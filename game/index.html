@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>세계 지식 창고를 지켜라!</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 화면1: 던전 선택 -->
+  <div class="screen active" id="s-map">
+    <div class="map-header">
+      <img src="images/Copilot_20260520_145119.png" class="map-bg-img" alt="메인배경">
+      <div class="map-overlay">
+        <h1>세계 지식 창고를 지켜라!</h1>
+        <p>도전할 던전을 선택하세요</p>
+      </div>
+    </div>
+    <div class="dungeon-cards">
+      <div class="d-card" onclick="goToBattle(0)">
+        <img src="images/Copilot_20260520_145843.png" alt="헤츨링">
+        <div class="d-name">헤츨링 던전</div>
+        <div class="d-diff">⭐ 초급</div>
+      </div>
+      <div class="d-card" onclick="goToBattle(1)">
+        <img src="images/Copilot_20260520_150244.png" alt="용">
+        <div class="d-name">용 던전</div>
+        <div class="d-diff">⭐⭐ 중급</div>
+      </div>
+      <div class="d-card" onclick="goToBattle(2)">
+        <img src="images/Copilot_20260520_150501.png" alt="나이많은 용">
+        <div class="d-name">나이많은 용</div>
+        <div class="d-diff">⭐⭐⭐ 고급</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 화면2: 전투 -->
+  <div class="screen" id="s-battle">
+    <div class="battle-bg" id="battle-bg">
+      <div class="fighter left">
+        <img class="sprite idle" id="hero-spr" src="images/Copilot_20260520_145541.png" alt="용사">
+        <div class="hp-wrap">
+          <div class="hp-bar-bg"><div class="hp-fill hp-hero" id="hero-bar" style="width:100%"></div></div>
+          <div class="hp-num" id="hero-num">100/100</div>
+        </div>
+        <div class="fighter-name">용사</div>
+      </div>
+      <div class="log-box">
+        <div class="log-text" id="log-text">전투 시작!</div>
+      </div>
+      <div class="fighter right">
+        <img class="sprite idle" id="enemy-spr" src="images/Copilot_20260520_145843.png" alt="적">
+        <div class="hp-wrap">
+          <div class="hp-bar-bg"><div class="hp-fill hp-enemy" id="enemy-bar" style="width:100%"></div></div>
+          <div class="hp-num" id="enemy-num">60/60</div>
+        </div>
+        <div class="fighter-name" id="enemy-lbl">헤츨링</div>
+      </div>
+    </div>
+    <div class="battle-bottom">
+      <div class="stats-row">
+        <div class="stat-c"><div class="stat-l">✨ 마법력</div><div class="stat-v" id="sv-magic">10</div></div>
+        <div class="stat-c"><div class="stat-l">💪 체력</div><div class="stat-v" id="sv-hp">100</div></div>
+        <div class="stat-c"><div class="stat-l">📚 지혜</div><div class="stat-v" id="sv-wisdom">10</div></div>
+      </div>
+      <div class="q-box">
+        <div class="q-text" id="q-text"></div>
+        <div class="choices" id="choices"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 화면3: 결과 -->
+  <div class="screen" id="s-result">
+    <div class="result-wrap">
+      <div class="result-emoji" id="r-emoji">🏆</div>
+      <div class="result-title" id="r-title">승리!</div>
+      <div class="result-sub" id="r-sub">용을 물리쳤습니다!</div>
+      <div class="reward-row" id="r-rewards"></div>
+      <button class="action-btn" onclick="goToMap()">던전 선택으로 돌아가기</button>
+    </div>
+  </div>
+
+  <script src="js/game.js"></script>
+</body>
+</html>
