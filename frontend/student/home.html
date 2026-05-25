@@ -1,0 +1,132 @@
+<!--
+  파일명: home.html
+  역할: 학생이 로그인 후 들어오는 메인 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 학생에게 오늘 할 활동을 보여줍니다.
+  2. 온책읽기 훈련장으로 이동할 수 있습니다.
+  3. 개별읽기 모험으로 이동할 수 있습니다.
+  4. 나의 질문 창고로 이동할 수 있습니다.
+  5. 던전 입장 버튼은 아직 잠금 상태로 보여줍니다.
+
+  저작권/출처 원칙:
+  - 현재 외부 이미지 파일을 사용하지 않습니다.
+  - UI는 HTML/CSS로 직접 제작합니다.
+  - 캐릭터/드래곤 이미지는 나중에 AI 생성 후 출처를 기록하고 넣을 예정입니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>학생 홈 - 문답책</title>
+
+  <link rel="stylesheet" href="../css/common.css">
+</head>
+
+<body>
+  <main class="student-home-page">
+
+    <!-- 상단바 영역입니다. -->
+    <header class="student-header">
+
+      <!-- 왼쪽 로고입니다. -->
+      <div class="student-logo">
+        📖 문답책
+      </div>
+
+      <!-- 오른쪽 메뉴입니다. -->
+      <div class="student-header-menu">
+        <button type="button" class="ability-mini-button">
+          🔔 나의 힘
+        </button>
+
+        <button type="button" class="logout-mini-button" onclick="logout()">
+          로그아웃
+        </button>
+      </div>
+    </header>
+
+    <!-- 메인 소개 영역입니다. -->
+    <section class="home-hero">
+      <p class="home-label">Victory Reading Quest</p>
+
+      <h1>
+        오늘도 질문의 힘을<br>
+        길러볼까요?
+      </h1>
+
+      <p class="home-desc">
+        책을 읽고 좋은 질문을 만들면 용사의 힘이 자라납니다.<br>
+        온책읽기 훈련장에서 연습하고, 개별읽기 모험에서 던전 입장을 준비해요.
+      </p>
+    </section>
+
+    <!-- 활동 카드 영역입니다. -->
+    <section class="home-card-grid">
+
+      <!-- 온책읽기 카드입니다. -->
+      <article class="home-card">
+        <div class="home-card-icon">🏫</div>
+        <h2>온책읽기 훈련장</h2>
+        <p>
+          친구들과 함께 책을 읽으며 질문 만드는 방법을 연습해요.
+        </p>
+        <a href="./before-read.html" class="home-card-button">
+          훈련 시작하기
+        </a>
+      </article>
+
+      <!-- 개별읽기 카드입니다. -->
+      <article class="home-card">
+        <div class="home-card-icon">📚</div>
+        <h2>개별읽기 모험</h2>
+        <p>
+          내가 고른 책으로 읽기 전·중·후 질문을 만들어요.
+        </p>
+        <a href="./book-select.html" class="home-card-button">
+          모험 시작하기
+        </a>
+      </article>
+
+      <!-- 질문 창고 카드입니다. -->
+      <article class="home-card">
+        <div class="home-card-icon">🗝️</div>
+        <h2>나의 질문 창고</h2>
+        <p>
+          내가 만든 질문과 AI 피드백을 다시 확인해요.
+        </p>
+        <a href="./my-questions.html" class="home-card-button">
+          질문 보러가기
+        </a>
+      </article>
+
+      <!-- 던전 카드입니다. -->
+      <article class="home-card locked">
+        <div class="home-card-icon">🐉</div>
+        <h2>용의 던전</h2>
+        <p>
+          개별읽기에서 질문 힘을 모으면 던전에 입장할 수 있어요.
+        </p>
+        <button type="button" class="home-card-button locked-button" disabled>
+          아직 잠겨 있어요
+        </button>
+      </article>
+
+    </section>
+  </main>
+
+  <script src="../js/auth.js"></script>
+
+  <script>
+    /*
+      학생 홈은 로그인이 필요한 화면이므로
+      페이지가 열리면 로그인 여부를 확인합니다.
+    */
+    checkLogin();
+  </script>
+</body>
+</html>
