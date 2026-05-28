@@ -255,6 +255,7 @@ function renderSourceList() {
     return;
   }
 
+<<<<<<< HEAD
   sourceList.innerHTML = sourceData.map(function (item) {
     return `
       <article class="source-item">
@@ -269,4 +270,32 @@ function renderSourceList() {
       </article>
     `;
   }).join("");
+=======
+  sourceList.innerHTML = `
+    <table class="source-table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>자료형태</th>
+          <th>파일명</th>
+          <th>자료 설명</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sourceData.map(function (item, index) {
+          return `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${item.type || "-"}</td>
+              <td>${item.fileName || item.name || "-"}</td>
+              <td>${item.description || item.usedIn || "-"}</td>
+              <td>${item.note || item.source || "-"}</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+>>>>>>> origin/jiao
 }

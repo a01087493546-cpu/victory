@@ -2413,4 +2413,43 @@ body {
   font-weight: 900 !important;
   letter-spacing: 0.24em !important;
   color: #e7be62 !important;
+}/* ===== 사용 자료 출처 표 ===== */
+
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: rgba(255, 250, 240, 0.96);
+  color: #2f2118;
+}
+
+.source-table th,
+.source-table td {
+  border: 1px solid rgba(91, 61, 33, 0.28);
+  padding: 10px 8px;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.source-table th {
+  background: rgba(139, 90, 43, 0.16);
+  font-weight: 800;
+  text-align: center;
+}
+
+.source-table td:nth-child(1),
+.source-table td:nth-child(2) {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.source-table td:nth-child(3) {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.source-table td:nth-child(4),
+.source-table td:nth-child(5) {
+  text-align: left;
 }
