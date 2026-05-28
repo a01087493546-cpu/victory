@@ -1,3 +1,5 @@
+frontend/js/story-intro.js
+
 /*
   파일명: story-intro.js
   역할: 첫 로그인 스토리 인트로 화면의 넘기기 기능을 담당합니다.
@@ -7,21 +9,15 @@
   2. 다음 버튼을 누르면 다음 이야기로 넘어갑니다.
   3. 이전 버튼을 누르면 이전 이야기로 돌아갑니다.
   4. 마지막 장에서 '모험 시작하기'를 누르면 학생 홈으로 이동합니다.
-  5. 스토리를 다 본 기록을 localStorage에 저장합니다.
+  5. 스토리를 다 본 기록을 studentId별로 sessionStorage에 저장합니다.
 
   저작권/출처 원칙:
   - 현재는 외부 이미지 파일을 사용하지 않습니다.
   - 임시 이모지와 텍스트만 사용합니다.
   - 나중에 AI 생성 이미지를 넣을 때는 source-data.js에 출처를 기록합니다.
 */
-
-/*
-  변수명: storySlides
-  역할: 스토리 화면에 표시할 이야기 목록입니다.
-
-  나중에 AI 생성 이미지가 준비되면
-  각 장면에 image 값을 추가해서 배경/캐릭터 이미지를 연결할 수 있습니다.
-*/
+// 로그인한 사용자만 스토리 인트로 화면에 접근할 수 있습니다.
+checkLogin();
 const storySlides = [
   {
     character: "🐉📚",
@@ -104,13 +100,11 @@ prevStoryButton.addEventListener("click", function () {
 nextStoryButton.addEventListener("click", function () {
   const lastIndex = storySlides.length - 1;
 
-  // 마지막 장이면 스토리를 본 것으로 저장하고 학생 홈으로 이동합니다.
   if (currentSlideIndex === lastIndex) {
     finishStoryIntro();
     return;
   }
 
-  // 마지막 장이 아니면 다음 장으로 이동합니다.
   currentSlideIndex = currentSlideIndex + 1;
   renderStorySlide();
 });
@@ -141,10 +135,8 @@ function renderStorySlide() {
 
   storyCount.textContent = `${currentSlideIndex + 1} / ${storySlides.length}`;
 
-  // 첫 장에서는 이전 버튼을 비활성화합니다.
   prevStoryButton.disabled = currentSlideIndex === 0;
 
-  // 마지막 장에서는 다음 버튼 문구를 바꿉니다.
   if (currentSlideIndex === storySlides.length - 1) {
     nextStoryButton.textContent = "모험 시작하기";
   } else {
@@ -177,9 +169,10 @@ function renderStoryDots() {
   역할: 스토리를 본 것으로 저장하고 학생 홈으로 이동합니다.
 */
 function finishStoryIntro() {
-  // 다음 로그인부터 스토리 인트로가 다시 나오지 않도록 저장합니다.
-  localStorage.setItem("hasSeenStoryIntro", "true");
+  // studentId별로 스토리 인트로를 본 기록을 저장합니다.
+  // 여러 학생이 같은 브라우저를 써도 각자 따로 관리됩니다.
+ const studentId = sessionStorage.getItem("studentId") || "1";
+  sessionStorage.setItem("hasSeenStoryIntro_" + studentId, "true");
 
-  // 학생 홈으로 이동합니다.
   window.location.href = "./home.html";
 }
