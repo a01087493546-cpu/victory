@@ -1160,12 +1160,12 @@ body {
 
 .fighter.left {
   left: 12%;
-  bottom: 14%;
+  bottom: 10%;
 }
 
 .fighter.right {
   right: 12%;
-  bottom: 15%;
+  bottom: 11%;
 }
 
 .fighter::after {
@@ -1347,7 +1347,7 @@ body {
 .log-box {
   position: absolute;
   left: 0;
-  bottom: 8;
+  bottom: 18;
   width: 310px;
   z-index: 30;
   background:
