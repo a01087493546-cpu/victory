@@ -1,0 +1,850 @@
+<!--
+  파일명: practice.html
+  역할: 문답책 프로젝트의 연습하기 단계 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 책 고르기부터 읽기 후 활동까지 단계별 흐름을 보여줍니다.
+  2. 한 단계를 완료하면 다음 단계가 활성화됩니다.
+  3. 현재는 화면 흐름 확인용 임시 단계 완료 방식입니다.
+  4. 나중에 실제 질문 작성 화면, 책 투표 화면, 우리반 함께 읽기 화면으로 연결할 예정입니다.
+
+  저작권/출처:
+  - 현재 이 화면은 기존 홈 배경 이미지와 로고 이미지를 사용합니다.
+  - 단계 아이콘은 practice 전용 이미지 경로로 연결해 두었습니다.
+  - 아직 practice 전용 아이콘이 없을 경우 기존 이미지가 임시로 표시되도록 onerror fallback을 넣었습니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>문답책 - 연습하기</title>
+
+  <style>
+  /* 제목/로고/단계 제목에 사용할 Noto Serif KR 폰트입니다. */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
+
+  /* 전체 기본 설정 */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    background:
+      radial-gradient(circle at 50% 16%, rgba(255, 219, 146, 0.28), transparent 31%),
+      radial-gradient(circle at 84% 62%, rgba(214, 151, 78, 0.24), transparent 34%),
+      radial-gradient(circle at 18% 80%, rgba(158, 98, 57, 0.2), transparent 36%),
+      linear-gradient(rgba(35, 22, 13, 0.26), rgba(35, 22, 13, 0.58)),
+      url("../assets/images/home/home-library-bg.png");
+    background-size: cover;
+    background-position: center;
+    color: #fff1da;
+    overflow-x: hidden;
+  }
+
+  .practice-page {
+    position: relative;
+    min-height: 100vh;
+    padding: 30px 34px 40px;
+  }
+
+  .practice-page::before {
+    content: "";
+    position: fixed;
+    left: 50%;
+    top: 105px;
+    transform: translateX(-50%);
+    width: 920px;
+    height: 920px;
+    background: radial-gradient(circle, rgba(255, 209, 123, 0.22), transparent 62%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .practice-page::after {
+    content: "";
+    position: fixed;
+    left: -180px;
+    bottom: -190px;
+    width: 570px;
+    height: 570px;
+    background: radial-gradient(circle, rgba(139, 82, 48, 0.22), transparent 68%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .practice-header {
+    position: relative;
+    z-index: 2;
+    max-width: 1280px;
+    margin: 0 auto 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff6e6;
+    font-family: "Noto Serif KR", serif;
+    font-size: 31px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-shadow:
+      0 2px 0 rgba(82, 48, 20, 0.78),
+      0 6px 14px rgba(0, 0, 0, 0.42),
+      0 0 14px rgba(233, 178, 91, 0.32);
+  }
+
+  .logo-area img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    filter:
+      drop-shadow(0 6px 10px rgba(0, 0, 0, 0.38))
+      drop-shadow(0 0 12px rgba(233, 178, 91, 0.38));
+  }
+
+  .home-button {
+    border: 1px solid rgba(230, 180, 105, 0.78);
+    border-radius: 999px;
+    padding: 13px 22px;
+    background: linear-gradient(180deg, rgba(164, 108, 55, 0.96), rgba(99, 62, 34, 0.96));
+    color: #fff5e4;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow:
+      0 8px 18px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 245, 219, 0.24),
+      0 0 12px rgba(212, 145, 66, 0.16);
+    transition: 0.2s ease;
+  }
+
+  .home-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, rgba(184, 126, 65, 0.98), rgba(113, 71, 39, 0.98));
+  }
+
+  .practice-card {
+    position: relative;
+    z-index: 1;
+    max-width: 1230px;
+    margin: 0 auto;
+    padding: 44px 34px 34px;
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at 80% 7%, rgba(255, 213, 137, 0.28), transparent 35%),
+      radial-gradient(circle at 10% 100%, rgba(157, 94, 56, 0.16), transparent 38%),
+      linear-gradient(180deg, rgba(130, 91, 59, 0.93) 0%, rgba(75, 50, 34, 0.95) 100%);
+    border: 1px solid rgba(231, 181, 105, 0.72);
+    box-shadow:
+      0 26px 58px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 247, 225, 0.18),
+      0 0 30px rgba(190, 125, 55, 0.18);
+    overflow: hidden;
+  }
+
+  .practice-card::before {
+    content: "";
+    position: absolute;
+    top: -145px;
+    right: -105px;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(255, 216, 139, 0.34) 0%, rgba(255, 216, 139, 0) 72%);
+    pointer-events: none;
+  }
+
+  .practice-card::after {
+    content: "";
+    position: absolute;
+    left: -130px;
+    bottom: -165px;
+    width: 430px;
+    height: 430px;
+    background: radial-gradient(circle, rgba(148, 89, 54, 0.22) 0%, rgba(148, 89, 54, 0) 72%);
+    pointer-events: none;
+  }
+
+  .title-area {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 34px;
+  }
+
+  .title-badge {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 9px 20px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #edc16f 0%, #b87939 100%);
+    color: #fff8e8;
+    font-size: 15px;
+    font-weight: 900;
+    border: 1px solid rgba(255, 226, 167, 0.72);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 250, 233, 0.28),
+      0 4px 12px rgba(0, 0, 0, 0.18),
+      0 0 14px rgba(233, 178, 91, 0.22);
+  }
+
+  .title-area h1 {
+    margin-bottom: 18px;
+    font-family: "Noto Serif KR", serif;
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1.24;
+    letter-spacing: -1.6px;
+    color: #fff7e6;
+    -webkit-text-stroke: 0.32px #fff7e6;
+    text-shadow:
+      0 2px 0 rgba(86, 50, 20, 0.72),
+      0 6px 14px rgba(0, 0, 0, 0.26),
+      0 0 18px rgba(238, 183, 92, 0.34);
+  }
+
+  .title-area p {
+    color: #ffe6c3;
+    font-size: 18px;
+    line-height: 1.8;
+    font-weight: 900;
+    letter-spacing: -0.2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  }
+
+  .step-list {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .step-card {
+    position: relative;
+    min-height: 390px;
+    padding: 22px 20px;
+    border: 1.5px solid rgba(224, 169, 94, 0.62);
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 78% 4%, rgba(238, 180, 96, 0.17), transparent 42%),
+      linear-gradient(180deg, rgba(132, 96, 63, 0.91) 0%, rgba(83, 58, 39, 0.93) 100%);
+    box-shadow:
+      0 12px 24px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 246, 223, 0.13);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: 0.25s ease;
+    overflow: hidden;
+  }
+
+  .step-card::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 145px;
+    height: 145px;
+    background: radial-gradient(circle, rgba(244, 192, 107, 0.24), transparent 68%);
+    pointer-events: none;
+  }
+
+  .step-card::after {
+    content: "";
+    position: absolute;
+    left: -45px;
+    bottom: -55px;
+    width: 125px;
+    height: 125px;
+    background: radial-gradient(circle, rgba(139, 82, 48, 0.14), transparent 70%);
+    pointer-events: none;
+  }
+
+  .step-card.active {
+    box-shadow:
+      0 16px 34px rgba(0, 0, 0, 0.28),
+      0 0 0 2px rgba(238, 183, 92, 0.22),
+      0 0 26px rgba(238, 183, 92, 0.18);
+  }
+
+  .step-card.active:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 38px rgba(0, 0, 0, 0.34),
+      0 0 0 2px rgba(255, 207, 122, 0.28),
+      0 0 32px rgba(238, 183, 92, 0.24);
+  }
+
+  .step-card.locked {
+    opacity: 0.72;
+    filter: saturate(0.82);
+  }
+
+  .step-number {
+    color: #f1c982;
+    font-size: 14px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+      .step-icon-box {
+      width: 150px;
+      height: 118px;
+      margin-bottom: 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 35% 28%, rgba(249, 204, 122, 0.32), rgba(102, 66, 36, 0.82));
+      border: 1px solid rgba(246, 194, 111, 0.62);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 249, 230, 0.22),
+        0 8px 16px rgba(0, 0, 0, 0.22),
+        0 0 16px rgba(235, 176, 88, 0.2);
+      overflow: hidden;
+    }
+
+     .step-icon-box img {
+      width: 138px;
+      height: 104px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
+        drop-shadow(0 0 8px rgba(246, 194, 111, 0.3));
+    }
+
+  .step-main-title {
+    margin-bottom: 6px;
+    font-family: "Noto Serif KR", serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff7e5;
+    letter-spacing: -0.7px;
+    text-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.24),
+      0 0 10px rgba(230, 171, 82, 0.14);
+  }
+
+  .step-sub-title {
+    margin-bottom: 14px;
+    font-size: 17px;
+    font-weight: 900;
+    color: #f2c174;
+    letter-spacing: -0.2px;
+  }
+
+  .step-card p {
+    color: #ffe4c0;
+    font-size: 15px;
+    line-height: 1.68;
+    font-weight: 800;
+    letter-spacing: -0.1px;
+  }
+
+  .step-button {
+    width: 100%;
+    margin-top: 18px;
+    border-radius: 16px;
+    padding: 13px 10px;
+    color: #fff8eb;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 246, 222, 0.2),
+      0 8px 16px rgba(0, 0, 0, 0.22),
+      0 0 12px rgba(230, 171, 82, 0.16);
+    transition: 0.2s ease;
+  }
+
+  .step-button:hover {
+    transform: translateY(-2px);
+  }
+
+  /*
+    단계별 포인트 색상입니다.
+    보라/연두 없이, 밝은 고급 옐로우에서 점점 브라운으로 이어지게 구성합니다.
+  */
+
+  /* 1단계: 밝은 고급 옐로우 골드 */
+  .step-card:nth-child(1) {
+    border-color: rgba(255, 220, 145, 0.92);
+    background:
+      radial-gradient(circle at 76% 0%, rgba(255, 220, 145, 0.32), transparent 42%),
+      linear-gradient(180deg, rgba(157, 119, 68, 0.95) 0%, rgba(100, 69, 39, 0.95) 100%);
+  }
+
+  .step-card:nth-child(1) .step-button {
+    border: 1px solid rgba(255, 220, 145, 0.76);
+    background: linear-gradient(180deg, #e5b96a 0%, #a06f38 100%);
+  }
+
+  .step-card:nth-child(1) .step-button:hover {
+    background: linear-gradient(180deg, #f0c879 0%, #b17e44 100%);
+  }
+
+  .step-card:nth-child(1) .step-sub-title,
+  .step-card:nth-child(1) .step-number {
+    color: #ffe1a0;
+  }
+
+  /* 2단계: 앰버 골드 */
+  .step-card:nth-child(2) {
+    border-color: rgba(244, 197, 121, 0.88);
+    background:
+      radial-gradient(circle at 76% 0%, rgba(244, 197, 121, 0.29), transparent 42%),
+      linear-gradient(180deg, rgba(146, 104, 59, 0.94) 0%, rgba(92, 61, 36, 0.95) 100%);
+  }
+
+  .step-card:nth-child(2) .step-button {
+    border: 1px solid rgba(244, 197, 121, 0.72);
+    background: linear-gradient(180deg, #d7a45a 0%, #925f2f 100%);
+  }
+
+  .step-card:nth-child(2) .step-button:hover {
+    background: linear-gradient(180deg, #e2b166 0%, #a06d39 100%);
+  }
+
+  .step-card:nth-child(2) .step-sub-title,
+  .step-card:nth-child(2) .step-number {
+    color: #ffd28c;
+  }
+
+  /* 3단계: 카라멜 브라운 */
+  .step-card:nth-child(3) {
+    border-color: rgba(227, 166, 98, 0.86);
+    background:
+      radial-gradient(circle at 76% 0%, rgba(227, 166, 98, 0.27), transparent 42%),
+      linear-gradient(180deg, rgba(133, 88, 51, 0.94) 0%, rgba(83, 52, 32, 0.95) 100%);
+  }
+
+  .step-card:nth-child(3) .step-button {
+    border: 1px solid rgba(227, 166, 98, 0.72);
+    background: linear-gradient(180deg, #c48b4c 0%, #824f27 100%);
+  }
+
+  .step-card:nth-child(3) .step-button:hover {
+    background: linear-gradient(180deg, #d09a59 0%, #935d31 100%);
+  }
+
+  .step-card:nth-child(3) .step-sub-title,
+  .step-card:nth-child(3) .step-number {
+    color: #f5bd79;
+  }
+
+  /* 4단계: 토피 브라운 */
+  .step-card:nth-child(4) {
+    border-color: rgba(205, 137, 78, 0.84);
+    background:
+      radial-gradient(circle at 76% 0%, rgba(205, 137, 78, 0.25), transparent 42%),
+      linear-gradient(180deg, rgba(119, 73, 43, 0.94) 0%, rgba(75, 45, 29, 0.95) 100%);
+  }
+
+  .step-card:nth-child(4) .step-button {
+    border: 1px solid rgba(205, 137, 78, 0.72);
+    background: linear-gradient(180deg, #af733d 0%, #754520 100%);
+  }
+
+  .step-card:nth-child(4) .step-button:hover {
+    background: linear-gradient(180deg, #bf8249 0%, #87522a 100%);
+  }
+
+  .step-card:nth-child(4) .step-sub-title,
+  .step-card:nth-child(4) .step-number {
+    color: #e9a967;
+  }
+
+  /* 5단계: 밝은 딥 브라운 */
+  .step-card:nth-child(5) {
+    border-color: rgba(181, 111, 64, 0.82);
+    background:
+      radial-gradient(circle at 76% 0%, rgba(181, 111, 64, 0.24), transparent 42%),
+      linear-gradient(180deg, rgba(98, 58, 36, 0.95) 0%, rgba(62, 36, 24, 0.96) 100%);
+  }
+
+  .step-card:nth-child(5) .step-button {
+    border: 1px solid rgba(181, 111, 64, 0.72);
+    background: linear-gradient(180deg, #965c32 0%, #623719 100%);
+  }
+
+  .step-card:nth-child(5) .step-button:hover {
+    background: linear-gradient(180deg, #a86b3c 0%, #744522 100%);
+  }
+
+  .step-card:nth-child(5) .step-sub-title,
+  .step-card:nth-child(5) .step-number {
+    color: #d89059;
+  }
+
+  /* 잠긴 단계 버튼은 단계 색보다 잠김 상태가 우선 보이게 합니다. */
+  .step-button:disabled {
+    border: 1px solid rgba(164, 134, 101, 0.5);
+    background: linear-gradient(180deg, #a08a73 0%, #796856 100%);
+    color: #f0deca;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .guide-box {
+    position: relative;
+    z-index: 1;
+    margin-top: 30px;
+    padding: 20px 22px;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(239, 180, 91, 0.24), transparent 62%),
+      linear-gradient(180deg, rgba(111, 75, 46, 0.95) 0%, rgba(72, 49, 33, 0.96) 100%);
+    border: 1px solid rgba(214, 157, 83, 0.68);
+    color: #ffe1b9;
+    font-size: 17px;
+    line-height: 1.7;
+    text-align: center;
+    font-weight: 900;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 242, 210, 0.15),
+      0 8px 18px rgba(0, 0, 0, 0.18),
+      0 0 18px rgba(190, 126, 59, 0.12);
+  }
+
+  .guide-box strong {
+    font-weight: 900;
+    color: #ffdb96;
+  }
+
+  @media (max-width: 1100px) {
+    .step-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .title-area h1 {
+      font-size: 40px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .practice-page {
+      padding: 20px;
+    }
+
+    .practice-header {
+      gap: 14px;
+    }
+
+    .logo-area {
+      font-size: 24px;
+    }
+
+    .logo-area img {
+      width: 54px;
+      height: 54px;
+    }
+
+    .home-button {
+      padding: 11px 15px;
+      font-size: 14px;
+    }
+
+    .practice-card {
+      padding: 30px 22px 26px;
+      border-radius: 28px;
+    }
+
+    .step-list {
+      grid-template-columns: 1fr;
+    }
+
+    .title-area h1 {
+      font-size: 32px;
+      letter-spacing: -1px;
+    }
+
+    .title-area p {
+      font-size: 16px;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="practice-page">
+
+    <!-- 상단 로고와 홈 버튼 -->
+    <header class="practice-header">
+      <div class="logo-area">
+        <img src="../assets/images/logo-book.png" alt="문답책 로고">
+        <span>문답책</span>
+      </div>
+
+      <button class="home-button" onclick="goHome()">
+        ← 홈으로
+      </button>
+    </header>
+
+    <main class="practice-card">
+
+      <!-- 제목 영역 -->
+      <section class="title-area">
+        <span class="title-badge">연습하기</span>
+
+        <h1>책 속 이야기를 함께 따라가 볼까요?</h1>
+
+        <p>
+          함께 읽을 책을 고르고, 읽기 전·중·후 활동을 차근차근 해 보며<br>
+          이야기 속 중요한 생각을 찾아가요.
+        </p>
+      </section>
+
+      <!-- 단계 카드 영역 -->
+      <section class="step-list">
+
+        <!-- 1단계 -->
+        <article class="step-card active" id="stepBook">
+          <div>
+            <div class="step-number">01</div>
+
+            <div class="step-icon-box">
+              <img
+                src="../assets/images/practice/practice-book-select.png"
+                alt="책 고르기 아이콘"
+                onerror="this.onerror=null; this.src='../assets/images/home/home-practice-icon.png';"
+              >
+            </div>
+
+            <h2 class="step-main-title">책 고르기</h2>
+            <div class="step-sub-title">함께 읽을 책 고르기</div>
+
+            <p>
+              우리 반이 함께 읽을 책을 살펴보고, 어떤 책을 읽고 싶은지 생각해요.
+            </p>
+          </div>
+
+          <button class="step-button" onclick="goBookVotePage()">
+  시작하기
+</button>
+        </article>
+
+        <!-- 2단계 -->
+        <article class="step-card locked" id="stepBefore">
+          <div>
+            <div class="step-number">02</div>
+
+            <div class="step-icon-box">
+              <img
+                src="../assets/images/practice/practice-before-reading.png"
+                alt="읽기 전 아이콘"
+                onerror="this.onerror=null; this.src='../assets/images/ability/ability-magic.png';"
+              >
+            </div>
+
+            <h2 class="step-main-title">읽기 전</h2>
+            <div class="step-sub-title">생각 열기</div>
+
+            <p>
+              제목, 표지, 그림 등을 보며 책에서 어떤 이야기가 펼쳐질지 떠올려요.
+            </p>
+          </div>
+
+          <button class="step-button" id="beforeButton" disabled onclick="completeStep('before')">
+            잠김
+          </button>
+        </article>
+
+        <!-- 3단계 -->
+        <article class="step-card locked" id="stepDuring">
+          <div>
+            <div class="step-number">03</div>
+
+            <div class="step-icon-box">
+              <img
+                src="../assets/images/practice/practice-during-reading.png"
+                alt="읽기 중 아이콘"
+                onerror="this.onerror=null; this.src='../assets/images/ability/ability-wisdom.png';"
+              >
+            </div>
+
+            <h2 class="step-main-title">읽기 중</h2>
+            <div class="step-sub-title">질문하며 깊이 읽기</div>
+
+            <p>
+              읽으면서 궁금한 점을 질문으로 만들고, 더 알고 싶은 생각을 따라가요.
+            </p>
+          </div>
+
+          <button class="step-button" id="duringButton" disabled onclick="completeStep('during')">
+            잠김
+          </button>
+        </article>
+
+        <!-- 4단계 -->
+        <article class="step-card locked" id="stepClass">
+          <div>
+            <div class="step-number">04</div>
+
+            <div class="step-icon-box">
+              <img
+                src="../assets/images/practice/practice-class-reading.png"
+                alt="우리반 책읽기 아이콘"
+                onerror="this.onerror=null; this.src='../assets/images/home/home-individual-icon.png';"
+              >
+            </div>
+
+            <h2 class="step-main-title">우리반 책읽기</h2>
+            <div class="step-sub-title">함께 읽기</div>
+
+            <p>
+              친구들과 같은 책을 읽으며 서로의 질문과 생각을 함께 살펴봐요.
+            </p>
+          </div>
+
+          <button class="step-button" id="classButton" disabled onclick="completeStep('classRead')">
+            잠김
+          </button>
+        </article>
+
+        <!-- 5단계 -->
+        <article class="step-card locked" id="stepAfter">
+          <div>
+            <div class="step-number">05</div>
+
+            <div class="step-icon-box">
+              <img
+                src="../assets/images/practice/practice-after-reading.png"
+                alt="읽기 후 아이콘"
+                onerror="this.onerror=null; this.src='../assets/images/ability/ability-courage.png';"
+              >
+            </div>
+
+            <h2 class="step-main-title">읽기 후</h2>
+            <div class="step-sub-title">내용 간추리기</div>
+
+            <p>
+              책에서 중요한 사건과 생각을 정리하며 읽은 내용을 간단히 간추려요.
+            </p>
+          </div>
+
+          <button class="step-button" id="afterButton" disabled onclick="completeStep('after')">
+            잠김
+          </button>
+        </article>
+
+      </section>
+
+      <!-- 현재 진행 안내 -->
+      <div class="guide-box" id="guideText">
+        먼저 <strong>책 고르기</strong>부터 시작해요. 책을 고르면 다음 독서 활동이 열려요.
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /*
+      현재는 프론트 화면 확인용 임시 진행 상태입니다.
+
+      나중에 백엔드가 연결되면 아래처럼 학생별 진행 상태를 서버에서 불러오면 됩니다.
+      예시:
+      GET /api/students/{studentId}/practice-progress
+      PATCH /api/students/{studentId}/practice-progress
+    */
+
+    // 로그인한 학생 ID를 가져옵니다.
+    const studentId = sessionStorage.getItem("studentId") || "test-student";
+
+    // 학생별 연습하기 진행 상태 저장 키입니다.
+    const progressKey = `practiceProgress_${studentId}`;
+
+    // 저장된 진행 상태가 있으면 불러오고, 없으면 처음 상태로 시작합니다.
+    let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
+      book: false,
+      before: false,
+      during: false,
+      classRead: false,
+      after: false
+    };
+
+    // 화면이 열리면 현재 진행 상태를 반영합니다.
+    updatePracticeScreen();
+
+    // 홈 화면으로 이동합니다.
+    function goHome() {
+      location.href = "./home.html";
+    }
+    // 책 투표 화면으로 이동합니다.
+function goBookVotePage() {
+  location.href = "./book-vote.html";
+}
+
+    // 단계를 완료 처리합니다.
+    function completeStep(stepName) {
+      progress[stepName] = true;
+      sessionStorage.setItem(progressKey, JSON.stringify(progress));
+      updatePracticeScreen();
+    }
+
+    // 진행 상태에 따라 다음 단계 버튼을 활성화합니다.
+    function updatePracticeScreen() {
+      const stepBefore = document.getElementById("stepBefore");
+      const stepDuring = document.getElementById("stepDuring");
+      const stepClass = document.getElementById("stepClass");
+      const stepAfter = document.getElementById("stepAfter");
+
+      const beforeButton = document.getElementById("beforeButton");
+      const duringButton = document.getElementById("duringButton");
+      const classButton = document.getElementById("classButton");
+      const afterButton = document.getElementById("afterButton");
+
+      const guideText = document.getElementById("guideText");
+
+      if (progress.book === true) {
+        stepBefore.classList.remove("locked");
+        stepBefore.classList.add("active");
+        beforeButton.disabled = false;
+        beforeButton.textContent = "시작하기";
+        guideText.innerHTML = "<strong>읽기 전 - 생각 열기</strong>에서 책의 첫인상을 떠올려 봐요.";
+      }
+
+      if (progress.before === true) {
+        stepDuring.classList.remove("locked");
+        stepDuring.classList.add("active");
+        duringButton.disabled = false;
+        duringButton.textContent = "시작하기";
+        guideText.innerHTML = "<strong>읽기 중 - 질문하며 깊이 읽기</strong>에서 떠오르는 생각을 따라가요.";
+      }
+
+      if (progress.during === true) {
+        stepClass.classList.remove("locked");
+        stepClass.classList.add("active");
+        classButton.disabled = false;
+        classButton.textContent = "시작하기";
+        guideText.innerHTML = "<strong>우리반 책읽기 - 함께 읽기</strong>에서 친구들과 같은 책을 함께 만나 봐요.";
+      }
+
+      if (progress.classRead === true) {
+        stepAfter.classList.remove("locked");
+        stepAfter.classList.add("active");
+        afterButton.disabled = false;
+        afterButton.textContent = "시작하기";
+        guideText.innerHTML = "<strong>읽기 후 - 내용 간추리기</strong>에서 중요한 장면과 생각을 정리해 봐요.";
+      }
+
+      if (progress.after === true) {
+        guideText.innerHTML = "모든 독서 활동을 마쳤어요. 책 속 이야기를 끝까지 잘 따라왔어요!";
+      }
+    }
+  </script>
+</body>
+</html>

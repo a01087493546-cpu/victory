@@ -1,206 +1,25 @@
 /*
   파일명: auth.js
-  역할: 문답책 프로젝트의 로그인 기능과 출처 모달 기능을 담당합니다.
+  역할: 문답책 로그인, 역할 선택, 로그인 확인 기능을 담당합니다.
 
-  이 파일에서 하는 일:
-  1. 로그인 폼에서 아이디, 비밀번호, 역할을 가져옵니다.
-  2. 백엔드 로그인 API와 연결할 준비를 합니다.
-  3. 백엔드 연결 전에는 임시 로그인으로 화면 이동을 테스트합니다.
-  4. 학생이 처음 로그인하면 story-intro.html로 이동하게 합니다.
-  5. 사용 자료 출처 버튼을 누르면 출처 모달을 엽니다.
-  6. source-data.js에 적어둔 출처 목록을 화면에 표시합니다.
+  중요 규칙:
+  1. 로그인 정보는 localStorage가 아니라 sessionStorage만 사용합니다.
+  2. 학생/교사 역할을 구분해서 저장합니다.
+  3. 학생은 첫 로그인일 때 스토리 화면으로 이동합니다.
+  4. 스토리를 본 학생은 바로 학생 홈으로 이동합니다.
 */
 
-// 백엔드 서버 기본 주소입니다.
-// 나중에 실제 Spring Boot 서버와 연결할 때 사용합니다.
-const BASE_URL = "http://localhost:8080";
-
-// 로그인 폼을 가져옵니다.
-const loginForm = document.getElementById("loginForm");
-
-// 출처 모달 열기 버튼을 가져옵니다.
-const openSourceModalButton = document.getElementById("openSourceButton");
-
-// 출처 모달 닫기 버튼을 가져옵니다.
-const closeSourceModalButton = document.getElementById("closeSourceButton");
-
-// 출처 모달 전체 영역을 가져옵니다.
-const sourceModal = document.getElementById("sourceModal");
-
-// 출처 목록이 들어갈 영역을 가져옵니다.
-const sourceList = document.getElementById("sourceList");
-
-/*
-  로그인 폼이 존재하면 submit 이벤트를 연결합니다.
-*/
-if (loginForm) {
-  loginForm.addEventListener("submit", handleLogin);
-}
-
-/*
-  출처 모달 열기 버튼이 존재하면 클릭 이벤트를 연결합니다.
-*/
-if (openSourceModalButton) {
-  openSourceModalButton.addEventListener("click", openSourceModal);
-}
-
-/*
-  출처 모달 닫기 버튼이 존재하면 클릭 이벤트를 연결합니다.
-*/
-if (closeSourceModalButton) {
-  closeSourceModalButton.addEventListener("click", closeSourceModal);
-}
-
-/*
-  모달의 어두운 배경을 클릭하면 모달이 닫히게 합니다.
-*/
-if (sourceModal) {
-  sourceModal.addEventListener("click", function (event) {
-    if (event.target === sourceModal) {
-      closeSourceModal();
-    }
-  });
-}
-
-/*
-  함수명: handleLogin
-  역할: 로그인 버튼을 눌렀을 때 실행되는 함수입니다.
-
-  실제 백엔드 API:
-  POST /api/auth/login
-
-  요청 데이터:
-  {
-    username: "아이디",
-    password: "비밀번호",
-    role: "student 또는 teacher"
-  }
-*/
-async function handleLogin(event) {
-  event.preventDefault();
-
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
-  const role = document.querySelector("input[name='role']:checked").value;
-
-  if (!username) {
-    alert("아이디를 입력해주세요.");
-    return;
-  }
-
-  if (!password) {
-    alert("비밀번호를 입력해주세요.");
-    return;
-  }
-
-  /*
-    지금은 임시 로그인으로 화면 이동을 테스트합니다.
-    나중에 백엔드 연결할 때는 아래 두 줄을 주석 처리하고,
-    그 아래 fetch 코드를 사용하면 됩니다.
-  */
-  tempLogin(username, role);
-  return;
-
-  /*
-    ===== 백엔드 연결용 코드 =====
-    백엔드 로그인 API가 완성되면 위의 tempLogin 부분을 막고 이 코드를 사용합니다.
-    나중에: POST /api/auth/login
-  */
-  try {
-    const response = await fetch(`${BASE_URL}/api/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-        role: role
-      })
-    });
-
-    if (response.status === 401) {
-      alert("아이디 또는 비밀번호가 올바르지 않습니다.");
-      return;
-    }
-
-    const result = await response.json();
-
-    if (result.success === false) {
-      alert(result.message || "로그인에 실패했습니다.");
-      return;
-    }
-
-    // 로그인 성공 후 사용자 정보를 sessionStorage에 저장합니다.
-    sessionStorage.setItem("token", result.data.token);
-    sessionStorage.setItem("role", result.data.role);
-    sessionStorage.setItem("name", result.data.name);
-    sessionStorage.setItem("studentId", result.data.id);
-
-    moveAfterLogin(result.data.role);
-
-  } catch (error) {
-    console.error("로그인 오류:", error);
-    alert("서버와 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인해주세요.");
-  }
-}
-
-/*
-  함수명: tempLogin
-  역할: 백엔드 연결 전 화면 이동을 테스트하는 임시 로그인 함수입니다.
-*/
-function tempLogin(username, role) {
-  // localStorage 대신 sessionStorage 사용
-  sessionStorage.setItem("token", "temp-token");
-  sessionStorage.setItem("role", role);
-  sessionStorage.setItem("name", username);
-
-  // userId 대신 studentId로 통일
-  // 나중에 백엔드에서 실제 studentId 받아올 예정
-  sessionStorage.setItem("studentId", "1");
-
-  moveAfterLogin(role);
-}
-
-/*
-  함수명: moveAfterLogin
-  역할: 로그인 후 역할에 따라 이동할 화면을 결정합니다.
-*/
-function moveAfterLogin(role) {
-  if (role === "student") {
-    const studentId = sessionStorage.getItem("studentId") || "1";
-
-    // studentId별로 스토리 인트로를 봤는지 확인합니다.
-    // 학생마다 다르게 저장되므로 여러 학생이 같은 브라우저를 써도 구분됩니다.
-    const hasSeenStoryIntro = sessionStorage.getItem("hasSeenStoryIntro_" + studentId);
-
-    if (hasSeenStoryIntro !== "true") {
-      window.location.href = "./student/story-intro.html";
-      return;
-    }
-
-    window.location.href = "./student/home.html";
-    return;
-  }
-
-  if (role === "teacher") {
-    window.location.href = "./teacher/home.html";
-    return;
-  }
-
-  alert("사용자 역할 정보를 확인할 수 없습니다.");
-}
+/* 현재 선택된 역할입니다. 기본값은 학생입니다. */
+let selectedRole = "student";
 
 /*
   함수명: checkLogin
-  역할: 로그인이 필요한 페이지에서 로그인 여부를 확인합니다.
-
-  사용 방법:
-  로그인이 필요한 모든 화면 JS 파일 상단에 checkLogin() 한 줄 추가하면 됩니다.
+  역할: 보호된 페이지에 로그인하지 않은 사용자가 들어오지 못하게 막습니다.
 */
 function checkLogin() {
   const token = sessionStorage.getItem("token");
 
+  /* 로그인 정보가 없으면 로그인 화면으로 돌려보냅니다. */
   if (!token) {
     alert("로그인이 필요합니다.");
     window.location.href = "../index.html";
@@ -208,77 +27,192 @@ function checkLogin() {
 }
 
 /*
-  함수명: logout
-  역할: 로그아웃 처리 후 첫 화면으로 이동합니다.
+  HTML 화면이 모두 준비된 뒤 로그인 기능을 연결합니다.
 */
-function logout() {
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("role");
-  sessionStorage.removeItem("name");
-  sessionStorage.removeItem("studentId");
+document.addEventListener("DOMContentLoaded", function () {
+  /* 로그인 form을 가져옵니다. */
+  const loginForm = document.getElementById("loginForm");
 
-  // sessionStorage를 사용하므로 브라우저 세션이 유지되는 동안만 인트로 확인 기록이 유지됩니다.
-  // 나중에 백엔드 연동 시 studentId별 스토리 확인 여부를 DB에서 관리할 수 있습니다.
-  window.location.href = "../index.html";
-}
+  /* 아이디/비밀번호 입력칸을 가져옵니다. */
+  const loginIdInput = document.getElementById("loginId");
+  const loginPasswordInput = document.getElementById("loginPassword");
 
-/*
-  함수명: openSourceModal
-  역할: 사용 자료 출처 모달을 엽니다.
-*/
-function openSourceModal() {
-  renderSourceList();
-  sourceModal.classList.remove("hidden");
-}
+  /* 학생/교사 역할 버튼을 가져옵니다. */
+  const studentRoleButton = document.getElementById("studentRoleButton");
+  const teacherRoleButton = document.getElementById("teacherRoleButton");
 
-/*
-  함수명: closeSourceModal
-  역할: 사용 자료 출처 모달을 닫습니다.
-*/
-function closeSourceModal() {
-  sourceModal.classList.add("hidden");
-}
+  /* 학생 역할 버튼 클릭 처리입니다. */
+  if (studentRoleButton) {
+    studentRoleButton.addEventListener("click", function () {
+      selectedRole = "student";
 
-/*
-  함수명: renderSourceList
-  역할: source-data.js에 있는 sourceData 배열을 화면에 표시합니다.
-*/
-function renderSourceList() {
-  if (!sourceList) return;
+      /* 선택된 버튼 표시를 바꿉니다. */
+      studentRoleButton.classList.add("active");
+      teacherRoleButton.classList.remove("active");
+    });
+  }
 
-  if (!Array.isArray(sourceData)) {
-    sourceList.innerHTML = `
-      <p class="empty-source">
-        출처 데이터가 아직 연결되지 않았습니다.
-      </p>
-    `;
+  /* 교사 역할 버튼 클릭 처리입니다. */
+  if (teacherRoleButton) {
+    teacherRoleButton.addEventListener("click", function () {
+      selectedRole = "teacher";
+
+      /* 선택된 버튼 표시를 바꿉니다. */
+      teacherRoleButton.classList.add("active");
+      studentRoleButton.classList.remove("active");
+    });
+  }
+
+  /* 로그인 form이 없는 페이지에서는 여기서 멈춥니다. */
+  if (!loginForm) {
     return;
   }
 
-  sourceList.innerHTML = `
-    <table class="source-table">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>자료형태</th>
-          <th>파일명</th>
-          <th>자료 설명</th>
-          <th>비고</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${sourceData.map(function (item, index) {
-          return `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${item.type || "-"}</td>
-              <td>${item.fileName || item.name || "-"}</td>
-              <td>${item.description || item.usedIn || "-"}</td>
-              <td>${item.note || item.source || "-"}</td>
-            </tr>
-          `;
-        }).join("")}
-      </tbody>
-    </table>
-  `;
-}
+  /*
+    로그인 버튼을 눌렀을 때 실행됩니다.
+    button type="submit"이기 때문에 form submit 이벤트로 처리합니다.
+  */
+  loginForm.addEventListener("submit", function (event) {
+    /* form 기본 새로고침 동작을 막습니다. */
+    event.preventDefault();
+
+    const loginId = loginIdInput.value.trim();
+    const loginPassword = loginPasswordInput.value.trim();
+
+    /* 아이디 입력 확인입니다. */
+    if (loginId === "") {
+      alert("아이디를 입력해주세요.");
+      loginIdInput.focus();
+      return;
+    }
+
+    /* 비밀번호 입력 확인입니다. */
+    if (loginPassword === "") {
+      alert("비밀번호를 입력해주세요.");
+      loginPasswordInput.focus();
+      return;
+    }
+
+    /*
+      임시 로그인 처리입니다.
+      나중에 실제 서버 로그인 API로 교체하면 됩니다.
+    */
+    sessionStorage.setItem("token", "mock-token");
+    sessionStorage.setItem("role", selectedRole);
+    sessionStorage.setItem("name", loginId);
+
+    /*
+      학생 데이터는 studentId 기준으로 관리합니다.
+      지금은 임시로 입력한 아이디를 studentId로 사용합니다.
+    */
+    sessionStorage.setItem("studentId", loginId);
+
+    /* 학생 로그인 처리입니다. */
+    if (selectedRole === "student") {
+      const studentId = sessionStorage.getItem("studentId");
+      const hasSeenStoryIntro = sessionStorage.getItem("hasSeenStoryIntro_" + studentId);
+
+      /* 스토리를 본 적 있으면 학생 홈으로 이동합니다. */
+      if (hasSeenStoryIntro === "true") {
+        window.location.href = "./student/home.html";
+        return;
+      }
+
+      /* 첫 로그인이라면 스토리 인트로 화면으로 이동합니다. */
+      window.location.href = "./student/story-intro.html";
+      return;
+    }
+
+    /* 교사 로그인 처리입니다. */
+    if (selectedRole === "teacher") {
+      window.location.href = "./teacher/home.html";
+      return;
+    }
+  });
+});
+/*
+  사용 자료 출처 모달 기능입니다.
+  로그인 화면의 '사용 자료 출처' 버튼을 누르면
+  source-data.js에 저장된 출처 목록을 화면에 보여줍니다.
+*/
+document.addEventListener("DOMContentLoaded", function () {
+  // 출처 버튼, 모달, 닫기 버튼, 출처 목록 영역을 가져옵니다.
+  const openSourceButton = document.getElementById("openSourceButton");
+  const closeSourceButton = document.getElementById("closeSourceButton");
+  const sourceModal = document.getElementById("sourceModal");
+  const sourceList = document.getElementById("sourceList");
+
+  // 출처 버튼이 없는 화면에서는 아래 기능을 실행하지 않습니다.
+  if (!openSourceButton || !sourceModal || !sourceList) {
+    return;
+  }
+
+  // 사용 자료 출처 버튼을 눌렀을 때 모달을 엽니다.
+  openSourceButton.addEventListener("click", function () {
+    // hidden 클래스를 제거해서 모달을 화면에 보이게 합니다.
+    sourceModal.classList.remove("hidden");
+
+    // source-data.js의 sourceData 배열이 있으면 목록을 화면에 그립니다.
+    renderSourceList();
+  });
+
+  // 닫기 버튼을 눌렀을 때 모달을 닫습니다.
+  if (closeSourceButton) {
+    closeSourceButton.addEventListener("click", function () {
+      sourceModal.classList.add("hidden");
+    });
+  }
+
+  // 모달 바깥 어두운 영역을 누르면 모달을 닫습니다.
+  sourceModal.addEventListener("click", function (event) {
+    if (event.target === sourceModal) {
+      sourceModal.classList.add("hidden");
+    }
+  });
+
+    /*
+    함수명: renderSourceList
+    역할: source-data.js에 있는 출처 정보를 화면에 표시합니다.
+    source-data.js의 항목 이름이 조금 달라도 undefined가 뜨지 않게 처리합니다.
+  */
+  function renderSourceList() {
+    const sourceList = document.getElementById("sourceList");
+
+    if (!sourceList) {
+      return;
+    }
+
+    sourceList.innerHTML = "";
+
+    sourceData.forEach(function (item) {
+      const sourceItem = document.createElement("article");
+      sourceItem.className = "source-item";
+
+      /*
+        기존 출처 데이터와 새로 추가한 출처 데이터의 속성 이름이 다를 수 있으므로
+        여러 이름을 함께 확인해서 안전하게 화면에 표시합니다.
+      */
+      const title = item.title || item.name || "제목 없음";
+      const type = item.type || item.category || "분류 없음";
+      const file = item.file || item.fileName || "파일명 없음";
+      const description = item.description || item.license || "설명 없음";
+      const source = item.source || "출처 없음";
+      const location = item.location || item.usedIn || item.usage || "사용 위치 없음";
+      const edit = item.edit || item.modified || "수정 여부 없음";
+      const note = item.note || item.memo || item.remark || "비고 없음";
+
+      sourceItem.innerHTML = `
+        <strong>${title}</strong>
+        <p><b>분류:</b> ${type}</p>
+        <p><b>파일명:</b> ${file}</p>
+        <p><b>설명:</b> ${description}</p>
+        <p><b>출처:</b> ${source}</p>
+        <p><b>사용 위치:</b> ${location}</p>
+        <p><b>수정 여부:</b> ${edit}</p>
+        <p><b>비고:</b> ${note}</p>
+      `;
+
+      sourceList.appendChild(sourceItem);
+    });
+  }
+});

@@ -88,5 +88,172 @@ var sourceData = [
     usedIn: "버튼, 카드 제목, 메뉴 등 UI 요소",
     modified: "수정 없음",
     note: "확보: Pretendard GitHub LICENSE / SIL Open Font License 1.1 증빙자료 확보"
-  }
+  },
+  {
+    type: "이미지",
+    fileName: "bg-story-01~06",
+    name: "스토리 인트로 배경 이미지 6종",
+    description: "용의 지식 욕심, 지식창고 습격, 텅 빈 도서관, 문답책, 질문의 힘, 훈련 시작 장면을 표현한 배경 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usedIn: "스토리 인트로 화면",
+    modified: "파일명 변경, 화면 비율에 맞게 CSS로 크기와 위치 조정",
+    note: "확보: ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },{
+  title: "마법력 아이콘",
+  category: "이미지",
+  file: "ability-magic.png",
+  description: "독서 활동에서 마법력 능력치를 나타내는 별빛 마법 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "능력치 안내 화면",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "체력 아이콘",
+  category: "이미지",
+  file: "ability-health.png",
+  description: "독서 활동에서 체력 능력치를 나타내는 하트 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "능력치 안내 화면",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "지혜 아이콘",
+  category: "이미지",
+  file: "ability-wisdom.png",
+  description: "독서 활동에서 지혜 능력치를 나타내는 책 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "능력치 안내 화면",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "용기 아이콘",
+  category: "이미지",
+  file: "ability-courage.png",
+  description: "독서 활동에서 용기 능력치를 나타내는 방패 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "능력치 안내 화면",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+
+  },{
+  title: "문답책 로고 이미지",
+  category: "이미지",
+  file: "logo-book.png",
+  description: "문답책 상징으로 사용한 책 모양 로고 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "로그인 화면, 학생 홈 화면 상단 로고",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "학생 홈 도서관 배경 이미지",
+  category: "이미지",
+  file: "home-library-bg.png",
+  description: "책 속 모험 분위기를 나타내는 판타지 도서관 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 배경",
+  modified: "홈 화면 분위기에 맞게 CSS로 어둡기와 배치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "홈 화면 용사 루미 이미지",
+  category: "이미지",
+  file: "home-lumi.png",
+  description: "학생을 독서 활동으로 안내하는 어린 용사 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 안내 캐릭터",
+  modified: "파일명 변경 및 홈 화면 배치에 맞게 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "연습하기 카드 아이콘",
+  category: "이미지",
+  file: "home-practice-icon.png",
+  description: "연습하기 활동을 나타내는 빛나는 책 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 연습하기 카드",
+  modified: "카드 아이콘 영역에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "개별읽기 카드 아이콘",
+  category: "이미지",
+  file: "home-individual-icon.png",
+  description: "개별읽기 활동을 나타내는 책 더미와 별빛 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 개별읽기 카드",
+  modified: "카드 아이콘 영역에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},  {
+    title: "연습하기 - 책 고르기 단계 이미지",
+    category: "이미지",
+    fileName: "practice-book-select.png",
+    description: "책 고르기 활동을 나타내는 빛나는 책 더미와 열린 책 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 연습하기 화면 책 고르기 카드",
+    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "연습하기 - 읽기 전 단계 이미지",
+    category: "이미지",
+    fileName: "practice-before-reading.png",
+    description: "읽기 전 생각 열기 활동을 나타내는 책 위의 빛나는 전구 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 연습하기 화면 읽기 전 카드",
+    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "연습하기 - 읽기 중 단계 이미지",
+    category: "이미지",
+    fileName: "practice-during-reading.png",
+    description: "읽기 중 질문하며 깊이 읽기 활동을 나타내는 열린 책, 돋보기, 물음표 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 연습하기 화면 읽기 중 카드",
+    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "연습하기 - 우리반 책읽기 단계 이미지",
+    category: "이미지",
+    fileName: "practice-class-reading.png",
+    description: "우리반이 함께 책을 읽는 활동을 나타내는 학생들과 빛나는 책 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 연습하기 화면 우리반 책읽기 카드",
+    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "연습하기 - 읽기 후 단계 이미지",
+    category: "이미지",
+    fileName: "practice-after-reading.png",
+    description: "읽기 후 내용을 간추리는 활동을 나타내는 책, 두루마리, 깃펜 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 연습하기 화면 읽기 후 카드",
+    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },  {
+    title: "책 투표 안내 루미 캐릭터 이미지",
+    category: "이미지",
+    fileName: "book-vote-lumi.png",
+    description: "책 투표 화면에서 학생에게 우리 반이 읽을 책 투표를 안내하는 루미 상반신 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 책 투표 화면 루미 안내 영역",
+    modified: "파일명 변경 및 책 투표 화면에 맞게 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+{
+  title: "책 투표 대기 화면 신비로운 모래시계 이미지",
+  category: "이미지",
+  fileName: "mystic-hourglass.png",
+  description: "책 투표 후 다른 학생들의 투표 결과를 기다리는 상태를 나타내는 신비로운 금빛 모래시계 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 책 투표 화면 투표 대기 상태 영역",
+  modified: "파일명 변경 및 책 투표 대기 화면에 맞게 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
 ];
