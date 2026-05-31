@@ -1,48 +1,56 @@
 // battle-engine.js
 // 전투 로직 담당 (순수 계산만, DOM 없음)
-// 화면 제어는 dungeon-ui.js에서만 함
 
 const BattleEngine = (() => {
 
-  // 정답 처리
-  // 반환값: { correct: true/false, damage: 숫자, magicGain: 숫자, wisdomGain: 숫자 }
-  function processAnswer(selectedIdx, correctIdx, magic) {
-    if (selectedIdx === correctIdx) {
-      return {
-        correct: true,
-        damage: PlayerStats.calcAttackDamage(magic),
-        magicGain: PlayerStats.getMagicGain(),
-        wisdomGain: PlayerStats.getWisdomGain()
-      };
-    } else {
-      return {
-        correct: false,
-        damage: 0,
-        magicGain: 0,
-        wisdomGain: 0
-      };
-    }
+  // 플레이어 일반 공격 처리
+  function playerNormalAttack(magic) {
+    const isCrit = PlayerStats.isCritical(magic);
+    const baseDmg = PlayerStats.calcNormalDamage(magic);
+    const damage = isCrit ? Math.floor(baseDmg * 2) : baseDmg;
+    return { damage, isCrit };
   }
 
-  // 적 공격 처리
-  // 반환값: { damage: 숫자 }
-  function processEnemyAttack(dungeonAtk) {
-    return {
-      damage: dungeonAtk
-    };
+  // 플레이어 강한 공격 처리
+  function playerHeavyAttack(magic) {
+    const isCrit = PlayerStats.isCritical(magic);
+    const baseDmg = PlayerStats.calcHeavyDamage(magic);
+    const damage = isCrit ? Math.floor(baseDmg * 2) : baseDmg;
+    return { damage, isCrit };
+  }
+
+  // 적 일반 공격 처리
+  function enemyNormalAttack(dungeonAtk, isDefending) {
+    const defenseRate = PlayerStats.calcDefenseRate();
+    const damage = isDefending
+      ? Math.floor(dungeonAtk * (1 - defenseRate / 100))
+      : dungeonAtk;
+    return { damage, blocked: isDefending };
+  }
+
+  // 적 강한 공격 처리
+  function enemyHeavyAttack(dungeonHeavyAtk, isDefending) {
+    const defenseRate = PlayerStats.calcDefenseRate();
+    const damage = isDefending
+      ? Math.floor(dungeonHeavyAtk * (1 - defenseRate / 100))
+      : dungeonHeavyAtk;
+    return { damage, blocked: isDefending };
   }
 
   // 전투 종료 여부 확인
-  function checkBattleEnd(heroHp, enemyHp) {
-    if (enemyHp <= 0) return 'victory';
-    if (heroHp <= 0)  return 'defeat';
-    return null; // 전투 계속
+  function checkBattleEnd(playerHp, enemyHp, timeLeft) {
+    if (enemyHp <= 0)   return 'victory';
+    if (playerHp <= 0)  return 'defeat';
+    if (timeLeft <= 0)  return 'timeout';
+    return null;
   }
 
   return {
-    processAnswer,
-    processEnemyAttack,
-    checkBattleEnd
+    playerNormalAttack,
+    playerHeavyAttack,
+    enemyNormalAttack,
+    enemyHeavyAttack,
+    checkBattleEnd,
   };
 
 })();

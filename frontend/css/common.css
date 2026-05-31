@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css');
 /*
   파일명: common.css
   역할: Victory 프로젝트 전체에서 공통으로 사용하는 디자인 파일입니다.
@@ -2452,4 +2454,111 @@ body {
 .source-table td:nth-child(4),
 .source-table td:nth-child(5) {
   text-align: left;
+}/* ===== 문답책 폰트 역할 분배 ===== */
+
+/* 전체 기본 폰트: 본문, 문제, 설명 */
+html,
+body,
+input,
+textarea,
+select {
+  font-family: "Noto Sans KR", "Pretendard", sans-serif !important;
+}
+
+/* 판타지/책 느낌이 필요한 제목 */
+.mq-title,
+.mq-login-title,
+.story-title,
+.story-card-title {
+  font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.07em !important;
+}
+
+/* 왼쪽 세계관 강조 문구 */
+.mq-bottom-message {
+  font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.6 !important;
+}
+
+/* 설명문/본문/문제/입력창 */
+.mq-main-copy,
+.mq-login-subtitle,
+.mq-role-card span,
+.story-scene,
+.story-text,
+.intro-text,
+.intro-message,
+p,
+input,
+input::placeholder {
+  font-family: "Noto Sans KR", "Pretendard", sans-serif !important;
+}
+
+/* 버튼, 역할명, UI 라벨 */
+button,
+button *,
+.mq-login-button,
+.mq-login-button *,
+.mq-source-button,
+.mq-source-button *,
+.primary-button,
+.primary-button *,
+.mq-role-card strong,
+.mq-kicker,
+label {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+}
+
+/* 버튼은 더 또렷하게 */
+.mq-login-button,
+.mq-source-button,
+.primary-button {
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* 역할 카드 이름 */
+.mq-role-card strong {
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* 라벨 */
+label {
+  font-weight: 800 !important;
+}/* 로그인 시작 버튼입니다. */
+/* 기본 버튼처럼 납작하게 보이지 않도록 출처 버튼과 비슷한 크기로 꾸밉니다. */
+.login-start-btn {
+  width: 100%;
+  height: 56px;
+
+  margin-top: 14px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: linear-gradient(180deg, #f3cf75 0%, #d89b35 100%);
+
+  color: #4b2a0f;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 0 #9b6825;
+}
+
+/* 로그인 버튼에 마우스를 올렸을 때 살짝 떠 보이게 합니다. */
+.login-start-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 로그인 버튼을 누르는 순간 살짝 눌리는 느낌을 줍니다. */
+.login-start-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #9b6825;
 }

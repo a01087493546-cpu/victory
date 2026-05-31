@@ -255,22 +255,6 @@ function renderSourceList() {
     return;
   }
 
-<<<<<<< HEAD
-  sourceList.innerHTML = sourceData.map(function (item) {
-    return `
-      <article class="source-item">
-        <h3>${item.name}</h3>
-        <p><strong>종류:</strong> ${item.type}</p>
-        <p><strong>출처:</strong> ${item.source}</p>
-        <p><strong>제작/생성 도구:</strong> ${item.tool}</p>
-        <p><strong>라이선스/사용 조건:</strong> ${item.license}</p>
-        <p><strong>사용 위치:</strong> ${item.usedIn}</p>
-        <p><strong>수정 여부:</strong> ${item.modified}</p>
-        <p><strong>비고:</strong> ${item.note}</p>
-      </article>
-    `;
-  }).join("");
-=======
   sourceList.innerHTML = `
     <table class="source-table">
       <thead>
@@ -297,5 +281,4 @@ function renderSourceList() {
       </tbody>
     </table>
   `;
->>>>>>> origin/jiao
 }

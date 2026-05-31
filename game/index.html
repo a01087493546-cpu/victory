@@ -3,71 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>세계 지식 창고를 지켜라!</title>
+  <title>문답책 - 던전</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- 화면1: 던전 선택 -->
   <div class="screen active" id="s-map">
-    <div class="map-header">
-      <img src="images/Copilot_20260520_145119.png" class="map-bg-img" alt="메인배경">
+    <!--
+      던전 선택 화면
+      - 배경은 images/bg_map.png를 기본으로 사용합니다.
+      - JS에서 던전을 선택하면 bg_hatchling / bg_dragon / bg_elder로 바뀔 수 있게 id를 붙였습니다.
+    -->
+    <div class="map-bg" id="map-bg" style="background-image: url('images/bg_map.png')">
       <div class="map-overlay">
-        <h1>세계 지식 창고를 지켜라!</h1>
-        <p>도전할 던전을 선택하세요</p>
-      </div>
-    </div>
-    <div class="dungeon-cards">
-      <div class="d-card" onclick="goToBattle(0)">
-        <img src="images/Copilot_20260520_145843.png" alt="헤츨링">
-        <div class="d-name">헤츨링 던전</div>
-        <div class="d-diff">⭐ 초급</div>
-      </div>
-      <div class="d-card" onclick="goToBattle(1)">
-        <img src="images/Copilot_20260520_150244.png" alt="용">
-        <div class="d-name">용 던전</div>
-        <div class="d-diff">⭐⭐ 중급</div>
-      </div>
-      <div class="d-card" onclick="goToBattle(2)">
-        <img src="images/Copilot_20260520_150501.png" alt="나이많은 용">
-        <div class="d-name">나이많은 용</div>
-        <div class="d-diff">⭐⭐⭐ 고급</div>
+
+        <!-- 상단 타이틀 -->
+        <header class="map-title-area">
+          <img src="../frontend/assets/images/logo-emblem.png" class="map-logo" alt="문답책 로고">
+          <h1 class="map-title">문답책 던전</h1>
+          <div class="map-title-deco">
+            <span class="deco-line"></span>
+            <span class="deco-diamond">◆</span>
+            <span class="deco-text">질문의 힘으로 용의 던전을 돌파하세요</span>
+            <span class="deco-diamond">◆</span>
+            <span class="deco-line"></span>
+          </div>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="map-content">
+
+          <!-- 왼쪽: 던전 목록 -->
+          <aside class="dungeon-list" aria-label="던전 목록">
+            <div class="dungeon-list-frame"></div>
+
+            <button class="dungeon-list-item active" id="list-0" type="button" onclick="selectDungeon(0)">
+              <div class="list-thumb">
+                <img src="images/hatchling_idle.png" alt="초급 던전">
+              </div>
+              <div class="list-info">
+                <div class="list-name">초급 던전</div>
+                <div class="list-diff">★ 초급</div>
+              </div>
+              <div class="list-arrow">›</div>
+            </button>
+
+            <button class="dungeon-list-item locked" id="list-1" type="button" onclick="selectDungeon(1)">
+              <div class="list-thumb locked-thumb">
+                <img src="images/dragon_idle.png" alt="중급 던전">
+                <div class="lock-overlay">🔒</div>
+              </div>
+              <div class="list-info">
+                <div class="list-name">중급 던전</div>
+                <div class="list-diff">★★ 중급</div>
+              </div>
+              <div class="list-arrow">›</div>
+            </button>
+
+            <button class="dungeon-list-item locked" id="list-2" type="button" onclick="selectDungeon(2)">
+              <div class="list-thumb locked-thumb">
+                <img src="images/elder_idle.png" alt="고급 던전">
+                <div class="lock-overlay">🔒</div>
+              </div>
+              <div class="list-info">
+                <div class="list-name">고급 던전</div>
+                <div class="list-diff">★★★ 고급</div>
+              </div>
+              <div class="list-arrow">›</div>
+            </button>
+
+            <div class="dungeon-list-bottom-deco" aria-hidden="true">
+              <span></span>
+              <b>◆</b>
+              <span></span>
+            </div>
+          </aside>
+
+          <!-- 오른쪽: 던전 상세 -->
+          <section class="dungeon-detail" aria-label="선택한 던전 상세 정보">
+            <div class="corner corner-lt"></div>
+            <div class="corner corner-rt"></div>
+            <div class="corner corner-lb"></div>
+            <div class="corner corner-rb"></div>
+
+            <!-- 상단: 용 이미지 + 던전 설명 -->
+            <div class="detail-header">
+              <div class="detail-boss-wrap">
+                <div class="detail-boss-glow" id="detail-boss-glow"></div>
+                <div class="boss-stage-ring"></div>
+                <img class="detail-boss-img" id="detail-boss-img" src="images/hatchling_idle.png" alt="보스">
+              </div>
+
+              <div class="detail-header-info">
+                <div class="detail-diff-badge" id="detail-diff">★ 초급</div>
+                <h2 class="detail-name" id="detail-name">해츨링 던전</h2>
+                <p class="detail-desc" id="detail-desc">
+                  지식 창고를 훔친 용의 새끼.<br>
+                  아직 어리지만 결코 만만하지 않다.
+                </p>
+              </div>
+            </div>
+
+            <!-- 중단: 입장 조건 / 시간 / 체력 / 난이도 -->
+            <div class="detail-info-grid">
+              <div class="info-card">
+                <div class="info-card-icon">📚</div>
+                <div class="info-card-content">
+                  <div class="info-card-label">입장 조건</div>
+                  <div class="info-card-val" id="detail-req">책 10권</div>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-icon">⌛</div>
+                <div class="info-card-content">
+                  <div class="info-card-label">제한 시간</div>
+                  <div class="info-card-val" id="detail-time">3분</div>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-icon">⚔</div>
+                <div class="info-card-content">
+                  <div class="info-card-label">적 체력</div>
+                  <div class="info-card-val" id="detail-hp">HP 300</div>
+                </div>
+              </div>
+
+              <div class="info-card">
+                <div class="info-card-icon">🛡</div>
+                <div class="info-card-content">
+                  <div class="info-card-label">난이도</div>
+                  <div class="info-card-val danger-text" id="detail-diff-val">매우 어려움</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 하단: 보상 / 추천 능력치 -->
+            <div class="detail-reward-area">
+              <div class="reward-box">
+                <div class="reward-icon">🎁</div>
+                <div>
+                  <div class="reward-box-title">클리어 보상</div>
+                  <div class="reward-chips" id="detail-rewards">
+                    <span class="reward-chip">질문력 +10</span>
+                    <span class="reward-chip">이해력 +5</span>
+                    <span class="reward-chip">용기 +20</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reward-box">
+                <div class="reward-icon">🏅</div>
+                <div>
+                  <div class="reward-box-title">추천 능력치</div>
+                  <div class="reward-chips">
+                    <span class="reward-chip power-chip" id="detail-condition">질문력 50 이상</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 입장 버튼 -->
+            <div class="detail-enter-area">
+              <button class="enter-btn" id="enter-btn" type="button" onclick="goToBattle(selectedDungeon)">
+                <span class="btn-icon">⚔</span>
+                <span>던전 입장하기</span>
+              </button>
+
+              <div class="enter-sub">
+                <span class="deco-line"></span>
+                <span>선택한 던전에 입장하면 모험이 시작됩니다</span>
+                <span class="deco-line"></span>
+              </div>
+            </div>
+          </section>
+          <!-- 오른쪽: 보조 HUD 패널 -->
+          <aside class="dungeon-side-hud">
+            <section class="hud-section">
+              <h3 class="hud-title">나의 준비 상태</h3>
+              <div class="hud-stat-row">
+                <span class="hud-stat-label">📚 읽은 책</span>
+                <strong id="hud-books">10권</strong>
+              </div>
+              <div class="hud-stat-row">
+                <span class="hud-stat-label">✨ 마법력</span>
+                <strong id="hud-magic">50</strong>
+              </div>
+              <div class="hud-stat-row">
+                <span class="hud-stat-label">❤️ 체력</span>
+                <strong id="hud-hp">120</strong>
+              </div>
+              <div class="hud-stat-row">
+                <span class="hud-stat-label">🔥 용기</span>
+                <strong id="hud-courage">20%</strong>
+              </div>
+              <div class="hud-stat-row" style="border-bottom: none;">
+                <span class="hud-stat-label">🪙 코인</span>
+                <strong id="hud-coin">35</strong>
+              </div>
+            </section>
+
+            <section class="hud-section hud-tip">
+              <h3 class="hud-title">문답책의 조언</h3>
+              <p class="hud-tip-text">
+                좋은 질문을 만들수록<br>
+                용은 혼란에 빠지고<br>
+                점점 힘을 잃습니다.
+              </p>
+            </section>
+          </aside>
+        </main>
       </div>
     </div>
   </div>
 
   <!-- 화면2: 전투 -->
   <div class="screen" id="s-battle">
-    <div class="battle-bg" id="battle-bg">
-      <div class="fighter left">
-        <img class="sprite idle" id="hero-spr" src="images/Copilot_20260520_145541.png" alt="용사">
-        <div class="hp-wrap">
-          <div class="hp-bar-bg"><div class="hp-fill hp-hero" id="hero-bar" style="width:100%"></div></div>
-          <div class="hp-num" id="hero-num">100/100</div>
-        </div>
-        <div class="fighter-name">용사</div>
+
+    <!-- 전투 상단 HUD -->
+    <div class="battle-topbar">
+      <div class="battle-top-left">
+        <button class="battle-back-btn" type="button" onclick="goToMap()">‹</button>
+        <span class="topbar-dungeon" id="enemy-lbl">헤츨링</span>
       </div>
-      <div class="log-box">
-        <div class="log-text" id="log-text">전투 시작!</div>
-      </div>
-      <div class="fighter right">
-        <img class="sprite idle" id="enemy-spr" src="images/Copilot_20260520_145843.png" alt="적">
-        <div class="hp-wrap">
-          <div class="hp-bar-bg"><div class="hp-fill hp-enemy" id="enemy-bar" style="width:100%"></div></div>
-          <div class="hp-num" id="enemy-num">60/60</div>
+
+      <div class="topbar-center">
+        <div class="timer-wrap">
+          <span class="timer-icon">⏳</span>
+          <div class="timer-text">
+            <small>남은 시간</small>
+            <span class="timer" id="timer">3:00</span>
+          </div>
         </div>
-        <div class="fighter-name" id="enemy-lbl">헤츨링</div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="stat-chip">✨ <span id="stat-magic">10</span></div>
+        <div class="stat-chip">💪 <span id="stat-stamina">10</span></div>
+        <div class="stat-chip">🔥 <span id="stat-courage">0</span></div>
       </div>
     </div>
+
+    <!-- 전투 본문 -->
+    <div class="battle-bg" id="battle-bg">
+
+      <!-- 배경을 어둡게 눌러주는 오버레이 -->
+      <div class="battle-vignette"></div>
+
+      <!-- 적 강공격 예고 -->
+      <div class="heavy-warning" id="heavy-warning">⚠ 강한 공격이 온다!</div>
+
+      <!-- 왼쪽 던전 정보 패널 -->
+      <aside class="battle-side-panel battle-left-panel">
+        <div class="battle-panel-title">던전 정보</div>
+
+        <div class="battle-dungeon-card active">
+          <img src="images/hatchling_idle.png" alt="헤츨링">
+          <div>
+            <strong>헤츨링 던전</strong>
+            <span>★ 초급</span>
+          </div>
+        </div>
+
+        <div class="battle-dungeon-card locked">
+          <div class="battle-lock-thumb">🔒</div>
+          <div>
+            <strong>용 던전</strong>
+            <span>★★ 중급</span>
+          </div>
+        </div>
+
+        <div class="battle-dungeon-card locked">
+          <div class="battle-lock-thumb">🔒</div>
+          <div>
+            <strong>나이 많은 용</strong>
+            <span>★★★ 고급</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 중앙 전투 필드 -->
+      <main class="battle-field">
+
+        <!-- 용사 -->
+        <div class="fighter left">
+          <div class="hp-wrap hero-hp-wrap">
+            <div class="fighter-name">용사</div>
+            <div class="hp-bar-bg">
+              <div class="hp-fill hp-hero" id="hero-bar" style="width:100%"></div>
+            </div>
+            <div class="hp-num" id="hero-num">100/100</div>
+          </div>
+
+          <div class="fighter-floor hero-floor"></div>
+          <img class="sprite idle" id="hero-spr" src="images/hero_idle.png" alt="용사">
+        </div>
+
+        <!-- 적 -->
+        <div class="fighter right">
+          <div class="hp-wrap enemy-hp-wrap">
+            <div class="fighter-name" id="enemy-lbl2">헤츨링</div>
+            <div class="hp-bar-bg">
+              <div class="hp-fill hp-enemy" id="enemy-bar" style="width:100%"></div>
+            </div>
+            <div class="hp-num" id="enemy-num">300/300</div>
+          </div>
+
+          <div class="fighter-floor enemy-floor"></div>
+          <img class="sprite idle" id="enemy-spr" src="images/hatchling_idle.png" alt="적">
+        </div>
+
+        <!-- 전투 로그 -->
+        <div class="log-box">
+          <div class="log-title">전투 로그</div>
+          <div class="battle-log" id="battle-log"></div>
+        </div>
+
+      </main>
+
+      <!-- 오른쪽 상태 패널 -->
+      <aside class="battle-side-panel battle-right-panel">
+        <div class="battle-panel-title">나의 준비 상태</div>
+
+        <div class="battle-stat-row">
+          <span>📚 읽은 책</span>
+          <strong>10권</strong>
+        </div>
+
+        <div class="battle-stat-row">
+          <span>✨ 마법력</span>
+          <strong id="battle-hud-magic">50</strong>
+        </div>
+
+        <div class="battle-stat-row">
+          <span>❤️ 체력</span>
+          <strong id="battle-hud-stamina">120</strong>
+        </div>
+
+        <div class="battle-stat-row">
+          <span>🔥 용기</span>
+          <strong id="battle-hud-courage">20%</strong>
+        </div>
+
+        <div class="battle-tip-box">
+          <div class="battle-panel-title small">문답책의 조언</div>
+          <p>
+            좋은 질문을 만들수록<br>
+            용은 혼란에 빠지고<br>
+            점점 힘을 잃습니다.
+          </p>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- 하단 스킬 버튼 -->
     <div class="battle-bottom">
-      <div class="stats-row">
-        <div class="stat-c"><div class="stat-l">✨ 마법력</div><div class="stat-v" id="sv-magic">10</div></div>
-        <div class="stat-c"><div class="stat-l">💪 체력</div><div class="stat-v" id="sv-hp">100</div></div>
-        <div class="stat-c"><div class="stat-l">📚 지혜</div><div class="stat-v" id="sv-wisdom">10</div></div>
+      <div class="action-buttons">
+        <button class="action-btn attack-btn" id="btn-attack" onclick="playerAttack()">
+          <span class="skill-key">1</span>
+          <span class="skill-icon">⚔</span>
+          <span class="skill-text">
+            <strong>질문 공격</strong>
+            <small>기본 피해를 줍니다</small>
+          </span>
+        </button>
+
+        <button class="action-btn defend-btn" id="btn-defend"
+          onmousedown="startDefend()" onmouseup="stopDefend()"
+          ontouchstart="startDefend()" ontouchend="stopDefend()">
+          <span class="skill-key">2</span>
+          <span class="skill-icon">🛡</span>
+          <span class="skill-text">
+            <strong>집중 방어</strong>
+            <small>받는 피해를 줄입니다</small>
+          </span>
+        </button>
+
+        <button class="action-btn heavy-btn" id="btn-heavy" onclick="playerHeavyAttack()">
+          <span class="skill-key">3</span>
+          <span class="skill-icon">💥</span>
+          <span class="skill-text">
+            <strong>깊은 질문</strong>
+            <small>높은 피해와 크리티컬</small>
+          </span>
+        </button>
       </div>
-      <div class="q-box">
-        <div class="q-text" id="q-text"></div>
-        <div class="choices" id="choices"></div>
+
+      <div class="battle-guide-box">
+        <strong>튜토리얼</strong>
+        <span>질문 공격으로 용을 혼란에 빠뜨리고, 강한 공격은 방어로 막아보세요.</span>
       </div>
     </div>
   </div>
@@ -79,7 +406,7 @@
       <div class="result-title" id="r-title">승리!</div>
       <div class="result-sub" id="r-sub">용을 물리쳤습니다!</div>
       <div class="reward-row" id="r-rewards"></div>
-      <button class="action-btn" onclick="goToMap()">던전 선택으로 돌아가기</button>
+      <button class="enter-btn" onclick="goToMap()">던전 선택으로 돌아가기</button>
     </div>
   </div>
 
@@ -88,6 +415,114 @@
   <script src="js/game-api.js"></script>
   <script src="js/game-state.js"></script>
   <script src="js/dungeon-ui.js"></script>
-  <script src="js/game.js"></script>
+  <script>
+    // 현재 선택된 던전 번호입니다.
+    let selectedDungeon = 0;
+
+    // 던전 선택 화면에 표시할 목업 데이터입니다.
+    const DUNGEON_INFO = [
+      {
+        img: 'images/hatchling_idle.png',
+        bg: 'images/bg_hatchling.png',
+        diff: '★ 초급',
+        name: '초급 던전',
+        desc: '어린 용이지만 절대 방심은 금물.<br>이곳에서 살아남아야 진짜 모험이 시작됩니다.',
+        req: '책 10권',
+        time: '3분',
+        hp: 'HP 300',
+        diffVal: '쉬움',
+        rewards: ['질문력 +10', '이해력 +5', '용기 +20'],
+        condition: '질문력 50 이상',
+        glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,95,35,0.38), rgba(255,183,74,0.12) 38%, transparent 70%)',
+        locked: false,
+        lockedMessage: ''
+      },
+      {
+        img: 'images/dragon_idle.png',
+        bg: 'images/bg_dragon.png',
+        diff: '★★ 중급',
+        name: '중급 던전',
+        desc: '번개를 무기로 삼은 용이 기다리고 있습니다.<br>두려움을 이겨낸 자만이 이 문을 열 수 있습니다.',
+        req: '책 30권',
+        time: '5분',
+        hp: 'HP 600',
+        diffVal: '보통',
+        rewards: ['질문력 +20', '이해력 +10', '용기 +35'],
+        condition: '초급 던전 클리어',
+        glowColor: 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
+        locked: true,
+        lockedMessage: '초급 던전 클리어 후 입장 가능'
+      },
+      {
+        img: 'images/elder_idle.png',
+        bg: 'images/bg_elder.png',
+        diff: '★★★ 고급',
+        name: '고급 던전',
+        desc: '세상의 모든 지식을 삼킨 자.<br>이 던전에 들어서는 순간, 전설이 시작됩니다.',
+        req: '책 50권',
+        time: '7분',
+        hp: 'HP 1000',
+        diffVal: '어려움',
+        rewards: ['질문력 +40', '이해력 +25', '용기 +60'],
+        condition: '중급 던전 클리어',
+        glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,196,76,0.34), rgba(88,55,13,0.2) 40%, transparent 72%)',
+        locked: true,
+        lockedMessage: '중급 던전 클리어 후 입장 가능'
+      }
+    ];
+
+    function selectDungeon(idx) {
+      selectedDungeon = idx;
+      const info = DUNGEON_INFO[idx];
+
+      // 왼쪽 던전 목록의 선택 표시를 바꿉니다.
+      document.querySelectorAll('.dungeon-list-item').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+
+      // 배경 이미지를 선택한 던전에 맞춰 바꿉니다.
+      const mapBg = document.getElementById('map-bg');
+      if (mapBg && info.bg) {
+        mapBg.style.backgroundImage = `url('${info.bg}'), url('images/bg_map.png')`;
+      }
+
+      // 오른쪽 상세 패널 내용을 바꿉니다.
+      document.getElementById('detail-boss-img').src = info.img;
+      document.getElementById('detail-boss-glow').style.background = info.glowColor;
+      document.getElementById('detail-diff').textContent = info.diff;
+      document.getElementById('detail-name').textContent = info.name;
+      document.getElementById('detail-desc').innerHTML = info.desc;
+      document.getElementById('detail-req').textContent = info.req;
+      document.getElementById('detail-time').textContent = info.time;
+      document.getElementById('detail-hp').textContent = info.hp;
+      document.getElementById('detail-diff-val').textContent = info.diffVal;
+      document.getElementById('detail-condition').textContent = info.condition;
+
+      // 보상 칩을 다시 그립니다.
+      const rewardArea = document.getElementById('detail-rewards');
+      rewardArea.innerHTML = '';
+      info.rewards.forEach((reward) => {
+        const chip = document.createElement('span');
+        chip.className = 'reward-chip';
+        chip.textContent = reward;
+        rewardArea.appendChild(chip);
+      });
+
+      // 잠긴 던전이면 입장 버튼을 비활성화합니다.
+      const enterBtn = document.getElementById('enter-btn');
+      if (info.locked) {
+        enterBtn.disabled = true;
+        enterBtn.innerHTML = '<span class="btn-icon">🔒</span><span>잠금 해제 필요</span>';
+        enterBtn.classList.add('locked');
+      } else {
+        enterBtn.disabled = false;
+        enterBtn.innerHTML = '<span class="btn-icon">⚔</span><span>던전 입장하기</span>';
+        enterBtn.classList.remove('locked');
+      }
+    }
+
+    // 화면이 처음 열렸을 때 첫 번째 던전 정보를 정확히 표시합니다.
+    selectDungeon(0);
+  </script>
 </body>
 </html>
