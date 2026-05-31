@@ -1,0 +1,1231 @@
+/* ===== 스토리 인트로 화면 ===== */
+
+/* 스토리 화면 전체 영역입니다. */
+/* JS에서 장면별 배경 이미지를 이 영역에 적용합니다. */
+.story-intro-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+
+  /* 배경 이미지를 화면에 꽉 차게 보여줍니다. */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* 스토리 화면 기본 폰트와 글자색을 설정합니다. */
+  font-family: "Noto Sans KR", "Pretendard", sans-serif;
+  color: #fff;
+}
+
+/* 배경 이미지 위에 어두운 막을 씌워 글자가 잘 보이게 합니다. */
+.story-dark-layer {
+  position: absolute;
+  inset: 0;
+
+  /* 위쪽은 살짝 어둡게, 아래쪽 대사창 주변은 더 어둡게 처리합니다. */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0.72)
+    );
+  z-index: 1;
+}
+
+/* 스토리를 보지 않고 바로 넘어갈 수 있는 건너뛰기 버튼입니다. */
+.story-skip-button {
+  position: absolute;
+  top: 26px;
+  right: 32px;
+  z-index: 5;
+
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 232, 181, 0.65);
+  border-radius: 999px;
+  background: rgba(26, 16, 8, 0.56);
+  color: #ffe8b5;
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* 루미 캐릭터가 배치되는 장면 영역입니다. */
+.story-scene-area {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 루미 캐릭터 이미지의 위치와 크기를 설정합니다. */
+.story-character {
+  position: absolute;
+  left: 8%;
+  bottom: 120px;
+  z-index: 3;
+
+  width: 360px;
+  max-width: 32vw;
+
+  /* 캐릭터 이미지는 클릭 대상이 아니므로 마우스 이벤트를 막습니다. */
+  pointer-events: none;
+}
+
+/* 루미 캐릭터 이미지 자체의 크기와 그림자 효과입니다. */
+.story-character-img {
+  width: 100%;
+  height: auto;
+  display: block;
+
+  /* 캐릭터가 배경과 자연스럽게 분리되어 보이도록 그림자를 줍니다. */
+  filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.55));
+}
+
+/* 화면 하단에 표시되는 스토리 대사창입니다. */
+.story-dialog-box {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  z-index: 4;
+
+  width: min(980px, calc(100% - 64px));
+  padding: 24px 28px 22px;
+
+  /* 판타지 책/양피지 느낌을 주기 위한 테두리와 배경입니다. */
+  border: 2px solid rgba(255, 220, 139, 0.72);
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(58, 34, 15, 0.92),
+      rgba(28, 16, 8, 0.94)
+    );
+
+  /* 대사창을 배경에서 띄워 보이게 하는 그림자입니다. */
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.5),
+    inset 0 0 18px rgba(255, 214, 128, 0.12);
+}
+
+/* 대사창 상단 영역입니다. */
+/* 왼쪽에는 화자와 제목, 오른쪽에는 현재 장면 번호가 들어갑니다. */
+.story-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+/* 현재 말하는 캐릭터 이름입니다. */
+.story-speaker {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 5px 14px;
+
+  border-radius: 999px;
+  background: rgba(255, 221, 145, 0.16);
+  color: #ffd884;
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+/* 현재 스토리 장면의 제목입니다. */
+.story-title {
+  margin: 0;
+  color: #fff3c7;
+
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+/* 현재 몇 번째 장면인지 보여주는 숫자입니다. */
+.story-count {
+  margin: 6px 0 0;
+  color: rgba(255, 238, 190, 0.86);
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* 장면을 짧게 설명하는 보조 문구입니다. */
+.story-scene-text {
+  margin: 0 0 8px;
+  color: #ffd884;
+
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* 실제 스토리 대사가 들어가는 본문입니다. */
+.story-main-text {
+  margin: 0;
+  min-height: 64px;
+
+  color: #fff8dc;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.6;
+
+  /* JS에서 넣은 줄바꿈 문자 \n이 화면에 그대로 보이게 합니다. */
+  white-space: pre-line;
+}
+
+/* 이전 버튼, 진행 점, 다음 버튼을 담는 하단 영역입니다. */
+.story-bottom-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+
+  margin-top: 20px;
+}
+
+/* 이전/다음 버튼의 공통 디자인입니다. */
+.story-nav-button {
+  min-width: 120px;
+  padding: 12px 20px;
+
+  border: 1px solid rgba(255, 218, 140, 0.72);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #c88b35, #7d481c);
+  color: #fff7d8;
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+
+  /* 버튼이 살짝 입체적으로 보이게 합니다. */
+  box-shadow: 0 5px 0 rgba(66, 35, 12, 0.85);
+}
+
+/* 첫 장면에서는 이전 버튼이 비활성화됩니다. */
+.story-nav-button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+/* 현재 스토리 진행 상태를 점으로 보여주는 영역입니다. */
+.story-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* 기본 진행 점 디자인입니다. */
+.story-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 230, 177, 0.38);
+}
+
+/* 현재 보고 있는 장면의 진행 점입니다. */
+.story-dot.active {
+  width: 26px;
+  background: #ffd884;
+}/* 장면 설명 문구가 없을 때 불필요한 여백을 없앱니다. */
+.story-scene-text:empty {
+  display: none;
+}/* 스토리 제목이 비어 있을 때 불필요한 여백을 없앱니다. */
+.story-title:empty {
+  display: none;
+}
+
+/* 장면 설명 문구가 비어 있을 때 불필요한 여백을 없앱니다. */
+.story-scene-text:empty {
+  display: none;
+}/* ===== 스토리 인트로 대사창 정리 ===== */
+
+/* 비어 있는 제목은 화면에서 완전히 숨깁니다. */
+.story-title:empty {
+  display: none !important;
+}
+
+/* 비어 있는 장면 설명도 화면에서 완전히 숨깁니다. */
+.story-scene-text:empty {
+  display: none !important;
+}
+
+/* 대사창 안쪽 요소 간격을 다시 정리합니다. */
+.story-dialog-box {
+  padding: 26px 30px 24px !important;
+}
+
+/* 루미 이름과 진행 숫자 영역 아래 여백을 줄입니다. */
+.story-dialog-header {
+  margin-bottom: 8px !important;
+  align-items: center !important;
+}
+
+/* 루미 이름표 아래쪽 여백을 줄입니다. */
+.story-speaker {
+  margin-bottom: 0 !important;
+}
+
+/* 스토리 본문을 대사창 중앙 쪽으로 배치하고 제목 폰트와 같은 느낌으로 설정합니다. */
+.story-main-text {
+  margin: 28px 0 24px !important;
+  min-height: auto !important;
+
+  text-align: center !important;
+
+  font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  line-height: 1.65 !important;
+  letter-spacing: -0.04em !important;
+
+  color: #fff3c7 !important;
+}
+
+/* 버튼 영역이 본문과 너무 붙거나 멀어지지 않게 정리합니다. */
+.story-bottom-area {
+  margin-top: 10px !important;
+}/* ===== 스토리 인트로 본문 위치 조정 ===== */
+
+/* 스토리 본문을 대사창 중앙보다 살짝 위쪽에 배치합니다. */
+.story-main-text {
+  margin: 18px 0 36px !important;
+}
+
+/* 이전/다음 버튼 영역을 본문에서 조금 더 떨어뜨립니다. */
+.story-bottom-area {
+  margin-top: 0 !important;
+}/* ===== 스토리 인트로 본문 위치 추가 조정 ===== */
+
+/* 스토리 본문을 조금 더 위로 올리고, 버튼과의 간격을 확보합니다. */
+.story-main-text {
+  margin: 6px 0 46px !important;
+}/* ===== 스토리 인트로 클릭 오류 방지 ===== */
+
+/* 어두운 배경 레이어는 화면만 어둡게 하고 클릭은 막지 않게 합니다. */
+.story-dark-layer {
+  pointer-events: none;
+}
+
+/* 루미 캐릭터와 장면 영역은 보여주기 전용이므로 클릭을 막지 않게 합니다. */
+.story-scene-area,
+.story-character {
+  pointer-events: none;
+}
+
+/* 대사창과 버튼들은 실제로 클릭되어야 하므로 클릭을 허용합니다. */
+.story-dialog-box,
+.story-dialog-box button,
+.story-skip-button {
+  pointer-events: auto;
+}/* ===== 스토리 화면 루미 캐릭터 위치 조정 ===== */
+/* 루미를 대사창 뒤에 숨기지 않고 화면 앞쪽으로 자연스럽게 올립니다. */
+.story-character {
+  position: absolute !important;
+
+  left: 90px !important;
+  bottom: 70px !important;
+
+  width: 360px !important;
+  height: auto !important;
+
+  z-index: 3 !important;
+
+  pointer-events: none !important;
+}
+
+/* 루미 이미지 크기를 화면에 맞게 조정합니다. */
+.story-character-img {
+  width: 100% !important;
+  height: auto !important;
+
+  display: block !important;
+}
+
+/* ===== 스토리 대사창 안 글자 위치 조정 ===== */
+/* 루미가 왼쪽에 있으므로, 대사 글자를 오른쪽으로 자연스럽게 옮깁니다. */
+.story-main-text {
+  padding-left: 260px !important;
+
+  text-align: center !important;
+
+  font-size: 24px !important;
+  line-height: 1.65 !important;
+}
+
+/* 루미 이름표도 캐릭터와 너무 겹치지 않게 살짝 오른쪽으로 이동합니다. */
+.story-speaker {
+  margin-left: 20px !important;
+}
+
+/* ===== 대사창이 캐릭터보다 앞에 오도록 정리 ===== */
+/* 대사창은 글자를 읽어야 하므로 캐릭터보다 위 레이어에 둡니다. */
+.story-dialog-box {
+  z-index: 4 !important;
+}/* ===== 스토리 화면 최종 배치 수정 ===== */
+/* 루미 뒤에 생긴 이상한 원/효과를 없앱니다. */
+.story-scene-area::before,
+.story-scene-area::after,
+.story-character::before,
+.story-character::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* 루미 캐릭터 영역 자체의 배경, 테두리, 그림자를 제거합니다. */
+.story-character {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  position: absolute !important;
+  left: 95px !important;
+  bottom: 35px !important;
+
+  width: 340px !important;
+  height: auto !important;
+
+  /* 대사창보다 앞으로 오게 합니다. */
+  z-index: 10 !important;
+
+  pointer-events: none !important;
+}
+
+/* 루미 이미지가 영역 안에서 선명하게 보이도록 합니다. */
+.story-character-img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 대사창은 루미보다 뒤에 두되, 글자는 읽히게 유지합니다. */
+.story-dialog-box {
+  z-index: 6 !important;
+}
+
+/* 루미가 왼쪽에 앞으로 나오므로, 대사 글자를 오른쪽으로 옮깁니다. */
+.story-main-text {
+  padding-left: 310px !important;
+  padding-right: 40px !important;
+
+  text-align: center !important;
+}
+
+/* 루미 이름표도 캐릭터와 겹치지 않도록 오른쪽으로 살짝 이동합니다. */
+.story-speaker {
+  margin-left: 70px !important;
+}/* ===== 스토리 화면 루미를 대사창 앞으로 올리는 최종 수정 ===== */
+
+/* 루미가 들어있는 부모 영역 자체를 대사창보다 앞으로 올립니다. */
+.story-scene-area {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: 30 !important;
+
+  pointer-events: none !important;
+}
+
+/* 루미 캐릭터를 화면 왼쪽 아래에 자연스럽게 배치합니다. */
+.story-character {
+  position: absolute !important;
+
+  left: 110px !important;
+  bottom: 20px !important;
+
+  width: 360px !important;
+  height: auto !important;
+
+  z-index: 31 !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  pointer-events: none !important;
+}
+
+/* 루미 이미지가 대사창 위로 선명하게 보이도록 합니다. */
+.story-character-img {
+  width: 100% !important;
+  height: auto !important;
+
+  display: block !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 대사창은 루미보다 뒤에 둡니다. */
+.story-dialog-box {
+  z-index: 20 !important;
+}
+
+/* 루미가 앞에 오면 글자를 가릴 수 있으므로 대사를 오른쪽으로 이동합니다. */
+.story-main-text {
+  padding-left: 340px !important;
+  padding-right: 40px !important;
+
+  text-align: center !important;
+}
+
+/* 루미 이름표도 루미 얼굴 쪽과 덜 겹치도록 살짝 오른쪽으로 이동합니다. */
+.story-speaker {
+  margin-left: 85px !important;
+}/* ===== 스토리 화면 최종 비율 조정 ===== */
+/* 목표:
+   1. 루미 캐릭터를 화면 비율에 맞게 작게 줄입니다.
+   2. 이전 버튼을 가리지 않게 캐릭터를 왼쪽 위로 살짝 올립니다.
+   3. 대사창이 배경을 너무 많이 가리지 않게 높이를 줄입니다.
+   4. 대사 글자가 어색하게 3줄로 끊기지 않도록 글자 영역을 넓힙니다.
+*/
+
+/* 루미가 들어있는 전체 장면 영역입니다. */
+.story-scene-area {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: 30 !important;
+  pointer-events: none !important;
+}
+
+/* 루미 캐릭터 위치와 크기입니다. */
+.story-character {
+  position: absolute !important;
+
+  /* 루미를 왼쪽에 두되, 이전 버튼을 덜 가리게 살짝 위로 올립니다. */
+  left: 120px !important;
+  bottom: 55px !important;
+
+  /* 기존보다 작게 줄여서 화면 비율에 맞춥니다. */
+  width: 270px !important;
+  height: auto !important;
+
+  z-index: 31 !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+
+  pointer-events: none !important;
+}
+
+/* 루미 이미지 자체 크기입니다. */
+.story-character-img {
+  width: 100% !important;
+  height: auto !important;
+
+  display: block !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 대사창 크기와 위치입니다. */
+.story-dialog-box {
+  position: absolute !important;
+
+  /* 배경 그림이 더 잘 보이도록 대사창 높이를 줄입니다. */
+  left: 50% !important;
+  bottom: 28px !important;
+  transform: translateX(-50%) !important;
+
+  width: 78vw !important;
+  max-width: 950px !important;
+  min-height: 185px !important;
+
+  padding: 26px 42px 24px 300px !important;
+
+  z-index: 20 !important;
+
+  /* 대사창이 너무 진해서 배경을 가리지 않도록 살짝 투명하게 유지합니다. */
+  background: rgba(48, 30, 13, 0.78) !important;
+}
+
+/* 루미 이름표 위치입니다. */
+.story-speaker {
+  margin-left: 0 !important;
+}
+
+/* 스토리 본문 글자 영역입니다. */
+.story-main-text {
+  /* 기존 padding-left 때문에 글자 영역이 좁아져 3줄로 끊기던 문제를 막습니다. */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  width: 100% !important;
+  max-width: 620px !important;
+
+  margin: 8px auto 34px !important;
+
+  text-align: center !important;
+
+  /* 글자가 너무 커서 줄바꿈되는 것을 막기 위해 살짝 줄입니다. */
+  font-size: 22px !important;
+  line-height: 1.6 !important;
+
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+/* 이전/다음 버튼은 루미보다 위에 보이게 합니다. */
+.story-nav-button {
+  position: relative !important;
+  z-index: 40 !important;
+}
+
+/* 진행 점도 버튼과 같이 잘 보이게 합니다. */
+.story-dots {
+  position: relative !important;
+  z-index: 40 !important;
+}/* ===== 능력치 안내 화면 ===== */
+/* 스토리 인트로가 끝난 뒤 학생에게 네 가지 능력치를 설명하는 화면입니다. */
+.ability-intro-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 24px;
+
+  background:
+    radial-gradient(circle at top, rgba(255, 231, 160, 0.22), transparent 38%),
+    linear-gradient(135deg, #241407 0%, #4b2b12 48%, #1b1008 100%);
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+/* 능력치 설명이 들어가는 큰 카드입니다. */
+.ability-intro-card {
+  width: min(980px, 100%);
+
+  padding: 42px 44px 38px;
+
+  border: 2px solid rgba(221, 174, 84, 0.75);
+  border-radius: 30px;
+
+  background: rgba(255, 245, 210, 0.94);
+
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+
+  text-align: center;
+}
+
+/* 작은 안내 문구입니다. */
+.ability-kicker {
+  margin: 0 0 10px;
+
+  color: #9b6a20;
+
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* 능력치 안내 제목입니다. */
+.ability-title {
+  margin: 0;
+
+  color: #4b2a0f;
+
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 36px;
+  font-weight: 900;
+}
+
+/* 능력치 설명 문장입니다. */
+.ability-desc {
+  margin: 16px 0 30px;
+
+  color: #5f452d;
+
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.7;
+
+  word-break: keep-all;
+}
+
+/* 네 가지 능력치 카드를 배치하는 영역입니다. */
+.ability-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+
+  margin-top: 24px;
+}
+
+/* 능력치 하나하나의 카드입니다. */
+.ability-card {
+  padding: 24px 18px 20px;
+
+  border: 2px solid rgba(182, 126, 42, 0.45);
+  border-radius: 22px;
+
+  background: linear-gradient(180deg, #fff8db 0%, #f2d58b 100%);
+
+  box-shadow: 0 8px 0 rgba(126, 82, 24, 0.25);
+}
+
+/* 능력치 아이콘입니다. */
+.ability-icon {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.65);
+
+  font-size: 30px;
+}
+
+/* 능력치 이름입니다. */
+.ability-card h2 {
+  margin: 0 0 10px;
+
+  color: #4b2a0f;
+
+  font-size: 22px;
+  font-weight: 900;
+}
+
+/* 능력치 설명입니다. */
+.ability-card p {
+  min-height: 68px;
+
+  margin: 0;
+
+  color: #5f452d;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.55;
+
+  word-break: keep-all;
+}
+
+/* 능력치가 오르는 조건 표시입니다. */
+.ability-card span {
+  display: inline-block;
+
+  margin-top: 14px;
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  background: rgba(75, 42, 15, 0.9);
+  color: #fff3c7;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* 학생 홈으로 이동하는 버튼입니다. */
+.ability-start-button {
+  margin-top: 34px;
+  padding: 15px 44px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: linear-gradient(180deg, #f3cf75 0%, #d89b35 100%);
+
+  color: #4b2a0f;
+
+  font-size: 18px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow: 0 6px 0 #9b6825;
+}
+
+/* 버튼에 마우스를 올렸을 때 살짝 떠 보이게 합니다. */
+.ability-start-button:hover {
+  transform: translateY(-1px);
+}
+
+/* 버튼을 눌렀을 때 눌리는 느낌을 줍니다. */
+.ability-start-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #9b6825;
+}/* ===== 능력치 카드 이미지 아이콘 정리 ===== */
+/* 이모지 대신 PNG 이미지를 넣었기 때문에 이미지 크기를 카드에 맞게 조정합니다. */
+.ability-icon {
+  width: 96px !important;
+  height: 96px !important;
+
+  margin: 0 auto 14px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 24px !important;
+
+  background: rgba(255, 248, 220, 0.75) !important;
+
+  overflow: visible !important;
+}
+
+/* 능력치 아이콘 이미지입니다. */
+/* PNG 그림이 카드 안에서 너무 커지지 않게 맞춥니다. */
+.ability-icon img {
+  width: 88px !important;
+  height: 88px !important;
+
+  object-fit: contain !important;
+
+  display: block !important;
+}/* ===== 능력치 안내 화면 - 마법 도서관 브라운톤 최종 디자인 ===== */
+/* 기존 밝은 카드 느낌을 줄이고, 신비로운 마법 도서관 분위기로 바꿉니다. */
+.ability-intro-page {
+  min-height: 100vh !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 42px 24px !important;
+
+  background:
+    radial-gradient(circle at 50% 8%, rgba(255, 211, 111, 0.26), transparent 34%),
+    radial-gradient(circle at 18% 82%, rgba(173, 105, 28, 0.35), transparent 34%),
+    linear-gradient(135deg, #140b05 0%, #2b180b 42%, #4a2b12 72%, #160c06 100%) !important;
+
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* 화면 뒤쪽에 은은한 빛 입자 느낌을 추가합니다. */
+.ability-intro-page::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  background-image:
+    radial-gradient(circle, rgba(255, 230, 154, 0.45) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(255, 196, 86, 0.22) 0 1px, transparent 3px) !important;
+  background-size: 120px 120px, 78px 78px !important;
+  background-position: 20px 30px, 60px 80px !important;
+
+  opacity: 0.35 !important;
+
+  pointer-events: none !important;
+}
+
+/* 전체 능력치 설명 박스입니다. */
+.ability-intro-card {
+  width: min(1060px, 100%) !important;
+
+  padding: 38px 44px 34px !important;
+
+  border: 2px solid rgba(226, 174, 81, 0.72) !important;
+  border-radius: 34px !important;
+
+  background:
+    linear-gradient(180deg, rgba(80, 47, 19, 0.94) 0%, rgba(43, 24, 10, 0.96) 100%) !important;
+
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 239, 184, 0.18),
+    inset 0 0 38px rgba(255, 202, 93, 0.08) !important;
+
+  text-align: center !important;
+
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 작은 안내 문구입니다. */
+.ability-kicker {
+  margin: 0 0 10px !important;
+
+  color: #f2c86f !important;
+
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.12em !important;
+}
+
+/* 큰 제목입니다. */
+.ability-title {
+  margin: 0 !important;
+
+  color: #fff0bd !important;
+
+  font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+  font-size: 38px !important;
+  font-weight: 900 !important;
+
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* 제목 아래 설명입니다. */
+.ability-desc {
+  margin: 16px auto 28px !important;
+
+  max-width: 760px !important;
+
+  color: #ead3a1 !important;
+
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.7 !important;
+
+  word-break: keep-all !important;
+}
+
+/* 네 가지 능력치 카드 배치입니다. */
+.ability-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 18px !important;
+
+  margin-top: 24px !important;
+}
+
+/* 능력치 카드입니다. */
+.ability-card {
+  padding: 22px 18px 20px !important;
+
+  border: 1.8px solid rgba(228, 181, 91, 0.58) !important;
+  border-radius: 24px !important;
+
+  background:
+    radial-gradient(circle at top, rgba(255, 226, 139, 0.22), transparent 46%),
+    linear-gradient(180deg, rgba(103, 62, 24, 0.96) 0%, rgba(54, 30, 12, 0.98) 100%) !important;
+
+  box-shadow:
+    0 10px 0 rgba(22, 12, 4, 0.55),
+    0 18px 32px rgba(0, 0, 0, 0.24),
+    inset 0 0 18px rgba(255, 220, 123, 0.08) !important;
+
+  color: #fff0bd !important;
+}
+
+/* 능력치 이미지가 들어가는 자리입니다. */
+.ability-icon {
+  width: 112px !important;
+  height: 112px !important;
+
+  margin: 0 auto 12px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 28px !important;
+
+  background:
+    radial-gradient(circle, rgba(255, 232, 151, 0.36), rgba(88, 49, 18, 0.2) 68%) !important;
+
+  box-shadow:
+    inset 0 0 20px rgba(255, 221, 126, 0.18),
+    0 8px 18px rgba(0, 0, 0, 0.22) !important;
+
+  overflow: visible !important;
+}
+
+/* 능력치 아이콘 이미지입니다. */
+.ability-icon img {
+  width: 98px !important;
+  height: 98px !important;
+
+  object-fit: contain !important;
+
+  display: block !important;
+
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* 능력치 이름입니다. */
+.ability-card h2 {
+  margin: 0 0 10px !important;
+
+  color: #ffe7a0 !important;
+
+  font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+/* 능력치 설명입니다. */
+.ability-card p {
+  min-height: 58px !important;
+
+  margin: 0 !important;
+
+  color: #f4dfb4 !important;
+
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.55 !important;
+
+  word-break: keep-all !important;
+}
+
+/* 능력치 획득 조건 표시입니다. */
+.ability-card span {
+  display: inline-block !important;
+
+  margin-top: 14px !important;
+  padding: 8px 13px !important;
+
+  border-radius: 999px !important;
+
+  background: rgba(255, 222, 137, 0.92) !important;
+  color: #3c210c !important;
+
+  font-size: 13px !important;
+  font-weight: 900 !important;
+
+  box-shadow: 0 4px 0 rgba(95, 55, 17, 0.75) !important;
+}
+
+/* 아래 시작 버튼입니다. */
+.ability-start-button {
+  margin-top: 34px !important;
+  padding: 15px 48px !important;
+
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(180deg, #f7d57a 0%, #d8942f 100%) !important;
+
+  color: #3c210c !important;
+
+  font-size: 18px !important;
+  font-weight: 900 !important;
+
+  cursor: pointer !important;
+
+  box-shadow:
+    0 7px 0 #8b551d,
+    0 12px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* 버튼에 마우스를 올렸을 때입니다. */
+.ability-start-button:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* 버튼을 누를 때입니다. */
+.ability-start-button:active {
+  transform: translateY(3px) !important;
+  box-shadow:
+    0 3px 0 #8b551d,
+    0 8px 18px rgba(0, 0, 0, 0.3) !important;
+}/* ===== 능력치 안내 화면 - 신비로운 도서관 분위기 강화 ===== */
+/* 화면이 단조롭게 보이지 않도록 빛, 책장 느낌, 카드 깊이감을 추가합니다. */
+
+.ability-intro-page {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 214, 122, 0.34), transparent 28%),
+    radial-gradient(circle at 12% 25%, rgba(255, 184, 69, 0.18), transparent 26%),
+    radial-gradient(circle at 88% 76%, rgba(255, 201, 91, 0.16), transparent 30%),
+    linear-gradient(135deg, #120804 0%, #2a1609 42%, #4a2a12 72%, #130905 100%) !important;
+}
+
+/* 뒤쪽에 흐릿한 마법 도서관 책장 느낌을 만듭니다. */
+.ability-intro-page::after {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+
+  background:
+    linear-gradient(90deg, rgba(255, 220, 140, 0.08) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 220, 140, 0.06) 1px, transparent 1px) !important;
+  background-size: 90px 100%, 100% 82px !important;
+
+  opacity: 0.22 !important;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 78%) !important;
+
+  pointer-events: none !important;
+}
+
+/* 큰 카드 위쪽에 은은한 빛나는 장식선을 추가합니다. */
+.ability-intro-card::before {
+  content: "" !important;
+
+  position: absolute !important;
+  top: 18px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  width: 62% !important;
+  height: 2px !important;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 224, 144, 0.85),
+    transparent
+  ) !important;
+
+  box-shadow: 0 0 18px rgba(255, 211, 104, 0.55) !important;
+}
+
+/* 능력치 카드마다 살짝 다른 빛 위치를 줘서 덜 단조롭게 만듭니다. */
+.ability-card:nth-child(1) {
+  background:
+    radial-gradient(circle at 25% 8%, rgba(255, 220, 93, 0.32), transparent 44%),
+    linear-gradient(180deg, rgba(105, 60, 22, 0.96), rgba(50, 27, 10, 0.98)) !important;
+}
+
+.ability-card:nth-child(2) {
+  background:
+    radial-gradient(circle at 70% 10%, rgba(255, 152, 74, 0.28), transparent 46%),
+    linear-gradient(180deg, rgba(96, 53, 22, 0.96), rgba(48, 25, 10, 0.98)) !important;
+}
+
+.ability-card:nth-child(3) {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(255, 232, 151, 0.30), transparent 46%),
+    linear-gradient(180deg, rgba(88, 51, 24, 0.96), rgba(40, 24, 12, 0.98)) !important;
+}
+
+.ability-card:nth-child(4) {
+  background:
+    radial-gradient(circle at 72% 12%, rgba(255, 206, 99, 0.28), transparent 46%),
+    linear-gradient(180deg, rgba(92, 54, 25, 0.96), rgba(42, 24, 10, 0.98)) !important;
+}
+
+/* 카드에 마우스를 올리면 살짝 떠오르게 해서 게임 UI 느낌을 줍니다. */
+.ability-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+.ability-card:hover {
+  transform: translateY(-6px) !important;
+
+  box-shadow:
+    0 14px 0 rgba(22, 12, 4, 0.58),
+    0 28px 42px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(255, 205, 105, 0.18),
+    inset 0 0 20px rgba(255, 225, 141, 0.1) !important;
+}
+
+/* 아이콘 주변에 마법 원형 빛을 더합니다. */
+.ability-icon {
+  position: relative !important;
+}
+
+.ability-icon::before {
+  content: "" !important;
+
+  position: absolute !important;
+  inset: 12px !important;
+
+  border-radius: 50% !important;
+
+  background: radial-gradient(circle, rgba(255, 224, 127, 0.34), transparent 68%) !important;
+  filter: blur(4px) !important;
+
+  z-index: 0 !important;
+}
+
+.ability-icon img {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* 제목에 살짝 마법 빛 느낌을 더합니다. */
+.ability-title {
+  text-shadow:
+    0 3px 14px rgba(0, 0, 0, 0.5),
+    0 0 18px rgba(255, 210, 111, 0.22) !important;
+}/* ===== 능력치 설명 박스 디자인 ===== */
+/* 능력이 오르는 방법과 던전 효과를 구분해서 보여주는 작은 설명 박스입니다. */
+.ability-info-box {
+  margin-top: 10px !important;
+  padding: 10px 12px !important;
+
+  border: 1px solid rgba(245, 207, 129, 0.38) !important;
+  border-radius: 14px !important;
+
+  background: rgba(24, 13, 6, 0.28) !important;
+
+  text-align: left !important;
+}
+
+/* 설명 박스의 작은 제목입니다. 예: 어떻게 올라가요?, 던전에서는? */
+.ability-info-box strong {
+  display: block !important;
+
+  margin-bottom: 5px !important;
+
+  color: #ffd978 !important;
+
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+/* 설명 박스 안의 문장입니다. */
+.ability-info-box p {
+  min-height: auto !important;
+
+  margin: 0 !important;
+
+  color: #f7e5bd !important;
+
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+
+  word-break: keep-all !important;
+}
+
+/* 능력의 의미를 설명하는 첫 문장입니다. */
+.ability-meaning {
+  min-height: 42px !important;
+
+  margin: 0 0 12px !important;
+
+  color: #ffe9ad !important;
+
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+
+  word-break: keep-all !important;
+}
+
+/* 카드 아래쪽 수치 표시입니다. */
+.ability-card span {
+  margin-top: 12px !important;
+
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}

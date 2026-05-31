@@ -1,113 +1,59 @@
-<!--
-  파일명: story-intro.html
-  역할: 학생이 처음 로그인했을 때 한 번만 보는 스토리 프롤로그 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 문답책 세계관을 6장으로 나누어 보여줍니다.
-  2. 학생이 직접 이전/다음 버튼을 눌러 넘깁니다.
-  3. 마지막 장에서 '모험 시작하기'를 누르면 학생 홈으로 이동합니다.
-  4. 스토리를 다 본 기록을 localStorage에 저장하여 다음 로그인부터는 다시 나오지 않게 합니다.
-
-  저작권/출처 원칙:
-  - 현재 이 화면은 외부 이미지 파일을 사용하지 않습니다.
-  - 캐릭터와 드래곤은 임시 이모지/텍스트로 표현합니다.
-  - 실제 AI 생성 이미지는 나중에 별도 파일로 넣고 source-data.js에 출처를 기록합니다.
--->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <!-- 한글이 깨지지 않도록 설정합니다. -->
   <meta charset="UTF-8">
-
-  <!-- 태블릿, 노트북, PC에서 자연스럽게 보이도록 설정합니다. -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문답책 - 이야기 시작</title>
 
-  <!-- 브라우저 탭 제목입니다. -->
-  <title>문답책 이야기</title>
-
-  <!-- 공통 디자인 파일입니다. -->
   <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/student.css">
 </head>
-
 <body>
-  <!-- 스토리 전체 화면입니다. -->
-  <main class="story-page">
+  <main id="storyPage" class="story-intro-page">
+    <div class="story-dark-layer"></div>
 
-    <!-- 상단 오른쪽 건너뛰기 버튼입니다. -->
-    <button type="button" class="story-skip-button" id="skipStoryButton">
+    <button id="skipStoryButton" class="story-skip-button" type="button" onclick="skipStory()">
       건너뛰기
     </button>
 
-    <!-- 스토리 카드 전체 영역입니다. -->
-    <section class="story-card">
+    <section class="story-scene-area">
+      <div id="storyCharacter" class="story-character"></div>
+    </section>
 
-      <!-- 위쪽 상황 묘사 영역입니다. 나중에 AI 생성 이미지가 들어갈 자리입니다. -->
-      <div class="story-visual">
-
-        <!-- 현재는 저작권 안전한 임시 이모지 캐릭터를 사용합니다. -->
-        <div class="story-character" id="storyCharacter">
-          🧒📖
+    <section class="story-dialog-box">
+      <div class="story-dialog-header">
+        <div>
+          <p id="storySpeaker" class="story-speaker">루미</p>
+          <h1 id="storyTitle" class="story-title"></h1>
         </div>
 
-        <!-- 현재 장면 제목입니다. -->
-        <h1 id="storyTitle">
-          욕심 많은 용
-        </h1>
-
-        <!-- 현재 장면의 짧은 상황 설명입니다. -->
-        <p id="storyScene">
-          아주 먼 옛날, 세상의 모든 지식을 탐내는 용이 있었어요.
-        </p>
+        <p id="storyCount" class="story-count">1 / 6</p>
       </div>
 
-      <!-- 아래쪽 대사/설명 박스입니다. -->
-      <div class="story-dialog-box">
+   <!-- 장면 설명은 JS에서 필요할 때 넣습니다. 지금은 중복 표시를 막기 위해 비워둡니다. -->
+<p id="storyScene" class="story-scene-text"></p>
 
-        <!-- 누가 말하는지 표시하는 작은 이름표입니다. -->
-        <span class="story-speaker" id="storySpeaker">
-          문답책
-        </span>
+<!-- 스토리 본문은 story-intro.js에서 현재 장면에 맞게 바뀝니다. -->
+<!-- JS가 늦게 불러와져도 첫 장면 문구가 보이도록 기본 문장을 넣어둡니다. -->
+<p id="storyText" class="story-main-text">
+  아무리 배워도 만족하지 못하는 용이 있었어.
+  그 용은 세상의 지식을 모두 혼자 갖고 싶어 했지.
+</p>
+      <div class="story-bottom-area">
+        <button id="prevStoryButton" class="story-nav-button prev" type="button" onclick="goPrevStory()">
+          이전
+        </button>
 
-        <!-- 실제 스토리 문장입니다. -->
-        <p class="story-text" id="storyText">
-          아무리 공부해도 만족하지 못한 용은 세상의 지식을 모두 혼자 차지하고 싶어 했어요.
-        </p>
+        <div id="storyDots" class="story-dots"></div>
 
-        <!-- 진행 표시 영역입니다. -->
-        <div class="story-progress">
-
-          <!-- 현재 페이지 번호입니다. -->
-          <span id="storyCount">1 / 6</span>
-
-          <!-- 점 표시가 들어갈 영역입니다. -->
-          <div class="story-dots" id="storyDots">
-            <!-- JavaScript에서 자동으로 채웁니다. -->
-          </div>
-        </div>
-
-        <!-- 버튼 영역입니다. -->
-        <div class="story-button-area">
-
-          <!-- 이전 버튼입니다. -->
-          <button type="button" class="story-button secondary" id="prevStoryButton">
-            이전
-          </button>
-
-          <!-- 다음 버튼입니다. 마지막 장에서는 '모험 시작하기'로 바뀝니다. -->
-          <button type="button" class="story-button primary" id="nextStoryButton">
-            다음
-          </button>
-
-        </div>
+        <button id="nextStoryButton" class="story-nav-button next" type="button" onclick="goNextStory()">
+          다음
+        </button>
       </div>
     </section>
   </main>
 
-  <!-- 로그인 여부 확인과 공통 함수가 들어 있는 파일입니다. -->
   <script src="../js/auth.js"></script>
-
-  <!-- 스토리 넘기기 기능이 들어갈 파일입니다. 다음 단계에서 만들 예정입니다. -->
   <script src="../js/story-intro.js"></script>
 </body>
 </html>

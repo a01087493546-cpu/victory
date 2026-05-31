@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Noto+Serif+KR:wght@700;900&display=swap');
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css');
 /*
   파일명: common.css
   역할: Victory 프로젝트 전체에서 공통으로 사용하는 디자인 파일입니다.
@@ -2561,4 +2561,1904 @@ label {
 .login-start-btn:active {
   transform: translateY(3px);
   box-shadow: 0 3px 0 #9b6825;
+}/* =========================================================
+   student/home.html 홈 화면 최종 보정 1차
+   목표: 신비한 책 서점 + 용사 루미 말풍선 + 2개 선택 카드
+========================================================= */
+
+/* 학생 홈 전체 배경입니다. */
+.student-home-page {
+  min-height: 100vh;
+  padding: 24px 42px 56px;
+  color: #fff4d6;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 219, 132, 0.24), transparent 28%),
+    radial-gradient(circle at 78% 24%, rgba(121, 71, 28, 0.34), transparent 32%),
+    linear-gradient(135deg, #150c06 0%, #3b2212 48%, #130b05 100%);
+  overflow-x: hidden;
+}
+
+/* 학생 홈 상단바입니다. */
+.student-header {
+  max-width: 1120px;
+  margin: 0 auto 34px;
+  padding: 14px 18px;
+  border: 1px solid rgba(235, 185, 88, 0.5);
+  border-radius: 22px;
+  background: rgba(37, 21, 10, 0.58);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+/* 상단 로고 영역입니다. */
+.student-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 문답책 로고 이미지입니다. */
+.student-logo-image {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
+  filter:
+    drop-shadow(0 0 8px rgba(255, 204, 87, 0.35))
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+/* 문답책 로고 글자입니다. */
+.student-logo-text {
+  color: #fff0bd;
+  font-size: 23px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+/* 상단 오른쪽 버튼 묶음입니다. */
+.student-header-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 나의 힘 버튼입니다. */
+.ability-mini-button {
+  padding: 11px 17px;
+  border: 1px solid rgba(255, 222, 145, 0.7);
+  border-radius: 999px;
+  background: rgba(255, 244, 214, 0.14);
+  color: #ffe9ad;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* 로그아웃 버튼입니다. */
+.logout-mini-button {
+  padding: 11px 17px;
+  border: none;
+  border-radius: 999px;
+  background: #f2d083;
+  color: #4c2b13;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+/* 메인 소개 영역입니다. */
+.home-hero {
+  max-width: 1120px;
+  margin: 0 auto 30px;
+}
+
+/* 루미와 말풍선 전체 영역입니다. */
+.home-lumi-area {
+  min-height: 330px;
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  align-items: center;
+  gap: 34px;
+  padding: 34px 42px;
+  border: 2px solid rgba(226, 174, 76, 0.62);
+  border-radius: 34px;
+  background:
+    linear-gradient(90deg, rgba(32, 18, 8, 0.86), rgba(52, 30, 14, 0.68)),
+    radial-gradient(circle at 28% 18%, rgba(255, 216, 120, 0.2), transparent 32%);
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, 0.36),
+    inset 0 0 0 1px rgba(255, 240, 190, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 책장 느낌의 세로 장식입니다. */
+.home-lumi-area::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 232, 160, 0.04) 0,
+      rgba(255, 232, 160, 0.04) 2px,
+      transparent 2px,
+      transparent 86px
+    );
+  pointer-events: none;
+}
+
+/* 홈 화면 루미 이미지입니다. */
+.home-lumi-image {
+  position: relative;
+  z-index: 2;
+  width: 280px;
+  max-height: 310px;
+  object-fit: contain;
+  justify-self: center;
+  filter:
+    drop-shadow(0 18px 22px rgba(0, 0, 0, 0.48))
+    drop-shadow(0 0 18px rgba(255, 209, 105, 0.18));
+}
+
+/* 루미 말풍선입니다. */
+.home-lumi-speech {
+  position: relative;
+  z-index: 2;
+  padding: 34px 40px;
+  border: 2px solid rgba(234, 184, 84, 0.78);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 237, 176, 0.9), transparent 36%),
+    linear-gradient(180deg, #fff4cf 0%, #edd088 100%);
+  color: #3b2211;
+  box-shadow:
+    0 14px 0 rgba(113, 65, 22, 0.55),
+    0 22px 42px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+}
+
+/* 말풍선 꼬리입니다. */
+.home-lumi-speech::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  background: #f5dfa2;
+  border-left: 2px solid rgba(234, 184, 84, 0.78);
+  border-bottom: 2px solid rgba(234, 184, 84, 0.78);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* 작은 라벨입니다. */
+.home-label {
+  margin: 0 0 12px;
+  color: #8d561f;
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+/* 루미 말풍선 안 큰 문장입니다. */
+.home-hero h1 {
+  margin: 0;
+  color: #3b2211;
+  font-size: 56px;
+  line-height: 1.12;
+  letter-spacing: -0.07em;
+  font-weight: 950;
+  text-shadow: none;
+}
+
+/* 활동 카드 영역입니다. */
+.home-card-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+/* 활동 카드입니다. */
+.home-card {
+  min-height: 270px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 30px 28px;
+  border: 2px solid rgba(221, 166, 65, 0.78);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 238, 178, 0.9), transparent 34%),
+    linear-gradient(180deg, #fff4cf 0%, #f0d58e 100%);
+  color: #332013;
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.3),
+    0 0 0 5px rgba(255, 218, 123, 0.08),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.23);
+  transition: 0.18s;
+}
+
+/* 카드에 마우스를 올렸을 때입니다. */
+.home-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.36),
+    0 0 0 5px rgba(255, 218, 123, 0.12),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+/* 카드 아이콘입니다. */
+.home-card-icon {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 20px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 35% 25%, #fff0b5, #d89b38);
+  color: #4b2a12;
+  font-size: 34px;
+  box-shadow:
+    0 7px 0 #8a4f19,
+    0 12px 22px rgba(104, 57, 15, 0.24);
+}
+
+/* 카드 제목입니다. */
+.home-card h2 {
+  margin: 0 0 12px;
+  color: #3b2211;
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: -0.05em;
+}
+
+/* 카드 설명입니다. */
+.home-card p {
+  flex: 1;
+  margin: 0;
+  color: #6b4727;
+  font-size: 17px;
+  line-height: 1.65;
+  font-weight: 800;
+}
+
+/* 카드 버튼입니다. */
+.home-card-button {
+  width: 100%;
+  height: 54px;
+  margin-top: 26px;
+  border-radius: 17px;
+  background: linear-gradient(180deg, #b7792d 0%, #714019 100%);
+  color: #fff8df;
+  font-size: 17px;
+  font-weight: 950;
+  box-shadow:
+    0 7px 0 #3f210c,
+    0 14px 24px rgba(79, 38, 13, 0.22);
+  transition: 0.14s;
+}
+
+/* 카드 버튼에 마우스를 올렸을 때입니다. */
+.home-card-button:hover {
+  transform: translateY(-2px);
+}
+
+/* 카드 버튼을 누르는 순간입니다. */
+.home-card-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 #3f210c;
+}
+
+/* 태블릿 화면 대응입니다. */
+@media (max-width: 900px) {
+  .home-lumi-area {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 30px 24px;
+  }
+
+  .home-lumi-speech::before {
+    display: none;
+  }
+
+  .home-lumi-image {
+    width: 230px;
+  }
+
+  .home-hero h1 {
+    font-size: 42px;
+  }
+}
+
+/* 모바일 화면 대응입니다. */
+@media (max-width: 640px) {
+  .student-home-page {
+    padding: 18px 16px 42px;
+  }
+
+  .student-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-logo {
+    justify-content: center;
+  }
+
+  .student-header-menu {
+    justify-content: center;
+  }
+
+  .home-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero h1 {
+    font-size: 34px;
+  }
+
+  .home-lumi-speech {
+    padding: 26px 22px;
+  }
+}/* =========================================================
+   student/home.html 홈 화면 2차 보정
+   목표: 촌스러운 말풍선 제거, 신비로운 책방 느낌, 심플한 동기유발 화면
+========================================================= */
+
+/* 홈 전체 여백을 조금 더 안정적으로 정리합니다. */
+.student-home-page {
+  padding: 24px 42px 52px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 213, 118, 0.18), transparent 28%),
+    radial-gradient(circle at 82% 30%, rgba(119, 75, 31, 0.28), transparent 34%),
+    linear-gradient(135deg, #140b05 0%, #2b180c 48%, #130904 100%);
+}
+
+/* 상단바를 더 얇고 고급스럽게 정리합니다. */
+.student-header {
+  margin-bottom: 28px;
+  border-radius: 20px;
+  background: rgba(29, 17, 8, 0.72);
+}
+
+/* 루미 영역을 큰 말풍선 카드가 아니라 신비로운 안내 패널처럼 바꿉니다. */
+.home-lumi-area {
+  min-height: 290px;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  padding: 30px 42px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 24% 28%, rgba(255, 217, 126, 0.14), transparent 30%),
+    linear-gradient(90deg, rgba(20, 12, 6, 0.94), rgba(58, 33, 15, 0.74));
+}
+
+/* 루미 뒤쪽 책장 줄무늬를 조금 약하게 만듭니다. */
+.home-lumi-area::before {
+  opacity: 0.45;
+}
+
+/* 루미 크기를 줄여 화면이 덜 부담스럽게 보이도록 합니다. */
+.home-lumi-image {
+  width: 235px;
+  max-height: 270px;
+}
+
+/* 기존 말풍선 꼬리를 없애서 촌스러운 느낌을 줄입니다. */
+.home-lumi-speech::before {
+  display: none;
+}
+
+/* 말풍선을 양피지 안내 카드처럼 심플하게 바꿉니다. */
+.home-lumi-speech {
+  padding: 32px 38px;
+  border-radius: 26px;
+  border: 1px solid rgba(236, 188, 91, 0.68);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 211, 0.96), rgba(236, 204, 132, 0.94));
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+/* 작은 라벨은 너무 튀지 않게 정리합니다. */
+.home-label {
+  margin-bottom: 10px;
+  color: #9b6729;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+/* 메인 문구를 과하게 크지 않게 줄이고, 더 세련되게 정리합니다. */
+.home-hero h1 {
+  font-size: 46px;
+  line-height: 1.16;
+  letter-spacing: -0.06em;
+  color: #3a2111;
+}
+
+/* 카드 2개 영역을 위쪽과 자연스럽게 연결합니다. */
+.home-card-grid {
+  gap: 24px;
+  margin-top: 26px;
+}
+
+/* 카드를 조금 낮고 넓게 만들어 버튼 위치가 안정적으로 보이게 합니다. */
+.home-card {
+  min-height: 245px;
+  padding: 30px 32px 28px;
+  border-radius: 28px;
+}
+
+/* 카드 아이콘을 조금 작게 줄입니다. */
+.home-card-icon {
+  width: 62px;
+  height: 62px;
+  margin-bottom: 18px;
+  font-size: 30px;
+  border-radius: 20px;
+}
+
+/* 카드 제목을 크게 두되 과하지 않게 정리합니다. */
+.home-card h2 {
+  font-size: 28px;
+}
+
+/* 카드 설명을 짧고 굵게 보이게 합니다. */
+.home-card p {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* 버튼을 카드 아래쪽에 안정적으로 붙입니다. */
+.home-card-button {
+  margin-top: 24px;
+  height: 52px;
+  border-radius: 16px;
+}
+
+/* 좁은 화면에서는 루미와 문구가 세로로 쌓이게 합니다. */
+@media (max-width: 900px) {
+  .home-lumi-area {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .home-lumi-image {
+    width: 210px;
+  }
+
+  .home-hero h1 {
+    font-size: 38px;
+  }
+}/* =========================================================
+   student/home.html 홈 화면 3차 보정
+   목표: 메인 문구 비중 줄이기, 카드/버튼 더 심플하게 정리
+========================================================= */
+
+/* 전체 화면이 한눈에 들어오도록 여백을 줄입니다. */
+.student-home-page {
+  padding: 20px 42px 42px;
+}
+
+/* 상단바 아래 여백을 줄입니다. */
+.student-header {
+  margin-bottom: 22px;
+  padding: 12px 18px;
+}
+
+/* 루미 + 문구 영역 높이를 확 줄입니다. */
+.home-lumi-area {
+  min-height: 220px;
+  grid-template-columns: 210px 1fr;
+  gap: 22px;
+  padding: 24px 34px;
+  border-radius: 28px;
+}
+
+/* 루미 이미지 크기를 줄입니다. */
+.home-lumi-image {
+  width: 190px;
+  max-height: 220px;
+}
+
+/* 큰 말풍선 느낌을 줄이고, 얇은 안내 카드처럼 만듭니다. */
+.home-lumi-speech {
+  max-width: 620px;
+  padding: 24px 30px;
+  border-radius: 22px;
+  justify-self: start;
+}
+
+/* 작은 라벨도 더 작게 만듭니다. */
+.home-label {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+/* 메인 문구 비중을 줄입니다. */
+.home-hero h1 {
+  font-size: 36px;
+  line-height: 1.18;
+  letter-spacing: -0.055em;
+}
+
+/* 메인 영역과 카드 사이 간격을 줄입니다. */
+.home-hero {
+  margin-bottom: 20px;
+}
+
+/* 카드 영역을 위로 당깁니다. */
+.home-card-grid {
+  margin-top: 18px;
+  gap: 22px;
+}
+
+/* 카드 높이를 줄여서 화면에 더 안정적으로 보이게 합니다. */
+.home-card {
+  min-height: 210px;
+  padding: 26px 28px 24px;
+  border-radius: 26px;
+}
+
+/* 카드 아이콘을 더 작게 정리합니다. */
+.home-card-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 16px;
+  font-size: 27px;
+  border-radius: 18px;
+  box-shadow:
+    0 5px 0 #8a4f19,
+    0 10px 18px rgba(104, 57, 15, 0.2);
+}
+
+/* 카드 제목 크기를 살짝 줄입니다. */
+.home-card h2 {
+  margin-bottom: 10px;
+  font-size: 25px;
+}
+
+/* 카드 설명도 조금 가볍게 만듭니다. */
+.home-card p {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* 버튼 크기를 줄이고 덜 둔탁하게 만듭니다. */
+.home-card-button {
+  width: fit-content;
+  min-width: 180px;
+  height: 44px;
+  padding: 0 24px;
+  margin-top: 20px;
+  border-radius: 999px;
+  align-self: flex-start;
+  font-size: 15px;
+  box-shadow:
+    0 5px 0 #3f210c,
+    0 10px 18px rgba(79, 38, 13, 0.18);
+}
+
+/* 버튼 hover도 과하지 않게 합니다. */
+.home-card-button:hover {
+  transform: translateY(-1px);
+}
+
+/* 버튼 누를 때 효과입니다. */
+.home-card-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #3f210c;
+}
+
+/* 화면이 낮은 노트북에서도 한 화면에 더 잘 들어오게 조정합니다. */
+@media (max-height: 760px) {
+  .student-home-page {
+    padding-top: 16px;
+  }
+
+  .home-lumi-area {
+    min-height: 200px;
+  }
+
+  .home-lumi-image {
+    width: 175px;
+    max-height: 205px;
+  }
+
+  .home-hero h1 {
+    font-size: 32px;
+  }
+
+  .home-card {
+    min-height: 195px;
+  }
+}/* =========================================================
+   student/home.html 홈 화면 4차 보정
+   목표: 큰 빈 영역 제거 / 루미 문구 영역 정리 / 전체 심플화
+========================================================= */
+
+/* 학생 홈 전체 높이와 여백을 더 안정적으로 정리합니다. */
+.student-home-page {
+  min-height: 100vh;
+  padding: 18px 42px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* 상단바 아래 간격을 조금 더 줄입니다. */
+.student-header {
+  margin-bottom: 18px;
+}
+
+/* 메인 소개 영역 아래 간격도 줄입니다. */
+.home-hero {
+  margin-bottom: 14px;
+}
+
+/* 루미 영역 전체를 더 작고 깔끔하게 정리합니다. */
+.home-lumi-area {
+  min-height: 170px;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 28px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 210, 110, 0.12), transparent 26%),
+    linear-gradient(90deg, rgba(24, 13, 6, 0.96), rgba(56, 31, 14, 0.72));
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 1px rgba(255, 230, 170, 0.08);
+}
+
+/* 배경 줄무늬는 더 약하게 합니다. */
+.home-lumi-area::before {
+  opacity: 0.18;
+}
+
+/* 루미 이미지를 더 작고 자연스럽게 정리합니다. */
+.home-lumi-image {
+  width: 135px;
+  max-height: 160px;
+  align-self: end;
+}
+
+/* 기존 말풍선 느낌 대신 작은 안내 카드처럼 만듭니다. */
+.home-lumi-speech {
+  max-width: 420px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(233, 184, 88, 0.52);
+  background:
+    linear-gradient(180deg, rgba(255, 247, 220, 0.96), rgba(239, 211, 145, 0.95));
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+/* 작은 제목입니다. */
+.home-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+/* 메인 문구 크기를 더 줄입니다. */
+.home-hero h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.05em;
+}
+
+/* 카드 2개 영역을 위에 더 붙입니다. */
+.home-card-grid {
+  margin-top: 12px;
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* 카드 자체를 더 컴팩트하게 정리합니다. */
+.home-card {
+  min-height: 180px;
+  padding: 22px 24px 20px;
+  border-radius: 24px;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.24),
+    0 0 0 4px rgba(255, 218, 123, 0.06),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+/* 카드 아이콘입니다. */
+.home-card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  font-size: 24px;
+  border-radius: 16px;
+}
+
+/* 카드 제목입니다. */
+.home-card h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+/* 카드 설명입니다. */
+.home-card p {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+/* 버튼을 더 작고 가볍게 바꿉니다. */
+.home-card-button {
+  min-width: 150px;
+  height: 38px;
+  padding: 0 18px;
+  margin-top: 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow:
+    0 4px 0 #3f210c,
+    0 8px 14px rgba(79, 38, 13, 0.14);
+}
+
+/* 버튼 눌림 효과도 더 작게 합니다. */
+.home-card-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #3f210c;
+}
+
+/* 작은 화면에서는 세로 정렬로 바꿉니다. */
+@media (max-width: 900px) {
+  .home-lumi-area {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .home-lumi-image {
+    width: 120px;
+    max-height: 145px;
+  }
+
+  .home-lumi-speech {
+    max-width: 100%;
+  }
+
+  .home-hero h1 {
+    font-size: 26px;
+  }
+}/* =========================================================
+   student/home.html 최종 리셋 스타일
+   목표: 신비로운 책방 입구 + 용사 루미 + 활동 카드 2개
+   기존 홈 CSS가 많아서 .home-bookstore-page 기준으로 강하게 덮어씁니다.
+========================================================= */
+
+/* 학생 홈 전체 화면입니다. */
+.home-bookstore-page {
+  min-height: 100vh !important;
+  padding: 22px 44px 36px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 214, 126, 0.16), transparent 28%),
+    radial-gradient(circle at 76% 32%, rgba(111, 67, 28, 0.24), transparent 34%),
+    linear-gradient(135deg, #120904 0%, #2a170b 48%, #130904 100%) !important;
+  color: #fff4d6 !important;
+  overflow-x: hidden !important;
+}
+
+/* 상단바입니다. */
+.home-bookstore-page .home-top-bar {
+  width: min(100%, 1120px) !important;
+  margin: 0 auto 28px !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border: 1px solid rgba(230, 180, 86, 0.45) !important;
+  border-radius: 20px !important;
+  background: rgba(25, 14, 7, 0.72) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.26) !important;
+}
+
+/* 로고 영역입니다. */
+.home-bookstore-page .student-logo {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  color: #fff0bd !important;
+  font-weight: 950 !important;
+}
+
+/* 로고 이미지가 깨져 보이면 일단 숨깁니다.
+   나중에 실제 logo-book.png 경로가 맞으면 이 줄은 지워도 됩니다. */
+.home-bookstore-page .student-logo-image {
+  display: block !important;
+  width: 44px !important;
+  height: 44px !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 0 10px rgba(255, 204, 87, 0.35));
+}
+
+/* 로고 앞 책 아이콘입니다. */
+.home-bookstore-page .student-logo::before {
+  content: none !important;
+}
+
+/* 문답책 글자입니다. */
+.home-bookstore-page .student-logo-text {
+  font-size: 24px !important;
+  letter-spacing: -0.04em !important;
+}
+
+/* 오른쪽 메뉴입니다. */
+.home-bookstore-page .student-header-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* 나의 힘 버튼입니다. */
+.home-bookstore-page .ability-mini-button {
+  height: 40px !important;
+  padding: 0 18px !important;
+  border: 1px solid rgba(255, 222, 145, 0.65) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 244, 214, 0.12) !important;
+  color: #ffe8ac !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+/* 로그아웃 버튼입니다. */
+.home-bookstore-page .logout-mini-button {
+  height: 40px !important;
+  padding: 0 18px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: #f1cf82 !important;
+  color: #4b2a12 !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+}
+
+/* 홈 메인 전체 판입니다. */
+.home-bookstore-page .home-main-board {
+  width: min(100%, 1120px) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: 0.9fr 1.15fr !important;
+  gap: 26px !important;
+  align-items: stretch !important;
+}
+
+/* 왼쪽 루미 패널입니다. */
+.home-bookstore-page .home-lumi-panel {
+  min-height: 460px !important;
+  padding: 30px 30px 28px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  position: relative !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(230, 180, 86, 0.45) !important;
+  border-radius: 30px !important;
+  background:
+    radial-gradient(circle at 44% 20%, rgba(255, 214, 126, 0.17), transparent 30%),
+    linear-gradient(180deg, rgba(45, 26, 12, 0.82), rgba(19, 10, 5, 0.92)) !important;
+  box-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px rgba(255, 238, 190, 0.08) !important;
+}
+
+/* 책장 느낌의 은은한 배경 선입니다. */
+.home-bookstore-page .home-lumi-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 232, 160, 0.035) 0,
+      rgba(255, 232, 160, 0.035) 1px,
+      transparent 1px,
+      transparent 76px
+    );
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+/* 루미 이미지입니다. */
+.home-bookstore-page .home-lumi-image {
+  width: 230px !important;
+  max-height: 280px !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 auto 18px !important;
+  position: relative !important;
+  z-index: 2 !important;
+  filter:
+    drop-shadow(0 18px 22px rgba(0, 0, 0, 0.52))
+    drop-shadow(0 0 16px rgba(255, 206, 104, 0.16)) !important;
+}
+
+/* 루미 문구 영역입니다. */
+.home-bookstore-page .home-lumi-message {
+  position: relative !important;
+  z-index: 2 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 작은 라벨입니다. */
+.home-bookstore-page .home-label {
+  margin: 0 0 10px !important;
+  color: #e1b65f !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* 메인 문구입니다. */
+.home-bookstore-page .home-lumi-message h1 {
+  margin: 0 !important;
+  color: #fff3cf !important;
+  font-size: 38px !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.06em !important;
+  font-weight: 950 !important;
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.28),
+    0 14px 28px rgba(0, 0, 0, 0.38) !important;
+}
+
+/* 보조 문구입니다. */
+.home-bookstore-page .home-sub-text {
+  margin: 18px 0 0 !important;
+  color: #f7dfaa !important;
+  font-size: 16px !important;
+  line-height: 1.65 !important;
+  font-weight: 800 !important;
+}
+
+/* 오른쪽 활동 카드 영역입니다. */
+.home-bookstore-page .home-choice-area {
+  display: grid !important;
+  grid-template-rows: 1fr 1fr !important;
+  gap: 22px !important;
+}
+
+/* 활동 카드입니다. */
+.home-bookstore-page .home-choice-card {
+  min-height: 0 !important;
+  padding: 30px 32px !important;
+  display: grid !important;
+  grid-template-columns: 70px 1fr auto !important;
+  align-items: center !important;
+  gap: 22px !important;
+  border: 2px solid rgba(219, 166, 65, 0.76) !important;
+  border-radius: 30px !important;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 241, 188, 0.85), transparent 36%),
+    linear-gradient(180deg, #fff0bd 0%, #edcf83 100%) !important;
+  color: #3b2211 !important;
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.22) !important;
+}
+
+/* 카드 아이콘입니다. */
+.home-bookstore-page .home-card-icon {
+  width: 60px !important;
+  height: 60px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 20px !important;
+  background: linear-gradient(180deg, #f5d58a, #c88728) !important;
+  font-size: 28px !important;
+  box-shadow: 0 6px 0 #875018 !important;
+}
+
+/* 카드 텍스트 영역입니다. */
+.home-bookstore-page .home-card-text {
+  min-width: 0 !important;
+}
+
+/* 카드 작은 분류명입니다. */
+.home-bookstore-page .home-card-kicker {
+  margin: 0 0 6px !important;
+  color: #916126 !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+/* 카드 제목입니다. */
+.home-bookstore-page .home-card h2 {
+  margin: 0 0 8px !important;
+  color: #3b2211 !important;
+  font-size: 28px !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.05em !important;
+  font-weight: 950 !important;
+}
+
+/* 카드 설명입니다. */
+.home-bookstore-page .home-card p {
+  margin: 0 !important;
+  color: #684523 !important;
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+  font-weight: 800 !important;
+}
+
+/* 카드 버튼입니다. */
+.home-bookstore-page .home-card-button {
+  width: auto !important;
+  min-width: 142px !important;
+  height: 42px !important;
+  margin: 0 !important;
+  padding: 0 18px !important;
+  align-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #a96b25, #623713) !important;
+  color: #fff8df !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  box-shadow:
+    0 5px 0 #3e210c,
+    0 12px 20px rgba(84, 40, 13, 0.22) !important;
+}
+
+/* 홈 하단 안내 문구입니다. */
+.home-bookstore-page .home-bottom-note {
+  width: min(100%, 1120px) !important;
+  margin: 22px auto 0 !important;
+  padding: 16px 20px !important;
+  display: flex !important;
+  gap: 12px !important;
+  align-items: center !important;
+  border: 1px solid rgba(230, 180, 86, 0.34) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 244, 214, 0.08) !important;
+  color: #f4dda6 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  font-weight: 750 !important;
+}
+
+/* 하단 안내 제목입니다. */
+.home-bookstore-page .home-bottom-note strong {
+  color: #f2c76b !important;
+  white-space: nowrap !important;
+}
+
+/* 화면이 좁을 때입니다. */
+@media (max-width: 960px) {
+  .home-bookstore-page .home-main-board {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-bookstore-page .home-lumi-panel {
+    min-height: auto !important;
+  }
+
+  .home-bookstore-page .home-choice-card {
+    grid-template-columns: 60px 1fr !important;
+  }
+
+  .home-bookstore-page .home-card-button {
+    grid-column: 2 !important;
+    justify-self: start !important;
+    margin-top: 12px !important;
+  }
+}/* =========================================================
+   student/home.html 신비로운 도서관 배경 + 로고 + 루미 적용
+========================================================= */
+
+/* 홈 전체에 신비로운 도서관 배경 이미지를 적용합니다. */
+.home-bookstore-page {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(12, 7, 3, 0.72) 0%,
+      rgba(18, 10, 4, 0.5) 42%,
+      rgba(18, 10, 4, 0.55) 100%
+    ),
+    radial-gradient(circle at 28% 24%, rgba(255, 202, 93, 0.2), transparent 30%),
+    url("../assets/images/home/home-library-bg.png") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* 상단 로고 이미지를 실제 문답책 로고로 보여줍니다. */
+.home-bookstore-page .student-logo-image {
+  display: block !important;
+  width: 46px !important;
+  height: 46px !important;
+  object-fit: contain !important;
+  filter:
+    drop-shadow(0 0 10px rgba(255, 206, 87, 0.45))
+    drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+/* 기존 책 이모지가 나오지 않게 합니다. */
+.home-bookstore-page .student-logo::before {
+  content: none !important;
+}
+
+/* 로고 글자를 배경과 어울리게 정리합니다. */
+.home-bookstore-page .student-logo-text {
+  color: #fff2c9 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 950 !important;
+}
+
+/* 상단바를 도서관 배경 위에 자연스럽게 올립니다. */
+.home-bookstore-page .home-top-bar {
+  background:
+    linear-gradient(180deg, rgba(39, 24, 12, 0.82), rgba(20, 11, 5, 0.82)) !important;
+  border: 1px solid rgba(229, 181, 84, 0.5) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 235, 180, 0.08) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* 왼쪽 루미 패널을 배경과 섞이게 투명하게 만듭니다. */
+.home-bookstore-page .home-lumi-panel {
+  background:
+    linear-gradient(180deg, rgba(28, 16, 8, 0.38), rgba(20, 10, 4, 0.54)) !important;
+  border: 1px solid rgba(229, 181, 84, 0.28) !important;
+  box-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.24),
+    inset 0 0 0 1px rgba(255, 238, 190, 0.06) !important;
+}
+
+/* 홈 전용 루미 이미지를 더 크게 자연스럽게 배치합니다. */
+.home-bookstore-page .home-lumi-image {
+  width: 300px !important;
+  max-height: 380px !important;
+  margin: 0 auto 10px !important;
+  object-fit: contain !important;
+  filter:
+    drop-shadow(0 22px 24px rgba(0, 0, 0, 0.58))
+    drop-shadow(0 0 18px rgba(255, 204, 102, 0.22)) !important;
+}
+
+/* 루미 안내 문구를 배경 위에 직접 놓인 느낌으로 정리합니다. */
+.home-bookstore-page .home-lumi-message h1 {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  color: #fff4d2 !important;
+  font-size: 44px !important;
+  font-weight: 950 !important;
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.32),
+    0 14px 28px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* 보조 문구입니다. */
+.home-bookstore-page .home-sub-text {
+  color: #f8e1ad !important;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* 카드가 배경 위에 뜬 양피지처럼 보이도록 정리합니다. */
+.home-bookstore-page .home-choice-card {
+  background:
+    radial-gradient(circle at 16% 8%, rgba(255, 247, 210, 0.94), transparent 34%),
+    linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94)) !important;
+  border: 2px solid rgba(219, 166, 65, 0.82) !important;
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.34),
+    0 0 0 5px rgba(255, 214, 116, 0.08),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 큰 제목과 카드 제목은 Pretendard로 통일합니다. */
+.home-bookstore-page h1,
+.home-bookstore-page h2,
+.home-bookstore-page .student-logo-text,
+.home-bookstore-page .home-card-button {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+}
+
+/* 하단 안내 박스도 배경과 어울리게 정리합니다. */
+.home-bookstore-page .home-bottom-note {
+  background: rgba(23, 13, 6, 0.58) !important;
+  border: 1px solid rgba(229, 181, 84, 0.32) !important;
+  backdrop-filter: blur(5px) !important;
+}/* =========================================================
+   student/home.html 홈 화면 5차 최종 방향 보정
+   목표: 목표화면처럼 배경 위에 문구 + 루미 + 카드가 한 장면으로 보이게 정리
+========================================================= */
+
+/* 홈 전체 배경: 신비로운 도서관 사진을 화면 전체에 꽉 채웁니다. */
+.home-bookstore-page {
+  min-height: 100vh !important;
+  padding: 24px 44px 30px !important;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(8, 5, 3, 0.78) 0%,
+      rgba(8, 5, 3, 0.48) 38%,
+      rgba(8, 5, 3, 0.44) 68%,
+      rgba(8, 5, 3, 0.72) 100%
+    ),
+    radial-gradient(circle at 48% 24%, rgba(255, 214, 126, 0.16), transparent 34%),
+    url("../assets/images/home/home-library-bg.png") !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  overflow-x: hidden !important;
+}
+
+/* 상단바: 목표화면처럼 넓고 얇은 판타지 바 느낌 */
+.home-bookstore-page .home-top-bar {
+  width: min(100%, 1180px) !important;
+  height: 76px !important;
+  margin: 0 auto 24px !important;
+  padding: 0 28px !important;
+  border-radius: 24px !important;
+  background:
+    linear-gradient(180deg, rgba(48, 31, 17, 0.88), rgba(24, 14, 7, 0.9)) !important;
+  border: 1px solid rgba(230, 184, 92, 0.52) !important;
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px rgba(255, 235, 180, 0.08) !important;
+}
+
+/* 로고 이미지 */
+.home-bookstore-page .student-logo-image {
+  display: block !important;
+  width: 54px !important;
+  height: 54px !important;
+  object-fit: contain !important;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 213, 107, 0.45))
+    drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+}
+
+/* 기존 이모지 제거 */
+.home-bookstore-page .student-logo::before {
+  content: none !important;
+}
+
+/* 문답책 로고 글자 */
+.home-bookstore-page .student-logo-text {
+  color: #fff4d2 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 30px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.05em !important;
+}
+
+/* 전체 메인 영역: 목표화면처럼 한 장면 안에 배치 */
+.home-bookstore-page .home-main-board {
+  width: min(100%, 1180px) !important;
+  min-height: 680px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  display: block !important;
+}
+
+/* 루미+문구 영역을 투명하게 풀어서 배경과 합칩니다. */
+.home-bookstore-page .home-lumi-panel {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  height: 390px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+/* 기존 줄무늬 제거 */
+.home-bookstore-page .home-lumi-panel::before {
+  display: none !important;
+}
+
+/* 루미 이미지: 오른쪽 중앙에 크게 배치 */
+.home-bookstore-page .home-lumi-image {
+  position: absolute !important;
+  right: 120px !important;
+  top: 18px !important;
+  width: 360px !important;
+  max-height: 440px !important;
+  margin: 0 !important;
+  object-fit: contain !important;
+  z-index: 2 !important;
+  filter:
+    drop-shadow(0 28px 30px rgba(0, 0, 0, 0.65))
+    drop-shadow(0 0 18px rgba(255, 211, 111, 0.2)) !important;
+}
+
+/* 메인 문구: 왼쪽에 크게 */
+.home-bookstore-page .home-lumi-message {
+  position: absolute !important;
+  left: 32px !important;
+  top: 72px !important;
+  width: 560px !important;
+  z-index: 3 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 루미의 한마디 라벨 */
+.home-bookstore-page .home-label {
+  margin: 0 0 18px !important;
+  color: #f2c76b !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 메인 큰 글씨 */
+.home-bookstore-page .home-lumi-message h1 {
+  margin: 0 !important;
+  color: #fff7df !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 66px !important;
+  line-height: 1.13 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.075em !important;
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.38),
+    0 18px 32px rgba(0, 0, 0, 0.58),
+    0 0 24px rgba(255, 224, 145, 0.12) !important;
+}
+
+/* 보조 문구 */
+.home-bookstore-page .home-sub-text {
+  margin: 28px 0 0 !important;
+  color: #fff0c3 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 22px !important;
+  line-height: 1.65 !important;
+  font-weight: 750 !important;
+  text-shadow: 0 5px 16px rgba(0, 0, 0, 0.72) !important;
+}
+
+/* 카드 영역: 목표화면처럼 아래쪽에 가로 2개 배치 */
+.home-bookstore-page .home-choice-area {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 390px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 28px !important;
+  z-index: 4 !important;
+}
+
+/* 카드: 넓은 양피지 카드 */
+.home-bookstore-page .home-choice-card {
+  min-height: 230px !important;
+  padding: 32px 36px !important;
+  display: grid !important;
+  grid-template-columns: 150px 1fr !important;
+  grid-template-rows: 1fr auto !important;
+  column-gap: 28px !important;
+  row-gap: 18px !important;
+  align-items: center !important;
+  border-radius: 26px !important;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 250, 226, 0.96), transparent 34%),
+    linear-gradient(180deg, rgba(255, 242, 205, 0.98), rgba(235, 205, 139, 0.98)) !important;
+  border: 2px solid rgba(219, 166, 65, 0.86) !important;
+  box-shadow:
+    0 28px 58px rgba(0, 0, 0, 0.38),
+    0 0 0 5px rgba(255, 214, 116, 0.08),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.24) !important;
+}
+
+/* 카드 아이콘: 이미지 들어가기 전까지 장식 역할 */
+.home-bookstore-page .home-card-icon {
+  grid-row: 1 / 3 !important;
+  width: 118px !important;
+  height: 118px !important;
+  margin: 0 !important;
+  border-radius: 30px !important;
+  font-size: 50px !important;
+  background:
+    radial-gradient(circle at 35% 25%, #fff4bf, #d49a36) !important;
+  box-shadow:
+    0 8px 0 #875018,
+    0 18px 28px rgba(104, 57, 15, 0.25) !important;
+}
+
+/* 카드 분류명 */
+.home-bookstore-page .home-card-kicker {
+  margin: 0 0 8px !important;
+  color: #7f5623 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 950 !important;
+}
+
+/* 카드 제목 */
+.home-bookstore-page .home-card h2 {
+  margin: 0 0 12px !important;
+  color: #3b2211 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 42px !important;
+  line-height: 1.08 !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.07em !important;
+}
+
+/* 카드 설명 */
+.home-bookstore-page .home-card p {
+  margin: 0 !important;
+  color: #5f3f20 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 18px !important;
+  line-height: 1.55 !important;
+  font-weight: 800 !important;
+}
+
+/* 카드 버튼 */
+.home-bookstore-page .home-card-button {
+  grid-column: 2 !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  height: 54px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #3f6425, #274318) !important;
+  color: #fff8df !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  box-shadow:
+    0 6px 0 #18280f,
+    0 14px 24px rgba(30, 48, 16, 0.25) !important;
+}
+
+/* 개별읽기 버튼은 갈색으로 구분 */
+.home-bookstore-page .individual-card .home-card-button {
+  background: linear-gradient(180deg, #9a5a22, #5f3412) !important;
+  box-shadow:
+    0 6px 0 #3d1f0b,
+    0 14px 24px rgba(83, 41, 12, 0.25) !important;
+}
+
+/* 하단 안내 문구 */
+.home-bookstore-page .home-bottom-note {
+  width: min(100%, 920px) !important;
+  margin: 24px auto 0 !important;
+  padding: 16px 24px !important;
+  justify-content: center !important;
+  border-radius: 999px !important;
+  background: rgba(23, 13, 6, 0.68) !important;
+  border: 1px solid rgba(229, 181, 84, 0.36) !important;
+  color: #f4dda6 !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* 작은 화면 대응 */
+@media (max-width: 1000px) {
+  .home-bookstore-page .home-main-board {
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+  }
+
+  .home-bookstore-page .home-lumi-panel,
+  .home-bookstore-page .home-choice-area {
+    position: static !important;
+  }
+
+  .home-bookstore-page .home-lumi-panel {
+    height: auto !important;
+    min-height: 360px !important;
+  }
+
+  .home-bookstore-page .home-lumi-image {
+    position: static !important;
+    width: 260px !important;
+    margin: 0 auto 18px !important;
+  }
+
+  .home-bookstore-page .home-lumi-message {
+    position: static !important;
+    width: auto !important;
+    text-align: center !important;
+  }
+
+  .home-bookstore-page .home-lumi-message h1 {
+    font-size: 44px !important;
+  }
+
+  .home-bookstore-page .home-choice-area {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-bookstore-page .home-choice-card {
+    grid-template-columns: 100px 1fr !important;
+  }
+}/* =========================================================
+   student/home.html 홈 화면 6차 보정
+   목표: 카드 노란 느낌 줄이기 / 신비로운 도서관 분위기 강화 / Pretendard 적용
+========================================================= */
+
+/* 루미의 한마디 라벨은 화면에서 숨깁니다. */
+.home-bookstore-page .home-label {
+  display: none !important;
+}
+
+/* 메인 큰 문구는 Pretendard로 또렷하게 정리합니다. */
+.home-bookstore-page .home-lumi-message h1 {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 62px !important;
+  font-weight: 950 !important;
+  color: #fff6dd !important;
+  letter-spacing: -0.075em !important;
+  text-shadow:
+    0 5px 0 rgba(0, 0, 0, 0.38),
+    0 18px 34px rgba(0, 0, 0, 0.65),
+    0 0 18px rgba(255, 220, 135, 0.18) !important;
+}
+
+/* 보조 문구도 배경 위에서 자연스럽게 보이도록 조정합니다. */
+.home-bookstore-page .home-sub-text {
+  margin-top: 24px !important;
+  color: #f4ddb0 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 21px !important;
+  font-weight: 750 !important;
+  text-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.72) !important;
+}
+
+/* 활동 카드 노란 느낌을 줄이고, 어두운 도서관 위에 뜬 고급 카드처럼 바꿉니다. */
+.home-bookstore-page .home-choice-card {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 235, 174, 0.34), transparent 34%),
+    linear-gradient(180deg, rgba(72, 43, 19, 0.92), rgba(37, 21, 9, 0.94)) !important;
+  border: 1px solid rgba(224, 174, 78, 0.72) !important;
+  color: #fff2c9 !important;
+  box-shadow:
+    0 28px 58px rgba(0, 0, 0, 0.46),
+    0 0 0 4px rgba(255, 211, 112, 0.06),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.1),
+    inset 0 0 38px rgba(255, 201, 91, 0.08) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* 카드 아이콘도 카드 분위기에 맞게 어둡고 금빛으로 정리합니다. */
+.home-bookstore-page .home-card-icon {
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 229, 154, 0.95), rgba(151, 93, 30, 0.9)) !important;
+  box-shadow:
+    0 7px 0 rgba(80, 45, 14, 0.9),
+    0 18px 30px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 2px rgba(255, 245, 202, 0.2) !important;
+}
+
+/* 카드 분류명입니다. */
+.home-bookstore-page .home-card-kicker {
+  color: #e5bd6a !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+}
+
+/* 연습하기 / 개별읽기 제목을 Pretendard로 강하게 적용합니다. */
+.home-bookstore-page .home-card h2 {
+  color: #fff4d2 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 42px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.07em !important;
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.28),
+    0 10px 18px rgba(0, 0, 0, 0.36) !important;
+}
+
+/* 카드 설명 문구입니다. */
+.home-bookstore-page .home-card p {
+  color: #f1d9a8 !important;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 750 !important;
+  line-height: 1.58 !important;
+}
+
+/* 연습하기 버튼: 초록 계열을 조금 더 깊고 고급스럽게 */
+.home-bookstore-page .practice-card .home-card-button {
+  background:
+    linear-gradient(180deg, #4f7130, #263f18) !important;
+  color: #fff8df !important;
+  box-shadow:
+    0 6px 0 #16240d,
+    0 15px 24px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 239, 180, 0.18) !important;
+}
+
+/* 개별읽기 버튼: 갈색을 더 어둡고 자연스럽게 */
+.home-bookstore-page .individual-card .home-card-button {
+  background:
+    linear-gradient(180deg, #8a5423, #4c2a10) !important;
+  color: #fff8df !important;
+  box-shadow:
+    0 6px 0 #2f1708,
+    0 15px 24px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 239, 180, 0.18) !important;
+}
+
+/* 카드 버튼 폰트도 Pretendard로 통일합니다. */
+.home-bookstore-page .home-card-button {
+  font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+
+/* 하단 안내 문구도 배경과 자연스럽게 어울리게 어둡게 정리합니다. */
+.home-bookstore-page .home-bottom-note {
+  background:
+    linear-gradient(180deg, rgba(34, 20, 9, 0.72), rgba(18, 10, 4, 0.76)) !important;
+  border: 1px solid rgba(224, 174, 78, 0.36) !important;
+  color: #ecd49f !important;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.06) !important;
+}/* =========================================================
+   student/home.html 홈 화면 7차 보정
+   목표:
+   - 연습하기/개별읽기 카드 노란 느낌 줄이기
+   - 전체를 신비로운 도서관 톤에 맞추기
+   - 큰 제목/카드 제목/버튼 폰트 Pretendard로 통일
+========================================================= */
+
+/* 루미의 한마디 라벨은 숨깁니다. */
+.home-bookstore-page .home-label {
+  display: none !important;
+}
+
+/* 홈 화면 큰 제목 폰트 정리 */
+.home-bookstore-page .home-lumi-message h1 {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 62px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.08em !important;
+  color: #fff7dd !important;
+  text-shadow:
+    0 5px 0 rgba(0, 0, 0, 0.36),
+    0 18px 34px rgba(0, 0, 0, 0.68),
+    0 0 18px rgba(255, 219, 132, 0.18) !important;
+}
+
+/* 보조 문구 폰트 정리 */
+.home-bookstore-page .home-sub-text {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  color: #f3dca9 !important;
+  font-size: 21px !important;
+  font-weight: 750 !important;
+  line-height: 1.65 !important;
+  text-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.72) !important;
+}
+
+/* 카드 노란 느낌을 줄이고 어두운 금빛 도서관 카드로 변경 */
+.home-bookstore-page .home-choice-card {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 223, 145, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(70, 42, 19, 0.94), rgba(34, 19, 8, 0.96)) !important;
+  border: 1px solid rgba(224, 176, 82, 0.72) !important;
+  color: #fff2c9 !important;
+  box-shadow:
+    0 28px 58px rgba(0, 0, 0, 0.48),
+    0 0 0 4px rgba(255, 211, 112, 0.06),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.12),
+    inset 0 0 38px rgba(255, 201, 91, 0.08) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* 카드 아이콘 박스도 어두운 금빛으로 정리 */
+.home-bookstore-page .home-card-icon {
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 231, 158, 0.96), rgba(137, 82, 27, 0.94)) !important;
+  box-shadow:
+    0 7px 0 rgba(70, 39, 13, 0.95),
+    0 18px 30px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 2px rgba(255, 245, 202, 0.2) !important;
+}
+
+/* 카드 위 작은 분류명 */
+.home-bookstore-page .home-card-kicker {
+  color: #e6bd6a !important;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+}
+
+/* 연습하기 / 개별읽기 제목 폰트 */
+.home-bookstore-page .home-card h2 {
+  color: #fff4d2 !important;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 42px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.075em !important;
+  text-shadow:
+    0 3px 0 rgba(0, 0, 0, 0.28),
+    0 10px 18px rgba(0, 0, 0, 0.36) !important;
+}
+
+/* 카드 설명 문구 */
+.home-bookstore-page .home-card p {
+  color: #f0d8a6 !important;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 750 !important;
+  line-height: 1.58 !important;
+}
+
+/* 버튼 폰트 공통 */
+.home-bookstore-page .home-card-button {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+
+/* 연습하기 버튼: 깊은 초록색 */
+.home-bookstore-page .practice-card .home-card-button {
+  background:
+    linear-gradient(180deg, #4f7130, #253f17) !important;
+  color: #fff8df !important;
+  box-shadow:
+    0 6px 0 #14240c,
+    0 15px 24px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 239, 180, 0.18) !important;
+}
+
+/* 개별읽기 버튼: 깊은 갈색 */
+.home-bookstore-page .individual-card .home-card-button {
+  background:
+    linear-gradient(180deg, #8a5423, #4a290f) !important;
+  color: #fff8df !important;
+  box-shadow:
+    0 6px 0 #2c1607,
+    0 15px 24px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 239, 180, 0.18) !important;
+}
+
+/* 하단 안내 문구도 도서관 분위기에 맞게 어둡게 */
+.home-bookstore-page .home-bottom-note {
+  background:
+    linear-gradient(180deg, rgba(34, 20, 9, 0.74), rgba(18, 10, 4, 0.78)) !important;
+  border: 1px solid rgba(224, 174, 78, 0.36) !important;
+  color: #ecd49f !important;
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.06) !important;
+}/* =========================================================
+   student/home.html Pretendard 폰트 강제 적용
+   대상: 문답책 / 메인 제목 / 연습하기 / 개별읽기
+========================================================= */
+
+/* 문답책 로고 옆 글자 */
+.home-bookstore-page .student-logo-text {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.06em !important;
+  color: #fff4d2 !important;
+}
+
+/* 메인 큰 제목: 오늘은 어떤 책 속으로 떠나볼까? */
+.home-bookstore-page .home-lumi-message h1 {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 64px !important;
+  font-weight: 900 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.08em !important;
+  color: #fff7df !important;
+}
+
+/* 카드 제목: 연습하기 / 개별읽기 */
+.home-bookstore-page .home-choice-card h2,
+.home-bookstore-page .home-card h2 {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.075em !important;
+  color: #fff4d2 !important;
+}
+
+/* 카드 위 작은 글씨도 Pretendard로 통일 */
+.home-bookstore-page .home-card-kicker {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-weight: 800 !important;
+}
+
+/* 카드 설명도 Pretendard로 통일 */
+.home-bookstore-page .home-choice-card p,
+.home-bookstore-page .home-card p {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-weight: 700 !important;
+}
+
+/* 버튼 글씨도 Pretendard로 통일 */
+.home-bookstore-page .home-card-button,
+.home-bookstore-page .ability-mini-button,
+.home-bookstore-page .logout-mini-button {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-weight: 800 !important;
+}/* =========================================================
+   home.html 폰트 최종 강제 적용
+   - 문답책
+   - 오늘은 어떤 책 속으로 떠나볼까?
+   - 연습하기
+   - 개별읽기
+========================================================= */
+
+/* 학생 홈 화면 전체 기본 폰트를 Pretendard로 고정합니다. */
+.home-bookstore-page,
+.home-bookstore-page * {
+  font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+}
+
+/* 로고 옆 문답책 */
+.home-bookstore-page .student-logo-text {
+  font-family: "Pretendard", sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.06em !important;
+}
+
+/* 오늘은 어떤 책 속으로 떠나볼까? */
+.home-bookstore-page .home-lumi-message h1 {
+  font-family: "Pretendard", sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.085em !important;
+}
+
+/* 연습하기 / 개별읽기 */
+.home-bookstore-page .home-choice-card h2,
+.home-bookstore-page .home-card h2 {
+  font-family: "Pretendard", sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.075em !important;
+}
+
+/* 버튼 글씨 */
+.home-bookstore-page .home-card-button,
+.home-bookstore-page .ability-mini-button,
+.home-bookstore-page .logout-mini-button {
+  font-family: "Pretendard", sans-serif !important;
+  font-weight: 800 !important;
 }

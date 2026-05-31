@@ -4,15 +4,27 @@
 
   이 화면에서 하는 일:
   1. 학생에게 오늘 할 활동을 보여줍니다.
-  2. 온책읽기 훈련장으로 이동할 수 있습니다.
-  3. 개별읽기 모험으로 이동할 수 있습니다.
-  4. 나의 질문 창고로 이동할 수 있습니다.
-  5. 던전 입장 버튼은 아직 잠금 상태로 보여줍니다.
+  2. 연습하기 화면으로 이동할 수 있습니다.
+  3. 개별읽기 화면으로 이동할 수 있습니다.
+  4. 상단의 나의 힘 버튼을 통해 능력치 확인 기능으로 확장할 예정입니다.
+
+  현재 기획:
+  - 연습하기는 책 고르기, 읽기 전, 읽기 중, 우리반 책읽기, 읽기 후 활동을 차례대로 진행합니다.
+  - 개별읽기는 학생이 혼자 책을 읽고 독서 중 떠오른 생각을 기록하며 성장 활동을 이어갑니다.
+  - 던전 입장은 홈 화면이 아니라 개별읽기 활동 안에서 조건을 만족하면 열리도록 설계합니다.
+  - 공유하기는 홈 화면이 아니라 각 학습 화면 안에서 질문 작성 후 활성화되도록 설계합니다.
+
+  사용 이미지:
+  - 문답책 로고: ../assets/images/logo-book.png
+  - 홈 배경 이미지: ../assets/images/home/home-library-bg.png
+  - 홈 루미 이미지: ../assets/images/home/home-lumi.png
+  - 연습하기 아이콘: ../assets/images/home/home-practice-icon.png
+  - 개별읽기 아이콘: ../assets/images/home/home-individual-icon.png
 
   저작권/출처 원칙:
-  - 현재 외부 이미지 파일을 사용하지 않습니다.
-  - UI는 HTML/CSS로 직접 제작합니다.
-  - 캐릭터/드래곤 이미지는 나중에 AI 생성 후 출처를 기록하고 넣을 예정입니다.
+  - 화면 UI는 HTML/CSS로 직접 제작합니다.
+  - 사용한 이미지와 폰트는 source-data.js에 출처와 사용 위치를 기록합니다.
+  - AI 생성 이미지는 생성 도구, 생성일, 사용 위치, 수정 여부를 함께 기록합니다.
 -->
 
 <!DOCTYPE html>
@@ -24,99 +36,389 @@
 
   <title>학생 홈 - 문답책</title>
 
-  <link rel="stylesheet" href="../css/common.css">
+  <!-- Pretendard 폰트를 불러옵니다. -->
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+
+  <!-- 공통 디자인 CSS입니다. -->
+  <link rel="stylesheet" href="../css/common.css?v=home-final-clean">
+
+  <style>
+    /*
+      홈 화면 최종 정리 스타일입니다.
+      common.css에 쌓인 홈 화면 스타일을 이 파일에서 마지막으로 덮어씁니다.
+    */
+
+    .home-bookstore-page,
+    .home-bookstore-page * {
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+      box-sizing: border-box !important;
+    }
+
+    /* 루미의 한마디는 사용하지 않습니다. */
+    .home-bookstore-page .home-label {
+      display: none !important;
+    }
+
+    /* 로고 옆 '문답책' 글자입니다. */
+    .home-bookstore-page .student-logo-text {
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 30px !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.03em !important;
+      color: #fff4d2 !important;
+    }
+
+    /* 메인 문구 위치입니다. */
+    .home-bookstore-page .home-lumi-message {
+      position: absolute !important;
+      left: 32px !important;
+      top: 78px !important;
+      width: 560px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      z-index: 5 !important;
+    }
+
+    /* '오늘은 어떤 책 속으로 떠나볼까?' 문구입니다. */
+    .home-bookstore-page .home-lumi-message h1 {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 56px !important;
+      font-weight: 900 !important;
+      line-height: 1.15 !important;
+      letter-spacing: -0.035em !important;
+      color: #fff7df !important;
+      text-shadow: 0 6px 16px rgba(0, 0, 0, 0.58) !important;
+      white-space: normal !important;
+    }
+
+    /* 메인 설명 문구입니다. */
+    .home-bookstore-page .home-sub-text {
+      margin: 24px 0 0 !important;
+      padding: 0 !important;
+      font-family: "Pretendard Variable", "Pretendard", sans-serif !important;
+      font-size: 20px !important;
+      font-weight: 500 !important;
+      line-height: 1.65 !important;
+      color: #f3dca9 !important;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.72) !important;
+    }
+
+    /* 연습하기 / 개별읽기 카드입니다. */
+    .home-bookstore-page .home-choice-card {
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255, 224, 149, 0.2), transparent 34%),
+        linear-gradient(180deg, rgba(68, 42, 20, 0.95), rgba(32, 19, 9, 0.97)) !important;
+      border: 1px solid rgba(224, 176, 82, 0.72) !important;
+      color: #fff2c9 !important;
+      box-shadow:
+        0 28px 58px rgba(0, 0, 0, 0.48),
+        inset 0 0 0 1px rgba(255, 239, 190, 0.12),
+        inset 0 0 38px rgba(255, 201, 91, 0.08) !important;
+    }
+
+    /* '연습하기', '개별읽기' 제목입니다. */
+    .home-bookstore-page .home-choice-card h2 {
+      margin: 0 0 12px !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 40px !important;
+      font-weight: 900 !important;
+      line-height: 1.1 !important;
+      letter-spacing: -0.035em !important;
+      color: #fff4d2 !important;
+      text-shadow: 0 5px 14px rgba(0, 0, 0, 0.46) !important;
+    }
+
+    /* 카드 위 작은 분류 글자입니다. */
+    .home-bookstore-page .home-card-kicker {
+      font-family: "Pretendard Variable", "Pretendard", sans-serif !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      color: #e8c274 !important;
+    }
+
+    /* 카드 설명 문구입니다. */
+    .home-bookstore-page .home-choice-card p {
+      font-family: "Pretendard Variable", "Pretendard", sans-serif !important;
+      font-size: 17px !important;
+      font-weight: 400 !important;
+      line-height: 1.55 !important;
+      color: #f1d9a8 !important;
+    }
+
+    /* 카드 버튼과 상단 버튼 글자입니다. */
+    .home-bookstore-page .home-card-button,
+    .home-bookstore-page .ability-mini-button,
+    .home-bookstore-page .logout-mini-button {
+      font-family: "Pretendard Variable", "Pretendard", sans-serif !important;
+      font-weight: 600 !important;
+    }
+
+    /* 카드 안 실제 이미지 아이콘 스타일입니다. */
+    .home-bookstore-page .home-card-icon {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 150px !important;
+      height: 150px !important;
+      border-radius: 28px !important;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255, 230, 155, 0.95), rgba(124, 74, 27, 0.96)) !important;
+      border: 1px solid rgba(255, 229, 160, 0.42) !important;
+      box-shadow:
+        0 7px 0 rgba(61, 35, 13, 0.95),
+        0 18px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 2px rgba(255, 245, 202, 0.15) !important;
+      overflow: hidden !important;
+    }
+
+    /* 카드 안 이미지 크기입니다. */
+    .home-bookstore-page .home-card-icon-image {
+      width: 140px !important;
+      height: 140px !important;
+      object-fit: contain !important;
+      display: block !important;
+    }
+
+    /* 나의 힘 안내 모달 배경입니다. */
+    .home-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(4px);
+    }
+
+    /* hidden 클래스가 붙으면 모달을 숨깁니다. */
+    .home-modal-backdrop.hidden {
+      display: none !important;
+    }
+
+    /* 나의 힘 안내 모달 상자입니다. */
+    .home-modal-box {
+      position: relative;
+      width: min(420px, 100%);
+      padding: 34px 32px 30px;
+      border: 1px solid rgba(235, 189, 93, 0.72);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 30% 10%, rgba(255, 223, 142, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(58, 35, 17, 0.98), rgba(23, 13, 6, 0.98));
+      color: #fff2c9;
+      text-align: center;
+      box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.58),
+        inset 0 0 0 1px rgba(255, 238, 190, 0.12);
+    }
+
+    /* 모달 닫기 버튼입니다. */
+    .home-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 240, 190, 0.12);
+      color: #ffe8ac;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    /* 모달 작은 제목입니다. */
+    .home-modal-kicker {
+      margin: 0 0 12px;
+      color: #e8c274;
+      font-family: "Pretendard Variable", "Pretendard", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* 모달 큰 제목입니다. */
+    .home-modal-box h2 {
+      margin: 0;
+      color: #fff7df;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    /* 모달 설명 문구입니다. */
+    .home-modal-text {
+      margin: 20px 0 26px;
+      color: #f0d7a3;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.7;
+    }
+
+    /* 모달 확인 버튼입니다. */
+    .home-modal-button {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #5f8034, #2c4619);
+      color: #fff8df;
+      font-family: "Pretendard Variable", "Pretendard", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow:
+        0 6px 0 #17270d,
+        0 14px 24px rgba(0, 0, 0, 0.28);
+    }
+  </style>
 </head>
 
 <body>
-  <main class="student-home-page">
+  <main class="student-home-page home-bookstore-page">
 
     <!-- 상단바 영역입니다. -->
-    <header class="student-header">
+    <header class="student-header home-top-bar">
 
       <!-- 왼쪽 로고입니다. -->
       <div class="student-logo">
-        📖 문답책
+        <img src="../assets/images/logo-book.png" alt="문답책 로고" class="student-logo-image">
+        <span class="student-logo-text">문답책</span>
       </div>
 
       <!-- 오른쪽 메뉴입니다. -->
       <div class="student-header-menu">
-        <button type="button" class="ability-mini-button">
-          🔔 나의 힘
+        <button type="button" class="ability-mini-button" onclick="openAbilityNotice()">
+          ✨ 나의 힘
         </button>
 
-        <button type="button" class="logout-mini-button" onclick="logout()">
+        <button type="button" class="logout-mini-button" onclick="logoutAndGoLogin()">
           로그아웃
         </button>
       </div>
     </header>
 
-    <!-- 메인 소개 영역입니다. -->
-    <section class="home-hero">
-      <p class="home-label">Victory Reading Quest</p>
+    <!-- 홈 메인 영역입니다. -->
+    <section class="home-main-board">
 
-      <h1>
-        오늘도 질문의 힘을<br>
-        길러볼까요?
-      </h1>
+      <!-- 왼쪽: 용사 루미와 짧은 안내 문구입니다. -->
+      <div class="home-lumi-panel">
 
-      <p class="home-desc">
-        책을 읽고 좋은 질문을 만들면 용사의 힘이 자라납니다.<br>
-        온책읽기 훈련장에서 연습하고, 개별읽기 모험에서 던전 입장을 준비해요.
-      </p>
+        <!-- 홈 화면용 용사 루미 이미지입니다. -->
+        <img
+          src="../assets/images/home/home-lumi.png"
+          alt="용사 루미"
+          class="home-lumi-image"
+        >
+
+        <div class="home-lumi-message">
+          <h1>
+            오늘은 어떤 책 속으로<br>
+            떠나볼까?
+          </h1>
+
+          <p class="home-sub-text">
+            읽으며 떠오른 생각을 따라가다 보면,<br>
+            책 속 이야기가 조금 더 깊이 보일 거야.
+          </p>
+        </div>
+      </div>
+
+      <!-- 오른쪽/아래: 오늘 할 활동 선택 영역입니다. -->
+      <div class="home-choice-area">
+
+        <!-- 연습하기 카드입니다. -->
+        <article class="home-card home-choice-card practice-card">
+          <div class="home-card-icon">
+            <img
+              src="../assets/images/home/home-practice-icon.png"
+              alt=""
+              class="home-card-icon-image"
+            >
+          </div>
+
+          <div class="home-card-text">
+            <p class="home-card-kicker">함께 읽기 준비</p>
+
+            <h2>연습하기</h2>
+
+            <p>
+              함께 읽을 책을 고르고, 읽기 전·중·후 활동을 차근차근 연습해요.
+            </p>
+          </div>
+
+          <a href="./practice.html" class="home-card-button">
+  연습 시작하기
+</a>
+        </article>
+
+        <!-- 개별읽기 카드입니다. -->
+        <article class="home-card home-choice-card individual-card">
+          <div class="home-card-icon">
+            <img
+              src="../assets/images/home/home-individual-icon.png"
+              alt=""
+              class="home-card-icon-image"
+            >
+          </div>
+
+          <div class="home-card-text">
+            <p class="home-card-kicker">나만의 독서 모험</p>
+
+            <h2>개별읽기</h2>
+
+            <p>
+              내가 고른 책을 읽고 생각을 기록하며, 나만의 독서 모험을 이어가요.
+            </p>
+          </div>
+
+          <a href="#" class="home-card-button">
+            개별읽기 시작하기
+          </a>
+        </article>
+
+      </div>
     </section>
 
-    <!-- 활동 카드 영역입니다. -->
-    <section class="home-card-grid">
+    <!-- 홈 하단 짧은 안내 문구입니다. -->
+    <section class="home-bottom-note">
+      <strong>문답책 안내</strong>
+      <span>
+        연습하기에서는 깊이 읽는 방법을 익히고, 개별읽기에서는 나만의 독서 기록과 성장 활동을 이어가요.
+      </span>
+    </section>
 
-      <!-- 온책읽기 카드입니다. -->
-      <article class="home-card">
-        <div class="home-card-icon">🏫</div>
-        <h2>온책읽기 훈련장</h2>
-        <p>
-          친구들과 함께 책을 읽으며 질문 만드는 방법을 연습해요.
-        </p>
-        <a href="./before-read.html" class="home-card-button">
-          훈련 시작하기
-        </a>
-      </article>
-
-      <!-- 개별읽기 카드입니다. -->
-      <article class="home-card">
-        <div class="home-card-icon">📚</div>
-        <h2>개별읽기 모험</h2>
-        <p>
-          내가 고른 책으로 읽기 전·중·후 질문을 만들어요.
-        </p>
-        <a href="./book-select.html" class="home-card-button">
-          모험 시작하기
-        </a>
-      </article>
-
-      <!-- 질문 창고 카드입니다. -->
-      <article class="home-card">
-        <div class="home-card-icon">🗝️</div>
-        <h2>나의 질문 창고</h2>
-        <p>
-          내가 만든 질문과 AI 피드백을 다시 확인해요.
-        </p>
-        <a href="./my-questions.html" class="home-card-button">
-          질문 보러가기
-        </a>
-      </article>
-
-      <!-- 던전 카드입니다. -->
-      <article class="home-card locked">
-        <div class="home-card-icon">🐉</div>
-        <h2>용의 던전</h2>
-        <p>
-          개별읽기에서 질문 힘을 모으면 던전에 입장할 수 있어요.
-        </p>
-        <button type="button" class="home-card-button locked-button" disabled>
-          아직 잠겨 있어요
+    <!-- 나의 힘 안내 모달입니다. -->
+    <div id="abilityNoticeModal" class="home-modal-backdrop hidden">
+      <div class="home-modal-box">
+        <button type="button" class="home-modal-close" onclick="closeAbilityNotice()">
+          ×
         </button>
-      </article>
 
-    </section>
+        <p class="home-modal-kicker">나의 힘 안내</p>
+
+        <h2>개별읽기 활동 후<br>나의 힘을 확인할 수 있어요</h2>
+
+        <p class="home-modal-text">
+          책을 읽으며 떠오른 생각을 기록하고 활동을 마치면,
+          나의 독서 성장과 능력치를 확인할 수 있어요.
+        </p>
+
+        <button type="button" class="home-modal-button" onclick="closeAbilityNotice()">
+          알겠어요
+        </button>
+      </div>
+    </div>
+
   </main>
 
   <script src="../js/auth.js"></script>
@@ -127,6 +429,34 @@
       페이지가 열리면 로그인 여부를 확인합니다.
     */
     checkLogin();
+
+    /*
+      나의 힘 안내 창을 엽니다.
+      실제 능력치 화면은 나중에 개별읽기 활동 완료 후 연결합니다.
+    */
+    function openAbilityNotice() {
+      document.getElementById("abilityNoticeModal").classList.remove("hidden");
+    }
+
+    /*
+      나의 힘 안내 창을 닫습니다.
+    */
+    function closeAbilityNotice() {
+      document.getElementById("abilityNoticeModal").classList.add("hidden");
+    }
+
+    /*
+      로그아웃 후 로그인 화면으로 이동합니다.
+      문답책 프로젝트에서는 로그인 정보만 sessionStorage에 저장합니다.
+    */
+    function logoutAndGoLogin() {
+      sessionStorage.removeItem("studentId");
+      sessionStorage.removeItem("role");
+      sessionStorage.removeItem("name");
+      sessionStorage.removeItem("token");
+
+      window.location.href = "../index.html";
+    }
   </script>
 </body>
 </html>
