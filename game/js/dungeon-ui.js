@@ -128,9 +128,9 @@ const DungeonUI = (() => {
     if (attackBtn) {
       attackBtn.innerHTML = makeSkillButtonHTML(
         '1',
-        '⚔',
-        '질문 공격',
-        '기본 피해를 줍니다'
+        '🗡️',
+        '용사의 검',
+        '기본 공격'
       );
     }
 
@@ -140,17 +140,17 @@ const DungeonUI = (() => {
         heavyBtn.disabled = true;
         heavyBtn.innerHTML = makeSkillButtonHTML(
           '3',
-          '💥',
-          '깊은 질문',
+          '🔥',
+          '불꽃 베기',
           Math.ceil(s.cooldowns.heavy / 1000) + '초 후 사용 가능'
         );
       } else {
         heavyBtn.disabled = false;
         heavyBtn.innerHTML = makeSkillButtonHTML(
           '3',
-          '💥',
-          '깊은 질문',
-          '높은 피해와 크리티컬'
+          '🔥',
+          '불꽃 베기',
+          '강한 공격'
         );
       }
     }
@@ -161,9 +161,9 @@ const DungeonUI = (() => {
         defendBtn.classList.add('defending');
         defendBtn.innerHTML = makeSkillButtonHTML(
           '2',
-          '🛡',
-          '방어 중',
-          '피해를 크게 줄입니다'
+          '🛡️',
+          '방패 방어',
+          '피해 줄이기'
         );
 
         setFighterClass('hero', 'defense-stance', true);
@@ -171,9 +171,9 @@ const DungeonUI = (() => {
         defendBtn.classList.remove('defending');
         defendBtn.innerHTML = makeSkillButtonHTML(
           '2',
-          '🛡',
-          '집중 방어',
-          '받는 피해를 줄입니다'
+          '🛡️',
+          '방패 방어',
+          '피해 줄이기'
         );
 
         setFighterClass('hero', 'defense-stance', false);
@@ -272,11 +272,17 @@ const DungeonUI = (() => {
     }
 
     // 같은 위치만 뜨면 밋밋해서 살짝 랜덤 위치
-    const randomX = Math.floor(Math.random() * 46) - 23;
-    const randomY = Math.floor(Math.random() * 28) - 14;
+    const randomX = Math.floor(Math.random() * 54) - 27;
+    const randomY = Math.floor(Math.random() * 30) - 15;
 
-    pop.style.left = (point.x + randomX) + 'px';
-    pop.style.top = (point.y + randomY) + 'px';
+    // 데미지 숫자가 캐릭터 얼굴/몸통 근처에 크게 뜨도록 위치를 보정합니다.
+    // 적에게 주는 데미지는 용 머리와 몸통 사이에,
+    // 용사가 받는 데미지는 용사 상체 위쪽에 뜨게 합니다.
+    const offsetX = target === 'enemy' ? 64 : -36;
+    const offsetY = target === 'enemy' ? -42 : -58;
+
+    pop.style.left = (point.x + offsetX + randomX) + 'px';
+    pop.style.top = (point.y + offsetY + randomY) + 'px';
 
     bg.appendChild(pop);
 
@@ -448,8 +454,12 @@ const DungeonUI = (() => {
         "url('" + s.dungeon.bg + "')";
     }
 
+    // 전투 화면 상단에는 난이도 기준 던전명을 보여줍니다.
+    // 보스 HP 위에는 실제 보스 이름을 보여줍니다.
+    const dungeonTitleMap = ['초급 던전', '중급 던전', '고급 던전'];
+
     if ($('enemy-lbl')) {
-      $('enemy-lbl').textContent = s.dungeon.name;
+      $('enemy-lbl').textContent = dungeonTitleMap[dungeonIdx] || s.dungeon.name;
     }
 
     if ($('enemy-lbl2')) {
