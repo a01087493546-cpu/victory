@@ -179,7 +179,7 @@ body {
   max-height: calc(100vh - 166px);
   min-height: 0;
   display: grid;
-  grid-template-columns: 300px minmax(720px, 900px) 230px;
+  grid-template-columns: 290px 1fr 290px;
   gap: clamp(22px, 1.8vw, 28px);
   align-items: center;
   justify-content: center;
@@ -814,15 +814,18 @@ body {
 
 /* 상단 HUD */
 .battle-topbar {
-  height: 64px;
+  height: 72px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 22px;
   background:
-    linear-gradient(180deg, rgba(8, 6, 3, 0.98), rgba(3, 2, 1, 0.96));
-  border-bottom: 1px solid rgba(214, 168, 74, 0.42);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(8, 6, 3, 0.99), rgba(3, 2, 1, 0.98));
+  border-bottom: 1px solid rgba(214, 168, 74, 0.55);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.62),
+    inset 0 -1px 0 rgba(255, 216, 117, 0.08);
   flex-shrink: 0;
   position: relative;
   z-index: 50;
@@ -831,11 +834,12 @@ body {
 .battle-topbar::after {
   content: '';
   position: absolute;
-  left: 12%;
-  right: 12%;
+  left: 9%;
+  right: 9%;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.75), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.9), transparent);
+  box-shadow: 0 0 18px rgba(255, 216, 117, 0.55);
 }
 
 .battle-top-left {
@@ -843,31 +847,58 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
+  min-width: 260px;
 }
 
 .battle-back-btn {
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(214, 168, 74, 0.55);
-  background: rgba(20, 14, 5, 0.8);
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(214, 168, 74, 0.68);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 216, 117, 0.16), transparent 48%),
+    linear-gradient(180deg, rgba(32, 21, 7, 0.94), rgba(8, 5, 2, 0.96));
   color: #f1d27a;
   font-size: 28px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: inset 0 0 14px rgba(255, 216, 117, 0.035);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 2px;
+  box-shadow:
+    0 0 18px rgba(255, 216, 117, 0.12),
+    inset 0 0 18px rgba(255, 216, 117, 0.04);
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .battle-back-btn:hover {
+  transform: translateX(-2px);
   filter: brightness(1.15);
+}
+
+.battle-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .topbar-dungeon {
   font-family: 'Noto Serif KR', serif;
   color: #f7dc8a;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-shadow: 0 0 14px rgba(255, 216, 117, 0.28);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 14px rgba(255, 216, 117, 0.32),
+    0 3px 8px rgba(0, 0, 0, 0.85);
+}
+
+.battle-title-block small {
+  color: #9f8b5b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
 }
 
 .topbar-center {
@@ -875,23 +906,58 @@ body {
 }
 
 .timer-wrap {
-  min-width: 150px;
-  height: 50px;
+  min-width: 180px;
+  height: 58px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 0 24px;
+  padding: 0 28px;
   background:
-    radial-gradient(circle at center, rgba(255, 216, 117, 0.09), transparent 68%),
-    rgba(16, 10, 4, 0.88);
-  border-left: 1px solid rgba(214, 168, 74, 0.24);
-  border-right: 1px solid rgba(214, 168, 74, 0.24);
+    radial-gradient(circle at center, rgba(255, 216, 117, 0.13), transparent 70%),
+    linear-gradient(180deg, rgba(34, 22, 7, 0.92), rgba(8, 5, 2, 0.96));
+  border: 1px solid rgba(214, 168, 74, 0.52);
+  box-shadow:
+    0 0 26px rgba(255, 216, 117, 0.14),
+    inset 0 0 24px rgba(255, 216, 117, 0.04);
+  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%);
 }
 
+/* 상단 남은 시간 아이콘 - 금색 미니 모래시계 */
 .timer-icon {
-  color: #ffb347;
-  font-size: 22px;
+  position: relative;
+  width: 18px;
+  height: 24px;
+  display: inline-block;
+  flex-shrink: 0;
+  border-top: 2px solid #e8c46b;
+  border-bottom: 2px solid #e8c46b;
+  filter: drop-shadow(0 0 6px rgba(255, 210, 120, 0.45));
+}
+
+/* 모래시계 바깥 X형 선 */
+.timer-icon::before {
+  content: '';
+  position: absolute;
+  inset: 2px 3px;
+  background:
+    linear-gradient(135deg, transparent 43%, #e8c46b 46%, #e8c46b 54%, transparent 57%),
+    linear-gradient(45deg, transparent 43%, #e8c46b 46%, #e8c46b 54%, transparent 57%);
+  opacity: 0.95;
+}
+
+/* 안쪽 모래 */
+.timer-icon::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 8px;
+  height: 14px;
+  background:
+    linear-gradient(180deg, #ffd980 0 32%, transparent 32% 52%, #d68b2a 52% 100%);
+  clip-path: polygon(0 0, 100% 0, 58% 45%, 100% 100%, 0 100%, 42% 45%);
 }
 
 .timer-text {
@@ -904,17 +970,19 @@ body {
 .timer-text small {
   color: #b9a77a;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .timer {
   color: #f7dc8a;
-  font-size: 25px;
+  font-size: 28px;
   font-weight: 900;
   font-family: monospace;
-  letter-spacing: 0.03em;
-  text-shadow: 0 0 15px rgba(255, 216, 117, 0.28);
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 18px rgba(255, 216, 117, 0.35),
+    0 3px 8px rgba(0, 0, 0, 0.8);
 }
 
 .timer.danger {
@@ -923,42 +991,173 @@ body {
 }
 
 @keyframes dangerTimePulse {
-  from { transform: scale(1); text-shadow: 0 0 10px rgba(255, 70, 70, 0.25); }
-  to   { transform: scale(1.08); text-shadow: 0 0 22px rgba(255, 70, 70, 0.78); }
+  from {
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(255, 70, 70, 0.25);
+  }
+
+  to {
+    transform: scale(1.08);
+    text-shadow: 0 0 22px rgba(255, 70, 70, 0.78);
+  }
 }
 
 .topbar-right {
   justify-self: end;
   display: flex;
+  align-items: center;
   gap: 10px;
+  height: 100%;
 }
 
-.stat-chip {
-  min-width: 70px;
-  height: 34px;
-  display: inline-flex;
+/* 상단 능력치 칩 */
+.top-stat-chip {
+  min-width: 106px;
+  height: 48px;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  grid-template-rows: 18px 20px;
+  column-gap: 8px;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  padding: 5px 12px;
   background:
-    linear-gradient(180deg, rgba(27, 18, 6, 0.92), rgba(7, 5, 3, 0.88));
-  border: 1px solid rgba(214, 168, 74, 0.38);
-  border-radius: 999px;
-  padding: 0 13px;
-  font-size: 14px;
+    radial-gradient(circle at 18% 25%, rgba(255, 216, 117, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(37, 24, 7, 0.96), rgba(8, 5, 3, 0.94));
+  border: 1px solid rgba(214, 168, 74, 0.55);
   color: #f1d27a;
+  box-shadow:
+    inset 0 0 18px rgba(255, 216, 117, 0.05),
+    0 0 16px rgba(0, 0, 0, 0.35);
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+.top-stat-icon {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font-size: 19px;
+  filter: drop-shadow(0 0 8px rgba(255, 216, 117, 0.28));
+}
+
+.top-stat-chip small {
+  color: #a8915e;
+  font-size: 10px;
   font-weight: 800;
-  box-shadow: inset 0 0 14px rgba(255, 216, 117, 0.035);
+  letter-spacing: 0.08em;
+}
+
+.top-stat-chip strong {
+  color: #fff0bd;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 216, 117, 0.18);
+}
+
+.magic-chip .top-stat-icon {
+  color: #8fdcff;
+}
+
+.hp-chip .top-stat-icon {
+  color: #ff6b6b;
+}
+
+.courage-chip .top-stat-icon {
+  color: #ff9f3d;
+}
+
+.coin-chip .top-stat-icon {
+  color: #ffd875;
+}
+
+.top-icon-btn {
+  width: 48px;
+  height: 48px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(214, 168, 74, 0.46);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 216, 117, 0.14), transparent 48%),
+    linear-gradient(180deg, rgba(28, 18, 6, 0.92), rgba(7, 5, 3, 0.96));
+  color: #f1d27a;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow:
+    0 0 16px rgba(255, 216, 117, 0.1),
+    inset 0 0 16px rgba(255, 216, 117, 0.035);
+}
+
+.top-icon-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+}
+
+.notice-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff4a32;
+  box-shadow: 0 0 10px rgba(255, 74, 50, 0.9);
+}
+
+@media (max-width: 1400px) {
+  .battle-topbar {
+    height: 64px;
+    padding: 0 18px;
+  }
+
+  .topbar-dungeon {
+    font-size: 19px;
+  }
+
+  .timer-wrap {
+    min-width: 150px;
+    height: 50px;
+    padding: 0 22px;
+  }
+
+  .timer {
+    font-size: 24px;
+  }
+
+  .top-stat-chip {
+    min-width: 82px;
+    height: 40px;
+    grid-template-columns: 22px 1fr;
+    padding: 4px 9px;
+  }
+
+  .top-stat-chip small {
+    display: none;
+  }
+
+  .top-stat-chip strong {
+    font-size: 14px;
+  }
+
+  .top-icon-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 19px;
+  }
 }
 
 /* 전투 배경 */
 .battle-bg {
   flex: 1;
+  height: calc(100vh - 72px - 236px);
+  min-height: 110px;
   position: relative;
   display: grid;
-  grid-template-columns: 290px 1fr 290px;
+  grid-template-columns: 260px 1fr 260px;
   gap: 22px;
-  padding: 28px 26px 22px;
+  padding: 28px 26px 12px 18px;
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -1005,106 +1204,307 @@ body {
   backdrop-filter: blur(5px);
 }
 
-.battle-left-panel {
-  grid-column: 1;
-}
+/* 왼쪽 던전 선택 패널 */
+  .battle-left-panel {
+    padding: 16px 10px 14px 10px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.08), transparent 38%),
+      linear-gradient(180deg, rgba(34, 21, 7, 0.96), rgba(9, 6, 3, 0.96));
+    border: 1px solid rgba(214, 168, 74, 0.5);
+    box-shadow:
+      inset 0 0 30px rgba(255, 216, 117, 0.045),
+      0 0 24px rgba(0, 0, 0, 0.38);
+  }
 
-.battle-right-panel {
-  grid-column: 3;
-}
+  /* 왼쪽 패널 제목 */
+  .battle-left-panel > .battle-panel-title {
+    position: relative;
+    text-align: center;
+    color: #f5dc91;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    margin-bottom: 13px;
+    padding-bottom: 10px;
+    text-shadow:
+      0 0 12px rgba(255, 216, 117, 0.24),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+  }
 
-.battle-panel-title {
-  margin-bottom: 14px;
-  color: #f1d27a;
-  font-size: 16px;
-  font-weight: 800;
-  text-align: center;
-  letter-spacing: 0.08em;
-}
+  .battle-left-panel > .battle-panel-title::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.72), transparent);
+    box-shadow: 0 0 10px rgba(255, 216, 117, 0.35);
+  }
 
-.battle-panel-title.small {
-  font-size: 14px;
-  margin-bottom: 10px;
-}
+  /* 오른쪽 상태 패널 */
+  .battle-right-panel {
+    padding: 16px 14px 14px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.09), transparent 38%),
+      linear-gradient(180deg, rgba(34, 21, 7, 0.96), rgba(9, 6, 3, 0.96));
+    border: 1px solid rgba(214, 168, 74, 0.5);
+    box-shadow:
+      inset 0 0 30px rgba(255, 216, 117, 0.045),
+      0 0 24px rgba(0, 0, 0, 0.38);
+  }
 
-/* 왼쪽 던전 카드 */
-.battle-dungeon-card {
-  min-height: 82px;
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 10px;
-  margin-bottom: 12px;
-  background: rgba(15, 10, 4, 0.78);
-  border: 1px solid rgba(184, 134, 43, 0.28);
-  box-shadow: inset 0 0 18px rgba(255, 216, 117, 0.02);
-}
+  /* 오른쪽 패널 제목 */
+  .battle-right-panel > .battle-panel-title {
+    position: relative;
+    text-align: center;
+    color: #f5dc91;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    margin-bottom: 13px;
+    padding-bottom: 10px;
+    text-shadow:
+      0 0 12px rgba(255, 216, 117, 0.24),
+      0 2px 6px rgba(0, 0, 0, 0.8);
+  }
 
-.battle-dungeon-card.active {
-  border-color: rgba(255, 216, 117, 0.85);
-  box-shadow: 0 0 24px rgba(255, 216, 117, 0.22);
-}
+  .battle-right-panel > .battle-panel-title::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.72), transparent);
+    box-shadow: 0 0 10px rgba(255, 216, 117, 0.35);
+  }
 
-.battle-dungeon-card.locked {
-  opacity: 0.46;
-  filter: grayscale(0.5);
-}
+  .battle-panel-title {
+    margin-bottom: 14px;
+    color: #f1d27a;
+    font-size: 16px;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
 
-.battle-dungeon-card img,
-.battle-lock-thumb {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  display: grid;
-  place-items: center;
-  background: rgba(5, 4, 2, 0.82);
-  border: 1px solid rgba(214, 168, 74, 0.26);
-}
+  .battle-panel-title.small {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
 
-.battle-dungeon-card strong {
-  display: block;
-  color: #efe3c5;
-  font-size: 17px;
-  margin-bottom: 6px;
-}
+  /* 왼쪽 던전 카드 */
+  .battle-dungeon-card {
+    min-height: 110px;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0;
+    align-items: center;
+    padding: 0;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background:
+      linear-gradient(90deg, rgba(255, 216, 117, 0.055), rgba(255, 216, 117, 0.01)),
+      linear-gradient(180deg, rgba(24, 15, 5, 0.94), rgba(10, 7, 3, 0.92));
+    border: 1px solid rgba(214, 168, 74, 0.24);
+    border-radius: 9px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035),
+      0 4px 10px rgba(0, 0, 0, 0.18);
+  }
 
-.battle-dungeon-card span {
-  color: #d6a84a;
-  font-size: 13px;
-  font-weight: 700;
-}
+  .battle-dungeon-card.active {
+    border-color: rgba(255, 216, 117, 0.85);
+    background:
+      radial-gradient(circle at 18% 50%, rgba(255, 216, 117, 0.16), transparent 45%),
+      linear-gradient(180deg, rgba(43, 28, 9, 0.97), rgba(12, 8, 3, 0.95));
+    box-shadow:
+      0 0 20px rgba(255, 216, 117, 0.2),
+      inset 0 0 20px rgba(255, 216, 117, 0.065);
+  }
 
-/* 오른쪽 준비 상태 */
+  .battle-dungeon-card.locked {
+    opacity: 0.5;
+    filter: grayscale(0.45);
+  }
+
+  .battle-dungeon-card img,
+  .battle-lock-thumb {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at center, rgba(255, 216, 117, 0.08), rgba(5, 4, 2, 0.84));
+    border: 1px solid rgba(214, 168, 74, 0.3);
+    border-radius: 6px 0 0 6px;
+    font-size: 44px;
+  }
+
+  .battle-dungeon-card strong {
+    display: block;
+    color: #f3dd9a;
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    padding-left: 14px;
+  }
+
+  .battle-dungeon-card span {
+    color: #d6a84a;
+    font-size: 15px;
+    font-weight: 800;
+    padding-left: 14px;
+  }
+
+  /* 선택된 던전 */
+  .battle-dungeon-card.active {
+    border-color: rgba(255, 216, 117, 0.85);
+    background:
+      radial-gradient(circle at 18% 50%, rgba(255, 216, 117, 0.16), transparent 45%),
+      linear-gradient(180deg, rgba(43, 28, 9, 0.97), rgba(12, 8, 3, 0.95));
+    box-shadow:
+      0 0 20px rgba(255, 216, 117, 0.2),
+      inset 0 0 20px rgba(255, 216, 117, 0.065);
+  }
+
+  /* 잠긴 던전 */
+  .battle-dungeon-card.locked {
+    opacity: 0.5;
+    filter: grayscale(0.45);
+  }
+
+  /* 던전 이미지 / 잠금 아이콘 칸 */
+  .battle-dungeon-card img,
+  .battle-lock-thumb {
+    width: 110px;
+    height: 110px;
+    object-fit: fill;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(circle at center, rgba(255, 216, 117, 0.08), rgba(5, 4, 2, 0.84));
+    border: none;
+    border-radius: 0;
+    font-size: 44px;
+  }
+
+  /* 던전 이름 */
+  .battle-dungeon-card strong {
+    display: block;
+    color: #f3dd9a;
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    text-shadow:
+      0 0 10px rgba(255, 216, 117, 0.12),
+      0 2px 4px rgba(0, 0, 0, 0.75);
+  }
+
+  /* 난이도 */
+  .battle-dungeon-card span {
+    color: #d6a84a;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+/* 능력치 한 줄 카드 */
 .battle-stat-row {
+  min-height: 40px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 11px 2px;
-  border-bottom: 1px solid rgba(214, 168, 74, 0.16);
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 12px 0 10px;
+  margin-bottom: 7px;
+  background:
+    linear-gradient(90deg, rgba(255, 216, 117, 0.07), rgba(255, 216, 117, 0.015)),
+    linear-gradient(180deg, rgba(24, 15, 5, 0.94), rgba(10, 7, 3, 0.92));
+  border: 1px solid rgba(214, 168, 74, 0.24);
+  border-radius: 9px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
+/* 왼쪽 능력치 이름 */
 .battle-stat-row span {
-  color: #b9a77a;
+  color: #d8c48f;
   font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
+/* 오른쪽 숫자 강조 */
 .battle-stat-row strong {
-  color: #f6e3b0;
-  font-size: 16px;
+  color: #fff0bd;
+  font-size: 19px;
+  font-weight: 900;
+  text-shadow:
+    0 0 10px rgba(255, 216, 117, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.75);
 }
 
+/* 능력치 확인 버튼 */
+.battle-ability-btn {
+  width: 100%;
+  height: 40px;
+  margin: 7px 0 13px;
+  border: 1px solid rgba(214, 168, 74, 0.66);
+  border-radius: 9px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 237, 160, 0.24), transparent 45%),
+    linear-gradient(180deg, #9a7424 0%, #6f4d15 100%);
+  color: #fff1c2;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 16px rgba(255, 200, 84, 0.14);
+}
+
+.battle-ability-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+/* 문답책의 조언 박스 */
 .battle-tip-box {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(214, 168, 74, 0.26);
+  margin-top: 0px;
+  padding: 12px 11px 11px;
+  background:
+    linear-gradient(180deg, rgba(15, 10, 4, 0.78), rgba(6, 4, 2, 0.72));
+  border: 1px solid rgba(214, 168, 74, 0.22);
+  border-radius: 9px;
+  box-shadow:
+    inset 0 0 18px rgba(255, 216, 117, 0.035),
+    0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.battle-tip-box .battle-panel-title.small {
+  text-align: center;
+  color: #f0d78d;
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 9px;
+  padding: 0;
+}
+
+.battle-tip-box .battle-panel-title.small::after {
+  display: none;
 }
 
 .battle-tip-box p {
-  color: #c7b27d;
-  font-size: 14px;
+  margin: 0;
+  color: #d5c18e;
+  font-size: 13px;
   line-height: 1.75;
-  text-align: center;
 }
 
 /* 중앙 전투 필드 */
@@ -1170,7 +1570,7 @@ body {
   bottom: 13%;
 }
 
-.fighter.right.sprite {
+.fighter.right .sprite {
   filter:
     drop-shadow(0 18px 22px rgba(0, 0, 0, 0.95))
     drop-shadow(0 0 30px rgba(255, 70, 38, 0.34));
@@ -1398,361 +1798,370 @@ body {
 
 /* 전투 로그 */
 .log-box {
-  position: absolute;
-  left: 0;
-  bottom: 18;
-  width: 310px;
-  z-index: 30;
+  width: 360px;
+  min-width: 360px;
+  height: 230px;
+  margin-top: -70px;
+  position: relative;
+  z-index: 5;
   background:
-    linear-gradient(180deg, rgba(14, 10, 4, 0.9), rgba(3, 2, 1, 0.86));
-  border: 1px solid rgba(214, 168, 74, 0.34);
-  box-shadow: 0 0 24px rgba(0,0,0,0.45), inset 0 0 24px rgba(255,216,117,0.025);
+    linear-gradient(180deg, rgba(14, 10, 4, 0.95), rgba(3, 2, 1, 0.93));
+  border: 1px solid rgba(214, 168, 74, 0.42);
+  box-shadow:
+    0 0 22px rgba(0, 0, 0, 0.5),
+    inset 0 0 22px rgba(255, 216, 117, 0.025);
+  overflow: hidden;
 }
 
 .log-title {
-  padding: 9px 12px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 13px;
   color: #f1d27a;
+  font-size: 15px;
   font-weight: 900;
-  border-bottom: 1px solid rgba(214, 168, 74, 0.18);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(214, 168, 74, 0.24);
+  background:
+    linear-gradient(90deg, rgba(255, 216, 117, 0.08), transparent 72%);
 }
 
 .battle-log {
-  min-height: 110px;
-  max-height: 110px;
+  height: calc(100% - 34px);
   overflow-y: auto;
-  padding: 10px 13px;
+  padding: 10px 14px;
   color: #efe3c5;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
-.battle-log::-webkit-scrollbar { width: 4px; }
-.battle-log::-webkit-scrollbar-thumb { background: rgba(184,134,43,0.55); border-radius: 2px; }
+.battle-log::-webkit-scrollbar {
+  width: 4px;
+}
 
-.log-line         { color: #efe3c5; margin-bottom: 4px; }
-.log-line.player  { color: #8fdcff; }
-.log-line.enemy   { color: #ff8f80; }
-.log-line.crit    { color: #ffd875; font-weight: 900; text-shadow: 0 0 12px rgba(255,216,117,0.3); }
-.log-line.defend  { color: #8ee8ff; }
-.log-line.warning { color: #ffb347; font-weight: 900; }
-.log-line.system  { color: #b9a77a; }
+.battle-log::-webkit-scrollbar-thumb {
+  background: rgba(184, 134, 43, 0.55);
+  border-radius: 2px;
+}
 
-/* 하단 스킬바 */
+.log-line {
+  color: #efe3c5;
+  margin-bottom: 3px;
+}
+
+.log-line.player {
+  color: #8fdcff;
+}
+
+.log-line.enemy {
+  color: #ff8f80;
+}
+
+.log-line.crit {
+  color: #ffd875;
+  font-weight: 900;
+  text-shadow: 0 0 12px rgba(255, 216, 117, 0.3);
+}
+
+.log-line.defend {
+  color: #8ee8ff;
+}
+
+.log-line.warning {
+  color: #ffb347;
+  font-weight: 900;
+}
+
+.log-line.system {
+  color: #c9b57a;
+}
+
+/* 하단 전투 UI */
 .battle-bottom {
-  min-height: 138px;
+  height: 270px;
   display: grid;
-  grid-template-columns: 1fr 370px;
-  gap: 18px;
-  align-items: center;
-  padding: 14px 24px 16px;
+  grid-template-rows: 168px 72px;
+  gap: 8px;
+  padding: 8px 18px 10px 18px;
   background:
-    radial-gradient(circle at 24% 0%, rgba(255, 187, 68, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(13, 9, 4, 0.98), rgba(3, 2, 1, 0.99));
-  border-top: 1px solid rgba(214, 168, 74, 0.52);
+    radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.06), transparent 34%),
+    linear-gradient(180deg, rgba(14, 9, 4, 0.96), rgba(5, 4, 2, 0.99));
+  border-top: 1px solid rgba(214, 168, 74, 0.58);
   box-shadow:
-    0 -12px 34px rgba(0, 0, 0, 0.62),
-    inset 0 1px 0 rgba(255, 216, 117, 0.12);
+    0 -12px 28px rgba(0, 0, 0, 0.58),
+    inset 0 1px 0 rgba(255, 216, 117, 0.08);
   flex-shrink: 0;
   position: relative;
-  z-index: 50;
+  z-index: 60;
 }
 
 .battle-bottom::before {
   content: '';
   position: absolute;
-  left: 6%;
-  right: 6%;
+  left: 7%;
+  right: 7%;
   top: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.85), transparent);
-  box-shadow: 0 0 18px rgba(255, 216, 117, 0.45);
+  box-shadow: 0 0 16px rgba(255, 216, 117, 0.4);
 }
 
-.action-buttons {
-  height: 100%;
+/* 왼쪽 로그 + 오른쪽 스킬 */
+.battle-command-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(230px, 1fr));
-  gap: 18px;
+  grid-template-columns: 360px 1fr;
+  gap: 12px;
+  min-width: 0;
+  align-items: end;
+}
+
+/* 스킬 버튼 묶음 */
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  min-width: 0;
 }
 
 /* 스킬 카드 공통 */
 .action-btn {
-  min-height: 96px;
   position: relative;
-  overflow: hidden;
+  min-width: 0;
+  height: 168px;
   display: grid;
-  grid-template-columns: 38px 74px 1fr;
+  grid-template-columns: 36px 64px 1fr;
   align-items: center;
   gap: 14px;
-  padding: 14px 20px;
-  color: #efe3c5;
-  font-family: 'Noto Sans KR', sans-serif;
-  text-align: left;
+  padding: 12px 16px;
+  border: 1px solid rgba(214, 168, 74, 0.58);
+  color: #f6e6bc;
   cursor: pointer;
-  border: 1px solid rgba(255, 232, 154, 0.58);
-  background: rgba(12, 8, 3, 0.92);
-  clip-path: polygon(16px 0, calc(100% - 10px) 0, 100% 12px, calc(100% - 16px) 100%, 10px 100%, 0 calc(100% - 12px));
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 216, 117, 0.13), transparent 42%),
+    linear-gradient(180deg, rgba(39, 26, 8, 0.97), rgba(10, 7, 3, 0.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 20px rgba(255, 216, 117, 0.035),
+    0 8px 18px rgba(0, 0, 0, 0.34);
+  clip-path: polygon(
+    12px 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    12px 100%,
+    0 calc(100% - 12px),
+    0 12px
+  );
   transition:
-    transform 0.16s ease,
-    filter 0.16s ease,
-    box-shadow 0.16s ease,
-    border-color 0.16s ease;
+    transform 0.14s ease,
+    filter 0.14s ease,
+    box-shadow 0.14s ease;
 }
 
 .action-btn::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.2) 45%, transparent 68%);
-  transform: translateX(-130%);
-  transition: transform 0.48s ease;
+  inset: 6px;
+  border: 1px solid rgba(255, 216, 117, 0.14);
   pointer-events: none;
+  clip-path: inherit;
 }
 
 .action-btn::after {
   content: '';
   position: absolute;
-  inset: 7px;
-  border: 1px solid rgba(255, 232, 154, 0.18);
-  clip-path: inherit;
+  left: -35%;
+  top: 0;
+  width: 34%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
   pointer-events: none;
 }
 
 .action-btn:hover:not(:disabled) {
-  transform: translateY(-5px);
-  filter: brightness(1.14);
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 24px rgba(255, 216, 117, 0.06),
+    0 12px 24px rgba(0, 0, 0, 0.42);
 }
 
-.action-btn:hover:not(:disabled)::before {
-  transform: translateX(130%);
+.action-btn:hover:not(:disabled)::after {
+  opacity: 1;
+  animation: skillShine 0.7s ease forwards;
 }
 
 .action-btn:active:not(:disabled) {
-  transform: translateY(2px);
+  transform: translateY(0) scale(0.99);
 }
 
-.action-btn:disabled {
+.action-btn:disabled,
+.action-btn.disabled {
+  opacity: 0.46;
   cursor: not-allowed;
-  filter: grayscale(0.55) brightness(0.65);
-  opacity: 0.62;
+  filter: grayscale(0.45) brightness(0.72);
+  transform: none;
 }
 
-/* 1번: 용사의 검 */
-.attack-btn {
-  background:
-    radial-gradient(circle at 18% 50%, rgba(255, 224, 138, 0.24), transparent 34%),
-    linear-gradient(135deg, rgba(92, 62, 16, 0.98), rgba(31, 18, 5, 0.98));
-  border-color: rgba(255, 216, 117, 0.82);
-  box-shadow:
-    0 5px 0 #4c2b08,
-    0 0 28px rgba(255, 196, 76, 0.22),
-    inset 0 0 28px rgba(255, 216, 117, 0.05);
+@keyframes skillShine {
+  from {
+    left: -35%;
+  }
+
+  to {
+    left: 110%;
+  }
 }
 
-.attack-btn:hover:not(:disabled) {
-  box-shadow:
-    0 8px 0 #4c2b08,
-    0 0 42px rgba(255, 216, 117, 0.42),
-    inset 0 0 32px rgba(255, 216, 117, 0.08);
-}
-
-/* 2번: 방패 방어 */
-.defend-btn {
-  background:
-    radial-gradient(circle at 18% 50%, rgba(84, 181, 255, 0.26), transparent 34%),
-    linear-gradient(135deg, rgba(29, 68, 112, 0.98), rgba(6, 20, 36, 0.98));
-  border-color: rgba(126, 203, 255, 0.72);
-  box-shadow:
-    0 5px 0 #061426,
-    0 0 28px rgba(90, 180, 255, 0.2),
-    inset 0 0 28px rgba(126, 203, 255, 0.05);
-}
-
-.defend-btn:hover:not(:disabled) {
-  box-shadow:
-    0 8px 0 #061426,
-    0 0 42px rgba(90, 180, 255, 0.38),
-    inset 0 0 32px rgba(126, 203, 255, 0.08);
-}
-
-.defend-btn.defending {
-  filter: brightness(1.24);
-  box-shadow:
-    0 2px 0 #061426,
-    0 0 48px rgba(90, 190, 255, 0.7),
-    inset 0 0 40px rgba(126, 203, 255, 0.12);
-}
-
-/* 3번: 불꽃 베기 */
-.heavy-btn {
-  background:
-    radial-gradient(circle at 18% 50%, rgba(255, 80, 42, 0.28), transparent 34%),
-    linear-gradient(135deg, rgba(140, 26, 30, 0.98), rgba(45, 6, 8, 0.98));
-  border-color: rgba(255, 117, 82, 0.78);
-  box-shadow:
-    0 5px 0 #4c0c0e,
-    0 0 28px rgba(255, 70, 70, 0.24),
-    inset 0 0 28px rgba(255, 117, 82, 0.05);
-}
-
-.heavy-btn:hover:not(:disabled) {
-  box-shadow:
-    0 8px 0 #4c0c0e,
-    0 0 46px rgba(255, 80, 42, 0.46),
-    inset 0 0 34px rgba(255, 117, 82, 0.1);
-}
-
-/* 번호 원형 */
+/* 스킬 번호 */
 .skill-key {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
-  color: #100904;
-  background:
-    radial-gradient(circle at 35% 30%, #fff0a8, #d49a2f 70%);
   border-radius: 50%;
+  color: #2a1906;
+  background:
+    radial-gradient(circle at 35% 30%, #fff2ba, #d7a84a 60%, #8b611b);
+  border: 1px solid rgba(255, 238, 170, 0.7);
+  font-size: 13px;
   font-weight: 900;
-  font-size: 15px;
   box-shadow:
-    0 0 14px rgba(255, 216, 117, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    0 0 12px rgba(255, 216, 117, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  z-index: 2;
 }
 
-/* 큰 스킬 아이콘 */
+/* 스킬 아이콘 */
 .skill-icon {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 35px;
-  text-align: center;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.24), transparent 28%),
-    radial-gradient(circle at center, rgba(255, 216, 117, 0.2), rgba(7, 5, 3, 0.92) 68%);
-  border: 1px solid rgba(255, 232, 154, 0.42);
+    radial-gradient(circle at 50% 35%, rgba(255, 236, 165, 0.18), rgba(7, 5, 3, 0.96) 68%);
+  border: 1px solid rgba(214, 168, 74, 0.5);
+  font-size: 32px;
   box-shadow:
-    0 0 22px rgba(255, 216, 117, 0.22),
-    inset 0 0 22px rgba(255, 216, 117, 0.05);
-  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.86));
+    0 0 16px rgba(0, 0, 0, 0.44),
+    inset 0 0 16px rgba(255, 216, 117, 0.055);
+  z-index: 2;
 }
 
-.defend-btn .skill-icon {
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.24), transparent 28%),
-    radial-gradient(circle at center, rgba(126, 203, 255, 0.22), rgba(7, 14, 28, 0.95) 68%);
-  box-shadow:
-    0 0 22px rgba(90, 180, 255, 0.24),
-    inset 0 0 22px rgba(126, 203, 255, 0.05);
-}
-
-.heavy-btn .skill-icon {
-  background:
-    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.24), transparent 28%),
-    radial-gradient(circle at center, rgba(255, 88, 46, 0.28), rgba(34, 5, 5, 0.95) 68%);
-  box-shadow:
-    0 0 24px rgba(255, 80, 42, 0.32),
-    inset 0 0 22px rgba(255, 117, 82, 0.05);
-}
-
+/* 스킬 텍스트 */
 .skill-text {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
   min-width: 0;
+  z-index: 2;
 }
 
 .skill-text strong {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 24px;
-  color: #fff0b8;
-  letter-spacing: 0.01em;
+  display: block;
+  color: #fff0bd;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin-bottom: 7px;
   text-shadow:
-    0 3px 5px rgba(0, 0, 0, 0.86),
-    0 0 12px rgba(255, 216, 117, 0.24);
+    0 0 12px rgba(255, 216, 117, 0.18),
+    0 3px 6px rgba(0, 0, 0, 0.85);
 }
 
 .skill-text small {
+  display: block;
+  color: #d5bd78;
   font-size: 14px;
-  color: rgba(239, 227, 197, 0.78);
-  letter-spacing: -0.02em;
-}
-
-/* 튜토리얼 박스 */
-.battle-guide-box {
-  min-height: 96px;
-  position: relative;
-  overflow: hidden;
-  padding: 18px 20px;
-  background:
-    radial-gradient(circle at 12% 50%, rgba(255, 216, 117, 0.1), transparent 34%),
-    linear-gradient(180deg, rgba(14, 10, 4, 0.94), rgba(4, 3, 2, 0.96));
-  border: 1px solid rgba(214, 168, 74, 0.42);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-shadow:
-    inset 0 0 26px rgba(255, 216, 117, 0.035),
-    0 0 24px rgba(0, 0, 0, 0.4);
-}
-
-.battle-guide-box::before {
-  content: '📖';
-  position: absolute;
-  left: 18px;
-  bottom: -8px;
-  font-size: 58px;
-  opacity: 0.18;
-  filter: drop-shadow(0 0 10px rgba(255, 216, 117, 0.25));
-}
-
-.battle-guide-box strong {
-  position: relative;
-  z-index: 1;
-  color: #f1d27a;
-  font-size: 16px;
-  margin-bottom: 8px;
-  letter-spacing: 0.04em;
-}
-
-.battle-guide-box span {
-  position: relative;
-  z-index: 1;
-  color: #c7b27d;
-  font-size: 13px;
-  line-height: 1.55;
-  padding-left: 6px;
-}
-
-/* 오른쪽 패널 능력치 확인 버튼 */
-.battle-ability-btn {
-  width: 100%;
-  height: 46px;
-  margin: 18px 0 8px;
-  border: 1px solid rgba(255, 216, 117, 0.68);
-  background:
-    radial-gradient(circle at 20% 50%, rgba(255, 216, 117, 0.2), transparent 36%),
-    linear-gradient(180deg, rgba(82, 54, 13, 0.92), rgba(22, 13, 4, 0.95));
-  color: #f7dc8a;
-  font-family: 'Noto Serif KR', serif;
-  font-size: 16px;
   font-weight: 800;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  box-shadow:
-    0 0 22px rgba(255, 216, 117, 0.14),
-    inset 0 0 20px rgba(255, 216, 117, 0.05);
-  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  letter-spacing: 0.02em;
 }
 
-.battle-ability-btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.12);
+/* 스킬별 색감 */
+.attack-btn {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 216, 117, 0.18), transparent 42%),
+    linear-gradient(180deg, rgba(82, 58, 14, 0.98), rgba(32, 22, 7, 0.98));
+}
+
+.defend-btn {
+  border-color: rgba(91, 158, 229, 0.5);
+  background:
+    radial-gradient(circle at 18% 22%, rgba(96, 169, 255, 0.16), transparent 42%),
+    linear-gradient(180deg, rgba(17, 45, 77, 0.98), rgba(7, 20, 36, 0.98));
+}
+
+.heavy-btn {
+  border-color: rgba(255, 82, 65, 0.55);
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 95, 65, 0.18), transparent 42%),
+    linear-gradient(180deg, rgba(100, 16, 22, 0.98), rgba(44, 7, 11, 0.98));
+}
+
+.attack-btn .skill-icon {
+  color: #f7d77b;
+}
+
+.defend-btn .skill-icon {
+  color: #a7d2ff;
+}
+
+.heavy-btn .skill-icon {
+  color: #ff9d55;
+}
+
+/* 제일 아래 튜토리얼 바 */
+.battle-guide-box {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  height: 72px;
+  padding: 0 16px;
+  background:
+    radial-gradient(circle at 8% 50%, rgba(255, 216, 117, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(20, 13, 5, 0.96), rgba(6, 5, 3, 0.96));
+  border: 1px solid rgba(214, 168, 74, 0.42);
   box-shadow:
-    0 0 34px rgba(255, 216, 117, 0.28),
-    inset 0 0 22px rgba(255, 216, 117, 0.08);
+    inset 0 0 20px rgba(255, 216, 117, 0.04),
+    0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.battle-guide-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, rgba(255, 216, 117, 0.18), rgba(7, 5, 3, 0.9));
+  border: 1px solid rgba(214, 168, 74, 0.38);
+  color: #f1d27a;
+  font-size: 22px;
+}
+
+.battle-guide-content {
+  min-width: 0;
+}
+
+.battle-guide-title {
+  color: #f0d78d;
+  font-size: 15px;
+  font-weight: 900;
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.battle-guide-box p {
+  margin: 0;
+  color: #d6c18d;
+  font-size: 14px;
+  line-height: 1.35;
 }
 
 /* 데미지 숫자 / 크리티컬 */
