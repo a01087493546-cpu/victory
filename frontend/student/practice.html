@@ -6,7 +6,7 @@
   1. 책 고르기부터 읽기 후 활동까지 단계별 흐름을 보여줍니다.
   2. 한 단계를 완료하면 다음 단계가 활성화됩니다.
   3. 현재는 화면 흐름 확인용 임시 단계 완료 방식입니다.
-  4. 나중에 실제 질문 작성 화면, 책 투표 화면, 우리반 함께 읽기 화면으로 연결할 예정입니다.
+  4. 책 고르기 단계에서는 질문 꾸러미 활동으로 먼저 이동합니다.
 
   저작권/출처:
   - 현재 이 화면은 기존 홈 배경 이미지와 로고 이미지를 사용합니다.
@@ -299,32 +299,32 @@
     margin-bottom: 12px;
   }
 
-      .step-icon-box {
-      width: 150px;
-      height: 118px;
-      margin-bottom: 20px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 35% 28%, rgba(249, 204, 122, 0.32), rgba(102, 66, 36, 0.82));
-      border: 1px solid rgba(246, 194, 111, 0.62);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow:
-        inset 0 1px 0 rgba(255, 249, 230, 0.22),
-        0 8px 16px rgba(0, 0, 0, 0.22),
-        0 0 16px rgba(235, 176, 88, 0.2);
-      overflow: hidden;
-    }
+  .step-icon-box {
+    width: 150px;
+    height: 118px;
+    margin-bottom: 20px;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(249, 204, 122, 0.32), rgba(102, 66, 36, 0.82));
+    border: 1px solid rgba(246, 194, 111, 0.62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 249, 230, 0.22),
+      0 8px 16px rgba(0, 0, 0, 0.22),
+      0 0 16px rgba(235, 176, 88, 0.2);
+    overflow: hidden;
+  }
 
-     .step-icon-box img {
-      width: 138px;
-      height: 104px;
-      object-fit: contain;
-      filter:
-        drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
-        drop-shadow(0 0 8px rgba(246, 194, 111, 0.3));
-    }
+  .step-icon-box img {
+    width: 138px;
+    height: 104px;
+    object-fit: contain;
+    filter:
+      drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
+      drop-shadow(0 0 8px rgba(246, 194, 111, 0.3));
+  }
 
   .step-main-title {
     margin-bottom: 6px;
@@ -373,11 +373,6 @@
   .step-button:hover {
     transform: translateY(-2px);
   }
-
-  /*
-    단계별 포인트 색상입니다.
-    보라/연두 없이, 밝은 고급 옐로우에서 점점 브라운으로 이어지게 구성합니다.
-  */
 
   /* 1단계: 밝은 고급 옐로우 골드 */
   .step-card:nth-child(1) {
@@ -489,8 +484,8 @@
     color: #d89059;
   }
 
-  /* 잠긴 단계 버튼은 단계 색보다 잠김 상태가 우선 보이게 합니다. */
-  .step-button:disabled {
+  /* 잠긴 단계 안에 있는 버튼만 회색 잠김 상태로 보이게 합니다. */
+  .step-card.locked .step-button {
     border: 1px solid rgba(164, 134, 101, 0.5);
     background: linear-gradient(180deg, #a08a73 0%, #796856 100%);
     color: #f0deca;
@@ -628,13 +623,14 @@
             <div class="step-sub-title">함께 읽을 책 고르기</div>
 
             <p>
-              우리 반이 함께 읽을 책을 살펴보고, 어떤 책을 읽고 싶은지 생각해요.
+              질문하며 읽기의 중요성을 알아보고,<br>
+              우리 반이 함께 읽을 책을 골라요.
             </p>
           </div>
 
-          <button class="step-button" onclick="goBookVotePage()">
-  시작하기
-</button>
+          <button class="step-button" type="button" onclick="goQuestionBundlePage()">
+            시작하기
+          </button>
         </article>
 
         <!-- 2단계 -->
@@ -658,7 +654,7 @@
             </p>
           </div>
 
-          <button class="step-button" id="beforeButton" disabled onclick="completeStep('before')">
+          <button class="step-button" id="beforeButton" onclick="completeStep('before')">
             잠김
           </button>
         </article>
@@ -684,7 +680,7 @@
             </p>
           </div>
 
-          <button class="step-button" id="duringButton" disabled onclick="completeStep('during')">
+          <button class="step-button" id="duringButton" onclick="completeStep('during')">
             잠김
           </button>
         </article>
@@ -783,10 +779,11 @@
     function goHome() {
       location.href = "./home.html";
     }
-    // 책 투표 화면으로 이동합니다.
-function goBookVotePage() {
-  location.href = "./book-vote.html";
-}
+
+    // 질문 꾸러미 화면으로 이동합니다.
+    function goQuestionBundlePage() {
+      window.location.href = "./question-bundle.html";
+    }
 
     // 단계를 완료 처리합니다.
     function completeStep(stepName) {
