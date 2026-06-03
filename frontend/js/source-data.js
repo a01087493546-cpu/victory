@@ -255,5 +255,94 @@ var sourceData = [
   usage: "학생 책 투표 화면 투표 대기 상태 영역",
   modified: "파일명 변경 및 책 투표 대기 화면에 맞게 크기 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},
+},  {
+    title: "질문 꾸러미 인트로 도서관 배경 이미지",
+    category: "이미지",
+    fileName: "question-intro-library-bg.png",
+    description: "질문하며 읽기의 중요성을 안내하는 인트로 화면에 사용한 신비로운 판타지 도서관 배경 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 인트로 배경",
+    modified: "파일명 변경 및 인트로 화면 비율에 맞게 CSS로 크기와 위치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 인트로 루미 장면 1 이미지",
+    category: "이미지",
+    fileName: "question-intro-lumi-scene1.png",
+    description: "책을 읽으며 궁금함이 생기는 순간을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 인트로 1장면",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 인트로 루미 장면 2 이미지",
+    category: "이미지",
+    fileName: "question-intro-lumi-scene2.png",
+    description: "작은 궁금함이 글을 깊이 읽는 힘이 된다는 내용을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 인트로 2장면",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 인트로 루미 장면 3 이미지",
+    category: "이미지",
+    fileName: "question-intro-lumi-scene3.png",
+    description: "질문의 힘을 깨워 책을 깊이 읽어보자는 메시지를 전달하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 인트로 3장면",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 1단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "question-bundle-lumi-step1.png",
+    description: "이야기를 먼저 그냥 읽어보는 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 1단계 그냥 읽어보기 안내 영역",
+    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 2단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "question-bundle-lumi-step2.png",
+    description: "질문과 함께 이야기를 다시 읽어보는 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 2단계 질문과 함께 읽기 안내 영역",
+    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 3단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "question-bundle-lumi-step3.png",
+    description: "학생이 직접 궁금한 질문을 만들어보는 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 3단계 내가 궁금한 질문 만들기 안내 영역",
+    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 4단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "question-bundle-lumi-step4.png",
+    description: "친구들의 생각을 살펴보고 내 생각을 나누는 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 4단계 생각 나누기 안내 영역",
+    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "질문 꾸러미 5단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "question-bundle-lumi-step5.png",
+    description: "질문하며 읽기의 중요성을 정리하는 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 질문 꾸러미 화면 5단계 질문하며 읽기의 중요성 알기 안내 영역",
+    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
 ];

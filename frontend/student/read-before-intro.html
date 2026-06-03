@@ -1,0 +1,305 @@
+<!--
+  파일명: read-before-intro.html
+  역할: 문답책 프로젝트의 '읽기 전' 활동 인트로 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 읽기 전 활동을 시작하기 전에 3장면 스토리를 보여줍니다.
+  2. 루미가 표지와 제목을 살펴보고 질문을 떠올리도록 안내합니다.
+  3. 마지막 장면에서 읽기 전 활동 화면으로 이동합니다.
+
+  이미지 출처 기록:
+  - 이 화면에서 사용하는 배경/루미 이미지는 AI 생성 이미지입니다.
+  - source-data.js에 생성 도구, 생성일, 사용 위치, 수정 여부를 기록해야 합니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>문답책 - 읽기 전 인트로</title>
+
+ <style>
+  /* 제목과 중요한 문구에 사용할 폰트입니다. */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    background: #1f140d;
+    color: #fff4e3;
+  }
+
+  .intro-page {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(22, 14, 8, 0.18), rgba(22, 14, 8, 0.34)),
+      url("../assets/images/read-before/intro/pre-reading-bg-magic-greenhouse.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  .intro-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 38%, rgba(255, 214, 133, 0.18), transparent 28%),
+      linear-gradient(90deg, rgba(20, 13, 9, 0.12), rgba(20, 13, 9, 0.02) 52%, rgba(20, 13, 9, 0.18));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .intro-lumi {
+    position: absolute;
+    right: 10%;
+    bottom: 0;
+    z-index: 2;
+    width: min(32vw, 460px);
+    max-height: 88vh;
+    object-fit: contain;
+    object-position: bottom center;
+    filter:
+      drop-shadow(0 18px 28px rgba(0, 0, 0, 0.34))
+      drop-shadow(0 0 12px rgba(231, 178, 82, 0.16));
+  }
+
+  .story-box {
+    position: absolute;
+    left: 6%;
+    bottom: 12%;
+    z-index: 3;
+    width: min(42vw, 600px);
+    min-height: 318px;
+    padding: 28px 28px 24px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(36, 31, 31, 0.88), rgba(21, 19, 25, 0.92));
+    border: 1px solid rgba(238, 212, 158, 0.18);
+    box-shadow:
+      0 18px 36px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 247, 226, 0.08);
+    backdrop-filter: blur(4px);
+  }
+
+  .speaker-name {
+    position: absolute;
+    left: 34px;
+    top: -28px;
+    min-width: 120px;
+    padding: 11px 22px;
+    border-radius: 12px 12px 4px 4px;
+    background: linear-gradient(180deg, rgba(70, 51, 32, 0.98), rgba(41, 31, 24, 0.98));
+    border: 1px solid rgba(237, 207, 151, 0.22);
+    color: #fff2d7;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
+
+  .scene-label {
+    margin-bottom: 12px;
+    color: #e8c481;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: -0.2px;
+  }
+
+  .story-text {
+    min-height: 150px;
+    font-family: "Noto Serif KR", serif;
+    color: #fff6e8;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.48;
+    letter-spacing: -1px;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.34);
+    white-space: pre-line;
+  }
+
+  .story-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .dot-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255, 246, 224, 0.22);
+  }
+
+  .dot.active {
+    width: 42px;
+    background: linear-gradient(90deg, #e2ae59, #f0d28b);
+    box-shadow: 0 0 10px rgba(230, 178, 88, 0.34);
+  }
+
+  .next-button {
+    min-width: 164px;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 30px;
+    background: linear-gradient(180deg, #f3e4bf, #d8bf87);
+    color: #4b3420;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    transition: 0.2s ease;
+  }
+
+  .next-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, #fff0c8, #e5ca91);
+  }
+
+  @media (max-width: 1100px) {
+    .intro-lumi {
+      width: min(42vw, 440px);
+      right: 3%;
+    }
+
+    .story-box {
+      width: min(48vw, 520px);
+    }
+
+    .story-text {
+      font-size: 26px;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <main class="intro-page">
+
+    <!-- 장면마다 루미 이미지가 바뀝니다. -->
+    <img
+      class="intro-lumi"
+      id="lumiImage"
+      src="../assets/images/read-before/intro/pre-reading-lumi-clue-book.png"
+      alt="읽기 전 활동을 안내하는 루미"
+    >
+
+    <!-- 대화창 영역입니다. -->
+    <section class="story-box">
+      <div class="speaker-name">루미</div>
+
+      <div class="scene-label" id="sceneLabel">
+        읽기 전 활동
+      </div>
+
+      <div class="story-text" id="storyText"></div>
+
+      <div class="story-bottom">
+        <div class="dot-row" id="dotRow"></div>
+
+        <button class="next-button" type="button" onclick="nextScene()" id="nextButton">
+          다음
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // 읽기 전 인트로 장면 데이터입니다.
+    const scenes = [
+      {
+        label: "책을 펼치기 전",
+        text: "바로 펼치기 전에 잠깐!\n\n표지랑 제목에\n이야기의 단서가 숨어 있을지도 몰라.",
+        button: "다음",
+        image: "../assets/images/read-before/intro/pre-reading-lumi-clue-book.png"
+      },
+      {
+        label: "궁금한 점 떠올리기",
+        text: "음… 뭔가 궁금하지 않아?\n\n‘왜 이런 제목일까?’\n‘이 인물에게 무슨 일이 생길까?’",
+        button: "다음",
+        image: "../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
+      },
+      {
+        label: "읽기 전 질문 만들기",
+        text: "이제 읽기 전 질문을 만들어보자.\n\n궁금한 점에 답하다 보면\n책의 내용을 짐작해 볼 수 있어!",
+        button: "질문 만들기 시작",
+        image: "../assets/images/read-before/intro/pre-reading-lumi-question-note.png"
+      }
+    ];
+
+    // 현재 보고 있는 장면 번호입니다.
+    let currentSceneIndex = 0;
+
+    // 화면이 열리면 첫 장면을 보여줍니다.
+    renderScene();
+
+    // 현재 장면을 화면에 그립니다.
+    function renderScene() {
+      const scene = scenes[currentSceneIndex];
+
+      document.getElementById("sceneLabel").textContent = scene.label;
+      document.getElementById("storyText").textContent = scene.text;
+      document.getElementById("nextButton").textContent = scene.button;
+      document.getElementById("lumiImage").src = scene.image;
+
+      renderDots();
+    }
+
+    // 아래 점 표시를 그립니다.
+    function renderDots() {
+      const dotRow = document.getElementById("dotRow");
+      dotRow.innerHTML = "";
+
+      scenes.forEach(function(scene, index) {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+
+        if (index === currentSceneIndex) {
+          dot.classList.add("active");
+        }
+
+        dotRow.appendChild(dot);
+      });
+    }
+
+    // 다음 장면으로 이동합니다.
+    function nextScene() {
+      if (currentSceneIndex < scenes.length - 1) {
+        currentSceneIndex++;
+        renderScene();
+        return;
+      }
+
+      // 마지막 장면 이후에는 읽기 전 활동 화면으로 이동합니다.
+      location.href = "./before-reading.html";
+    }
+  </script>
+</body>
+</html>

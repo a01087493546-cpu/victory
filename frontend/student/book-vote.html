@@ -1,18 +1,6 @@
 <!--
   파일명: book-vote.html
   역할: 문답책 프로젝트의 학생용 책 투표 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 교사가 등록한 책 후보를 학생이 확인합니다.
-  2. 학생은 우리 반이 함께 읽을 책 한 권에 투표합니다.
-  3. 투표가 완료되면 "다른 학생 기다리기" 화면이 나옵니다.
-  4. 이후 "투표 결과 확인" 화면으로 넘어갈 수 있습니다.
-  5. 연습하기 1단계(책 고르기)를 완료 처리합니다.
-
-  참고:
-  - 지금은 화면 시연용 임시 데이터 3권을 사용합니다.
-  - 교사 계정이 아직 연결되지 않아 표지 이미지는 비어 있는 상태를 가정합니다.
-  - 나중에 실제 백엔드가 연결되면 교사가 등록한 책 정보/표지로 바꿉니다.
 -->
 
 <!DOCTYPE html>
@@ -37,10 +25,9 @@
       min-height: 100vh;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       background:
-        radial-gradient(circle at 50% 15%, rgba(255, 222, 160, 0.20), transparent 30%),
-        radial-gradient(circle at 84% 65%, rgba(195, 136, 74, 0.18), transparent 35%),
-        radial-gradient(circle at 14% 82%, rgba(123, 78, 49, 0.16), transparent 36%),
-        linear-gradient(rgba(29, 19, 11, 0.30), rgba(29, 19, 11, 0.62)),
+        radial-gradient(circle at 50% 12%, rgba(255, 225, 164, 0.24), transparent 30%),
+        radial-gradient(circle at 86% 66%, rgba(195, 136, 74, 0.18), transparent 34%),
+        linear-gradient(rgba(29, 19, 11, 0.32), rgba(29, 19, 11, 0.66)),
         url("../assets/images/home/home-library-bg.png");
       background-size: cover;
       background-position: center;
@@ -48,20 +35,24 @@
       overflow-x: hidden;
     }
 
+    button {
+      font-family: inherit;
+    }
+
     .vote-page {
       position: relative;
       min-height: 100vh;
-      padding: 28px 34px 40px;
+      padding: 28px 34px 44px;
     }
 
     .vote-page::before {
       content: "";
       position: fixed;
       left: 50%;
-      top: 100px;
+      top: 80px;
       transform: translateX(-50%);
-      width: 920px;
-      height: 920px;
+      width: 960px;
+      height: 960px;
       background: radial-gradient(circle, rgba(255, 214, 132, 0.15), transparent 64%);
       pointer-events: none;
       z-index: 0;
@@ -121,8 +112,8 @@
       z-index: 1;
       max-width: 1240px;
       margin: 0 auto;
-      padding: 34px 34px 36px;
-      border-radius: 32px;
+      padding: 34px 34px 38px;
+      border-radius: 34px;
       background:
         radial-gradient(circle at 82% 10%, rgba(255, 216, 140, 0.16), transparent 34%),
         linear-gradient(180deg, rgba(122, 88, 58, 0.90) 0%, rgba(75, 51, 35, 0.94) 100%);
@@ -209,8 +200,6 @@
     }
 
     .speech-bubble h1 {
-      position: relative;
-      z-index: 1;
       margin-bottom: 10px;
       font-family: "Noto Serif KR", serif;
       font-size: 36px;
@@ -222,8 +211,6 @@
     }
 
     .speech-bubble p {
-      position: relative;
-      z-index: 1;
       font-size: 18px;
       line-height: 1.8;
       font-weight: 800;
@@ -282,7 +269,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
 
     .cover-box img {
@@ -370,48 +356,17 @@
 
     .state-box {
       display: none;
-      margin-top: 28px;
-      padding: 26px 24px 24px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 92% 10%, rgba(255, 225, 160, 0.18), transparent 34%),
-        linear-gradient(180deg, rgba(255, 248, 232, 0.82) 0%, rgba(239, 217, 184, 0.76) 100%);
-      border: 1px solid rgba(221, 179, 108, 0.62);
-      color: #563117;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
-      backdrop-filter: blur(5px);
+      margin-top: 30px;
     }
 
     .state-box.show {
       display: block;
     }
 
-    .state-box h3 {
-      margin-bottom: 10px;
-      font-family: "Noto Serif KR", serif;
-      font-size: 28px;
-      font-weight: 900;
-      color: #61361a;
-    }
-
-    .state-box p {
-      font-size: 17px;
-      line-height: 1.8;
-      font-weight: 800;
-      color: #704321;
-      margin-bottom: 18px;
-    }
-
-    .state-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
     .state-button {
       border: none;
-      border-radius: 14px;
-      padding: 13px 18px;
+      border-radius: 999px;
+      padding: 13px 22px;
       font-size: 15px;
       font-weight: 900;
       cursor: pointer;
@@ -421,10 +376,13 @@
     .state-button.primary {
       background: linear-gradient(180deg, #efc16f 0%, #b77939 100%);
       color: #fff9f0;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 249, 234, 0.24),
+        0 8px 14px rgba(0, 0, 0, 0.16);
     }
 
     .state-button.secondary {
-      background: rgba(243, 225, 191, 0.88);
+      background: rgba(243, 225, 191, 0.92);
       color: #6a4020;
       border: 1px solid rgba(203, 154, 78, 0.56);
     }
@@ -433,92 +391,190 @@
       transform: translateY(-2px);
     }
 
-    /* 투표 대기 화면 전용 디자인 */
-    .waiting-visual {
+    /* ===== 투표 완료 화면 재구성 ===== */
+   .vote-complete-panel {
+  position: relative;
+  overflow: hidden;
+  min-height: 430px;
+  padding: 38px 44px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255, 236, 184, 0.52), transparent 30%),
+    radial-gradient(circle at 88% 16%, rgba(214, 148, 64, 0.24), transparent 32%),
+    linear-gradient(135deg, rgba(255, 247, 229, 0.97), rgba(224, 198, 158, 0.94));
+  border: 1px solid rgba(236, 190, 119, 0.62);
+  box-shadow:
+    0 24px 48px rgba(31, 18, 9, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  color: #4b2b14;
+}
+
+    .vote-complete-panel::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 26px;
+      border: 1px solid rgba(130, 78, 33, 0.12);
+      pointer-events: none;
+    }
+
+    .vote-complete-panel::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      bottom: -95px;
+      width: 310px;
+      height: 310px;
+      background: radial-gradient(circle, rgba(255, 215, 132, 0.34), transparent 68%);
+      pointer-events: none;
+    }
+
+    .vote-complete-inner {
+      position: relative;
+      z-index: 1;
       display: grid;
-      grid-template-columns: 190px 1fr;
-      gap: 24px;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: 36px;
       align-items: center;
+    }
+
+    .vote-complete-illustration {
+      width: 190px;
+      height: 190px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 42px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255, 232, 169, 0.62), transparent 62%),
+        linear-gradient(180deg, rgba(123, 75, 33, 0.18), rgba(123, 75, 33, 0.06));
+      border: 1px solid rgba(150, 91, 43, 0.18);
+      box-shadow:
+        0 18px 34px rgba(96, 56, 24, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    }
+
+    .vote-complete-illustration img {
+      width: 152px;
+      height: 152px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 18px 22px rgba(74, 43, 18, 0.32))
+        drop-shadow(0 0 18px rgba(238, 181, 78, 0.44));
+    }
+
+    .vote-complete-content {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .vote-complete-chip {
+      width: fit-content;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #76502c, #b77a35);
+      color: #fff5dc;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow:
+        0 8px 16px rgba(81, 47, 18, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .vote-complete-title {
+      margin: 0;
+      font-family: "Noto Serif KR", serif;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -1px;
+      color: #4d2b13;
+      text-shadow: 0 1px 0 rgba(255, 248, 232, 0.60);
+    }
+
+    .vote-complete-book {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 900;
+      color: #6b3f1e;
+      line-height: 1.55;
+    }
+
+    .vote-complete-book strong {
+      color: #9a5a25;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+    }
+
+    .vote-complete-desc {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.65;
+      font-weight: 800;
+      color: #674522;
+    }
+
+    .vote-complete-notice {
+      margin-top: 4px;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(96, 58, 28, 0.10);
+      border: 1px solid rgba(135, 87, 43, 0.14);
+      color: #65421f;
+      font-size: 15px;
+      line-height: 1.65;
+      font-weight: 800;
+    }
+
+    .vote-complete-button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .vote-complete-button-row .state-button {
+      min-width: 188px;
+      min-height: 52px;
+    }
+
+    /* ===== 투표 결과 화면 ===== */
+    #resultBox {
+      padding: 28px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 92% 10%, rgba(255, 225, 160, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(255, 248, 232, 0.86) 0%, rgba(239, 217, 184, 0.78) 100%);
+      border: 1px solid rgba(221, 179, 108, 0.62);
+      color: #563117;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(5px);
+    }
+
+    #resultBox h3 {
+      margin-bottom: 10px;
+      font-family: "Noto Serif KR", serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: #61361a;
+    }
+
+    #resultText {
+      font-size: 23px;
+      line-height: 1.7;
+      font-weight: 900;
+      color: #5b3218;
       margin-bottom: 18px;
     }
 
-    .waiting-icon {
-      width: 170px;
-      height: 170px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    #resultText strong {
+      font-size: 27px;
+      color: #8a4f1f;
+      font-family: "Noto Serif KR", serif;
     }
 
-    .waiting-icon.image-icon {
-      background: transparent;
-      border: none;
-      box-shadow: none;
-    }
-
-    .waiting-icon.image-icon img {
-      width: 170px;
-      height: 170px;
-      object-fit: contain;
-      filter:
-        drop-shadow(0 14px 22px rgba(71, 39, 17, 0.32))
-        drop-shadow(0 0 18px rgba(238, 183, 83, 0.36));
-    }
-
-    .waiting-copy h3 {
-      margin-bottom: 8px;
-    }
-
-    .waiting-status {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(108, 70, 42, 0.12);
-      border: 1px solid rgba(150, 101, 54, 0.18);
-      color: #704321;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.7;
-    }
-
-    .vote-progress {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin: 18px 0 4px;
-    }
-
-    .vote-progress-item {
-      padding: 12px 10px;
-      border-radius: 14px;
-      background: rgba(255, 245, 224, 0.58);
-      border: 1px solid rgba(203, 154, 78, 0.28);
-      text-align: center;
-      color: #6a4020;
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    .vote-progress-item.done {
-      background: linear-gradient(180deg, rgba(242, 199, 120, 0.78), rgba(209, 151, 74, 0.62));
-      color: #4f2d16;
-    }
-
-       /* 투표 결과 화면 */
-       /* 투표 결과 핵심 문장 */
-#resultText {
-  font-size: 23px;
-  line-height: 1.7;
-  font-weight: 900;
-  color: #5b3218;
-  margin-bottom: 18px;
-}
-
-#resultText strong {
-  font-size: 27px;
-  color: #8a4f1f;
-  font-family: "Noto Serif KR", serif;
-}
     .result-layout {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -556,13 +612,6 @@
       align-items: center;
       justify-content: center;
       margin-bottom: 14px;
-    }
-
-    .selected-cover img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
     }
 
     .selected-cover-placeholder {
@@ -661,24 +710,10 @@
       background: linear-gradient(90deg, #d99b4f, #f3c879);
     }
 
-    .result-content .state-actions {
-      margin-top: 4px;
-      justify-content: flex-start;
-    }
-
-    @media (max-width: 700px) {
-      .result-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .selected-cover {
-        height: 170px;
-      }
-
-      .result-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-      }
+    .state-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     @media (max-width: 1100px) {
@@ -695,13 +730,45 @@
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 800px) {
+      .vote-complete-panel {
+        padding: 32px 24px;
+      }
+
+      .vote-complete-inner {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .vote-complete-illustration {
+        width: 160px;
+        height: 160px;
+      }
+
+      .vote-complete-illustration img {
+        width: 128px;
+        height: 128px;
+      }
+
+      .vote-complete-title {
+        font-size: 30px;
+      }
+
+      .vote-complete-button-row {
+        flex-direction: column;
+      }
+
+      .vote-complete-button-row .state-button {
+        width: 100%;
+      }
+
       .result-layout {
         grid-template-columns: 1fr;
       }
 
-      .selected-cover {
-        height: 160px;
+      .result-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
       }
     }
 
@@ -742,19 +809,6 @@
 
       .book-summary {
         min-height: auto;
-      }
-
-      .waiting-visual {
-        grid-template-columns: 1fr;
-      }
-
-      .vote-progress {
-        grid-template-columns: 1fr;
-      }
-
-      .result-row {
-        grid-template-columns: 1fr;
-        gap: 6px;
       }
     }
   </style>
@@ -800,47 +854,45 @@
       <!-- 책 후보 카드 -->
       <section class="book-list" id="bookList"></section>
 
-      <!-- 투표 후 기다리기 상태 -->
+      <!-- 투표 완료 상태 -->
       <section class="state-box" id="waitingBox">
-        <div class="waiting-visual">
+        <div class="vote-complete-panel">
+          <div class="vote-complete-inner">
+            <div class="vote-complete-illustration">
+              <img src="../assets/images/book-vote/mystic-hourglass.png" alt="투표 완료를 알려주는 신비로운 모래시계">
+            </div>
 
-          <!-- 투표 대기 화면용 신비로운 모래시계 이미지입니다. -->
-          <div class="waiting-icon image-icon">
-            <img src="../assets/images/book-vote/mystic-hourglass.png" alt="투표 결과를 기다리는 신비로운 모래시계">
-          </div>
+            <div class="vote-complete-content">
+  <span class="vote-complete-chip">투표 완료</span>
 
-          <div class="waiting-copy">
-            <h3>투표가 완료되었어요!</h3>
+  <!-- 학생이 고른 책 제목이 들어가는 메인 제목입니다. -->
+  <h3 class="vote-complete-title" id="waitingText">
+    내가 고른 책에 투표했어요.
+  </h3>
 
-            <p id="waitingText">
-              내가 고른 책으로 투표를 마쳤어요.<br>
-              이제 다른 친구들의 투표가 끝날 때까지 기다려요.
-            </p>
+  <p class="vote-complete-desc">
+    친구들의 투표가 모두 끝나면 우리 반이 함께 읽을 책 결과를 확인할 수 있어요.
+  </p>
 
-            <div class="waiting-status">
-              친구들의 투표가 모두 끝나면 우리 반이 함께 읽을 책 결과를 확인할 수 있어요.
+  <div class="vote-complete-notice">
+    잠시 기다리는 동안 다른 책 후보의 줄거리도 다시 살펴볼 수 있어요.
+  </div>
+
+              <div class="vote-complete-button-row">
+                <button class="state-button secondary" onclick="goPracticePage()">
+                  연습하기로 돌아가기
+                </button>
+
+                <button class="state-button primary" onclick="showResultState()">
+                  투표 결과 확인하기
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="vote-progress">
-          <div class="vote-progress-item done">나의 투표 완료</div>
-          <div class="vote-progress-item done">친구들 투표 중</div>
-          <div class="vote-progress-item">결과 확인 대기</div>
-        </div>
-
-        <div class="state-actions">
-          <button class="state-button secondary" onclick="goPracticePage()">
-            연습하기로 돌아가기
-          </button>
-
-          <button class="state-button primary" onclick="showResultState()">
-            투표 결과 확인하기
-          </button>
-        </div>
       </section>
 
-            <!-- 투표 결과 상태 -->
+      <!-- 투표 결과 상태 -->
       <section class="state-box" id="resultBox">
         <h3>투표 결과를 확인해볼까요?</h3>
 
@@ -849,13 +901,8 @@
         </p>
 
         <div class="result-layout">
+          <div class="selected-book-preview" id="selectedBookPreview"></div>
 
-          <!-- 투표 결과로 선택된 책 이미지 영역 -->
-          <div class="selected-book-preview" id="selectedBookPreview">
-            <!-- JavaScript에서 결과 책 정보를 넣습니다. -->
-          </div>
-
-          <!-- 투표 결과 막대 영역 -->
           <div class="result-content">
             <div class="result-guide">
               가장 많은 표를 받은 책으로 읽기 전 활동을 시작해요.
@@ -1020,8 +1067,7 @@
       const waitingText = document.getElementById("waitingText");
 
       waitingText.innerHTML = `
-        <strong>${selectedBook.title}</strong>에 투표했어요.<br>
-        이제 다른 친구들의 투표가 끝날 때까지 기다려요.
+        <strong>${selectedBook.title}</strong>에 투표했어요.
       `;
 
       waitingBox.classList.add("show");
@@ -1033,10 +1079,8 @@
       });
     }
 
-        // 시연용 투표 결과 확인 상태입니다.
+    // 시연용 투표 결과 확인 상태입니다.
     function showResultState() {
-      const selectedBook = JSON.parse(sessionStorage.getItem(voteKey));
-
       const waitingBox = document.getElementById("waitingBox");
       const resultBox = document.getElementById("resultBox");
       const resultText = document.getElementById("resultText");
