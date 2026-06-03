@@ -1151,7 +1151,7 @@ body {
 /* 전투 배경 */
 .battle-bg {
   flex: 1;
-  height: calc(100vh - 72px - 236px);
+  height: calc(100vh - 72px - 256px);
   min-height: 110px;
   position: relative;
   display: grid;
@@ -1879,11 +1879,11 @@ body {
 
 /* 하단 전투 UI */
 .battle-bottom {
-  height: 270px;
+  height: 256px;
   display: grid;
-  grid-template-rows: 168px 72px;
+  grid-template-rows: 150px 66px;
   gap: 8px;
-  padding: 8px 18px 10px 18px;
+  padding: 10px 18px 2px;
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.06), transparent 34%),
     linear-gradient(180deg, rgba(14, 9, 4, 0.96), rgba(5, 4, 2, 0.99));
@@ -1894,6 +1894,7 @@ body {
   flex-shrink: 0;
   position: relative;
   z-index: 60;
+  align-content: space-between;
 }
 
 .battle-bottom::before {
@@ -1929,7 +1930,7 @@ body {
 .action-btn {
   position: relative;
   min-width: 0;
-  height: 110px;
+  height: 160px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2025,46 +2026,40 @@ body {
 
 /* 스킬 번호 */
 .skill-key {
-  width: 34px;
-  height: 34px;
+  width: 22px;
+  height: 22px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  color: #2a1906;
-  background:
-    radial-gradient(circle at 35% 30%, #fff2ba, #d7a84a 60%, #8b611b);
-  border: 1px solid rgba(255, 238, 170, 0.7);
-  font-size: 14px;
+  border-radius: 5px;
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  color: #1a0a00;
+  background: linear-gradient(180deg, #ffe08a 0%, #e0a33d 44%, #a9691c 100%);
+  border: 1px solid rgba(255, 232, 154, 0.88);
+  font-size: 12px;
   font-weight: 900;
-  box-shadow:
-    0 0 14px rgba(255, 216, 117, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  flex-shrink: 0;
   z-index: 2;
 }
 
 /* 스킬 아이콘 */
 .skill-icon {
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  font-size: 38px;
   flex-shrink: 0;
   z-index: 2;
   position: relative;
-  box-shadow:
-    0 0 20px rgba(0, 0, 0, 0.5),
-    inset 0 0 18px rgba(255, 216, 117, 0.08);
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
-.skill-icon::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 216, 117, 0.4);
+.skill-icon img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
 /* 스킬 텍스트 */
@@ -2135,28 +2130,19 @@ body {
 }
 
 .attack-btn .skill-icon {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 220, 100, 0.25), rgba(120, 80, 10, 0.9) 60%, rgba(60, 40, 5, 0.95));
+  background: none;
+  border: none;
+  box-shadow: none;
   color: #ffd875;
-  text-shadow: 0 0 18px rgba(255, 196, 76, 0.9);
-  border-color: rgba(255, 196, 76, 0.6);
-}
-
-.attack-btn .skill-icon::before {
-  border-color: rgba(255, 196, 76, 0.5);
-  box-shadow: 0 0 16px rgba(255, 196, 76, 0.35);
+  text-shadow: none;
 }
 
 .defend-btn .skill-icon {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(120, 180, 255, 0.25), rgba(20, 60, 120, 0.9) 60%, rgba(10, 30, 70, 0.95));
+  background: none;
+  border: none;
+  box-shadow: none;
   color: #a7d2ff;
-  text-shadow: 0 0 18px rgba(91, 158, 229, 0.9);
-}
-
-.defend-btn .skill-icon::before {
-  border-color: rgba(91, 158, 229, 0.5);
-  box-shadow: 0 0 16px rgba(91, 158, 229, 0.35);
+  text-shadow: none;
 }
 
 .defend-btn.defending {
@@ -2168,15 +2154,11 @@ body {
 }
 
 .heavy-btn .skill-icon {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 120, 80, 0.25), rgba(140, 20, 20, 0.9) 60%, rgba(80, 10, 10, 0.95));
+  background: none;
+  border: none;
+  box-shadow: none;
   color: #ff9d55;
-  text-shadow: 0 0 18px rgba(255, 82, 65, 0.9);
-}
-
-.heavy-btn .skill-icon::before {
-  border-color: rgba(255, 82, 65, 0.5);
-  box-shadow: 0 0 16px rgba(255, 82, 65, 0.35);
+  text-shadow: none;
 }
 
 .heavy-btn:disabled {
@@ -2192,8 +2174,8 @@ body {
   align-items: center;
   gap: 16px;
   min-width: 0;
-  height: 62px;
-  padding: 0 20px;
+  height: 60px;
+  padding: 0 10px;
   background:
     radial-gradient(circle at 6% 50%, rgba(255, 216, 117, 0.1), transparent 32%),
     linear-gradient(180deg, rgba(22, 14, 5, 0.98), rgba(8, 5, 3, 0.98));

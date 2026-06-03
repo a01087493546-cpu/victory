@@ -362,7 +362,7 @@
       </div>
 
     </div>
-
+    
     <!-- 하단 전투 UI -->
     <div class="battle-bottom">
 
@@ -378,54 +378,40 @@
         <!-- 스킬 버튼 -->
         <div class="action-buttons">
           <button class="action-btn attack-btn" id="btn-attack" onclick="playerAttack()">
-            <span class="skill-key">1</span>
-            <span class="skill-icon attack-icon">
-              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
-                <line x1="8" y1="40" x2="36" y2="12" stroke="#ffd875" stroke-width="4" stroke-linecap="round"/>
-                <line x1="36" y1="12" x2="28" y2="12" stroke="#ffd875" stroke-width="3" stroke-linecap="round"/>
-                <line x1="36" y1="12" x2="36" y2="20" stroke="#ffd875" stroke-width="3" stroke-linecap="round"/>
-                <line x1="18" y1="30" x2="24" y2="24" stroke="#fff0b0" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="10" cy="38" r="3" fill="#c9953f"/>
-              </svg>
+            <span class="skill-num">1</span>
+            <span class="skill-icon">
+              <img src="images/icon_attack.png" width="56" height="56" style="object-fit:contain;">
             </span>
             <span class="skill-text">
               <strong>용사의 검</strong>
-              <small>기본 공격</small>
+              <small>기본 피해를 줍니다.</small>
             </span>
           </button>
 
           <button class="action-btn defend-btn" id="btn-defend"
             onmousedown="startDefend()" onmouseup="stopDefend()"
             ontouchstart="startDefend()" ontouchend="stopDefend()">
-            <span class="skill-key">2</span>
-            <span class="skill-icon defend-icon">
-              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
-                <path d="M24 6 L40 13 L40 26 C40 34 24 42 24 42 C24 42 8 34 8 26 L8 13 Z" stroke="#7ec8f0" stroke-width="3" fill="rgba(60,130,200,0.25)"/>
-                <path d="M24 12 L34 17 L34 26 C34 31 24 36 24 36 C24 36 14 31 14 26 L14 17 Z" stroke="#a8dcff" stroke-width="1.5" fill="rgba(100,170,240,0.15)"/>
-                <line x1="24" y1="14" x2="24" y2="34" stroke="#a8dcff" stroke-width="1.5" stroke-linecap="round"/>
-                <line x1="16" y1="22" x2="32" y2="22" stroke="#a8dcff" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
+            <span class="skill-num">2</span>
+            <span class="skill-icon">
+              <img src="images/icon_defend.png" width="56" height="56" style="object-fit:contain;">
             </span>
             <span class="skill-text">
               <strong>방패 방어</strong>
-              <small>피해 줄이기</small>
+              <small>다음 피해를 줄입니다.</small>
             </span>
+            <span class="skill-cooldown">2턴</span>
           </button>
 
           <button class="action-btn heavy-btn" id="btn-heavy" onclick="playerHeavyAttack()">
-            <span class="skill-key">3</span>
-            <span class="skill-icon heavy-icon">
-              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
-                <ellipse cx="24" cy="36" rx="10" ry="5" fill="rgba(255,100,30,0.3)"/>
-                <path d="M24 6 C24 6 14 18 14 26 C14 32 18.5 36 24 36 C29.5 36 34 32 34 26 C34 18 24 6 24 6Z" fill="rgba(255,120,30,0.85)" stroke="#ff6a20" stroke-width="1.5"/>
-                <path d="M24 14 C24 14 19 22 19 27 C19 30 21 32 24 32 C27 32 29 30 29 27 C29 22 24 14 24 14Z" fill="rgba(255,200,80,0.9)" stroke="#ffd060" stroke-width="1"/>
-                <circle cx="24" cy="28" r="3" fill="#fff0a0"/>
-              </svg>
+            <span class="skill-num">3</span>
+            <span class="skill-icon">
+              <img src="images/icon_heavy.png" width="56" height="56" style="object-fit:contain;">
             </span>
             <span class="skill-text">
               <strong>불꽃 베기</strong>
-              <small>강한 공격</small>
+              <small>높은 피해를 줍니다.</small>
             </span>
+            <span class="skill-cooldown">3턴</span>
           </button>
         </div>
       </div>

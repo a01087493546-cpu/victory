@@ -105,14 +105,15 @@ const DungeonUI = (() => {
   }
 
   // ─── 스킬 버튼 HTML 생성 ───
-  function makeSkillButtonHTML(key, svgIcon, title, desc) {
+  function makeSkillButtonHTML(key, svgIcon, title, desc, cooldown) {
     return (
-      '<span class="skill-key">' + key + '</span>' +
+      '<span class="skill-num">' + key + '</span>' +
       '<span class="skill-icon">' + svgIcon + '</span>' +
       '<span class="skill-text">' +
         '<strong>' + title + '</strong>' +
         '<small>' + desc + '</small>' +
-      '</span>'
+      '</span>' +
+      (cooldown ? '<span class="skill-cooldown">' + cooldown + '</span>' : '')
     );
   }
 
@@ -125,9 +126,9 @@ const DungeonUI = (() => {
     const heavyBtn = $('btn-heavy');
     const defendBtn = $('btn-defend');
 
-    const svgSword = '<img src="images/icon_attack.png" width="44" height="44" style="object-fit:contain;">';
-    const svgShield = '<img src="images/icon_defend.png" width="44" height="44" style="object-fit:contain;">';
-    const svgFire = '<img src="images/icon_heavy.png" width="44" height="44" style="object-fit:contain;">';
+    const svgSword = '<img src="images/icon_attack.png" width="60" height="60" style="object-fit:contain;">';
+    const svgShield = '<img src="images/icon_defend.png" width="60" height="60" style="object-fit:contain;">';
+    const svgFire = '<img src="images/icon_heavy.png" width="60" height="60" style="object-fit:contain;">';
 
     if (attackBtn) {
       attackBtn.innerHTML = makeSkillButtonHTML('1', svgSword, '용사의 검', '기본 공격');
