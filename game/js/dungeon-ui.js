@@ -105,10 +105,10 @@ const DungeonUI = (() => {
   }
 
   // ─── 스킬 버튼 HTML 생성 ───
-  function makeSkillButtonHTML(key, icon, title, desc) {
+  function makeSkillButtonHTML(key, svgIcon, title, desc) {
     return (
       '<span class="skill-key">' + key + '</span>' +
-      '<span class="skill-icon">' + icon + '</span>' +
+      '<span class="skill-icon">' + svgIcon + '</span>' +
       '<span class="skill-text">' +
         '<strong>' + title + '</strong>' +
         '<small>' + desc + '</small>' +
@@ -125,57 +125,32 @@ const DungeonUI = (() => {
     const heavyBtn = $('btn-heavy');
     const defendBtn = $('btn-defend');
 
+    const svgSword = '<img src="images/icon_attack.png" width="44" height="44" style="object-fit:contain;">';
+    const svgShield = '<img src="images/icon_defend.png" width="44" height="44" style="object-fit:contain;">';
+    const svgFire = '<img src="images/icon_heavy.png" width="44" height="44" style="object-fit:contain;">';
+
     if (attackBtn) {
-      attackBtn.innerHTML = makeSkillButtonHTML(
-        '1',
-        '🗡️',
-        '용사의 검',
-        '기본 공격'
-      );
+      attackBtn.innerHTML = makeSkillButtonHTML('1', svgSword, '용사의 검', '기본 공격');
     }
 
-    // 강한 공격 쿨타임
     if (heavyBtn) {
       if (s.cooldowns.heavy > 0) {
         heavyBtn.disabled = true;
-        heavyBtn.innerHTML = makeSkillButtonHTML(
-          '3',
-          '🔥',
-          '불꽃 베기',
-          Math.ceil(s.cooldowns.heavy / 1000) + '초 후 사용 가능'
-        );
+        heavyBtn.innerHTML = makeSkillButtonHTML('3', svgFire, '불꽃 베기', Math.ceil(s.cooldowns.heavy / 1000) + '초 후 사용 가능');
       } else {
         heavyBtn.disabled = false;
-        heavyBtn.innerHTML = makeSkillButtonHTML(
-          '3',
-          '🔥',
-          '불꽃 베기',
-          '강한 공격'
-        );
+        heavyBtn.innerHTML = makeSkillButtonHTML('3', svgFire, '불꽃 베기', '강한 공격');
       }
     }
 
-    // 방어 버튼 상태
     if (defendBtn) {
       if (s.player.isDefending) {
         defendBtn.classList.add('defending');
-        defendBtn.innerHTML = makeSkillButtonHTML(
-          '2',
-          '🛡️',
-          '방패 방어',
-          '피해 줄이기'
-        );
-
+        defendBtn.innerHTML = makeSkillButtonHTML('2', svgShield, '방패 방어', '피해 줄이기');
         setFighterClass('hero', 'defense-stance', true);
       } else {
         defendBtn.classList.remove('defending');
-        defendBtn.innerHTML = makeSkillButtonHTML(
-          '2',
-          '🛡️',
-          '방패 방어',
-          '피해 줄이기'
-        );
-
+        defendBtn.innerHTML = makeSkillButtonHTML('2', svgShield, '방패 방어', '피해 줄이기');
         setFighterClass('hero', 'defense-stance', false);
       }
     }

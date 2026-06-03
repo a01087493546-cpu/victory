@@ -1929,12 +1929,11 @@ body {
 .action-btn {
   position: relative;
   min-width: 0;
-  height: 168px;
-  display: grid;
-  grid-template-columns: 36px 64px 1fr;
+  height: 110px;
+  display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
+  gap: 16px;
+  padding: 0 20px;
   border: 1px solid rgba(214, 168, 74, 0.58);
   color: #f6e6bc;
   cursor: pointer;
@@ -1965,8 +1964,8 @@ body {
 .action-btn::before {
   content: '';
   position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(255, 216, 117, 0.14);
+  inset: 5px;
+  border: 1px solid rgba(255, 216, 117, 0.12);
   pointer-events: none;
   clip-path: inherit;
 }
@@ -1978,7 +1977,7 @@ body {
   top: 0;
   width: 34%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
   transform: skewX(-18deg);
   opacity: 0;
   pointer-events: none;
@@ -1986,11 +1985,7 @@ body {
 
 .action-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  filter: brightness(1.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 24px rgba(255, 216, 117, 0.06),
-    0 12px 24px rgba(0, 0, 0, 0.42);
+  filter: brightness(1.15);
 }
 
 .action-btn:hover:not(:disabled)::after {
@@ -2000,6 +1995,14 @@ body {
 
 .action-btn:active:not(:disabled) {
   transform: translateY(0) scale(0.99);
+}
+
+.action-btn:disabled,
+.action-btn.disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+  filter: grayscale(0.45) brightness(0.72);
+  transform: none;
 }
 
 .action-btn:disabled,
@@ -2022,8 +2025,8 @@ body {
 
 /* 스킬 번호 */
 .skill-key {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -2031,137 +2034,206 @@ body {
   background:
     radial-gradient(circle at 35% 30%, #fff2ba, #d7a84a 60%, #8b611b);
   border: 1px solid rgba(255, 238, 170, 0.7);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   box-shadow:
-    0 0 12px rgba(255, 216, 117, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.36);
+    0 0 14px rgba(255, 216, 117, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
   z-index: 2;
 }
 
 /* 스킬 아이콘 */
 .skill-icon {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 35%, rgba(255, 236, 165, 0.18), rgba(7, 5, 3, 0.96) 68%);
-  border: 1px solid rgba(214, 168, 74, 0.5);
-  font-size: 32px;
-  box-shadow:
-    0 0 16px rgba(0, 0, 0, 0.44),
-    inset 0 0 16px rgba(255, 216, 117, 0.055);
+  font-size: 38px;
+  flex-shrink: 0;
   z-index: 2;
+  position: relative;
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.5),
+    inset 0 0 18px rgba(255, 216, 117, 0.08);
+}
+
+.skill-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 216, 117, 0.4);
 }
 
 /* 스킬 텍스트 */
 .skill-text {
   min-width: 0;
   z-index: 2;
+  flex: 1;
 }
 
 .skill-text strong {
   display: block;
   color: #fff0bd;
-  font-size: 25px;
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: 0.02em;
-  margin-bottom: 7px;
+  margin-bottom: 6px;
   text-shadow:
-    0 0 12px rgba(255, 216, 117, 0.18),
-    0 3px 6px rgba(0, 0, 0, 0.85);
+    0 0 14px rgba(255, 216, 117, 0.22),
+    0 3px 6px rgba(0, 0, 0, 0.9);
 }
 
 .skill-text small {
   display: block;
   color: #d5bd78;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
 }
 
-/* 스킬별 색감 */
+/* 공격 버튼 */
 .attack-btn {
+  border-color: rgba(255, 196, 76, 0.7);
   background:
-    radial-gradient(circle at 18% 22%, rgba(255, 216, 117, 0.18), transparent 42%),
-    linear-gradient(180deg, rgba(82, 58, 14, 0.98), rgba(32, 22, 7, 0.98));
+    radial-gradient(circle at 15% 50%, rgba(255, 196, 76, 0.22), transparent 45%),
+    linear-gradient(135deg, rgba(82, 58, 14, 0.98) 0%, rgba(50, 35, 8, 0.98) 50%, rgba(32, 22, 7, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 30px rgba(255, 196, 76, 0.08),
+    0 0 20px rgba(255, 196, 76, 0.15),
+    0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
+/* 방어 버튼 */
 .defend-btn {
-  border-color: rgba(91, 158, 229, 0.5);
+  border-color: rgba(91, 158, 229, 0.65);
   background:
-    radial-gradient(circle at 18% 22%, rgba(96, 169, 255, 0.16), transparent 42%),
-    linear-gradient(180deg, rgba(17, 45, 77, 0.98), rgba(7, 20, 36, 0.98));
+    radial-gradient(circle at 15% 50%, rgba(91, 158, 229, 0.2), transparent 45%),
+    linear-gradient(135deg, rgba(17, 45, 90, 0.98) 0%, rgba(10, 30, 65, 0.98) 50%, rgba(7, 20, 45, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 30px rgba(91, 158, 229, 0.08),
+    0 0 20px rgba(91, 158, 229, 0.15),
+    0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
+/* 강공격 버튼 */
 .heavy-btn {
-  border-color: rgba(255, 82, 65, 0.55);
+  border-color: rgba(255, 82, 65, 0.65);
   background:
-    radial-gradient(circle at 18% 22%, rgba(255, 95, 65, 0.18), transparent 42%),
-    linear-gradient(180deg, rgba(100, 16, 22, 0.98), rgba(44, 7, 11, 0.98));
+    radial-gradient(circle at 15% 50%, rgba(255, 82, 65, 0.2), transparent 45%),
+    linear-gradient(135deg, rgba(100, 16, 22, 0.98) 0%, rgba(70, 10, 15, 0.98) 50%, rgba(44, 7, 11, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 30px rgba(255, 82, 65, 0.08),
+    0 0 20px rgba(255, 82, 65, 0.15),
+    0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
 .attack-btn .skill-icon {
-  color: #f7d77b;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 220, 100, 0.25), rgba(120, 80, 10, 0.9) 60%, rgba(60, 40, 5, 0.95));
+  color: #ffd875;
+  text-shadow: 0 0 18px rgba(255, 196, 76, 0.9);
+  border-color: rgba(255, 196, 76, 0.6);
+}
+
+.attack-btn .skill-icon::before {
+  border-color: rgba(255, 196, 76, 0.5);
+  box-shadow: 0 0 16px rgba(255, 196, 76, 0.35);
 }
 
 .defend-btn .skill-icon {
+  background:
+    radial-gradient(circle at 40% 35%, rgba(120, 180, 255, 0.25), rgba(20, 60, 120, 0.9) 60%, rgba(10, 30, 70, 0.95));
   color: #a7d2ff;
+  text-shadow: 0 0 18px rgba(91, 158, 229, 0.9);
+}
+
+.defend-btn .skill-icon::before {
+  border-color: rgba(91, 158, 229, 0.5);
+  box-shadow: 0 0 16px rgba(91, 158, 229, 0.35);
+}
+
+.defend-btn.defending {
+  filter: brightness(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 30px rgba(91, 158, 229, 0.5),
+    0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
 .heavy-btn .skill-icon {
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 120, 80, 0.25), rgba(140, 20, 20, 0.9) 60%, rgba(80, 10, 10, 0.95));
   color: #ff9d55;
+  text-shadow: 0 0 18px rgba(255, 82, 65, 0.9);
 }
 
-/* 제일 아래 튜토리얼 바 */
+.heavy-btn .skill-icon::before {
+  border-color: rgba(255, 82, 65, 0.5);
+  box-shadow: 0 0 16px rgba(255, 82, 65, 0.35);
+}
+
+.heavy-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 튜토리얼 바 */
 .battle-guide-box {
   display: grid;
-  grid-template-columns: 54px 1fr;
+  grid-template-columns: 62px 1fr;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
-  height: 72px;
-  padding: 0 16px;
+  height: 62px;
+  padding: 0 20px;
   background:
-    radial-gradient(circle at 8% 50%, rgba(255, 216, 117, 0.08), transparent 38%),
-    linear-gradient(180deg, rgba(20, 13, 5, 0.96), rgba(6, 5, 3, 0.96));
-  border: 1px solid rgba(214, 168, 74, 0.42);
+    radial-gradient(circle at 6% 50%, rgba(255, 216, 117, 0.1), transparent 32%),
+    linear-gradient(180deg, rgba(22, 14, 5, 0.98), rgba(8, 5, 3, 0.98));
+  border: 1px solid rgba(214, 168, 74, 0.5);
   box-shadow:
-    inset 0 0 20px rgba(255, 216, 117, 0.04),
-    0 6px 14px rgba(0, 0, 0, 0.3);
+    inset 0 0 24px rgba(255, 216, 117, 0.05),
+    0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 .battle-guide-icon {
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at center, rgba(255, 216, 117, 0.18), rgba(7, 5, 3, 0.9));
-  border: 1px solid rgba(214, 168, 74, 0.38);
-  color: #f1d27a;
-  font-size: 22px;
-}
-
-.battle-guide-content {
-  min-width: 0;
+    radial-gradient(circle at 40% 35%, rgba(255, 216, 117, 0.25), rgba(80, 50, 5, 0.95) 60%);
+  border: 1px solid rgba(214, 168, 74, 0.6);
+  border-radius: 50%;
+  color: #ffd875;
+  font-size: 26px;
+  box-shadow:
+    0 0 18px rgba(255, 216, 117, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .battle-guide-title {
-  color: #f0d78d;
-  font-size: 15px;
+  color: #ffd875;
+  font-size: 14px;
   font-weight: 900;
-  margin-bottom: 4px;
-  letter-spacing: 0.03em;
+  margin-bottom: 3px;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 12px rgba(255, 216, 117, 0.4);
 }
 
 .battle-guide-box p {
   margin: 0;
-  color: #d6c18d;
-  font-size: 14px;
-  line-height: 1.35;
+  color: #c8a85a;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
 }
 
 /* 데미지 숫자 / 크리티컬 */
