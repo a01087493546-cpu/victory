@@ -345,4 +345,44 @@ var sourceData = [
     modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
+    {
+    title: "읽기 전 인트로 배경 이미지",
+    category: "이미지",
+    fileName: "pre-reading-bg-magic-greenhouse.png",
+    description: "읽기 전 활동을 시작하기 전에 보여주는 판타지 도서관 배경 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 읽기 전 인트로 화면 배경",
+    modified: "파일명 변경 및 인트로 화면 분위기에 맞게 CSS로 밝기와 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "읽기 전 인트로 1단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "pre-reading-lumi-clue-book.png",
+    description: "책을 펼치기 전 표지와 제목에 숨은 단서를 살펴보도록 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 읽기 전 인트로 화면 1단계 루미 안내 영역",
+    modified: "파일명 변경, 투명 배경 PNG로 정리, 화면 배치에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "읽기 전 인트로 2단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "pre-reading-lumi-thinking.png",
+    description: "책을 읽기 전에 궁금한 점을 떠올리도록 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 읽기 전 인트로 화면 2단계 루미 안내 영역",
+    modified: "파일명 변경, 투명 배경 PNG로 정리, 다른 루미 이미지와 크기가 맞도록 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "읽기 전 인트로 3단계 루미 안내 이미지",
+    category: "이미지",
+    fileName: "pre-reading-lumi-question-note.png",
+    description: "읽기 전 질문을 만들어 보도록 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    usage: "학생 읽기 전 인트로 화면 3단계 루미 안내 영역",
+    modified: "파일명 변경, 투명 배경 PNG로 정리, 화면 배치에 맞게 CSS로 크기 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
 ];
