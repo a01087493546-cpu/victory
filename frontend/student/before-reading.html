@@ -1,0 +1,1360 @@
+<!--
+  파일명: before-reading.html
+  역할: 문답책 프로젝트의 읽기 전 질문 만들기 화면입니다.
+
+  화면 흐름:
+  1. 책 고르기/투표로 결정된 책을 기준으로 읽기 전 질문을 만듭니다.
+  2. 제목 → 차례 → 책 속 그림 → 글 훑어보기 순서로 진행합니다.
+  3. 각 단계는 예시 보기와 질문 만들기 화면으로 구성됩니다.
+  4. 질문과 내가 생각한 답을 적고, 루미의 피드백을 받은 뒤 다음 단계로 넘어갑니다.
+  5. 모든 질문을 완성하면 공유하기 화면으로 이동합니다.
+
+  백엔드 연동 준비:
+  - 현재는 sessionStorage와 mock 데이터를 사용합니다.
+  - 나중에 API 함수 부분만 fetch 코드로 바꾸면 됩니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>문답책 - 읽기 전 질문 만들기</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #fff2dc;
+      background:
+        linear-gradient(rgba(10, 7, 5, 0.58), rgba(10, 7, 5, 0.68)),
+        url("../assets/images/home/home-library-bg.png");
+      background-size: cover;
+      background-position: center;
+      overflow-x: hidden;
+    }
+
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+   .page {
+  position: relative;
+  min-height: 100vh;
+  padding: 14px 28px 22px;
+}
+
+    .page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 8% 75%, rgba(255, 189, 83, 0.2), transparent 23%),
+        radial-gradient(circle at 92% 66%, rgba(255, 170, 62, 0.18), transparent 22%),
+        radial-gradient(circle at 55% 14%, rgba(255, 218, 151, 0.13), transparent 34%),
+        linear-gradient(90deg, rgba(5, 4, 3, 0.28), transparent 34%, rgba(5, 4, 3, 0.3));
+      z-index: 0;
+    }
+
+    .page-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    /* 상단 메뉴 */
+   .top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-button {
+      border: 1px solid rgba(236, 198, 127, 0.22);
+      border-radius: 999px;
+      padding: 11px 17px;
+      background: rgba(24, 18, 13, 0.6);
+      color: #fff0cf;
+      font-size: 15px;
+      font-weight: 900;
+      backdrop-filter: blur(5px);
+      transition: 0.18s ease;
+    }
+
+    .nav-button:hover {
+      transform: translateY(-2px);
+      background: rgba(55, 40, 26, 0.72);
+    }
+
+    .my-count {
+      border: 1px solid rgba(230, 177, 75, 0.42);
+      border-radius: 999px;
+      padding: 12px 22px;
+      background: rgba(30, 22, 14, 0.72);
+      color: #ffd786;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 책 정보 + 진행도 + 루미 */
+  .top-info {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+
+    .book-strip {
+  display: grid;
+  grid-template-columns: 90px 1fr 500px;
+  align-items: center;
+  min-height: 92px;
+  padding: 12px 22px;
+      border-radius: 24px;
+      border: 1px solid rgba(238, 207, 150, 0.2);
+      background: rgba(32, 26, 21, 0.78);
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 246, 225, 0.08);
+      backdrop-filter: blur(7px);
+    }
+
+    .book-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #f5d58c 0%, #b47a31 72%);
+      color: #432914;
+      font-size: 34px;
+      box-shadow: 0 0 22px rgba(232, 179, 78, 0.28);
+    }
+.book-icon-image {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  display: block;
+}
+    .book-small-label {
+      margin-bottom: 8px;
+      color: #f2d38b;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+   .book-title {
+  font-family: "Noto Serif KR", serif;
+  color: #fff6e4;
+  font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .book-meta {
+      margin-top: 6px;
+      color: rgba(255, 241, 214, 0.66);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .step-progress {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-step {
+      display: grid;
+      place-items: center;
+      gap: 7px;
+      color: rgba(255, 237, 205, 0.62);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .progress-circle {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 999px;
+      border: 2px solid rgba(239, 206, 145, 0.24);
+      background: rgba(18, 14, 11, 0.56);
+      color: rgba(255, 237, 205, 0.8);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .progress-step.active .progress-circle {
+      border-color: rgba(255, 222, 143, 0.9);
+      background: radial-gradient(circle, #ffe09c 0%, #bd832f 78%);
+      color: #3f2814;
+      box-shadow: 0 0 22px rgba(239, 191, 91, 0.36);
+    }
+
+    .progress-step.done .progress-circle {
+      border-color: rgba(122, 210, 152, 0.72);
+      background: rgba(50, 96, 60, 0.86);
+      color: #eaffde;
+    }
+
+    .progress-line {
+      flex: 1;
+      height: 2px;
+      background: rgba(230, 203, 154, 0.18);
+      margin-top: -25px;
+    }
+
+    .lumi-zone {
+      position: relative;
+      min-height: 118px;
+      border-radius: 24px;
+    }
+
+    .lumi-bubble {
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 270px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(61, 43, 27, 0.88);
+      border: 1px solid rgba(238, 201, 136, 0.18);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+      z-index: 2;
+    }
+
+    .lumi-title {
+      margin-bottom: 8px;
+      color: #f4c873;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .lumi-text {
+      color: #fff0d2;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.58;
+      word-break: keep-all;
+      white-space: pre-line;
+    }
+
+    .lumi-img {
+      position: absolute;
+      right: -4px;
+      bottom: -10px;
+      width: 185px;
+      max-height: 150px;
+      object-fit: contain;
+      filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.34));
+    }
+
+    /* 메인 활동 영역 */
+    .activity-layout {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .side-steps {
+      padding: 18px 0;
+      border-radius: 24px;
+      border: 1px solid rgba(238, 207, 150, 0.18);
+      background: rgba(19, 15, 11, 0.72);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    }
+
+    .side-step {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+      padding: 24px 22px;
+      border: none;
+      border-bottom: 1px solid rgba(238, 207, 150, 0.09);
+      background: transparent;
+      color: rgba(255, 239, 210, 0.68);
+      text-align: left;
+      transition: 0.18s ease;
+    }
+
+    .side-step:last-child {
+      border-bottom: none;
+    }
+
+    .side-step:hover {
+      background: rgba(255, 223, 158, 0.06);
+    }
+
+    .side-step.active {
+      background:
+        linear-gradient(90deg, rgba(217, 154, 45, 0.22), rgba(217, 154, 45, 0.03));
+      color: #fff1d4;
+      box-shadow: inset 4px 0 0 #f0bf62;
+    }
+
+    .side-step.done {
+      color: #e3ffe0;
+    }
+
+    .side-num {
+      display: grid;
+      place-items: center;
+      min-width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: 2px solid rgba(238, 207, 150, 0.24);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .side-step.active .side-num {
+      border-color: #ffd77d;
+      background: radial-gradient(circle, #ffe29e 0%, #c4862d 76%);
+      color: #3e2813;
+      box-shadow: 0 0 22px rgba(239, 191, 91, 0.36);
+    }
+
+    .side-main {
+      display: block;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .side-sub {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 234, 199, 0.54);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .activity-card {
+  min-height: 520px;
+  padding: 24px 30px 22px;
+      border-radius: 28px;
+      background: rgba(255, 248, 235, 0.94);
+      color: #312419;
+      box-shadow:
+        0 22px 44px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    }
+
+    .activity-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+    .activity-title {
+      font-family: "Noto Serif KR", serif;
+      color: #2e2117;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.9px;
+      word-break: keep-all;
+white-space: normal;
+    }
+
+    .activity-desc {
+      margin-top: 8px;
+      color: #766555;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .tab-box {
+  display: flex;
+  width: 420px;
+  max-width: 100%;
+  margin-left: auto;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e8d8bd;
+}
+
+    .tab-button {
+      flex: 1;
+      border: none;
+      padding: 14px 18px;
+      background: transparent;
+      color: #3f3023;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .tab-button.active {
+      background: #fffaf0;
+      box-shadow: inset 0 0 0 1px rgba(162, 123, 69, 0.08);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .example-panel,
+    .write-panel {
+      padding: 20px;
+      border-radius: 20px;
+      background: #fffaf0;
+      border: 1px solid #ead9bd;
+    }
+
+    .panel-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .panel-title {
+      color: #3a2a1c;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .book-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f4ead8;
+      color: #5a4734;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .example-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .example-item {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 13px 14px;
+      border-radius: 18px;
+      background: #fff7e9;
+      border: 1px solid #ecd9b9;
+    }
+
+    .example-num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e5b94d, #bd7f22);
+      color: #fff8df;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .example-question {
+      color: #3b2a1b;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .example-answer {
+      margin-top: 7px;
+      color: #7b6856;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .input-block {
+      margin-bottom: 18px;
+    }
+
+    .input-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+      gap: 12px;
+    }
+
+    .input-label {
+      color: #3b2a1b;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .input-help {
+      color: #b48938;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+   textarea {
+  width: 100%;
+  min-height: 104px;
+      resize: none;
+      border: 1px solid #dec9a8;
+      border-radius: 18px;
+      outline: none;
+      padding: 16px;
+      background: #fffdf8;
+      color: #33261b;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    textarea:focus {
+      border-color: #c88d24;
+      box-shadow: 0 0 0 4px rgba(216, 158, 50, 0.14);
+    }
+
+    .feedback-box {
+      min-height: 70px;
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: #fff3d5;
+      border: 1px solid #eac675;
+      color: #5a3e19;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.55;
+      word-break: keep-all;
+      white-space: pre-line;
+    }
+
+    .feedback-box.good {
+      background: #eff8e8;
+      border-color: #b7d991;
+      color: #355628;
+    }
+
+    .feedback-box.need {
+      background: #fff0df;
+      border-color: #e6b178;
+      color: #6a3d17;
+    }
+.feedback-box-with-lumi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 82px;
+}
+
+.feedback-lumi {
+  width: 78px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.18));
+}
+
+.feedback-message {
+  flex: 1;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+    .bottom-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      gap: 14px;
+    }
+
+    .small-note {
+      flex: 1;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #fff2cf;
+      border: 1px solid #e7c574;
+      color: #5a421c;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .action-area {
+      display: flex;
+      gap: 12px;
+    }
+
+    .plain-button,
+    .main-button {
+      border: none;
+      border-radius: 16px;
+      padding: 17px 28px;
+      font-size: 18px;
+      font-weight: 900;
+      transition: 0.18s ease;
+    }
+
+    .plain-button {
+      background: #d8cab5;
+      color: #6c5a48;
+    }
+
+    .main-button {
+      background: linear-gradient(180deg, #dca328, #bd7908);
+      color: #fff7e4;
+      box-shadow: 0 10px 18px rgba(143, 91, 8, 0.24);
+    }
+
+    .plain-button:hover,
+    .main-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .summary-item {
+      padding: 18px;
+      border-radius: 18px;
+      background: #fffaf0;
+      border: 1px solid #ead9bd;
+    }
+
+    .summary-title {
+      margin-bottom: 8px;
+      color: #bb7d13;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .summary-text {
+      color: #443123;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 1100px) {
+      .top-info,
+      .activity-layout,
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .book-strip {
+        grid-template-columns: 80px 1fr;
+      }
+
+      .step-progress {
+        grid-column: 1 / -1;
+        margin-top: 18px;
+      }
+
+      .lumi-zone {
+        min-height: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="page-inner">
+
+      <header class="top-nav">
+        <div class="nav-left">
+          <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
+          <button class="nav-button" type="button" onclick="goPractice()">▣ 연습하기로</button>
+        </div>
+
+        <div class="nav-right">
+          <button class="my-count" type="button" onclick="showSummary()">
+            내가 만든 질문 <span id="questionCount">(0/4)</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="top-info">
+        <article class="book-strip">
+         <div class="book-icon">
+  <img src="../assets/images/logo-book.png" alt="문답책 로고" class="book-icon-image">
+</div>
+
+          <div>
+            <p class="book-small-label">우리 반이 함께 읽을 책</p>
+            <h1 class="book-title" id="bookTitle">「신통방통 홈 쇼핑」</h1>
+            <p class="book-meta" id="bookMeta">작가: 예시 작가</p>
+          </div>
+
+          <div class="step-progress" id="topProgress"></div>
+        </article>
+
+        
+      </section>
+
+      <section class="activity-layout">
+        <nav class="side-steps" id="sideSteps"></nav>
+
+        <section class="activity-card" id="activityCard"></section>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    /*
+      =========================================================
+      1. 기본 상태
+      =========================================================
+    */
+
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    const studentName = sessionStorage.getItem("name") || "학생";
+
+    let selectedBook = null;
+    let currentStepIndex = 0;
+    let currentMode = "example";
+
+    const answers = [
+      { question: "", expectedAnswer: "", passed: false },
+      { question: "", expectedAnswer: "", passed: false },
+      { question: "", expectedAnswer: "", passed: false },
+      { question: "", expectedAnswer: "", passed: false }
+    ];
+
+    /*
+      =========================================================
+      2. 책과 질문 단계 데이터
+      =========================================================
+    */
+
+    const defaultBook = {
+      bookId: "book001",
+      title: "신통방통 홈 쇼핑",
+      author: "예시 작가",
+      tableOfContents: [
+        "1장. 수상한 홈 쇼핑 방송",
+        "2장. 이상한 주문",
+        "3장. 생각지도 못한 선물"
+      ]
+    };
+
+    const steps = [
+      {
+        type: "title",
+        number: "01",
+        short: "제목",
+        title: "제목을 보고 질문 만들기",
+        desc: "제목을 보고 떠오른 궁금한 점을 질문으로 만들어 봐요.",
+        tip: "제목은 책의 첫 번째 단서야.\\n제목 속에서 이상하거나 궁금한 말을 찾아 질문으로 바꿔 봐!",
+        examples: [
+          {
+            q: "왜 홈 쇼핑이 ‘신통방통’하다고 했을까?",
+            a: "보통 물건이 아니라 특별한 능력이 있는 물건을 팔 것 같아요."
+          },
+          {
+            q: "홈 쇼핑에서 어떤 특별한 물건을 팔까?",
+            a: "주인공에게 꼭 필요한 물건이나 이상한 물건이 나올 것 같아요."
+          },
+          {
+            q: "주인공은 홈 쇼핑 때문에 어떤 일을 겪게 될까?",
+            a: "좋은 일이 생기거나, 반대로 문제가 생길 수도 있을 것 같아요."
+          }
+        ],
+        questionPlaceholder: "예) 왜 홈 쇼핑이 신통방통하다고 했을까?",
+        answerPlaceholder: "예) 특별한 물건을 팔거나 이상한 일이 생길 것 같다."
+      },
+      {
+        type: "contents",
+        number: "02",
+        short: "차례",
+        title: "차례를 보고 질문 만들기",
+        desc: "차례를 보고 이야기의 흐름을 짐작하며 질문을 만들어 봐요.",
+        tip: "차례는 이야기의 길잡이야.\\n각 장 제목을 보면 어떤 일이 차례대로 이어질지 상상할 수 있어!",
+        examples: [
+          {
+            q: "‘수상한 홈 쇼핑 방송’에서는 어떤 물건이 소개될까?",
+            a: "평범해 보이지만 이상한 힘을 가진 물건이 소개될 것 같아요."
+          },
+          {
+            q: "주인공은 왜 ‘이상한 주문’을 하게 될까?",
+            a: "호기심 때문에 주문하거나, 꼭 필요한 물건이라고 생각해서 주문할 것 같아요."
+          },
+          {
+            q: "‘생각지도 못한 선물’은 좋은 일일까, 문제일까?",
+            a: "처음에는 좋아 보이지만 나중에는 문제가 생길 수도 있을 것 같아요."
+          }
+        ],
+        questionPlaceholder: "예) 수상한 방송에서는 어떤 일이 일어날까?",
+        answerPlaceholder: "예) 이상한 물건이 소개되고 주인공이 주문하게 될 것 같다."
+      },
+      {
+        type: "picture",
+        number: "03",
+        short: "그림",
+        title: "책 속 그림을 훑어보고 질문 만들기",
+        desc: "책 속 그림의 인물, 표정, 장소, 물건을 살펴보고 질문을 만들어 봐요.",
+        tip: "그림은 이야기의 장면을 먼저 보여줘.\\n인물의 표정이나 물건을 보면 숨은 단서를 찾을 수 있어!",
+        examples: [
+          {
+            q: "그림 속 인물은 왜 놀란 표정을 짓고 있을까?",
+            a: "기대하지 않은 물건이 도착했거나 이상한 일이 생겼을 것 같아요."
+          },
+          {
+            q: "그림에 나온 물건은 이야기에서 어떤 역할을 할까?",
+            a: "주인공을 도와주거나 문제를 일으키는 중요한 물건일 것 같아요."
+          },
+          {
+            q: "그림 속 장소에서는 어떤 사건이 벌어질까?",
+            a: "홈 쇼핑 물건을 사용하다가 예상하지 못한 일이 생길 것 같아요."
+          }
+        ],
+        questionPlaceholder: "예) 그림 속 인물은 왜 놀란 표정을 짓고 있을까?",
+        answerPlaceholder: "예) 이상한 물건을 보고 놀랐을 것 같다."
+      },
+      {
+        type: "skim",
+        number: "04",
+        short: "글",
+        title: "글을 훑어보고 질문 만들기",
+        desc: "글을 자세히 읽기 전에 눈에 띄는 낱말과 문장을 보고 질문을 만들어 봐요.",
+        tip: "글을 훑어볼 때는 모든 문장을 다 읽지 않아도 돼.\\n반복되는 말이나 눈에 띄는 표현에서 질문을 찾아 봐!",
+        examples: [
+          {
+            q: "글에서 ‘주문’, ‘선물’, ‘수상한’ 같은 말이 왜 자주 나올까?",
+            a: "주문한 물건이나 선물이 이야기의 중요한 사건이 될 것 같아요."
+          },
+          {
+            q: "글의 분위기를 보면 앞으로 좋은 일이 생길까, 문제가 생길까?",
+            a: "처음에는 재미있지만 점점 문제가 생기는 이야기일 것 같아요."
+          },
+          {
+            q: "주인공은 어떤 선택을 하게 될까?",
+            a: "홈 쇼핑 물건을 살지 말지 고민하다가 결국 주문할 것 같아요."
+          }
+        ],
+        questionPlaceholder: "예) 글에서 자주 나오는 말은 왜 중요할까?",
+        answerPlaceholder: "예) 그 말이 사건의 중요한 단서가 될 것 같다."
+      }
+    ];
+
+    /*
+      =========================================================
+      3. 초기 실행
+      =========================================================
+    */
+
+    initPage();
+
+    function initPage() {
+      selectedBook = getSelectedBook();
+
+      document.getElementById("bookTitle").textContent = "「" + selectedBook.title + "」";
+      document.getElementById("bookMeta").textContent = "작가: " + selectedBook.author;
+
+      renderAll();
+    }
+
+    // 책 고르기/투표에서 저장된 책이 있으면 사용하고, 없으면 예시 책을 사용합니다.
+    function getSelectedBook() {
+      const savedBook = sessionStorage.getItem("selectedBook");
+
+      if (savedBook) {
+        try {
+          return JSON.parse(savedBook);
+        } catch (error) {
+          console.warn("선정 도서 데이터를 읽을 수 없어 예시 책을 사용합니다.", error);
+        }
+      }
+
+      return defaultBook;
+    }
+
+    function renderAll() {
+  renderTopProgress();
+  renderSideSteps();
+
+  if (currentMode === "summary") {
+    renderSummary();
+  } else {
+    renderActivity();
+  }
+
+  updateQuestionCount();
+}
+
+    /*
+      =========================================================
+      4. 진행도 표시
+      =========================================================
+    */
+
+    function renderTopProgress() {
+      const topProgress = document.getElementById("topProgress");
+      topProgress.innerHTML = "";
+
+      steps.forEach(function(step, index) {
+        const item = document.createElement("div");
+        item.className = "progress-step";
+
+        if (index === currentStepIndex) {
+          item.classList.add("active");
+        }
+
+        if (answers[index].passed) {
+          item.classList.add("done");
+        }
+
+        item.innerHTML =
+          '<div class="progress-circle">' + step.number + '</div>' +
+          '<div>' + step.short + '</div>';
+
+        topProgress.appendChild(item);
+
+        if (index < steps.length - 1) {
+          const line = document.createElement("div");
+          line.className = "progress-line";
+          topProgress.appendChild(line);
+        }
+      });
+    }
+
+    function renderSideSteps() {
+      const sideSteps = document.getElementById("sideSteps");
+      sideSteps.innerHTML = "";
+
+      steps.forEach(function(step, index) {
+        const button = document.createElement("button");
+        button.className = "side-step";
+
+        if (index === currentStepIndex && currentMode !== "summary") {
+          button.classList.add("active");
+        }
+
+        if (answers[index].passed) {
+          button.classList.add("done");
+        }
+
+        button.onclick = function() {
+          currentStepIndex = index;
+          currentMode = "example";
+          renderAll();
+        };
+
+        button.innerHTML =
+          '<span class="side-num">' + step.number + '</span>' +
+          '<span>' +
+            '<span class="side-main">' + step.title + '</span>' +
+            '<span class="side-sub">' + (answers[index].passed ? "완성됨" : "예시 보고 작성하기") + '</span>' +
+          '</span>';
+
+        sideSteps.appendChild(button);
+      });
+    }
+
+    function updateQuestionCount() {
+      const count = answers.filter(function(item) {
+        return item.passed;
+      }).length;
+
+      document.getElementById("questionCount").textContent = "(" + count + "/4)";
+    }
+
+    function updateLumiText() {
+      if (currentMode === "summary") {
+        document.getElementById("lumiText").textContent =
+          "잘했어! 네 질문들이 책을 읽을 때 생각의 길잡이가 되어 줄 거야.";
+        return;
+      }
+
+      const step = steps[currentStepIndex];
+
+      if (currentMode === "write") {
+        document.getElementById("lumiText").textContent =
+          "질문과 답을 적어 봐.\\n정답을 맞히는 것보다 책 내용을 상상하는 게 더 중요해!";
+        return;
+      }
+
+      document.getElementById("lumiText").textContent = step.tip;
+    }
+
+    /*
+      =========================================================
+      5. 예시 보기 / 질문 만들기 화면
+      =========================================================
+    */
+
+    function renderActivity() {
+      const step = steps[currentStepIndex];
+      const answer = answers[currentStepIndex];
+      const activityCard = document.getElementById("activityCard");
+
+      activityCard.innerHTML =
+        '<div class="activity-head">' +
+          '<div>' +
+            '<h2 class="activity-title">' + step.number + '. ' + step.title + '</h2>' +
+            '<p class="activity-desc">' + step.desc + '</p>' +
+          '</div>' +
+
+          '<div class="tab-box">' +
+            '<button class="tab-button ' + (currentMode === "example" ? "active" : "") + '" onclick="setMode(\'example\')">예시 보기</button>' +
+'<button class="tab-button ' + (currentMode === "write" ? "active" : "") + '" onclick="setMode(\'write\')">질문 만들기</button>' +
+        '</div>' +
+
+        '<div class="content-grid">' +
+          '<section class="example-panel">' +
+            '<div class="panel-title-row">' +
+              '<h3 class="panel-title">📖 예시 질문</h3>' +
+              '<span class="book-tag">이 책의 제목: ' + selectedBook.title + '</span>' +
+            '</div>' +
+
+            '<div class="example-list">' +
+              step.examples.map(function(example, index) {
+                return '<article class="example-item">' +
+                  '<div class="example-num">' + (index + 1) + '</div>' +
+                  '<div>' +
+                    '<p class="example-question">' + example.q + '</p>' +
+                    '<p class="example-answer">' + example.a + '</p>' +
+                  '</div>' +
+                '</article>';
+              }).join("") +
+            '</div>' +
+          '</section>' +
+
+          '<section class="write-panel">' +
+            '<div class="panel-title-row">' +
+              '<h3 class="panel-title">나만의 질문을 만들어 볼까요?</h3>' +
+              '<span class="book-tag">질문은 하나만 적어도 좋아요!</span>' +
+            '</div>' +
+
+            '<div class="input-block">' +
+              '<div class="input-label-row">' +
+                '<label class="input-label" for="questionInput">내가 만든 읽기 전 질문</label>' +
+                '<span class="input-help" id="questionLength">0 / 100</span>' +
+              '</div>' +
+              '<textarea id="questionInput" maxlength="100" placeholder="' + step.questionPlaceholder + '">' + answer.question + '</textarea>' +
+            '</div>' +
+
+            '<div class="input-block">' +
+              '<div class="input-label-row">' +
+                '<label class="input-label" for="answerInput">내가 생각한 답</label>' +
+                '<span class="input-help" id="answerLength">0 / 200</span>' +
+              '</div>' +
+              '<textarea id="answerInput" maxlength="200" placeholder="' + step.answerPlaceholder + '">' + answer.expectedAnswer + '</textarea>' +
+            '</div>' +
+
+          '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox">' +
+  '<img class="feedback-lumi" src="../assets/images/read-before/intro/pre-reading-lumi-question-note.png" alt="피드백을 주는 루미">' +
+  '<div class="feedback-message">질문과 답을 적고 저장하면 루미가 피드백을 줄게!</div>' +
+'</div>' +
+          '</section>' +
+        '</div>' +
+
+        '<div class="bottom-row">' +
+  '<div></div>' +
+
+  '<div class="action-area">' +
+    '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
+    '<button class="main-button" type="button" onclick="checkAndGoNext()">저장하고 다음 →</button>' +
+  '</div>' +
+'</div>';
+
+      bindTextareaEvents();
+      updateTextareaCount();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      renderAll();
+    }
+
+    function bindTextareaEvents() {
+      const questionInput = document.getElementById("questionInput");
+      const answerInput = document.getElementById("answerInput");
+
+      questionInput.addEventListener("input", updateTextareaCount);
+      answerInput.addEventListener("input", updateTextareaCount);
+    }
+
+    function updateTextareaCount() {
+      const questionInput = document.getElementById("questionInput");
+      const answerInput = document.getElementById("answerInput");
+
+      if (!questionInput || !answerInput) {
+        return;
+      }
+
+      document.getElementById("questionLength").textContent = questionInput.value.length + " / 100";
+      document.getElementById("answerLength").textContent = answerInput.value.length + " / 200";
+    }
+
+    /*
+      =========================================================
+      6. 질문/답 피드백 검사
+      =========================================================
+    */
+
+    function checkAndGoNext() {
+      const questionInput = document.getElementById("questionInput");
+      const answerInput = document.getElementById("answerInput");
+      const feedbackBox = document.getElementById("feedbackBox");
+
+      const question = questionInput.value.trim();
+      const expectedAnswer = answerInput.value.trim();
+
+      const result = validateQuestionAndAnswer(question, expectedAnswer);
+
+      feedbackBox.classList.remove("good", "need");
+      feedbackBox.classList.add(result.ok ? "good" : "need");
+      feedbackBox.querySelector(".feedback-message").textContent = result.message;
+
+      if (!result.ok) {
+        return;
+      }
+
+      answers[currentStepIndex].question = question;
+      answers[currentStepIndex].expectedAnswer = expectedAnswer;
+      answers[currentStepIndex].passed = true;
+
+      setTimeout(function() {
+        if (currentStepIndex < steps.length - 1) {
+          currentStepIndex++;
+          currentMode = "example";
+          renderAll();
+        } else {
+          currentMode = "summary";
+          renderAll();
+        }
+      }, 900);
+    }
+
+    function validateQuestionAndAnswer(question, expectedAnswer) {
+      if (!question) {
+  const emptyQuestionMessages = {
+    title: "질문이 아직 비어 있어. 제목에서 궁금한 점을 한 문장으로 적어 봐!",
+    contents: "질문이 아직 비어 있어. 차례를 보고 앞으로 어떤 일이 일어날지 궁금한 점을 적어 봐!",
+    picture: "질문이 아직 비어 있어. 책 속 그림을 보고 인물, 표정, 장소, 물건에서 궁금한 점을 적어 봐!",
+    skim: "질문이 아직 비어 있어. 글을 훑어보고 눈에 띄는 낱말이나 문장에서 궁금한 점을 적어 봐!"
+  };
+
+  return {
+    ok: false,
+    message: emptyQuestionMessages[steps[currentStepIndex].type]
+  };
+}
+
+      if (question.length < 8) {
+        return {
+          ok: false,
+          message: "질문이 조금 짧아. 무엇이 궁금한지 더 자세히 적어 보면 좋아!"
+        };
+      }
+
+      if (!question.includes("?") && !question.includes("까") && !question.includes("왜") && !question.includes("어떤") && !question.includes("무슨")) {
+        return {
+          ok: false,
+          message: "질문처럼 보이도록 바꿔 보자. 예를 들면 ‘왜 ~일까?’, ‘어떤 일이 생길까?’처럼 적으면 좋아!"
+        };
+      }
+
+      if (!expectedAnswer) {
+        return {
+          ok: false,
+          message: "내가 생각한 답도 적어 줘. 아직 읽기 전이니까 상상해서 답해도 괜찮아!"
+        };
+      }
+
+      if (expectedAnswer.length < 8) {
+        return {
+          ok: false,
+          message: "답이 조금 짧아. 왜 그렇게 생각했는지 한 문장만 더 자세히 적어 봐!"
+        };
+      }
+
+      const weakAnswers = ["몰라", "모르겠다", "없다", "그냥", "모름"];
+
+      if (weakAnswers.includes(expectedAnswer.replaceAll(" ", ""))) {
+        return {
+          ok: false,
+          message: "조금 더 상상해서 답해 보자. 정답이 아니어도 괜찮으니까 ‘~일 것 같다’처럼 써 보면 좋아!"
+        };
+      }
+
+      return {
+        ok: true,
+        message: "좋아! 책을 읽기 전에 내용을 짐작해 볼 수 있는 질문이야. 다음 단서도 살펴보자!"
+      };
+    }
+
+    /*
+      =========================================================
+      7. 요약 화면
+      =========================================================
+    */
+
+    function showSummary() {
+      currentMode = "summary";
+      renderAll();
+    }
+
+    function renderSummary() {
+      const activityCard = document.getElementById("activityCard");
+
+      activityCard.innerHTML =
+        '<div class="activity-head">' +
+          '<div>' +
+            '<h2 class="activity-title">내가 만든 읽기 전 질문 확인하기</h2>' +
+            '<p class="activity-desc">완성한 질문은 공유하기 화면에서 친구들과 함께 볼 수 있어요.</p>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="summary-list">' +
+          steps.map(function(step, index) {
+            const item = answers[index];
+
+            return '<article class="summary-item">' +
+              '<h3 class="summary-title">' + step.number + '. ' + step.title + '</h3>' +
+              '<p class="summary-text"><strong>질문</strong> · ' + (item.question || "아직 작성하지 않았어요.") + '</p>' +
+              '<p class="summary-text"><strong>내가 생각한 답</strong> · ' + (item.expectedAnswer || "아직 작성하지 않았어요.") + '</p>' +
+            '</article>';
+          }).join("") +
+        '</div>' +
+
+        '<div class="bottom-row">' +
+          '<div class="small-note">✨ 모두 완성하면 공유하기 화면에서 친구들의 질문도 볼 수 있어요.</div>' +
+
+          '<div class="action-area">' +
+            '<button class="plain-button" type="button" onclick="editIncompleteOrFirst()">수정하기</button>' +
+            '<button class="main-button" type="button" onclick="completeAndGoShare()">공유하기로 이동 →</button>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function editIncompleteOrFirst() {
+      const incompleteIndex = answers.findIndex(function(item) {
+        return !item.passed;
+      });
+
+      currentStepIndex = incompleteIndex === -1 ? 0 : incompleteIndex;
+      currentMode = "write";
+      renderAll();
+    }
+
+    function completeAndGoShare() {
+      const incompleteIndex = answers.findIndex(function(item) {
+        return !item.passed;
+      });
+
+      if (incompleteIndex !== -1) {
+        currentStepIndex = incompleteIndex;
+        currentMode = "write";
+        renderAll();
+
+        setTimeout(function() {
+          const feedbackBox = document.getElementById("feedbackBox");
+          feedbackBox.classList.add("need");
+         feedbackBox.querySelector(".feedback-message").textContent =
+  "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 공유하기로 갈 수 있어!";
+        }, 100);
+
+        return;
+      }
+
+      saveBeforeReadingData();
+
+      location.href = "./before-reading-share.html";
+    }
+
+    function saveBeforeReadingData() {
+      const payload = {
+        studentId: studentId,
+        studentName: studentName,
+        bookId: selectedBook.bookId,
+        bookTitle: selectedBook.title,
+        questions: steps.map(function(step, index) {
+          return {
+            type: step.type,
+            typeName: step.title,
+            question: answers[index].question,
+            expectedAnswer: answers[index].expectedAnswer
+          };
+        })
+      };
+
+      sessionStorage.setItem("beforeReadingQuestions_" + studentId, JSON.stringify(payload));
+      console.log("읽기 전 질문 저장 데이터:", payload);
+    }
+
+    /*
+      =========================================================
+      8. 이동 함수
+      =========================================================
+    */
+
+    function goPrevious() {
+      if (currentStepIndex === 0) {
+        currentMode = "example";
+        renderAll();
+        return;
+      }
+
+      currentStepIndex--;
+      currentMode = "example";
+      renderAll();
+    }
+
+    function goHome() {
+      location.href = "./home.html";
+    }
+
+    function goPractice() {
+      location.href = "./practice.html";
+    }
+  </script>
+</body>
+</html>

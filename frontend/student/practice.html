@@ -654,9 +654,9 @@
             </p>
           </div>
 
-          <button class="step-button" id="beforeButton" onclick="completeStep('before')">
-            잠김
-          </button>
+          <button class="step-button" id="beforeButton" onclick="goBeforeIntroPage()">
+  잠김
+</button>
         </article>
 
         <!-- 3단계 -->
@@ -784,7 +784,10 @@
     function goQuestionBundlePage() {
       window.location.href = "./question-bundle.html";
     }
-
+// 읽기 전 인트로 화면으로 이동합니다.
+function goBeforeIntroPage() {
+  window.location.href = "./read-before-intro.html";
+}
     // 단계를 완료 처리합니다.
     function completeStep(stepName) {
       progress[stepName] = true;
