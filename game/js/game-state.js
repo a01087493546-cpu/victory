@@ -35,8 +35,14 @@ const GameState = (() => {
 
       // 쿨타임 (ms)
       cooldowns: {
-        normal: 0,
-        heavy:  0,
+        normal:     0,
+        heavy:      0,
+        ilgyeok:    0,
+        yeonsoek:   0,
+        bangeo:     0,
+        cheolbyeok: 0,
+        bulkkot:    0,
+        hwayeom:    0,
       },
 
       // 전투 진행 여부

@@ -1,53 +1,36 @@
 // dungeon-ui.js
-// 화면 제어 담당 (DOM 조작은 이 파일에서만)
-// 전투 화면 타격감 강화 버전
-// - 용사/적 돌진 모션
-// - 데미지 숫자 팝업
-// - 크리티컬 표시
-// - 검기/폭발/방어막 이펙트
-// - 피격 플래시
-// - 방어 BLOCK 표시
+// v3 - 스킬 6개 탭 UI
 
 const DungeonUI = (() => {
 
-  // 인터벌 ID 저장
   let _timerInterval    = null;
   let _enemyNormalTimer = null;
   let _enemyHeavyTimer  = null;
   let _cooldownInterval = null;
 
-  // ─────────────────────────────
-  // 공통 유틸
-  // ─────────────────────────────
+  const SKILL_COOLDOWNS = {
+    ilgyeok:    800,
+    yeonsoek:   1200,
+    bangeo:     0,
+    cheolbyeok: 3000,
+    bulkkot:    1000,
+    hwayeom:    5000,
+  };
 
-  // id로 요소를 안전하게 가져오는 함수
-  function $(id) {
-    return document.getElementById(id);
-  }
+  function $(id) { return document.getElementById(id); }
 
-  // ─── 화면 전환 ───
   function showScreen(id) {
-    document.querySelectorAll('.screen').forEach((screen) => {
-      screen.classList.remove('active');
-    });
-
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = $(id);
-    if (target) {
-      target.classList.add('active');
-    }
+    if (target) target.classList.add('active');
   }
 
-  // ─── 스프라이트 변경 ───
   function setAnim(id, animName) {
     const images = GameAPI.getImages();
     const el = $(id);
     if (!el) return;
-
-    // sprite 기본 클래스 + 현재 애니메이션 이름만 유지
     el.className = 'sprite ' + animName;
-
     const s = GameState.get();
-
     if (id === 'hero-spr') {
       el.src = images.hero[animName] || images.hero.idle;
     } else if (id === 'enemy-spr') {
@@ -56,416 +39,286 @@ const DungeonUI = (() => {
     }
   }
 
-  // ─── HP 바 업데이트 ───
   function updateBars() {
     const s = GameState.get();
     if (!s) return;
-
-    const heroHp  = Math.max(0, s.player.hp);
-    const enemyHp = Math.max(0, s.enemy.hp);
-
-    const heroPercent = Math.max(0, heroHp / s.player.maxHp * 100);
-    const enemyPercent = Math.max(0, enemyHp / s.enemy.maxHp * 100);
-
-    const heroBar = $('hero-bar');
+    const heroHp   = Math.max(0, s.player.hp);
+    const enemyHp  = Math.max(0, s.enemy.hp);
+    const heroP    = Math.max(0, heroHp  / s.player.maxHp * 100);
+    const enemyP   = Math.max(0, enemyHp / s.enemy.maxHp  * 100);
+    const heroBar  = $('hero-bar');
     const enemyBar = $('enemy-bar');
-
-    if (heroBar) {
-      heroBar.style.width = heroPercent + '%';
-      heroBar.classList.toggle('hp-low', heroPercent <= 25);
-    }
-
-    if (enemyBar) {
-      enemyBar.style.width = enemyPercent + '%';
-      enemyBar.classList.toggle('hp-low', enemyPercent <= 25);
-    }
-
-    if ($('hero-num')) {
-      $('hero-num').textContent = heroHp + ' / ' + s.player.maxHp;
-    }
-
-    if ($('enemy-num')) {
-      $('enemy-num').textContent = enemyHp + ' / ' + s.enemy.maxHp;
-    }
+    if (heroBar)  { heroBar.style.width  = heroP  + '%'; heroBar.classList.toggle('hp-low',  heroP  <= 25); }
+    if (enemyBar) { enemyBar.style.width = enemyP + '%'; enemyBar.classList.toggle('hp-low', enemyP <= 25); }
+    if ($('hero-num'))  $('hero-num').textContent  = heroHp  + ' / ' + s.player.maxHp;
+    if ($('enemy-num')) $('enemy-num').textContent = enemyHp + ' / ' + s.enemy.maxHp;
   }
 
-  // ─── 타이머 표시 ───
   function updateTimer() {
     const s = GameState.get();
     if (!s) return;
-
     const min = Math.floor(s.timeLeft / 60);
     const sec = s.timeLeft % 60;
-
     const timer = $('timer');
     if (!timer) return;
-
     timer.textContent = min + ':' + (sec < 10 ? '0' + sec : sec);
     timer.classList.toggle('danger', s.timeLeft <= 30);
   }
 
-  // ─── 스킬 버튼 HTML 생성 ───
-  function makeSkillButtonHTML(key, svgIcon, title, desc, cooldown) {
-    return (
-      '<span class="skill-num">' + key + '</span>' +
-      '<span class="skill-icon">' + svgIcon + '</span>' +
-      '<span class="skill-text">' +
-        '<strong>' + title + '</strong>' +
-        '<small>' + desc + '</small>' +
-      '</span>' +
-      (cooldown ? '<span class="skill-cooldown">' + cooldown + '</span>' : '')
-    );
-  }
-
-  // ─── 쿨타임 버튼 업데이트 ───
   function updateButtons() {
     const s = GameState.get();
     if (!s) return;
 
-    const attackBtn = $('btn-attack');
-    const heavyBtn = $('btn-heavy');
-    const defendBtn = $('btn-defend');
+    const skillDefaults = {
+      ilgyeok: '기본 베기', yeonsoek: '연속 공격',
+      cheolbyeok: '완전 방어', bulkkot: '강한 공격', hwayeom: '초강력 필살기'
+    };
 
-    const svgSword = '<img src="images/icon_attack.png" width="60" height="60" style="object-fit:contain;">';
-    const svgShield = '<img src="images/icon_defend.png" width="60" height="60" style="object-fit:contain;">';
-    const svgFire = '<img src="images/icon_heavy.png" width="60" height="60" style="object-fit:contain;">';
-
-    if (attackBtn) {
-      attackBtn.innerHTML = makeSkillButtonHTML('1', svgSword, '용사의 검', '기본 공격');
-    }
-
-    if (heavyBtn) {
-      if (s.cooldowns.heavy > 0) {
-        heavyBtn.disabled = true;
-        heavyBtn.innerHTML = makeSkillButtonHTML('3', svgFire, '불꽃 베기', Math.ceil(s.cooldowns.heavy / 1000) + '초 후 사용 가능');
+    ['ilgyeok','yeonsoek','cheolbyeok','bulkkot','hwayeom'].forEach(id => {
+      const btn = $('btn-' + id);
+      if (!btn) return;
+      const cd = s.cooldowns[id] || 0;
+      if (cd > 0) {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+        const small = btn.querySelector('.skill-text small');
+        if (small) small.textContent = Math.ceil(cd / 1000) + '초 후 사용 가능';
       } else {
-        heavyBtn.disabled = false;
-        heavyBtn.innerHTML = makeSkillButtonHTML('3', svgFire, '불꽃 베기', '강한 공격');
+        btn.disabled = false;
+        btn.classList.remove('disabled');
+        const small = btn.querySelector('.skill-text small');
+        if (small) small.textContent = skillDefaults[id] || '';
       }
-    }
+    });
 
-    if (defendBtn) {
-      if (s.player.isDefending) {
-        defendBtn.classList.add('defending');
-        defendBtn.innerHTML = makeSkillButtonHTML('2', svgShield, '방패 방어', '피해 줄이기');
-        setFighterClass('hero', 'defense-stance', true);
-      } else {
-        defendBtn.classList.remove('defending');
-        defendBtn.innerHTML = makeSkillButtonHTML('2', svgShield, '방패 방어', '피해 줄이기');
-        setFighterClass('hero', 'defense-stance', false);
-      }
-    }
+    const isDefending = s.player.isDefending;
+    ['btn-bangeo','btn-cheolbyeok'].forEach(id => {
+      const btn = $(id);
+      if (!btn) return;
+      btn.classList.toggle('defending', isDefending);
+    });
+    setFighterClass('hero', 'defense-stance', isDefending);
   }
 
-  // ─── 오른쪽 전투 HUD 값 업데이트 ───
   function updateBattleHud() {
     const s = GameState.get();
     if (!s) return;
-
-    if ($('battle-hud-magic')) {
-      $('battle-hud-magic').textContent = s.player.magic;
-    }
-
-    if ($('battle-hud-stamina')) {
-      $('battle-hud-stamina').textContent = s.player.maxHp;
-    }
-
-    if ($('battle-hud-courage')) {
-      $('battle-hud-courage').textContent = s.player.courage + '%';
-    }
+    if ($('battle-hud-magic'))   $('battle-hud-magic').textContent   = s.player.magic;
+    if ($('battle-hud-stamina')) $('battle-hud-stamina').textContent = s.player.maxHp;
+    if ($('battle-hud-courage')) $('battle-hud-courage').textContent = s.player.courage + '%';
   }
 
-  // ─── 전투 로그 ───
   function addLog(msg, type) {
     const log = $('battle-log');
     if (!log) return;
-
     const line = document.createElement('div');
     line.className = 'log-line ' + (type || '');
     line.textContent = msg;
-
     log.appendChild(line);
-
-    while (log.children.length > 16) {
-      log.removeChild(log.firstChild);
-    }
-
+    while (log.children.length > 16) log.removeChild(log.firstChild);
     log.scrollTop = log.scrollHeight;
   }
 
-  // ─────────────────────────────
-  // 이펙트 관련 함수
-  // ─────────────────────────────
+  // ── 이펙트 ──
 
-  // ─── 대상 위치 계산 ───
-  // target: 'enemy' 또는 'hero'
   function getTargetPoint(target) {
     const bg = $('battle-bg');
-
-    const targetEl = target === 'enemy'
-      ? $('enemy-spr')
-      : $('hero-spr');
-
-    if (!bg || !targetEl) {
-      return { x: 300, y: 260 };
-    }
-
+    const targetEl = target === 'enemy' ? $('enemy-spr') : $('hero-spr');
+    if (!bg || !targetEl) return { x: 300, y: 260 };
     const bgRect = bg.getBoundingClientRect();
-    const rect = targetEl.getBoundingClientRect();
-
+    const rect   = targetEl.getBoundingClientRect();
     return {
-      x: rect.left - bgRect.left + rect.width * 0.5,
-      y: rect.top - bgRect.top + rect.height * 0.42
+      x: rect.left - bgRect.left + rect.width  * 0.5,
+      y: rect.top  - bgRect.top  + rect.height * 0.42
     };
   }
 
-  // ─── 데미지 팝업 ───
-  // target: 'enemy' 또는 'hero'
-  // 기존 코드 호환용으로 true/false도 처리
   function showDmgPopup(target, dmg, isCrit) {
     const bg = $('battle-bg');
     if (!bg) return;
-
-    // 기존 호출 방식 호환
-    if (target === true) target = 'enemy';
+    if (target === true)  target = 'enemy';
     if (target === false) target = 'hero';
-
     const point = getTargetPoint(target);
-
     const pop = document.createElement('div');
-
-    pop.className =
-      'dmg-popup ' +
-      (target === 'enemy' ? 'enemy-dmg' : 'hero-dmg') +
-      (isCrit ? ' crit' : '');
-
-    if (isCrit) {
-      pop.innerHTML =
-        '<span class="critical-label">CRITICAL!</span>' +
-        '<span class="dmg-num">' + dmg + '</span>';
-    } else {
-      pop.innerHTML = '<span class="dmg-num">' + dmg + '</span>';
-    }
-
-    // 같은 위치만 뜨면 밋밋해서 살짝 랜덤 위치
-    const randomX = Math.floor(Math.random() * 54) - 27;
-    const randomY = Math.floor(Math.random() * 30) - 15;
-
-    // 데미지 숫자가 캐릭터 얼굴/몸통 근처에 크게 뜨도록 위치를 보정합니다.
-    // 적에게 주는 데미지는 용 머리와 몸통 사이에,
-    // 용사가 받는 데미지는 용사 상체 위쪽에 뜨게 합니다.
-    const offsetX = target === 'enemy' ? 64 : -36;
-    const offsetY = target === 'enemy' ? -42 : -58;
-
-    pop.style.left = (point.x + offsetX + randomX) + 'px';
-    pop.style.top = (point.y + offsetY + randomY) + 'px';
-
+    pop.className = 'dmg-popup ' + (target === 'enemy' ? 'enemy-dmg' : 'hero-dmg') + (isCrit ? ' crit' : '');
+    pop.innerHTML = isCrit
+      ? '<span class="critical-label">CRITICAL!</span><span class="dmg-num">' + dmg + '</span>'
+      : '<span class="dmg-num">' + dmg + '</span>';
+    const rx = Math.floor(Math.random() * 54) - 27;
+    const ry = Math.floor(Math.random() * 30) - 15;
+    pop.style.left = (point.x + (target==='enemy'?64:-36) + rx) + 'px';
+    pop.style.top  = (point.y + (target==='enemy'?-42:-58) + ry) + 'px';
     bg.appendChild(pop);
-
-    setTimeout(() => {
-      pop.remove();
-    }, 1000);
+    setTimeout(() => pop.remove(), 1000);
   }
 
-  // ─── BLOCK / GUARD / VICTORY 텍스트 팝업 ───
   function showTextPopup(target, text, type) {
     const bg = $('battle-bg');
     if (!bg) return;
-
     const point = getTargetPoint(target);
-
     const pop = document.createElement('div');
     pop.className = 'text-popup ' + (type || '');
     pop.textContent = text;
-
     pop.style.left = point.x + 'px';
-    pop.style.top = point.y + 'px';
-
+    pop.style.top  = point.y + 'px';
     bg.appendChild(pop);
-
-    setTimeout(() => {
-      pop.remove();
-    }, 900);
+    setTimeout(() => pop.remove(), 900);
   }
 
-  // ─── 검기 / 폭발 / 방어막 이펙트 ───
   function showImpact(target, type) {
     const bg = $('battle-bg');
     if (!bg) return;
-
     const point = getTargetPoint(target);
-
     const effect = document.createElement('div');
     effect.className = 'impact-effect ' + type;
-
     effect.style.left = point.x + 'px';
-    effect.style.top = point.y + 'px';
-
+    effect.style.top  = point.y + 'px';
     bg.appendChild(effect);
-
-    setTimeout(() => {
-      effect.remove();
-    }, 700);
+    setTimeout(() => effect.remove(), 700);
   }
 
-  // ─── 화면 흔들림 ───
+  function showWhiteFlash() {
+    const battle = $('s-battle');
+    if (!battle) return;
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;inset:0;z-index:9999;pointer-events:none;background:rgba(255,255,255,0.88);animation:whiteFlashFade 0.38s ease forwards;';
+    battle.appendChild(flash);
+    setTimeout(() => flash.remove(), 400);
+  }
+
+  function showShockwaves(target) {
+    const bg = $('battle-bg');
+    if (!bg) return;
+    const point = getTargetPoint(target);
+    [0,100,200].forEach(delay => {
+      setTimeout(() => {
+        const wave = document.createElement('div');
+        wave.className = 'impact-effect shockwave';
+        wave.style.left = point.x + 'px';
+        wave.style.top  = point.y + 'px';
+        bg.appendChild(wave);
+        setTimeout(() => wave.remove(), 700);
+      }, delay);
+    });
+  }
+
+  function showSparks(target) {
+    const bg = $('battle-bg');
+    if (!bg) return;
+    const point = getTargetPoint(target);
+    for (let i = 0; i < 12; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'spark-particle';
+      spark.style.left = point.x + 'px';
+      spark.style.top  = point.y + 'px';
+      const angle = (Math.PI * 2 / 12) * i;
+      const dist  = 60 + Math.random() * 60;
+      spark.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      spark.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      spark.style.animationDelay = Math.random() * 80 + 'ms';
+      bg.appendChild(spark);
+      setTimeout(() => spark.remove(), 600);
+    }
+  }
+
   function shakeScreen(isStrong) {
     const battle = $('s-battle');
     if (!battle) return;
-
-    battle.classList.remove('screen-shake');
-
-    // 같은 애니메이션을 연속 실행하기 위한 강제 갱신
+    battle.classList.remove('screen-shake','screen-shake-strong');
     void battle.offsetWidth;
-
-    battle.classList.add('screen-shake');
-
-    setTimeout(() => {
-      battle.classList.remove('screen-shake');
-    }, isStrong ? 430 : 330);
+    battle.classList.add(isStrong ? 'screen-shake-strong' : 'screen-shake');
+    setTimeout(() => battle.classList.remove('screen-shake','screen-shake-strong'), isStrong ? 500 : 330);
   }
 
-  // ─── 용사가 맞았을 때 붉은 화면 효과 ───
   function showHeroDamageVignette() {
     const battle = $('s-battle');
     if (!battle) return;
-
     battle.classList.add('hero-damaged');
-
-    setTimeout(() => {
-      battle.classList.remove('hero-damaged');
-    }, 480);
+    setTimeout(() => battle.classList.remove('hero-damaged'), 480);
   }
 
-  // ─── fighter 요소 가져오기 ───
   function getFighter(type) {
-    return document.querySelector(
-      type === 'enemy' ? '.fighter.right' : '.fighter.left'
-    );
+    return document.querySelector(type === 'enemy' ? '.fighter.right' : '.fighter.left');
   }
 
-  // ─── fighter 클래스 켜기/끄기 ───
-  // 방어 중일 때 용사에게 defense-stance 클래스를 붙이는 용도
   function setFighterClass(type, className, enabled) {
     const fighter = getFighter(type);
     if (!fighter) return;
-
     fighter.classList.toggle(className, enabled);
   }
 
-  // ─── 용사/적 돌진 모션 ───
   function playFighterMotion(type, className, duration) {
     const fighter = getFighter(type);
     if (!fighter) return;
-
     fighter.classList.remove(className);
-
-    // 같은 모션을 연속 실행하기 위한 강제 갱신
     void fighter.offsetWidth;
-
     fighter.classList.add(className);
-
-    setTimeout(() => {
-      fighter.classList.remove(className);
-    }, duration);
+    setTimeout(() => fighter.classList.remove(className), duration);
   }
 
-  // ─── 피격 플래시 / 흔들림 ───
   function playHitEffect(type) {
     const fighter = getFighter(type);
-
-    const sprite = type === 'enemy'
-      ? $('enemy-spr')
-      : $('hero-spr');
-
+    const sprite  = type === 'enemy' ? $('enemy-spr') : $('hero-spr');
     if (!fighter || !sprite) return;
-
     fighter.classList.remove('fighter-hit');
     sprite.classList.remove('taking-hit');
-
-    // 같은 피격 효과를 연속 실행하기 위한 강제 갱신
     void fighter.offsetWidth;
-
     fighter.classList.add('fighter-hit');
     sprite.classList.add('taking-hit');
-
     setTimeout(() => {
       fighter.classList.remove('fighter-hit');
       sprite.classList.remove('taking-hit');
     }, 390);
   }
 
-  // ─────────────────────────────
-  // 전투 시작 / 타이머
-  // ─────────────────────────────
+  function showCriticalBanner(dmg) {
+    const battle = $('s-battle');
+    if (!battle) return;
+    const banner = document.createElement('div');
+    banner.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0) rotate(-6deg);z-index:9998;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px;animation:critBannerIn 0.28s cubic-bezier(.18,.84,.28,1.4) forwards;';
+    banner.innerHTML =
+      '<div style="font-family:\'Noto Serif KR\',serif;font-size:52px;font-weight:900;color:#ff4422;letter-spacing:0.08em;text-shadow:0 0 30px rgba(255,68,34,0.9),0 0 60px rgba(255,68,34,0.5),-2px -2px 0 #fff8d0,2px -2px 0 #fff8d0;">CRITICAL!</div>' +
+      '<div style="font-family:\'Noto Serif KR\',serif;font-size:80px;font-weight:900;color:#ffd875;text-shadow:0 0 24px rgba(255,68,34,0.8),0 4px 0 rgba(80,20,0,0.9),-1px -1px 0 #fff,1px -1px 0 #fff;line-height:1;">' + dmg + '</div>';
+    battle.appendChild(banner);
+    setTimeout(() => {
+      banner.style.animation = 'critBannerOut 0.4s ease forwards';
+      setTimeout(() => banner.remove(), 400);
+    }, 900);
+  }
 
-  // ─── 적 강공격 예고 ───
   function showHeavyWarning() {
     const warning = $('heavy-warning');
-
     if (warning) {
       warning.classList.add('visible');
-
-      setTimeout(() => {
-        warning.classList.remove('visible');
-      }, 2000);
+      setTimeout(() => warning.classList.remove('visible'), 2000);
     }
-
     addLog('⚠️ 적이 강한 공격을 준비하고 있습니다!', 'warning');
   }
 
-  // ─── 전투 시작 ───
+  // ── 전투 시작 / 타이머 ──
+
   function startBattle(dungeonIdx) {
     clearTimers();
-
     GameState.init(dungeonIdx);
-
     const s = GameState.get();
     if (!s) return;
-
     GameState.setRunning(true);
 
-    if ($('battle-bg')) {
-      $('battle-bg').style.backgroundImage =
-        "url('" + s.dungeon.bg + "')";
-    }
+    if ($('battle-bg')) $('battle-bg').style.backgroundImage = "url('" + s.dungeon.bg + "')";
 
-    // 전투 화면 상단에는 난이도 기준 던전명을 보여줍니다.
-    // 보스 HP 위에는 실제 보스 이름을 보여줍니다.
-    const dungeonTitleMap = ['초급 던전', '중급 던전', '고급 던전'];
-
-    if ($('enemy-lbl')) {
-      $('enemy-lbl').textContent = dungeonTitleMap[dungeonIdx] || s.dungeon.name;
-    }
-
-    if ($('enemy-lbl2')) {
-      $('enemy-lbl2').textContent = s.dungeon.name;
-    }
-
-    if ($('stat-magic')) {
-      $('stat-magic').textContent = s.player.magic;
-    }
-
-    if ($('stat-stamina')) {
-      $('stat-stamina').textContent = s.player.stamina;
-    }
-
-    if ($('stat-courage')) {
-      $('stat-courage').textContent = s.player.courage;
-    }
+    const titleMap = ['초급 던전','중급 던전','고급 던전'];
+    if ($('enemy-lbl'))    $('enemy-lbl').textContent    = titleMap[dungeonIdx] || s.dungeon.name;
+    if ($('enemy-lbl2'))   $('enemy-lbl2').textContent   = s.dungeon.name;
+    if ($('stat-magic'))   $('stat-magic').textContent   = s.player.magic;
+    if ($('stat-stamina')) $('stat-stamina').textContent = s.player.stamina;
+    if ($('stat-courage')) $('stat-courage').textContent = s.player.courage;
 
     setAnim('hero-spr', 'idle');
     setAnim('enemy-spr', 'idle');
+    updateBars(); updateTimer(); updateBattleHud();
+    switchSkillTabInternal('atk');
 
-    updateBars();
-    updateTimer();
-    updateButtons();
-    updateBattleHud();
-
-    if ($('battle-log')) {
-      $('battle-log').innerHTML = '';
-    }
-
+    if ($('battle-log')) $('battle-log').innerHTML = '';
     addLog('⚔️ ' + s.dungeon.name + ' 등장! 전투 시작!', 'system');
     addLog('좋은 질문으로 용을 혼란에 빠뜨리세요.', 'system');
 
@@ -473,330 +326,249 @@ const DungeonUI = (() => {
     startTimers();
   }
 
-  // ─── 타이머 시작 ───
   function startTimers() {
     const s = GameState.get();
     if (!s) return;
-
     const dungeon = s.dungeon;
 
-    // 1초마다 타이머 감소
     _timerInterval = setInterval(() => {
       if (!s.isRunning) return;
-
-      GameState.tickTimer();
-      updateTimer();
-
-      const result = BattleEngine.checkBattleEnd(
-        s.player.hp,
-        s.enemy.hp,
-        s.timeLeft
-      );
-
-      if (result) {
-        endBattle(result);
-      }
+      GameState.tickTimer(); updateTimer();
+      const r = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+      if (r) endBattle(r);
     }, 1000);
 
-    // 쿨타임 감소
     _cooldownInterval = setInterval(() => {
       if (!s.isRunning) return;
-
-      GameState.tickCooldown('normal', 100);
-      GameState.tickCooldown('heavy', 100);
+      Object.keys(SKILL_COOLDOWNS).forEach(id => GameState.tickCooldown(id, 100));
       updateButtons();
     }, 100);
 
-    // 적 일반 공격
     _enemyNormalTimer = setInterval(() => {
       if (!s.isRunning) return;
-
       setAnim('enemy-spr', 'attack');
       playFighterMotion('enemy', 'enemy-lunge', 480);
-
-      // 적이 달려드는 타이밍에 맞춰 실제 피해와 이펙트를 조금 늦게 발생
       setTimeout(() => {
         if (!s.isRunning) return;
-
-        const result = BattleEngine.enemyNormalAttack(
-          dungeon.enemy.normalAtk,
-          s.player.isDefending
-        );
-
+        const result = BattleEngine.enemyNormalAttack(dungeon.enemy.normalAtk, s.player.isDefending);
         GameState.damagePlayer(result.damage);
-
         if (result.blocked) {
-          showImpact('hero', 'shield');
-          showTextPopup('hero', 'BLOCK', 'block');
+          showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
           addLog('🛡️ 방어 성공! ' + result.damage + ' 데미지만 받았습니다.', 'defend');
         } else {
-          showImpact('hero', 'burst');
-          showDmgPopup('hero', result.damage, false);
-          playHitEffect('hero');
-          showHeroDamageVignette();
-          shakeScreen(false);
+          showImpact('hero','burst'); showDmgPopup('hero', result.damage, false);
+          playHitEffect('hero'); showHeroDamageVignette(); shakeScreen(false);
           addLog('🐉 ' + s.dungeon.name + ' 의 공격! ' + result.damage + ' 데미지!', 'enemy');
         }
-
         updateBars();
-
-        setTimeout(() => {
-          setAnim('enemy-spr', 'idle');
-        }, 260);
-
-        const result2 = BattleEngine.checkBattleEnd(
-          s.player.hp,
-          s.enemy.hp,
-          s.timeLeft
-        );
-
-        if (result2) {
-          endBattle(result2);
-        }
+        setTimeout(() => setAnim('enemy-spr','idle'), 260);
+        const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        if (r2) endBattle(r2);
       }, 260);
     }, dungeon.enemy.normalAtkInterval);
 
-    // 적 강한 공격
     _enemyHeavyTimer = setInterval(() => {
       if (!s.isRunning) return;
-
       showHeavyWarning();
-
       setTimeout(() => {
         if (!s.isRunning) return;
-
-        setAnim('enemy-spr', 'attack');
-        playFighterMotion('enemy', 'enemy-lunge', 520);
-
+        setAnim('enemy-spr','attack');
+        playFighterMotion('enemy','enemy-lunge',520);
         setTimeout(() => {
           if (!s.isRunning) return;
-
-          const result = BattleEngine.enemyHeavyAttack(
-            dungeon.enemy.heavyAtk,
-            s.player.isDefending
-          );
-
+          const result = BattleEngine.enemyHeavyAttack(dungeon.enemy.heavyAtk, s.player.isDefending);
           GameState.damagePlayer(result.damage);
-
           if (result.blocked) {
-            showImpact('hero', 'shield');
-            showTextPopup('hero', 'BLOCK', 'block');
+            showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
             addLog('🛡️ 강공격 방어 성공! ' + result.damage + ' 데미지만 받았습니다.', 'defend');
           } else {
-            showImpact('hero', 'burst');
-            showDmgPopup('hero', result.damage, true);
-            playHitEffect('hero');
-            showHeroDamageVignette();
-            shakeScreen(true);
+            showWhiteFlash(); showImpact('hero','burst'); showShockwaves('hero');
+            showDmgPopup('hero', result.damage, true); playHitEffect('hero');
+            showHeroDamageVignette(); shakeScreen(true);
             addLog('💢 ' + s.dungeon.name + ' 의 강한 공격!! ' + result.damage + ' 데미지!', 'enemy');
           }
-
           updateBars();
-
-          setTimeout(() => {
-            setAnim('enemy-spr', 'idle');
-          }, 260);
-
-          const result2 = BattleEngine.checkBattleEnd(
-            s.player.hp,
-            s.enemy.hp,
-            s.timeLeft
-          );
-
-          if (result2) {
-            endBattle(result2);
-          }
+          setTimeout(() => setAnim('enemy-spr','idle'), 260);
+          const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+          if (r2) endBattle(r2);
         }, 300);
       }, 2000);
     }, dungeon.enemy.heavyAtkInterval);
   }
 
-  // ─── 타이머 정리 ───
   function clearTimers() {
-    clearInterval(_timerInterval);
-    clearInterval(_enemyNormalTimer);
-    clearInterval(_enemyHeavyTimer);
-    clearInterval(_cooldownInterval);
-
-    _timerInterval = null;
-    _enemyNormalTimer = null;
-    _enemyHeavyTimer = null;
-    _cooldownInterval = null;
+    clearInterval(_timerInterval); clearInterval(_enemyNormalTimer);
+    clearInterval(_enemyHeavyTimer); clearInterval(_cooldownInterval);
+    _timerInterval = _enemyNormalTimer = _enemyHeavyTimer = _cooldownInterval = null;
   }
 
-  // ─────────────────────────────
-  // 플레이어 행동
-  // ─────────────────────────────
+  // ── 스킬 사용 ──
 
-  // ─── 플레이어 일반 공격 ───
-  function playerAttack() {
-    const s = GameState.get();
-    if (!s || !s.isRunning || s.cooldowns.normal > 0) return;
-
-    const result = BattleEngine.playerNormalAttack(s.player.magic);
-
-    // 일반 공격 쿨타임
-    GameState.setCooldown('normal', 850);
-
-    // 1) 용사 공격 이미지 + 돌진 모션
-    setAnim('hero-spr', 'attack');
-    playFighterMotion('hero', 'hero-lunge', 470);
-
-    // 2) 검이 닿는 타이밍에 피해 적용
-    setTimeout(() => {
-      if (!s.isRunning) return;
-
-      GameState.damageEnemy(result.damage);
-
-      // 3) 검기 또는 크리티컬 폭발 이펙트
-      showImpact('enemy', result.isCrit ? 'burst' : 'slash');
-
-      // 4) 데미지 숫자
-      showDmgPopup('enemy', result.damage, result.isCrit);
-
-      // 5) 적 피격 플래시
-      playHitEffect('enemy');
-
-      // 6) 크리티컬이면 화면 살짝 흔들기
-      shakeScreen(result.isCrit);
-
-      if (result.isCrit) {
-        addLog('✨ 크리티컬! 질문이 깊게 꽂혔습니다. ' + result.damage + ' 데미지!', 'crit');
-      } else {
-        addLog('⚔️ 질문 공격! ' + result.damage + ' 데미지!', 'player');
-      }
-
-      updateBars();
-
-      const battleEnd = BattleEngine.checkBattleEnd(
-        s.player.hp,
-        s.enemy.hp,
-        s.timeLeft
-      );
-
-      if (battleEnd) {
-        endBattle(battleEnd);
-      }
-    }, 230);
-
-    // 공격 모션 후 다시 대기 이미지
-    setTimeout(() => {
-      setAnim('hero-spr', 'idle');
-    }, 540);
-  }
-
-  // ─── 플레이어 강한 공격 ───
-  function playerHeavyAttack() {
-    const s = GameState.get();
-    if (!s || !s.isRunning || s.cooldowns.heavy > 0) return;
-
-    const cooldown = PlayerStats.calcHeavyCooldown(s.player.courage);
-    const result = BattleEngine.playerHeavyAttack(s.player.magic);
-
-    GameState.setCooldown('heavy', cooldown);
-
-    // 1) 용사 강공격 모션
-    setAnim('hero-spr', 'attack');
-    playFighterMotion('hero', 'hero-lunge', 520);
-
-    // 2) 공격이 닿는 타이밍에 피해 적용
-    setTimeout(() => {
-      if (!s.isRunning) return;
-
-      GameState.damageEnemy(result.damage);
-
-      // 강공격은 항상 폭발 이펙트
-      showImpact('enemy', 'burst');
-      showDmgPopup('enemy', result.damage, result.isCrit);
-      playHitEffect('enemy');
-
-      // 강공격은 화면 흔들림 강하게
-      shakeScreen(true);
-
-      if (result.isCrit) {
-        addLog('💥 깊은 질문 크리티컬!! 용이 크게 흔들립니다. ' + result.damage + ' 데미지!', 'crit');
-      } else {
-        addLog('💥 깊은 질문! ' + result.damage + ' 데미지!', 'player');
-      }
-
-      updateBars();
-
-      const battleEnd = BattleEngine.checkBattleEnd(
-        s.player.hp,
-        s.enemy.hp,
-        s.timeLeft
-      );
-
-      if (battleEnd) {
-        endBattle(battleEnd);
-      }
-    }, 260);
-
-    setTimeout(() => {
-      setAnim('hero-spr', 'idle');
-    }, 580);
-  }
-
-  // ─── 방어 시작 ───
-  function startDefend() {
+  function useSkill(skillName) {
     const s = GameState.get();
     if (!s || !s.isRunning) return;
+    if ((s.cooldowns[skillName] || 0) > 0) return;
 
-    GameState.setDefending(true);
-    updateButtons();
-
-    showImpact('hero', 'shield');
-    showTextPopup('hero', 'GUARD', 'block');
-
-    addLog('🛡️ 집중 방어 자세!', 'defend');
+    if (skillName === 'bangeo' || skillName === 'cheolbyeok') {
+      _doDefendSkill(skillName, s); return;
+    }
+    _doAttackSkill(skillName, s);
   }
 
-  // ─── 방어 종료 ───
+  function _doDefendSkill(skillName, s) {
+    const cd = SKILL_COOLDOWNS[skillName] || 0;
+    if (cd > 0) GameState.setCooldown(skillName, cd);
+    GameState.setDefending(true);
+    updateButtons();
+    if (skillName === 'cheolbyeok') {
+      showImpact('hero','shield'); showImpact('hero','shield');
+      showTextPopup('hero','철벽!','block');
+      addLog('🔒 철벽! 완전 방어 자세!', 'defend');
+    } else {
+      showImpact('hero','shield');
+      showTextPopup('hero','GUARD','block');
+      addLog('🛡️ 방어 자세!', 'defend');
+    }
+  }
+
+  function _doAttackSkill(skillName, s) {
+    const cd = SKILL_COOLDOWNS[skillName] || 0;
+    if (cd > 0) GameState.setCooldown(skillName, cd);
+
+    if (skillName === 'hwayeom') { _doHwayeom(s); return; }
+    if (skillName === 'bulkkot') { _doBulkkot(s); return; }
+
+    setAnim('hero-spr','attack');
+    playFighterMotion('hero','hero-lunge',470);
+
+    setTimeout(() => {
+      if (!s.isRunning) return;
+      const result = skillName === 'ilgyeok'
+        ? BattleEngine.skillIlgyeok(s.player.magic)
+        : BattleEngine.skillYeonsoek(s.player.magic);
+
+      GameState.damageEnemy(result.damage);
+
+      if (result.isCrit) {
+        showWhiteFlash(); showImpact('enemy','burst');
+        showShockwaves('enemy'); showSparks('enemy');
+      } else {
+        showImpact('enemy','slash');
+      }
+
+      showDmgPopup('enemy', result.damage, result.isCrit);
+      playHitEffect('enemy');
+      shakeScreen(result.isCrit);
+
+      const label = { ilgyeok:'일격', yeonsoek:'연속베기' };
+      addLog(result.isCrit
+        ? '✨ ' + label[skillName] + ' 크리티컬! ' + result.damage + ' 데미지!'
+        : '⚔️ ' + label[skillName] + '! ' + result.damage + ' 데미지!',
+        result.isCrit ? 'crit' : 'player');
+
+      updateBars();
+      const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+      if (be) endBattle(be);
+    }, 230);
+
+    setTimeout(() => setAnim('hero-spr','idle'), 540);
+  }
+
+  function _doBulkkot(s) {
+    const result = BattleEngine.skillBulkkot(s.player.magic);
+    const slots = ['...숨을 죽이고','...모든 걸 걸어','...지금 이 순간'];
+    const heroFighter = getFighter('hero');
+    if (heroFighter) heroFighter.classList.add('charging');
+    const bg = $('battle-bg');
+    if (bg) { bg.style.transition='filter 0.4s ease'; bg.style.filter='brightness(0.45)'; }
+    [0,380,760].forEach((d,i) => setTimeout(() => showTextPopup('hero',slots[i],'charging-slot'), d));
+    setTimeout(() => {
+      if (heroFighter) heroFighter.classList.remove('charging');
+      if (bg) { bg.style.filter='brightness(1)'; bg.style.transition='filter 0.2s ease'; }
+      setAnim('hero-spr','attack'); playFighterMotion('hero','hero-lunge',520); showWhiteFlash();
+      setTimeout(() => {
+        if (!s.isRunning) return;
+        GameState.damageEnemy(result.damage);
+        showImpact('enemy','burst'); showShockwaves('enemy'); showSparks('enemy');
+        showCriticalBanner(result.damage); playHitEffect('enemy'); shakeScreen(true);
+        addLog('🔥 불꽃베기 CRITICAL!! ' + result.damage + ' 데미지!', 'crit');
+        updateBars();
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        if (be) endBattle(be);
+      }, 260);
+      setTimeout(() => setAnim('hero-spr','idle'), 580);
+    }, 1200);
+  }
+
+  function _doHwayeom(s) {
+    const result = BattleEngine.skillHwayeom(s.player.magic);
+    const slots = ['운명을 건다...','모든 걸 담아...','이 한 방에...'];
+    const heroFighter = getFighter('hero');
+    if (heroFighter) heroFighter.classList.add('charging');
+    const bg = $('battle-bg');
+    if (bg) { bg.style.transition='filter 0.5s ease'; bg.style.filter='brightness(0.3)'; }
+    [0,380,760].forEach((d,i) => setTimeout(() => showTextPopup('hero',slots[i],'charging-slot'), d));
+    setTimeout(() => showWhiteFlash(), 100);
+    setTimeout(() => {
+      if (heroFighter) heroFighter.classList.remove('charging');
+      if (bg) { bg.style.filter='brightness(1)'; bg.style.transition='filter 0.2s ease'; }
+      setAnim('hero-spr','attack'); playFighterMotion('hero','hero-lunge',520); showWhiteFlash();
+      setTimeout(() => {
+        if (!s.isRunning) return;
+        GameState.damageEnemy(result.damage);
+        showImpact('enemy','burst'); showImpact('enemy','burst');
+        showShockwaves('enemy'); showSparks('enemy');
+        showCriticalBanner(result.damage); playHitEffect('enemy'); shakeScreen(true);
+        addLog('💥 화염폭발 CRITICAL!! 용이 크게 흔들립니다. ' + result.damage + ' 데미지!', 'crit');
+        updateBars();
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        if (be) endBattle(be);
+      }, 260);
+      setTimeout(() => setAnim('hero-spr','idle'), 580);
+    }, 1200);
+  }
+
   function stopDefend() {
     const s = GameState.get();
     if (!s) return;
-
     GameState.setDefending(false);
     updateButtons();
   }
 
-  // ─────────────────────────────
-  // 전투 종료 / 결과
-  // ─────────────────────────────
+  function switchSkillTabInternal(tab) {
+    document.querySelectorAll('.skill-slots').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.skill-tab').forEach(el => el.classList.remove('active'));
+    const slot = document.getElementById('slot-' + tab);
+    const tabBtn = document.querySelector('.' + tab + '-tab');
+    if (slot) slot.classList.remove('hidden');
+    if (tabBtn) tabBtn.classList.add('active');
+  }
 
-  // ─── 전투 종료 ───
+  // ── 전투 종료 / 결과 ──
+
   function endBattle(result) {
     const s = GameState.get();
     if (!s || !s.isRunning) return;
-
-    GameState.setRunning(false);
-    clearTimers();
-
+    GameState.setRunning(false); clearTimers();
     if (result === 'victory') {
-      setAnim('enemy-spr', 'dead');
-      showTextPopup('enemy', 'VICTORY', 'block');
-      addLog('🎉 승리! 지식을 되찾았습니다!', 'system');
-      showResult(true, false);
+      setAnim('enemy-spr','dead'); showTextPopup('enemy','VICTORY','block');
+      addLog('🎉 승리! 지식을 되찾았습니다!', 'system'); showResult(true, false);
     } else if (result === 'defeat') {
-      setAnim('hero-spr', 'dead');
-      addLog('💀 용사가 쓰러졌습니다...', 'system');
-      showResult(false, false);
+      setAnim('hero-spr','dead');
+      addLog('💀 용사가 쓰러졌습니다...', 'system'); showResult(false, false);
     } else if (result === 'timeout') {
-      addLog('⏰ 시간 초과! 패배...', 'system');
-      showResult(false, true);
+      addLog('⏰ 시간 초과! 패배...', 'system'); showResult(false, true);
     }
   }
 
-  // ─── 결과 화면 ───
   function showResult(isWin, isTimeout) {
     setTimeout(() => {
       const s = GameState.get();
       if (!s) return;
-
       if (isWin) {
         $('r-emoji').textContent = '🏆';
         $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
-        $('r-sub').textContent = '세계 지식 창고의 지식을 되찾았습니다!';
+        $('r-sub').textContent   = '세계 지식 창고의 지식을 되찾았습니다!';
         $('r-rewards').innerHTML =
           '<div class="reward-chip-result">✨ 마법력 +' + s.player.magic + '</div>' +
           '<div class="reward-chip-result">💪 체력 +' + s.player.stamina + '</div>' +
@@ -804,37 +576,30 @@ const DungeonUI = (() => {
       } else {
         $('r-emoji').textContent = isTimeout ? '⏰' : '💀';
         $('r-title').textContent = isTimeout ? '시간 초과!' : '패배...';
-        $('r-sub').textContent = '더 많이 책을 읽고 능력치를 올려보세요!';
-        $('r-rewards').innerHTML =
-          '<div class="reward-chip-result">다시 도전하면 더 강해질 거예요 💪</div>';
+        $('r-sub').textContent   = '더 많이 책을 읽고 능력치를 올려보세요!';
+        $('r-rewards').innerHTML = '<div class="reward-chip-result">다시 도전하면 더 강해질 거예요 💪</div>';
       }
-
       showScreen('s-result');
     }, 1200);
   }
 
-  // ─── 던전 선택 화면으로 돌아가기 ───
-  function goToMap() {
-    clearTimers();
-    showScreen('s-map');
-  }
+  function goToMap() { clearTimers(); showScreen('s-map'); }
 
   return {
-    startBattle,
-    playerAttack,
-    playerHeavyAttack,
-    startDefend,
-    stopDefend,
-    goToMap,
-    showScreen,
+    startBattle, useSkill, stopDefend, goToMap, showScreen,
+    switchSkillTab: switchSkillTabInternal,
+    playerAttack:      () => useSkill('ilgyeok'),
+    playerHeavyAttack: () => useSkill('bulkkot'),
+    startDefend:       () => useSkill('bangeo'),
   };
 
 })();
 
-// index.html onclick에서 직접 호출
-function goToMap()             { DungeonUI.goToMap(); }
-function goToBattle(idx)       { DungeonUI.startBattle(idx); }
-function playerAttack()        { DungeonUI.playerAttack(); }
-function playerHeavyAttack()   { DungeonUI.playerHeavyAttack(); }
-function startDefend()         { DungeonUI.startDefend(); }
-function stopDefend()          { DungeonUI.stopDefend(); }
+function goToMap()           { DungeonUI.goToMap(); }
+function goToBattle(idx)     { DungeonUI.startBattle(idx); }
+function playerAttack()      { DungeonUI.playerAttack(); }
+function playerHeavyAttack() { DungeonUI.playerHeavyAttack(); }
+function startDefend()       { DungeonUI.startDefend(); }
+function stopDefend()        { DungeonUI.stopDefend(); }
+function useSkill(name)      { DungeonUI.useSkill(name); }
+function switchSkillTab(tab) { DungeonUI.switchSkillTab(tab); }

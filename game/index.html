@@ -377,48 +377,103 @@
 
         <!-- 스킬 버튼 -->
         <div class="action-buttons">
-          <button class="action-btn attack-btn" id="btn-attack" onclick="playerAttack()">
-            <span class="skill-num">1</span>
-            <span class="skill-icon">
-              <img src="images/icon_attack.png" width="56" height="56" style="object-fit:contain;">
-            </span>
-            <span class="skill-text">
-              <strong>용사의 검</strong>
-              <small>기본 피해를 줍니다.</small>
-            </span>
-          </button>
 
-          <button class="action-btn defend-btn" id="btn-defend"
-            onmousedown="startDefend()" onmouseup="stopDefend()"
-            ontouchstart="startDefend()" ontouchend="stopDefend()">
-            <span class="skill-num">2</span>
-            <span class="skill-icon">
-              <img src="images/icon_defend.png" width="56" height="56" style="object-fit:contain;">
-            </span>
-            <span class="skill-text">
-              <strong>방패 방어</strong>
-              <small>다음 피해를 줄입니다.</small>
-            </span>
-            <span class="skill-cooldown">2턴</span>
-          </button>
+          <!-- 탭 -->
+          <div class="skill-tabs">
+            <button class="skill-tab active atk-tab" onclick="switchSkillTab('atk')">
+              <span>⚔</span> 공격
+            </button>
+            <button class="skill-tab def-tab" onclick="switchSkillTab('def')">
+              <span>🛡</span> 방어
+            </button>
+            <button class="skill-tab hvy-tab" onclick="switchSkillTab('hvy')">
+              <span>🔥</span> 필살
+            </button>
+          </div>
 
-          <button class="action-btn heavy-btn" id="btn-heavy" onclick="playerHeavyAttack()">
-            <span class="skill-num">3</span>
-            <span class="skill-icon">
-              <img src="images/icon_heavy.png" width="56" height="56" style="object-fit:contain;">
-            </span>
-            <span class="skill-text">
-              <strong>불꽃 베기</strong>
-              <small>높은 피해를 줍니다.</small>
-            </span>
-            <span class="skill-cooldown">3턴</span>
-          </button>
+          <!-- 공격 스킬 -->
+          <div class="skill-slots" id="slot-atk">
+            <button class="action-btn attack-btn" id="btn-ilgyeok" onclick="useSkill('ilgyeok')">
+              <span class="skill-key">1</span>
+              <span class="skill-icon">
+                <img src="images/icon_ilgyeok.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>일격</strong>
+                <small>기본 베기</small>
+              </span>
+            </button>
+            <button class="action-btn attack-btn" id="btn-yeonsoek" onclick="useSkill('yeonsoek')">
+              <span class="skill-key">2</span>
+              <span class="skill-icon">
+                <img src="images/icon_yeonsoek.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>연속 베기</strong>
+                <small>연속 공격</small>
+              </span>
+            </button>
+          </div>
+
+          <!-- 방어 스킬 -->
+          <div class="skill-slots hidden" id="slot-def">
+            <button class="action-btn defend-btn" id="btn-bangeo"
+              onmousedown="useSkill('bangeo')" onmouseup="stopDefend()"
+              ontouchstart="useSkill('bangeo')" ontouchend="stopDefend()">
+              <span class="skill-key">1</span>
+              <span class="skill-icon">
+                <img src="images/icon_bangeo.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>방어</strong>
+                <small>기본 막기</small>
+              </span>
+            </button>
+            <button class="action-btn defend-btn" id="btn-cheolbyeok"
+              onmousedown="useSkill('cheolbyeok')" onmouseup="stopDefend()"
+              ontouchstart="useSkill('cheolbyeok')" ontouchend="stopDefend()">
+              <span class="skill-key">2</span>
+              <span class="skill-icon">
+                <img src="images/icon_cheolbyeok.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>철벽</strong>
+                <small>완전 방어</small>
+              </span>
+            </button>
+          </div>
+
+          <!-- 필살 스킬 -->
+          <div class="skill-slots hidden" id="slot-hvy">
+            <button class="action-btn heavy-btn" id="btn-bulkkot" onclick="useSkill('bulkkot')">
+              <span class="skill-key">1</span>
+              <span class="skill-icon">
+                <img src="images/icon_bulkkot.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>불꽃 베기</strong>
+                <small>강한 공격</small>
+              </span>
+            </button>
+            <button class="action-btn heavy-btn" id="btn-hwayeom" onclick="useSkill('hwayeom')">
+              <span class="skill-key">2</span>
+              <span class="skill-icon">
+                <img src="images/icon_hwayeom.png" width="56" height="56" style="object-fit:contain;">
+              </span>
+              <span class="skill-text">
+                <strong>화염 폭발</strong>
+                <small>초강력 필살기</small>
+              </span>
+            </button>
+          </div>
+
         </div>
-      </div>
 
       <!-- 튜토리얼 바 -->
       <div class="battle-guide-box">
-        <div class="battle-guide-icon">📖</div>
+        <div class="battle-guide-icon">
+          <img src="images/icon_tutorial.png" width="130" height="130" style="object-fit:contain;">
+        </div>
         <div class="battle-guide-content">
           <div class="battle-guide-title">튜토리얼</div>
           <p>좋은 질문을 만들수록 용을 혼란에 빠뜨리고, 강한 공격은 방어로 막을 수 있습니다.</p>
