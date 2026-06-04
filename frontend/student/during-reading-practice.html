@@ -1,0 +1,1407 @@
+<!--
+  파일명: during-reading-practice.html
+  역할: 읽기 중 질문 종류별 연습 화면입니다.
+
+  현재 구현 범위:
+  1. 질문 종류 선택 화면
+  2. 방법 알기 화면
+  3. 1번 질문 종류 기본 연습 화면
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>문답책 - 읽기 중 질문 연습</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #fff1d0;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.68)),
+        url("../assets/images/during-reading/intro/during-reading-practice-bg.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px 38px 30px;
+    }
+
+    .page-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Noto Serif KR", serif;
+      color: #fff4d8;
+      font-size: 29px;
+      font-weight: 900;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+    }
+
+    .logo-area img {
+      width: 62px;
+      height: 62px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
+    }
+
+    .nav-button {
+      border: 1px solid rgba(218, 160, 65, 0.45);
+      border-radius: 999px;
+      padding: 13px 24px;
+      background: rgba(25, 17, 10, 0.72);
+      color: #fff0cf;
+      font-size: 16px;
+      font-weight: 900;
+      box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+    }
+
+    .nav-button:hover {
+      transform: translateY(-2px);
+      background: rgba(69, 44, 22, 0.82);
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 720px;
+      overflow: hidden;
+      border-radius: 34px;
+      border: 1px solid rgba(218, 160, 65, 0.48);
+      background:
+        radial-gradient(circle at 50% 8%, rgba(221, 158, 55, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(15, 12, 9, 0.76), rgba(4, 4, 3, 0.82));
+      box-shadow:
+        0 36px 80px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 230, 166, 0.08);
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(216, 150, 42, 0.13), transparent 38%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.08), transparent 45%, rgba(0, 0, 0, 0.18));
+      z-index: 0;
+    }
+
+    .screen {
+      position: relative;
+      z-index: 1;
+      padding: 38px 58px 48px;
+    }
+
+    .screen-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .title-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 9px 20px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #d8a84c, #8d551a);
+      border: 1px solid rgba(255, 220, 142, 0.6);
+      color: #fff3d0;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+    }
+
+    .main-title {
+      font-family: "Noto Serif KR", serif;
+      color: #fff3d4;
+      font-size: 43px;
+      font-weight: 900;
+      line-height: 1.24;
+      letter-spacing: -1.4px;
+      text-shadow:
+        0 3px 0 rgba(51, 29, 9, 0.9),
+        0 10px 24px rgba(0, 0, 0, 0.7);
+    }
+
+    .main-desc {
+      margin-top: 15px;
+      color: rgba(255, 228, 186, 0.86);
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.65;
+      word-break: keep-all;
+    }
+
+    .progress-pill {
+      flex-shrink: 0;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: rgba(9, 7, 5, 0.68);
+      border: 1px solid rgba(214, 154, 60, 0.5);
+      color: #f2cf82;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    /* 질문 종류 선택 화면 */
+    .question-map-wrap {
+      display: block;
+      margin-top: 30px;
+    }
+
+    .question-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      min-height: 500px;
+      padding: 20px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(222, 159, 49, 0.16), transparent 26%),
+        linear-gradient(180deg, rgba(12, 10, 8, 0.72), rgba(4, 4, 3, 0.78));
+      border: 1px solid rgba(198, 138, 50, 0.36);
+      box-shadow:
+        0 28px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 223, 158, 0.08);
+    }
+
+    .question-cell {
+      position: relative;
+      min-height: 230px;
+      padding: 30px 34px 80px;
+      overflow: hidden;
+      border: 1px solid rgba(185, 125, 43, 0.34);
+      background:
+        radial-gradient(circle at 82% 26%, rgba(222, 158, 44, 0.14), transparent 26%),
+        linear-gradient(180deg, rgba(19, 16, 13, 0.78), rgba(5, 5, 4, 0.84));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 231, 168, 0.06),
+        0 14px 28px rgba(0, 0, 0, 0.35);
+      color: #fff1ce;
+      text-align: left;
+      transition: 0.2s ease;
+    }
+
+    .question-cell:nth-child(1) {
+      border-radius: 24px 8px 8px 8px;
+    }
+
+    .question-cell:nth-child(2) {
+      border-radius: 8px 24px 8px 8px;
+    }
+
+    .question-cell:nth-child(3) {
+      border-radius: 8px 8px 8px 24px;
+    }
+
+    .question-cell:nth-child(4) {
+      border-radius: 8px 8px 24px 8px;
+    }
+
+    .question-cell.open {
+      border-color: rgba(255, 211, 112, 0.95);
+      background:
+        radial-gradient(circle at 82% 25%, rgba(255, 189, 55, 0.28), transparent 28%),
+        radial-gradient(circle at 12% 82%, rgba(189, 116, 24, 0.24), transparent 32%),
+        linear-gradient(180deg, rgba(74, 48, 18, 0.82), rgba(18, 12, 7, 0.9));
+      box-shadow:
+        inset 0 0 0 2px rgba(236, 181, 72, 0.24),
+        0 0 34px rgba(230, 164, 42, 0.34),
+        0 20px 40px rgba(0, 0, 0, 0.48);
+    }
+
+    .question-cell.open:hover {
+      transform: translateY(-4px);
+    }
+
+    .question-cell.locked {
+      opacity: 0.46;
+      filter: grayscale(0.55) brightness(0.7);
+      cursor: not-allowed;
+    }
+
+    .question-cell.done {
+      border-color: rgba(156, 216, 118, 0.7);
+      box-shadow:
+        inset 0 0 0 2px rgba(156, 216, 118, 0.22),
+        0 0 28px rgba(118, 216, 112, 0.16);
+    }
+
+    .cell-number {
+      position: relative;
+      z-index: 3;
+      margin-bottom: 12px;
+      color: #d8a851;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .cell-icon-img {
+      position: absolute;
+      right: 34px;
+      top: 34px;
+      width: 126px;
+      height: 126px;
+      object-fit: contain;
+      opacity: 0.92;
+      filter:
+        drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55))
+        drop-shadow(0 0 18px rgba(224, 158, 45, 0.24));
+    }
+
+    .cell-title {
+      position: relative;
+      z-index: 3;
+      max-width: 56%;
+      margin-top: 18px;
+      color: #fff1ca;
+      font-family: "Noto Serif KR", serif;
+      font-size: 27px;
+      font-weight: 900;
+      line-height: 1.42;
+      letter-spacing: -0.9px;
+      word-break: keep-all;
+      text-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.72),
+        0 0 14px rgba(224, 158, 45, 0.18);
+    }
+
+    .cell-state {
+      position: absolute;
+      left: 34px;
+      bottom: 26px;
+      width: 210px;
+      padding: 12px 10px;
+      border-radius: 999px;
+      background: rgba(8, 6, 4, 0.76);
+      border: 1px solid rgba(201, 139, 52, 0.44);
+      color: #cdb37a;
+      font-size: 15px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .question-cell.open .cell-state {
+      background: linear-gradient(180deg, #dca64a, #8b551a);
+      color: #fff4d4;
+      border-color: rgba(255, 218, 142, 0.74);
+    }
+
+    .question-core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 20;
+      transform: translate(-50%, -50%);
+      width: 170px;
+      height: 170px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at 42% 26%, #f5d38a 0%, #9a641f 55%, #251306 100%);
+      border: 1px solid rgba(255, 211, 114, 0.9);
+      box-shadow:
+        0 0 42px rgba(226, 163, 42, 0.52),
+        0 18px 38px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 246, 210, 0.26);
+      color: #fff1c8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .question-core span {
+      display: block;
+      margin-top: 5px;
+      color: #ffd56f;
+      font-size: 34px;
+      text-shadow: 0 0 18px rgba(255, 204, 76, 0.85);
+    }
+
+    /* 방법 알기 화면 */
+    .method-screen {
+      padding-top: 34px;
+    }
+
+    .method-title-row {
+      margin-bottom: 24px;
+    }
+
+    .method-quest-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 30px;
+      align-items: stretch;
+    }
+
+    .method-rune-card,
+    .method-example-card {
+      border-radius: 28px;
+      border: 1px solid rgba(210, 154, 64, 0.44);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(221, 160, 58, 0.12), transparent 38%),
+        linear-gradient(180deg, rgba(22, 17, 12, 0.84), rgba(7, 6, 5, 0.88));
+      box-shadow:
+        0 26px 54px rgba(0, 0, 0, 0.46),
+        inset 0 1px 0 rgba(255, 226, 164, 0.08);
+      padding: 30px;
+    }
+
+    .method-small-label,
+    .example-section-title {
+      color: #e3b35d;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .method-rune-frame {
+      position: relative;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      padding: 38px 34px;
+      border-radius: 24px;
+      border: 1px solid rgba(218, 166, 76, 0.54);
+      background:
+        radial-gradient(circle at 50% 78%, rgba(255, 196, 74, 0.22), transparent 30%),
+        linear-gradient(180deg, rgba(16, 13, 10, 0.94), rgba(6, 5, 4, 0.94));
+      overflow: hidden;
+    }
+
+    .rune-star {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffd16b;
+      font-size: 28px;
+      text-shadow: 0 0 18px rgba(255, 206, 82, 0.85);
+    }
+
+    .rune-light {
+      position: absolute;
+      bottom: -48px;
+      left: 50%;
+      width: 220px;
+      height: 120px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 204, 80, 0.42), transparent 70%);
+      filter: blur(8px);
+    }
+
+    .method-rune-text {
+      position: relative;
+      z-index: 2;
+      color: #fff2d0;
+      font-family: "Noto Serif KR", serif;
+      font-size: 31px;
+      font-weight: 900;
+      line-height: 1.75;
+      letter-spacing: -1px;
+      text-align: center;
+      word-break: keep-all;
+      text-shadow: 0 6px 18px rgba(0, 0, 0, 0.68);
+    }
+
+    .hidden-keyword {
+      display: inline-grid;
+      place-items: center;
+      min-width: 150px;
+      margin: 0 8px;
+      padding: 6px 20px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 218, 132, 0.82);
+      background:
+        radial-gradient(circle, #fff0b7, #c88624 72%);
+      color: #3a2109;
+      font-size: 30px;
+      font-weight: 900;
+      box-shadow:
+        0 0 24px rgba(240, 177, 53, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.38);
+      cursor: pointer;
+    }
+
+    .hidden-keyword.revealed {
+      background:
+        radial-gradient(circle, #fff4c8, #e0a33b 72%);
+    }
+
+    .method-hint-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255, 238, 193, 0.1);
+      border: 1px solid rgba(226, 177, 81, 0.42);
+      color: #ffe5aa;
+    }
+
+    .method-hint-box img {
+      width: 74px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .method-hint-box p {
+      color: #ffe8b5;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .example-list,
+    .question-example-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .example-row,
+    .question-example-row {
+      display: grid;
+      align-items: center;
+      gap: 16px;
+      min-height: 82px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      background: rgba(255, 239, 202, 0.08);
+      border: 1px solid rgba(218, 166, 76, 0.3);
+      color: #fff0ca;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    .example-row {
+      grid-template-columns: 76px 1fr;
+    }
+
+    .question-example-row {
+      grid-template-columns: 52px 1fr;
+      min-height: 66px;
+      background: rgba(255, 226, 164, 0.1);
+    }
+
+    .example-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: rgba(255, 207, 116, 0.12);
+      border: 1px solid rgba(230, 178, 83, 0.34);
+      font-size: 28px;
+    }
+
+    .question-example-row span {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      background: rgba(223, 163, 58, 0.2);
+      color: #ffd477;
+      border: 1px solid rgba(231, 178, 85, 0.4);
+      font-weight: 900;
+    }
+
+    .example-row p,
+    .question-example-row p {
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .question-title {
+      margin-top: 26px;
+    }
+
+    /* 기본 연습 화면 */
+    .basic-screen {
+      padding-top: 26px;
+      padding-bottom: 28px;
+    }
+
+    .basic-title-row {
+      margin-bottom: 16px;
+    }
+
+    .basic-screen .main-title {
+      font-size: 36px;
+      line-height: 1.24;
+    }
+
+    .basic-new-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .basic-story-new,
+    .basic-choice-new {
+      min-height: 480px;
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid rgba(210, 154, 64, 0.44);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(221, 160, 58, 0.12), transparent 38%),
+        linear-gradient(180deg, rgba(22, 17, 12, 0.84), rgba(7, 6, 5, 0.88));
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.44),
+        inset 0 1px 0 rgba(255, 226, 164, 0.08);
+    }
+
+    .basic-section-label {
+      color: #e3b35d;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .basic-story-new-box {
+      min-height: 250px;
+      padding: 28px 30px;
+      display: flex;
+      align-items: center;
+      border-radius: 24px;
+      border: 1px solid rgba(218, 166, 76, 0.46);
+      background:
+        radial-gradient(circle at 50% 15%, rgba(255, 216, 126, 0.08), transparent 34%),
+        linear-gradient(180deg, rgba(9, 8, 6, 0.9), rgba(3, 3, 2, 0.92));
+    }
+
+    .basic-story-new-box p {
+      color: #fff0c9;
+      font-family: "Noto Serif KR", serif;
+      font-size: 29px;
+      font-weight: 900;
+      line-height: 1.65;
+      word-break: keep-all;
+      text-shadow: 0 5px 16px rgba(0, 0, 0, 0.66);
+    }
+
+    .story-highlight {
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: rgba(168, 255, 95, 0.38);
+      box-shadow:
+        0 0 0 1px rgba(190, 255, 124, 0.26),
+        0 0 20px rgba(164, 255, 93, 0.22);
+      color: #fff8d5;
+    }
+
+    .answer-left-box {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      align-items: center;
+      gap: 16px;
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      border: 2px solid rgba(211, 173, 91, 0.88);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 211, 104, 0.18), transparent 42%),
+        rgba(255, 230, 166, 0.08);
+      box-shadow:
+        0 0 22px rgba(218, 166, 76, 0.16),
+        inset 0 1px 0 rgba(255, 246, 216, 0.08);
+    }
+
+    .answer-left-box span {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: rgba(223, 163, 58, 0.24);
+      color: #ffd477;
+      border: 1px solid rgba(231, 178, 85, 0.45);
+      font-weight: 900;
+    }
+
+    .answer-left-box p {
+      color: #fff3ce;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .choice-guide-title {
+      margin-bottom: 12px;
+      padding: 13px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(218, 166, 76, 0.42);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 211, 104, 0.12), transparent 40%),
+        rgba(255, 230, 166, 0.065);
+      color: #ffe6ad;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .choice-list-new {
+      display: grid;
+      gap: 11px;
+    }
+
+    .basic-choice-button {
+      width: 100%;
+      min-height: 58px;
+      padding: 13px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(218, 166, 76, 0.28);
+      background: rgba(255, 239, 202, 0.065);
+      color: #fff0ca;
+      text-align: left;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.4;
+      word-break: keep-all;
+      transition: 0.16s ease;
+    }
+
+    .basic-choice-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 207, 116, 0.66);
+      background: rgba(255, 223, 151, 0.13);
+    }
+
+    .basic-choice-button.selected {
+      border-color: rgba(174, 255, 111, 0.72);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.16), transparent 42%),
+        rgba(255, 223, 151, 0.12);
+    }
+
+    .lumi-basic-feedback {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      align-items: center;
+      gap: 14px;
+      margin-top: 15px;
+      padding: 13px 18px;
+      min-height: 82px;
+      border-radius: 20px;
+      border: 1px solid rgba(218, 166, 76, 0.42);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 211, 104, 0.12), transparent 42%),
+        rgba(255, 230, 166, 0.07);
+      color: #ffe6ad;
+    }
+
+    .lumi-basic-feedback img {
+      width: 64px;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
+    }
+
+    .lumi-basic-feedback p {
+      color: #ffe6ad;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .lumi-basic-feedback.good {
+      border-color: rgba(174, 255, 111, 0.56);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.14), transparent 42%),
+        rgba(255, 230, 166, 0.07);
+    }
+
+    .lumi-basic-feedback.need {
+      border-color: rgba(255, 190, 93, 0.5);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 170, 72, 0.13), transparent 42%),
+        rgba(255, 230, 166, 0.06);
+    }
+
+    .method-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      gap: 14px;
+    }
+
+    .plain-button,
+    .main-button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 900;
+      transition: 0.18s ease;
+    }
+
+    .plain-button {
+      background: #d8cab5;
+      color: #6c5a48;
+    }
+
+    .main-button {
+      background: linear-gradient(180deg, #dca328, #bd7908);
+      color: #fff7e4;
+      box-shadow: 0 10px 18px rgba(143, 91, 8, 0.24);
+    }
+
+    .main-button:disabled {
+      background: #b9a58c;
+      color: #efe2d0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @media (max-width: 1100px) {
+      .question-map,
+      .method-quest-layout,
+      .basic-new-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .main-title {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="page-inner">
+
+      <header class="top-bar">
+        <div class="logo-area">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+
+        <button class="nav-button" type="button" onclick="goPractice()">
+          ← 연습하기
+        </button>
+      </header>
+
+      <section class="hero-card" id="app"></section>
+
+    </div>
+  </main>
+
+  <script>
+    /*
+      =========================================================
+      1. 기본 상태
+      =========================================================
+    */
+
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    const progressKey = "duringReadingPracticeProgress_" + studentId;
+
+    let currentScreen = "select";
+    let selectedQuestionType = null;
+    let keywordRevealed = false;
+    let selectedBasicChoice = null;
+    let currentBasicIndex = 0;
+
+    let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
+      direct: false,
+      infer: false,
+      opinion: false,
+      connect: false
+    };
+
+    /*
+      =========================================================
+      2. 질문 종류 데이터
+      =========================================================
+    */
+
+    const questionTypes = [
+      {
+        id: "direct",
+        number: "01",
+        iconImage: "../assets/images/during-reading/intro/icon-direct-answer.png",
+        title: "책 내용에서 바로 답을 찾을 수 있는 질문",
+        shortDesc: "책 속 문장에 답이 직접 나와 있는 질문을 연습해요.",
+        methodTitle: "책 내용에서 바로 답을 찾을 수 있는 질문 만드는 방법",
+        beforeText: "책에서<br>",
+        hiddenWord: "직접적으로",
+        afterText: "<br>나와 있는 내용으로<br>답을 하는 질문을 만드는 방법",
+        lumiText: "책 속 문장에 답이 바로 나와 있어야 해. 상상하거나 추측하지 않아도 글에서 바로 확인할 수 있는 질문이야.",
+        exampleTexts: [
+          {
+            icon: "🌿",
+            text: "민지는 아침마다 화분에 물을 주었어요. 며칠 뒤 작은 새싹이 올라왔어요."
+          },
+          {
+            icon: "🎒",
+            text: "준호는 도서관에서 동화책 세 권을 빌렸어요. 집에 가서 가장 먼저 표지를 살펴보았어요."
+          },
+          {
+            icon: "🐶",
+            text: "강아지 뭉치는 공원에서 공을 물고 달렸어요. 지우는 뭉치를 보며 웃었어요."
+          }
+        ],
+        exampleQuestions: [
+          "민지는 아침마다 무엇을 했나요?",
+          "준호는 도서관에서 무엇을 빌렸나요?",
+          "뭉치는 어디에서 공을 물고 달렸나요?"
+        ]
+      },
+      {
+        id: "infer",
+        number: "02",
+        iconImage: "../assets/images/during-reading/intro/icon-infer-answer.png",
+        title: "책 내용에서 답을 짐작할 수 있는 질문",
+        shortDesc: "글 속 단서를 모아 이유나 마음을 생각하는 질문을 연습해요.",
+        methodTitle: "책 내용에서 답을 짐작할 수 있는 질문 만드는 방법",
+        beforeText: "책 내용을 바탕으로<br>여러 ",
+        hiddenWord: "단서",
+        afterText: "를 모아<br>답을 생각하는 질문을 만드는 방법",
+        lumiText: "답이 책에 그대로 적혀 있지는 않아. 대신 앞뒤 내용과 인물의 말, 행동을 보고 답을 짐작할 수 있어.",
+        exampleTexts: [
+          {
+            icon: "🔍",
+            text: "토끼는 자신이 빠르다고 믿고 나무 아래에서 잠이 들었어요."
+          }
+        ],
+        exampleQuestions: [
+          "토끼는 왜 시합 중에 잠을 잤을까요?"
+        ]
+      },
+      {
+        id: "opinion",
+        number: "03",
+        iconImage: "../assets/images/during-reading/intro/icon-thought-feeling.png",
+        title: "책을 읽고 떠오른 생각이나 느낌에 대한 질문",
+        shortDesc: "책을 읽고 생긴 내 생각, 느낌, 의견을 말하는 질문을 연습해요.",
+        methodTitle: "책을 읽고 떠오른 생각이나 느낌에 대한 질문 만드는 방법",
+        beforeText: "책의 내용에 대한 느낌이나<br>글쓴이의 생각에 대한 내 ",
+        hiddenWord: "의견",
+        afterText: "을 말하는<br>질문을 만드는 방법",
+        lumiText: "정답을 찾는 질문이 아니라, 책을 읽고 내가 어떻게 생각했는지 말하는 질문이야. 친구마다 답이 달라도 괜찮아.",
+        exampleTexts: [
+          {
+            icon: "💭",
+            text: "거북이는 느리지만 포기하지 않고 끝까지 걸었어요."
+          }
+        ],
+        exampleQuestions: [
+          "거북이를 보며 어떤 생각이 들었나요?"
+        ]
+      },
+      {
+        id: "connect",
+        number: "04",
+        iconImage: "../assets/images/during-reading/intro/icon-life-connection.png",
+        title: "자신의 삶과 관련짓는 질문",
+        shortDesc: "책 속 이야기와 나의 경험, 생활을 연결하는 질문을 연습해요.",
+        methodTitle: "자신의 삶과 관련짓는 질문 만드는 방법",
+        beforeText: "책 내용과 나의 ",
+        hiddenWord: "경험",
+        afterText: "을 비교하며<br>생활에 적용할 수 있는 방법을 생각하는 질문을 만드는 방법",
+        lumiText: "책 속 이야기와 내 생활을 이어 보는 질문이야. 내가 겪은 일이나 앞으로의 행동을 생각하게 해.",
+        exampleTexts: [
+          {
+            icon: "🧭",
+            text: "거북이는 느리지만 끝까지 포기하지 않았어요."
+          }
+        ],
+        exampleQuestions: [
+          "나도 거북이처럼 끝까지 노력한 적이 있나요?"
+        ]
+      }
+    ];
+
+    // 1번 질문 기본 연습 문제입니다.
+    const directBasicQuestions = [
+      {
+        story: "민지는 아침마다 화분에 물을 주었어요. 며칠 뒤 작은 새싹이 올라왔어요.",
+        answer: "민지는 아침마다 화분에 물을 주었어요.",
+        highlight: "민지는 아침마다 화분에 물을 주었어요.",
+        choices: [
+          {
+            id: "direct",
+            text: "민지는 아침마다 무엇을 했나요?"
+          },
+          {
+            id: "infer",
+            text: "새싹은 왜 올라왔나요?"
+          },
+          {
+            id: "opinion",
+            text: "민지를 보며 어떤 생각이 들었나요?"
+          }
+        ]
+      },
+      {
+        story: "준호는 도서관에서 동화책 세 권을 빌렸어요. 집에 가서 가장 먼저 표지를 살펴보았어요.",
+        answer: "준호는 도서관에서 동화책 세 권을 빌렸어요.",
+        highlight: "준호는 도서관에서 동화책 세 권을 빌렸어요.",
+        choices: [
+          {
+            id: "opinion",
+            text: "준호를 보며 어떤 생각이 들었나요?"
+          },
+          {
+            id: "direct",
+            text: "준호는 도서관에서 무엇을 빌렸나요?"
+          },
+          {
+            id: "infer",
+            text: "준호는 왜 표지를 먼저 살펴보았을까요?"
+          }
+        ]
+      },
+      {
+        story: "강아지 뭉치는 공원에서 공을 물고 달렸어요. 지우는 뭉치를 보며 웃었어요.",
+        answer: "뭉치는 공원에서 공을 물고 달렸어요.",
+        highlight: "뭉치는 공원에서 공을 물고 달렸어요.",
+        choices: [
+          {
+            id: "infer",
+            text: "뭉치는 왜 신이 났을까요?"
+          },
+          {
+            id: "opinion",
+            text: "뭉치를 보면 어떤 기분이 들까요?"
+          },
+          {
+            id: "direct",
+            text: "뭉치는 어디에서 공을 물고 달렸나요?"
+          }
+        ]
+      }
+    ];
+
+    render();
+
+    /*
+      =========================================================
+      3. 화면 렌더링
+      =========================================================
+    */
+
+    function render() {
+      if (currentScreen === "select") {
+        renderSelectScreen();
+        return;
+      }
+
+      if (currentScreen === "method") {
+        renderMethodScreen();
+        return;
+      }
+
+      if (currentScreen === "basic") {
+        renderBasicPracticeScreen();
+        return;
+      }
+    }
+
+    function renderSelectScreen() {
+      const app = document.getElementById("app");
+      const completedCount = Object.values(progress).filter(Boolean).length;
+
+      app.innerHTML =
+        '<section class="screen">' +
+          '<div class="screen-title-row">' +
+            '<div>' +
+              '<span class="title-badge">읽기 중 질문 연습</span>' +
+              '<h1 class="main-title">질문 만드는 방법을 하나씩 열어 보자!</h1>' +
+              '<p class="main-desc">' +
+                '읽기 중에 사용할 수 있는 4가지 질문 종류를 차근차근 연습해요.<br>' +
+                '하나의 질문 종류를 연습하면 다음 질문 종류가 열려요.' +
+              '</p>' +
+            '</div>' +
+
+            '<div class="progress-pill">완료 ' + completedCount + ' / 4</div>' +
+          '</div>' +
+
+          '<div class="question-map-wrap">' +
+            '<div class="question-map">' +
+              questionTypes.map(function(item, index) {
+                const isDone = progress[item.id];
+                const isOpen = isQuestionTypeOpen(index);
+                const cellClass = isDone ? "done" : (isOpen ? "open" : "locked");
+                const stateText = isDone ? "다시 보기" : (isOpen ? "시작하기" : "잠김");
+
+                return '' +
+                  '<button class="question-cell ' + cellClass + '" type="button" onclick="selectQuestionType(\'' + item.id + '\')">' +
+                    '<div class="cell-number">' + item.number + '</div>' +
+                    '<img class="cell-icon-img" src="' + item.iconImage + '" alt="질문 종류 아이콘">' +
+                    '<h2 class="cell-title">' + item.title + '</h2>' +
+                    '<div class="cell-state">' + stateText + '</div>' +
+                  '</button>';
+              }).join("") +
+
+              '<div class="question-core">' +
+                '<div>' +
+                  '질문<br>만드는 방법' +
+                  '<span>?</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</section>';
+    }
+
+    function renderMethodScreen() {
+      const app = document.getElementById("app");
+      const item = getSelectedQuestionType();
+
+      const exampleTexts = item.exampleTexts || [];
+      const exampleQuestions = item.exampleQuestions || [];
+
+      app.innerHTML =
+        '<section class="screen method-screen">' +
+          '<div class="screen-title-row method-title-row">' +
+            '<div>' +
+              '<span class="title-badge">방법 알기</span>' +
+              '<h1 class="main-title">' + item.title + '</h1>' +
+              '<p class="main-desc">가려진 핵심어를 열어 보며 이 질문의 특징을 알아봐요.</p>' +
+            '</div>' +
+
+            '<div class="progress-pill">' + item.number + ' 질문의 문</div>' +
+          '</div>' +
+
+          '<div class="method-quest-layout">' +
+
+            '<article class="method-rune-card">' +
+              '<p class="method-small-label">질문 만드는 방법</p>' +
+
+              '<div class="method-rune-frame">' +
+                '<div class="rune-star">✦</div>' +
+
+                '<p class="method-rune-text">' +
+                  item.beforeText +
+                  '<span class="hidden-keyword ' + (keywordRevealed ? "revealed" : "") + '" onclick="revealKeyword()">' +
+                    (keywordRevealed ? item.hiddenWord : "?") +
+                  '</span>' +
+                  item.afterText +
+                '</p>' +
+
+                '<div class="rune-light"></div>' +
+              '</div>' +
+
+              '<div class="method-hint-box">' +
+                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                '<p>' +
+                  (keywordRevealed ? item.lumiText : "가려진 핵심어를 눌러 봐. 이 질문의 가장 중요한 특징이 숨어 있어!") +
+                '</p>' +
+              '</div>' +
+
+              '<div class="method-actions">' +
+                '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류 선택</button>' +
+                '<button class="main-button" type="button" onclick="goBasicPractice()">기본 연습으로 가기 →</button>' +
+              '</div>' +
+            '</article>' +
+
+            '<article class="method-example-card">' +
+              '<div class="example-section-title">✦ 예시 글</div>' +
+
+              '<div class="example-list">' +
+                exampleTexts.map(function(example) {
+                  return '' +
+                    '<div class="example-row">' +
+                      '<div class="example-icon">' + example.icon + '</div>' +
+                      '<p>' + example.text + '</p>' +
+                    '</div>';
+                }).join("") +
+              '</div>' +
+
+              '<div class="example-section-title question-title">✦ 예시 질문</div>' +
+
+              '<div class="question-example-list">' +
+                exampleQuestions.map(function(question) {
+                  return '' +
+                    '<div class="question-example-row">' +
+                      '<span>Q</span>' +
+                      '<p>' + question + '</p>' +
+                    '</div>';
+                }).join("") +
+              '</div>' +
+
+              '<button class="plain-button temp-button" type="button" onclick="markAsDoneForTest()">임시 완료 처리</button>' +
+            '</article>' +
+
+          '</div>' +
+        '</section>';
+    }
+
+    function renderBasicPracticeScreen() {
+      const app = document.getElementById("app");
+      const item = getSelectedQuestionType();
+      const question = directBasicQuestions[currentBasicIndex];
+
+      app.innerHTML =
+        '<section class="screen basic-screen">' +
+          '<div class="screen-title-row basic-title-row">' +
+            '<div>' +
+              '<span class="title-badge">기본 연습</span>' +
+              '<h1 class="main-title">' + item.title + '</h1>' +
+            '</div>' +
+
+            '<div class="progress-pill">' + (currentBasicIndex + 1) + ' / ' + directBasicQuestions.length + ' 문제</div>' +
+          '</div>' +
+
+          '<div class="basic-practice-layout basic-new-layout">' +
+
+            '<article class="basic-story-card basic-story-new">' +
+              '<p class="basic-section-label">읽을 글</p>' +
+
+              '<div class="basic-story-box basic-story-new-box">' +
+                '<p>' + makeHighlightedStory(question.story, question.highlight) + '</p>' +
+              '</div>' +
+
+              '<div class="answer-target-box answer-target-strong answer-left-box">' +
+                '<span>답</span>' +
+                '<p>' + question.answer + '</p>' +
+              '</div>' +
+
+              '<div class="method-actions basic-left-actions">' +
+                '<button class="plain-button" type="button" onclick="goMethodScreen()">← 방법 다시 보기</button>' +
+              '</div>' +
+            '</article>' +
+
+            '<article class="basic-choice-card basic-choice-new">' +
+              '<p class="basic-section-label">알맞은 질문 고르기</p>' +
+
+              '<div class="choice-guide-title">' +
+                '왼쪽의 답을 보고, 그 답을 물어보는 질문을 골라 봐요.' +
+              '</div>' +
+
+              '<div class="choice-list choice-list-new">' +
+                question.choices.map(function(choice) {
+                  return renderBasicChoiceButton(choice.id, choice.text);
+                }).join("") +
+              '</div>' +
+
+              '<div class="basic-feedback-box lumi-basic-feedback ' + getBasicFeedbackClass() + '" id="basicFeedbackBox">' +
+                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                '<p>' + getBasicFeedbackText() + '</p>' +
+              '</div>' +
+
+              '<div class="method-actions basic-right-actions">' +
+                '<button class="plain-button" type="button" onclick="resetBasicPractice()">다시 고르기</button>' +
+                '<button class="main-button" type="button" ' + (selectedBasicChoice === "direct" ? "" : "disabled") + ' onclick="goNextBasicQuestion()">다음 문제로 가기 →</button>' +
+              '</div>' +
+            '</article>' +
+
+          '</div>' +
+        '</section>';
+    }
+
+    /*
+      =========================================================
+      4. 기본 연습 보조 함수
+      =========================================================
+    */
+
+    function makeHighlightedStory(story, highlight) {
+      return story.replace(
+        highlight,
+        '<span class="story-highlight">' + highlight + '</span>'
+      );
+    }
+
+    function renderBasicChoiceButton(choiceId, text) {
+      const selectedClass = selectedBasicChoice === choiceId ? "selected" : "";
+
+      return '' +
+        '<button class="basic-choice-button ' + selectedClass + '" type="button" onclick="selectBasicChoice(\'' + choiceId + '\')">' +
+          text +
+        '</button>';
+    }
+
+    function selectBasicChoice(choiceId) {
+      selectedBasicChoice = choiceId;
+      render();
+    }
+
+    function getBasicFeedbackClass() {
+      if (selectedBasicChoice === null) {
+        return "";
+      }
+
+      if (selectedBasicChoice === "direct") {
+        return "good";
+      }
+
+      return "need";
+    }
+
+    function getBasicFeedbackText() {
+      if (selectedBasicChoice === null) {
+        return "천천히 골라도 괜찮아. 왼쪽의 답을 보고, 그 답을 물어보는 질문을 찾아보자!";
+      }
+
+      if (selectedBasicChoice === "direct") {
+        return "좋아! 글에 바로 나와 있는 답을 묻는 질문을 잘 골랐어.";
+      }
+
+      if (selectedBasicChoice === "infer") {
+        return "이 질문은 이유를 생각해야 해서 ‘짐작하는 질문’에 더 가까워.";
+      }
+
+      return "이 질문은 내 생각이나 느낌을 말하는 질문에 더 가까워.";
+    }
+
+    function resetBasicPractice() {
+      selectedBasicChoice = null;
+      render();
+    }
+
+    function goNextBasicQuestion() {
+      if (selectedBasicChoice !== "direct") {
+        return;
+      }
+
+      if (currentBasicIndex < directBasicQuestions.length - 1) {
+        currentBasicIndex += 1;
+        selectedBasicChoice = null;
+        render();
+        return;
+      }
+
+      alert("기본 연습 완료! 다음 단계에서 심화 연습 화면을 만들 예정입니다.");
+    }
+
+    /*
+      =========================================================
+      5. 화면 이동 함수
+      =========================================================
+    */
+
+    function isQuestionTypeOpen(index) {
+      if (index === 0) {
+        return true;
+      }
+
+      const previousQuestion = questionTypes[index - 1];
+
+      return progress[previousQuestion.id];
+    }
+
+    function selectQuestionType(id) {
+      const index = questionTypes.findIndex(function(item) {
+        return item.id === id;
+      });
+
+      if (!isQuestionTypeOpen(index)) {
+        return;
+      }
+
+      selectedQuestionType = id;
+      keywordRevealed = false;
+      selectedBasicChoice = null;
+      currentBasicIndex = 0;
+      currentScreen = "method";
+      render();
+    }
+
+    function getSelectedQuestionType() {
+      return questionTypes.find(function(item) {
+        return item.id === selectedQuestionType;
+      });
+    }
+
+    function revealKeyword() {
+      keywordRevealed = true;
+      render();
+    }
+
+    function goSelectScreen() {
+      currentScreen = "select";
+      selectedQuestionType = null;
+      keywordRevealed = false;
+      selectedBasicChoice = null;
+      currentBasicIndex = 0;
+      render();
+    }
+
+    function goMethodScreen() {
+      currentScreen = "method";
+      selectedBasicChoice = null;
+      render();
+    }
+
+    function goBasicPractice() {
+      selectedBasicChoice = null;
+      currentBasicIndex = 0;
+      currentScreen = "basic";
+      render();
+    }
+
+    function markAsDoneForTest() {
+      progress[selectedQuestionType] = true;
+      sessionStorage.setItem(progressKey, JSON.stringify(progress));
+
+      currentScreen = "select";
+      selectedQuestionType = null;
+      keywordRevealed = false;
+      selectedBasicChoice = null;
+      currentBasicIndex = 0;
+      render();
+    }
+
+    function goPractice() {
+      location.href = "./practice.html";
+    }
+  </script>
+</body>
+</html>
