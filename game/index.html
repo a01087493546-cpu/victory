@@ -13,7 +13,6 @@
     <div class="map-bg" id="map-bg" style="background-image: url('images/bg_map.png')">
       <div class="map-overlay">
 
-        <!-- 상단 타이틀 -->
         <header class="map-title-area">
           <img src="../frontend/assets/images/logo-emblem.png" class="map-logo" alt="문답책 로고">
           <h1 class="map-title">문답책 던전</h1>
@@ -26,24 +25,18 @@
           </div>
         </header>
 
-        <!-- 메인 콘텐츠 -->
         <main class="map-content">
 
-          <!-- 왼쪽: 던전 목록 -->
           <aside class="dungeon-list" aria-label="던전 목록">
             <div class="dungeon-list-frame"></div>
-
             <button class="dungeon-list-item active" id="list-0" type="button" onclick="selectDungeon(0)">
-              <div class="list-thumb">
-                <img src="images/hatchling_idle.png" alt="초급 던전">
-              </div>
+              <div class="list-thumb"><img src="images/hatchling_idle.png" alt="초급 던전"></div>
               <div class="list-info">
                 <div class="list-name">초급 던전</div>
                 <div class="list-diff">★ 초급</div>
               </div>
               <div class="list-arrow">›</div>
             </button>
-
             <button class="dungeon-list-item locked" id="list-1" type="button" onclick="selectDungeon(1)">
               <div class="list-thumb locked-thumb">
                 <img src="images/dragon_idle.png" alt="중급 던전">
@@ -55,7 +48,6 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
-
             <button class="dungeon-list-item locked" id="list-2" type="button" onclick="selectDungeon(2)">
               <div class="list-thumb locked-thumb">
                 <img src="images/elder_idle.png" alt="고급 던전">
@@ -67,28 +59,22 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
-
             <div class="dungeon-list-bottom-deco" aria-hidden="true">
-              <span></span>
-              <b>◆</b>
-              <span></span>
+              <span></span><b>◆</b><span></span>
             </div>
           </aside>
 
-          <!-- 오른쪽: 던전 상세 -->
           <section class="dungeon-detail" aria-label="선택한 던전 상세 정보">
             <div class="corner corner-lt"></div>
             <div class="corner corner-rt"></div>
             <div class="corner corner-lb"></div>
             <div class="corner corner-rb"></div>
-
             <div class="detail-header">
               <div class="detail-boss-wrap">
                 <div class="detail-boss-glow" id="detail-boss-glow"></div>
                 <div class="boss-stage-ring"></div>
                 <img class="detail-boss-img" id="detail-boss-img" src="images/hatchling_idle.png" alt="보스">
               </div>
-
               <div class="detail-header-info">
                 <div class="detail-diff-badge" id="detail-diff">★ 초급</div>
                 <h2 class="detail-name" id="detail-name">초급 던전</h2>
@@ -98,7 +84,6 @@
                 </p>
               </div>
             </div>
-
             <div class="detail-info-grid">
               <div class="info-card">
                 <div class="info-card-icon">📚</div>
@@ -129,7 +114,6 @@
                 </div>
               </div>
             </div>
-
             <div class="detail-reward-area">
               <div class="reward-box">
                 <div class="reward-icon">🎁</div>
@@ -152,7 +136,6 @@
                 </div>
               </div>
             </div>
-
             <div class="detail-enter-area">
               <button class="enter-btn" id="enter-btn" type="button" onclick="goToBattle(selectedDungeon)">
                 <span class="btn-icon">⚔</span>
@@ -166,7 +149,6 @@
             </div>
           </section>
 
-          <!-- 오른쪽: 보조 HUD 패널 -->
           <aside class="dungeon-side-hud">
             <section class="hud-section">
               <h3 class="hud-title">나의 준비 상태</h3>
@@ -348,7 +330,6 @@
     <!-- 하단 전투 UI -->
     <div class="battle-bottom">
 
-      <!-- 전투 로그 + 스킬 버튼 -->
       <div class="battle-command-row">
 
         <!-- 전투 로그 -->
@@ -359,92 +340,62 @@
 
         <!-- 스킬 버튼 -->
         <div class="action-buttons">
-          <div class="skill-tabs">
-            <button class="skill-tab active atk-tab" onclick="switchSkillTab('atk')">
+
+          <!-- 공격 -->
+          <div class="skill-section atk-section">
+            <div class="skill-section-header atk-header">
               <span>⚔</span> 공격
-            </button>
-            <button class="skill-tab def-tab" onclick="switchSkillTab('def')">
+            </div>
+            <div class="skill-section-slots">
+              <button class="action-btn attack-btn" id="btn-ilgyeok" onclick="useSkill('ilgyeok')">
+                <span class="skill-key">1</span>
+                <span class="skill-icon"><img src="images/icon_ilgyeok.png" width="96" height="96" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>일격</strong><small>기본 베기</small></span>
+              </button>
+              <button class="action-btn attack-btn" id="btn-yeonsoek" onclick="useSkill('yeonsoek')">
+                <span class="skill-key">2</span>
+                <span class="skill-icon"><img src="images/icon_yeonsoek.png" width="80" height="80" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>연속 베기</strong><small>연속 공격</small></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 방어 -->
+          <div class="skill-section def-section">
+            <div class="skill-section-header def-header">
               <span>🛡</span> 방어
-            </button>
-            <button class="skill-tab hvy-tab" onclick="switchSkillTab('hvy')">
+            </div>
+            <div class="skill-section-slots">
+              <button class="action-btn defend-btn" id="btn-bangeo" onmousedown="useSkill('bangeo')" onmouseup="stopDefend()" ontouchstart="useSkill('bangeo')" ontouchend="stopDefend()">
+                <span class="skill-key">1</span>
+                <span class="skill-icon"><img src="images/icon_bangeo.png" width="96" height="96" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>방어</strong><small>기본 막기</small></span>
+              </button>
+              <button class="action-btn defend-btn" id="btn-cheolbyeok" onmousedown="useSkill('cheolbyeok')" onmouseup="stopDefend()" ontouchstart="useSkill('cheolbyeok')" ontouchend="stopDefend()">
+                <span class="skill-key">2</span>
+                <span class="skill-icon"><img src="images/icon_cheolbyeok.png" width="96" height="96" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>철벽</strong><small>완전 방어</small></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 필살 -->
+          <div class="skill-section hvy-section">
+            <div class="skill-section-header hvy-header">
               <span>🔥</span> 필살
-            </button>
-          </div>
-
-          <!-- 공격 스킬 -->
-          <div class="skill-slots" id="slot-atk">
-            <button class="action-btn attack-btn" id="btn-ilgyeok" onclick="useSkill('ilgyeok')">
-              <span class="skill-key">1</span>
-              <span class="skill-icon">
-                <img src="images/icon_ilgyeok.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>일격</strong>
-                <small>기본 베기</small>
-              </span>
-            </button>
-            <button class="action-btn attack-btn" id="btn-yeonsoek" onclick="useSkill('yeonsoek')">
-              <span class="skill-key">2</span>
-              <span class="skill-icon">
-                <img src="images/icon_yeonsoek.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>연속 베기</strong>
-                <small>연속 공격</small>
-              </span>
-            </button>
-          </div>
-
-          <!-- 방어 스킬 -->
-          <div class="skill-slots hidden" id="slot-def">
-            <button class="action-btn defend-btn" id="btn-bangeo"
-              onmousedown="useSkill('bangeo')" onmouseup="stopDefend()"
-              ontouchstart="useSkill('bangeo')" ontouchend="stopDefend()">
-              <span class="skill-key">1</span>
-              <span class="skill-icon">
-                <img src="images/icon_bangeo.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>방어</strong>
-                <small>기본 막기</small>
-              </span>
-            </button>
-            <button class="action-btn defend-btn" id="btn-cheolbyeok"
-              onmousedown="useSkill('cheolbyeok')" onmouseup="stopDefend()"
-              ontouchstart="useSkill('cheolbyeok')" ontouchend="stopDefend()">
-              <span class="skill-key">2</span>
-              <span class="skill-icon">
-                <img src="images/icon_cheolbyeok.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>철벽</strong>
-                <small>완전 방어</small>
-              </span>
-            </button>
-          </div>
-
-          <!-- 필살 스킬 -->
-          <div class="skill-slots hidden" id="slot-hvy">
-            <button class="action-btn heavy-btn" id="btn-bulkkot" onclick="useSkill('bulkkot')">
-              <span class="skill-key">1</span>
-              <span class="skill-icon">
-                <img src="images/icon_bulkkot.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>불꽃 베기</strong>
-                <small>강한 공격</small>
-              </span>
-            </button>
-            <button class="action-btn heavy-btn" id="btn-hwayeom" onclick="useSkill('hwayeom')">
-              <span class="skill-key">2</span>
-              <span class="skill-icon">
-                <img src="images/icon_hwayeom.png" width="56" height="56" style="object-fit:contain;">
-              </span>
-              <span class="skill-text">
-                <strong>화염 폭발</strong>
-                <small>초강력 필살기</small>
-              </span>
-            </button>
+            </div>
+            <div class="skill-section-slots">
+              <button class="action-btn heavy-btn" id="btn-bulkkot" onclick="useSkill('bulkkot')">
+                <span class="skill-key">1</span>
+                <span class="skill-icon"><img src="images/icon_bulkkot.png" width="80" height="80" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>불꽃 베기</strong><small>강한 공격</small></span>
+              </button>
+              <button class="action-btn heavy-btn" id="btn-hwayeom" onclick="useSkill('hwayeom')">
+                <span class="skill-key">2</span>
+                <span class="skill-icon"><img src="images/icon_hwayeom.png" width="80" height="80" style="object-fit:contain;"></span>
+                <span class="skill-text"><strong>화염 폭발</strong><small>초강력 필살기</small></span>
+              </button>
+            </div>
           </div>
 
         </div>
