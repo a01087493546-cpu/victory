@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 질문 나누기</title>
+
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(8, 5, 3, 0.82) 0%,
+          rgba(8, 5, 3, 0.55) 45%,
+          rgba(8, 5, 3, 0.72) 100%
+        ),
+        radial-gradient(circle at 48% 18%, rgba(255, 214, 126, 0.16), transparent 34%),
+        url("../assets/images/home/home-library-bg.png");
+      background-size: cover;
+      background-position: center;
+      color: #fff4d6;
+    }
+
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    /* =========================
+       왼쪽 사이드바
+    ========================= */
+
+    .side-nav {
+      padding: 24px 18px;
+      background: linear-gradient(180deg, rgba(39, 24, 12, 0.94), rgba(18, 10, 5, 0.96));
+      border-right: 1px solid rgba(230, 180, 86, 0.38);
+      box-shadow: 18px 0 40px rgba(0, 0, 0, 0.26);
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: #fff0bd;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .logo-box img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255, 206, 87, 0.45));
+    }
+
+    .step-item {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: rgba(255, 244, 214, 0.08);
+      border: 1px solid rgba(230, 180, 86, 0.24);
+      color: rgba(255, 239, 204, 0.72);
+    }
+
+    .step-item.done {
+      color: #f5d890;
+    }
+
+    .step-item.active {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 215, 126, 0.24), transparent 42%),
+        linear-gradient(180deg, rgba(111, 70, 28, 0.96), rgba(51, 29, 12, 0.96));
+      border-color: rgba(245, 197, 96, 0.78);
+      color: #fff5d8;
+      box-shadow:
+        0 0 0 3px rgba(255, 214, 116, 0.08),
+        0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .step-number {
+      display: block;
+      margin-bottom: 5px;
+      color: #e5bd6a;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .step-lock {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      opacity: 0.7;
+      font-size: 15px;
+    }
+
+    /* =========================
+       메인
+    ========================= */
+
+    .main-area {
+      padding: 26px 34px 28px;
+    }
+
+    .top-bar {
+      height: 70px;
+      margin-bottom: 22px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(48, 31, 17, 0.88), rgba(24, 14, 7, 0.9));
+      border: 1px solid rgba(230, 184, 92, 0.52);
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.32),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      color: #fff4d2;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 222, 145, 0.65);
+      border-radius: 999px;
+      background: rgba(255, 244, 214, 0.12);
+      color: #ffe8ac;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .content-board {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* =========================
+       상단 루미 + 안내 영역
+    ========================= */
+
+    .question-hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 22px 26px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255, 223, 145, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(70, 42, 19, 0.82), rgba(34, 19, 8, 0.86));
+      border: 1px solid rgba(224, 176, 82, 0.58);
+      box-shadow:
+        0 20px 44px rgba(0, 0, 0, 0.32),
+        inset 0 0 0 1px rgba(255, 239, 190, 0.08);
+    }
+
+    .lumi-speech-wrap {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .lumi-img {
+      width: 150px;
+      height: auto;
+      display: block;
+      flex: 0 0 150px;
+      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45));
+    }
+
+    .speech-box {
+      position: relative;
+      width: 520px;
+      padding: 22px 30px;
+      background: #fff8ea;
+      color: #4a2d16;
+      border-radius: 24px;
+      border: 4px solid #d9b15a;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.55;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .speech-box::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-right: 18px solid #fff8ea;
+    }
+
+    .guide-card {
+      width: 380px;
+      flex: 0 0 380px;
+      padding: 18px 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.28),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .guide-card h2 {
+      margin-bottom: 12px;
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .guide-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .guide-mini {
+      padding: 10px 12px;
+      border-radius: 15px;
+      background: rgba(255, 248, 226, 0.72);
+    }
+
+    .guide-mini span {
+      display: block;
+      margin-bottom: 3px;
+      color: #8a5a24;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .guide-mini strong {
+      display: block;
+      color: #3b2211;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .guide-text {
+      padding: 10px 12px;
+      border-radius: 15px;
+      background: rgba(255, 248, 226, 0.72);
+      color: #5a3518;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    /* =========================
+       친구 질문 카드
+    ========================= */
+
+    .friend-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .friend-card {
+      min-height: 430px;
+      padding: 24px 22px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .friend-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .friend-icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #f5d58a, #c88728);
+      box-shadow: 0 6px 0 #875018;
+      font-size: 32px;
+    }
+
+    .friend-name {
+      margin-bottom: 4px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .friend-count {
+      color: #8a5423;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .question-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .question-box {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 248, 226, 0.72);
+      border: 1px solid rgba(138, 84, 35, 0.12);
+    }
+
+    .question-label {
+      margin-bottom: 6px;
+      color: #8a5423;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .question-text {
+      color: #3b2211;
+      font-size: 16px;
+      line-height: 1.5;
+      font-weight: 900;
+      word-break: keep-all;
+    }
+
+    .extra-question {
+      display: none;
+    }
+
+    .answer-area {
+      margin-top: auto;
+    }
+
+    .answer-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #5f3f20;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .answer-input {
+      width: 100%;
+      height: 78px;
+      padding: 12px 14px;
+      resize: none;
+      outline: none;
+      border: 2px solid rgba(138, 84, 35, 0.22);
+      border-radius: 18px;
+      background: rgba(255, 253, 246, 0.92);
+      color: #3b2211;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .comment-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .comment-item {
+      padding: 9px 11px;
+      border-radius: 14px;
+      background: rgba(255, 248, 226, 0.74);
+      color: #5f3f20;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .card-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .card-button {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8df;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .card-button.brown {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 5px 0 #2c1607;
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .bottom-button {
+      width: 190px;
+      height: 46px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      color: #fff8df;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #2c1607;
+    }
+
+    .bottom-button.green {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    /* =========================
+       반응형
+    ========================= */
+
+    @media (max-width: 1250px) {
+      .question-hero {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .guide-card {
+        width: 100%;
+        flex: none;
+      }
+    }
+
+    @media (max-width: 1050px) {
+      .friend-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .side-nav {
+        display: none;
+      }
+
+      .main-area {
+        padding: 18px;
+      }
+
+      .top-bar {
+        height: auto;
+        padding: 16px;
+        align-items: flex-start;
+        gap: 12px;
+        flex-direction: column;
+      }
+
+      .lumi-speech-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .speech-box {
+        width: 100%;
+      }
+
+      .speech-box::before {
+        display: none;
+      }
+
+      .friend-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* =========================
+   상단 영역: 루미 + 말풍선 + 활동카드 + 질문유형 버튼
+========================= */
+
+.question-hero {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+  padding: 22px 26px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 223, 145, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(70, 42, 19, 0.82), rgba(34, 19, 8, 0.86));
+  border: 1px solid rgba(224, 176, 82, 0.58);
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.32),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.08);
+}
+
+.lumi-speech-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 0 0 auto;
+}
+
+.lumi-img {
+  width: 140px;
+  height: auto;
+  display: block;
+  flex: 0 0 140px;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45));
+}
+
+.speech-box {
+  position: relative;
+  width: 450px;
+  padding: 22px 28px;
+  background: #fff8ea;
+  color: #4a2d16;
+  border-radius: 24px;
+  border: 4px solid #d9b15a;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.55;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.speech-box::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-right: 18px solid #fff8ea;
+}
+
+/* 질문 나누기 활동 카드 */
+.guide-card {
+  width: 320px;
+  flex: 0 0 320px;
+  padding: 16px 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+    linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+  color: #3b2211;
+  border: 2px solid rgba(219, 166, 65, 0.82);
+  box-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.guide-card h2 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.guide-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.guide-mini {
+  padding: 10px 12px;
+  border-radius: 15px;
+  background: rgba(255, 248, 226, 0.72);
+}
+
+.guide-mini span {
+  display: block;
+  margin-bottom: 3px;
+  color: #8a5a24;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.guide-mini strong {
+  display: block;
+  color: #3b2211;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.guide-text {
+  padding: 10px 12px;
+  border-radius: 15px;
+  background: rgba(255, 248, 226, 0.72);
+  color: #5a3518;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+/* 질문 유형 버튼 묶음 */
+.type-filter-box {
+  width: 260px;
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.type-all-button {
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a5423, #4a290f);
+  color: #fff8df;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #2c1607;
+}
+
+.type-button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.type-button {
+  min-height: 54px;
+  padding: 8px 8px;
+  border: 2px solid rgba(219, 166, 65, 0.62);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.82), transparent 34%),
+    linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+  color: #3b2211;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.25;
+  cursor: pointer;
+  box-shadow:
+    0 4px 0 rgba(110, 65, 18, 0.65),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+}
+
+.type-button.active {
+  background: linear-gradient(180deg, #4f7130, #253f17);
+  color: #fff8df;
+  border-color: rgba(198, 231, 151, 0.65);
+  box-shadow:
+    0 4px 0 #14240c,
+    0 0 0 3px rgba(180, 220, 120, 0.12);
+}
+
+.question-type-badge {
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(79, 113, 48, 0.14);
+  color: #4f7130;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.empty-card {
+  grid-column: 1 / -1;
+  padding: 34px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+    linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+  color: #3b2211;
+  border: 2px solid rgba(219, 166, 65, 0.82);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+@media (max-width: 1350px) {
+  .question-hero {
+    flex-wrap: wrap;
+  }
+
+  .type-filter-box {
+    width: 100%;
+    flex: none;
+  }
+
+  .type-button-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .lumi-speech-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .speech-box {
+    width: 100%;
+  }
+
+  .speech-box::before {
+    display: none;
+  }
+
+  .guide-card {
+    width: 100%;
+    flex: none;
+  }
+
+  .type-button-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+/* 상단 오른쪽 영역 간격 살짝 정리 */
+.question-hero {
+  gap: 14px;
+}
+
+.type-filter-box {
+  width: 250px;
+  flex: 0 0 250px;
+}
+
+.type-button {
+  min-height: 48px;
+  font-size: 12px;
+}
+
+.type-all-button {
+  height: 32px;
+}
+/* 질문 유형 버튼 크기 살짝 키우기 */
+
+.type-filter-box {
+  width: 300px;
+  flex: 0 0 300px;
+}
+
+.type-all-button {
+  height: 36px;
+  font-size: 13px;
+}
+
+.type-button-grid {
+  gap: 10px;
+}
+
+.type-button {
+  min-height: 62px;
+  padding: 10px 8px;
+  font-size: 13px;
+  line-height: 1.25;
+  border-radius: 17px;
+}
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <aside class="side-nav">
+      <div class="logo-box">
+        <img src="../assets/images/logo-book.png" alt="문답책 로고">
+        <span>문답책</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">01</span>
+        <span class="step-title">책 고르기</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">02</span>
+        <span class="step-title">읽기 전</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">03</span>
+        <span class="step-title">읽기 중</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item active">
+        <span class="step-number">04</span>
+        <span class="step-title">우리반 책읽기</span>
+      </div>
+
+      <div class="step-item">
+        <span class="step-number">05</span>
+        <span class="step-title">읽기 후</span>
+        <span class="step-lock">🔒</span>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="top-bar">
+        <h1 class="page-title">질문 나누기</h1>
+
+        <div class="top-buttons">
+          <button class="top-button" type="button" onclick="goPracticePage()">단계 선택</button>
+          <button class="top-button" type="button" onclick="goHome()">홈으로</button>
+          <button class="top-button" type="button">나의 힘</button>
+        </div>
+      </header>
+
+      <section class="content-board">
+        <section class="question-hero">
+  <div class="lumi-speech-wrap">
+    <img
+      src="../assets/images/role-student.png"
+      alt="루미"
+      class="lumi-img"
+    >
+
+    <div class="speech-box">
+      친구들이 만든 질문을 살펴보고<br>
+      내 생각을 답으로 적어보자!<br>
+      질문을 나누면 책이 더 깊어져!
+    </div>
+  </div>
+
+  <section class="guide-card">
+    <h2>질문 나누기 활동</h2>
+
+    <div class="guide-mini-grid">
+      <div class="guide-mini">
+        <span>친구 카드</span>
+        <strong id="friendCount">3명</strong>
+      </div>
+
+      <div class="guide-mini">
+        <span>오늘의 질문</span>
+        <strong id="questionCount">8개</strong>
+      </div>
+    </div>
+
+    <div class="guide-text">
+      친구별로 질문 카드가 하나씩 보여요.<br>
+      대표 질문을 읽고, 궁금하면 질문 더보기를 눌러보세요.
+    </div>
+  </section>
+
+  <section class="type-filter-box">
+    <button class="type-all-button" type="button" onclick="selectQuestionType('all')">
+      전체 보기
+    </button>
+
+    <div class="type-button-grid" id="typeButtonGrid">
+      <!-- JS로 질문 유형 버튼이 들어갑니다. -->
+    </div>
+  </section>
+</section>
+        </section>
+
+        <section class="friend-grid" id="friendGrid"></section>
+
+        <div class="bottom-buttons">
+          <button class="bottom-button" type="button" onclick="goClassReading()">
+            우리반 책읽기로
+          </button>
+
+          <button class="bottom-button green" type="button" onclick="goMyQuestions()">
+            질문 모음 보기
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  const questionTypes = [
+  {
+    id: "direct",
+    label: "바로 답 찾기"
+  },
+  {
+    id: "infer",
+    label: "답 짐작하기"
+  },
+  {
+    id: "feeling",
+    label: "생각·느낌"
+  },
+  {
+    id: "life",
+    label: "내 삶 연결"
+  }
+];
+
+let selectedType = "all";
+
+const friendQuestionData = [
+  {
+    name: "민지",
+    icon: "❓",
+    questions: [
+      {
+        text: "주인공은 왜 숲으로 들어갔을까?",
+        type: "direct"
+      },
+      {
+        text: "나라면 이 장면에서 어떻게 했을까?",
+        type: "life"
+      },
+      {
+        text: "이 장면이 중요한 이유는 무엇일까?",
+        type: "infer"
+      }
+    ]
+  },
+  {
+    name: "서준",
+    icon: "💬",
+    questions: [
+      {
+        text: "주인공의 마음은 언제 가장 많이 바뀌었을까?",
+        type: "feeling"
+      },
+      {
+        text: "친구에게 이 장면을 설명한다면 어떻게 말할까?",
+        type: "direct"
+      }
+    ]
+  },
+  {
+    name: "하윤",
+    icon: "📒",
+    questions: [
+      {
+        text: "이 이야기에서 가장 궁금한 부분은 무엇일까?",
+        type: "feeling"
+      },
+      {
+        text: "제목을 새로 만든다면 무엇으로 하고 싶을까?",
+        type: "infer"
+      },
+      {
+        text: "이 책이 나에게 알려준 것은 무엇일까?",
+        type: "life"
+      }
+    ]
+  },
+  {
+    name: "도윤",
+    icon: "🔎",
+    questions: [
+      {
+        text: "이야기 속에서 주인공이 만난 인물은 누구였을까?",
+        type: "direct"
+      },
+      {
+        text: "주인공은 왜 친구를 도와주었을까?",
+        type: "infer"
+      }
+    ]
+  }
+];
+
+function getTypeLabel(typeId) {
+  const type = questionTypes.find(function(item) {
+    return item.id === typeId;
+  });
+
+  return type ? type.label : "질문";
+}
+
+function selectQuestionType(typeId) {
+  selectedType = typeId;
+  renderTypeButtons();
+  renderFriendCards();
+}
+
+function renderTypeButtons() {
+  const typeButtonGrid = document.getElementById("typeButtonGrid");
+
+  if (!typeButtonGrid) {
+    console.error("typeButtonGrid 요소가 없습니다.");
+    return;
+  }
+
+  typeButtonGrid.innerHTML = "";
+
+  questionTypes.forEach(function(type) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "type-button";
+
+    if (selectedType === type.id) {
+      button.classList.add("active");
+    }
+
+    button.textContent = type.label;
+
+    button.addEventListener("click", function() {
+      selectQuestionType(type.id);
+    });
+
+    typeButtonGrid.appendChild(button);
+  });
+}
+
+function getFilteredFriends() {
+  if (selectedType === "all") {
+    return friendQuestionData;
+  }
+
+  return friendQuestionData
+    .map(function(friend) {
+      const filteredQuestions = friend.questions.filter(function(question) {
+        return question.type === selectedType;
+      });
+
+      return {
+        name: friend.name,
+        icon: friend.icon,
+        questions: filteredQuestions
+      };
+    })
+    .filter(function(friend) {
+      return friend.questions.length > 0;
+    });
+}
+
+function renderFriendCards() {
+  const friendGrid = document.getElementById("friendGrid");
+
+  if (!friendGrid) {
+    console.error("friendGrid 요소가 없습니다.");
+    return;
+  }
+
+  friendGrid.innerHTML = "";
+
+  const filteredFriends = getFilteredFriends();
+  let totalQuestionCount = 0;
+
+  if (filteredFriends.length === 0) {
+    friendGrid.innerHTML = `
+      <div class="empty-card">
+        이 유형으로 만든 친구 질문이 아직 없어요.
+      </div>
+    `;
+
+    updateCounts(0, 0);
+    return;
+  }
+
+  filteredFriends.forEach(function(friend) {
+    totalQuestionCount += friend.questions.length;
+
+    const article = document.createElement("article");
+    article.className = "friend-card";
+
+    const questionHtml = friend.questions.map(function(question, questionIndex) {
+      const extraClass = questionIndex === 0 ? "" : " extra-question";
+      const label = questionIndex === 0 ? "대표 질문" : "추가 질문";
+
+      return `
+        <div class="question-box${extraClass}">
+          <span class="question-type-badge">${getTypeLabel(question.type)}</span>
+          <div class="question-label">${label}</div>
+          <div class="question-text">Q${questionIndex + 1}. ${question.text}</div>
+        </div>
+      `;
+    }).join("");
+
+    article.innerHTML = `
+      <div class="friend-top">
+        <div class="friend-icon">${friend.icon}</div>
+        <div>
+          <div class="friend-name">${friend.name}</div>
+          <div class="friend-count">공유한 질문 ${friend.questions.length}개</div>
+        </div>
+      </div>
+
+      <div class="question-list">
+        ${questionHtml}
+      </div>
+
+      <div class="answer-area">
+        <label class="answer-label">내 생각 쓰기</label>
+        <textarea class="answer-input" placeholder="친구의 질문에 대한 내 생각을 적어봐요."></textarea>
+        <div class="comment-list"></div>
+      </div>
+
+      <div class="card-buttons">
+        <button class="card-button" type="button" onclick="toggleQuestions(this)">질문 더보기</button>
+        <button class="card-button brown" type="button" onclick="saveAnswer(this)">답변 저장</button>
+      </div>
+    `;
+
+    friendGrid.appendChild(article);
+  });
+
+  updateCounts(filteredFriends.length, totalQuestionCount);
+}
+
+function updateCounts(friendCount, questionCount) {
+  const friendCountEl = document.getElementById("friendCount");
+  const questionCountEl = document.getElementById("questionCount");
+
+  if (friendCountEl) {
+    friendCountEl.textContent = friendCount + "명";
+  }
+
+  if (questionCountEl) {
+    questionCountEl.textContent = questionCount + "개";
+  }
+}
+
+function toggleQuestions(button) {
+  const card = button.closest(".friend-card");
+  const extraQuestions = card.querySelectorAll(".extra-question");
+
+  const isClosed = Array.from(extraQuestions).some(function(question) {
+    return question.style.display !== "block";
+  });
+
+  extraQuestions.forEach(function(question) {
+    question.style.display = isClosed ? "block" : "none";
+  });
+
+  button.textContent = isClosed ? "질문 접기" : "질문 더보기";
+}
+
+function saveAnswer(button) {
+  const card = button.closest(".friend-card");
+  const textarea = card.querySelector(".answer-input");
+  const commentList = card.querySelector(".comment-list");
+  const text = textarea.value.trim();
+
+  if (!text) {
+    alert("답변을 먼저 적어주세요!");
+    return;
+  }
+
+  const comment = document.createElement("div");
+  comment.className = "comment-item";
+  comment.textContent = "내 답변: " + text;
+
+  commentList.prepend(comment);
+  textarea.value = "";
+
+  alert("답변이 저장되었어요!");
+}
+
+function goPracticePage() {
+  location.href = "./practice.html";
+}
+
+function goHome() {
+  location.href = "./home.html";
+}
+
+function goClassReading() {
+  location.href = "./class-reading.html";
+}
+
+function goMyQuestions() {
+  location.href = "./my-questions.html";
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  renderTypeButtons();
+  renderFriendCards();
+});
+  </script>
+</body>
+</html>
