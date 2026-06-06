@@ -654,7 +654,7 @@
             </p>
           </div>
 
-          <button class="step-button" id="beforeButton" onclick="goBeforeIntroPage()">
+<button class="step-button" id="beforeButton" disabled onclick="goBeforeIntroPage()">
   잠김
 </button>
         </article>
@@ -680,9 +680,9 @@
             </p>
           </div>
 
-          <button class="step-button" id="duringButton" onclick="completeStep('during')">
-            잠김
-          </button>
+     <button class="step-button" id="duringButton" disabled onclick="goDuringReadingIntro()">
+  잠김
+</button>
         </article>
 
         <!-- 4단계 -->
@@ -758,8 +758,7 @@
     */
 
     // 로그인한 학생 ID를 가져옵니다.
-    const studentId = sessionStorage.getItem("studentId") || "test-student";
-
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
     // 학생별 연습하기 진행 상태 저장 키입니다.
     const progressKey = `practiceProgress_${studentId}`;
 
@@ -771,7 +770,12 @@
       classRead: false,
       after: false
     };
-
+// 읽기 전 공유 활동을 완료했다면 읽기 중 단계를 열어 줍니다.
+if (sessionStorage.getItem("beforeReadingShareCompleted_" + studentId) === "true") {
+  progress.book = true;
+  progress.before = true;
+  sessionStorage.setItem(progressKey, JSON.stringify(progress));
+}
     // 화면이 열리면 현재 진행 상태를 반영합니다.
     updatePracticeScreen();
 
@@ -784,6 +788,10 @@
     function goQuestionBundlePage() {
       window.location.href = "./question-bundle.html";
     }
+    // 읽기 중 인트로 화면으로 이동합니다.
+function goDuringReadingIntro() {
+  window.location.href = "./during-reading-intro.html";
+}
 // 읽기 전 인트로 화면으로 이동합니다.
 function goBeforeIntroPage() {
   window.location.href = "./read-before-intro.html";
