@@ -1801,7 +1801,7 @@ body {
   width: 360px;
   min-width: 360px;
   height: 260px;
-  margin-top: -3px;
+  margin-top: -16px;
   position: relative;
   z-index: 5;
   background:
@@ -2257,50 +2257,48 @@ body {
   align-items: center;
   justify-content: center;
 
-  /* 부모보다 더 넓게 잡아서 카드 양끝까지 뻗어 보이게 */
-  width: calc(100% + 16px);
-  height: 34px;
-  margin-left: -8px;
-  margin-right: -8px;
+  /* 카드 안에서 너무 길게 뻗지 않고, 목표 이미지처럼 둥근 캡슐로 보이게 */
+  width: fit-content;
+  min-width: 118px;
+  max-width: 82%;
+  height: 24px;
+  margin: 4px auto 0;
+  padding: 0 18px;
 
   position: relative;
   isolation: isolate;
   overflow: hidden;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
   line-height: 1;
   color: #fff8df;
   white-space: nowrap;
 
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.05) 38%, rgba(0,0,0,0.35) 100%),
-    linear-gradient(90deg, rgba(24,14,5,0.98) 0%, rgba(158,102,24,0.98) 48%, rgba(24,14,5,0.98) 100%);
+    linear-gradient(180deg,
+      rgba(255,255,255,0.32) 0%,
+      rgba(255,255,255,0.12) 35%,
+      rgba(0,0,0,0.18) 70%,
+      rgba(0,0,0,0.34) 100%
+    ),
+    linear-gradient(180deg,
+      rgba(206, 153, 45, 0.98) 0%,
+      rgba(126, 82, 20, 0.98) 100%
+    );
 
-  border-top: 2px solid rgba(255, 238, 158, 0.95);
-  border-bottom: 2px solid rgba(24, 12, 4, 0.95);
-  border-left: 1px solid rgba(255, 220, 120, 0.7);
-  border-right: 1px solid rgba(255, 220, 120, 0.7);
+  border: 1px solid rgba(255, 226, 145, 0.75);
+  border-radius: 999px;
 
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,0.34),
-    inset 0 -2px 0 rgba(0,0,0,0.74),
-    inset 0 0 18px rgba(255, 216, 100, 0.26),
-    0 0 18px rgba(255, 202, 64, 0.34),
-    0 4px 10px rgba(0,0,0,0.55);
+    inset 0 1px 0 rgba(255,255,255,0.42),
+    inset 0 -2px 0 rgba(0,0,0,0.38),
+    0 2px 5px rgba(0,0,0,0.48);
 
-  clip-path: polygon(
-    14px 0,
-    calc(100% - 14px) 0,
-    100% 50%,
-    calc(100% - 14px) 100%,
-    14px 100%,
-    0 50%
-  );
+  clip-path: none;
 
   text-shadow:
-    0 0 8px rgba(255, 238, 170, 0.65),
-    0 2px 4px rgba(0,0,0,0.95);
+    0 1px 2px rgba(0,0,0,0.9);
 }
 
 .skill-text small::before {
@@ -2445,15 +2443,17 @@ body {
 
 /* 튜토리얼 바 */
 .battle-guide-box {
-  width: 60%;
+  width: 100%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 54px 1fr;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   min-width: 0;
-  height: 95px;
+  height: 74px;
   padding: 0 10px;
+  position: relative;
+  top: -14px;
   background:
     radial-gradient(circle at 6% 50%, rgba(255, 216, 117, 0.1), transparent 32%),
     linear-gradient(180deg, rgba(22, 14, 5, 0.98), rgba(8, 5, 3, 0.98));
@@ -2465,8 +2465,8 @@ body {
 
 .battle-guide-icon {
   align-self: start;
-  margin-top: -17px;
-  margin-left: -30px;
+  margin-top: -13px;
+  margin-left: -25px;
   width: 96px;
   height: 96px;
   display: grid;
@@ -2478,8 +2478,8 @@ body {
 }
 
 .battle-guide-icon img {
-  width: 130px !important;
-  height: 130px !important;
+  width: 100px !important;
+  height: 100px !important;
   object-fit: contain !important;
   filter:
     drop-shadow(0 0 12px rgba(255, 216, 117, 0.32))
@@ -2488,11 +2488,13 @@ body {
 
 .battle-guide-title {
   color: #ffd875;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 900;
-  margin-bottom: 3px;
+  margin-bottom: 7px;
   letter-spacing: 0.06em;
   text-shadow: 0 0 12px rgba(255, 216, 117, 0.4);
+  position: relative;
+  top: -9px;
 }
 
 .battle-guide-box p {
@@ -2501,6 +2503,8 @@ body {
   font-size: 14px;
   line-height: 1.4;
   font-weight: 700;
+  position: relative;
+  top: -8px;
 }
 
 
@@ -2995,4 +2999,56 @@ body {
     drop-shadow(0 0 16px rgba(255,100,36,0.45))
     drop-shadow(0 0 8px rgba(255,200,80,0.25))
     drop-shadow(0 8px 14px rgba(0,0,0,0.8));
+}
+
+/* 헤더 아이콘 공통 - 네모 테두리/배경 제거 */
+.header-icon {
+  display: inline-block;
+  margin-right: 8px;
+  width: auto;
+  height: auto;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  line-height: 1;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
+/* 공격 - 기존 검 느낌 + 업그레이드 */
+.atk-icon {
+  font-size: 24px;
+  color: #ffe08a;
+  text-shadow:
+    0 0 4px rgba(255, 240, 180, 0.75),
+    0 0 10px rgba(255, 201, 74, 0.65),
+    0 0 18px rgba(255, 170, 30, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.85);
+  transform: translateY(1px);
+}
+
+/* 방어 - 기존 방패 느낌 + 더 단단하고 묵직하게 */
+.def-icon {
+  font-size: 24px;
+  color: #d7ebff;
+  text-shadow:
+    0 0 4px rgba(220, 240, 255, 0.75),
+    0 0 10px rgba(106, 184, 255, 0.55),
+    0 0 16px rgba(58, 126, 214, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateY(1px);
+}
+
+/* 필살 - 기존 불꽃 느낌 + 더 강렬하게 */
+.hvy-icon {
+  font-size: 25px;
+  color: #ffcf8f;
+  text-shadow:
+    0 0 4px rgba(255, 232, 180, 0.8),
+    0 0 10px rgba(255, 140, 60, 0.85),
+    0 0 18px rgba(255, 72, 0, 0.65),
+    0 0 26px rgba(255, 40, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateY(1px);
 }
