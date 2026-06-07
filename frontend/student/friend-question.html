@@ -858,6 +858,253 @@
   font-size: 16px;
   font-weight: 950;
 }
+.my-question-card-from-storage {
+  border-color: rgba(245, 197, 96, 0.95) !important;
+  box-shadow:
+    0 0 0 3px rgba(255, 214, 116, 0.12),
+    0 20px 42px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.18) !important;
+}
+
+.my-storage-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.my-storage-card-header h3 {
+  margin: 0 0 6px;
+  color: #3b2211;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.my-storage-card-header p {
+  margin: 0;
+  color: #684523;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.my-storage-card-header span {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(138, 84, 35, 0.16);
+  color: #8a5423;
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.my-answer-preview {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 244, 214, 0.62);
+  color: #5a3518;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.my-answer-preview strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #4f7130;
+  font-weight: 900;
+}
+
+.my-answer-preview p {
+  margin: 0;
+}
+
+.my-extra-answer-box {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.my-storage-answer-textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 2px solid rgba(219, 166, 65, 0.72);
+  background: rgba(255, 253, 245, 0.94);
+  color: #3b2211;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+  resize: none;
+  outline: none;
+}
+
+.my-storage-answer-textarea:focus {
+  border-color: #4f7130;
+  box-shadow: 0 0 0 3px rgba(79, 113, 48, 0.18);
+}
+
+.my-storage-answer-button {
+  justify-self: end;
+  min-width: 120px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4f7130, #253f17);
+  color: #fff8df;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #14240c;
+}
+
+.saved-answer-box {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(79, 113, 48, 0.14);
+  color: #3b2211;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.saved-answer-box strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #4f7130;
+  font-weight: 900;
+}
+
+.saved-answer-box p {
+  margin: 0;
+}
+/* 친구 질문 카드: 프로필 이미지/아이콘 숨기고 이름 중심으로 정리 */
+.friend-icon,
+.friend-avatar,
+.profile-icon,
+.profile-image {
+  display: none !important;
+}
+
+.friend-profile {
+  display: block !important;
+}
+
+.friend-profile h3 {
+  margin: 0 0 6px !important;
+  color: #3b2211 !important;
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.05em !important;
+}
+
+.friend-profile p {
+  margin: 0 !important;
+  color: #684523 !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+}
+
+.friend-card-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  margin-bottom: 18px !important;
+}
+
+.friend-question-count {
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(138, 84, 35, 0.16) !important;
+  color: #8a5423 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+/* 내 질문 카드 - 질문 더보기 버튼 디자인 통일 */
+.my-more-question-list {
+  display: grid !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+
+.my-question-more-button {
+  width: 100% !important;
+  height: 44px !important;
+  margin-top: 14px !important;
+
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(180deg, #4f7130, #253f17) !important;
+  color: #fff8df !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+
+  cursor: pointer !important;
+  box-shadow: 0 5px 0 #14240c !important;
+}
+
+.my-question-more-button:hover {
+  transform: translateY(-1px);
+}
+/* 내 질문 카드 더보기/접기 최종 정리 */
+.my-more-question-list {
+  display: none !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+
+.my-more-question-list.open {
+  display: grid !important;
+}
+
+.my-question-more-button {
+  width: 100% !important;
+  height: 44px !important;
+  margin-top: 14px !important;
+
+  border: none !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(180deg, #4f7130, #253f17) !important;
+  color: #fff8df !important;
+
+  font-family: inherit !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+
+  cursor: pointer !important;
+  box-shadow: 0 5px 0 #14240c !important;
+}
+
+.my-question-more-button:hover {
+  transform: translateY(-1px);
+}
+
+.saved-answer-box {
+  display: none !important;
+}
+
+.saved-answer-box.show {
+  display: block !important;
+  margin-top: 10px !important;
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+  background: rgba(79, 113, 48, 0.14) !important;
+  color: #3b2211 !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  line-height: 1.45 !important;
+}
   </style>
 </head>
 
@@ -1272,5 +1519,352 @@ document.addEventListener("DOMContentLoaded", function() {
   renderFriendCards();
 });
   </script>
+  <script>
+  window.addEventListener("load", function () {
+    if (window.__myQuestionConnectorInstalled) {
+      return;
+    }
+
+    window.__myQuestionConnectorInstalled = true;
+
+    const typeButtonGrid = document.getElementById("typeButtonGrid");
+    const friendGrid = document.getElementById("friendGrid");
+
+    let currentFilterType = "all";
+
+    if (!friendGrid) {
+      return;
+    }
+
+    renderMyQuestionCardLater("all");
+
+    if (typeButtonGrid) {
+      typeButtonGrid.addEventListener("click", function (event) {
+        const clickedButton = event.target.closest("button");
+
+        if (!clickedButton) {
+          return;
+        }
+
+        currentFilterType = getFilterTypeFromButton(clickedButton);
+
+        renderMyQuestionCardLater(currentFilterType);
+      });
+    }
+
+    function renderMyQuestionCardLater(filterType) {
+      /*
+        기존 friend-question.html이 필터 버튼을 누르면
+        친구 카드를 다시 그리기 때문에 시간을 조금 두고 여러 번 확인합니다.
+        removeOldMyQuestionCard()가 먼저 실행되므로 중복 카드는 생기지 않습니다.
+      */
+      setTimeout(function () {
+        addMyQuestionCardByFilter(filterType);
+      }, 80);
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter(filterType);
+      }, 250);
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter(filterType);
+      }, 500);
+    }
+
+    function getFilterTypeFromButton(button) {
+      const datasetType =
+        button.dataset.type ||
+        button.dataset.filter ||
+        button.dataset.category ||
+        button.dataset.value;
+
+      if (datasetType) {
+        if (
+          datasetType === "all" ||
+          datasetType === "total" ||
+          datasetType === "전체" ||
+          datasetType === "전체 보기"
+        ) {
+          return "all";
+        }
+
+        return datasetType;
+      }
+
+      const buttonText = button.textContent.replace(/\s/g, "");
+
+      if (buttonText.includes("전체")) return "all";
+      if (buttonText.includes("바로")) return "direct";
+      if (buttonText.includes("짐작")) return "infer";
+      if (buttonText.includes("생각") || buttonText.includes("느낌")) return "feeling";
+      if (buttonText.includes("삶") || buttonText.includes("연결")) return "life";
+
+      return "all";
+    }
+
+    function addMyQuestionCardByFilter(filterType) {
+      const savedData = localStorage.getItem("mySharedQuestions");
+
+      removeOldMyQuestionCard();
+
+      if (!savedData) {
+        updateFriendAndQuestionCount();
+        return;
+      }
+
+      let myData;
+
+      try {
+        myData = JSON.parse(savedData);
+      } catch (error) {
+        console.log("내 질문 데이터를 읽을 수 없습니다.", error);
+        updateFriendAndQuestionCount();
+        return;
+      }
+
+      if (!myData || !Array.isArray(myData.questions) || myData.questions.length === 0) {
+        updateFriendAndQuestionCount();
+        return;
+      }
+
+      const filteredQuestions = filterType === "all"
+        ? myData.questions
+        : myData.questions.filter(function (question) {
+            return question.type === filterType;
+          });
+
+      if (filteredQuestions.length === 0) {
+        updateFriendAndQuestionCount();
+        return;
+      }
+
+      const myCard = createMyQuestionCard(filteredQuestions);
+      friendGrid.prepend(myCard);
+
+      connectMoreButton(myCard);
+      connectMyCardAnswerButtons(myCard);
+      updateFriendAndQuestionCount();
+    }
+
+    function createMyQuestionCard(questions) {
+      const typeLabelMap = {
+        direct: "바로 답 찾기",
+        infer: "답 짐작하기",
+        feeling: "생각·느낌",
+        life: "내 삶 연결"
+      };
+
+      const typeIconMap = {
+        direct: "🔍",
+        infer: "💭",
+        feeling: "💛",
+        life: "🌱"
+      };
+
+      const firstQuestion = questions[0];
+      const restQuestions = questions.slice(1);
+      const hasMoreQuestions = restQuestions.length > 0;
+
+      const myCard = document.createElement("article");
+      myCard.className = "friend-card my-question-card-from-storage";
+
+      myCard.innerHTML = `
+        <div class="my-storage-card-header">
+          <div>
+            <h3>나 질문 카드</h3>
+            <p>내가 질문 만들기에서 저장한 질문이에요.</p>
+          </div>
+          <span class="friend-question-count">${questions.length}개</span>
+        </div>
+
+        <div class="friend-question-list">
+          ${makeQuestionItemHTML(firstQuestion, typeLabelMap, typeIconMap)}
+
+          ${hasMoreQuestions ? `
+            <div class="my-more-question-list">
+              ${restQuestions.map(function (question) {
+                return makeQuestionItemHTML(question, typeLabelMap, typeIconMap);
+              }).join("")}
+            </div>
+
+            <button class="my-question-more-button" type="button">
+              질문 더보기 +${restQuestions.length}
+            </button>
+          ` : ""}
+        </div>
+      `;
+
+      return myCard;
+    }
+
+    function makeQuestionItemHTML(question, typeLabelMap, typeIconMap) {
+      return `
+        <div class="friend-question-item">
+          <div class="question-type-badge">
+            ${typeIconMap[question.type] || "❓"} ${typeLabelMap[question.type] || "질문"}
+          </div>
+
+          <p class="question-text">
+            ${escapeStorageQuestionHTML(question.text)}
+          </p>
+
+          ${question.answer ? `
+            <div class="my-answer-preview">
+              <strong>내 생각</strong>
+              <p>${escapeStorageQuestionHTML(question.answer)}</p>
+            </div>
+          ` : ""}
+
+          <div class="my-extra-answer-box">
+            <textarea
+              class="my-storage-answer-textarea"
+              placeholder="이 질문에 대한 내 생각을 더 적어 보세요."
+            ></textarea>
+
+            <button class="my-storage-answer-button" type="button">
+              답변 저장
+            </button>
+
+            <div class="saved-answer-box"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function connectMoreButton(card) {
+      const moreButton = card.querySelector(".my-question-more-button");
+      const moreList = card.querySelector(".my-more-question-list");
+
+      if (!moreButton || !moreList) {
+        return;
+      }
+
+      moreButton.addEventListener("click", function () {
+        const isOpen = moreList.classList.contains("open");
+        const restCount = moreList.querySelectorAll(".friend-question-item").length;
+
+        if (isOpen) {
+          moreList.classList.remove("open");
+          moreButton.textContent = `질문 더보기 +${restCount}`;
+        } else {
+          moreList.classList.add("open");
+          moreButton.textContent = "질문 접기";
+        }
+      });
+    }
+
+    function connectMyCardAnswerButtons(card) {
+      const items = card.querySelectorAll(".friend-question-item");
+
+      items.forEach(function (item) {
+        const textarea = item.querySelector(".my-storage-answer-textarea");
+        const button = item.querySelector(".my-storage-answer-button");
+        const savedBox = item.querySelector(".saved-answer-box");
+
+        if (!textarea || !button || !savedBox) {
+          return;
+        }
+
+        button.addEventListener("click", function () {
+          const answer = textarea.value.trim();
+
+          if (!answer) {
+            alert("답변을 먼저 써 주세요.");
+            textarea.focus();
+            return;
+          }
+
+          savedBox.classList.add("show");
+          savedBox.innerHTML = `
+            <strong>내가 쓴 답변</strong>
+            <p>${escapeStorageQuestionHTML(answer)}</p>
+          `;
+
+          textarea.value = "";
+        });
+      });
+    }
+
+    function updateFriendAndQuestionCount() {
+      const friendCount = document.getElementById("friendCount");
+      const questionCount = document.getElementById("questionCount");
+
+      if (!friendGrid) {
+        return;
+      }
+
+      const cards = friendGrid.querySelectorAll(".friend-card");
+      let totalQuestionCount = 0;
+
+      cards.forEach(function (card) {
+        const countElement = card.querySelector(".friend-question-count");
+
+        if (countElement) {
+          const number = Number(countElement.textContent.replace(/[^0-9]/g, "")) || 0;
+          totalQuestionCount += number;
+        } else {
+          totalQuestionCount += card.querySelectorAll(".friend-question-item").length;
+        }
+      });
+
+      if (friendCount) {
+        friendCount.textContent = cards.length;
+      }
+
+      if (questionCount) {
+        questionCount.textContent = totalQuestionCount;
+      }
+    }
+
+    function removeOldMyQuestionCard() {
+      const oldCards = document.querySelectorAll(".my-question-card-from-storage");
+
+      oldCards.forEach(function (card) {
+        card.remove();
+      });
+    }
+
+    function escapeStorageQuestionHTML(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+        // 전체 보기 버튼을 눌렀을 때 내 질문 카드가 사라지는 문제 보정
+    document.addEventListener("click", function (event) {
+      const clickedButton = event.target.closest("button");
+
+      if (!clickedButton) {
+        return;
+      }
+
+      const buttonText = clickedButton.textContent.replace(/\s/g, "");
+
+      if (!buttonText.includes("전체")) {
+        return;
+      }
+
+      currentFilterType = "all";
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter("all");
+      }, 100);
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter("all");
+      }, 350);
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter("all");
+      }, 700);
+
+      setTimeout(function () {
+        addMyQuestionCardByFilter("all");
+      }, 1200);
+    });
+  });
+</script>
 </body>
 </html>
