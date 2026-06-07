@@ -865,11 +865,21 @@
         return;
       }
 
-      myQuestions.push({
-        text: questionText,
-        answer: answerText,
-        type: selectedType
-      });
+      const today = new Date();
+
+const createdAt =
+  today.getFullYear() +
+  "." +
+  String(today.getMonth() + 1).padStart(2, "0") +
+  "." +
+  String(today.getDate()).padStart(2, "0");
+
+myQuestions.push({
+  text: questionText,
+  answer: answerText,
+  type: selectedType,
+  createdAt: createdAt
+});
 
       questionInput.value = "";
       answerInput.value = "";
@@ -926,18 +936,19 @@
     }
 
     function saveToLocalStorage() {
-      const studentQuestionData = {
-        name: "나",
-        icon: "❓",
-        questions: myQuestions.map((question) => ({
-          text: question.text,
-          answer: question.answer,
-          type: question.type
-        }))
-      };
+  const studentQuestionData = {
+    name: "나",
+    icon: "❓",
+    questions: myQuestions.map((question) => ({
+      text: question.text,
+      answer: question.answer,
+      type: question.type,
+      createdAt: question.createdAt || "날짜 기록 없음"
+    }))
+  };
 
-      localStorage.setItem("mySharedQuestions", JSON.stringify(studentQuestionData));
-    }
+  localStorage.setItem("mySharedQuestions", JSON.stringify(studentQuestionData));
+}
 
     function loadSavedQuestions() {
       const savedData = localStorage.getItem("mySharedQuestions");

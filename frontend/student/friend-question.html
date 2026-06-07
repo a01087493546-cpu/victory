@@ -1105,6 +1105,31 @@
   font-weight: 800 !important;
   line-height: 1.45 !important;
 }
+#allTypeButton,
+button[onclick="selectQuestionType('all')"] {
+  border: 2px solid #d9b15a;
+  border-radius: 16px;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, #8a5423, #4a290f);
+  color: #fff8ea;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #2c1609;
+}
+
+#allTypeButton:hover,
+button[onclick="selectQuestionType('all')"]:hover {
+  transform: translateY(1px);
+  box-shadow: 0 4px 0 #2c1609;
+}
+
+#allTypeButton.active,
+button[onclick="selectQuestionType('all')"].active {
+  border-color: #f4d06f;
+  background: linear-gradient(180deg, #8a5423, #4a290f);
+  color: #fff8ea;
+}
   </style>
 </head>
 
@@ -1195,9 +1220,9 @@
   </section>
 
   <section class="type-filter-box">
-    <button class="type-all-button" type="button" onclick="selectQuestionType('all')">
-      전체 보기
-    </button>
+   <button class="어떤클래스이름 active" id="allTypeButton" type="button" onclick="selectQuestionType('all')">
+  전체 보기
+</button>
 
     <div class="type-button-grid" id="typeButtonGrid">
       <!-- JS로 질문 유형 버튼이 들어갑니다. -->
@@ -1241,629 +1266,387 @@
   }
 ];
 
-let selectedType = "all";
+  const typeIconMap = {
+    direct: "🔍",
+    infer: "💭",
+    feeling: "💛",
+    life: "🌱"
+  };
 
-const friendQuestionData = [
-  {
-    name: "민지",
-    icon: "❓",
-    questions: [
-      {
-        text: "주인공은 왜 숲으로 들어갔을까?",
-        type: "direct"
-      },
-      {
-        text: "나라면 이 장면에서 어떻게 했을까?",
-        type: "life"
-      },
-      {
-        text: "이 장면이 중요한 이유는 무엇일까?",
-        type: "infer"
-      }
-    ]
-  },
-  {
-    name: "서준",
-    icon: "💬",
-    questions: [
-      {
-        text: "주인공의 마음은 언제 가장 많이 바뀌었을까?",
-        type: "feeling"
-      },
-      {
-        text: "친구에게 이 장면을 설명한다면 어떻게 말할까?",
-        type: "direct"
-      }
-    ]
-  },
-  {
-    name: "하윤",
-    icon: "📒",
-    questions: [
-      {
-        text: "이 이야기에서 가장 궁금한 부분은 무엇일까?",
-        type: "feeling"
-      },
-      {
-        text: "제목을 새로 만든다면 무엇으로 하고 싶을까?",
-        type: "infer"
-      },
-      {
-        text: "이 책이 나에게 알려준 것은 무엇일까?",
-        type: "life"
-      }
-    ]
-  },
-  {
-    name: "도윤",
-    icon: "🔎",
-    questions: [
-      {
-        text: "이야기 속에서 주인공이 만난 인물은 누구였을까?",
-        type: "direct"
-      },
-      {
-        text: "주인공은 왜 친구를 도와주었을까?",
-        type: "infer"
-      }
-    ]
-  }
-];
+  let selectedType = "all";
 
-function getTypeLabel(typeId) {
-  const type = questionTypes.find(function(item) {
-    return item.id === typeId;
-  });
+  const friendQuestionData = [
+    {
+      name: "민지",
+      icon: "❓",
+      questions: [
+        {
+          text: "주인공은 왜 숲으로 들어갔을까?",
+          type: "direct"
+        },
+        {
+          text: "나라면 이 장면에서 어떻게 했을까?",
+          type: "life"
+        },
+        {
+          text: "이 장면이 중요한 이유는 무엇일까?",
+          type: "infer"
+        }
+      ]
+    },
+    {
+      name: "서준",
+      icon: "💬",
+      questions: [
+        {
+          text: "주인공의 마음은 언제 가장 많이 바뀌었을까?",
+          type: "feeling"
+        },
+        {
+          text: "친구에게 이 장면을 설명한다면 어떻게 말할까?",
+          type: "direct"
+        }
+      ]
+    },
+    {
+      name: "하윤",
+      icon: "📒",
+      questions: [
+        {
+          text: "이 이야기에서 가장 궁금한 부분은 무엇일까?",
+          type: "feeling"
+        },
+        {
+          text: "제목을 새로 만든다면 무엇으로 하고 싶을까?",
+          type: "infer"
+        },
+        {
+          text: "이 책이 나에게 알려준 것은 무엇일까?",
+          type: "life"
+        }
+      ]
+    },
+    {
+      name: "도윤",
+      icon: "🔎",
+      questions: [
+        {
+          text: "이야기 속에서 주인공이 만난 인물은 누구였을까?",
+          type: "direct"
+        },
+        {
+          text: "주인공은 왜 친구를 도와주었을까?",
+          type: "infer"
+        }
+      ]
+    }
+  ];
 
-  return type ? type.label : "질문";
-}
+  function getMyQuestionData() {
+    const savedData = localStorage.getItem("mySharedQuestions");
 
-function selectQuestionType(typeId) {
-  selectedType = typeId;
-  renderTypeButtons();
-  renderFriendCards();
-}
-
-function renderTypeButtons() {
-  const typeButtonGrid = document.getElementById("typeButtonGrid");
-
-  if (!typeButtonGrid) {
-    console.error("typeButtonGrid 요소가 없습니다.");
-    return;
-  }
-
-  typeButtonGrid.innerHTML = "";
-
-  questionTypes.forEach(function(type) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "type-button";
-
-    if (selectedType === type.id) {
-      button.classList.add("active");
+    if (!savedData) {
+      return null;
     }
 
-    button.textContent = type.label;
+    try {
+      const parsedData = JSON.parse(savedData);
 
-    button.addEventListener("click", function() {
-      selectQuestionType(type.id);
-    });
+      if (
+        !parsedData ||
+        !Array.isArray(parsedData.questions) ||
+        parsedData.questions.length === 0
+      ) {
+        return null;
+      }
 
-    typeButtonGrid.appendChild(button);
-  });
-}
+      return {
+        name: parsedData.name || "나",
+        icon: parsedData.icon || "❓",
+        isMine: true,
+        questions: parsedData.questions
+      };
+    } catch (error) {
+      console.error("내 질문 데이터를 불러오지 못했습니다.", error);
+      return null;
+    }
+  }
 
-function getFilteredFriends() {
-  if (selectedType === "all") {
+  function getAllQuestionData() {
+    const myQuestionData = getMyQuestionData();
+
+    if (myQuestionData) {
+      return [myQuestionData, ...friendQuestionData];
+    }
+
     return friendQuestionData;
   }
 
-  return friendQuestionData
-    .map(function(friend) {
-      const filteredQuestions = friend.questions.filter(function(question) {
-        return question.type === selectedType;
-      });
-
-      return {
-        name: friend.name,
-        icon: friend.icon,
-        questions: filteredQuestions
-      };
-    })
-    .filter(function(friend) {
-      return friend.questions.length > 0;
+  function getTypeLabel(typeId) {
+    const type = questionTypes.find(function(item) {
+      return item.id === typeId;
     });
-}
 
-function renderFriendCards() {
-  const friendGrid = document.getElementById("friendGrid");
-
-  if (!friendGrid) {
-    console.error("friendGrid 요소가 없습니다.");
-    return;
+    return type ? type.label : "질문";
   }
 
-  friendGrid.innerHTML = "";
-
-  const filteredFriends = getFilteredFriends();
-  let totalQuestionCount = 0;
-
-  if (filteredFriends.length === 0) {
-    friendGrid.innerHTML = `
-      <div class="empty-card">
-        이 유형으로 만든 친구 질문이 아직 없어요.
-      </div>
-    `;
-
-    updateCounts(0, 0);
-    return;
+  function selectQuestionType(typeId) {
+    selectedType = typeId;
+    renderTypeButtons();
+    renderFriendCards();
   }
 
-  filteredFriends.forEach(function(friend) {
-    totalQuestionCount += friend.questions.length;
+  function renderTypeButtons() {
+    const typeButtonGrid = document.getElementById("typeButtonGrid");
 
-    const article = document.createElement("article");
-    article.className = "friend-card";
-
-    const questionHtml = friend.questions.map(function(question, questionIndex) {
-      const extraClass = questionIndex === 0 ? "" : " extra-question";
-      const label = questionIndex === 0 ? "대표 질문" : "추가 질문";
-
-      return `
-        <div class="question-box${extraClass}">
-          <span class="question-type-badge">${getTypeLabel(question.type)}</span>
-          <div class="question-label">${label}</div>
-          <div class="question-text">Q${questionIndex + 1}. ${question.text}</div>
-        </div>
-      `;
-    }).join("");
-
-    article.innerHTML = `
-      <div class="friend-top">
-        <div class="friend-icon">${friend.icon}</div>
-        <div>
-          <div class="friend-name">${friend.name}</div>
-          <div class="friend-count">공유한 질문 ${friend.questions.length}개</div>
-        </div>
-      </div>
-
-      <div class="question-list">
-        ${questionHtml}
-      </div>
-
-      <div class="answer-area">
-        <label class="answer-label">내 생각 쓰기</label>
-        <textarea class="answer-input" placeholder="친구의 질문에 대한 내 생각을 적어봐요."></textarea>
-        <div class="comment-list"></div>
-      </div>
-
-      <div class="card-buttons">
-        <button class="card-button" type="button" onclick="toggleQuestions(this)">질문 더보기</button>
-        <button class="card-button brown" type="button" onclick="saveAnswer(this)">답변 저장</button>
-      </div>
-    `;
-
-    friendGrid.appendChild(article);
-  });
-
-  updateCounts(filteredFriends.length, totalQuestionCount);
-}
-
-function updateCounts(friendCount, questionCount) {
-  const friendCountEl = document.getElementById("friendCount");
-  const questionCountEl = document.getElementById("questionCount");
-
-  if (friendCountEl) {
-    friendCountEl.textContent = friendCount + "명";
-  }
-
-  if (questionCountEl) {
-    questionCountEl.textContent = questionCount + "개";
-  }
-}
-
-function toggleQuestions(button) {
-  const card = button.closest(".friend-card");
-  const extraQuestions = card.querySelectorAll(".extra-question");
-
-  const isClosed = Array.from(extraQuestions).some(function(question) {
-    return question.style.display !== "block";
-  });
-
-  extraQuestions.forEach(function(question) {
-    question.style.display = isClosed ? "block" : "none";
-  });
-
-  button.textContent = isClosed ? "질문 접기" : "질문 더보기";
-}
-
-function saveAnswer(button) {
-  const card = button.closest(".friend-card");
-  const textarea = card.querySelector(".answer-input");
-  const commentList = card.querySelector(".comment-list");
-  const text = textarea.value.trim();
-
-  if (!text) {
-    alert("답변을 먼저 적어주세요!");
-    return;
-  }
-
-  const comment = document.createElement("div");
-  comment.className = "comment-item";
-  comment.textContent = "내 답변: " + text;
-
-  commentList.prepend(comment);
-  textarea.value = "";
-
-  alert("답변이 저장되었어요!");
-}
-
-function goPracticePage() {
-  location.href = "./practice.html";
-}
-
-function goHome() {
-  location.href = "./home.html";
-}
-
-function goClassReading() {
-  location.href = "./class-reading.html";
-}
-
-function goMyQuestions() {
-  location.href = "./my-questions.html";
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-  renderTypeButtons();
-  renderFriendCards();
-});
-  </script>
-  <script>
-  window.addEventListener("load", function () {
-    if (window.__myQuestionConnectorInstalled) {
+    if (!typeButtonGrid) {
+      console.error("typeButtonGrid 요소가 없습니다.");
       return;
     }
 
-    window.__myQuestionConnectorInstalled = true;
+    typeButtonGrid.innerHTML = "";
 
-    const typeButtonGrid = document.getElementById("typeButtonGrid");
+    questionTypes.forEach(function(type) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "type-button";
+      button.dataset.type = type.id;
+
+      if (selectedType === type.id) {
+        button.classList.add("active");
+      }
+
+      button.textContent = type.label;
+
+      button.addEventListener("click", function() {
+        selectQuestionType(type.id);
+      });
+
+      typeButtonGrid.appendChild(button);
+    });
+  }
+
+  function getFilteredFriends() {
+    const allQuestionData = getAllQuestionData();
+
+    if (selectedType === "all") {
+      return allQuestionData;
+    }
+
+    return allQuestionData
+      .map(function(friend) {
+        const filteredQuestions = friend.questions.filter(function(question) {
+          return question.type === selectedType;
+        });
+
+        return {
+          name: friend.name,
+          icon: friend.icon,
+          isMine: friend.isMine || false,
+          questions: filteredQuestions
+        };
+      })
+      .filter(function(friend) {
+        return friend.questions.length > 0;
+      });
+  }
+
+  function renderFriendCards() {
     const friendGrid = document.getElementById("friendGrid");
 
-    let currentFilterType = "all";
-
     if (!friendGrid) {
+      console.error("friendGrid 요소가 없습니다.");
       return;
     }
 
-    renderMyQuestionCardLater("all");
+    friendGrid.innerHTML = "";
 
-    if (typeButtonGrid) {
-      typeButtonGrid.addEventListener("click", function (event) {
-        const clickedButton = event.target.closest("button");
+    const filteredFriends = getFilteredFriends();
+    let totalQuestionCount = 0;
 
-        if (!clickedButton) {
-          return;
-        }
+    if (filteredFriends.length === 0) {
+      friendGrid.innerHTML = `
+        <div class="empty-card">
+          이 유형으로 만든 질문이 아직 없어요.
+        </div>
+      `;
 
-        currentFilterType = getFilterTypeFromButton(clickedButton);
-
-        renderMyQuestionCardLater(currentFilterType);
-      });
+      updateCounts(0, 0);
+      return;
     }
 
-    function renderMyQuestionCardLater(filterType) {
-      /*
-        기존 friend-question.html이 필터 버튼을 누르면
-        친구 카드를 다시 그리기 때문에 시간을 조금 두고 여러 번 확인합니다.
-        removeOldMyQuestionCard()가 먼저 실행되므로 중복 카드는 생기지 않습니다.
-      */
-      setTimeout(function () {
-        addMyQuestionCardByFilter(filterType);
-      }, 80);
+    filteredFriends.forEach(function(friend) {
+      totalQuestionCount += friend.questions.length;
 
-      setTimeout(function () {
-        addMyQuestionCardByFilter(filterType);
-      }, 250);
+      const article = document.createElement("article");
+      article.className = friend.isMine
+        ? "friend-card my-question-card"
+        : "friend-card";
 
-      setTimeout(function () {
-        addMyQuestionCardByFilter(filterType);
-      }, 500);
-    }
+      const questionHtml = friend.questions.map(function(question, questionIndex) {
+        const extraClass = questionIndex === 0 ? "" : " extra-question";
+        const label = questionIndex === 0 ? "대표 질문" : "추가 질문";
+        const typeIcon = typeIconMap[question.type] || "❓";
 
-    function getFilterTypeFromButton(button) {
-      const datasetType =
-        button.dataset.type ||
-        button.dataset.filter ||
-        button.dataset.category ||
-        button.dataset.value;
+        return `
+          <div class="question-box${extraClass}">
+            <span class="question-type-badge">
+              ${typeIcon} ${getTypeLabel(question.type)}
+            </span>
+            <div class="question-label">${label}</div>
+            <div class="question-text">Q${questionIndex + 1}. ${escapeHtml(question.text)}</div>
 
-      if (datasetType) {
-        if (
-          datasetType === "all" ||
-          datasetType === "total" ||
-          datasetType === "전체" ||
-          datasetType === "전체 보기"
-        ) {
-          return "all";
-        }
+            ${
+              friend.isMine && question.answer
+                ? `
+                  <div class="my-answer-preview">
+                    <strong>내가 생각한 답</strong>
+                    <p>${escapeHtml(question.answer)}</p>
+                  </div>
+                `
+                : ""
+            }
 
-        return datasetType;
-      }
+            ${
+              question.createdAt
+                ? `<div class="question-date">${escapeHtml(question.createdAt)}</div>`
+                : ""
+            }
+          </div>
+        `;
+      }).join("");
 
-      const buttonText = button.textContent.replace(/\s/g, "");
+      const moreButtonText =
+        friend.questions.length > 1
+          ? "질문 더보기"
+          : "질문 1개";
 
-      if (buttonText.includes("전체")) return "all";
-      if (buttonText.includes("바로")) return "direct";
-      if (buttonText.includes("짐작")) return "infer";
-      if (buttonText.includes("생각") || buttonText.includes("느낌")) return "feeling";
-      if (buttonText.includes("삶") || buttonText.includes("연결")) return "life";
-
-      return "all";
-    }
-
-    function addMyQuestionCardByFilter(filterType) {
-      const savedData = localStorage.getItem("mySharedQuestions");
-
-      removeOldMyQuestionCard();
-
-      if (!savedData) {
-        updateFriendAndQuestionCount();
-        return;
-      }
-
-      let myData;
-
-      try {
-        myData = JSON.parse(savedData);
-      } catch (error) {
-        console.log("내 질문 데이터를 읽을 수 없습니다.", error);
-        updateFriendAndQuestionCount();
-        return;
-      }
-
-      if (!myData || !Array.isArray(myData.questions) || myData.questions.length === 0) {
-        updateFriendAndQuestionCount();
-        return;
-      }
-
-      const filteredQuestions = filterType === "all"
-        ? myData.questions
-        : myData.questions.filter(function (question) {
-            return question.type === filterType;
-          });
-
-      if (filteredQuestions.length === 0) {
-        updateFriendAndQuestionCount();
-        return;
-      }
-
-      const myCard = createMyQuestionCard(filteredQuestions);
-      friendGrid.prepend(myCard);
-
-      connectMoreButton(myCard);
-      connectMyCardAnswerButtons(myCard);
-      updateFriendAndQuestionCount();
-    }
-
-    function createMyQuestionCard(questions) {
-      const typeLabelMap = {
-        direct: "바로 답 찾기",
-        infer: "답 짐작하기",
-        feeling: "생각·느낌",
-        life: "내 삶 연결"
-      };
-
-      const typeIconMap = {
-        direct: "🔍",
-        infer: "💭",
-        feeling: "💛",
-        life: "🌱"
-      };
-
-      const firstQuestion = questions[0];
-      const restQuestions = questions.slice(1);
-      const hasMoreQuestions = restQuestions.length > 0;
-
-      const myCard = document.createElement("article");
-      myCard.className = "friend-card my-question-card-from-storage";
-
-      myCard.innerHTML = `
-        <div class="my-storage-card-header">
+      article.innerHTML = `
+        <div class="friend-top">
+          <div class="friend-icon">${friend.icon}</div>
           <div>
-            <h3>나 질문 카드</h3>
-            <p>내가 질문 만들기에서 저장한 질문이에요.</p>
+            <div class="friend-name">${friend.isMine ? "나의 질문" : friend.name}</div>
+            <div class="friend-count">공유한 질문 ${friend.questions.length}개</div>
           </div>
-          <span class="friend-question-count">${questions.length}개</span>
         </div>
 
-        <div class="friend-question-list">
-          ${makeQuestionItemHTML(firstQuestion, typeLabelMap, typeIconMap)}
-
-          ${hasMoreQuestions ? `
-            <div class="my-more-question-list">
-              ${restQuestions.map(function (question) {
-                return makeQuestionItemHTML(question, typeLabelMap, typeIconMap);
-              }).join("")}
-            </div>
-
-            <button class="my-question-more-button" type="button">
-              질문 더보기 +${restQuestions.length}
-            </button>
-          ` : ""}
+        <div class="question-list">
+          ${questionHtml}
         </div>
-      `;
 
-      return myCard;
-    }
+        <div class="answer-area">
+          <label class="answer-label">내 생각 쓰기</label>
+          <textarea class="answer-input" placeholder="이 질문에 대한 내 생각을 적어봐요."></textarea>
+          <div class="comment-list"></div>
+        </div>
 
-    function makeQuestionItemHTML(question, typeLabelMap, typeIconMap) {
-      return `
-        <div class="friend-question-item">
-          <div class="question-type-badge">
-            ${typeIconMap[question.type] || "❓"} ${typeLabelMap[question.type] || "질문"}
-          </div>
-
-          <p class="question-text">
-            ${escapeStorageQuestionHTML(question.text)}
-          </p>
-
-          ${question.answer ? `
-            <div class="my-answer-preview">
-              <strong>내 생각</strong>
-              <p>${escapeStorageQuestionHTML(question.answer)}</p>
-            </div>
-          ` : ""}
-
-          <div class="my-extra-answer-box">
-            <textarea
-              class="my-storage-answer-textarea"
-              placeholder="이 질문에 대한 내 생각을 더 적어 보세요."
-            ></textarea>
-
-            <button class="my-storage-answer-button" type="button">
-              답변 저장
-            </button>
-
-            <div class="saved-answer-box"></div>
-          </div>
+        <div class="card-buttons">
+          <button
+            class="card-button"
+            type="button"
+            onclick="toggleQuestions(this)"
+            ${friend.questions.length <= 1 ? "disabled" : ""}
+          >
+            ${moreButtonText}
+          </button>
+          <button class="card-button brown" type="button" onclick="saveAnswer(this)">
+            답변 저장
+          </button>
         </div>
       `;
-    }
 
-    function connectMoreButton(card) {
-      const moreButton = card.querySelector(".my-question-more-button");
-      const moreList = card.querySelector(".my-more-question-list");
-
-      if (!moreButton || !moreList) {
-        return;
-      }
-
-      moreButton.addEventListener("click", function () {
-        const isOpen = moreList.classList.contains("open");
-        const restCount = moreList.querySelectorAll(".friend-question-item").length;
-
-        if (isOpen) {
-          moreList.classList.remove("open");
-          moreButton.textContent = `질문 더보기 +${restCount}`;
-        } else {
-          moreList.classList.add("open");
-          moreButton.textContent = "질문 접기";
-        }
-      });
-    }
-
-    function connectMyCardAnswerButtons(card) {
-      const items = card.querySelectorAll(".friend-question-item");
-
-      items.forEach(function (item) {
-        const textarea = item.querySelector(".my-storage-answer-textarea");
-        const button = item.querySelector(".my-storage-answer-button");
-        const savedBox = item.querySelector(".saved-answer-box");
-
-        if (!textarea || !button || !savedBox) {
-          return;
-        }
-
-        button.addEventListener("click", function () {
-          const answer = textarea.value.trim();
-
-          if (!answer) {
-            alert("답변을 먼저 써 주세요.");
-            textarea.focus();
-            return;
-          }
-
-          savedBox.classList.add("show");
-          savedBox.innerHTML = `
-            <strong>내가 쓴 답변</strong>
-            <p>${escapeStorageQuestionHTML(answer)}</p>
-          `;
-
-          textarea.value = "";
-        });
-      });
-    }
-
-    function updateFriendAndQuestionCount() {
-      const friendCount = document.getElementById("friendCount");
-      const questionCount = document.getElementById("questionCount");
-
-      if (!friendGrid) {
-        return;
-      }
-
-      const cards = friendGrid.querySelectorAll(".friend-card");
-      let totalQuestionCount = 0;
-
-      cards.forEach(function (card) {
-        const countElement = card.querySelector(".friend-question-count");
-
-        if (countElement) {
-          const number = Number(countElement.textContent.replace(/[^0-9]/g, "")) || 0;
-          totalQuestionCount += number;
-        } else {
-          totalQuestionCount += card.querySelectorAll(".friend-question-item").length;
-        }
-      });
-
-      if (friendCount) {
-        friendCount.textContent = cards.length;
-      }
-
-      if (questionCount) {
-        questionCount.textContent = totalQuestionCount;
-      }
-    }
-
-    function removeOldMyQuestionCard() {
-      const oldCards = document.querySelectorAll(".my-question-card-from-storage");
-
-      oldCards.forEach(function (card) {
-        card.remove();
-      });
-    }
-
-    function escapeStorageQuestionHTML(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-        // 전체 보기 버튼을 눌렀을 때 내 질문 카드가 사라지는 문제 보정
-    document.addEventListener("click", function (event) {
-      const clickedButton = event.target.closest("button");
-
-      if (!clickedButton) {
-        return;
-      }
-
-      const buttonText = clickedButton.textContent.replace(/\s/g, "");
-
-      if (!buttonText.includes("전체")) {
-        return;
-      }
-
-      currentFilterType = "all";
-
-      setTimeout(function () {
-        addMyQuestionCardByFilter("all");
-      }, 100);
-
-      setTimeout(function () {
-        addMyQuestionCardByFilter("all");
-      }, 350);
-
-      setTimeout(function () {
-        addMyQuestionCardByFilter("all");
-      }, 700);
-
-      setTimeout(function () {
-        addMyQuestionCardByFilter("all");
-      }, 1200);
+      friendGrid.appendChild(article);
     });
+
+    updateCounts(filteredFriends.length, totalQuestionCount);
+  }
+
+  function updateCounts(friendCount, questionCount) {
+    const friendCountEl = document.getElementById("friendCount");
+    const questionCountEl = document.getElementById("questionCount");
+
+    if (friendCountEl) {
+      friendCountEl.textContent = friendCount + "명";
+    }
+
+    if (questionCountEl) {
+      questionCountEl.textContent = questionCount + "개";
+    }
+  }
+
+  function toggleQuestions(button) {
+    if (button.disabled) {
+      return;
+    }
+
+    const card = button.closest(".friend-card");
+    const extraQuestions = card.querySelectorAll(".extra-question");
+
+    if (extraQuestions.length === 0) {
+      return;
+    }
+
+    const isClosed = Array.from(extraQuestions).some(function(question) {
+      return question.style.display !== "block";
+    });
+
+    extraQuestions.forEach(function(question) {
+      question.style.display = isClosed ? "block" : "none";
+    });
+
+    button.textContent = isClosed ? "질문 접기" : "질문 더보기";
+  }
+
+  function saveAnswer(button) {
+    const card = button.closest(".friend-card");
+    const textarea = card.querySelector(".answer-input");
+    const commentList = card.querySelector(".comment-list");
+    const text = textarea.value.trim();
+
+    if (!text) {
+      alert("답변을 먼저 적어주세요!");
+      textarea.focus();
+      return;
+    }
+
+    const comment = document.createElement("div");
+    comment.className = "comment-item";
+    comment.textContent = "내 답변: " + text;
+
+    commentList.prepend(comment);
+    textarea.value = "";
+
+    alert("답변이 저장되었어요!");
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function goPracticePage() {
+    location.href = "./practice.html";
+  }
+
+  function goHome() {
+    location.href = "./home.html";
+  }
+
+  function goClassReading() {
+    location.href = "./class-reading.html";
+  }
+
+  function goMyQuestions() {
+    location.href = "./my-questions.html";
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    renderTypeButtons();
+    renderFriendCards();
   });
 </script>
 </body>

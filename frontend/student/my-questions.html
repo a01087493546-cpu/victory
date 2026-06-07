@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 질문 모음 보기</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      color: #3b2414;
+      background:
+        linear-gradient(rgba(28, 15, 7, 0.72), rgba(28, 15, 7, 0.8)),
+        url("../assets/images/home/home-library-bg.png") center / cover no-repeat fixed;
+    }
+
+    .class-reading-page {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* 왼쪽 단계 사이드바 */
+    .side-nav {
+      width: 230px;
+      padding: 24px 16px;
+      background: rgba(38, 21, 10, 0.88);
+      border-right: 2px solid rgba(217, 177, 90, 0.45);
+      box-shadow: 8px 0 20px rgba(0, 0, 0, 0.28);
+    }
+
+    .logo-box {
+      padding: 16px 12px;
+      margin-bottom: 18px;
+      text-align: center;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #6b3f1d, #2c1609);
+      border: 2px solid #d9b15a;
+      color: #fff4cf;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 12px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: rgba(255, 248, 234, 0.12);
+      border: 1px solid rgba(217, 177, 90, 0.25);
+      color: rgba(255, 248, 234, 0.78);
+    }
+
+    .step-item.done {
+      background: rgba(91, 123, 48, 0.28);
+    }
+
+    .step-item.active {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      border: 2px solid #d9b15a;
+      color: #fff8ea;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .step-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff8ea;
+      color: #5a3316;
+      font-weight: 900;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .step-lock {
+      margin-left: auto;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+
+    /* 오른쪽 메인 */
+    .main-area {
+      flex: 1;
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .top-bar {
+      height: 66px;
+      padding: 0 22px;
+      margin-bottom: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(81, 46, 20, 0.95), rgba(43, 22, 8, 0.95));
+      border: 2px solid rgba(217, 177, 90, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .page-title {
+      margin: 0;
+      color: #fff4cf;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      border: 0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: #fff8ea;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 4px 0 #2c1609;
+    }
+
+    .top-button:hover {
+      transform: translateY(1px);
+      box-shadow: 0 3px 0 #2c1609;
+    }
+
+    .content-board {
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(62, 35, 15, 0.72);
+      border: 2px solid rgba(217, 177, 90, 0.45);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-columns: 220px 1fr 260px;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .hero-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lumi-character {
+      width: 185px;
+      max-width: 100%;
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+    }
+
+    .speech-bubble {
+      position: relative;
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: #fff8ea;
+      border: 3px solid #d9b15a;
+      color: #4a2c13;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.45;
+      box-shadow: 0 8px 0 rgba(87, 49, 18, 0.45);
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 48%;
+      width: 26px;
+      height: 26px;
+      background: #fff8ea;
+      border-left: 3px solid #d9b15a;
+      border-bottom: 3px solid #d9b15a;
+      transform: rotate(45deg);
+    }
+
+    .question-status-card {
+      padding: 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 35%),
+        linear-gradient(180deg, #f7df9f, #d39b43);
+      border: 3px solid #f4d06f;
+      box-shadow: 0 7px 0 rgba(87, 49, 18, 0.55);
+    }
+
+    .question-status-card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      font-weight: 900;
+      color: #4a2c13;
+    }
+
+    .status-count-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .status-mini-box {
+      flex: 1;
+      padding: 12px 8px;
+      border-radius: 16px;
+      background: rgba(255, 248, 234, 0.75);
+      border: 2px solid rgba(138, 84, 35, 0.35);
+      text-align: center;
+    }
+
+    .status-mini-box strong {
+      display: block;
+      font-size: 26px;
+      color: #3f641e;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .status-mini-box span {
+      display: block;
+      margin-top: 5px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #5a3316;
+    }
+
+    .status-text {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: #5a3316;
+    }
+
+    /* 질문 모음 화면 전용 */
+    .my-question-board {
+      border-radius: 26px;
+      padding: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.42), transparent 30%),
+        linear-gradient(180deg, #f4d98d, #bd7a2c);
+      border: 3px solid #e8bd5b;
+      box-shadow: 0 8px 0 rgba(60, 31, 10, 0.55);
+    }
+
+    .my-question-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .my-question-title-box h2 {
+      margin: 0 0 6px;
+      font-size: 25px;
+      color: #3f260f;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+    }
+
+    .my-question-title-box p {
+      margin: 0;
+      font-size: 15px;
+      color: #5a3316;
+      font-weight: 800;
+    }
+
+    .my-question-action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .activity-button {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 18px;
+      color: #fff8ea;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .activity-button:hover {
+      transform: translateY(1px);
+      box-shadow: 0 4px 0 #14240c;
+    }
+
+    .activity-button.brown {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 5px 0 #2c1609;
+    }
+
+    .activity-button.brown:hover {
+      box-shadow: 0 4px 0 #2c1609;
+    }
+
+    .question-type-panel {
+      margin-bottom: 18px;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 248, 234, 0.68);
+      border: 2px solid rgba(138, 84, 35, 0.35);
+    }
+
+    .question-type-panel h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      color: #4a2c13;
+      font-weight: 900;
+    }
+
+    .question-type-list {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .question-type-button {
+      border: 2px solid rgba(138, 84, 35, 0.45);
+      border-radius: 16px;
+      padding: 12px 10px;
+      background: #fff8ea;
+      color: #5a3316;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(138, 84, 35, 0.28);
+    }
+
+    .question-type-button.active {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8ea;
+      border-color: #d9b15a;
+      box-shadow: 0 4px 0 #14240c;
+    }
+
+    .question-summary-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .question-summary-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 248, 234, 0.76);
+      border: 2px solid rgba(138, 84, 35, 0.35);
+    }
+
+    .question-summary-card span {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #6c431f;
+    }
+
+    .question-summary-card strong {
+      display: block;
+      font-size: 24px;
+      font-weight: 900;
+      color: #3f641e;
+    }
+
+    .saved-question-panel {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 248, 234, 0.66);
+      border: 2px solid rgba(138, 84, 35, 0.35);
+    }
+
+    .saved-question-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .saved-question-title-row h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 900;
+      color: #3f260f;
+    }
+
+    .question-count-text {
+      font-size: 14px;
+      font-weight: 900;
+      color: #6c431f;
+    }
+
+    .saved-question-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .saved-question-card {
+      padding: 16px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.65), transparent 34%),
+        linear-gradient(180deg, #fff8ea, #f0d99a);
+      border: 2px solid #d9b15a;
+      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.28);
+    }
+
+    .saved-question-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .saved-question-type {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #5b7b30;
+      color: #fff8ea;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .saved-question-date {
+      font-size: 13px;
+      color: #7a5429;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .saved-question-card h4 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.45;
+      color: #3f260f;
+    }
+
+    .saved-answer-box {
+      padding: 12px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(138, 84, 35, 0.25);
+    }
+
+    .saved-answer-box span {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #6c431f;
+    }
+
+    .saved-answer-box p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+      color: #4a2c13;
+      word-break: keep-all;
+    }
+
+    .empty-question-message {
+      padding: 34px 20px;
+      border-radius: 22px;
+      background: rgba(255, 248, 234, 0.82);
+      border: 2px dashed rgba(138, 84, 35, 0.45);
+      text-align: center;
+      color: #5a3316;
+    }
+
+    .empty-question-message strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .empty-question-message p {
+      margin: 0 0 18px;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1180px) {
+      .hero-panel {
+        grid-template-columns: 170px 1fr;
+      }
+
+      .question-status-card {
+        grid-column: 1 / -1;
+      }
+
+      .question-type-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .class-reading-page {
+        flex-direction: column;
+      }
+
+      .side-nav {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .logo-box {
+        grid-column: 1 / -1;
+        margin-bottom: 4px;
+      }
+
+      .step-item {
+        margin-bottom: 0;
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+      }
+
+      .top-bar {
+        height: auto;
+        padding: 16px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .hero-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .speech-bubble::before {
+        display: none;
+      }
+
+      .question-summary-row {
+        grid-template-columns: 1fr;
+      }
+
+      .saved-question-list {
+        grid-template-columns: 1fr;
+      }
+
+      .question-type-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .main-area {
+        padding: 14px;
+      }
+
+      .content-board {
+        padding: 16px;
+      }
+
+      .side-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .question-type-list {
+        grid-template-columns: 1fr;
+      }
+
+      .my-question-action-row,
+      .top-buttons {
+        width: 100%;
+      }
+
+      .activity-button,
+      .top-button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="class-reading-page">
+    <aside class="side-nav">
+      <div class="logo-box">문답책</div>
+
+      <div class="step-item done">
+        <div class="step-number">01</div>
+        <div class="step-title">책 고르기</div>
+      </div>
+
+      <div class="step-item done">
+        <div class="step-number">02</div>
+        <div class="step-title">읽기 전</div>
+      </div>
+
+      <div class="step-item done">
+        <div class="step-number">03</div>
+        <div class="step-title">읽기 중</div>
+      </div>
+
+      <div class="step-item active">
+        <div class="step-number">04</div>
+        <div class="step-title">우리반<br />책읽기</div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-number">05</div>
+        <div class="step-title">읽기 후</div>
+        <div class="step-lock">🔒</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="top-bar">
+        <h1 class="page-title">질문 모음 보기</h1>
+
+        <div class="top-buttons">
+          <button class="top-button" type="button">단계 선택</button>
+          <button class="top-button" type="button">홈으로</button>
+          <button class="top-button" type="button">나의 힘</button>
+        </div>
+      </header>
+
+      <section class="content-board">
+        <section class="hero-panel">
+          <div class="hero-left">
+            <img
+              class="lumi-character"
+              src="../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
+              alt="루미 캐릭터"
+            />
+          </div>
+
+          <div class="speech-bubble">
+            내가 만든 질문을 모아 보자!<br />
+            질문과 답을 다시 읽으면<br />
+            책 생각이 더 깊어져!
+          </div>
+
+          <aside class="question-status-card">
+            <h2>나의 질문 기록</h2>
+
+            <div class="status-count-row">
+              <div class="status-mini-box">
+                <strong id="totalQuestionCount">0</strong>
+                <span>전체 질문</span>
+              </div>
+
+              <div class="status-mini-box">
+                <strong id="todayQuestionCount">0</strong>
+                <span>오늘 질문</span>
+              </div>
+            </div>
+
+            <p class="status-text" id="statusText">
+              내가 만든 질문을 불러오는 중이에요.
+            </p>
+          </aside>
+        </section>
+
+        <section class="my-question-board">
+          <div class="my-question-top-row">
+            <div class="my-question-title-box">
+              <h2>내 질문 메모장</h2>
+              <p>질문 만들기 화면에서 저장한 질문과 답을 모아 볼 수 있어요.</p>
+            </div>
+
+            <div class="my-question-action-row">
+              <button class="activity-button" type="button" onclick="goDuringRead()">
+                질문 만들기
+              </button>
+              <button class="activity-button brown" type="button" onclick="goClassReading()">
+                우리반 책읽기
+              </button>
+            </div>
+          </div>
+
+          <section class="question-summary-row">
+            <div class="question-summary-card">
+              <span>가장 많이 만든 유형</span>
+              <strong id="mostTypeText">아직 없음</strong>
+            </div>
+
+            <div class="question-summary-card">
+              <span>현재 보고 있는 유형</span>
+              <strong id="currentTypeText">전체 보기</strong>
+            </div>
+
+            <div class="question-summary-card">
+              <span>질문 모음 상태</span>
+              <strong id="questionStateText">확인 중</strong>
+            </div>
+          </section>
+
+          <section class="question-type-panel">
+            <h3>질문 유형별로 보기</h3>
+
+            <div class="question-type-list" id="questionTypeList">
+              <button class="question-type-button active" type="button" data-type="all">
+                전체 보기
+              </button>
+              <button class="question-type-button" type="button" data-type="direct">
+                바로 답 찾기
+              </button>
+              <button class="question-type-button" type="button" data-type="infer">
+                답 짐작하기
+              </button>
+              <button class="question-type-button" type="button" data-type="feeling">
+                생각·느낌
+              </button>
+              <button class="question-type-button" type="button" data-type="life">
+                내 삶 연결
+              </button>
+            </div>
+          </section>
+
+          <section class="saved-question-panel">
+            <div class="saved-question-title-row">
+              <h3>저장한 질문</h3>
+              <div class="question-count-text" id="filteredQuestionCount">
+                0개의 질문
+              </div>
+            </div>
+
+            <div class="saved-question-list" id="savedQuestionList"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "mySharedQuestions";
+
+    const typeMap = {
+      direct: "바로 답 찾기",
+      infer: "답 짐작하기",
+      feeling: "생각·느낌",
+      life: "내 삶 연결"
+    };
+
+    let selectedType = "all";
+    let myQuestions = [];
+
+    const savedQuestionList = document.getElementById("savedQuestionList");
+    const totalQuestionCount = document.getElementById("totalQuestionCount");
+    const todayQuestionCount = document.getElementById("todayQuestionCount");
+    const statusText = document.getElementById("statusText");
+    const filteredQuestionCount = document.getElementById("filteredQuestionCount");
+    const mostTypeText = document.getElementById("mostTypeText");
+    const currentTypeText = document.getElementById("currentTypeText");
+    const questionStateText = document.getElementById("questionStateText");
+    const questionTypeList = document.getElementById("questionTypeList");
+
+    function getTodayText() {
+      const today = new Date();
+
+      return (
+        today.getFullYear() +
+        "." +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "." +
+        String(today.getDate()).padStart(2, "0")
+      );
+    }
+
+    function getTypeText(type) {
+      return typeMap[type] || "질문";
+    }
+
+    function loadMyQuestions() {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+
+      if (!savedData) {
+        myQuestions = [];
+        return;
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+
+        if (
+          parsedData &&
+          Array.isArray(parsedData.questions)
+        ) {
+          myQuestions = parsedData.questions;
+        } else {
+          myQuestions = [];
+        }
+      } catch (error) {
+        console.error("질문 모음을 불러오지 못했습니다.", error);
+        myQuestions = [];
+      }
+    }
+
+    function getFilteredQuestions() {
+      if (selectedType === "all") {
+        return myQuestions;
+      }
+
+      return myQuestions.filter(function(question) {
+        return question.type === selectedType;
+      });
+    }
+
+    function getMostQuestionType() {
+      if (myQuestions.length === 0) {
+        return "아직 없음";
+      }
+
+      const typeCount = {
+        direct: 0,
+        infer: 0,
+        feeling: 0,
+        life: 0
+      };
+
+      myQuestions.forEach(function(question) {
+        if (typeCount[question.type] !== undefined) {
+          typeCount[question.type] += 1;
+        }
+      });
+
+      let mostType = "direct";
+      let mostCount = 0;
+
+      Object.keys(typeCount).forEach(function(type) {
+        if (typeCount[type] > mostCount) {
+          mostType = type;
+          mostCount = typeCount[type];
+        }
+      });
+
+      if (mostCount === 0) {
+        return "아직 없음";
+      }
+
+      return getTypeText(mostType);
+    }
+
+    function renderSummary() {
+      const todayText = getTodayText();
+
+      const todayQuestions = myQuestions.filter(function(question) {
+        return question.createdAt === todayText;
+      });
+
+      totalQuestionCount.textContent = myQuestions.length;
+      todayQuestionCount.textContent = todayQuestions.length;
+      mostTypeText.textContent = getMostQuestionType();
+
+      currentTypeText.textContent =
+        selectedType === "all" ? "전체 보기" : getTypeText(selectedType);
+
+      if (myQuestions.length === 0) {
+        statusText.textContent = "아직 저장한 질문이 없어요. 질문 만들기에서 나만의 질문을 먼저 만들어 봐요.";
+        questionStateText.textContent = "비어 있음";
+      } else {
+        statusText.textContent = "내가 만든 질문을 잘 모아 두었어요. 다시 읽으며 책 생각을 정리해 봐요.";
+        questionStateText.textContent = "저장 완료";
+      }
+    }
+
+    function renderQuestionCards() {
+      const filteredQuestions = getFilteredQuestions();
+
+      filteredQuestionCount.textContent = filteredQuestions.length + "개의 질문";
+      savedQuestionList.innerHTML = "";
+
+      if (myQuestions.length === 0) {
+        savedQuestionList.innerHTML = `
+          <div class="empty-question-message" style="grid-column: 1 / -1;">
+            <strong>아직 만든 질문이 없어요</strong>
+            <p>
+              질문 만들기 화면에서 책을 읽으며 떠오른 질문을 먼저 저장해 봐요.
+            </p>
+            <button class="activity-button" type="button" onclick="goDuringRead()">
+              질문 만들러 가기
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      if (filteredQuestions.length === 0) {
+        savedQuestionList.innerHTML = `
+          <div class="empty-question-message" style="grid-column: 1 / -1;">
+            <strong>이 유형의 질문은 아직 없어요</strong>
+            <p>
+              다른 유형을 눌러 보거나, 질문 만들기에서 이 유형의 질문을 만들어 봐요.
+            </p>
+            <button class="activity-button" type="button" onclick="goDuringRead()">
+              질문 만들러 가기
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      filteredQuestions.forEach(function(question) {
+        const questionCard = document.createElement("article");
+        questionCard.className = "saved-question-card";
+
+        const questionTypeText = getTypeText(question.type);
+        const questionDate = question.createdAt || "날짜 기록 없음";
+        const questionText = question.text || "질문 내용이 없습니다.";
+        const answerText = question.answer || "아직 적은 답이 없습니다.";
+
+        questionCard.innerHTML = `
+          <div class="saved-question-top">
+            <span class="saved-question-type">${questionTypeText}</span>
+            <span class="saved-question-date">${questionDate}</span>
+          </div>
+
+          <h4>Q. ${questionText}</h4>
+
+          <div class="saved-answer-box">
+            <span>내가 생각한 답</span>
+            <p>A. ${answerText}</p>
+          </div>
+        `;
+
+        savedQuestionList.appendChild(questionCard);
+      });
+    }
+
+    function render() {
+      renderSummary();
+      renderQuestionCards();
+    }
+
+    function setTypeButtons() {
+      const buttons = questionTypeList.querySelectorAll(".question-type-button");
+
+      buttons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          selectedType = button.dataset.type;
+
+          buttons.forEach(function(item) {
+            item.classList.remove("active");
+          });
+
+          button.classList.add("active");
+
+          render();
+        });
+      });
+    }
+
+    function goClassReading() {
+      location.href = "./class-reading.html";
+    }
+
+    function goDuringRead() {
+      location.href = "./during-read.html";
+    }
+
+    function goFriendQuestion() {
+      location.href = "./friend-question.html";
+    }
+
+    loadMyQuestions();
+    setTypeButtons();
+    render();
+  </script>
+</body>
+</html>
