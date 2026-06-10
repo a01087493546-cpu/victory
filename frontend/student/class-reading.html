@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문답책 - 우리반 책읽기</title>
+
+  <style>
+   
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+.lumi-character {
+  width: 180px;
+  height: auto;
+  display: block;
+}
+
+.hero-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+  .speech-bubble {
+  position: relative;
+  width: 520px;
+  padding: 24px 30px;
+
+  background: #fff8ea;
+  color: #4a2d16;
+
+  border-radius: 24px;
+  border: 4px solid #d9b15a;
+
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.6;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+.speech-bubble::before {
+  content: "";
+  position: absolute;
+
+  left: -18px;
+  top: 60px;
+
+  width: 0;
+  height: 0;
+
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-right: 18px solid #fff8ea;
+}
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(8, 5, 3, 0.82) 0%,
+          rgba(8, 5, 3, 0.55) 45%,
+          rgba(8, 5, 3, 0.72) 100%
+        ),
+        radial-gradient(circle at 48% 18%, rgba(255, 214, 126, 0.16), transparent 34%),
+        url("../assets/images/home/home-library-bg.png");
+      background-size: cover;
+      background-position: center;
+      color: #fff4d6;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .class-reading-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    /* 왼쪽 단계 사이드바 */
+    .side-nav {
+      padding: 24px 18px;
+      background: linear-gradient(180deg, rgba(39, 24, 12, 0.94), rgba(18, 10, 5, 0.96));
+      border-right: 1px solid rgba(230, 180, 86, 0.38);
+      box-shadow: 18px 0 40px rgba(0, 0, 0, 0.26);
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: #fff0bd;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .logo-box img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(255, 206, 87, 0.45));
+    }
+
+    .step-item {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: rgba(255, 244, 214, 0.08);
+      border: 1px solid rgba(230, 180, 86, 0.24);
+      color: rgba(255, 239, 204, 0.72);
+    }
+
+    .step-item.done {
+      color: #f5d890;
+    }
+
+    .step-item.active {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 215, 126, 0.24), transparent 42%),
+        linear-gradient(180deg, rgba(111, 70, 28, 0.96), rgba(51, 29, 12, 0.96));
+      border-color: rgba(245, 197, 96, 0.78);
+      color: #fff5d8;
+      box-shadow:
+        0 0 0 3px rgba(255, 214, 116, 0.08),
+        0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .step-number {
+      display: block;
+      margin-bottom: 5px;
+      color: #e5bd6a;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .step-lock {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      opacity: 0.7;
+      font-size: 15px;
+    }
+
+    /* 오른쪽 메인 화면 */
+    .main-area {
+      padding: 26px 34px 28px;
+    }
+
+    .top-bar {
+      height: 70px;
+      margin-bottom: 22px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(48, 31, 17, 0.88), rgba(24, 14, 7, 0.9));
+      border: 1px solid rgba(230, 184, 92, 0.52);
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.32),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      color: #fff4d2;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 222, 145, 0.65);
+      border-radius: 999px;
+      background: rgba(255, 244, 214, 0.12);
+      color: #ffe8ac;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .content-board {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 22px;
+    }
+
+    .hero-panel {
+      min-height: 160px;
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      width: 100%;
+      gap: 24px;
+      padding: 18px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255, 223, 145, 0.22), transparent 34%),
+        linear-gradient(180deg, rgba(70, 42, 19, 0.94), rgba(34, 19, 8, 0.96));
+      border: 1px solid rgba(224, 176, 82, 0.72);
+      box-shadow:
+        0 24px 54px rgba(0, 0, 0, 0.42),
+        inset 0 0 0 1px rgba(255, 239, 190, 0.1);
+    }
+
+    .lumi-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lumi-placeholder {
+      width: 170px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 38px;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255, 231, 158, 0.96), rgba(137, 82, 27, 0.94));
+      box-shadow:
+        0 8px 0 rgba(70, 39, 13, 0.95),
+        0 18px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 2px rgba(255, 245, 202, 0.2);
+      font-size: 70px;
+    }
+
+    .book-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .guide-text {
+      margin-bottom: 22px;
+      color: #f3dca9;
+      font-size: 20px;
+      line-height: 1.65;
+      font-weight: 800;
+    }
+
+    .book-card {
+      padding: 22px;
+      border-radius: 22px;
+      background: rgba(255, 244, 214, 0.1);
+      border: 1px solid rgba(230, 180, 86, 0.3);
+    }
+
+    .book-label {
+      margin-bottom: 10px;
+      color: #e6bd6a;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .book-title {
+      margin-bottom: 8px;
+      color: #fff4d2;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .page-range {
+      color: #f0d8a6;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .progress-panel {
+      min-height: 0px;
+      padding: 18px;
+      max-width: 520px;
+justify-self: end;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 24px 52px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .progress-title {
+      margin-bottom: 18px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .progress-circle {
+      width: 132px;
+      height: 132px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        conic-gradient(#4f7130 0 68%, rgba(82, 57, 30, 0.18) 68% 100%);
+    }
+
+    .progress-inner {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff3c8;
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    .progress-desc {
+      text-align: center;
+      color: #5f3f20;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .activity-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+    .activity-card {
+      min-height: 190px;
+      padding: 24px 22px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .activity-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #f5d58a, #c88728);
+      box-shadow: 0 6px 0 #875018;
+      font-size: 32px;
+    }
+
+    .activity-card h2 {
+      margin-bottom: 10px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .activity-card p {
+      min-height: 48px;
+      color: #684523;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 800;
+    }
+
+    .activity-count {
+      margin: 12px 0 16px;
+      color: #8a5423;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .activity-button {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8df;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .activity-button.brown {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 5px 0 #2c1607;
+    }
+
+    .bottom-grid {
+      grid-column: 1 / 3;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 22px;
+    }
+
+    .check-panel,
+    .next-panel {
+      padding: 24px;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(48, 31, 17, 0.9), rgba(24, 14, 7, 0.94));
+      border: 1px solid rgba(230, 184, 92, 0.48);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.28),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .panel-title {
+      margin-bottom: 18px;
+      color: #fff4d2;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .check-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .check-item {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 244, 214, 0.1);
+      border: 1px solid rgba(230, 180, 86, 0.22);
+      color: #f0d8a6;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .check-item.done {
+      color: #cfe8a5;
+    }
+
+    .next-panel p {
+      margin-bottom: 18px;
+      color: #ecd49f;
+      font-size: 16px;
+      line-height: 1.6;
+      font-weight: 750;
+    }
+
+    .next-button {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 999px;
+      background: #7f725f;
+      color: rgba(255, 248, 223, 0.68);
+      font-size: 16px;
+      font-weight: 900;
+      cursor: not-allowed;
+    }
+     .activity-grid {
+  grid-column: 1 / -1;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.activity-card {
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 210px;
+}
+.progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.book-mini-info {
+  width: 100%;
+}
+
+.progress-row {
+  width: 100%;
+  padding: 18px 22px;
+  border-radius: 20px;
+  background: rgba(255, 244, 214, 0.55);
+
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.progress-desc {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 900;
+  text-align: left;
+}
+
+.progress-bar {
+  flex: 2;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(95, 63, 32, 0.18);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  width: 68%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #4f7130, #253f17);
+}
+.progress-panel {
+  padding: 26px 30px !important;
+}
+
+.book-mini-info {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 14px !important;
+  margin: 20px 0 18px !important;
+}
+
+.book-mini-info div {
+  padding: 16px 18px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 248, 226, 0.72) !important;
+}
+
+.book-mini-info span {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #8a5a24 !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.book-mini-info strong {
+  display: block !important;
+  color: #3b2211 !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+}
+
+.progress-row {
+  width: 100% !important;
+  padding: 18px 22px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 248, 226, 0.72) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+}
+
+.progress-circle {
+  width: 110px !important;
+  height: 110px !important;
+  flex: 0 0 110px !important;
+}
+
+.progress-inner {
+  width: 80px !important;
+  height: 80px !important;
+  font-size: 26px !important;
+}
+
+.progress-text-box {
+  flex: 1 !important;
+}
+
+.progress-desc {
+  margin-bottom: 14px !important;
+  color: #5a3518 !important;
+  font-size: 26px !important;
+  font-weight: 900 !important;
+}
+
+.progress-bar {
+  width: 100% !important;
+  height: 18px !important;
+  border-radius: 999px !important;
+  background: rgba(95, 63, 32, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.progress-bar-fill {
+  width: 68% !important;
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #4f7130, #253f17) !important;
+}
+.progress-panel {
+  max-width: 760px !important;
+  min-height: 0 !important;
+  padding: 24px 28px !important;
+}
+
+.book-mini-info {
+  grid-template-columns: 1fr 1fr !important;
+  margin: 16px 0 !important;
+}
+
+.progress-row {
+  height: 130px !important;
+  flex-direction: row !important;
+}
+
+.progress-text-box {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.progress-desc {
+  white-space: nowrap !important;
+  font-size: 24px !important;
+}
+
+.progress-bar {
+  min-width: 260px !important;
+}
+  </style>
+</head>
+
+<body>
+  <div class="class-reading-page">
+
+    <aside class="side-nav">
+      <div class="logo-box">
+        <img src="../assets/images/logo-book.png" alt="문답책 로고">
+        <span>문답책</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">01</span>
+        <span class="step-title">책 고르기</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">02</span>
+        <span class="step-title">읽기 전</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">03</span>
+        <span class="step-title">읽기 중</span>
+        <span class="step-lock">✓</span>
+      </div>
+
+      <div class="step-item active">
+        <span class="step-number">04</span>
+        <span class="step-title">우리반 책읽기</span>
+      </div>
+
+      <div class="step-item">
+        <span class="step-number">05</span>
+        <span class="step-title">읽기 후</span>
+        <span class="step-lock">🔒</span>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="top-bar">
+        <h1 class="page-title">우리반 책읽기</h1>
+
+        <div class="top-buttons">
+          <button class="top-button" type="button" onclick="goPracticePage()">단계 선택</button>
+          <button class="top-button" type="button" onclick="goHome()">홈으로</button>
+          <button class="top-button" type="button">나의 힘</button>
+        </div>
+      </header>
+
+      <section class="content-board">
+       
+<section class="hero-panel">
+
+  <div class="hero-left">
+    <div class="lumi-box">
+      <img
+        src="../assets/images/role-student.png"
+        alt="루미"
+        class="lumi-character"
+      >
+    </div>
+
+    <div class="speech-bubble">
+      친구들은 어떤 질문을 만들었을까?<br>
+      친구들의 생각을 살펴보며<br>
+      더 깊이 읽어보자!
+    </div>
+  </div>
+
+  <section class="progress-panel">
+  <h2 class="progress-title">우리반 책 진행 상황</h2>
+
+  <div class="book-mini-info">
+    <div>
+      <span>투표로 정해진 책</span>
+      <strong id="bookTitle">책 제목</strong>
+    </div>
+
+    <div>
+      <span>현재 읽는 구간</span>
+      <strong id="pageRange">읽는 구간</strong>
+    </div>
+  </div>
+
+  <div class="progress-row">
+    <div class="progress-circle">
+      <div class="progress-inner" id="classProgressPercent">68%</div>
+    </div>
+
+    <div class="progress-text-box">
+      <p class="progress-desc" id="classProgressText">우리 반 68% 완료</p>
+
+      <div class="progress-bar">
+        <div class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+
+<section class="activity-grid">
+
+  <article class="activity-card">
+    <div class="activity-icon">❓</div>
+    <h2>질문 만들기</h2>
+    <p>
+      책을 읽으며 떠오른 질문을 만들고,<br>
+      친구와 나누고 싶은 질문을 골라요.
+    </p>
+    <div class="activity-count">1~3개 공유</div>
+    <button class="activity-button" type="button" onclick="goDuringRead()">
+  질문 만들기
+</button>
+  </article>
+
+  <article class="activity-card">
+    <div class="activity-icon">💬</div>
+    <h2>질문 나누기</h2>
+    <p>
+      친구들이 올린 질문을 보고<br>
+      내 생각을 답으로 적어봐요.
+    </p>
+    <div class="activity-count">답하기</div>
+    <button class="activity-button" type="button" onclick="goFriendQuestion()">
+  질문 나누기
+</button>
+  </article>
+
+  <article class="activity-card">
+    <div class="activity-icon">📒</div>
+    <h2>질문 모음 보기</h2>
+    <p>
+      내가 만든 질문과 오늘의 질문을<br>
+      메모장처럼 모아 볼 수 있어요.
+    </p>
+    <div class="activity-count" id="myQuestionCount">3개</div>
+    <button class="activity-button brown" type="button" onclick="goMyQuestions()">
+  모음 보기
+</button>
+  </article>
+
+</section>
+
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ===============================
+    // 1. API 영역
+    // ===============================
+
+    async function fetchClassReadingData(studentId) {
+      // 추후 연결 예정 API:
+      // GET /api/students/{studentId}/class-reading
+      // 현재는 백엔드 연결 전이므로 mock 데이터를 반환합니다.
+
+      return {
+  studentId: studentId,
+  bookTitle: "투표로 정해진 책 제목",
+  pageRange: "현재 읽는 구간",
+  classProgress: 68,
+  myQuestionCount: 3,
+  friendQuestionCount: 18,
+  challengeStatus: "3일 연속",
+
+  checklist: {
+    readDone: true,
+    questionDone: true,
+    friendQuestionDone: false,
+    voteDone: false
+  }
+};
+    }
+
+    // ===============================
+    // 2. 화면 렌더링 영역
+    // ===============================
+
+    function renderClassReadingPage(data) {
+      document.getElementById("bookTitle").textContent = data.bookTitle;
+      document.getElementById("pageRange").textContent = data.pageRange;
+
+      document.getElementById("classProgressPercent").textContent = `${data.classProgress}%`;
+      document.getElementById("classProgressText").textContent = `우리 반 ${data.classProgress}% 완료`;
+
+      document.getElementById("myQuestionCount").textContent = `${data.myQuestionCount}개`;
+      document.getElementById("friendQuestionCount").textContent = `${data.friendQuestionCount}개`;
+      document.getElementById("challengeStatus").textContent = data.challengeStatus;
+      if (data.checklist.readDone) {
+  document.getElementById("checkRead").classList.add("done");
+  document.getElementById("checkRead").innerHTML = "📖 책 읽기<br>완료";
+}
+
+if (data.checklist.questionDone) {
+  document.getElementById("checkQuestion").classList.add("done");
+  document.getElementById("checkQuestion").innerHTML = "❓ 질문 만들기<br>완료";
+}
+
+if (data.checklist.friendQuestionDone) {
+  document.getElementById("checkFriend").classList.add("done");
+  document.getElementById("checkFriend").innerHTML = "💬 친구 질문 보기<br>완료";
+}
+
+if (data.checklist.voteDone) {
+  document.getElementById("checkVote").classList.add("done");
+  document.getElementById("checkVote").innerHTML = "🏆 좋은 질문 투표<br>완료";
+}
+    }
+
+    // ===============================
+    // 3. 이동 함수 영역
+    // ===============================
+
+   function goPracticePage() {
+  location.href = "./practice.html";
+}
+
+function goHome() {
+  location.href = "./home.html";
+}
+
+function goDuringRead() {
+  location.href = "./during-read.html";
+}
+
+function goFriendQuestion() {
+  location.href = "./friend-question.html";
+}
+
+function goMyQuestions() {
+  location.href = "./my-questions.html";
+}
+
+// =========================
+    // ===============================
+    // 4. 초기 실행 영역
+    // ===============================
+
+    async function initPage() {
+      const studentId = sessionStorage.getItem("studentId") || "test-student";
+
+      const data = await fetchClassReadingData(studentId);
+      renderClassReadingPage(data);
+    }
+
+    initPage();
+  </script>
+</body>
+</html>

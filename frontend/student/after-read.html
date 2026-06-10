@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 읽기 후</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      color: #3b2414;
+      background:
+        linear-gradient(rgba(28, 15, 7, 0.72), rgba(28, 15, 7, 0.82)),
+        url("../assets/images/home/home-library-bg.png") center / cover no-repeat fixed;
+    }
+
+    .after-read-page {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .side-nav {
+      width: 230px;
+      padding: 24px 16px;
+      background: rgba(38, 21, 10, 0.88);
+      border-right: 2px solid rgba(217, 177, 90, 0.45);
+      box-shadow: 8px 0 20px rgba(0, 0, 0, 0.28);
+    }
+
+    .logo-box {
+      padding: 16px 12px;
+      margin-bottom: 18px;
+      text-align: center;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #6b3f1d, #2c1609);
+      border: 2px solid #d9b15a;
+      color: #fff4cf;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 12px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: rgba(255, 248, 234, 0.12);
+      border: 1px solid rgba(217, 177, 90, 0.25);
+      color: rgba(255, 248, 234, 0.78);
+    }
+
+    .step-item.done {
+      background: rgba(91, 123, 48, 0.28);
+    }
+
+    .step-item.active {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      border: 2px solid #d9b15a;
+      color: #fff8ea;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .step-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff8ea;
+      color: #5a3316;
+      font-weight: 900;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-weight: 800;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .main-area {
+      flex: 1;
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .top-bar {
+      height: 66px;
+      padding: 0 22px;
+      margin-bottom: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(81, 46, 20, 0.95), rgba(43, 22, 8, 0.95));
+      border: 2px solid rgba(217, 177, 90, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .page-title {
+      margin: 0;
+      color: #fff4cf;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      border: 0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: #fff8ea;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 4px 0 #2c1609;
+    }
+
+    .top-button:hover {
+      transform: translateY(1px);
+      box-shadow: 0 3px 0 #2c1609;
+    }
+
+    .content-board {
+      padding: 24px;
+      border-radius: 28px;
+      background: rgba(62, 35, 15, 0.72);
+      border: 2px solid rgba(217, 177, 90, 0.45);
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-columns: 210px 1fr 270px;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .hero-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lumi-character {
+      width: 180px;
+      max-width: 100%;
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+    }
+
+    .speech-bubble {
+      position: relative;
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: #fff8ea;
+      border: 3px solid #d9b15a;
+      color: #4a2c13;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.45;
+      box-shadow: 0 8px 0 rgba(87, 49, 18, 0.45);
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 48%;
+      width: 26px;
+      height: 26px;
+      background: #fff8ea;
+      border-left: 3px solid #d9b15a;
+      border-bottom: 3px solid #d9b15a;
+      transform: rotate(45deg);
+    }
+
+    .after-status-card {
+      padding: 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 35%),
+        linear-gradient(180deg, #f7df9f, #d39b43);
+      border: 3px solid #f4d06f;
+      box-shadow: 0 7px 0 rgba(87, 49, 18, 0.55);
+    }
+
+    .after-status-card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      font-weight: 900;
+      color: #4a2c13;
+    }
+
+    .status-step-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .status-step {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 248, 234, 0.65);
+      border: 1px solid rgba(138, 84, 35, 0.25);
+      font-size: 14px;
+      font-weight: 900;
+      color: #5a3316;
+    }
+
+    .status-step.active {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8ea;
+      border-color: #d9b15a;
+    }
+
+    .after-board {
+      border-radius: 26px;
+      padding: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.42), transparent 30%),
+        linear-gradient(180deg, #f4d98d, #bd7a2c);
+      border: 3px solid #e8bd5b;
+      box-shadow: 0 8px 0 rgba(60, 31, 10, 0.55);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .screen-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .screen-title-box h2 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 900;
+      color: #3f260f;
+      letter-spacing: -0.7px;
+    }
+
+    .screen-title-box p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #5a3316;
+      line-height: 1.45;
+    }
+
+    .book-type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .book-type-card {
+      min-height: 300px;
+      padding: 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 34%),
+        linear-gradient(180deg, #fff8ea, #efd28b);
+      border: 3px solid #d9b15a;
+      box-shadow: 0 7px 0 rgba(138, 84, 35, 0.36);
+      cursor: pointer;
+      text-align: center;
+      transition: 0.15s;
+    }
+
+    .book-type-card:hover {
+      transform: translateY(2px);
+      border-color: #4f7130;
+      box-shadow: 0 5px 0 rgba(63, 100, 30, 0.48);
+    }
+
+    .book-type-image {
+      width: 128px;
+      height: 128px;
+      margin: 0 auto 14px;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(91, 123, 48, 0.16);
+      border: 2px solid rgba(79, 113, 48, 0.35);
+      font-size: 70px;
+    }
+
+    .book-type-card h3 {
+      margin: 0 0 12px;
+      font-size: 25px;
+      font-weight: 900;
+      color: #3f260f;
+    }
+
+    .book-type-card p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #5a3316;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .method-card,
+    .quiz-card,
+    .question-builder-card,
+    .question-maker-card,
+    .summary-card,
+    .share-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 248, 234, 0.74);
+      border: 2px solid rgba(138, 84, 35, 0.35);
+      margin-bottom: 18px;
+    }
+
+    .method-card h3,
+    .quiz-card h3,
+    .question-builder-card h3,
+    .question-maker-card h3,
+    .summary-card h3,
+    .share-card h3 {
+      margin: 0 0 12px;
+      font-size: 21px;
+      font-weight: 900;
+      color: #3f260f;
+    }
+
+    .method-sentence {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff8ea, #f1dca2);
+      border: 2px solid #d9b15a;
+      font-size: 22px;
+      font-weight: 900;
+      color: #4a2c13;
+      line-height: 1.55;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .quiz-sentence {
+      margin-bottom: 14px;
+      padding: 18px;
+      border-radius: 20px;
+      background: #fff8ea;
+      border: 2px dashed rgba(138, 84, 35, 0.45);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.7;
+      color: #4a2c13;
+      text-align: center;
+    }
+
+    .blank {
+      display: inline-flex;
+      min-width: 120px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      margin: 0 4px;
+      border-radius: 12px;
+      background: rgba(173, 205, 214, 0.8);
+      border: 2px solid rgba(79, 113, 48, 0.35);
+      color: #254016;
+    }
+
+    .blank.filled {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8ea;
+      border-color: #d9b15a;
+    }
+
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .word-button {
+      border: 2px solid #d9b15a;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: #fff8ea;
+      color: #5a3316;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(138, 84, 35, 0.3);
+    }
+
+    .word-button.used {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .builder-guide {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(173, 205, 214, 0.55);
+      border: 2px solid rgba(79, 113, 48, 0.22);
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.5;
+      color: #3b2414;
+    }
+
+    .builder-column-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .builder-column {
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff8ea, #f1dca2);
+      border: 2px solid rgba(217, 177, 90, 0.9);
+    }
+
+    .builder-column h4 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      font-weight: 900;
+      color: #4a2c13;
+      text-align: center;
+    }
+
+    .builder-word-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .builder-word-button {
+      border: 2px solid rgba(138, 84, 35, 0.35);
+      border-radius: 14px;
+      padding: 9px 8px;
+      background: rgba(255, 255, 255, 0.65);
+      color: #4a2c13;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(138, 84, 35, 0.22);
+    }
+
+    .builder-word-button:hover {
+      transform: translateY(1px);
+      box-shadow: 0 2px 0 rgba(138, 84, 35, 0.22);
+    }
+
+    .builder-word-button.selected {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8ea;
+      border-color: #d9b15a;
+    }
+
+    .preview-box {
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 20px;
+      background: #fff8ea;
+      border: 3px solid #d9b15a;
+      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
+    }
+
+    .preview-box span {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #6c431f;
+    }
+
+    .preview-question {
+      min-height: 36px;
+      font-size: 22px;
+      font-weight: 900;
+      color: #3f260f;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .practice-note {
+      margin: 0;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: rgba(91, 123, 48, 0.16);
+      border: 2px solid rgba(79, 113, 48, 0.25);
+      color: #3f260f;
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.5;
+    }
+
+    .question-answer-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .qa-card {
+      padding: 15px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff8ea, #f1dca2);
+      border: 2px solid rgba(217, 177, 90, 0.9);
+    }
+
+    .qa-card-title {
+      margin: 0 0 10px;
+      font-size: 17px;
+      font-weight: 900;
+      color: #4a2c13;
+    }
+
+    .input-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #6c431f;
+    }
+
+    .question-input,
+    .answer-input,
+    .summary-textarea {
+      width: 100%;
+      border: 2px solid rgba(138, 84, 35, 0.35);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #3b2414;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+      resize: vertical;
+    }
+
+    .question-input {
+      min-height: 48px;
+    }
+
+    .answer-input {
+      min-height: 72px;
+    }
+
+    .summary-textarea {
+      min-height: 170px;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    .question-input:focus,
+    .answer-input:focus,
+    .summary-textarea:focus {
+      border-color: #4f7130;
+      box-shadow: 0 0 0 3px rgba(79, 113, 48, 0.18);
+    }
+
+    .connect-box {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .connect-item {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 248, 234, 0.8);
+      border: 2px solid rgba(217, 177, 90, 0.85);
+    }
+
+    .connect-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #4f7130;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .connect-item p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 800;
+      color: #4a2c13;
+    }
+
+    .arrow-text {
+      text-align: center;
+      margin: 10px 0 14px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #4f7130;
+    }
+
+    .share-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .share-item {
+      padding: 16px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff8ea, #f0d99a);
+      border: 2px solid #d9b15a;
+      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
+    }
+
+    .share-item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .share-name {
+      font-size: 17px;
+      font-weight: 900;
+      color: #3f260f;
+    }
+
+    .share-type {
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #5b7b30;
+      color: #fff8ea;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .share-item p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 750;
+      color: #4a2c13;
+      white-space: pre-line;
+    }
+
+    .bottom-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .activity-button {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 18px;
+      color: #fff8ea;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .activity-button:hover {
+      transform: translateY(1px);
+      box-shadow: 0 4px 0 #14240c;
+    }
+
+    .activity-button.brown {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 5px 0 #2c1609;
+    }
+
+    .empty-message {
+      padding: 24px 18px;
+      border-radius: 20px;
+      background: rgba(255, 248, 234, 0.75);
+      border: 2px dashed rgba(138, 84, 35, 0.45);
+      text-align: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: #5a3316;
+    }
+
+    @media (max-width: 1180px) {
+      .hero-panel {
+        grid-template-columns: 170px 1fr;
+      }
+
+      .after-status-card {
+        grid-column: 1 / -1;
+      }
+
+      .book-type-grid,
+      .share-list {
+        grid-template-columns: 1fr;
+      }
+
+      .builder-column-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .after-read-page {
+        flex-direction: column;
+      }
+
+      .side-nav {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .logo-box {
+        grid-column: 1 / -1;
+        margin-bottom: 4px;
+      }
+
+      .step-item {
+        margin-bottom: 0;
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+      }
+
+      .top-bar {
+        height: auto;
+        padding: 16px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .hero-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .speech-bubble::before {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .main-area {
+        padding: 14px;
+      }
+
+      .content-board,
+      .after-board {
+        padding: 16px;
+      }
+
+      .side-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .builder-column-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-buttons,
+      .top-buttons {
+        width: 100%;
+      }
+
+      .activity-button,
+      .top-button {
+        flex: 1;
+      }
+    }
+    .good-question-check-card {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 35%),
+    linear-gradient(180deg, #fff8ea, #f1dca2);
+  border: 2px solid #d9b15a;
+  box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
+}
+
+.good-question-check-card h4 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #3f260f;
+}
+
+.good-question-check-card p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 800;
+  color: #5a3316;
+}
+
+.good-question-list {
+  display: grid;
+  gap: 9px;
+}
+
+.good-question-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(138, 84, 35, 0.25);
+  color: #4a2c13;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.good-question-item input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: #4f7130;
+  flex-shrink: 0;
+}
+
+.good-question-feedback {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 15px;
+  background: rgba(91, 123, 48, 0.16);
+  border: 2px solid rgba(79, 113, 48, 0.25);
+  color: #3f260f;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.good-question-feedback.show {
+  display: block;
+}
+  </style>
+</head>
+
+<body>
+  <div class="after-read-page">
+    <aside class="side-nav">
+      <div class="logo-box">문답책</div>
+
+      <div class="step-item done">
+        <div class="step-number">01</div>
+        <div class="step-title">책 고르기</div>
+      </div>
+
+      <div class="step-item done">
+        <div class="step-number">02</div>
+        <div class="step-title">읽기 전</div>
+      </div>
+
+      <div class="step-item done">
+        <div class="step-number">03</div>
+        <div class="step-title">읽기 중</div>
+      </div>
+
+      <div class="step-item done">
+        <div class="step-number">04</div>
+        <div class="step-title">우리반<br />책읽기</div>
+      </div>
+
+      <div class="step-item active">
+        <div class="step-number">05</div>
+        <div class="step-title">읽기 후</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="top-bar">
+        <h1 class="page-title">읽기 후</h1>
+
+        <div class="top-buttons">
+          <button class="top-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+          <button class="top-button" type="button" onclick="goHome()">홈으로</button>
+          <button class="top-button" type="button" onclick="goPower()">나의 힘</button>
+        </div>
+      </header>
+
+      <section class="content-board">
+        <section class="hero-panel">
+          <div class="hero-left">
+            <img
+              class="lumi-character"
+              src="../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
+              alt="루미 캐릭터"
+            />
+          </div>
+
+          <div class="speech-bubble" id="lumiMessage">
+            책마다 간추리는 방법이 달라!<br />
+            먼저 내가 읽은 책의 종류를 골라 보자.
+          </div>
+
+          <aside class="after-status-card">
+            <h2>읽기 후 순서</h2>
+
+            <div class="status-step-list">
+              <div class="status-step active" id="status1">1. 책 유형 고르기</div>
+              <div class="status-step" id="status2">2. 간추리기 비법</div>
+              <div class="status-step" id="status3">3. 질문으로 간추리기</div>
+              <div class="status-step" id="status4">4. 간추리기 공유</div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="after-board">
+          <section class="screen active" id="screenType">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2>책의 종류를 골라요</h2>
+                <p>내가 읽은 책에 어울리는 간추리기 방법을 선택해요.</p>
+              </div>
+            </div>
+
+            <div class="book-type-grid">
+              <article class="book-type-card" onclick="selectBookType('story')">
+                <div class="book-type-image">📖</div>
+                <h3>이야기 책</h3>
+                <p>인물에게 일어난 일을<br />차례대로 간추리는 책</p>
+              </article>
+
+              <article class="book-type-card" onclick="selectBookType('info')">
+                <div class="book-type-image">🔍</div>
+                <h3>정보를 담은 책</h3>
+                <p>문단이나 장의 중심 내용을<br />골라 간추리는 책</p>
+              </article>
+
+              <article class="book-type-card" onclick="selectBookType('opinion')">
+                <div class="book-type-image">📣</div>
+                <h3>주장을 담은 책</h3>
+                <p>주장과 이유를 찾아<br />생각을 정리하는 책</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="screen" id="screenMethod">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2 id="methodTitle">간추리기 비법</h2>
+                <p>먼저 이 책을 어떻게 간추리면 좋은지 알아봐요.</p>
+              </div>
+            </div>
+
+            <div class="method-card">
+              <h3>간추리기 비법 문장</h3>
+              <div class="method-sentence" id="methodSentence"></div>
+            </div>
+
+            <div class="quiz-card">
+              <h3>빈칸 퀴즈</h3>
+              <div class="quiz-sentence" id="quizSentence"></div>
+              <div class="word-bank" id="wordBank"></div>
+            </div>
+
+            <div class="bottom-buttons">
+              <button class="activity-button brown" type="button" onclick="goScreen(1)">다시 고르기</button>
+              <button class="activity-button" type="button" onclick="checkQuizAndNext()">다음으로</button>
+            </div>
+          </section>
+
+          <section class="screen" id="screenQuestionBuilder">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2>질문 만들기 연습</h2>
+                <p>질문 재료를 눌러 간추리기 질문이 어떻게 만들어지는지 연습해요.</p>
+              </div>
+            </div>
+
+            <div class="question-builder-card">
+              <h3 id="builderTitle">간추리기 질문 재료</h3>
+              <p class="builder-guide" id="builderGuide"></p>
+
+              <div class="builder-column-grid" id="builderColumnGrid"></div>
+
+              <div class="preview-box">
+                <span>연습 질문 미리보기</span>
+                <div class="preview-question" id="previewQuestion">
+                  질문 재료를 골라 연습 질문을 만들어 보세요.
+                </div>
+              </div>
+
+              <p class="practice-note">
+                이 질문은 연습용이에요. 다음 화면에서 방금 연습한 방법을 떠올리며
+                내가 읽은 책에 맞는 질문을 직접 써 봐요.
+              </p>
+              <div class="good-question-check-card">
+  <h4>좋은 간추리기 질문인지 확인해요</h4>
+  <p>
+    연습 질문을 보고, 간추리기에 도움이 되는 질문인지 체크해 봐요.
+  </p>
+
+  <div class="good-question-list" id="goodQuestionList"></div>
+
+  <div class="good-question-feedback" id="goodQuestionFeedback">
+    좋아요! 이 기준을 떠올리며 내 책에 맞는 질문을 직접 써 봐요.
+  </div>
+</div>
+            </div>
+
+            <div class="bottom-buttons">
+              <button class="activity-button brown" type="button" onclick="resetBuilderSelection()">다시 고르기</button>
+              <button class="activity-button" type="button" onclick="goScreen(4)">직접 질문 쓰러 가기</button>
+            </div>
+          </section>
+
+          <section class="screen" id="screenQuestion">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2>내 책에 맞는 질문을 직접 써요</h2>
+                <p>
+                  방금 연습한 방법을 떠올리며 내가 읽은 책의 중요한 내용을 묻는 질문을 써 봐요.
+                  질문에 답하면 간추리기의 재료가 돼요.
+                </p>
+              </div>
+            </div>
+
+            <div class="question-maker-card">
+              <h3 id="directQuestionTitle">직접 질문 쓰기</h3>
+
+              <div class="question-answer-list">
+                <div class="qa-card">
+                  <p class="qa-card-title">질문 1</p>
+                  <label class="input-label">간추리기 질문</label>
+                  <input class="question-input" id="question1" type="text" />
+                  <label class="input-label">질문에 대한 답</label>
+                  <textarea class="answer-input" id="answer1"></textarea>
+                </div>
+
+                <div class="qa-card">
+                  <p class="qa-card-title">질문 2</p>
+                  <label class="input-label">간추리기 질문</label>
+                  <input class="question-input" id="question2" type="text" />
+                  <label class="input-label">질문에 대한 답</label>
+                  <textarea class="answer-input" id="answer2"></textarea>
+                </div>
+
+                <div class="qa-card">
+                  <p class="qa-card-title">질문 3</p>
+                  <label class="input-label">간추리기 질문</label>
+                  <input class="question-input" id="question3" type="text" />
+                  <label class="input-label">질문에 대한 답</label>
+                  <textarea class="answer-input" id="answer3"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-buttons">
+              <button class="activity-button brown" type="button" onclick="goScreen(3)">이전으로</button>
+              <button class="activity-button" type="button" onclick="makeSummaryGuide()">답을 모아 간추리기</button>
+            </div>
+          </section>
+
+          <section class="screen" id="screenSummary">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2>내 간추리기 완성</h2>
+                <p>질문에 답한 내용을 모아 책의 핵심을 정리해요.</p>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <h3>질문에서 간추리기로 이어져요</h3>
+              <div class="connect-box" id="connectBox"></div>
+              <div class="arrow-text">↓ 이 답을 모아 간추리기 글로 정리해요 ↓</div>
+
+              <label class="input-label">내가 쓴 간추리기</label>
+              <textarea class="summary-textarea" id="summaryText"></textarea>
+            </div>
+
+            <div class="bottom-buttons">
+              <button class="activity-button brown" type="button" onclick="goScreen(4)">이전으로</button>
+              <button class="activity-button" type="button" onclick="saveSummary()">저장하고 공유하기</button>
+            </div>
+          </section>
+
+          <section class="screen" id="screenShare">
+            <div class="screen-title-row">
+              <div class="screen-title-box">
+                <h2>우리 반 간추리기 모음</h2>
+                <p>내가 간추린 내용을 친구들과 함께 볼 수 있어요.</p>
+              </div>
+            </div>
+
+            <div class="share-card">
+              <h3>친구들이 간추린 내용</h3>
+              <div class="share-list" id="shareList"></div>
+            </div>
+
+            <div class="bottom-buttons">
+              <button class="activity-button brown" type="button" onclick="goScreen(1)">처음으로</button>
+              <button class="activity-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "afterReadSummaries";
+
+    const bookTypeData = {
+      story: {
+        label: "이야기 책",
+        icon: "📖",
+        method: "이야기 책은 시간의 흐름이나 장소의 변화에 따라 등장인물에게 일어난 일을 중심으로 간추려요.",
+        blanks: ["시간의 흐름", "장소의 변화", "등장인물"],
+        quiz: "이야기 책은 {blank}이나 {blank}에 따라 {blank}에게 일어난 일을 중심으로 간추려요.",
+        words: ["시간의 흐름", "장소의 변화", "등장인물", "문단", "글쓴이의 주장"],
+        builderGuide: "이야기 책은 언제, 어디서, 누가, 무엇을 했는지 떠올리면 간추리기 질문을 만들기 쉬워요.",
+        checkList: [
+  "이 질문은 이야기의 중요한 일을 떠올리게 하나요?",
+  "인물이나 사건, 변화 중 하나를 알 수 있나요?",
+  "답을 쓰면 처음·가운데·끝 간추리기에 넣을 수 있나요?"
+],
+        builderColumns: [
+          {
+            id: "when",
+            title: "언제",
+            words: ["처음에", "가운데에", "마지막에", "어느 날", "문제가 생겼을 때", "친구를 만났을 때"]
+          },
+          {
+            id: "where",
+            title: "어디서",
+            words: ["집에서", "학교에서", "숲에서", "마을에서", "길에서", "교실에서"]
+          },
+          {
+            id: "who",
+            title: "누가",
+            words: ["주인공이", "친구가", "엄마가", "아빠가", "선생님이", "나쁜 인물이"]
+          },
+          {
+            id: "action",
+            title: "무엇을",
+            words: ["무엇을 했나요?", "무엇을 보았나요?", "누구를 만났나요?", "어떤 문제를 겪었나요?", "어떤 선택을 했나요?", "어떻게 해결했나요?"]
+          }
+        ],
+        examples: [
+          "처음에 주인공은 무엇을 했나요?",
+          "가운데에 어떤 문제가 생겼나요?",
+          "마지막에는 어떻게 되었나요?"
+        ],
+        summaryTemplate:
+          "처음에는 __________________________.\n가운데에는 ________________________.\n마지막에는 ________________________.\n그래서 이 책은 ____________________ 이야기입니다."
+      },
+
+      info: {
+        label: "정보를 담은 책",
+        icon: "🔍",
+        method: "정보를 담은 책은 문단이나 각 장의 중심 내용을 중심으로 간추려요.",
+        blanks: ["문단", "각 장", "중심 내용"],
+        quiz: "정보를 담은 책은 {blank}이나 {blank}의 {blank}을 중심으로 간추려요.",
+        words: ["문단", "각 장", "중심 내용", "등장인물", "글쓴이의 주장"],
+        builderGuide: "정보를 담은 책은 문단이나 각 장에서 가장 중요한 내용이 무엇인지 묻는 질문이 좋아요.",
+        checkList: [
+  "이 질문은 문단이나 각 장의 중심 내용을 묻나요?",
+  "중요한 정보를 찾게 하나요?",
+  "답을 쓰면 한 문장으로 정리할 수 있나요?"
+],
+        builderColumns: [
+          {
+            id: "part",
+            title: "어느 부분",
+            words: ["첫 번째 문단은", "두 번째 문단은", "마지막 문단은", "첫 번째 장은", "두 번째 장은", "이 부분은"]
+          },
+          {
+            id: "center",
+            title: "중심 내용",
+            words: ["무엇을 알려 주나요?", "가장 중요한 내용은 무엇인가요?", "어떤 사실을 설명하나요?", "무엇이 핵심인가요?"]
+          },
+          {
+            id: "organize",
+            title: "정보 정리",
+            words: ["어떤 특징이 있나요?", "어떤 종류가 있나요?", "어떤 순서로 설명하나요?", "어떤 점이 새로웠나요?"]
+          },
+          {
+            id: "oneSentence",
+            title: "한 문장으로",
+            words: ["한 문장으로 말하면 무엇인가요?", "중요한 낱말은 무엇인가요?", "꼭 기억할 내용은 무엇인가요?"]
+          }
+        ],
+        examples: [
+          "첫 번째 문단의 중심 내용은 무엇인가요?",
+          "이 장에서 가장 중요한 정보는 무엇인가요?",
+          "새롭게 알게 된 사실은 무엇인가요?"
+        ],
+        summaryTemplate:
+          "이 책은 __________________에 대해 알려 줍니다.\n첫 번째 중심 내용은 __________________입니다.\n또 다른 중심 내용은 __________________입니다.\n그래서 이 책은 __________________에 대한 책입니다."
+      },
+
+      opinion: {
+        label: "주장을 담은 책",
+        icon: "📣",
+        method: "주장을 담은 책은 글쓴이의 주장과 그 이유를 중심으로 간추려요.",
+        blanks: ["글쓴이의 주장", "이유", "근거"],
+        quiz: "주장을 담은 책은 {blank}과 {blank}, {blank}를 중심으로 간추려요.",
+        words: ["글쓴이의 주장", "이유", "근거", "시간의 흐름", "등장인물"],
+        builderGuide: "주장을 담은 책은 글쓴이가 무엇을 주장하는지, 왜 그렇게 생각하는지 묻는 질문이 좋아요.",
+        checkList: [
+  "이 질문은 글쓴이의 주장이나 이유를 묻나요?",
+  "글쓴이의 생각을 찾게 하나요?",
+  "답을 쓰면 주장과 이유를 간추릴 수 있나요?"
+],
+        builderColumns: [
+          {
+            id: "claimSubject",
+            title: "주장",
+            words: ["글쓴이는", "이 글은", "글쓴이가 가장 말하고 싶은 생각은", "이 글의 주장은"]
+          },
+          {
+            id: "claimQuestion",
+            title: "무엇을",
+            words: ["무엇을 주장하나요?", "무엇을 말하고 싶어 하나요?", "어떤 생각을 전하나요?"]
+          },
+          {
+            id: "reason",
+            title: "이유",
+            words: ["그 이유는 무엇인가요?", "왜 그렇게 생각하나요?", "어떤 까닭을 들었나요?"]
+          },
+          {
+            id: "evidence",
+            title: "근거와 예시",
+            words: ["어떤 근거가 있나요?", "어떤 예를 들었나요?", "어떤 사실로 설명했나요?"]
+          }
+        ],
+        examples: [
+          "글쓴이는 무엇을 주장하나요?",
+          "글쓴이가 그렇게 생각한 이유는 무엇인가요?",
+          "주장을 뒷받침하는 근거나 예시는 무엇인가요?"
+        ],
+        summaryTemplate:
+          "글쓴이는 __________________라고 주장합니다.\n그 이유는 __________________입니다.\n또 __________________라는 근거가 있습니다.\n나는 __________________라고 생각합니다."
+      }
+    };
+
+    let selectedBookType = null;
+    let blankAnswers = [];
+    let currentBlankIndex = 0;
+    let builderSelection = {};
+    let previewQuestionText = "";
+
+    function selectBookType(type) {
+      selectedBookType = type;
+      blankAnswers = [];
+      currentBlankIndex = 0;
+      builderSelection = {};
+      previewQuestionText = "";
+
+      const data = bookTypeData[type];
+
+      document.getElementById("methodTitle").textContent = data.label + " 간추리기 비법";
+      document.getElementById("methodSentence").textContent = data.method;
+
+      clearQuestionInputs();
+      renderQuiz();
+      renderQuestionBuilder();
+      setQuestionPlaceholders();
+
+      goScreen(2);
+    }
+
+    function renderQuiz() {
+      const data = bookTypeData[selectedBookType];
+      const quizSentence = document.getElementById("quizSentence");
+      const wordBank = document.getElementById("wordBank");
+
+      let blankNumber = 0;
+
+      quizSentence.innerHTML = data.quiz.replaceAll("{blank}", function() {
+        const answer = blankAnswers[blankNumber] || "";
+        const html = `<span class="blank ${answer ? "filled" : ""}">${answer || "빈칸"}</span>`;
+        blankNumber += 1;
+        return html;
+      });
+
+      wordBank.innerHTML = "";
+
+      data.words.forEach(function(word) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "word-button";
+        button.textContent = word;
+
+        if (blankAnswers.includes(word)) {
+          button.classList.add("used");
+        }
+
+        button.addEventListener("click", function() {
+          fillBlank(word);
+        });
+
+        wordBank.appendChild(button);
+      });
+    }
+
+    function fillBlank(word) {
+      const data = bookTypeData[selectedBookType];
+
+      if (currentBlankIndex >= data.blanks.length) {
+        return;
+      }
+
+      blankAnswers[currentBlankIndex] = word;
+      currentBlankIndex += 1;
+
+      renderQuiz();
+    }
+
+    function checkQuizAndNext() {
+      const data = bookTypeData[selectedBookType];
+
+      if (blankAnswers.length < data.blanks.length) {
+        alert("빈칸을 모두 채워 주세요.");
+        return;
+      }
+
+      const isCorrect = data.blanks.every(function(answer, index) {
+        return blankAnswers[index] === answer;
+      });
+
+      if (!isCorrect) {
+        alert("조금 아쉬워요. 다시 해 볼까요?");
+        blankAnswers = [];
+        currentBlankIndex = 0;
+        renderQuiz();
+        return;
+      }
+
+      alert("좋아요! 이제 질문 만드는 방법을 연습해 봐요.");
+      renderQuestionBuilder();
+      goScreen(3);
+    }
+function renderGoodQuestionCheck() {
+  const data = bookTypeData[selectedBookType];
+  const goodQuestionList = document.getElementById("goodQuestionList");
+  const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+
+  if (!data || !goodQuestionList) {
+    return;
+  }
+
+  goodQuestionList.innerHTML = "";
+
+  if (goodQuestionFeedback) {
+    goodQuestionFeedback.classList.remove("show");
+  }
+
+  data.checkList.forEach(function(text, index) {
+    const label = document.createElement("label");
+    label.className = "good-question-item";
+
+    label.innerHTML = `
+      <input type="checkbox" class="good-question-checkbox" onchange="checkGoodQuestionDone()" />
+      <span>${escapeHtml(text)}</span>
+    `;
+
+    goodQuestionList.appendChild(label);
+  });
+}
+
+function checkGoodQuestionDone() {
+  const checkboxes = document.querySelectorAll(".good-question-checkbox");
+  const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+
+  if (!checkboxes.length || !goodQuestionFeedback) {
+    return;
+  }
+
+  const allChecked = Array.from(checkboxes).every(function(checkbox) {
+    return checkbox.checked;
+  });
+
+  if (allChecked) {
+    goodQuestionFeedback.classList.add("show");
+  } else {
+    goodQuestionFeedback.classList.remove("show");
+  }
+}
+    function renderQuestionBuilder() {
+      const data = bookTypeData[selectedBookType];
+      const builderTitle = document.getElementById("builderTitle");
+      const builderGuide = document.getElementById("builderGuide");
+      const builderColumnGrid = document.getElementById("builderColumnGrid");
+
+      if (!data || !builderColumnGrid) {
+        return;
+      }
+
+      builderTitle.textContent = data.label + " 질문 재료";
+      builderGuide.textContent = data.builderGuide;
+      builderColumnGrid.innerHTML = "";
+
+      data.builderColumns.forEach(function(column) {
+        const columnBox = document.createElement("div");
+        columnBox.className = "builder-column";
+
+        const wordHtml = column.words.map(function(word) {
+          const isSelected = builderSelection[column.id] === word;
+
+          return `
+            <button
+              class="builder-word-button ${isSelected ? "selected" : ""}"
+              type="button"
+              onclick="selectBuilderWord('${column.id}', '${escapeForAttribute(word)}')"
+            >
+              ${escapeHtml(word)}
+            </button>
+          `;
+        }).join("");
+
+        columnBox.innerHTML = `
+          <h4>${escapeHtml(column.title)}</h4>
+          <div class="builder-word-list">
+            ${wordHtml}
+          </div>
+        `;
+
+        builderColumnGrid.appendChild(columnBox);
+      });
+
+      updatePreviewQuestion();
+      renderGoodQuestionCheck();
+    }
+
+    function selectBuilderWord(columnId, word) {
+      builderSelection[columnId] = word;
+      renderQuestionBuilder();
+    }
+
+    function updatePreviewQuestion() {
+      const data = bookTypeData[selectedBookType];
+      const previewQuestion = document.getElementById("previewQuestion");
+
+      if (!data || !previewQuestion) {
+        return;
+      }
+
+      const parts = [];
+
+      data.builderColumns.forEach(function(column) {
+        if (builderSelection[column.id]) {
+          parts.push(builderSelection[column.id]);
+        }
+      });
+
+      previewQuestionText = parts.join(" ").trim();
+
+      previewQuestion.textContent =
+        previewQuestionText || "질문 재료를 골라 연습 질문을 만들어 보세요.";
+    }
+
+    function resetBuilderSelection() {
+      builderSelection = {};
+      previewQuestionText = "";
+      renderQuestionBuilder();
+    }
+
+    function setQuestionPlaceholders() {
+      const data = bookTypeData[selectedBookType];
+
+      document.getElementById("directQuestionTitle").textContent =
+        data.label + " 질문 직접 쓰기";
+
+      document.getElementById("question1").placeholder = "예) " + data.examples[0];
+      document.getElementById("question2").placeholder = "예) " + data.examples[1];
+      document.getElementById("question3").placeholder = "예) " + data.examples[2];
+
+      document.getElementById("answer1").placeholder = "질문 1에 대한 답을 책에서 찾아 적어 봐요.";
+      document.getElementById("answer2").placeholder = "질문 2에 대한 답을 책에서 찾아 적어 봐요.";
+      document.getElementById("answer3").placeholder = "질문 3에 대한 답을 책에서 찾아 적어 봐요.";
+    }
+
+    function clearQuestionInputs() {
+      ["question1", "question2", "question3", "answer1", "answer2", "answer3"].forEach(function(id) {
+        const el = document.getElementById(id);
+
+        if (el) {
+          el.value = "";
+        }
+      });
+
+      const summaryText = document.getElementById("summaryText");
+
+      if (summaryText) {
+        summaryText.value = "";
+      }
+    }
+
+    function getQuestionAnswerData() {
+      return [
+        {
+          question: document.getElementById("question1").value.trim(),
+          answer: document.getElementById("answer1").value.trim()
+        },
+        {
+          question: document.getElementById("question2").value.trim(),
+          answer: document.getElementById("answer2").value.trim()
+        },
+        {
+          question: document.getElementById("question3").value.trim(),
+          answer: document.getElementById("answer3").value.trim()
+        }
+      ];
+    }
+
+    function makeSummaryGuide() {
+      const qaData = getQuestionAnswerData();
+
+      const isFilled = qaData.every(function(item) {
+        return item.question && item.answer;
+      });
+
+      if (!isFilled) {
+        alert("질문 3개와 답 3개를 모두 적어 주세요.");
+        return;
+      }
+
+      const connectBox = document.getElementById("connectBox");
+      connectBox.innerHTML = "";
+
+      qaData.forEach(function(item, index) {
+        const div = document.createElement("div");
+        div.className = "connect-item";
+        div.innerHTML = `
+          <strong>질문 ${index + 1}</strong>
+          <p>Q. ${escapeHtml(item.question)}</p>
+          <p>A. ${escapeHtml(item.answer)}</p>
+        `;
+        connectBox.appendChild(div);
+      });
+
+      const data = bookTypeData[selectedBookType];
+      const answerText = qaData.map(function(item) {
+        return item.answer;
+      }).join(" ");
+
+      document.getElementById("summaryText").value =
+        data.summaryTemplate + "\n\n" +
+        "내 답을 모아 쓰기: " + answerText;
+
+      goScreen(5);
+    }
+
+    function saveSummary() {
+      const summaryText = document.getElementById("summaryText").value.trim();
+
+      if (!summaryText) {
+        alert("간추리기 내용을 적어 주세요.");
+        return;
+      }
+
+      const savedList = loadSummaries();
+      const data = bookTypeData[selectedBookType];
+
+      const newSummary = {
+        name: "나",
+        type: selectedBookType,
+        typeLabel: data.label,
+        icon: data.icon,
+        summary: summaryText,
+        questions: getQuestionAnswerData(),
+        createdAt: getTodayText()
+      };
+
+      savedList.unshift(newSummary);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
+
+      renderShareList();
+      alert("간추리기가 저장되었어요!");
+      goScreen(6);
+    }
+
+    function loadSummaries() {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+
+      if (!savedData) {
+        return [];
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+        return Array.isArray(parsedData) ? parsedData : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function renderShareList() {
+      const shareList = document.getElementById("shareList");
+      const savedList = loadSummaries();
+
+      const sampleList = [
+        {
+          name: "민지",
+          typeLabel: "이야기 책",
+          icon: "📖",
+          summary: "처음에는 주인공이 길을 잃었습니다.\n가운데에는 친구를 만나 도움을 받았습니다.\n마지막에는 집으로 돌아왔습니다."
+        },
+        {
+          name: "서준",
+          typeLabel: "정보를 담은 책",
+          icon: "🔍",
+          summary: "이 책은 동물의 겨울나기에 대해 알려 줍니다.\n첫 번째 중심 내용은 동물들이 겨울을 준비하는 방법입니다.\n또 다른 중심 내용은 겨울잠을 자는 동물들의 특징입니다."
+        }
+      ];
+
+      const allList = [...savedList, ...sampleList];
+
+      if (allList.length === 0) {
+        shareList.innerHTML = `
+          <div class="empty-message">
+            아직 공유된 간추리기가 없어요.
+          </div>
+        `;
+        return;
+      }
+
+      shareList.innerHTML = allList.map(function(item) {
+        return `
+          <article class="share-item">
+            <div class="share-item-top">
+              <div class="share-name">${escapeHtml(item.name)}의 간추리기</div>
+              <div class="share-type">${item.icon || "📘"} ${escapeHtml(item.typeLabel)}</div>
+            </div>
+            <p>${escapeHtml(item.summary)}</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function goScreen(step) {
+      document.querySelectorAll(".screen").forEach(function(screen) {
+        screen.classList.remove("active");
+      });
+
+      document.querySelectorAll(".status-step").forEach(function(stepEl) {
+        stepEl.classList.remove("active");
+      });
+
+      if (step === 1) {
+        document.getElementById("screenType").classList.add("active");
+        document.getElementById("status1").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "책마다 간추리는 방법이 달라!<br />먼저 내가 읽은 책의 종류를 골라 보자.";
+      }
+
+      if (step === 2) {
+        document.getElementById("screenMethod").classList.add("active");
+        document.getElementById("status2").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "좋아! 이 책에 맞는<br />간추리기 비법을 알아보자.";
+      }
+
+      if (step === 3) {
+        document.getElementById("screenQuestionBuilder").classList.add("active");
+        document.getElementById("status3").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "질문 재료를 고르며<br />질문 만드는 방법을 연습해 보자.";
+      }
+
+      if (step === 4) {
+        setQuestionPlaceholders();
+        document.getElementById("screenQuestion").classList.add("active");
+        document.getElementById("status3").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "이제 내 책에 맞는 질문을<br />직접 쓰고 답해 보자!";
+      }
+
+      if (step === 5) {
+        document.getElementById("screenSummary").classList.add("active");
+        document.getElementById("status4").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "이제 답을 모아서<br />나만의 간추리기를 완성해 보자.";
+      }
+
+      if (step === 6) {
+        document.getElementById("screenShare").classList.add("active");
+        document.getElementById("status4").classList.add("active");
+        document.getElementById("lumiMessage").innerHTML =
+          "멋져! 친구들의 간추리기도<br />함께 살펴보자.";
+      }
+    }
+
+    function getTodayText() {
+      const today = new Date();
+
+      return (
+        today.getFullYear() +
+        "." +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "." +
+        String(today.getDate()).padStart(2, "0")
+      );
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeForAttribute(text) {
+      return String(text)
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'")
+        .replaceAll('"', "&quot;");
+    }
+
+    function goClassReading() {
+      location.href = "./class-reading.html";
+    }
+
+    function goHome() {
+      location.href = "./home.html";
+    }
+
+    function goPower() {
+      alert("나의 힘 화면은 아직 준비 중이에요.");
+    }
+
+    renderShareList();
+  </script>
+</body>
+</html>

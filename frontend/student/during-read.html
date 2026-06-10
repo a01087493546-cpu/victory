@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 질문 만들기</title>
+
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(8, 5, 3, 0.82) 0%,
+          rgba(8, 5, 3, 0.55) 45%,
+          rgba(8, 5, 3, 0.72) 100%
+        ),
+        radial-gradient(circle at 48% 18%, rgba(255, 214, 126, 0.16), transparent 34%),
+        url("../assets/images/home/home-library-bg.png");
+      background-size: cover;
+      background-position: center;
+      color: #fff4d6;
+    }
+
+    button,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .class-reading-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    /* 왼쪽 단계 사이드바 */
+    .side-nav {
+      padding: 24px 18px;
+      background: linear-gradient(180deg, rgba(39, 24, 12, 0.94), rgba(18, 10, 5, 0.96));
+      border-right: 1px solid rgba(230, 180, 86, 0.38);
+      box-shadow: 18px 0 40px rgba(0, 0, 0, 0.26);
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: #fff0bd;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #f5d58a, #c88728);
+      color: #3b2211;
+      box-shadow: 0 6px 0 #875018;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .step-item {
+      position: relative;
+      margin-bottom: 14px;
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: rgba(255, 244, 214, 0.08);
+      border: 1px solid rgba(230, 180, 86, 0.24);
+      color: rgba(255, 239, 204, 0.72);
+    }
+
+    .step-item.done {
+      color: #f5d890;
+    }
+
+    .step-item.active {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 215, 126, 0.24), transparent 42%),
+        linear-gradient(180deg, rgba(111, 70, 28, 0.96), rgba(51, 29, 12, 0.96));
+      border-color: rgba(245, 197, 96, 0.78);
+      color: #fff5d8;
+      box-shadow:
+        0 0 0 3px rgba(255, 214, 116, 0.08),
+        0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .step-number {
+      display: block;
+      margin-bottom: 5px;
+      color: #e5bd6a;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .step-lock {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      opacity: 0.7;
+      font-size: 15px;
+    }
+
+    /* 오른쪽 메인 화면 */
+    .main-area {
+      padding: 26px 34px 28px;
+    }
+
+    .top-bar {
+      height: 70px;
+      margin-bottom: 22px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(48, 31, 17, 0.88), rgba(24, 14, 7, 0.9));
+      border: 1px solid rgba(230, 184, 92, 0.52);
+      box-shadow:
+        0 18px 44px rgba(0, 0, 0, 0.32),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      color: #fff4d2;
+    }
+
+    .top-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 222, 145, 0.65);
+      border-radius: 999px;
+      background: rgba(255, 244, 214, 0.12);
+      color: #ffe8ac;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .top-button:hover {
+      background: rgba(255, 244, 214, 0.2);
+    }
+
+    .content-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    /* 루미 안내 */
+    .hero-panel {
+      min-height: 160px;
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 24px;
+      padding: 18px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(255, 223, 145, 0.22), transparent 34%),
+        linear-gradient(180deg, rgba(70, 42, 19, 0.94), rgba(34, 19, 8, 0.96));
+      border: 1px solid rgba(224, 176, 82, 0.72);
+      box-shadow:
+        0 24px 54px rgba(0, 0, 0, 0.42),
+        inset 0 0 0 1px rgba(255, 239, 190, 0.1);
+    }
+
+    .hero-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      min-width: 0;
+    }
+
+    .lumi-character {
+      width: 180px;
+      height: auto;
+      display: block;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.28));
+    }
+
+    .lumi-fallback {
+      width: 170px;
+      height: 170px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 38px;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255, 231, 158, 0.96), rgba(137, 82, 27, 0.94));
+      box-shadow:
+        0 8px 0 rgba(70, 39, 13, 0.95),
+        0 18px 30px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 2px rgba(255, 245, 202, 0.2);
+      font-size: 70px;
+    }
+
+    .speech-bubble {
+      position: relative;
+      width: min(620px, 100%);
+      padding: 24px 30px;
+      background: #fff8ea;
+      color: #4a2d16;
+      border-radius: 24px;
+      border: 4px solid #d9b15a;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.6;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -18px;
+      top: 60px;
+      width: 0;
+      height: 0;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-right: 18px solid #fff8ea;
+    }
+
+    .question-status-card {
+      padding: 24px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 18px 38px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      align-self: stretch;
+      gap: 10px;
+    }
+
+    .question-status-card span {
+      color: #8a5423;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .question-status-card strong {
+      color: #3b2211;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    /* 질문 만들기 본문 */
+    .question-create-board {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 22px;
+    }
+
+    .question-type-panel {
+      padding: 22px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 20px 42px rgba(0, 0, 0, 0.3),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .question-type-panel h2 {
+      margin-bottom: 16px;
+      color: #3b2211;
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: -0.04em;
+    }
+
+    .question-type-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .question-type-button {
+      min-height: 82px;
+      padding: 14px 12px;
+      border-radius: 20px;
+      border: 2px solid rgba(219, 166, 65, 0.75);
+      background: rgba(255, 248, 226, 0.82);
+      color: #3b2211;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
+      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.32);
+    }
+
+    .question-type-button small {
+      display: block;
+      margin-top: 4px;
+      color: #8a5423;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .question-type-button.active {
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8df;
+      border-color: rgba(255, 222, 145, 0.9);
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .question-type-button.active small {
+      color: #f1e4bd;
+    }
+
+    .question-write-panel {
+      padding: 24px;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(48, 31, 17, 0.9), rgba(24, 14, 7, 0.94));
+      border: 1px solid rgba(230, 184, 92, 0.48);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.28),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .selected-question-type {
+      margin-bottom: 18px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 244, 214, 0.1);
+      border: 1px solid rgba(230, 180, 86, 0.3);
+      color: #f3dca9;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .selected-question-type strong {
+      color: #fff4d2;
+      font-size: 20px;
+    }
+
+    .question-input-card {
+      margin-bottom: 18px;
+      padding: 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+    }
+
+    .question-input-card label {
+      display: inline-block;
+      min-width: 190px;
+      margin-bottom: 12px;
+      padding: 8px 18px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #f5d58a, #c88728);
+      box-shadow: 0 5px 0 #875018;
+      color: #3b2211;
+      font-size: 24px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .question-input-card textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 16px;
+      border: 2px solid rgba(219, 166, 65, 0.65);
+      border-radius: 18px;
+      background: rgba(255, 253, 245, 0.92);
+      color: #3b2211;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+
+    .question-input-card textarea:focus {
+      border-color: #4f7130;
+      box-shadow: 0 0 0 3px rgba(79, 113, 48, 0.18);
+    }
+
+    .question-save-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .question-count-text {
+      color: #f0d8a6;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .question-save-button {
+      min-width: 160px;
+      height: 48px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8df;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .question-save-button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* 저장된 질문 */
+    .saved-question-panel {
+      padding: 24px;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(48, 31, 17, 0.9), rgba(24, 14, 7, 0.94));
+      border: 1px solid rgba(230, 184, 92, 0.48);
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.28),
+        inset 0 0 0 1px rgba(255, 235, 180, 0.08);
+    }
+
+    .saved-question-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .saved-question-title-row h2 {
+      color: #fff4d2;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .saved-question-title-row span {
+      color: #e6bd6a;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .saved-question-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .saved-question-card {
+      min-height: 190px;
+      padding: 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(255, 247, 210, 0.9), transparent 34%),
+        linear-gradient(180deg, rgba(255, 239, 188, 0.96), rgba(232, 200, 124, 0.94));
+      color: #3b2211;
+      border: 2px solid rgba(219, 166, 65, 0.82);
+      box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.22),
+        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .saved-question-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .saved-question-type {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(138, 84, 35, 0.16);
+      color: #8a5423;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .saved-delete-button {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #8a5423;
+      color: #fff8df;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .saved-question-card p {
+      margin-bottom: 8px;
+      color: #4a2d16;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .saved-question-card p strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #4f7130;
+      font-weight: 900;
+    }
+
+    .empty-question-message {
+      grid-column: 1 / -1;
+      padding: 24px;
+      border-radius: 22px;
+      border: 1px dashed rgba(230, 180, 86, 0.7);
+      background: rgba(255, 244, 214, 0.1);
+      color: #f0d8a6;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .question-bottom-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .activity-button {
+      width: 180px;
+      height: 44px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      color: #fff8df;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 5px 0 #14240c;
+    }
+
+    .activity-button.brown {
+      background: linear-gradient(180deg, #8a5423, #4a290f);
+      box-shadow: 0 5px 0 #2c1607;
+    }
+
+    @media (max-width: 1100px) {
+      .class-reading-page {
+        grid-template-columns: 1fr;
+      }
+
+      .side-nav {
+        display: none;
+      }
+
+      .hero-panel,
+      .question-create-board {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-left {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .speech-bubble::before {
+        display: none;
+      }
+
+      .saved-question-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="class-reading-page">
+    <!-- 왼쪽 단계 사이드바 -->
+    <aside class="side-nav">
+      <div class="logo-box">
+        <div class="logo-icon">?</div>
+        <span>문답책</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">01</span>
+        <span class="step-title">책 고르기</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">02</span>
+        <span class="step-title">읽기 전</span>
+      </div>
+
+      <div class="step-item done">
+        <span class="step-number">03</span>
+        <span class="step-title">읽기 중</span>
+      </div>
+
+      <div class="step-item active">
+        <span class="step-number">04</span>
+        <span class="step-title">우리반 책읽기</span>
+      </div>
+
+      <div class="step-item">
+        <span class="step-number">05</span>
+        <span class="step-title">읽기 후</span>
+        <span class="step-lock">🔒</span>
+      </div>
+    </aside>
+
+    <!-- 오른쪽 메인 -->
+    <main class="main-area">
+      <header class="top-bar">
+        <h1 class="page-title">질문 만들기</h1>
+
+        <div class="top-buttons">
+          <button class="top-button" type="button" onclick="goStepSelect()">단계 선택</button>
+          <button class="top-button" type="button" onclick="goHome()">홈으로</button>
+          <button class="top-button" type="button" onclick="goPower()">나의 힘</button>
+        </div>
+      </header>
+
+      <section class="content-board">
+        <!-- 루미 안내 -->
+        <section class="hero-panel">
+          <div class="hero-left">
+            <img
+              class="lumi-character"
+              src="../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
+              alt="루미"
+              onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div class=&quot;lumi-fallback&quot;>📖</div>');"
+            />
+
+            <div class="speech-bubble">
+              책을 읽으며 떠오른 질문을 만들어 보자!<br />
+              질문 유형을 고르고, 질문과 내 생각을 써 봐.
+            </div>
+          </div>
+
+          <div class="question-status-card">
+            <span>내가 만든 질문</span>
+            <strong id="savedCountMini">0 / 3</strong>
+          </div>
+        </section>
+
+        <!-- 질문 만들기 -->
+        <section class="question-create-board">
+          <aside class="question-type-panel">
+            <h2>질문 유형</h2>
+
+            <div class="question-type-list">
+              <button class="question-type-button active" type="button" data-type="direct">
+                🔍 바로 답 찾기
+                <small>책 속에서 답 찾기</small>
+              </button>
+
+              <button class="question-type-button" type="button" data-type="infer">
+                💭 답 짐작하기
+                <small>까닭과 마음 짐작</small>
+              </button>
+
+              <button class="question-type-button" type="button" data-type="feeling">
+                💛 생각·느낌
+                <small>내 생각 말하기</small>
+              </button>
+
+              <button class="question-type-button" type="button" data-type="life">
+                🌱 내 삶 연결
+                <small>내 경험과 연결</small>
+              </button>
+            </div>
+          </aside>
+
+          <section class="question-write-panel">
+            <div class="selected-question-type">
+              선택한 질문 유형:
+              <strong id="selectedTypeLabel">바로 답 찾기</strong><br />
+              <span id="selectedTypeGuide">책 내용에서 바로 답을 찾을 수 있는 질문이에요.</span>
+            </div>
+
+            <div class="question-input-card">
+              <label for="questionInput">질문</label>
+              <textarea
+                id="questionInput"
+                maxlength="100"
+                placeholder="예) 주인공은 어디로 갔나요?"
+              ></textarea>
+            </div>
+
+            <div class="question-input-card">
+              <label for="answerInput">내 생각 / 답</label>
+              <textarea
+                id="answerInput"
+                maxlength="160"
+                placeholder="예) 주인공은 숲으로 갔어요."
+              ></textarea>
+            </div>
+
+            <div class="question-save-row">
+              <span class="question-count-text" id="inputCountText">질문 0/100 · 답 0/160</span>
+              <button class="question-save-button" id="saveQuestionBtn" type="button">저장하기</button>
+            </div>
+          </section>
+        </section>
+
+        <!-- 저장된 질문 -->
+        <section class="saved-question-panel">
+          <div class="saved-question-title-row">
+            <h2>내가 만든 질문</h2>
+            <span id="savedCount">0 / 3</span>
+          </div>
+
+          <div class="saved-question-list" id="savedQuestionList">
+            <div class="empty-question-message">
+              아직 저장한 질문이 없어요. 질문 유형을 고르고 질문을 만들어 보세요!
+            </div>
+          </div>
+
+          <div class="question-bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="goClassReading()">우리반 책읽기</button>
+            <button class="activity-button" type="button" onclick="goFriendQuestion()">질문 나누기</button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const typeInfo = {
+      direct: {
+        label: "바로 답 찾기",
+        badge: "🔍 바로 답 찾기",
+        guide: "책 내용에서 바로 답을 찾을 수 있는 질문이에요.",
+        questionPlaceholder: "예) 주인공은 어디로 갔나요?",
+        answerPlaceholder: "예) 주인공은 숲으로 갔어요."
+      },
+      infer: {
+        label: "답 짐작하기",
+        badge: "💭 답 짐작하기",
+        guide: "책 내용을 보고 까닭이나 마음을 짐작해서 답하는 질문이에요.",
+        questionPlaceholder: "예) 주인공은 왜 그런 선택을 했을까요?",
+        answerPlaceholder: "예) 친구를 도와주고 싶어서 그런 것 같아요."
+      },
+      feeling: {
+        label: "생각·느낌",
+        badge: "💛 생각·느낌",
+        guide: "책을 읽고 든 내 생각이나 느낌을 말하는 질문이에요.",
+        questionPlaceholder: "예) 이 장면을 읽고 어떤 기분이 들었나요?",
+        answerPlaceholder: "예) 주인공이 용감해서 멋지다고 느꼈어요."
+      },
+      life: {
+        label: "내 삶 연결",
+        badge: "🌱 내 삶 연결",
+        guide: "책 내용과 나의 경험을 연결해서 생각하는 질문이에요.",
+        questionPlaceholder: "예) 나라면 이 상황에서 어떻게 했을까요?",
+        answerPlaceholder: "예) 나라면 먼저 친구에게 이유를 물어봤을 것 같아요."
+      }
+    };
+
+    let selectedType = "direct";
+    let myQuestions = [];
+
+    const typeButtons = document.querySelectorAll(".question-type-button");
+    const selectedTypeLabel = document.getElementById("selectedTypeLabel");
+    const selectedTypeGuide = document.getElementById("selectedTypeGuide");
+    const questionInput = document.getElementById("questionInput");
+    const answerInput = document.getElementById("answerInput");
+    const inputCountText = document.getElementById("inputCountText");
+    const saveQuestionBtn = document.getElementById("saveQuestionBtn");
+    const savedQuestionList = document.getElementById("savedQuestionList");
+    const savedCount = document.getElementById("savedCount");
+    const savedCountMini = document.getElementById("savedCountMini");
+
+    loadSavedQuestions();
+    updateInputCount();
+    renderSavedQuestions();
+
+    typeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        typeButtons.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        selectedType = button.dataset.type;
+        changeTypeInfo();
+      });
+    });
+
+    questionInput.addEventListener("input", updateInputCount);
+    answerInput.addEventListener("input", updateInputCount);
+    saveQuestionBtn.addEventListener("click", saveQuestion);
+
+    function changeTypeInfo() {
+      const info = typeInfo[selectedType];
+
+      selectedTypeLabel.textContent = info.label;
+      selectedTypeGuide.textContent = info.guide;
+      questionInput.placeholder = info.questionPlaceholder;
+      answerInput.placeholder = info.answerPlaceholder;
+      questionInput.focus();
+    }
+
+    function updateInputCount() {
+      inputCountText.textContent =
+        `질문 ${questionInput.value.length}/100 · 답 ${answerInput.value.length}/160`;
+    }
+
+    function saveQuestion() {
+      const questionText = questionInput.value.trim();
+      const answerText = answerInput.value.trim();
+
+      if (!questionText) {
+        alert("질문을 써 주세요.");
+        questionInput.focus();
+        return;
+      }
+
+      if (!answerText) {
+        alert("내 생각이나 답을 써 주세요.");
+        answerInput.focus();
+        return;
+      }
+
+      if (myQuestions.length >= 3) {
+        alert("질문은 최대 3개까지 저장할 수 있어요.");
+        return;
+      }
+
+      const today = new Date();
+
+const createdAt =
+  today.getFullYear() +
+  "." +
+  String(today.getMonth() + 1).padStart(2, "0") +
+  "." +
+  String(today.getDate()).padStart(2, "0");
+
+myQuestions.push({
+  text: questionText,
+  answer: answerText,
+  type: selectedType,
+  createdAt: createdAt
+});
+
+      questionInput.value = "";
+      answerInput.value = "";
+      updateInputCount();
+
+      saveToLocalStorage();
+      renderSavedQuestions();
+
+      alert("질문이 저장되었어요!");
+    }
+
+    function renderSavedQuestions() {
+      savedCount.textContent = `${myQuestions.length} / 3`;
+      savedCountMini.textContent = `${myQuestions.length} / 3`;
+
+      if (myQuestions.length >= 3) {
+        saveQuestionBtn.disabled = true;
+        saveQuestionBtn.textContent = "3개 저장 완료";
+      } else {
+        saveQuestionBtn.disabled = false;
+        saveQuestionBtn.textContent = "저장하기";
+      }
+
+      if (myQuestions.length === 0) {
+        savedQuestionList.innerHTML = `
+          <div class="empty-question-message">
+            아직 저장한 질문이 없어요. 질문 유형을 고르고 질문을 만들어 보세요!
+          </div>
+        `;
+        return;
+      }
+
+      savedQuestionList.innerHTML = myQuestions.map((question, index) => {
+        const info = typeInfo[question.type] || typeInfo.direct;
+
+        return `
+          <article class="saved-question-card">
+            <div class="saved-question-top">
+              <span class="saved-question-type">${info.badge}</span>
+              <button class="saved-delete-button" type="button" onclick="deleteQuestion(${index})">삭제</button>
+            </div>
+
+            <p><strong>질문</strong> ${escapeHtml(question.text)}</p>
+            <p><strong>내 생각</strong> ${escapeHtml(question.answer)}</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function deleteQuestion(index) {
+      myQuestions.splice(index, 1);
+      saveToLocalStorage();
+      renderSavedQuestions();
+    }
+
+    function saveToLocalStorage() {
+  const studentQuestionData = {
+    name: "나",
+    icon: "❓",
+    questions: myQuestions.map((question) => ({
+      text: question.text,
+      answer: question.answer,
+      type: question.type,
+      createdAt: question.createdAt || "날짜 기록 없음"
+    }))
+  };
+
+  localStorage.setItem("mySharedQuestions", JSON.stringify(studentQuestionData));
+}
+
+    function loadSavedQuestions() {
+      const savedData = localStorage.getItem("mySharedQuestions");
+
+      if (!savedData) {
+        myQuestions = [];
+        return;
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+        myQuestions = parsedData.questions || [];
+      } catch (error) {
+        myQuestions = [];
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function goClassReading() {
+      location.href = "./class-reading.html";
+    }
+
+    function goFriendQuestion() {
+      location.href = "./friend-question.html";
+    }
+
+    function goStepSelect() {
+      location.href = "./class-reading.html";
+    }
+
+    function goHome() {
+      location.href = "./index.html";
+    }
+
+    function goPower() {
+      alert("나의 힘 화면은 아직 준비 중이에요.");
+    }
+  </script>
+</body>
+</html>
