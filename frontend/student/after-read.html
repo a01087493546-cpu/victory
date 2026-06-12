@@ -6,207 +6,278 @@
   <title>문답책 - 읽기 후</title>
 
   <style>
+    /*
+      파일명: after-read.html
+      역할: 문답책 프로젝트 - 읽기 후 활동 화면입니다.
+
+      이 화면에서 하는 일:
+      1. 책의 종류를 고릅니다.
+      2. 책 종류에 맞는 간추리기 방법을 익힙니다.
+      3. 질문을 만들고 답을 적어 간추리기 재료를 만듭니다.
+      4. 내 간추리기를 완성하고 친구들과 공유합니다.
+
+      사용 이미지:
+      - ../assets/images/after-read/after-read-bg.png
+      - ../assets/images/after-read/after-read-lumi-guide.png
+      - ../assets/images/after-read/after-read-icon-story.png
+      - ../assets/images/after-read/after-read-icon-info.png
+      - ../assets/images/after-read/after-read-icon-opinion.png
+    */
+
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Pretendard", "Noto Sans KR", sans-serif;
-      color: #3b2414;
+      overflow: hidden;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #fff1d1;
       background:
-        linear-gradient(rgba(28, 15, 7, 0.72), rgba(28, 15, 7, 0.82)),
-        url("../assets/images/home/home-library-bg.png") center / cover no-repeat fixed;
+        linear-gradient(180deg, rgba(28, 16, 8, 0.28), rgba(20, 10, 4, 0.62)),
+        url("../assets/images/after-read/after-read-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    button,
+    input,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
     }
 
     .after-read-page {
-      min-height: 100vh;
-      display: flex;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-width: 1180px;
+      padding: 22px 34px 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255, 214, 126, 0.20), transparent 33%),
+        radial-gradient(circle at 10% 85%, rgba(255, 192, 86, 0.14), transparent 32%),
+        linear-gradient(90deg, rgba(5, 3, 2, 0.44), rgba(5, 3, 2, 0.08), rgba(5, 3, 2, 0.44));
     }
 
-    .side-nav {
-      width: 230px;
-      padding: 24px 16px;
-      background: rgba(38, 21, 10, 0.88);
-      border-right: 2px solid rgba(217, 177, 90, 0.45);
-      box-shadow: 8px 0 20px rgba(0, 0, 0, 0.28);
+    .after-read-page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 51%, rgba(255, 232, 162, 0.16), transparent 25%),
+        radial-gradient(circle at 83% 19%, rgba(255, 190, 74, 0.12), transparent 26%);
+      pointer-events: none;
     }
 
-    .logo-box {
-      padding: 16px 12px;
-      margin-bottom: 18px;
-      text-align: center;
-      border-radius: 18px;
-      background: linear-gradient(180deg, #6b3f1d, #2c1609);
-      border: 2px solid #d9b15a;
-      color: #fff4cf;
-      font-weight: 900;
-      font-size: 22px;
-      letter-spacing: -0.5px;
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+    .page-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1460px, 100%);
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: 68px 232px 1fr;
+      gap: 15px;
     }
 
-    .step-item {
+    /* 상단 헤더 */
+    .top-header {
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 24px;
+      border: 1px solid rgba(236, 180, 88, 0.56);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 213, 125, 0.18), transparent 42%),
+        linear-gradient(180deg, rgba(69, 38, 16, 0.88), rgba(34, 17, 7, 0.92));
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 245, 211, 0.18);
+    }
+
+    .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 13px 12px;
-      margin-bottom: 10px;
-      border-radius: 16px;
-      background: rgba(255, 248, 234, 0.12);
-      border: 1px solid rgba(217, 177, 90, 0.25);
-      color: rgba(255, 248, 234, 0.78);
-    }
-
-    .step-item.done {
-      background: rgba(91, 123, 48, 0.28);
-    }
-
-    .step-item.active {
-      background: linear-gradient(180deg, #8a5423, #4a290f);
-      border: 2px solid #d9b15a;
-      color: #fff8ea;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
-    }
-
-    .step-number {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff8ea;
-      color: #5a3316;
+      padding-left: 10px;
+      color: #fff2cf;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
       font-weight: 900;
-      font-size: 14px;
-      flex-shrink: 0;
+      letter-spacing: -0.8px;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.42);
     }
 
-    .step-title {
-      font-weight: 800;
-      font-size: 15px;
-      line-height: 1.25;
-    }
-
-    .main-area {
-      flex: 1;
-      padding: 24px;
-      min-width: 0;
-    }
-
-    .top-bar {
-      height: 66px;
-      padding: 0 22px;
-      margin-bottom: 20px;
-      border-radius: 22px;
-      background: linear-gradient(180deg, rgba(81, 46, 20, 0.95), rgba(43, 22, 8, 0.95));
-      border: 2px solid rgba(217, 177, 90, 0.55);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 225, 150, 0.76);
+      background:
+        radial-gradient(circle at 40% 24%, rgba(255, 247, 210, 0.35), transparent 38%),
+        linear-gradient(180deg, rgba(149, 90, 32, 0.96), rgba(60, 32, 13, 0.98));
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+      font-size: 22px;
     }
 
     .page-title {
-      margin: 0;
-      color: #fff4cf;
-      font-size: 25px;
+      text-align: center;
+      color: #fff5d4;
+      font-family: "Noto Serif KR", serif;
+      font-size: 45px;
       font-weight: 900;
-      letter-spacing: -0.7px;
+      letter-spacing: -1.4px;
+      text-shadow:
+        0 2px 0 rgba(86, 48, 17, 0.88),
+        0 8px 20px rgba(0, 0, 0, 0.46),
+        0 0 16px rgba(238, 183, 92, 0.22);
     }
 
-    .top-buttons {
+    .top-actions {
       display: flex;
+      justify-content: flex-end;
       gap: 10px;
+      padding-right: 10px;
     }
 
-    .top-button {
-      border: 0;
-      border-radius: 14px;
-      padding: 10px 14px;
-      color: #fff8ea;
+    .top-pill {
+      height: 42px;
+      padding: 0 17px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 222, 145, 0.58);
+      background: linear-gradient(180deg, rgba(139, 83, 32, 0.95), rgba(66, 35, 12, 0.95));
+      color: #fff4d7;
+      font-size: 14px;
       font-weight: 900;
-      cursor: pointer;
-      background: linear-gradient(180deg, #8a5423, #4a290f);
-      box-shadow: 0 4px 0 #2c1609;
+      box-shadow:
+        0 7px 0 rgba(44, 22, 6, 0.78),
+        inset 0 1px 0 rgba(255, 247, 221, 0.18);
+      transition: 0.18s ease;
     }
 
-    .top-button:hover {
-      transform: translateY(1px);
-      box-shadow: 0 3px 0 #2c1609;
+    .top-pill:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(162, 101, 42, 0.98), rgba(82, 45, 17, 0.98));
     }
 
-    .content-board {
-      padding: 24px;
-      border-radius: 28px;
-      background: rgba(62, 35, 15, 0.72);
-      border: 2px solid rgba(217, 177, 90, 0.45);
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .hero-panel {
+    /* 루미 안내 영역 */
+    .guide-zone {
       display: grid;
-      grid-template-columns: 210px 1fr 270px;
+      grid-template-columns: 260px 1fr 300px;
       gap: 18px;
       align-items: center;
-      margin-bottom: 22px;
+      min-height: 0;
     }
 
-    .hero-left {
+    .lumi-box {
+      height: 100%;
+      position: relative;
       display: flex;
+      align-items: flex-end;
       justify-content: center;
-      align-items: center;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 1px solid rgba(228, 171, 75, 0.38);
+      background:
+        radial-gradient(circle at 50% 38%, rgba(255, 205, 98, 0.16), transparent 48%),
+        linear-gradient(180deg, rgba(35, 23, 13, 0.42), rgba(12, 8, 5, 0.62));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 239, 196, 0.05),
+        0 16px 30px rgba(0, 0, 0, 0.22);
     }
 
     .lumi-character {
-      width: 180px;
-      max-width: 100%;
-      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+      width: 226px;
+      max-height: 228px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter:
+        drop-shadow(0 16px 18px rgba(0, 0, 0, 0.34))
+        drop-shadow(0 0 16px rgba(243, 190, 93, 0.18));
     }
 
-    .speech-bubble {
+    .speech-card {
       position: relative;
-      padding: 20px 22px;
-      border-radius: 24px;
-      background: #fff8ea;
-      border: 3px solid #d9b15a;
-      color: #4a2c13;
-      font-size: 22px;
+      min-height: 122px;
+      padding: 28px 34px;
+      border-radius: 28px;
+      border: 2px solid rgba(221, 162, 68, 0.75);
+      background:
+        radial-gradient(circle at 95% 12%, rgba(255, 232, 180, 0.38), transparent 28%),
+        linear-gradient(180deg, rgba(255, 250, 235, 0.96), rgba(246, 222, 174, 0.94));
+      color: #4a2811;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
       font-weight: 900;
-      line-height: 1.45;
-      box-shadow: 0 8px 0 rgba(87, 49, 18, 0.45);
+      line-height: 1.46;
+      letter-spacing: -0.7px;
+      word-break: keep-all;
+      display: flex;
+      align-items: center;
+      box-shadow:
+        0 16px 26px rgba(0, 0, 0, 0.22),
+        0 7px 0 rgba(105, 59, 19, 0.36),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.34);
     }
 
-    .speech-bubble::before {
+    .speech-card::before {
       content: "";
       position: absolute;
       left: -18px;
-      top: 48%;
-      width: 26px;
-      height: 26px;
-      background: #fff8ea;
-      border-left: 3px solid #d9b15a;
-      border-bottom: 3px solid #d9b15a;
-      transform: rotate(45deg);
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 16px solid transparent;
+      border-bottom: 16px solid transparent;
+      border-right: 18px solid rgba(255, 250, 235, 0.96);
     }
 
-    .after-status-card {
+    .speech-card::after {
+      content: "✦";
+      position: absolute;
+      right: 22px;
+      bottom: 14px;
+      color: rgba(191, 125, 41, 0.45);
+      font-size: 22px;
+    }
+
+    .status-card {
+      height: 100%;
       padding: 18px;
-      border-radius: 22px;
+      border-radius: 26px;
+      border: 1px solid rgba(236, 180, 88, 0.58);
       background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 35%),
-        linear-gradient(180deg, #f7df9f, #d39b43);
-      border: 3px solid #f4d06f;
-      box-shadow: 0 7px 0 rgba(87, 49, 18, 0.55);
+        radial-gradient(circle at 80% 0%, rgba(255, 222, 145, 0.20), transparent 42%),
+        linear-gradient(180deg, rgba(70, 40, 18, 0.86), rgba(33, 18, 8, 0.92));
+      box-shadow:
+        0 16px 30px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 245, 211, 0.13);
     }
 
-    .after-status-card h2 {
-      margin: 0 0 12px;
-      font-size: 20px;
+    .status-title {
+      margin-bottom: 12px;
+      text-align: center;
+      color: #fff1ca;
+      font-family: "Noto Serif KR", serif;
+      font-size: 22px;
       font-weight: 900;
-      color: #4a2c13;
+      letter-spacing: -0.5px;
     }
 
     .status-step-list {
@@ -215,116 +286,179 @@
     }
 
     .status-step {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255, 248, 234, 0.65);
-      border: 1px solid rgba(138, 84, 35, 0.25);
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 229, 158, 0.28);
+      background: rgba(255, 248, 234, 0.84);
+      color: #5a3316;
       font-size: 14px;
       font-weight: 900;
-      color: #5a3316;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
+    }
+
+    .status-step span {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 25px;
+      border-radius: 50%;
+      background: rgba(91, 123, 48, 0.14);
+      color: #6c431f;
+      font-size: 12px;
     }
 
     .status-step.active {
-      background: linear-gradient(180deg, #4f7130, #253f17);
-      color: #fff8ea;
-      border-color: #d9b15a;
+      border-color: rgba(255, 226, 145, 0.82);
+      background: linear-gradient(180deg, #476b2b, #233c15);
+      color: #fff7e6;
+      box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 245, 211, 0.16);
     }
 
-    .after-board {
-      border-radius: 26px;
-      padding: 22px;
+    .status-step.active span {
+      background: rgba(255, 247, 221, 0.92);
+      color: #2f481a;
+    }
+
+    /* 메인 활동 보드 */
+    .activity-board {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: 1fr;
+      padding: 22px 24px;
+      overflow: hidden;
+      border-radius: 32px;
+      border: 2px solid rgba(228, 171, 75, 0.68);
       background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.42), transparent 30%),
-        linear-gradient(180deg, #f4d98d, #bd7a2c);
-      border: 3px solid #e8bd5b;
-      box-shadow: 0 8px 0 rgba(60, 31, 10, 0.55);
+        radial-gradient(circle at 50% 0%, rgba(255, 246, 214, 0.72), transparent 34%),
+        linear-gradient(180deg, rgba(255, 244, 215, 0.96), rgba(238, 189, 99, 0.95));
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.28),
+        0 8px 0 rgba(91, 50, 16, 0.48),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.30);
     }
 
     .screen {
       display: none;
+      min-height: 0;
+      overflow: hidden;
     }
 
     .screen.active {
-      display: block;
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
     }
 
     .screen-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
+      text-align: center;
     }
 
     .screen-title-box h2 {
-      margin: 0 0 6px;
-      font-size: 26px;
-      font-weight: 900;
+      margin-bottom: 7px;
       color: #3f260f;
-      letter-spacing: -0.7px;
+      font-family: "Noto Serif KR", serif;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
     }
 
     .screen-title-box p {
-      margin: 0;
+      color: #64401e;
       font-size: 16px;
-      font-weight: 800;
-      color: #5a3316;
+      font-weight: 850;
       line-height: 1.45;
     }
 
+    .screen-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 2px 4px 6px;
+    }
+
+    .screen-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .screen-scroll::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(124, 75, 30, 0.38);
+    }
+
     .book-type-grid {
+      height: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
+      gap: 20px;
+      align-items: stretch;
     }
 
     .book-type-card {
-      min-height: 300px;
-      padding: 20px;
-      border-radius: 24px;
+      min-height: 230px;
+      padding: 22px 20px 18px;
+      border: 2px solid rgba(218, 163, 78, 0.72);
+      border-radius: 28px;
       background:
-        radial-gradient(circle at top right, rgba(255, 255, 255, 0.7), transparent 34%),
-        linear-gradient(180deg, #fff8ea, #efd28b);
-      border: 3px solid #d9b15a;
-      box-shadow: 0 7px 0 rgba(138, 84, 35, 0.36);
-      cursor: pointer;
+        radial-gradient(circle at 50% 7%, rgba(255, 255, 255, 0.82), transparent 28%),
+        linear-gradient(180deg, rgba(255, 251, 239, 0.96), rgba(247, 222, 166, 0.95));
+      color: #3f260f;
       text-align: center;
-      transition: 0.15s;
+      cursor: pointer;
+      box-shadow:
+        0 9px 0 rgba(137, 81, 28, 0.28),
+        0 12px 22px rgba(75, 42, 12, 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+      transition: 0.18s ease;
     }
 
     .book-type-card:hover {
-      transform: translateY(2px);
+      transform: translateY(-3px);
       border-color: #4f7130;
-      box-shadow: 0 5px 0 rgba(63, 100, 30, 0.48);
+      box-shadow:
+        0 7px 0 rgba(63, 100, 30, 0.38),
+        0 15px 24px rgba(75, 42, 12, 0.18),
+        0 0 18px rgba(255, 216, 135, 0.25);
     }
 
     .book-type-image {
-      width: 128px;
-      height: 128px;
-      margin: 0 auto 14px;
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 13px;
+      display: grid;
+      place-items: center;
       border-radius: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(91, 123, 48, 0.16);
-      border: 2px solid rgba(79, 113, 48, 0.35);
-      font-size: 70px;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(255, 250, 225, 0.74), rgba(235, 208, 145, 0.28));
+      border: 1px solid rgba(126, 90, 34, 0.22);
+    }
+
+    .book-type-image img {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      filter: drop-shadow(0 7px 8px rgba(95, 53, 15, 0.24));
     }
 
     .book-type-card h3 {
-      margin: 0 0 12px;
-      font-size: 25px;
+      margin-bottom: 9px;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
       font-weight: 900;
-      color: #3f260f;
+      letter-spacing: -0.7px;
     }
 
     .book-type-card p {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 800;
-      color: #5a3316;
-      line-height: 1.5;
+      color: #674522;
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.48;
       word-break: keep-all;
     }
 
@@ -334,11 +468,12 @@
     .question-maker-card,
     .summary-card,
     .share-card {
-      padding: 18px;
+      padding: 17px;
       border-radius: 22px;
-      background: rgba(255, 248, 234, 0.74);
-      border: 2px solid rgba(138, 84, 35, 0.35);
-      margin-bottom: 18px;
+      background: rgba(255, 251, 239, 0.82);
+      border: 1.5px solid rgba(138, 84, 35, 0.28);
+      box-shadow: 0 8px 14px rgba(120, 70, 23, 0.10);
+      margin-bottom: 14px;
     }
 
     .method-card h3,
@@ -347,49 +482,43 @@
     .question-maker-card h3,
     .summary-card h3,
     .share-card h3 {
-      margin: 0 0 12px;
-      font-size: 21px;
-      font-weight: 900;
+      margin-bottom: 10px;
       color: #3f260f;
+      font-family: "Noto Serif KR", serif;
+      font-size: 20px;
+      font-weight: 900;
     }
 
-    .method-sentence {
-      padding: 18px;
-      border-radius: 20px;
+    .method-sentence,
+    .quiz-sentence {
+      padding: 16px;
+      border-radius: 18px;
       background: linear-gradient(180deg, #fff8ea, #f1dca2);
-      border: 2px solid #d9b15a;
-      font-size: 22px;
-      font-weight: 900;
+      border: 1.5px solid rgba(217, 177, 90, 0.85);
       color: #4a2c13;
-      line-height: 1.55;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.52;
       text-align: center;
       word-break: keep-all;
     }
 
     .quiz-sentence {
-      margin-bottom: 14px;
-      padding: 18px;
-      border-radius: 20px;
-      background: #fff8ea;
-      border: 2px dashed rgba(138, 84, 35, 0.45);
-      font-size: 20px;
-      font-weight: 900;
-      line-height: 1.7;
-      color: #4a2c13;
-      text-align: center;
+      margin-bottom: 12px;
+      border-style: dashed;
     }
 
     .blank {
       display: inline-flex;
-      min-width: 120px;
-      height: 42px;
+      min-width: 112px;
+      min-height: 38px;
       align-items: center;
       justify-content: center;
-      padding: 0 12px;
+      padding: 0 10px;
       margin: 0 4px;
       border-radius: 12px;
-      background: rgba(173, 205, 214, 0.8);
-      border: 2px solid rgba(79, 113, 48, 0.35);
+      background: rgba(192, 210, 174, 0.70);
+      border: 1.5px solid rgba(79, 113, 48, 0.35);
       color: #254016;
     }
 
@@ -399,22 +528,31 @@
       border-color: #d9b15a;
     }
 
-    .word-bank {
+    .word-bank,
+    .bottom-buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
       justify-content: center;
+      gap: 10px;
+    }
+
+    .word-button,
+    .activity-button {
+      border: 1.5px solid rgba(217, 177, 90, 0.72);
+      border-radius: 999px;
+      padding: 11px 17px;
+      color: #fff8ea;
+      font-size: 15px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #4f7130, #253f17);
+      box-shadow: 0 5px 0 rgba(20, 36, 12, 0.8);
+      transition: 0.16s ease;
     }
 
     .word-button {
-      border: 2px solid #d9b15a;
-      border-radius: 999px;
-      padding: 10px 16px;
       background: #fff8ea;
       color: #5a3316;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 4px 0 rgba(138, 84, 35, 0.3);
+      box-shadow: 0 4px 0 rgba(138, 84, 35, 0.28);
     }
 
     .word-button.used {
@@ -422,60 +560,66 @@
       pointer-events: none;
     }
 
-    .builder-guide {
-      margin: 0 0 16px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(173, 205, 214, 0.55);
-      border: 2px solid rgba(79, 113, 48, 0.22);
-      font-size: 16px;
+    .activity-button:hover,
+    .word-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .activity-button.brown {
+      background: linear-gradient(180deg, #a86b33, #5a2f10);
+      box-shadow: 0 5px 0 rgba(44, 22, 6, 0.82);
+    }
+
+    .builder-guide,
+    .practice-note,
+    .good-question-feedback {
+      margin-bottom: 14px;
+      padding: 13px 15px;
+      border-radius: 16px;
+      background: rgba(91, 123, 48, 0.14);
+      border: 1.5px solid rgba(79, 113, 48, 0.22);
+      color: #3f260f;
+      font-size: 15px;
       font-weight: 850;
       line-height: 1.5;
-      color: #3b2414;
     }
 
     .builder-column-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-bottom: 14px;
     }
 
     .builder-column {
-      padding: 14px;
+      padding: 12px;
       border-radius: 18px;
       background: linear-gradient(180deg, #fff8ea, #f1dca2);
-      border: 2px solid rgba(217, 177, 90, 0.9);
+      border: 1.5px solid rgba(217, 177, 90, 0.8);
     }
 
     .builder-column h4 {
-      margin: 0 0 10px;
-      font-size: 17px;
-      font-weight: 900;
+      margin-bottom: 9px;
       color: #4a2c13;
       text-align: center;
+      font-size: 16px;
+      font-weight: 900;
     }
 
     .builder-word-list {
       display: grid;
-      gap: 8px;
+      gap: 7px;
     }
 
     .builder-word-button {
-      border: 2px solid rgba(138, 84, 35, 0.35);
-      border-radius: 14px;
-      padding: 9px 8px;
-      background: rgba(255, 255, 255, 0.65);
+      border: 1.5px solid rgba(138, 84, 35, 0.28);
+      border-radius: 13px;
+      padding: 8px 7px;
+      background: rgba(255, 255, 255, 0.68);
       color: #4a2c13;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 3px 0 rgba(138, 84, 35, 0.22);
-    }
-
-    .builder-word-button:hover {
-      transform: translateY(1px);
-      box-shadow: 0 2px 0 rgba(138, 84, 35, 0.22);
+      box-shadow: 0 3px 0 rgba(138, 84, 35, 0.18);
     }
 
     .builder-word-button.selected {
@@ -485,169 +629,216 @@
     }
 
     .preview-box {
-      padding: 18px;
-      margin-bottom: 16px;
-      border-radius: 20px;
+      padding: 15px;
+      margin-bottom: 13px;
+      border-radius: 18px;
       background: #fff8ea;
-      border: 3px solid #d9b15a;
-      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
+      border: 2px solid #d9b15a;
     }
 
     .preview-box span {
       display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 900;
+      margin-bottom: 7px;
       color: #6c431f;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .preview-question {
-      min-height: 36px;
-      font-size: 22px;
-      font-weight: 900;
+      min-height: 34px;
       color: #3f260f;
-      line-height: 1.45;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.4;
       word-break: keep-all;
     }
 
-    .practice-note {
-      margin: 0;
-      padding: 13px 15px;
-      border-radius: 16px;
-      background: rgba(91, 123, 48, 0.16);
-      border: 2px solid rgba(79, 113, 48, 0.25);
+    .good-question-check-card {
+      margin-top: 14px;
+      padding: 15px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fff8ea, #f1dca2);
+      border: 1.5px solid #d9b15a;
+    }
+
+    .good-question-check-card h4 {
+      margin-bottom: 8px;
       color: #3f260f;
-      font-size: 15px;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .good-question-check-card p {
+      margin-bottom: 10px;
+      color: #5a3316;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .good-question-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .good-question-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 11px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(138, 84, 35, 0.22);
+      color: #4a2c13;
+      font-size: 14px;
       font-weight: 850;
-      line-height: 1.5;
+      line-height: 1.42;
+    }
+
+    .good-question-item input {
+      margin-top: 2px;
+      width: 17px;
+      height: 17px;
+      accent-color: #4f7130;
+      flex-shrink: 0;
+    }
+
+    .good-question-feedback {
+      display: none;
+      margin: 11px 0 0;
+    }
+
+    .good-question-feedback.show {
+      display: block;
     }
 
     .question-answer-list {
       display: grid;
-      gap: 14px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
     }
 
     .qa-card {
-      padding: 15px;
-      border-radius: 18px;
+      padding: 13px;
+      border-radius: 17px;
       background: linear-gradient(180deg, #fff8ea, #f1dca2);
-      border: 2px solid rgba(217, 177, 90, 0.9);
+      border: 1.5px solid rgba(217, 177, 90, 0.9);
     }
 
     .qa-card-title {
-      margin: 0 0 10px;
-      font-size: 17px;
-      font-weight: 900;
+      margin-bottom: 8px;
       color: #4a2c13;
+      font-size: 16px;
+      font-weight: 900;
     }
 
     .input-label {
       display: block;
-      margin-bottom: 6px;
-      font-size: 14px;
-      font-weight: 900;
+      margin-bottom: 5px;
       color: #6c431f;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .question-input,
     .answer-input,
     .summary-textarea {
       width: 100%;
-      border: 2px solid rgba(138, 84, 35, 0.35);
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.72);
+      border: 1.5px solid rgba(138, 84, 35, 0.32);
+      border-radius: 14px;
+      padding: 11px 12px;
+      background: rgba(255, 255, 255, 0.76);
       color: #3b2414;
-      font-family: inherit;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       outline: none;
       resize: vertical;
     }
 
     .question-input {
-      min-height: 48px;
+      min-height: 44px;
+      margin-bottom: 8px;
     }
 
     .answer-input {
-      min-height: 72px;
+      min-height: 86px;
     }
 
     .summary-textarea {
-      min-height: 170px;
-      font-size: 16px;
-      line-height: 1.55;
+      min-height: 136px;
+      font-size: 15px;
+      line-height: 1.52;
     }
 
     .question-input:focus,
     .answer-input:focus,
     .summary-textarea:focus {
       border-color: #4f7130;
-      box-shadow: 0 0 0 3px rgba(79, 113, 48, 0.18);
+      box-shadow: 0 0 0 3px rgba(79, 113, 48, 0.16);
     }
 
     .connect-box {
       display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .connect-item {
-      padding: 14px;
-      border-radius: 18px;
+      padding: 12px;
+      border-radius: 16px;
       background: rgba(255, 248, 234, 0.8);
-      border: 2px solid rgba(217, 177, 90, 0.85);
+      border: 1.5px solid rgba(217, 177, 90, 0.8);
     }
 
     .connect-item strong {
       display: block;
       margin-bottom: 5px;
       color: #4f7130;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 900;
     }
 
     .connect-item p {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.45;
-      font-weight: 800;
       color: #4a2c13;
+      font-size: 13px;
+      line-height: 1.42;
+      font-weight: 800;
     }
 
     .arrow-text {
+      margin: 8px 0 11px;
       text-align: center;
-      margin: 10px 0 14px;
-      font-size: 18px;
-      font-weight: 900;
       color: #4f7130;
+      font-size: 16px;
+      font-weight: 900;
     }
 
     .share-list {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
     }
 
     .share-item {
-      padding: 16px;
-      border-radius: 20px;
+      padding: 14px;
+      border-radius: 18px;
       background: linear-gradient(180deg, #fff8ea, #f0d99a);
-      border: 2px solid #d9b15a;
-      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
+      border: 1.5px solid #d9b15a;
+      box-shadow: 0 5px 0 rgba(138, 84, 35, 0.22);
     }
 
     .share-item-top {
       display: flex;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
     }
 
     .share-name {
-      font-size: 17px;
-      font-weight: 900;
       color: #3f260f;
+      font-size: 16px;
+      font-weight: 900;
     }
 
     .share-type {
@@ -661,323 +852,126 @@
     }
 
     .share-item p {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.5;
-      font-weight: 750;
       color: #4a2c13;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 750;
       white-space: pre-line;
     }
 
-    .bottom-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    .activity-button {
-      border: 0;
-      border-radius: 16px;
-      padding: 13px 18px;
-      color: #fff8ea;
+    .empty-message {
+      padding: 22px 18px;
+      border-radius: 18px;
+      background: rgba(255, 248, 234, 0.75);
+      border: 2px dashed rgba(138, 84, 35, 0.42);
+      text-align: center;
+      color: #5a3316;
       font-size: 15px;
       font-weight: 900;
-      cursor: pointer;
-      background: linear-gradient(180deg, #4f7130, #253f17);
-      box-shadow: 0 5px 0 #14240c;
-    }
-
-    .activity-button:hover {
-      transform: translateY(1px);
-      box-shadow: 0 4px 0 #14240c;
-    }
-
-    .activity-button.brown {
-      background: linear-gradient(180deg, #8a5423, #4a290f);
-      box-shadow: 0 5px 0 #2c1609;
-    }
-
-    .empty-message {
-      padding: 24px 18px;
-      border-radius: 20px;
-      background: rgba(255, 248, 234, 0.75);
-      border: 2px dashed rgba(138, 84, 35, 0.45);
-      text-align: center;
-      font-size: 16px;
-      font-weight: 900;
-      color: #5a3316;
     }
 
     @media (max-width: 1180px) {
-      .hero-panel {
-        grid-template-columns: 170px 1fr;
+      body {
+        overflow: auto;
       }
 
-      .after-status-card {
-        grid-column: 1 / -1;
-      }
-
-      .book-type-grid,
-      .share-list {
-        grid-template-columns: 1fr;
-      }
-
-      .builder-column-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 900px) {
       .after-read-page {
-        flex-direction: column;
-      }
-
-      .side-nav {
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
-        padding: 12px;
-      }
-
-      .logo-box {
-        grid-column: 1 / -1;
-        margin-bottom: 4px;
-      }
-
-      .step-item {
-        margin-bottom: 0;
-        flex-direction: column;
-        text-align: center;
-        gap: 6px;
-      }
-
-      .top-bar {
-        height: auto;
-        padding: 16px;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .hero-panel {
-        grid-template-columns: 1fr;
-      }
-
-      .speech-bubble::before {
-        display: none;
+        overflow: visible;
       }
     }
-
-    @media (max-width: 560px) {
-      .main-area {
-        padding: 14px;
-      }
-
-      .content-board,
-      .after-board {
-        padding: 16px;
-      }
-
-      .side-nav {
-        grid-template-columns: 1fr;
-      }
-
-      .builder-column-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .bottom-buttons,
-      .top-buttons {
-        width: 100%;
-      }
-
-      .activity-button,
-      .top-button {
-        flex: 1;
-      }
-    }
-    .good-question-check-card {
-  margin-top: 16px;
-  padding: 18px;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 35%),
-    linear-gradient(180deg, #fff8ea, #f1dca2);
-  border: 2px solid #d9b15a;
-  box-shadow: 0 5px 0 rgba(138, 84, 35, 0.25);
-}
-
-.good-question-check-card h4 {
-  margin: 0 0 10px;
-  font-size: 18px;
-  font-weight: 900;
-  color: #3f260f;
-}
-
-.good-question-check-card p {
-  margin: 0 0 12px;
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 800;
-  color: #5a3316;
-}
-
-.good-question-list {
-  display: grid;
-  gap: 9px;
-}
-
-.good-question-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  padding: 11px 12px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(138, 84, 35, 0.25);
-  color: #4a2c13;
-  font-size: 15px;
-  font-weight: 850;
-  line-height: 1.45;
-}
-
-.good-question-item input {
-  margin-top: 3px;
-  width: 18px;
-  height: 18px;
-  accent-color: #4f7130;
-  flex-shrink: 0;
-}
-
-.good-question-feedback {
-  display: none;
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 15px;
-  background: rgba(91, 123, 48, 0.16);
-  border: 2px solid rgba(79, 113, 48, 0.25);
-  color: #3f260f;
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1.45;
-}
-
-.good-question-feedback.show {
-  display: block;
-}
   </style>
 </head>
 
 <body>
   <div class="after-read-page">
-    <aside class="side-nav">
-      <div class="logo-box">문답책</div>
+    <div class="page-shell">
+      <header class="top-header">
+        <div class="brand">
+          <div class="brand-mark">📘</div>
+          <span>문답책</span>
+        </div>
 
-      <div class="step-item done">
-        <div class="step-number">01</div>
-        <div class="step-title">책 고르기</div>
-      </div>
-
-      <div class="step-item done">
-        <div class="step-number">02</div>
-        <div class="step-title">읽기 전</div>
-      </div>
-
-      <div class="step-item done">
-        <div class="step-number">03</div>
-        <div class="step-title">읽기 중</div>
-      </div>
-
-      <div class="step-item done">
-        <div class="step-number">04</div>
-        <div class="step-title">우리반<br />책읽기</div>
-      </div>
-
-      <div class="step-item active">
-        <div class="step-number">05</div>
-        <div class="step-title">읽기 후</div>
-      </div>
-    </aside>
-
-    <main class="main-area">
-      <header class="top-bar">
         <h1 class="page-title">읽기 후</h1>
 
-        <div class="top-buttons">
-          <button class="top-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
-          <button class="top-button" type="button" onclick="goHome()">홈으로</button>
-          <button class="top-button" type="button" onclick="goPower()">나의 힘</button>
+        <div class="top-actions">
+          <button class="top-pill" type="button" onclick="goClassReading()">우리반 책읽기</button>
+          <button class="top-pill" type="button" onclick="goHome()">홈으로</button>
         </div>
       </header>
 
-      <section class="content-board">
-        <section class="hero-panel">
-          <div class="hero-left">
-            <img
-              class="lumi-character"
-              src="../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
-              alt="루미 캐릭터"
-            />
+      <section class="guide-zone">
+        <div class="lumi-box">
+          <img
+            class="lumi-character"
+            src="../assets/images/after-read/after-read-lumi-guide.png"
+            alt="루미 캐릭터"
+          />
+        </div>
+
+        <div class="speech-card" id="lumiMessage">
+          책마다 간추리는 방법이 달라!<br />
+          먼저 내가 읽은 책의 종류를 골라 보자.
+        </div>
+
+        <aside class="status-card">
+          <h2 class="status-title">읽기 후 순서</h2>
+
+          <div class="status-step-list">
+            <div class="status-step active" id="status1"><span>1</span> 책 유형 고르기</div>
+            <div class="status-step" id="status2"><span>2</span> 간추리기 비법</div>
+            <div class="status-step" id="status3"><span>3</span> 질문으로 간추리기</div>
+            <div class="status-step" id="status4"><span>4</span> 간추리기 공유</div>
+          </div>
+        </aside>
+      </section>
+
+      <main class="activity-board">
+        <section class="screen active" id="screenType">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2>책의 종류를 골라요</h2>
+              <p>내가 읽은 책에 어울리는 간추리기 방법을 선택해요.</p>
+            </div>
           </div>
 
-          <div class="speech-bubble" id="lumiMessage">
-            책마다 간추리는 방법이 달라!<br />
-            먼저 내가 읽은 책의 종류를 골라 보자.
-          </div>
-
-          <aside class="after-status-card">
-            <h2>읽기 후 순서</h2>
-
-            <div class="status-step-list">
-              <div class="status-step active" id="status1">1. 책 유형 고르기</div>
-              <div class="status-step" id="status2">2. 간추리기 비법</div>
-              <div class="status-step" id="status3">3. 질문으로 간추리기</div>
-              <div class="status-step" id="status4">4. 간추리기 공유</div>
-            </div>
-          </aside>
-        </section>
-
-        <section class="after-board">
-          <section class="screen active" id="screenType">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2>책의 종류를 골라요</h2>
-                <p>내가 읽은 책에 어울리는 간추리기 방법을 선택해요.</p>
-              </div>
-            </div>
-
+          <div class="screen-scroll">
             <div class="book-type-grid">
               <article class="book-type-card" onclick="selectBookType('story')">
-                <div class="book-type-image">📖</div>
+                <div class="book-type-image">
+                  <img src="../assets/images/after-read/after-read-icon-story.png" alt="이야기 책 아이콘" />
+                </div>
                 <h3>이야기 책</h3>
                 <p>인물에게 일어난 일을<br />차례대로 간추리는 책</p>
               </article>
 
               <article class="book-type-card" onclick="selectBookType('info')">
-                <div class="book-type-image">🔍</div>
+                <div class="book-type-image">
+                  <img src="../assets/images/after-read/after-read-icon-info.png" alt="정보를 담은 책 아이콘" />
+                </div>
                 <h3>정보를 담은 책</h3>
                 <p>문단이나 장의 중심 내용을<br />골라 간추리는 책</p>
               </article>
 
               <article class="book-type-card" onclick="selectBookType('opinion')">
-                <div class="book-type-image">📣</div>
+                <div class="book-type-image">
+                  <img src="../assets/images/after-read/after-read-icon-opinion.png" alt="주장을 담은 책 아이콘" />
+                </div>
                 <h3>주장을 담은 책</h3>
                 <p>주장과 이유를 찾아<br />생각을 정리하는 책</p>
               </article>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section class="screen" id="screenMethod">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2 id="methodTitle">간추리기 비법</h2>
-                <p>먼저 이 책을 어떻게 간추리면 좋은지 알아봐요.</p>
-              </div>
+        <section class="screen" id="screenMethod">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2 id="methodTitle">간추리기 비법</h2>
+              <p>먼저 이 책을 어떻게 간추리면 좋은지 알아봐요.</p>
             </div>
+          </div>
 
+          <div class="screen-scroll">
             <div class="method-card">
               <h3>간추리기 비법 문장</h3>
               <div class="method-sentence" id="methodSentence"></div>
@@ -988,21 +982,23 @@
               <div class="quiz-sentence" id="quizSentence"></div>
               <div class="word-bank" id="wordBank"></div>
             </div>
+          </div>
 
-            <div class="bottom-buttons">
-              <button class="activity-button brown" type="button" onclick="goScreen(1)">다시 고르기</button>
-              <button class="activity-button" type="button" onclick="checkQuizAndNext()">다음으로</button>
+          <div class="bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="goScreen(1)">다시 고르기</button>
+            <button class="activity-button" type="button" onclick="checkQuizAndNext()">다음으로</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screenQuestionBuilder">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2>질문 만들기 연습</h2>
+              <p>질문 재료를 눌러 간추리기 질문이 어떻게 만들어지는지 연습해요.</p>
             </div>
-          </section>
+          </div>
 
-          <section class="screen" id="screenQuestionBuilder">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2>질문 만들기 연습</h2>
-                <p>질문 재료를 눌러 간추리기 질문이 어떻게 만들어지는지 연습해요.</p>
-              </div>
-            </div>
-
+          <div class="screen-scroll">
             <div class="question-builder-card">
               <h3 id="builderTitle">간추리기 질문 재료</h3>
               <p class="builder-guide" id="builderGuide"></p>
@@ -1020,37 +1016,33 @@
                 이 질문은 연습용이에요. 다음 화면에서 방금 연습한 방법을 떠올리며
                 내가 읽은 책에 맞는 질문을 직접 써 봐요.
               </p>
+
               <div class="good-question-check-card">
-  <h4>좋은 간추리기 질문인지 확인해요</h4>
-  <p>
-    연습 질문을 보고, 간추리기에 도움이 되는 질문인지 체크해 봐요.
-  </p>
-
-  <div class="good-question-list" id="goodQuestionList"></div>
-
-  <div class="good-question-feedback" id="goodQuestionFeedback">
-    좋아요! 이 기준을 떠올리며 내 책에 맞는 질문을 직접 써 봐요.
-  </div>
-</div>
-            </div>
-
-            <div class="bottom-buttons">
-              <button class="activity-button brown" type="button" onclick="resetBuilderSelection()">다시 고르기</button>
-              <button class="activity-button" type="button" onclick="goScreen(4)">직접 질문 쓰러 가기</button>
-            </div>
-          </section>
-
-          <section class="screen" id="screenQuestion">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2>내 책에 맞는 질문을 직접 써요</h2>
-                <p>
-                  방금 연습한 방법을 떠올리며 내가 읽은 책의 중요한 내용을 묻는 질문을 써 봐요.
-                  질문에 답하면 간추리기의 재료가 돼요.
-                </p>
+                <h4>좋은 간추리기 질문인지 확인해요</h4>
+                <p>연습 질문을 보고, 간추리기에 도움이 되는 질문인지 체크해 봐요.</p>
+                <div class="good-question-list" id="goodQuestionList"></div>
+                <div class="good-question-feedback" id="goodQuestionFeedback">
+                  좋아요! 이 기준을 떠올리며 내 책에 맞는 질문을 직접 써 봐요.
+                </div>
               </div>
             </div>
+          </div>
 
+          <div class="bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="resetBuilderSelection()">다시 고르기</button>
+            <button class="activity-button" type="button" onclick="goScreen(4)">직접 질문 쓰러 가기</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screenQuestion">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2>내 책에 맞는 질문을 직접 써요</h2>
+              <p>내가 읽은 책의 중요한 내용을 묻는 질문을 쓰고 답해 봐요.</p>
+            </div>
+          </div>
+
+          <div class="screen-scroll">
             <div class="question-maker-card">
               <h3 id="directQuestionTitle">직접 질문 쓰기</h3>
 
@@ -1080,21 +1072,23 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="bottom-buttons">
-              <button class="activity-button brown" type="button" onclick="goScreen(3)">이전으로</button>
-              <button class="activity-button" type="button" onclick="makeSummaryGuide()">답을 모아 간추리기</button>
+          <div class="bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="goScreen(3)">이전으로</button>
+            <button class="activity-button" type="button" onclick="makeSummaryGuide()">답을 모아 간추리기</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screenSummary">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2>내 간추리기 완성</h2>
+              <p>질문에 답한 내용을 모아 책의 핵심을 정리해요.</p>
             </div>
-          </section>
+          </div>
 
-          <section class="screen" id="screenSummary">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2>내 간추리기 완성</h2>
-                <p>질문에 답한 내용을 모아 책의 핵심을 정리해요.</p>
-              </div>
-            </div>
-
+          <div class="screen-scroll">
             <div class="summary-card">
               <h3>질문에서 간추리기로 이어져요</h3>
               <div class="connect-box" id="connectBox"></div>
@@ -1103,34 +1097,36 @@
               <label class="input-label">내가 쓴 간추리기</label>
               <textarea class="summary-textarea" id="summaryText"></textarea>
             </div>
+          </div>
 
-            <div class="bottom-buttons">
-              <button class="activity-button brown" type="button" onclick="goScreen(4)">이전으로</button>
-              <button class="activity-button" type="button" onclick="saveSummary()">저장하고 공유하기</button>
+          <div class="bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="goScreen(4)">이전으로</button>
+            <button class="activity-button" type="button" onclick="saveSummary()">저장하고 공유하기</button>
+          </div>
+        </section>
+
+        <section class="screen" id="screenShare">
+          <div class="screen-title-row">
+            <div class="screen-title-box">
+              <h2>우리 반 간추리기 모음</h2>
+              <p>내가 간추린 내용을 친구들과 함께 볼 수 있어요.</p>
             </div>
-          </section>
+          </div>
 
-          <section class="screen" id="screenShare">
-            <div class="screen-title-row">
-              <div class="screen-title-box">
-                <h2>우리 반 간추리기 모음</h2>
-                <p>내가 간추린 내용을 친구들과 함께 볼 수 있어요.</p>
-              </div>
-            </div>
-
+          <div class="screen-scroll">
             <div class="share-card">
               <h3>친구들이 간추린 내용</h3>
               <div class="share-list" id="shareList"></div>
             </div>
+          </div>
 
-            <div class="bottom-buttons">
-              <button class="activity-button brown" type="button" onclick="goScreen(1)">처음으로</button>
-              <button class="activity-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
-            </div>
-          </section>
+          <div class="bottom-buttons">
+            <button class="activity-button brown" type="button" onclick="goScreen(1)">처음으로</button>
+            <button class="activity-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+          </div>
         </section>
-      </section>
-    </main>
+      </main>
+    </div>
   </div>
 
   <script>
@@ -1146,10 +1142,10 @@
         words: ["시간의 흐름", "장소의 변화", "등장인물", "문단", "글쓴이의 주장"],
         builderGuide: "이야기 책은 언제, 어디서, 누가, 무엇을 했는지 떠올리면 간추리기 질문을 만들기 쉬워요.",
         checkList: [
-  "이 질문은 이야기의 중요한 일을 떠올리게 하나요?",
-  "인물이나 사건, 변화 중 하나를 알 수 있나요?",
-  "답을 쓰면 처음·가운데·끝 간추리기에 넣을 수 있나요?"
-],
+          "이 질문은 이야기의 중요한 일을 떠올리게 하나요?",
+          "인물이나 사건, 변화 중 하나를 알 수 있나요?",
+          "답을 쓰면 처음·가운데·끝 간추리기에 넣을 수 있나요?"
+        ],
         builderColumns: [
           {
             id: "when",
@@ -1190,10 +1186,10 @@
         words: ["문단", "각 장", "중심 내용", "등장인물", "글쓴이의 주장"],
         builderGuide: "정보를 담은 책은 문단이나 각 장에서 가장 중요한 내용이 무엇인지 묻는 질문이 좋아요.",
         checkList: [
-  "이 질문은 문단이나 각 장의 중심 내용을 묻나요?",
-  "중요한 정보를 찾게 하나요?",
-  "답을 쓰면 한 문장으로 정리할 수 있나요?"
-],
+          "이 질문은 문단이나 각 장의 중심 내용을 묻나요?",
+          "중요한 정보를 찾게 하나요?",
+          "답을 쓰면 한 문장으로 정리할 수 있나요?"
+        ],
         builderColumns: [
           {
             id: "part",
@@ -1234,10 +1230,10 @@
         words: ["글쓴이의 주장", "이유", "근거", "시간의 흐름", "등장인물"],
         builderGuide: "주장을 담은 책은 글쓴이가 무엇을 주장하는지, 왜 그렇게 생각하는지 묻는 질문이 좋아요.",
         checkList: [
-  "이 질문은 글쓴이의 주장이나 이유를 묻나요?",
-  "글쓴이의 생각을 찾게 하나요?",
-  "답을 쓰면 주장과 이유를 간추릴 수 있나요?"
-],
+          "이 질문은 글쓴이의 주장이나 이유를 묻나요?",
+          "글쓴이의 생각을 찾게 하나요?",
+          "답을 쓰면 주장과 이유를 간추릴 수 있나요?"
+        ],
         builderColumns: [
           {
             id: "claimSubject",
@@ -1367,52 +1363,54 @@
       renderQuestionBuilder();
       goScreen(3);
     }
-function renderGoodQuestionCheck() {
-  const data = bookTypeData[selectedBookType];
-  const goodQuestionList = document.getElementById("goodQuestionList");
-  const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
 
-  if (!data || !goodQuestionList) {
-    return;
-  }
+    function renderGoodQuestionCheck() {
+      const data = bookTypeData[selectedBookType];
+      const goodQuestionList = document.getElementById("goodQuestionList");
+      const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
 
-  goodQuestionList.innerHTML = "";
+      if (!data || !goodQuestionList) {
+        return;
+      }
 
-  if (goodQuestionFeedback) {
-    goodQuestionFeedback.classList.remove("show");
-  }
+      goodQuestionList.innerHTML = "";
 
-  data.checkList.forEach(function(text, index) {
-    const label = document.createElement("label");
-    label.className = "good-question-item";
+      if (goodQuestionFeedback) {
+        goodQuestionFeedback.classList.remove("show");
+      }
 
-    label.innerHTML = `
-      <input type="checkbox" class="good-question-checkbox" onchange="checkGoodQuestionDone()" />
-      <span>${escapeHtml(text)}</span>
-    `;
+      data.checkList.forEach(function(text) {
+        const label = document.createElement("label");
+        label.className = "good-question-item";
 
-    goodQuestionList.appendChild(label);
-  });
-}
+        label.innerHTML = `
+          <input type="checkbox" class="good-question-checkbox" onchange="checkGoodQuestionDone()" />
+          <span>${escapeHtml(text)}</span>
+        `;
 
-function checkGoodQuestionDone() {
-  const checkboxes = document.querySelectorAll(".good-question-checkbox");
-  const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+        goodQuestionList.appendChild(label);
+      });
+    }
 
-  if (!checkboxes.length || !goodQuestionFeedback) {
-    return;
-  }
+    function checkGoodQuestionDone() {
+      const checkboxes = document.querySelectorAll(".good-question-checkbox");
+      const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
 
-  const allChecked = Array.from(checkboxes).every(function(checkbox) {
-    return checkbox.checked;
-  });
+      if (!checkboxes.length || !goodQuestionFeedback) {
+        return;
+      }
 
-  if (allChecked) {
-    goodQuestionFeedback.classList.add("show");
-  } else {
-    goodQuestionFeedback.classList.remove("show");
-  }
-}
+      const allChecked = Array.from(checkboxes).every(function(checkbox) {
+        return checkbox.checked;
+      });
+
+      if (allChecked) {
+        goodQuestionFeedback.classList.add("show");
+      } else {
+        goodQuestionFeedback.classList.remove("show");
+      }
+    }
+
     function renderQuestionBuilder() {
       const data = bookTypeData[selectedBookType];
       const builderTitle = document.getElementById("builderTitle");
@@ -1752,10 +1750,6 @@ function checkGoodQuestionDone() {
 
     function goHome() {
       location.href = "./home.html";
-    }
-
-    function goPower() {
-      alert("나의 힘 화면은 아직 준비 중이에요.");
     }
 
     renderShareList();

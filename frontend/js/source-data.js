@@ -497,5 +497,75 @@ var sourceData = [
   createdDate: "2026-06-04",
   modified: "투명 배경 처리 및 파일명 수정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},{
+title: "우리반 책읽기 배경 이미지",
+category: "이미지",
+fileName: "class-reading-bg.png",
+description: "우리반 책읽기 메인 화면의 어두운 판타지 도서관 분위기 배경 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 배경",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "우리반 책읽기 루미 이미지",
+category: "이미지",
+fileName: "class-reading-lumi.png",
+description: "우리반 책읽기 메인 화면에서 안내 역할을 하는 루미 캐릭터 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 안내 영역",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-create.png",
+description: "우리반 책읽기 메인 화면의 질문 만들기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 만들기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 나누기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-share.png",
+description: "우리반 책읽기 메인 화면의 질문 나누기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 나누기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 모음 보기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-collection.png",
+description: "우리반 책읽기 메인 화면의 질문 모음 보기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 모음 보기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 밝은 도서관 배경 이미지",
+category: "이미지",
+fileName: "class-reading-question-bg.png",
+description: "질문 만들기, 질문 나누기, 나의 질문 모음 화면에 사용되는 밝은 판타지 도서관 배경 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 - 질문 만들기 / 질문 나누기 / 나의 질문 모음 화면 배경",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 피드백 루미 이미지",
+category: "이미지",
+fileName: "class-reading-lumi-feedback.png",
+description: "질문 만들기 화면에서 학생 질문에 대한 피드백을 안내하는 루미 캐릭터 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 - 질문 만들기 피드백 영역 / 질문 나누기 안내 영역",
+modified: "배경 투명 처리 및 크기 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 }
+
 ];

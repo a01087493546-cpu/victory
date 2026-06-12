@@ -706,7 +706,7 @@
             </p>
           </div>
 
-          <button class="step-button" id="classButton" disabled onclick="completeStep('classRead')">
+          <button class="step-button" id="classButton" disabled onclick="goClassReadingPage()">
             잠김
           </button>
         </article>
@@ -732,8 +732,10 @@
             </p>
           </div>
 
-          <button class="step-button" id="afterButton" disabled onclick="completeStep('after')">
-            잠김
+         <button class="step-button" id="afterButton" disabled onclick="goAfterReadingPage()">
+  잠김
+</button>
+      
           </button>
         </article>
 
@@ -776,6 +778,21 @@ if (sessionStorage.getItem("beforeReadingShareCompleted_" + studentId) === "true
   progress.before = true;
   sessionStorage.setItem(progressKey, JSON.stringify(progress));
 }
+// 읽기 중 질문 총 복습을 완료했다면 우리반 책읽기 단계를 열어 줍니다.
+if (sessionStorage.getItem("duringReadingReviewDone_" + studentId) === "true") {
+  progress.book = true;
+  progress.before = true;
+  progress.during = true;
+  sessionStorage.setItem(progressKey, JSON.stringify(progress));
+}
+// 우리반 책읽기를 완료했다면 읽기 후 단계를 열어 줍니다.
+if (sessionStorage.getItem("classReadingCompleted_" + studentId) === "true") {
+  progress.book = true;
+  progress.before = true;
+  progress.during = true;
+  progress.classRead = true;
+  sessionStorage.setItem(progressKey, JSON.stringify(progress));
+}
     // 화면이 열리면 현재 진행 상태를 반영합니다.
     updatePracticeScreen();
 
@@ -792,9 +809,17 @@ if (sessionStorage.getItem("beforeReadingShareCompleted_" + studentId) === "true
 function goDuringReadingIntro() {
   window.location.href = "./during-reading-intro.html";
 }
+// 우리반 책읽기 화면으로 이동합니다.
+function goClassReadingPage() {
+  window.location.href = "./class-reading.html";
+}
 // 읽기 전 인트로 화면으로 이동합니다.
 function goBeforeIntroPage() {
   window.location.href = "./read-before-intro.html";
+}
+// 읽기 후 활동 화면으로 이동합니다.
+function goAfterReadingPage() {
+  window.location.href = "./after-read.html";
 }
     // 단계를 완료 처리합니다.
     function completeStep(stepName) {

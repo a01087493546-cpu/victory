@@ -1128,9 +1128,28 @@
     }
 
     // 연습하기 화면으로 돌아갑니다.
-    function goPracticePage() {
-      location.href = "./practice.html";
-    }
+function goPracticePage() {
+  // 책 고르기 단계를 완료 처리합니다.
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  const practiceProgressKey = "practiceProgress_" + studentId;
+
+  let practiceProgress = JSON.parse(sessionStorage.getItem(practiceProgressKey)) || {
+    book: false,
+    before: false,
+    during: false,
+    classRead: false,
+    after: false
+  };
+
+  // 책 고르기를 완료한 것으로 저장합니다.
+  practiceProgress.book = true;
+
+  // 저장한 진행 상태를 sessionStorage에 다시 넣습니다.
+  sessionStorage.setItem(practiceProgressKey, JSON.stringify(practiceProgress));
+
+  // 연습하기 화면으로 이동합니다.
+  location.href = "./practice.html";
+}
   </script>
 </body>
 </html>
