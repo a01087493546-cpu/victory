@@ -350,7 +350,11 @@ const DungeonUI = (() => {
       playFighterMotion('enemy', 'enemy-lunge', 480);
       setTimeout(() => {
         if (!s.isRunning) return;
-        const result = BattleEngine.enemyNormalAttack(dungeon.enemy.normalAtk, s.player.isDefending);
+        const result = BattleEngine.enemyNormalAttack(
+          dungeon.enemy.normalAtk,
+          s.player.isDefending,
+          s.player.defenseMode
+        );
         GameState.damagePlayer(result.damage);
         if (result.blocked) {
           showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
@@ -376,7 +380,11 @@ const DungeonUI = (() => {
         playFighterMotion('enemy','enemy-lunge',520);
         setTimeout(() => {
           if (!s.isRunning) return;
-          const result = BattleEngine.enemyHeavyAttack(dungeon.enemy.heavyAtk, s.player.isDefending);
+          const result = BattleEngine.enemyHeavyAttack(
+            dungeon.enemy.heavyAtk,
+            s.player.isDefending,
+            s.player.defenseMode
+          );
           GameState.damagePlayer(result.damage);
           if (result.blocked) {
             showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
@@ -418,7 +426,8 @@ const DungeonUI = (() => {
   function _doDefendSkill(skillName, s) {
     const cd = SKILL_COOLDOWNS[skillName] || 0;
     if (cd > 0) GameState.setCooldown(skillName, cd);
-    GameState.setDefending(true);
+    // 방어와 철벽을 구분해서 저장
+    GameState.setDefending(true, skillName === 'cheolbyeok' ? 'ironWall' : 'guard');
     updateButtons();
     if (skillName === 'cheolbyeok') {
       showImpact('hero','shield'); showImpact('hero','shield');
@@ -438,8 +447,12 @@ const DungeonUI = (() => {
     if (skillName === 'hwayeom') { _doHwayeom(s); return; }
     if (skillName === 'bulkkot') { _doBulkkot(s); return; }
 
-    setAnim('hero-spr','attack');
-    playFighterMotion('hero','hero-lunge',470);
+    // 일격은 기존처럼 한 번만 공격 모션을 보여줌
+    // 연속 베기는 각 타격 순간마다 따로 모션을 보여줄 예정
+    if (skillName === 'ilgyeok') {
+      setAnim('hero-spr','attack');
+      playFighterMotion('hero','hero-lunge',470);
+    }
 
     setTimeout(() => {
       if (!s.isRunning) return;
@@ -447,31 +460,74 @@ const DungeonUI = (() => {
         ? BattleEngine.skillIlgyeok(s.player.magic)
         : BattleEngine.skillYeonsoek(s.player.magic);
 
-      GameState.damageEnemy(result.damage);
+      // 연속 베기는 실제 2타로 나눠서 보여줌
+      if (skillName === 'yeonsoek' && result.hits) {
+        result.hits.forEach((hit, index) => {
+          setTimeout(() => {
+            if (!s.isRunning) return;
 
-      if (result.isCrit) {
-        showWhiteFlash(); showImpact('enemy','burst');
-        showShockwaves('enemy'); showSparks('enemy');
+            // 연속 베기는 1타와 2타의 모션을 다르게 보여줌
+            setAnim('hero-spr','attack');
+
+            if (index === 0) {
+              // 1타: 기존처럼 왼쪽에서 오른쪽으로 베는 기본 모션
+              playFighterMotion('hero','hero-lunge',260);
+            } else {
+              // 2타: 검 휘두르는 방향이 반대로 보이도록 만든 전용 모션
+              playFighterMotion('hero','hero-combo-second',640);
+            }
+
+            GameState.damageEnemy(hit.damage);
+
+            if (hit.isCrit) {
+            showWhiteFlash();
+            showImpact('enemy', 'burst');
+            showSparks('enemy');
+          } else {
+            showImpact('enemy', index === 1 ? 'burst' : 'slash');
+          }
+
+            showDmgPopup('enemy', hit.damage, hit.isCrit);
+            playHitEffect('enemy');
+            shakeScreen(hit.isCrit);
+
+            // 로그는 나중에 다시 다듬을 예정이라 지금은 최소만 표시
+            addLog('연속 베기 ' + (index + 1) + '타: ' + hit.damage + ' 피해', hit.isCrit ? 'crit' : 'player');
+
+            updateBars();
+
+            const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+            if (be) endBattle(be);
+          }, index * 360);
+        });
       } else {
-        showImpact('enemy','slash');
+        GameState.damageEnemy(result.damage);
+
+        if (result.isCrit) {
+          showWhiteFlash();
+          showImpact('enemy', 'burst');
+          showShockwaves('enemy');
+          showSparks('enemy');
+        } else {
+          showImpact('enemy', 'slash');
+        }
+
+        showDmgPopup('enemy', result.damage, result.isCrit);
+        playHitEffect('enemy');
+        shakeScreen(result.isCrit);
+
+        // 로그는 나중에 다시 다듬을 예정이라 지금은 최소만 표시
+        addLog('일격: ' + result.damage + ' 피해', result.isCrit ? 'crit' : 'player');
+
+        updateBars();
+
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        if (be) endBattle(be);
       }
-
-      showDmgPopup('enemy', result.damage, result.isCrit);
-      playHitEffect('enemy');
-      shakeScreen(result.isCrit);
-
-      const label = { ilgyeok:'일격', yeonsoek:'연속베기' };
-      addLog(result.isCrit
-        ? '✨ ' + label[skillName] + ' 크리티컬! ' + result.damage + ' 데미지!'
-        : '⚔️ ' + label[skillName] + '! ' + result.damage + ' 데미지!',
-        result.isCrit ? 'crit' : 'player');
-
-      updateBars();
-      const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
-      if (be) endBattle(be);
     }, 230);
 
-    setTimeout(() => setAnim('hero-spr','idle'), 540);
+    // 일격과 연속 베기의 공격 종료 타이밍을 다르게 처리
+    setTimeout(() => setAnim('hero-spr','idle'), skillName === 'yeonsoek' ? 880 : 540);
   }
 
   function _doBulkkot(s) {

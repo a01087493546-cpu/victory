@@ -3052,3 +3052,60 @@ body {
     0 2px 4px rgba(0, 0, 0, 0.9);
   transform: translateY(1px);
 }
+
+/* ================================
+   연속 베기 2타 전용 모션
+   - 1타는 기존 hero-lunge 유지
+   - 2타는 용사 이미지를 좌우 반전시켜
+     반대 방향으로 베는 것처럼 보이게 함
+================================ */
+
+.fighter.left.hero-combo-second {
+  animation: heroComboSecondMove 640ms cubic-bezier(.16,.92,.3,1.18);
+}
+
+/* 2타 때 용사 스프라이트 자체를 순간적으로 좌우 반전 */
+.fighter.left.hero-combo-second #hero-spr {
+  animation: heroComboSecondSlash 640ms ease-out;
+  transform-origin: center center;
+}
+
+@keyframes heroComboSecondMove {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+    filter: brightness(1);
+  }
+
+  25% {
+    transform: translateX(18px) translateY(-2px) scale(1.02);
+    filter: brightness(1.12);
+  }
+
+  58% {
+    transform: translateX(42px) translateY(0) scale(1.05);
+    filter: brightness(1.35);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes heroComboSecondSlash {
+  0% {
+    transform: scaleX(1) rotate(0deg);
+  }
+
+  12% {
+    transform: scaleX(-1) rotate(4deg);
+  }
+
+  62% {
+    transform: scaleX(-1) rotate(-8deg);
+  }
+
+  100% {
+    transform: scaleX(1) rotate(0deg);
+  }
+}
