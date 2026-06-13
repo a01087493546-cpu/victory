@@ -19,41 +19,13 @@
 
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
-/* 문답책 로고 이미지 공통 */
-.brand-logo-img {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  display: block;
-}
-/* 상단 문답책 로고 이미지 */
-.brand-icon .brand-logo-img {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-  display: block;
-}
-
-/* 통계 카드 안 로고 이미지 */
-.summary-logo-img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
-  display: block;
-}
-/* 상단 왼쪽 브랜드 로고 박스 안 이미지 */
-.brand-mark .brand-logo-img {
-  width: 52px;
-  height: 52px;
-}
-
-/* 통계 카드 안 작은 원형 아이콘 */
-.stat-icon-img {
+.brand-icon img {
   width: 32px;
   height: 32px;
   object-fit: contain;
   display: block;
 }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -632,13 +604,12 @@
   <main class="page">
     <div class="shell">
       <header class="top">
-        <div class="brand">
-          <div class="summary-icon">
-  <img src="../assets/images/logo-emblem.png" alt="문답책 로고" class="summary-logo-img">
+      <div class="brand">
+  <div class="brand-icon">
+    <img src="../assets/images/logo-book.png" alt="문답책 로고">
+  </div>
+  <span>문답책</span>
 </div>
-</div>
-          <span>문답책</span>
-        </div>
 
         <div class="title-area">
           <h1 class="main-title">나의 질문 모음</h1>
@@ -661,25 +632,21 @@
             </div>
           </article>
 
-          <article class="summary-item">
-            <div class="summary-icon">
-  <img src="../assets/images/logo-emblem.png" alt="문답책 로고" class="summary-logo-img">
-</div>
-            <div>
-              <p class="summary-label">이번 주 만든 질문</p>
-              <p class="summary-value"><span id="weekCount">0</span><small>개</small></p>
-            </div>
-          </article>
+        <article class="summary-item">
+  <div class="summary-icon">🗓️</div>
+  <div>
+    <p class="summary-label">이번 주 만든 질문</p>
+    <p class="summary-value"><span id="weekCount">0</span><small>개</small></p>
+  </div>
+</article>
 
           <article class="summary-item">
-            <div class="summary-icon">
-  <img src="../assets/images/logo-emblem.png" alt="문답책 로고" class="summary-logo-img">
-</div>
-            <div>
-              <p class="summary-label">가장 많이 만든 유형</p>
-              <p class="type-pill" id="mostTypeText">아직 없음</p>
-            </div>
-          </article>
+  <div class="summary-icon">💡</div>
+  <div>
+    <p class="summary-label">가장 많이 만든 유형</p>
+    <p class="type-pill" id="mostTypeText">아직 없음</p>
+  </div>
+</article>
         </div>
       </section>
 
