@@ -200,6 +200,67 @@
       font-size: 26px;
     }
   }
+  /* ===============================
+   읽기 후 메인 화면 새 디자인 1단계
+   - 배경과 전체 분위기만 먼저 바꿉니다.
+   - 기능/HTML은 건드리지 않습니다.
+================================ */
+
+/* 전체 화면을 신비로운 도서관 배경으로 바꿉니다. */
+body {
+  background:
+    linear-gradient(180deg, rgba(10, 5, 2, 0.18), rgba(8, 4, 2, 0.58)),
+    url("../assets/images/after-reading/after-reading-main-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
+}
+
+/* 화면 전체에 어둡고 고급스러운 도서관 필터를 입힙니다. */
+.ar-page {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 214, 116, 0.18), transparent 31%),
+    radial-gradient(circle at 50% 85%, rgba(255, 176, 58, 0.10), transparent 34%),
+    linear-gradient(90deg, rgba(6, 3, 1, 0.62), rgba(6, 3, 1, 0.10), rgba(6, 3, 1, 0.62)) !important;
+}
+
+/* 상단 헤더를 목표 화면처럼 더 얇고 고급스럽게 만듭니다. */
+.ar-topbar {
+  background:
+    linear-gradient(90deg, rgba(18, 9, 4, 0.92), rgba(56, 29, 10, 0.76), rgba(18, 9, 4, 0.92)) !important;
+  border: 1.5px solid rgba(255, 203, 111, 0.70) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 238, 190, 0.18) !important;
+}
+
+/* 읽기 후 제목에 은은한 금빛을 줍니다. */
+.ar-title {
+  color: #ffe9a8 !important;
+  text-shadow:
+    0 2px 0 rgba(59, 31, 8, 0.95),
+    0 0 18px rgba(255, 210, 110, 0.28),
+    0 8px 24px rgba(0, 0, 0, 0.42) !important;
+}
+
+/* 문답책 로고 영역도 배경과 어울리게 조정합니다. */
+.ar-brand-mark {
+  background:
+    radial-gradient(circle at 35% 20%, rgba(255, 242, 190, 0.42), transparent 42%),
+    linear-gradient(180deg, rgba(123, 78, 28, 0.94), rgba(38, 21, 9, 0.96)) !important;
+  border-color: rgba(255, 215, 132, 0.72) !important;
+}
+
+/* 이전 화면 버튼도 목표 화면처럼 정리합니다. */
+.ar-pill-button {
+  background:
+    linear-gradient(180deg, rgba(130, 78, 26, 0.96), rgba(67, 33, 10, 0.98)) !important;
+  border: 1px solid rgba(255, 215, 132, 0.72) !important;
+  color: #fff1c9 !important;
+  box-shadow:
+    0 5px 0 rgba(30, 14, 4, 0.75),
+    inset 0 1px 0 rgba(255, 238, 190, 0.18) !important;
+}
 </style>
 </head>
 
