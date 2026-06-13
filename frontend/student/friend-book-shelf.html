@@ -1,0 +1,315 @@
+<!--
+  파일명: friend-book-shelf.html
+  역할: 문답책 개별읽기 - 우리 반 추천 책장 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 친구들이 추천한 책을 카드 형태로 보여줍니다.
+  2. 좋아요 수가 높은 책은 BEST 추천책으로 자동 정렬되어 맨 위에 배치됩니다.
+  3. 내가 추천한 책만 따로 볼 수 있습니다.
+  4. 새 추천 책을 직접 등록할 수 있습니다.
+
+  참고:
+  - 현재 데이터는 화면 확인용 임시 데이터입니다.
+  - 실제 서버/DB를 붙이면 classBooks 배열과 addMyBook() 부분을 API로 교체하면 됩니다.
+  - 책 표지는 저작권 문제가 있을 수 있어 사용하지 않고, 제목/지은이/추천 이유 중심으로 구성합니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>우리 반 추천 책장 - 문답책</title>
+
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <link rel="stylesheet" href="../css/common.css?v=friend-book-shelf-1">
+
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    .fs-page, .fs-page * { box-sizing: border-box; font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
+    .fs-page {
+      width: 100vw; height: 100vh; padding: 16px 28px 20px; color: #4a2a10; overflow: hidden;
+      background: linear-gradient(90deg, rgba(255,248,229,.92), rgba(255,248,229,.72) 48%, rgba(255,248,229,.5)), radial-gradient(circle at 12% 18%, rgba(255,221,135,.38), transparent 34%), radial-gradient(circle at 88% 82%, rgba(166,103,31,.22), transparent 32%), linear-gradient(135deg, #f8ecd2, #d8b16d 48%, #84521f);
+    }
+    .fs-shell { width: 100%; max-width: 1480px; height: 100%; margin: 0 auto; display: grid; grid-template-rows: 64px minmax(0,1fr); gap: 14px; }
+    .fs-top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 22px; border:1px solid rgba(182,119,38,.28); border-radius:24px; background:rgba(255,250,236,.92); box-shadow:0 12px 24px rgba(92,58,18,.12); backdrop-filter:blur(8px); }
+    .fs-logo { display:flex; align-items:center; gap:12px; }
+    .fs-logo img { width:42px; height:42px; object-fit:contain; }
+    .fs-logo span { font-family:"Noto Serif KR","Noto Sans KR",serif; font-size:29px; font-weight:900; letter-spacing:-.045em; color:#5a3415; }
+    .fs-top-actions { display:flex; align-items:center; gap:10px; }
+    .fs-top-button { height:42px; padding:0 18px; border:1px solid rgba(168,106,31,.28); border-radius:999px; background:rgba(255,252,242,.94); color:#633915; font-size:15px; font-weight:900; cursor:pointer; box-shadow:0 8px 16px rgba(98,59,15,.1); }
+    .fs-main { min-height:0; display:grid; grid-template-columns:320px minmax(0,1fr); gap:18px; align-items:stretch; }
+    .fs-side-card, .fs-content-card { min-height:0; border:1px solid rgba(180,116,34,.24); border-radius:34px; background:rgba(255,251,242,.92); box-shadow:0 18px 34px rgba(92,58,18,.13), inset 0 0 0 1px rgba(255,255,255,.5); backdrop-filter:blur(8px); overflow:hidden; }
+    .fs-side-card { display:grid; grid-template-rows:auto auto minmax(0,1fr); padding:26px 22px; }
+    .fs-side-kicker { margin:0 0 10px; color:#b5761f; font-size:15px; font-weight:900; }
+    .fs-side-title { margin:0 0 14px; font-family:"Noto Serif KR","Noto Sans KR",serif; color:#4d2b10; font-size:32px; font-weight:900; line-height:1.16; letter-spacing:-.055em; word-break:keep-all; }
+    .fs-side-desc { margin:0 0 22px; color:#765026; font-size:15px; font-weight:800; line-height:1.5; word-break:keep-all; }
+    .fs-guide-box { display:grid; gap:10px; margin-bottom:18px; }
+    .fs-guide-item { display:grid; grid-template-columns:42px 1fr; gap:10px; align-items:center; padding:11px 12px; border-radius:18px; background:rgba(255,246,220,.82); border:1px solid rgba(181,117,37,.16); }
+    .fs-guide-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:14px; background:linear-gradient(180deg,#edc261,#a9651e); color:#fff9e8; font-size:20px; box-shadow:0 8px 14px rgba(129,76,18,.16); }
+    .fs-guide-item strong { display:block; margin-bottom:2px; color:#5c3615; font-size:14px; font-weight:900; }
+    .fs-guide-item span { display:block; color:#7a5123; font-size:12px; font-weight:800; line-height:1.35; }
+    .fs-form { min-height:0; display:grid; grid-template-rows:auto repeat(4,auto) 48px; gap:9px; padding:16px; border-radius:24px; background:rgba(255,252,244,.8); border:1px solid rgba(181,117,37,.16); box-shadow:inset 0 0 0 1px rgba(255,255,255,.4); }
+    .fs-form-title { margin:0 0 2px; color:#573315; font-size:18px; font-weight:900; }
+    .fs-input, .fs-textarea { width:100%; border:1px solid rgba(171,108,31,.22); border-radius:16px; background:rgba(255,250,237,.9); color:#4d2b10; font-size:14px; font-weight:800; outline:none; }
+    .fs-input { height:42px; padding:0 13px; }
+    .fs-textarea { height:58px; padding:11px 13px; resize:none; line-height:1.35; }
+    .fs-input::placeholder, .fs-textarea::placeholder { color:rgba(111,72,29,.52); }
+    .fs-submit-button { border:none; border-radius:999px; background:linear-gradient(180deg,#e6b656,#a8641e); color:#fff9e8; font-size:16px; font-weight:900; cursor:pointer; box-shadow:0 12px 22px rgba(128,76,18,.2); }
+    .fs-content-card { display:grid; grid-template-rows:126px minmax(0,1fr); padding:26px 30px 28px; }
+    .fs-content-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:start; border-bottom:1px solid rgba(181,117,37,.16); padding-bottom:18px; }
+    .fs-content-header h1 { margin:0 0 8px; font-family:"Noto Serif KR","Noto Sans KR",serif; color:#4d2b10; font-size:42px; font-weight:900; line-height:1.12; letter-spacing:-.055em; }
+    .fs-content-header p { margin:0; color:#795024; font-size:16px; font-weight:800; line-height:1.45; word-break:keep-all; }
+    .fs-tab-list { display:flex; gap:8px; padding:6px; border-radius:999px; background:rgba(255,245,219,.8); border:1px solid rgba(178,113,31,.16); }
+    .fs-tab-button { height:42px; padding:0 16px; border:none; border-radius:999px; background:transparent; color:#744919; font-size:14px; font-weight:900; cursor:pointer; white-space:nowrap; }
+    .fs-tab-button.active { background:linear-gradient(180deg,#e7ba5b,#a8641e); color:#fff9e8; box-shadow:0 8px 16px rgba(128,76,18,.18); }
+    .fs-scroll-area { min-height:0; overflow-y:auto; padding:18px 4px 2px 0; }
+    .fs-section { margin-bottom:22px; }
+    .fs-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .fs-section-title { margin:0; color:#5b3515; font-size:21px; font-weight:900; letter-spacing:-.035em; }
+    .fs-section-note { color:#9a681f; font-size:13px; font-weight:900; }
+    .fs-best-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .fs-best-card { position:relative; min-height:174px; padding:18px 18px 16px; border-radius:24px; border:1px solid rgba(185,116,30,.24); background:radial-gradient(circle at 12% 10%, rgba(255,236,169,.72), transparent 42%), linear-gradient(180deg, rgba(255,252,241,.95), rgba(255,240,199,.9)); box-shadow:0 14px 24px rgba(101,63,18,.12); overflow:hidden; }
+    .fs-best-badge { display:inline-flex; align-items:center; gap:5px; height:28px; padding:0 10px; border-radius:999px; background:linear-gradient(180deg,#e7ba5b,#a8641e); color:#fff9e8; font-size:12px; font-weight:900; box-shadow:0 8px 14px rgba(128,76,18,.18); }
+    .fs-card-title { margin:12px 0 4px; color:#4e2d10; font-size:21px; font-weight:900; line-height:1.25; letter-spacing:-.035em; word-break:keep-all; }
+    .fs-card-author { margin:0 0 9px; color:#8a5b22; font-size:13px; font-weight:900; }
+    .fs-card-reason { margin:0; color:#6f481d; font-size:13px; font-weight:800; line-height:1.42; word-break:keep-all; }
+    .fs-like-row { display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:8px; }
+    .fs-rec-by { color:#9a681f; font-size:12px; font-weight:900; }
+    .fs-like-button { height:34px; padding:0 11px; border:1px solid rgba(174,109,27,.22); border-radius:999px; background:rgba(255,250,237,.9); color:#8a5519; font-size:13px; font-weight:900; cursor:pointer; }
+    .fs-book-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .fs-book-card { min-height:146px; display:grid; grid-template-columns:54px minmax(0,1fr); gap:13px; padding:15px; border-radius:22px; border:1px solid rgba(181,117,37,.16); background:rgba(255,252,244,.84); box-shadow:0 10px 18px rgba(101,63,18,.08); }
+    .fs-book-mark { width:54px; height:64px; display:grid; place-items:center; border-radius:15px 15px 22px 22px; background:linear-gradient(180deg,#e6b656,#9f5d1d); color:#fff9e8; font-size:24px; box-shadow:0 8px 14px rgba(129,76,18,.16); }
+    .fs-empty { display:grid; place-items:center; min-height:280px; border-radius:28px; border:1px dashed rgba(166,103,31,.3); background:rgba(255,248,229,.65); color:#7a5123; font-size:17px; font-weight:900; text-align:center; line-height:1.5; grid-column:1 / -1; }
+    @media (max-height:760px) {
+      .fs-page{padding:12px 24px}.fs-shell{grid-template-rows:58px minmax(0,1fr);gap:10px}.fs-main{grid-template-columns:300px minmax(0,1fr);gap:14px}.fs-side-card{padding:20px 18px}.fs-side-title{font-size:28px}.fs-side-desc{margin-bottom:14px}.fs-guide-box{gap:8px;margin-bottom:12px}.fs-guide-item{padding:9px 10px}.fs-form{gap:7px;padding:13px}.fs-input{height:38px}.fs-textarea{height:50px}.fs-content-card{grid-template-rows:112px minmax(0,1fr);padding:20px 24px}.fs-content-header h1{font-size:36px}.fs-best-card{min-height:154px;padding:15px}.fs-card-title{font-size:18px}.fs-book-card{min-height:130px;padding:13px}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="fs-page">
+    <div class="fs-shell">
+      <header class="fs-top-bar">
+        <div class="fs-logo">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+        <div class="fs-top-actions">
+          <button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
+          <button type="button" class="fs-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+          <button type="button" class="fs-top-button" onclick="goIndividualReading()">🏠</button>
+        </div>
+      </header>
+
+      <section class="fs-main">
+        <aside class="fs-side-card">
+          <div>
+            <p class="fs-side-kicker">CLASS BOOK SHELF</p>
+            <h1 class="fs-side-title">우리 반 친구들이<br>추천한 책장이야</h1>
+            <p class="fs-side-desc">좋아요를 많이 받은 책은 자동으로 BEST에 올라가. 네가 재미있게 읽은 책도 친구들에게 추천해줘!</p>
+          </div>
+
+          <div class="fs-guide-box">
+            <div class="fs-guide-item"><div class="fs-guide-icon">🏆</div><div><strong>BEST 추천책</strong><span>좋아요가 많은 책이 위로 올라와요.</span></div></div>
+            <div class="fs-guide-item"><div class="fs-guide-icon">💬</div><div><strong>친구 추천 이유</strong><span>왜 추천했는지 함께 살펴봐요.</span></div></div>
+            <div class="fs-guide-item"><div class="fs-guide-icon">✍️</div><div><strong>나도 추천하기</strong><span>책 제목과 추천 이유를 적어 등록해요.</span></div></div>
+          </div>
+
+          <form class="fs-form" onsubmit="addMyBook(event)">
+            <h2 class="fs-form-title">나도 책 추천하기</h2>
+            <input id="bookTitleInput" class="fs-input" type="text" placeholder="책 제목" autocomplete="off">
+            <input id="bookAuthorInput" class="fs-input" type="text" placeholder="지은이" autocomplete="off">
+            <textarea id="bookReasonInput" class="fs-textarea" placeholder="추천 이유"></textarea>
+            <textarea id="bookTargetInput" class="fs-textarea" placeholder="이런 친구에게 추천해요"></textarea>
+            <button type="submit" class="fs-submit-button">추천 등록하기</button>
+          </form>
+        </aside>
+
+        <article class="fs-content-card">
+          <div class="fs-content-header">
+            <div>
+              <h1>우리 반 추천 책장</h1>
+              <p>친구들이 직접 추천한 책을 살펴보고 좋아요를 눌러봐.<br>내가 등록한 책은 ‘내가 추천한 책’에서 따로 확인할 수 있어.</p>
+            </div>
+            <div class="fs-tab-list" aria-label="추천 책 보기 방식">
+              <button type="button" class="fs-tab-button active" data-tab="all" onclick="changeTab('all')">전체 추천</button>
+              <button type="button" class="fs-tab-button" data-tab="mine" onclick="changeTab('mine')">내가 추천한 책</button>
+            </div>
+          </div>
+
+          <div class="fs-scroll-area" id="scrollArea">
+            <section class="fs-section" id="bestSection">
+              <div class="fs-section-header"><h2 class="fs-section-title">🏆 BEST 추천책</h2><span class="fs-section-note">좋아요 많은 순서로 자동 배치</span></div>
+              <div class="fs-best-grid" id="bestBookList"></div>
+            </section>
+
+            <section class="fs-section" id="allSection">
+              <div class="fs-section-header"><h2 class="fs-section-title">📚 친구들이 추천한 책</h2><span class="fs-section-note">좋아요를 눌러 BEST에 올려봐</span></div>
+              <div class="fs-book-grid" id="friendBookList"></div>
+            </section>
+
+            <section class="fs-section" id="mineSection" style="display:none;">
+              <div class="fs-section-header"><h2 class="fs-section-title">✍️ 내가 추천한 책</h2><span class="fs-section-note">내가 등록한 추천만 모아보기</span></div>
+              <div class="fs-book-grid" id="myBookList"></div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
+    // checkLogin();
+
+    let classBooks = [
+      { id: 1, title: "긴긴밤", author: "루리", reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 감동적이었어.", target: "마음이 따뜻해지는 이야기를 좋아하는 친구", recommender: "민서", likes: 18, mine: false },
+      { id: 2, title: "만복이네 떡집", author: "김리리", reason: "소원을 들어주는 떡집 이야기가 신기하고 재미있었어.", target: "웃기고 따뜻한 이야기를 좋아하는 친구", recommender: "지후", likes: 15, mine: false },
+      { id: 3, title: "푸른 사자 와니니", author: "이현", reason: "와니니가 포기하지 않고 자기 길을 찾는 모습이 멋졌어.", target: "용기 있는 모험 이야기를 좋아하는 친구", recommender: "서아", likes: 13, mine: false },
+      { id: 4, title: "시간 가게", author: "이나영", reason: "시간을 사고판다는 상상이 재미있고, 선택에 대해 생각하게 됐어.", target: "판타지와 생각할 거리를 좋아하는 친구", recommender: "도윤", likes: 9, mine: false },
+      { id: 5, title: "이상한 과자 가게 전천당", author: "히로시마 레이코", reason: "과자마다 다른 일이 생겨서 다음 이야기가 계속 궁금했어.", target: "신비로운 이야기를 좋아하는 친구", recommender: "하린", likes: 8, mine: false },
+      { id: 6, title: "불량한 자전거 여행", author: "김남중", reason: "여행하면서 조금씩 달라지는 주인공이 기억에 남았어.", target: "현실적인 성장 이야기를 좋아하는 친구", recommender: "준서", likes: 6, mine: false }
+    ];
+
+    let currentTab = "all";
+    document.addEventListener("DOMContentLoaded", () => { renderShelf(); });
+
+    function goIndividualReading() { window.location.href = "./individual-reading.html"; }
+    function goBookRecommend() { window.location.href = "./book-recommend.html"; }
+
+    function changeTab(tabName) {
+      currentTab = tabName;
+      document.querySelectorAll(".fs-tab-button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.tab === tabName);
+      });
+      renderShelf();
+    }
+
+    function getSortedBooks() {
+      return [...classBooks].sort((a, b) => {
+        if (b.likes !== a.likes) return b.likes - a.likes;
+        return b.id - a.id;
+      });
+    }
+
+    function renderShelf() {
+      const bestSection = document.getElementById("bestSection");
+      const allSection = document.getElementById("allSection");
+      const mineSection = document.getElementById("mineSection");
+
+      if (currentTab === "all") {
+        bestSection.style.display = "block";
+        allSection.style.display = "block";
+        mineSection.style.display = "none";
+        renderBestBooks();
+        renderFriendBooks();
+      } else {
+        bestSection.style.display = "none";
+        allSection.style.display = "none";
+        mineSection.style.display = "block";
+        renderMyBooks();
+      }
+    }
+
+    function renderBestBooks() {
+      const bestBookList = document.getElementById("bestBookList");
+      const bestBooks = getSortedBooks().slice(0, 3);
+      bestBookList.innerHTML = "";
+
+      bestBooks.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "fs-best-card";
+        card.innerHTML = `
+          <span class="fs-best-badge">BEST ${index + 1}</span>
+          <h3 class="fs-card-title">${book.title}</h3>
+          <p class="fs-card-author">${book.author} 지음 · ${book.recommender} 추천</p>
+          <p class="fs-card-reason">${book.reason}</p>
+          <div class="fs-like-row">
+            <span class="fs-rec-by">👍 ${book.likes}명이 좋아해요</span>
+            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">좋아요</button>
+          </div>
+        `;
+        bestBookList.appendChild(card);
+      });
+    }
+
+    function renderFriendBooks() {
+      const friendBookList = document.getElementById("friendBookList");
+      const books = getSortedBooks();
+      friendBookList.innerHTML = "";
+      books.forEach((book) => { friendBookList.appendChild(createBookCard(book)); });
+    }
+
+    function renderMyBooks() {
+      const myBookList = document.getElementById("myBookList");
+      const myBooks = getSortedBooks().filter((book) => book.mine);
+      myBookList.innerHTML = "";
+
+      if (myBooks.length === 0) {
+        myBookList.innerHTML = `<div class="fs-empty">아직 내가 추천한 책이 없어.<br>왼쪽에서 친구들에게 추천하고 싶은 책을 등록해봐!</div>`;
+        return;
+      }
+
+      myBooks.forEach((book) => { myBookList.appendChild(createBookCard(book)); });
+    }
+
+    function createBookCard(book) {
+      const card = document.createElement("div");
+      card.className = "fs-book-card";
+      card.innerHTML = `
+        <div class="fs-book-mark">📖</div>
+        <div>
+          <h3 class="fs-card-title">${book.title}</h3>
+          <p class="fs-card-author">${book.author} 지음 · ${book.recommender} 추천</p>
+          <p class="fs-card-reason">${book.reason}</p>
+          <p class="fs-card-reason"><strong>추천 대상:</strong> ${book.target}</p>
+          <div class="fs-like-row">
+            <span class="fs-rec-by">👍 ${book.likes}</span>
+            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">좋아요</button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function likeBook(bookId) {
+      classBooks = classBooks.map((book) => {
+        if (book.id === bookId) return { ...book, likes: book.likes + 1 };
+        return book;
+      });
+      renderShelf();
+    }
+
+    function addMyBook(event) {
+      event.preventDefault();
+
+      const titleInput = document.getElementById("bookTitleInput");
+      const authorInput = document.getElementById("bookAuthorInput");
+      const reasonInput = document.getElementById("bookReasonInput");
+      const targetInput = document.getElementById("bookTargetInput");
+
+      const title = titleInput.value.trim();
+      const author = authorInput.value.trim();
+      const reason = reasonInput.value.trim();
+      const target = targetInput.value.trim();
+
+      if (!title || !author || !reason || !target) {
+        alert("책 제목, 지은이, 추천 이유, 추천 대상을 모두 적어줘!");
+        return;
+      }
+
+      const newBook = { id: Date.now(), title, author, reason, target, recommender: "나", likes: 0, mine: true };
+      classBooks = [newBook, ...classBooks];
+
+      titleInput.value = "";
+      authorInput.value = "";
+      reasonInput.value = "";
+      targetInput.value = "";
+
+      changeTab("mine");
+    }
+  </script>
+</body>
+</html>

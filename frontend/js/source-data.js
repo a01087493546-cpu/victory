@@ -566,6 +566,45 @@ source: "ChatGPT 생성 이미지",
 usage: "우리반 책읽기 - 질문 만들기 피드백 영역 / 질문 나누기 안내 영역",
 modified: "배경 투명 처리 및 크기 수정",
 note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-}
+},  {
+    category: "이미지",
+    title: "개별읽기 메인 배경 이미지",
+    fileName: "individual-reading.png",
+    description: "개별읽기 메인 화면의 밝은 판타지 도서관 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 메인 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "개별읽기 메인 루미 이미지",
+    fileName: "home-lumi.png",
+    description: "개별읽기 메인 화면에서 학생을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 메인 화면 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "책 추천 받기 배경 이미지",
+    fileName: "book-recommend-bg.png",
+    description: "책 추천 받기 화면의 따뜻하고 신비로운 도서관 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "책 추천 받기 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "책 추천 받기 루미 이미지",
+    fileName: "book-recommend-lumi.png",
+    description: "책 추천 받기 화면에서 학생에게 질문을 던지고 책 추천을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "책 추천 받기 화면 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  }
 
 ];
