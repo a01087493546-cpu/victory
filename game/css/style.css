@@ -3109,3 +3109,889 @@ body {
     transform: scaleX(1) rotate(0deg);
   }
 }
+
+/* ================================
+   방어 / 철벽 전용 임팩트
+   - 기존 UI 배치는 건드리지 않고
+   - 용사 주변 방어 효과만 강화
+================================ */
+
+/* 일반 방어: 짧고 선명한 파란 방어막 */
+.fighter.left.guard-burst::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 170px;
+  height: 170px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  border: 3px solid rgba(120, 220, 255, 0.95);
+  box-shadow:
+    0 0 18px rgba(90, 210, 255, 0.95),
+    inset 0 0 28px rgba(90, 210, 255, 0.35);
+  animation: guardBurstPulse 650ms ease-out forwards;
+}
+
+/* 일반 방어: 중심부 빛 */
+.fighter.left.guard-burst::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 110px;
+  height: 110px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(circle, rgba(140,230,255,0.38), rgba(80,180,255,0.08) 55%, transparent 72%);
+  animation: guardCoreFlash 650ms ease-out forwards;
+}
+
+/* 철벽: 일반 방어보다 크고 두꺼운 방어막 */
+.fighter.left.ironwall-burst::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 210px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  border: 5px solid rgba(190, 235, 255, 1);
+  box-shadow:
+    0 0 28px rgba(100, 220, 255, 1),
+    0 0 58px rgba(60, 170, 255, 0.75),
+    inset 0 0 34px rgba(190, 235, 255, 0.45);
+  animation: ironWallPulse 900ms ease-out forwards;
+}
+
+/* 철벽: 안쪽에 사각 방패 느낌 추가 */
+.fighter.left.ironwall-burst::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 120px;
+  height: 92px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  border: 3px solid rgba(220, 245, 255, 0.95);
+  background: linear-gradient(
+    135deg,
+    rgba(210, 245, 255, 0.30),
+    rgba(70, 160, 255, 0.12)
+  );
+  box-shadow:
+    0 0 18px rgba(150, 225, 255, 0.8),
+    inset 0 0 18px rgba(255, 255, 255, 0.24);
+  clip-path: polygon(50% 0%, 100% 22%, 86% 100%, 50% 84%, 14% 100%, 0% 22%);
+  animation: ironWallShield 900ms ease-out forwards;
+}
+
+@keyframes guardBurstPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  70% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+}
+
+@keyframes guardCoreFlash {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.65);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.22);
+  }
+}
+
+@keyframes ironWallPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  65% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+@keyframes ironWallShield {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.62);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  75% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+/* ================================
+   불꽃 베기 전용 이펙트
+   - 휘어진 불꽃 칼날
+   - 맞는 순간 불꽃 폭발
+   - 불씨 파편 확산
+================================ */
+
+.fire-slash-effect {
+  position: absolute;
+  width: 220px;
+  height: 130px;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 46;
+  opacity: 0;
+  animation: fireSlashArc 700ms ease-out forwards;
+}
+
+/* 불꽃 검격 본체 */
+.fire-slash-effect::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 40px;
+  width: 185px;
+  height: 65px;
+  border-radius: 50%;
+  border-top: 22px solid rgba(255, 220, 110, 0.98);
+  border-right: 14px solid rgba(255, 95, 10, 0.95);
+  border-bottom: 0;
+  border-left: 0;
+  filter:
+    drop-shadow(0 0 10px rgba(255, 210, 90, 0.95))
+    drop-shadow(0 0 22px rgba(255, 120, 20, 0.95))
+    drop-shadow(0 0 40px rgba(220, 35, 0, 0.72));
+}
+
+/* 안쪽 뜨거운 칼날 심 */
+.fire-slash-effect::after {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 52px;
+  width: 138px;
+  height: 34px;
+  border-radius: 50%;
+  border-top: 7px solid rgba(255, 250, 220, 0.96);
+  border-right: 6px solid rgba(255, 205, 90, 0.92);
+  border-bottom: 0;
+  border-left: 0;
+  filter: blur(0.3px);
+}
+
+/* 맞는 순간 중심 폭발 */
+.fire-burst-effect {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 47;
+  opacity: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,245,210,0.95) 0 10%, rgba(255,180,60,0.88) 18%, rgba(255,90,0,0.55) 42%, rgba(180,20,0,0.18) 64%, transparent 74%);
+  box-shadow:
+    0 0 18px rgba(255, 220, 120, 0.9),
+    0 0 40px rgba(255, 120, 20, 0.9),
+    0 0 75px rgba(220, 30, 0, 0.55);
+  animation: fireBurstPop 900ms ease-out forwards;
+}
+
+/* 불씨 파편 */
+.fire-slash-ember {
+  position: absolute;
+  width: 260px;
+  height: 180px;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  pointer-events: none;
+  z-index: 45;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 22% 55%, rgba(255,235,120,0.95) 0 4px, transparent 5px),
+    radial-gradient(circle at 30% 40%, rgba(255,160,40,0.9) 0 5px, transparent 6px),
+    radial-gradient(circle at 42% 62%, rgba(255,90,10,0.88) 0 5px, transparent 6px),
+    radial-gradient(circle at 58% 38%, rgba(255,190,60,0.82) 0 4px, transparent 5px),
+    radial-gradient(circle at 66% 58%, rgba(255,70,0,0.82) 0 6px, transparent 7px),
+    radial-gradient(circle at 78% 44%, rgba(255,220,90,0.72) 0 4px, transparent 5px),
+    radial-gradient(circle at 86% 60%, rgba(215,30,0,0.72) 0 7px, transparent 8px);
+  filter: blur(0.2px);
+  animation: fireSlashEmbers 900ms ease-out forwards;
+}
+
+@keyframes fireSlashArc {
+  0% {
+    opacity: 0;
+    transform: translate(-58%, -48%) rotate(-26deg) scale(0.56);
+    filter: brightness(1);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  48% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-18deg) scale(1.08);
+    filter: brightness(1.5);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-42%, -55%) rotate(-9deg) scale(1.18);
+    filter: brightness(0.94);
+  }
+}
+
+@keyframes fireBurstPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  55% {
+    opacity: 0.92;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+@keyframes fireSlashEmbers {
+  0% {
+    opacity: 0;
+    transform: translate(-54%, -46%) rotate(-20deg) scale(0.74);
+  }
+
+  24% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-40%, -66%) rotate(-8deg) scale(1.3);
+  }
+}
+
+/* ================================
+   불꽃 베기 - 실제 불씨 파편
+================================ */
+
+.fire-ember-particle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 90;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fffbe0 0%,
+    #ffd35a 32%,
+    #ff6a00 62%,
+    #d82900 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 14px rgba(255, 230, 120, 1),
+    0 0 30px rgba(255, 110, 0, 0.95),
+    0 0 48px rgba(220, 35, 0, 0.72);
+  animation: fireEmberFly 1350ms ease-out forwards;
+}
+
+@keyframes fireEmberFly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+
+  48% {
+    opacity: 0.95;
+    transform: translate(
+      calc(-50% + var(--ex) * 0.58),
+      calc(-50% + var(--ey) * 0.58)
+    ) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--ex)),
+      calc(-50% + var(--ey))
+    ) scale(0.35);
+  }
+}
+
+/* ================================
+   화염 폭발 전용 이펙트
+   - 큰 중심 폭발
+   - 바깥 화염 고리
+   - 불꽃 파편 확산
+================================ */
+
+.flame-explosion-core {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 88;
+  opacity: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle,
+      rgba(255, 250, 220, 0.98) 0%,
+      rgba(255, 210, 90, 0.92) 16%,
+      rgba(255, 125, 20, 0.88) 38%,
+      rgba(255, 60, 0, 0.55) 60%,
+      rgba(165, 20, 0, 0.16) 78%,
+      transparent 86%);
+  box-shadow:
+    0 0 26px rgba(255, 235, 130, 0.95),
+    0 0 56px rgba(255, 120, 20, 0.92),
+    0 0 110px rgba(220, 35, 0, 0.68);
+  animation: flameExplosionCoreAnim 950ms ease-out forwards;
+}
+
+.flame-explosion-ring {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 87;
+  opacity: 0;
+  border-radius: 50%;
+  border: 12px solid rgba(255, 160, 30, 0.82);
+  box-shadow:
+    0 0 20px rgba(255, 225, 110, 0.88),
+    0 0 46px rgba(255, 90, 0, 0.9),
+    inset 0 0 26px rgba(255, 210, 90, 0.25);
+  animation: flameExplosionRingAnim 980ms ease-out forwards;
+}
+
+.flame-explosion-particle {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 89;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fffbe8 0%,
+    #ffd468 28%,
+    #ff7a12 58%,
+    #db2600 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 14px rgba(255, 225, 120, 0.98),
+    0 0 32px rgba(255, 110, 10, 0.96),
+    0 0 54px rgba(220, 30, 0, 0.7);
+  animation: flameExplosionParticleAnim 1200ms ease-out forwards;
+}
+
+@keyframes flameExplosionCoreAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.28);
+    filter: brightness(1);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.12);
+    filter: brightness(1.55);
+  }
+
+  55% {
+    opacity: 0.96;
+    transform: translate(-50%, -50%) scale(0.98);
+    filter: brightness(1.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.38);
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes flameExplosionRingAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.24);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.42);
+  }
+}
+
+@keyframes flameExplosionParticleAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(calc(var(--scale) * 1.1));
+  }
+
+  48% {
+    opacity: 0.95;
+    transform: translate(
+      calc(-50% + var(--ex) * 0.55),
+      calc(-50% + var(--ey) * 0.55)
+    ) scale(var(--scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--ex)),
+      calc(-50% + var(--ey))
+    ) scale(calc(var(--scale) * 0.45));
+  }
+}
+
+/* ================================
+   우측 능력치 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 심볼 + 광원으로 판타지 UI 느낌만 유지
+================================ */
+
+.stat-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  margin-right: 6px;
+  border-radius: 999px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.82em;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: -0.08em;
+  color: #fff6d2;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.45), transparent 34%),
+    linear-gradient(145deg, rgba(80, 56, 32, 0.92), rgba(30, 22, 18, 0.96));
+  border: 1px solid rgba(255, 214, 130, 0.45);
+  box-shadow:
+    inset 0 0 8px rgba(255, 230, 160, 0.18),
+    0 0 10px rgba(255, 188, 88, 0.18);
+  text-shadow:
+    0 0 8px rgba(255, 220, 130, 0.65),
+    0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+  box-shadow:
+    inset 0 0 8px rgba(235, 205, 145, 0.22),
+    0 0 10px rgba(220, 160, 90, 0.22);
+}
+
+.magic-symbol {
+  color: #ffe7a3;
+  border-color: rgba(255, 211, 112, 0.65);
+  box-shadow:
+    inset 0 0 10px rgba(255, 225, 140, 0.28),
+    0 0 14px rgba(255, 196, 78, 0.35);
+}
+
+.hp-symbol {
+  color: #ffd1c2;
+  border-color: rgba(255, 138, 112, 0.58);
+  box-shadow:
+    inset 0 0 10px rgba(255, 120, 98, 0.22),
+    0 0 13px rgba(255, 90, 70, 0.26);
+}
+
+.courage-symbol {
+  color: #ffc06e;
+  border-color: rgba(255, 152, 66, 0.6);
+  box-shadow:
+    inset 0 0 10px rgba(255, 142, 50, 0.24),
+    0 0 14px rgba(255, 95, 30, 0.28);
+}
+
+.coin-symbol {
+  color: #ffe28a;
+  border-color: rgba(255, 210, 86, 0.7);
+  box-shadow:
+    inset 0 0 10px rgba(255, 226, 120, 0.28),
+    0 0 15px rgba(255, 190, 64, 0.32);
+}
+
+/* ================================
+   우측 상단바 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 기존 배치는 유지
+================================ */
+
+.top-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 999px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.9em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff6d2;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(86, 60, 34, 0.92), rgba(28, 21, 17, 0.96));
+  border: 1px solid rgba(255, 214, 130, 0.45);
+  box-shadow:
+    inset 0 0 8px rgba(255, 230, 160, 0.16),
+    0 0 10px rgba(255, 190, 88, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 220, 130, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.top-stat-icon.magic-symbol {
+  color: #ffe7a3;
+  border-color: rgba(255, 211, 112, 0.65);
+  box-shadow:
+    inset 0 0 10px rgba(255, 225, 140, 0.28),
+    0 0 14px rgba(255, 196, 78, 0.32);
+}
+
+.top-stat-icon.hp-symbol {
+  color: #ffd1c2;
+  border-color: rgba(255, 138, 112, 0.58);
+  box-shadow:
+    inset 0 0 10px rgba(255, 120, 98, 0.22),
+    0 0 13px rgba(255, 90, 70, 0.24);
+}
+
+.top-stat-icon.courage-symbol {
+  color: #ffc06e;
+  border-color: rgba(255, 152, 66, 0.6);
+  box-shadow:
+    inset 0 0 10px rgba(255, 142, 50, 0.24),
+    0 0 14px rgba(255, 95, 30, 0.26);
+}
+
+.top-stat-icon.coin-symbol {
+  color: #ffe28a;
+  border-color: rgba(255, 210, 86, 0.7);
+  box-shadow:
+    inset 0 0 10px rgba(255, 226, 120, 0.28),
+    0 0 15px rgba(255, 190, 64, 0.3);
+}
+
+/* 알림 / 설정 버튼 안 심볼 */
+.top-ui-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #f7ebc6;
+  text-shadow:
+    0 0 10px rgba(255, 220, 130, 0.65),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.top-ui-symbol.notice-symbol {
+  color: #ffe1a0;
+}
+
+.top-ui-symbol.setting-symbol {
+  color: #eadbb6;
+  font-size: 1.02em;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 배치는 건드리지 않음
+================================ */
+
+.detail-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 999px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff3cf;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(88, 60, 30, 0.94), rgba(24, 18, 15, 0.98));
+  border: 1px solid rgba(255, 213, 126, 0.48);
+  box-shadow:
+    inset 0 0 8px rgba(255, 229, 158, 0.18),
+    0 0 10px rgba(255, 187, 84, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 224, 132, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+/* 아이콘별 색감만 살짝 다르게 */
+.detail-book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+}
+
+.detail-time-symbol {
+  color: #ffd89c;
+  border-color: rgba(255, 186, 104, 0.58);
+  box-shadow:
+    inset 0 0 9px rgba(255, 210, 120, 0.2),
+    0 0 12px rgba(255, 160, 70, 0.2);
+}
+
+.detail-enemy-symbol {
+  color: #ffd5b5;
+  border-color: rgba(255, 150, 110, 0.55);
+  box-shadow:
+    inset 0 0 9px rgba(255, 160, 120, 0.18),
+    0 0 12px rgba(255, 105, 75, 0.2);
+}
+
+.detail-difficulty-symbol {
+  color: #f2e1b8;
+  border-color: rgba(233, 202, 138, 0.56);
+}
+
+.detail-reward-symbol {
+  color: #ffe391;
+  border-color: rgba(255, 215, 98, 0.66);
+  box-shadow:
+    inset 0 0 10px rgba(255, 232, 132, 0.24),
+    0 0 14px rgba(255, 198, 72, 0.28);
+}
+
+.detail-recommend-symbol {
+  color: #ffdca0;
+  border-color: rgba(255, 197, 98, 0.62);
+  box-shadow:
+    inset 0 0 10px rgba(255, 219, 122, 0.22),
+    0 0 14px rgba(255, 178, 68, 0.24);
+}
+
+/* 입장 버튼 안 아이콘은 버튼 톤에 맞게 조금 더 크게 */
+.enter-btn-symbol {
+  width: 1.55em;
+  height: 1.55em;
+  font-size: 0.95em;
+  color: #4d2b00;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.35), transparent 34%),
+    linear-gradient(145deg, rgba(255, 232, 160, 0.96), rgba(224, 171, 63, 0.98));
+  border: 1px solid rgba(145, 92, 20, 0.32);
+  box-shadow:
+    inset 0 0 8px rgba(255, 248, 220, 0.22),
+    0 0 8px rgba(255, 202, 92, 0.15);
+  text-shadow: none;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 배치는 건드리지 않음
+================================ */
+
+.detail-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 999px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff3cf;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(88, 60, 30, 0.94), rgba(24, 18, 15, 0.98));
+  border: 1px solid rgba(255, 213, 126, 0.48);
+  box-shadow:
+    inset 0 0 8px rgba(255, 229, 158, 0.18),
+    0 0 10px rgba(255, 187, 84, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 224, 132, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+/* 아이콘별 색감만 살짝 다르게 */
+.detail-book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+}
+
+.detail-time-symbol {
+  color: #ffd89c;
+  border-color: rgba(255, 186, 104, 0.58);
+  box-shadow:
+    inset 0 0 9px rgba(255, 210, 120, 0.2),
+    0 0 12px rgba(255, 160, 70, 0.2);
+}
+
+.detail-enemy-symbol {
+  color: #ffd5b5;
+  border-color: rgba(255, 150, 110, 0.55);
+  box-shadow:
+    inset 0 0 9px rgba(255, 160, 120, 0.18),
+    0 0 12px rgba(255, 105, 75, 0.2);
+}
+
+.detail-difficulty-symbol {
+  color: #f2e1b8;
+  border-color: rgba(233, 202, 138, 0.56);
+}
+
+.detail-reward-symbol {
+  color: #ffe391;
+  border-color: rgba(255, 215, 98, 0.66);
+  box-shadow:
+    inset 0 0 10px rgba(255, 232, 132, 0.24),
+    0 0 14px rgba(255, 198, 72, 0.28);
+}
+
+.detail-recommend-symbol {
+  color: #ffdca0;
+  border-color: rgba(255, 197, 98, 0.62);
+  box-shadow:
+    inset 0 0 10px rgba(255, 219, 122, 0.22),
+    0 0 14px rgba(255, 178, 68, 0.24);
+}
+
+/* 입장 버튼 안 아이콘은 버튼 톤에 맞게 조금 더 크게 */
+.enter-btn-symbol {
+  width: 1.55em;
+  height: 1.55em;
+  font-size: 0.95em;
+  color: #4d2b00;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.35), transparent 34%),
+    linear-gradient(145deg, rgba(255, 232, 160, 0.96), rgba(224, 171, 63, 0.98));
+  border: 1px solid rgba(145, 92, 20, 0.32);
+  box-shadow:
+    inset 0 0 8px rgba(255, 248, 220, 0.22),
+    0 0 8px rgba(255, 202, 92, 0.15);
+  text-shadow: none;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 바깥 네모 테두리 제거
+   - 안쪽 동그란 아이콘(detail-symbol)은 유지
+   - 바깥 네모 박스만 제거
+================================ */
+
+.dungeon-detail .info-card-icon,
+.dungeon-detail .reward-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 버튼 안 아이콘 바깥 박스도 제거 */
+.dungeon-detail .btn-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 동그란 아이콘 자체는 유지 */
+.dungeon-detail .detail-symbol {
+  border-radius: 999px;
+}

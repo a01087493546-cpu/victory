@@ -7,6 +7,7 @@ const DungeonUI = (() => {
   let _enemyNormalTimer = null;
   let _enemyHeavyTimer  = null;
   let _cooldownInterval = null;
+  let _defenseTimer = null;
 
   const SKILL_COOLDOWNS = {
     ilgyeok:    800,
@@ -15,6 +16,14 @@ const DungeonUI = (() => {
     cheolbyeok: 3000,
     bulkkot:    1000,
     hwayeom:    5000,
+  };
+
+  // 방어/철벽 실제 유지 시간
+  // SKILL_COOLDOWNS는 다시 사용 가능해지는 시간이고,
+  // DEFENSE_DURATIONS는 방어 상태가 실제로 유지되는 시간임.
+  const DEFENSE_DURATIONS = {
+    bangeo: 1600,     // 방어: 1.2초 유지
+    cheolbyeok: 2400, // 철벽: 2초 유지
   };
 
   function $(id) { return document.getElementById(id); }
@@ -221,6 +230,97 @@ const DungeonUI = (() => {
     }
   }
 
+  // 불꽃 베기 전용 이펙트
+  // 불꽃 칼날 + 중심 폭발 + 실제 불씨 파편 여러 개
+  function showFireSlash(target) {
+    const bg = $('battle-bg');
+    if (!bg) return;
+
+    const point = getTargetPoint(target);
+
+    // 1) 불꽃 검격
+    const slash = document.createElement('div');
+    slash.className = 'fire-slash-effect';
+    slash.style.left = point.x + 'px';
+    slash.style.top = point.y + 'px';
+    bg.appendChild(slash);
+
+    // 2) 맞는 순간 불꽃 폭발
+    const burst = document.createElement('div');
+    burst.className = 'fire-burst-effect';
+    burst.style.left = point.x + 'px';
+    burst.style.top = point.y + 'px';
+    bg.appendChild(burst);
+
+    // 3) 실제 불씨 파편 여러 개 생성
+    for (let i = 0; i < 18; i++) {
+      const ember = document.createElement('div');
+      ember.className = 'fire-ember-particle';
+
+      ember.style.left = point.x + 'px';
+      ember.style.top = point.y + 'px';
+
+      const angle = (-160 + Math.random() * 130) * Math.PI / 180;
+      const dist = 55 + Math.random() * 115;
+
+      ember.style.setProperty('--ex', Math.cos(angle) * dist + 'px');
+      ember.style.setProperty('--ey', Math.sin(angle) * dist + 'px');
+      ember.style.animationDelay = Math.random() * 90 + 'ms';
+
+      bg.appendChild(ember);
+      setTimeout(() => ember.remove(), 950);
+    }
+
+    setTimeout(() => slash.remove(), 760);
+    setTimeout(() => burst.remove(), 760);
+  }
+
+  // 화염 폭발 전용 이펙트
+  // 적 위치에서 큰 화염 폭발 + 바깥으로 퍼지는 불꽃 파편
+  function showFlameExplosion(target) {
+    const bg = $('battle-bg');
+    if (!bg) return;
+
+    const point = getTargetPoint(target);
+
+    // 1) 중심 폭발
+    const core = document.createElement('div');
+    core.className = 'flame-explosion-core';
+    core.style.left = point.x + 'px';
+    core.style.top = point.y + 'px';
+    bg.appendChild(core);
+
+    // 2) 바깥 화염 고리
+    const ring = document.createElement('div');
+    ring.className = 'flame-explosion-ring';
+    ring.style.left = point.x + 'px';
+    ring.style.top = point.y + 'px';
+    bg.appendChild(ring);
+
+    // 3) 큰 불꽃 파편 여러 개
+    for (let i = 0; i < 26; i++) {
+      const ember = document.createElement('div');
+      ember.className = 'flame-explosion-particle';
+
+      ember.style.left = point.x + 'px';
+      ember.style.top = point.y + 'px';
+
+      const angle = (-180 + Math.random() * 360) * Math.PI / 180;
+      const dist = 70 + Math.random() * 150;
+
+      ember.style.setProperty('--ex', Math.cos(angle) * dist + 'px');
+      ember.style.setProperty('--ey', Math.sin(angle) * dist + 'px');
+      ember.style.setProperty('--scale', (0.8 + Math.random() * 1.25).toFixed(2));
+      ember.style.animationDelay = Math.random() * 120 + 'ms';
+
+      bg.appendChild(ember);
+      setTimeout(() => ember.remove(), 1200);
+    }
+
+    setTimeout(() => core.remove(), 950);
+    setTimeout(() => ring.remove(), 980);
+  }
+
   function shakeScreen(isStrong) {
     const battle = $('s-battle');
     if (!battle) return;
@@ -405,9 +505,14 @@ const DungeonUI = (() => {
   }
 
   function clearTimers() {
-    clearInterval(_timerInterval); clearInterval(_enemyNormalTimer);
-    clearInterval(_enemyHeavyTimer); clearInterval(_cooldownInterval);
+    clearInterval(_timerInterval); 
+    clearInterval(_enemyNormalTimer);
+    clearInterval(_enemyHeavyTimer); 
+    clearInterval(_cooldownInterval);
+    clearTimeout(_defenseTimer);
+
     _timerInterval = _enemyNormalTimer = _enemyHeavyTimer = _cooldownInterval = null;
+    _defenseTimer = null;
   }
 
   // ── 스킬 사용 ──
@@ -425,19 +530,42 @@ const DungeonUI = (() => {
 
   function _doDefendSkill(skillName, s) {
     const cd = SKILL_COOLDOWNS[skillName] || 0;
+    const duration = DEFENSE_DURATIONS[skillName] || 1000;
+    const mode = skillName === 'cheolbyeok' ? 'ironWall' : 'guard';
+
     if (cd > 0) GameState.setCooldown(skillName, cd);
+
+    // 기존 방어 타이머가 있으면 정리하고 새로 시작
+    clearTimeout(_defenseTimer);
+
     // 방어와 철벽을 구분해서 저장
-    GameState.setDefending(true, skillName === 'cheolbyeok' ? 'ironWall' : 'guard');
+    GameState.setDefending(true, mode);
     updateButtons();
+
     if (skillName === 'cheolbyeok') {
-      showImpact('hero','shield'); showImpact('hero','shield');
-      showTextPopup('hero','철벽!','block');
-      addLog('🔒 철벽! 완전 방어 자세!', 'defend');
+      // 철벽은 더 강한 방어막 효과
+      showImpact('hero','shield');
+      showImpact('hero','shield');
+      showTextPopup('hero','철벽','block');
+      playFighterMotion('hero', 'ironwall-burst', 900);
+      addLog('철벽: 0 피해', 'defend');
     } else {
+      // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
       showTextPopup('hero','GUARD','block');
-      addLog('🛡️ 방어 자세!', 'defend');
+      playFighterMotion('hero', 'guard-burst', 650);
+      addLog('방어 자세', 'defend');
     }
+
+    // 버튼을 떼도 바로 풀리지 않고, 정해진 시간 동안 방어 유지
+    _defenseTimer = setTimeout(() => {
+      const current = GameState.get();
+      if (!current || !current.isRunning) return;
+
+      GameState.setDefending(false);
+      updateButtons();
+      _defenseTimer = null;
+    }, duration);
   }
 
   function _doAttackSkill(skillName, s) {
@@ -532,63 +660,126 @@ const DungeonUI = (() => {
 
   function _doBulkkot(s) {
     const result = BattleEngine.skillBulkkot(s.player.magic);
-    const slots = ['...숨을 죽이고','...모든 걸 걸어','...지금 이 순간'];
+
+    const slots = ['...숨을 죽이고', '...모든 걸 걸어', '...지금 이 순간'];
     const heroFighter = getFighter('hero');
+
     if (heroFighter) heroFighter.classList.add('charging');
+
     const bg = $('battle-bg');
-    if (bg) { bg.style.transition='filter 0.4s ease'; bg.style.filter='brightness(0.45)'; }
-    [0,380,760].forEach((d,i) => setTimeout(() => showTextPopup('hero',slots[i],'charging-slot'), d));
+    if (bg) {
+      bg.style.transition = 'filter 0.4s ease';
+      bg.style.filter = 'brightness(0.45)';
+    }
+
+    [0, 380, 760].forEach((d, i) => {
+      setTimeout(() => showTextPopup('hero', slots[i], 'charging-slot'), d);
+    });
+
     setTimeout(() => {
       if (heroFighter) heroFighter.classList.remove('charging');
-      if (bg) { bg.style.filter='brightness(1)'; bg.style.transition='filter 0.2s ease'; }
-      setAnim('hero-spr','attack'); playFighterMotion('hero','hero-lunge',520); showWhiteFlash();
+
+      if (bg) {
+        bg.style.filter = 'brightness(1)';
+        bg.style.transition = 'filter 0.2s ease';
+      }
+
+      setAnim('hero-spr', 'attack');
+      playFighterMotion('hero', 'hero-lunge', 520);
+
       setTimeout(() => {
         if (!s.isRunning) return;
+
         GameState.damageEnemy(result.damage);
-        showImpact('enemy','burst'); showShockwaves('enemy'); showSparks('enemy');
-        showCriticalBanner(result.damage); playHitEffect('enemy'); shakeScreen(true);
-        addLog('🔥 불꽃베기 CRITICAL!! ' + result.damage + ' 데미지!', 'crit');
+
+        // 불꽃 베기 전용 이펙트
+        // 큰 CRITICAL 글자는 쓰지 않고, 불꽃 칼날 + 데미지 숫자만 보여줌
+        showFireSlash('enemy');
+        showImpact('enemy', 'burst');
+        showSparks('enemy');
+
+        // 불꽃 베기는 데미지 숫자만 크게 보여줌
+        showDmgPopup('enemy', result.damage, false);
+
+        playHitEffect('enemy');
+        shakeScreen(true);
+
+        // 로그는 나중에 다시 다듬을 예정
+        addLog('불꽃 베기: ' + result.damage + ' 피해', 'crit');
+
         updateBars();
+
         const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
         if (be) endBattle(be);
       }, 260);
-      setTimeout(() => setAnim('hero-spr','idle'), 580);
+
+      setTimeout(() => setAnim('hero-spr', 'idle'), 580);
     }, 1200);
   }
 
   function _doHwayeom(s) {
     const result = BattleEngine.skillHwayeom(s.player.magic);
-    const slots = ['운명을 건다...','모든 걸 담아...','이 한 방에...'];
+
+    const slots = ['...숨을 멈추고', '...모든 힘을 모아', '...화염 폭발'];
     const heroFighter = getFighter('hero');
+
     if (heroFighter) heroFighter.classList.add('charging');
+
     const bg = $('battle-bg');
-    if (bg) { bg.style.transition='filter 0.5s ease'; bg.style.filter='brightness(0.3)'; }
-    [0,380,760].forEach((d,i) => setTimeout(() => showTextPopup('hero',slots[i],'charging-slot'), d));
-    setTimeout(() => showWhiteFlash(), 100);
+    if (bg) {
+      bg.style.transition = 'filter 0.45s ease';
+      bg.style.filter = 'brightness(0.32) saturate(1.12)';
+    }
+
+    [0, 450, 900].forEach((d, i) => {
+      setTimeout(() => showTextPopup('hero', slots[i], 'charging-slot'), d);
+    });
+
     setTimeout(() => {
       if (heroFighter) heroFighter.classList.remove('charging');
-      if (bg) { bg.style.filter='brightness(1)'; bg.style.transition='filter 0.2s ease'; }
-      setAnim('hero-spr','attack'); playFighterMotion('hero','hero-lunge',520); showWhiteFlash();
+
+      if (bg) {
+        bg.style.filter = 'brightness(1)';
+        bg.style.transition = 'filter 0.25s ease';
+      }
+
+      setAnim('hero-spr', 'attack');
+      playFighterMotion('hero', 'hero-lunge', 620);
+      showWhiteFlash();
+
       setTimeout(() => {
         if (!s.isRunning) return;
+
         GameState.damageEnemy(result.damage);
-        showImpact('enemy','burst'); showImpact('enemy','burst');
-        showShockwaves('enemy'); showSparks('enemy');
-        showCriticalBanner(result.damage); playHitEffect('enemy'); shakeScreen(true);
-        addLog('💥 화염폭발 CRITICAL!! 용이 크게 흔들립니다. ' + result.damage + ' 데미지!', 'crit');
+
+        // 화염 폭발 전용 이펙트
+        showFlameExplosion('enemy');
+        showImpact('enemy', 'burst');
+        showShockwaves('enemy');
+        showSparks('enemy');
+
+        // 큰 CRITICAL 배너 대신 데미지 숫자만 보여줌
+        showDmgPopup('enemy', result.damage, false);
+
+        playHitEffect('enemy');
+        shakeScreen(true);
+
+        addLog('화염 폭발: ' + result.damage + ' 피해', 'crit');
+
         updateBars();
+
         const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
         if (be) endBattle(be);
-      }, 260);
-      setTimeout(() => setAnim('hero-spr','idle'), 580);
-    }, 1200);
+      }, 320);
+
+      setTimeout(() => setAnim('hero-spr', 'idle'), 760);
+    }, 1450);
   }
 
   function stopDefend() {
-    const s = GameState.get();
-    if (!s) return;
-    GameState.setDefending(false);
-    updateButtons();
+    // 예전에는 버튼을 떼면 바로 방어가 풀렸지만,
+    // 지금은 방어/철벽을 일정 시간 유지하는 스킬 방식으로 변경함.
+    // 그래서 mouseup/touchend가 와도 여기서는 바로 해제하지 않음.
   }
 
   function switchSkillTabInternal(tab) {
