@@ -8,6 +8,7 @@ const DungeonUI = (() => {
   let _enemyHeavyTimer  = null;
   let _cooldownInterval = null;
   let _defenseTimer = null;
+  let _currentDungeonIdx = 0;
 
   const SKILL_COOLDOWNS = {
     ilgyeok:    800,
@@ -129,7 +130,6 @@ const DungeonUI = (() => {
   }
 
   // ── 이펙트 ──
-
   function getTargetPoint(target) {
     const bg = $('battle-bg');
     const targetEl = target === 'enemy' ? $('enemy-spr') : $('hero-spr');
@@ -161,17 +161,24 @@ const DungeonUI = (() => {
     setTimeout(() => pop.remove(), 1000);
   }
 
-  function showTextPopup(target, text, type) {
+  function showTextPopup(target, text, type, duration) {
     const bg = $('battle-bg');
     if (!bg) return;
+
     const point = getTargetPoint(target);
     const pop = document.createElement('div');
     pop.className = 'text-popup ' + (type || '');
     pop.textContent = text;
     pop.style.left = point.x + 'px';
     pop.style.top  = point.y + 'px';
+
     bg.appendChild(pop);
-    setTimeout(() => pop.remove(), 900);
+
+    // duration이 들어오면 그 시간만큼 유지하고,
+    // 따로 지정하지 않은 일반 전투 문구는 기존처럼 0.9초만 보여줍니다.
+    const removeDelay = duration || 900;
+
+    setTimeout(() => pop.remove(), removeDelay);
   }
 
   function showImpact(target, type) {
@@ -392,12 +399,13 @@ const DungeonUI = (() => {
       warning.classList.add('visible');
       setTimeout(() => warning.classList.remove('visible'), 2000);
     }
-    addLog('⚠️ 적이 강한 공격을 준비하고 있습니다!', 'warning');
+    addLog('적이 강한 공격을 준비하고 있습니다.', 'warning');
   }
 
-  // ── 전투 시작 / 타이머 ──
-
   function startBattle(dungeonIdx) {
+    // 다시 도전하기 버튼에서 사용할 수 있도록 현재 던전 번호를 저장합니다.
+    _currentDungeonIdx = dungeonIdx;
+
     clearTimers();
     GameState.init(dungeonIdx);
     const s = GameState.get();
@@ -419,7 +427,7 @@ const DungeonUI = (() => {
     switchSkillTabInternal('atk');
 
     if ($('battle-log')) $('battle-log').innerHTML = '';
-    addLog('⚔️ ' + s.dungeon.name + ' 등장! 전투 시작!', 'system');
+    addLog(s.dungeon.name + ' 등장. 전투를 시작합니다.', 'system');
     addLog('좋은 질문으로 용을 혼란에 빠뜨리세요.', 'system');
 
     showScreen('s-battle');
@@ -458,11 +466,11 @@ const DungeonUI = (() => {
         GameState.damagePlayer(result.damage);
         if (result.blocked) {
           showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
-          addLog('🛡️ 방어 성공! ' + result.damage + ' 데미지만 받았습니다.', 'defend');
+          addLog('방어 성공: ' + result.damage + ' 피해를 받았습니다.', 'defend');
         } else {
           showImpact('hero','burst'); showDmgPopup('hero', result.damage, false);
           playHitEffect('hero'); showHeroDamageVignette(); shakeScreen(false);
-          addLog('🐉 ' + s.dungeon.name + ' 의 공격! ' + result.damage + ' 데미지!', 'enemy');
+          addLog(s.dungeon.name + '의 공격: ' + result.damage + ' 피해', 'enemy');
         }
         updateBars();
         setTimeout(() => setAnim('enemy-spr','idle'), 260);
@@ -488,7 +496,7 @@ const DungeonUI = (() => {
           GameState.damagePlayer(result.damage);
           if (result.blocked) {
             showImpact('hero','shield'); showTextPopup('hero','BLOCK','block');
-            addLog('🛡️ 강공격 방어 성공! ' + result.damage + ' 데미지만 받았습니다.', 'defend');
+            addLog('강공격 방어 성공: ' + result.damage + ' 피해를 받았습니다.', 'defend');
           } else {
             showWhiteFlash(); showImpact('hero','burst'); showShockwaves('hero');
             showDmgPopup('hero', result.damage, true); playHitEffect('hero');
@@ -661,7 +669,7 @@ const DungeonUI = (() => {
   function _doBulkkot(s) {
     const result = BattleEngine.skillBulkkot(s.player.magic);
 
-    const slots = ['...숨을 죽이고', '...모든 걸 걸어', '...지금 이 순간'];
+    const slots = ['불꽃 베기'];
     const heroFighter = getFighter('hero');
 
     if (heroFighter) heroFighter.classList.add('charging');
@@ -672,9 +680,10 @@ const DungeonUI = (() => {
       bg.style.filter = 'brightness(0.45)';
     }
 
-    [0, 380, 760].forEach((d, i) => {
-      setTimeout(() => showTextPopup('hero', slots[i], 'charging-slot'), d);
-    });
+    // 필살 스킬명은 한 번만 크게 보여줍니다.
+    setTimeout(() => {
+      showTextPopup('hero', '불꽃 베기', 'charging-slot', 1250);
+    }, 0);
 
     setTimeout(() => {
       if (heroFighter) heroFighter.classList.remove('charging');
@@ -720,7 +729,7 @@ const DungeonUI = (() => {
   function _doHwayeom(s) {
     const result = BattleEngine.skillHwayeom(s.player.magic);
 
-    const slots = ['...숨을 멈추고', '...모든 힘을 모아', '...화염 폭발'];
+    const slots = ['화염 폭발'];
     const heroFighter = getFighter('hero');
 
     if (heroFighter) heroFighter.classList.add('charging');
@@ -731,9 +740,10 @@ const DungeonUI = (() => {
       bg.style.filter = 'brightness(0.32) saturate(1.12)';
     }
 
-    [0, 450, 900].forEach((d, i) => {
-      setTimeout(() => showTextPopup('hero', slots[i], 'charging-slot'), d);
-    });
+    // 필살 스킬명은 한 번만 크게 보여줍니다.
+    setTimeout(() => {
+      showTextPopup('hero', '화염 폭발', 'charging-slot', 1500);
+    }, 0);
 
     setTimeout(() => {
       if (heroFighter) heroFighter.classList.remove('charging');
@@ -792,42 +802,85 @@ const DungeonUI = (() => {
   }
 
   // ── 전투 종료 / 결과 ──
-
   function endBattle(result) {
+    // 전투가 끝나면 오른쪽 상단 팝업을 닫습니다.
+    closeTopHudPopup();
     const s = GameState.get();
     if (!s || !s.isRunning) return;
     GameState.setRunning(false); clearTimers();
     if (result === 'victory') {
       setAnim('enemy-spr','dead'); showTextPopup('enemy','VICTORY','block');
-      addLog('🎉 승리! 지식을 되찾았습니다!', 'system'); showResult(true, false);
+      addLog('전투 승리: 지식을 되찾았습니다.', 'system'); showResult(true, false);
     } else if (result === 'defeat') {
       setAnim('hero-spr','dead');
-      addLog('💀 용사가 쓰러졌습니다...', 'system'); showResult(false, false);
+      addLog('전투 실패: 용사가 쓰러졌습니다.', 'system'); 
+      showResult(false, false);
     } else if (result === 'timeout') {
-      addLog('⏰ 시간 초과! 패배...', 'system'); showResult(false, true);
+      addLog('시간 초과: 전투에 실패했습니다.', 'system'); 
+      showResult(false, true);
     }
   }
 
   function showResult(isWin, isTimeout) {
-    setTimeout(() => {
-      const s = GameState.get();
-      if (!s) return;
-      if (isWin) {
-        $('r-emoji').textContent = '🏆';
-        $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
-        $('r-sub').textContent   = '세계 지식 창고의 지식을 되찾았습니다!';
-        $('r-rewards').innerHTML =
-          '<div class="reward-chip-result">✨ 마법력 +' + s.player.magic + '</div>' +
-          '<div class="reward-chip-result">💪 체력 +' + s.player.stamina + '</div>' +
-          '<div class="reward-chip-result">🏅 던전 클리어!</div>';
-      } else {
-        $('r-emoji').textContent = isTimeout ? '⏰' : '💀';
-        $('r-title').textContent = isTimeout ? '시간 초과!' : '패배...';
-        $('r-sub').textContent   = '더 많이 책을 읽고 능력치를 올려보세요!';
-        $('r-rewards').innerHTML = '<div class="reward-chip-result">다시 도전하면 더 강해질 거예요 💪</div>';
-      }
-      showScreen('s-result');
-    }, 1200);
+  setTimeout(() => {
+    const s = GameState.get();
+    if (!s) return;
+
+    const resultWrap = document.getElementById('result-wrap');
+
+    if (resultWrap) {
+      resultWrap.classList.remove('victory-result', 'defeat-result', 'timeout-result');
+      resultWrap.classList.add(isWin ? 'victory-result' : (isTimeout ? 'timeout-result' : 'defeat-result'));
+    }
+
+    if (isWin) {
+      $('r-emoji').textContent = '🏆';
+      $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
+      $('r-sub').textContent = '세계 지식 창고의 지식을 되찾았습니다!';
+      $('r-rewards').innerHTML =
+        '<div class="reward-chip-result">마법력 +' + s.player.magic + '</div>' +
+        '<div class="reward-chip-result">체력 +' + s.player.stamina + '</div>' +
+        '<div class="reward-chip-result">던전 클리어!</div>';
+    } else {
+      // 패배 / 시간 초과 결과 화면
+      $('r-emoji').textContent = isTimeout ? '⌛' : '☠';
+      $('r-title').textContent = isTimeout ? '시간이 모두 지났습니다' : '전투에 실패했습니다';
+
+      $('r-sub').innerHTML = isTimeout
+        ? '제한 시간 안에 용을 물리치지 못했어요.<br>능력치를 더 키운 뒤 다시 도전해 보세요.'
+        : '이번 전투에서는 용을 물리치지 못했어요.<br>능력치를 더 키운 뒤 다시 도전해 보세요.';
+
+      $('r-rewards').innerHTML = `
+        <div class="result-tip-line">
+          질문 활동으로 힘을 모으면 전투가 더 쉬워집니다.
+        </div>
+      `;
+    }
+
+    showScreen('s-result');
+
+    // 결과 화면의 다시 도전하기 버튼 연결
+    const retryBtn = document.getElementById('retry-dungeon-btn');
+
+    if (retryBtn) {
+      retryBtn.onclick = function () {
+        // 결과 화면에서 현재 던전을 바로 다시 시작합니다.
+        startBattle(_currentDungeonIdx);
+      };
+    }
+  }, 1200);
+}
+
+  // 결과 화면에서 현재 던전을 다시 도전합니다.
+  function restartCurrentDungeon() {
+    const s = GameState.get();
+
+    if (!s || !s.dungeon || !s.dungeon.id) {
+      goToMap();
+      return;
+    }
+
+    DungeonUI.startBattle(s.dungeon.id);
   }
 
   function goToMap() { clearTimers(); showScreen('s-map'); }
@@ -850,3 +903,300 @@ function startDefend()       { DungeonUI.startDefend(); }
 function stopDefend()        { DungeonUI.stopDefend(); }
 function useSkill(name)      { DungeonUI.useSkill(name); }
 function switchSkillTab(tab) { DungeonUI.switchSkillTab(tab); }
+
+// 결과 화면에서 현재 던전을 다시 도전합니다.
+function restartCurrentDungeon() {
+  const s = GameState.get();
+
+  // 현재 던전 정보가 없으면 던전 선택 화면으로 돌아갑니다.
+  if (!s || !s.dungeon || !s.dungeon.id) {
+    goToMap();
+    return;
+  }
+
+  // 열려 있는 오른쪽 상단 팝업이 있으면 닫습니다.
+  const topPopup = document.getElementById('top-hud-popup');
+  if (topPopup) {
+    topPopup.classList.remove('visible');
+    topPopup.setAttribute('aria-hidden', 'true');
+  }
+
+  // 현재 던전으로 다시 전투를 시작합니다.
+  startBattle(s.dungeon.id);
+}
+
+// 오른쪽 상단 알림/도움말/설정 팝업을 여는 함수입니다.
+// 현재 알림과 설정은 프론트 화면 확인용 임시 UI입니다.
+// 추후 백엔드 연동 시 학생별 알림 목록, 읽음 처리, 설정 저장 기능과 연결할 예정입니다.
+function openTopHudPopup(type) {
+  const popup = document.getElementById('top-hud-popup');
+  const card = document.getElementById('top-hud-popup-card');
+  const kicker = document.getElementById('top-popup-kicker');
+  const title = document.getElementById('top-popup-title');
+  const body = document.getElementById('top-popup-body');
+
+  if (!popup || !card || !kicker || !title || !body) return;
+
+  // 이전 팝업 타입 클래스 제거
+  card.classList.remove('notice-mode', 'guide-mode', 'setting-mode');
+
+  if (type === 'notice') {
+    card.classList.add('notice-mode');
+    kicker.textContent = '알림';
+    title.textContent = '알림 센터';
+
+    // 지금은 프론트 화면 확인용 mock 알림
+    // 나중에 백엔드 알림 API로 교체 가능
+    body.innerHTML = `
+      <div class="notice-stack-panel">
+        <div class="notice-stack-head">
+          <span>최근 알림</span>
+          <small>최신순</small>
+        </div>
+
+        <div class="notice-list">
+          <div class="notice-item newest">
+            <div class="notice-dot-icon"></div>
+            <div class="notice-content">
+              <strong>전투 준비 완료</strong>
+              <p>초급 던전에 입장할 수 있습니다.</p>
+              <small>방금 전</small>
+            </div>
+          </div>
+
+          <div class="notice-item">
+            <div class="notice-dot-icon"></div>
+            <div class="notice-content">
+              <strong>능력치 확인 가능</strong>
+              <p>읽기 활동으로 쌓은 능력치를 확인해 보세요.</p>
+              <small>3분 전</small>
+            </div>
+          </div>
+
+          <div class="notice-item">
+            <div class="notice-dot-icon muted"></div>
+            <div class="notice-content">
+              <strong>문답책의 조언</strong>
+              <p>좋은 질문은 전투에서 더 강한 힘이 됩니다.</p>
+              <small>오늘</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (type === 'guide') {
+    card.classList.add('guide-mode');
+    kicker.textContent = '전투 도움말';
+    title.textContent = '스킬 사용 안내';
+
+    body.innerHTML = `
+      <div class="guide-panel">
+        <div class="guide-row">
+          <strong>공격</strong>
+          <p>일격은 빠르게 공격하고, 연속 베기는 두 번 공격합니다.</p>
+        </div>
+        <div class="guide-row">
+          <strong>방어</strong>
+          <p>방어는 피해를 줄이고, 철벽은 짧은 시간 동안 강하게 막습니다.</p>
+        </div>
+        <div class="guide-row">
+          <strong>필살</strong>
+          <p>불꽃 베기와 화염 폭발은 큰 피해를 주는 강한 스킬입니다.</p>
+        </div>
+      </div>
+    `;
+  } else {
+    card.classList.add('setting-mode');
+    kicker.textContent = '설정';
+    title.textContent = '전투 설정';
+
+    // 실제 설정 기능은 추후 연결
+    // 지금은 카테고리별 화면만 먼저 구성
+    body.innerHTML = `
+      <div class="setting-panel">
+        <div class="setting-tabs">
+          <button class="setting-tab active" type="button" onclick="switchSettingPanel('screen', this)">화면</button>
+          <button class="setting-tab" type="button" onclick="switchSettingPanel('sound', this)">음향</button>
+          <button class="setting-tab" type="button" onclick="switchSettingPanel('battle', this)">전투</button>
+          <button class="setting-tab" type="button" onclick="switchSettingPanel('effect', this)">효과</button>
+        </div>
+
+        <div class="setting-content" id="setting-content">
+          ${getSettingPanelHtml('screen')}
+        </div>
+      </div>
+    `;
+  }
+
+  popup.classList.add('visible');
+  popup.setAttribute('aria-hidden', 'false');
+}
+
+// 오른쪽 상단 버튼 팝업 닫기
+function closeTopHudPopup() {
+  const popup = document.getElementById('top-hud-popup');
+  if (!popup) return;
+
+  popup.classList.remove('visible');
+  popup.setAttribute('aria-hidden', 'true');
+}
+
+// 설정창 카테고리 전환
+function switchSettingPanel(type, clickedBtn) {
+  const content = document.getElementById('setting-content');
+  if (!content) return;
+
+  // 왼쪽 카테고리 버튼 active 표시 변경
+  document.querySelectorAll('.setting-tab').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  if (clickedBtn) clickedBtn.classList.add('active');
+
+  // 오른쪽 설정 내용 교체
+  content.innerHTML = getSettingPanelHtml(type);
+}
+
+// 설정 팝업의 오른쪽 내용을 만드는 함수입니다.
+// 현재는 화면에 설정 항목을 보여주는 mock UI이며 실제 저장 기능은 없습니다.
+// 추후 학생별 설정 API 또는 저장소와 연결해 효과음, 알림음, 전투 이펙트 설정을 실제로 반영할 예정입니다.
+function getSettingPanelHtml(type) {
+  if (type === 'sound') {
+    return `
+      <div class="setting-section-title">음향 설정</div>
+
+      <div class="setting-row">
+        <div>
+          <strong>전체 음량</strong>
+          <p>전투 효과음과 알림음의 전체 크기를 조절합니다.</p>
+        </div>
+        <button class="setting-fake-select" type="button">80%</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>효과음</strong>
+          <p>공격, 방어, 피격 효과음을 재생합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>알림음</strong>
+          <p>전투 알림이 뜰 때 짧은 소리를 재생합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-footer">
+        <button class="setting-apply-btn" type="button">확인</button>
+        <button class="setting-cancel-btn" type="button" onclick="closeTopHudPopup()">취소</button>
+      </div>
+    `;
+  }
+
+  if (type === 'battle') {
+    return `
+      <div class="setting-section-title">전투 설정</div>
+
+      <div class="setting-row">
+        <div>
+          <strong>전투 속도</strong>
+          <p>스킬 모션과 적 공격 흐름의 기본 속도입니다.</p>
+        </div>
+        <button class="setting-fake-select" type="button">보통</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>스킬 쿨타임 표시</strong>
+          <p>스킬을 다시 사용할 수 있는 시간을 표시합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>전투 로그</strong>
+          <p>공격과 방어 결과를 왼쪽 로그에 기록합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-footer">
+        <button class="setting-apply-btn" type="button">확인</button>
+        <button class="setting-cancel-btn" type="button" onclick="closeTopHudPopup()">취소</button>
+      </div>
+    `;
+  }
+
+  if (type === 'effect') {
+    return `
+      <div class="setting-section-title">효과 설정</div>
+
+      <div class="setting-row">
+        <div>
+          <strong>전투 이펙트</strong>
+          <p>불꽃, 방어막, 피격 효과를 표시합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>데미지 숫자</strong>
+          <p>공격 시 피해량을 화면에 표시합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <strong>화면 흔들림</strong>
+          <p>강한 공격을 사용할 때 화면 흔들림을 표시합니다.</p>
+        </div>
+        <button class="setting-toggle on" type="button">켜짐</button>
+      </div>
+
+      <div class="setting-footer">
+        <button class="setting-apply-btn" type="button">확인</button>
+        <button class="setting-cancel-btn" type="button" onclick="closeTopHudPopup()">취소</button>
+      </div>
+    `;
+  }
+
+  // 기본값: 화면 설정
+  return `
+    <div class="setting-section-title">화면 설정</div>
+
+    <div class="setting-row">
+      <div>
+        <strong>화면 모드</strong>
+        <p>현재 브라우저 화면에 맞춰 표시됩니다.</p>
+      </div>
+      <button class="setting-fake-select" type="button">전체 화면</button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <strong>해상도</strong>
+        <p>발표 화면 기준에 맞춰 표시됩니다.</p>
+      </div>
+      <button class="setting-fake-select" type="button">자동</button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <strong>UI 크기</strong>
+        <p>전투 화면의 버튼과 패널 크기입니다.</p>
+      </div>
+      <button class="setting-fake-select" type="button">기본</button>
+    </div>
+
+    <div class="setting-footer">
+      <button class="setting-apply-btn" type="button">확인</button>
+      <button class="setting-cancel-btn" type="button" onclick="closeTopHudPopup()">취소</button>
+    </div>
+  `;
+}

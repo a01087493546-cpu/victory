@@ -37,10 +37,9 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
-            <button class="dungeon-list-item locked" id="list-1" type="button" onclick="selectDungeon(1)">
-              <div class="list-thumb locked-thumb">
+            <button class="dungeon-list-item" id="list-1" type="button" onclick="selectDungeon(1)">
+              <div class="list-thumb">
                 <img src="images/dragon_idle.png" alt="중급 던전">
-                <div class="lock-overlay">🔒</div>
               </div>
               <div class="list-info">
                 <div class="list-name">중급 던전</div>
@@ -48,10 +47,9 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
-            <button class="dungeon-list-item locked" id="list-2" type="button" onclick="selectDungeon(2)">
-              <div class="list-thumb locked-thumb">
+            <button class="dungeon-list-item" id="list-2" type="button" onclick="selectDungeon(2)">
+              <div class="list-thumb">
                 <img src="images/elder_idle.png" alt="고급 던전">
-                <div class="lock-overlay">🔒</div>
               </div>
               <div class="list-info">
                 <div class="list-name">고급 던전</div>
@@ -161,7 +159,7 @@
                 <strong id="hud-magic">50</strong>
               </div>
               <div class="hud-stat-row">
-                <span class="hud-stat-label"><span class="stat-symbol hp-symbol">♥</span> 체력</span>
+                <span class="hud-stat-label"><span class="stat-symbol hp-symbol">♥</span> 최대 생명력</span>
                 <strong id="hud-hp">120</strong>
               </div>
               <div class="hud-stat-row">
@@ -230,14 +228,18 @@
           <small>코인</small>
           <strong>35</strong>
         </div>
-        <button class="top-icon-btn">
-          <span class="top-ui-symbol notice-symbol">◉</span>
+        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('notice')" title="알림">
+          <span class="top-ui-symbol notice-symbol">🔔</span>
           <span class="notice-dot"></span>
         </button>
-        <button class="top-icon-btn">
-          <span class="top-ui-symbol setting-symbol">✧</span>
+
+        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('guide')" title="전투 도움말">
+          <span class="top-ui-symbol guide-symbol">?</span>
         </button>
-        <button class="top-icon-btn">⚙️</button>
+
+        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('setting')" title="설정">
+          <span class="top-ui-symbol setting-symbol">⚙</span>
+        </button>
       </div>
     </div>
 
@@ -310,7 +312,7 @@
           <strong id="battle-hud-magic">10</strong>
         </div>
         <div class="battle-stat-row">
-          <span><span class="stat-symbol hp-symbol">♥</span> 체력</span>
+          <span><span class="stat-symbol hp-symbol">♥</span> 최대 생명력</span>
           <strong id="battle-hud-stamina">150</strong>
         </div>
         <div class="battle-stat-row">
@@ -421,12 +423,26 @@
 
   <!-- 화면3: 결과 -->
   <div class="screen" id="s-result">
-    <div class="result-wrap">
+    <div class="result-wrap" id="result-wrap">
       <div class="result-emoji" id="r-emoji">🏆</div>
+
       <div class="result-title" id="r-title">승리!</div>
-      <div class="result-sub" id="r-sub">용을 물리쳤습니다!</div>
+
+      <div class="result-sub" id="r-sub">
+        용을 물리쳤습니다!
+      </div>
+
       <div class="reward-row" id="r-rewards"></div>
-      <button class="enter-btn" onclick="goToMap()">던전 선택으로 돌아가기</button>
+
+      <div class="result-actions">
+        <button class="result-primary-btn" type="button" id="retry-dungeon-btn">
+          다시 도전하기
+        </button>
+
+        <button class="result-secondary-btn" type="button" onclick="goToMap()">
+          던전 선택으로 돌아가기
+        </button>
+      </div>
     </div>
   </div>
 
@@ -449,6 +465,11 @@
         glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,95,35,0.38), rgba(255,183,74,0.12) 38%, transparent 70%)',
         locked: false, lockedMessage: ''
       },
+
+      // 개발 중 테스트용으로 중급 던전 잠금을 임시 해제한 상태입니다.
+      // 추후 백엔드 연동 시 학생별 읽은 책 수, 클리어 기록 등을 기준으로
+      // 잠금 여부를 다시 판단하도록 수정할 예정입니다.
+      
       {
         img: 'images/dragon_idle.png', bg: 'images/bg_dragon.png',
         diff: '★★ 중급', name: '중급 던전',
@@ -458,6 +479,11 @@
         glowColor: 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
         locked: true, lockedMessage: '초급 던전 클리어 후 입장 가능'
       },
+
+      // 개발 중 테스트용으로 고급 던전 잠금을 임시 해제한 상태입니다.
+      // 추후 백엔드 연동 시 학생별 읽은 책 수, 클리어 기록 등을 기준으로
+      // 잠금 여부를 다시 판단하도록 수정할 예정입니다.
+
       {
         img: 'images/elder_idle.png', bg: 'images/bg_elder.png',
         diff: '★★★ 고급', name: '고급 던전',
@@ -496,19 +522,30 @@
         rewardArea.appendChild(chip);
       });
       const enterBtn = document.getElementById('enter-btn');
-      if (info.locked) {
-        enterBtn.disabled = true;
-        enterBtn.innerHTML = '<span class="btn-icon">🔒</span><span>잠금 해제 필요</span>';
-        enterBtn.classList.add('locked');
-      } else {
-        enterBtn.disabled = false;
-        enterBtn.innerHTML = '<span class="btn-icon">⚔</span><span>던전 입장하기</span>';
-        enterBtn.classList.remove('locked');
-      }
+
+      // 개발 중 테스트용: 중급/고급 던전도 임시로 입장 가능하게 합니다.
+      // 실제 제출 전에는 아래 4줄을 원래 locked 조건 코드로 되돌리면 됩니다.
+      enterBtn.disabled = false;
+      enterBtn.innerHTML = '<span class="btn-icon">⚔</span><span>던전 입장하기</span>';
+      enterBtn.classList.remove('locked');
     }
 
     selectDungeon(0);
   </script>
 
+  <!-- 오른쪽 상단 버튼 팝업 -->
+  <div class="top-hud-popup" id="top-hud-popup" aria-hidden="true">
+    <div class="top-hud-popup-card" id="top-hud-popup-card">
+      <button class="top-hud-popup-close" type="button" onclick="closeTopHudPopup()">×</button>
+
+      <div class="top-hud-popup-kicker" id="top-popup-kicker">알림</div>
+      <h3 class="top-hud-popup-title" id="top-popup-title">새 알림</h3>
+
+      <!-- 알림 / 도움말 / 설정 내용이 JS로 들어오는 영역 -->
+      <div class="top-hud-popup-body" id="top-popup-body">
+        아직 확인할 알림이 없습니다.
+      </div>
+    </div>
+  </div>
 </body>
 </html>
