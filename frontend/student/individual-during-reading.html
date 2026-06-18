@@ -30,7 +30,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=individual-during-reading-v3">
-
+<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
   <style>
     html,
     body {
@@ -1273,6 +1274,3043 @@
         font-size: 22px;
       }
     }
+
+    /*
+      =========================================================
+      최종 정리본: 개별읽기 읽기 중 > 질문 만들기 화면
+      ---------------------------------------------------------
+      이 블록은 앞에서 여러 번 덧붙인 CSS를 최종적으로 덮어씁니다.
+      목표:
+      1. 상단 제목 바 제거
+      2. 날짜는 전체 상단바에 표시
+      3. 질문 만들기 카드 내부 여백/입력칸/글자 위치 정리
+      4. 오늘 만든 질문 카드에서 쪽수 표시 제거
+      5. 질문 나누기 패널은 제목 + 넓은 버튼만 표시
+      6. 질문은 3개 선택해야 질문 나누기 버튼 활성화
+      =========================================================
+    */
+
+    .idr-top-date {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 205px !important;
+      height: 42px !important;
+      padding: 0 18px !important;
+      line-height: 1 !important;
+      background: rgba(255, 248, 230, 0.96) !important;
+      color: #6a3d17 !important;
+      cursor: default !important;
+      white-space: nowrap !important;
+    }
+
+    .idr-question-screen.active {
+      display: grid !important;
+      grid-template-rows: minmax(0, 1fr) 142px !important;
+      gap: 14px !important;
+      width: min(1220px, 100%) !important;
+      max-width: 1220px !important;
+      margin: 0 auto !important;
+      min-height: 0 !important;
+    }
+
+    .idr-question-top {
+      display: none !important;
+    }
+
+    .idr-question-main {
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr) !important;
+      gap: 18px !important;
+    }
+
+    .idr-question-panel,
+    .idr-today-panel,
+    .idr-feedback-panel,
+    .idr-share-panel {
+      border-radius: 28px !important;
+      background: rgba(255, 251, 242, 0.88) !important;
+      border: 1px solid rgba(180, 116, 34, 0.20) !important;
+      box-shadow:
+        0 16px 26px rgba(92, 58, 18, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.60) !important;
+      overflow: hidden !important;
+    }
+
+    /*
+      질문 만들기 카드 내부:
+      - 제목 영역은 여유 있게
+      - 질문 유형은 위쪽에 붙임
+      - 질문/답 칸은 각각 충분한 높이를 확보
+      - 하단 버튼은 카드 하단에 자연스럽게 고정
+    */
+    .idr-question-panel {
+      padding: 24px 28px 22px !important;
+      display: grid !important;
+      grid-template-rows:
+        40px
+        1px
+        72px
+        minmax(126px, 1fr)
+        minmax(128px, 1.02fr)
+        54px !important;
+      gap: 12px !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .idr-question-panel .idr-panel-title {
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      color: #4e2d10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 29px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.045em !important;
+      line-height: 1.1 !important;
+    }
+
+    .idr-question-panel .idr-divider {
+      height: 1px !important;
+      margin: 0 !important;
+      background: rgba(180, 116, 34, 0.16) !important;
+    }
+
+    .idr-question-panel .idr-field {
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .idr-question-panel .idr-field:first-of-type {
+      display: grid !important;
+      grid-template-rows: 18px 42px !important;
+      gap: 8px !important;
+      align-content: start !important;
+    }
+
+    .idr-question-panel .idr-field:first-of-type label {
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      color: #4f2d11 !important;
+      font-size: 14px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+    }
+
+    .idr-question-type-row {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      margin: 0 !important;
+      align-items: start !important;
+    }
+
+    .idr-type-button {
+      width: 100% !important;
+      height: 42px !important;
+      border-radius: 14px !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    /*
+      질문 쓰기 / 내 생각 답 영역:
+      첫 줄 = 라벨 + 글자 수
+      둘째 줄 = 입력칸
+    */
+    .idr-question-panel .idr-field:nth-of-type(2),
+    .idr-question-panel .idr-field:nth-of-type(3) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-rows: 22px minmax(0, 1fr) !important;
+      gap: 8px 10px !important;
+      position: relative !important;
+      height: auto !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+    }
+
+    .idr-question-panel .idr-field:nth-of-type(2) label,
+    .idr-question-panel .idr-field:nth-of-type(3) label {
+      grid-column: 1 / 2 !important;
+      grid-row: 1 / 2 !important;
+      display: flex !important;
+      align-items: center !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      color: #4f2d11 !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+    }
+
+    .idr-question-panel .idr-field:nth-of-type(2) .idr-count-row,
+    .idr-question-panel .idr-field:nth-of-type(3) .idr-count-row {
+      grid-column: 2 / 3 !important;
+      grid-row: 1 / 2 !important;
+      position: static !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      width: auto !important;
+      height: 22px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      color: #b48938 !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+      z-index: 10 !important;
+    }
+
+    #questionLength,
+    #answerLength {
+      position: static !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      color: #b48938 !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+    }
+
+    .idr-question-panel .idr-field:nth-of-type(2) .idr-textarea,
+    .idr-question-panel .idr-field:nth-of-type(3) .idr-textarea {
+      grid-column: 1 / 3 !important;
+      grid-row: 2 / 3 !important;
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+      padding: 15px 17px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(171, 108, 31, 0.22) !important;
+      background: rgba(255, 250, 237, 0.96) !important;
+      color: #4d2b10 !important;
+      font-size: 15px !important;
+      font-weight: 850 !important;
+      line-height: 1.5 !important;
+      resize: none !important;
+      overflow-y: auto !important;
+      outline: none !important;
+    }
+
+    .idr-question-panel .idr-field:nth-of-type(2) .idr-textarea::placeholder,
+    .idr-question-panel .idr-field:nth-of-type(3) .idr-textarea::placeholder {
+      color: rgba(111, 72, 29, 0.48) !important;
+    }
+
+    .idr-question-actions {
+      display: grid !important;
+      grid-template-columns: 150px minmax(0, 1fr) !important;
+      gap: 12px !important;
+      align-self: end !important;
+      margin: 0 !important;
+      min-height: 0 !important;
+    }
+
+    .idr-question-actions .idr-main-button {
+      height: 52px !important;
+      border-radius: 999px !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+    }
+
+    /*
+      오늘 만든 질문 카드 정리
+    */
+    .idr-today-panel {
+      padding: 24px 24px 22px !important;
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+      min-height: 0 !important;
+    }
+
+    .idr-panel-head h2 {
+      font-size: 29px !important;
+      line-height: 1.12 !important;
+    }
+
+    .idr-panel-head p {
+      font-size: 13px !important;
+      line-height: 1.4 !important;
+    }
+
+    .idr-select-badge {
+      min-width: 112px !important;
+      height: 40px !important;
+      font-size: 13px !important;
+    }
+
+    .idr-question-card {
+      position: relative !important;
+      padding: 15px 92px 15px 16px !important;
+      border-radius: 18px !important;
+    }
+
+    .idr-question-card .idr-question-card-top {
+      justify-content: flex-start !important;
+      margin-bottom: 7px !important;
+    }
+
+    .idr-question-card > .idr-pill-button {
+      position: absolute !important;
+      right: 15px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      min-width: 62px !important;
+      height: 36px !important;
+      padding: 0 13px !important;
+      font-size: 13px !important;
+      box-shadow: none !important;
+    }
+
+    /*
+      하단 영역:
+      루미 피드백은 넓게, 질문 나누기는 제목+넓은 버튼만
+    */
+    .idr-question-bottom {
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 390px !important;
+      gap: 18px !important;
+    }
+
+    .idr-feedback-panel {
+      display: grid !important;
+      grid-template-columns: 100px minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: center !important;
+      padding: 18px 22px !important;
+    }
+
+    .idr-feedback-lumi {
+      width: 92px !important;
+      height: 116px !important;
+      object-fit: contain !important;
+      object-position: bottom center !important;
+    }
+
+    .idr-feedback-title {
+      margin: 0 !important;
+      font-size: 24px !important;
+      line-height: 1.15 !important;
+    }
+
+    .idr-feedback-box {
+      min-height: 58px !important;
+      padding: 12px 16px !important;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+    }
+
+    .idr-share-panel {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      justify-items: stretch !important;
+      align-items: stretch !important;
+      padding: 22px 24px !important;
+      min-height: 0 !important;
+    }
+
+    .idr-share-panel h2 {
+      display: block !important;
+      justify-self: start !important;
+      align-self: start !important;
+      margin: 0 !important;
+      text-align: left !important;
+      color: #4e2d10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 24px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.045em !important;
+      line-height: 1.15 !important;
+    }
+
+    .idr-share-panel p,
+    .idr-share-help {
+      display: none !important;
+    }
+
+    #bottomShareButton,
+    .idr-share-panel .idr-main-button {
+      align-self: center !important;
+      justify-self: stretch !important;
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
+      height: 56px !important;
+      padding: 0 18px !important;
+      border-radius: 999px !important;
+      font-size: 16px !important;
+      font-weight: 950 !important;
+    }
+
+    @media (max-height: 760px) {
+      .idr-question-screen.active {
+        grid-template-rows: minmax(0, 1fr) 128px !important;
+        gap: 12px !important;
+      }
+
+      .idr-question-main {
+        gap: 16px !important;
+      }
+
+      .idr-question-panel {
+        padding: 20px 24px 18px !important;
+        grid-template-rows:
+          34px
+          1px
+          64px
+          minmax(112px, 1fr)
+          minmax(112px, 1fr)
+          50px !important;
+        gap: 9px !important;
+      }
+
+      .idr-question-panel .idr-panel-title {
+        font-size: 26px !important;
+      }
+
+      .idr-question-panel .idr-field:first-of-type {
+        grid-template-rows: 16px 38px !important;
+        gap: 7px !important;
+      }
+
+      .idr-type-button {
+        height: 38px !important;
+        font-size: 12px !important;
+      }
+
+      .idr-question-panel .idr-field:nth-of-type(2),
+      .idr-question-panel .idr-field:nth-of-type(3) {
+        grid-template-rows: 20px minmax(0, 1fr) !important;
+        gap: 7px 10px !important;
+      }
+
+      .idr-question-actions .idr-main-button {
+        height: 48px !important;
+      }
+
+      .idr-question-bottom {
+        grid-template-columns: minmax(0, 1fr) 370px !important;
+      }
+
+      .idr-feedback-panel {
+        grid-template-columns: 84px minmax(0, 1fr) !important;
+        padding: 14px 18px !important;
+      }
+
+      .idr-feedback-lumi {
+        width: 80px !important;
+        height: 102px !important;
+      }
+
+      #bottomShareButton,
+      .idr-share-panel .idr-main-button {
+        height: 52px !important;
+      }
+    }
+
+
+    /*
+      =========================================================
+      질문 나누기 화면 최종 정리
+      ---------------------------------------------------------
+      연습읽기 질문 나누기 화면 구조와 비슷하게 맞추되,
+      개별읽기에서는 다음 기능을 유지합니다.
+      1. 친구 질문에 대한 내 생각 쓰기
+      2. 내 책에 맞게 비슷한 질문으로 바꾸기
+      3. 댓글이 많은 질문을 BEST 질문으로 맨 위 자동 배치
+      =========================================================
+    */
+
+    #shareScreen.idr-work-screen.active {
+      display: grid !important;
+      grid-template-rows: 86px 210px 60px minmax(0, 1fr) !important;
+      gap: 14px !important;
+      width: min(1160px, 100%) !important;
+      max-width: 1160px !important;
+      margin: 0 auto !important;
+      min-height: 0 !important;
+    }
+
+    #shareScreen .idr-work-header {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      place-items: center !important;
+      padding: 18px 24px !important;
+      border-radius: 26px !important;
+      text-align: center !important;
+      background: rgba(255, 251, 242, 0.84) !important;
+    }
+
+    #shareScreen .idr-work-header h1 {
+      margin: 0 !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 38px !important;
+      font-weight: 950 !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.055em !important;
+      text-align: center !important;
+    }
+
+    #shareScreen .idr-work-header p {
+      margin: 7px 0 0 !important;
+      color: #6e431b !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+    }
+
+    #shareScreen .idr-work-actions {
+      display: none !important;
+    }
+
+    /*
+      상단 안내/현황 영역
+    */
+    #shareScreen .idr-share-layout {
+      display: contents !important;
+    }
+
+    #shareScreen .idr-share-list-card {
+      grid-row: 4 !important;
+      grid-column: 1 !important;
+    }
+
+    #shareScreen .idr-selected-card {
+      grid-row: 4 !important;
+      grid-column: 2 !important;
+    }
+
+    #shareScreen::before {
+      content: "";
+      grid-row: 2 !important;
+      grid-column: 1 / -1 !important;
+      border-radius: 28px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background:
+        linear-gradient(90deg, rgba(255, 252, 244, 0.90), rgba(255, 247, 230, 0.78)),
+        url("../assets/images/individual-reading/individual-during-lumi-guide.png") 40px bottom / 160px auto no-repeat !important;
+      box-shadow:
+        0 16px 28px rgba(92, 58, 18, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.60) !important;
+      backdrop-filter: blur(8px) !important;
+    }
+
+    #shareScreen::after {
+      content: "친구들이 만든 질문을 살펴보고\A내 생각을 답으로 적어보자!";
+      white-space: pre-line !important;
+      grid-row: 2 !important;
+      grid-column: 1 / -1 !important;
+      align-self: center !important;
+      justify-self: start !important;
+      margin-left: 230px !important;
+      width: min(430px, 44%) !important;
+      padding: 24px 28px !important;
+      border-radius: 24px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 251, 242, 0.90) !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 22px !important;
+      font-weight: 950 !important;
+      line-height: 1.45 !important;
+      letter-spacing: -0.04em !important;
+      box-shadow: 0 14px 22px rgba(92, 58, 18, 0.08) !important;
+      z-index: 1 !important;
+    }
+
+    #shareScreen .idr-filter-row {
+      grid-row: 3 !important;
+      grid-column: 1 / -1 !important;
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) 150px !important;
+      gap: 10px !important;
+      padding: 12px 16px !important;
+      border-radius: 22px !important;
+      border: 1px solid rgba(180, 116, 34, 0.16) !important;
+      background: rgba(255, 251, 242, 0.88) !important;
+      box-shadow: 0 12px 20px rgba(92, 58, 18, 0.08) !important;
+    }
+
+    #shareScreen .idr-filter-button {
+      height: 42px !important;
+      border-radius: 14px !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      background: rgba(255, 250, 237, 0.94) !important;
+    }
+
+    #shareScreen .idr-filter-button.active {
+      color: #fff8e8 !important;
+      background: linear-gradient(180deg, #e6b656, #a8641e) !important;
+      box-shadow: 0 9px 16px rgba(128, 76, 18, 0.14) !important;
+    }
+
+    /*
+      하단 2열: 친구 질문 카드 / 선택한 질문
+    */
+    #shareScreen .idr-share-list-card,
+    #shareScreen .idr-selected-card {
+      min-height: 0 !important;
+      padding: 22px 22px !important;
+      border-radius: 28px !important;
+      background: rgba(255, 251, 242, 0.88) !important;
+      border: 1px solid rgba(180, 116, 34, 0.20) !important;
+      box-shadow:
+        0 16px 26px rgba(92, 58, 18, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.60) !important;
+      overflow: hidden !important;
+    }
+
+    #shareScreen .idr-share-list-card {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+    }
+
+    #shareScreen .idr-selected-card {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+    }
+
+    #shareScreen .idr-section-title {
+      margin: 0 !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 27px !important;
+      font-weight: 950 !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.045em !important;
+    }
+
+    #shareScreen .idr-list-scroll,
+    #shareScreen .idr-selected-content {
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      display: grid !important;
+      align-content: start !important;
+      gap: 12px !important;
+      padding-right: 6px !important;
+    }
+
+    #shareScreen .idr-share-card {
+      padding: 16px 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 252, 244, 0.88) !important;
+      border: 1px solid rgba(181, 117, 37, 0.18) !important;
+      cursor: pointer !important;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease !important;
+    }
+
+    #shareScreen .idr-share-card:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 20px rgba(92, 58, 18, 0.10) !important;
+    }
+
+    #shareScreen .idr-share-card.selected {
+      border-color: rgba(187, 113, 26, 0.58) !important;
+      box-shadow: 0 12px 22px rgba(130, 76, 18, 0.11) !important;
+    }
+
+    #shareScreen .idr-question-card-top {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      margin-bottom: 8px !important;
+      color: #9a631e !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-share-card strong {
+      display: block !important;
+      margin-bottom: 8px !important;
+      color: #4d2b10 !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      line-height: 1.35 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-share-card p {
+      margin: 0 !important;
+      color: #416928 !important;
+      font-size: 13px !important;
+      font-weight: 850 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    .idr-best-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 24px !important;
+      padding: 0 9px !important;
+      margin-left: 6px !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #e8bc55, #b87622) !important;
+      color: #fff8e8 !important;
+      font-size: 11px !important;
+      font-weight: 950 !important;
+      vertical-align: middle !important;
+      box-shadow: 0 6px 12px rgba(128, 76, 18, 0.16) !important;
+    }
+
+    .idr-comment-count {
+      color: #9a631e !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    /*
+      오른쪽 선택 질문 영역
+    */
+    #shareScreen .idr-selected-question {
+      padding: 18px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 252, 244, 0.90) !important;
+      border: 1px solid rgba(181, 117, 37, 0.18) !important;
+    }
+
+    #shareScreen .idr-selected-question h3 {
+      margin: 0 0 12px !important;
+      color: #4d2b10 !important;
+      font-size: 23px !important;
+      font-weight: 950 !important;
+      line-height: 1.35 !important;
+      letter-spacing: -0.04em !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-question p {
+      margin: 0 !important;
+      padding: 13px 15px !important;
+      border-radius: 16px !important;
+      background: rgba(241, 253, 232, 0.80) !important;
+      border: 1px solid rgba(101, 145, 66, 0.18) !important;
+      color: #355628 !important;
+      font-size: 14px !important;
+      font-weight: 850 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-question p strong {
+      display: block !important;
+      margin-bottom: 4px !important;
+      color: #527831 !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-friend-replies {
+      padding: 16px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 250, 237, 0.76) !important;
+      border: 1px solid rgba(181, 117, 37, 0.16) !important;
+    }
+
+    #shareScreen .idr-friend-replies h3 {
+      margin: 0 0 10px !important;
+      color: #4d2b10 !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.03em !important;
+    }
+
+    #shareScreen .idr-reply-item {
+      padding: 12px 13px !important;
+      border-radius: 16px !important;
+      background: rgba(247, 253, 239, 0.84) !important;
+      border: 1px solid rgba(101, 145, 66, 0.18) !important;
+      color: #355628 !important;
+      font-size: 13px !important;
+      font-weight: 850 !important;
+      line-height: 1.42 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-reply-item strong {
+      display: block !important;
+      margin-bottom: 4px !important;
+      color: #527831 !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-reply-box {
+      display: grid !important;
+      gap: 12px !important;
+      padding: 18px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 252, 244, 0.90) !important;
+      border: 1px solid rgba(181, 117, 37, 0.18) !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-field {
+      display: grid !important;
+      gap: 8px !important;
+    }
+
+    #shareScreen .idr-reply-box label {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      color: #4f2d11 !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+    }
+
+    #shareScreen .idr-reply-box label span {
+      color: #b48938 !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-textarea {
+      min-height: 112px !important;
+      height: 112px !important;
+      padding: 15px 17px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 250, 237, 0.96) !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+      resize: none !important;
+    }
+
+    #shareScreen .idr-reply-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 12px !important;
+    }
+
+    #shareScreen .idr-reply-actions .idr-main-button {
+      height: 52px !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      border-radius: 999px !important;
+    }
+
+    @media (max-height: 760px) {
+      #shareScreen.idr-work-screen.active {
+        grid-template-rows: 76px 178px 54px minmax(0, 1fr) !important;
+        gap: 12px !important;
+      }
+
+      #shareScreen .idr-work-header h1 {
+        font-size: 34px !important;
+      }
+
+      #shareScreen::before {
+        background:
+          linear-gradient(90deg, rgba(255, 252, 244, 0.90), rgba(255, 247, 230, 0.78)),
+          url("../assets/images/individual-reading/individual-during-lumi-guide.png") 38px bottom / 132px auto no-repeat !important;
+      }
+
+      #shareScreen::after {
+        margin-left: 196px !important;
+        padding: 20px 24px !important;
+        font-size: 19px !important;
+      }
+
+      #shareScreen .idr-filter-button {
+        height: 38px !important;
+      }
+
+      #shareScreen .idr-share-list-card,
+      #shareScreen .idr-selected-card {
+        padding: 18px !important;
+      }
+
+      #shareScreen .idr-reply-box .idr-textarea {
+        min-height: 92px !important;
+        height: 92px !important;
+      }
+    }
+
+  
+    /*
+      =========================================================
+      최종 덮어쓰기: 개별읽기 질문 나누기 화면
+      ---------------------------------------------------------
+      연습읽기 질문 나누기 화면과 최대한 같은 구조로 맞춥니다.
+      차이점:
+      - 개별읽기는 같은 책이 아니므로 정답 맞히기 대신
+        1) 질문에 대한 내 생각 쓰기
+        2) 내 책에 맞게 비슷한 질문 만들기
+        3) 바꾼 질문에 대한 답 적어보기
+        활동을 합니다.
+      =========================================================
+    */
+
+    #shareScreen.idr-work-screen.active {
+      display: grid !important;
+      grid-template-rows: 90px 205px 72px minmax(0, 1fr) !important;
+      gap: 14px !important;
+      width: min(1190px, 100%) !important;
+      max-width: 1190px !important;
+      margin: 0 auto !important;
+      min-height: 0 !important;
+    }
+
+    #shareScreen::before,
+    #shareScreen::after {
+      display: none !important;
+      content: none !important;
+    }
+
+    #shareScreen .idr-share-title-card {
+      display: grid !important;
+      place-items: center !important;
+      padding: 16px 24px !important;
+      border-radius: 28px !important;
+      text-align: center !important;
+      background: rgba(255, 251, 242, 0.88) !important;
+      border: 1px solid rgba(180, 116, 34, 0.20) !important;
+      box-shadow:
+        0 16px 28px rgba(92, 58, 18, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.60) !important;
+    }
+
+    #shareScreen .idr-work-header h1 {
+      margin: 0 !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 38px !important;
+      font-weight: 950 !important;
+      line-height: 1.05 !important;
+      letter-spacing: -0.055em !important;
+      text-align: center !important;
+    }
+
+    #shareScreen .idr-work-header p {
+      margin: 7px 0 0 !important;
+      color: #6e431b !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      text-align: center !important;
+    }
+
+    #shareScreen .idr-share-hero {
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+    }
+
+    #shareScreen .idr-share-guide-card,
+    #shareScreen .idr-share-activity-card,
+    #shareScreen .idr-share-filter-card,
+    #shareScreen .idr-share-list-card,
+    #shareScreen .idr-selected-card {
+      min-height: 0 !important;
+      border-radius: 28px !important;
+      background: rgba(255, 251, 242, 0.88) !important;
+      border: 1px solid rgba(180, 116, 34, 0.20) !important;
+      box-shadow:
+        0 16px 26px rgba(92, 58, 18, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.60) !important;
+      backdrop-filter: blur(8px) !important;
+      overflow: hidden !important;
+    }
+
+    #shareScreen .idr-share-guide-card {
+      display: grid !important;
+      grid-template-columns: 155px minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: center !important;
+      padding: 18px 24px !important;
+    }
+
+    #shareScreen .idr-share-lumi {
+      width: 150px !important;
+      align-self: end !important;
+      justify-self: center !important;
+      object-fit: contain !important;
+      filter: drop-shadow(0 14px 18px rgba(92, 58, 18, 0.14)) !important;
+    }
+
+    #shareScreen .idr-share-speech {
+      position: relative !important;
+      padding: 22px 26px !important;
+      border-radius: 24px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 252, 244, 0.92) !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 22px !important;
+      font-weight: 950 !important;
+      line-height: 1.45 !important;
+      letter-spacing: -0.04em !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-share-speech::before {
+      content: "" !important;
+      position: absolute !important;
+      left: -14px !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      border-top: 12px solid transparent !important;
+      border-bottom: 12px solid transparent !important;
+      border-right: 14px solid rgba(255, 252, 244, 0.92) !important;
+    }
+
+    #shareScreen .idr-share-activity-card {
+      display: grid !important;
+      grid-template-rows: auto 1fr auto !important;
+      gap: 14px !important;
+      align-content: center !important;
+      padding: 24px 26px !important;
+    }
+
+    #shareScreen .idr-share-activity-card h2 {
+      margin: 0 !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 28px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.045em !important;
+    }
+
+    #shareScreen .idr-share-stat-row {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+    }
+
+    #shareScreen .idr-share-stat-box {
+      min-height: 76px !important;
+      padding: 13px 15px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 255, 255, 0.54) !important;
+    }
+
+    #shareScreen .idr-share-stat-box span {
+      display: block !important;
+      color: #8b642f !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-share-stat-box strong {
+      display: block !important;
+      margin-top: 6px !important;
+      color: #4d2b10 !important;
+      font-size: 29px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.04em !important;
+    }
+
+    #shareScreen .idr-share-activity-card p {
+      margin: 0 !important;
+      color: #6f4720 !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-share-filter-card {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 150px !important;
+      gap: 10px !important;
+      align-items: center !important;
+      padding: 14px 18px !important;
+      border-radius: 22px !important;
+    }
+
+    #shareScreen .idr-filter-row {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    #shareScreen .idr-filter-button,
+    #shareScreen .idr-share-sort-select {
+      width: 100% !important;
+      height: 44px !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(174, 109, 27, 0.24) !important;
+      background: rgba(255, 250, 237, 0.94) !important;
+      color: #654018 !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      cursor: pointer !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.62) !important;
+    }
+
+    #shareScreen .idr-filter-button.active {
+      border: none !important;
+      color: #fff8e8 !important;
+      background: linear-gradient(180deg, #e6b656, #a8641e) !important;
+      box-shadow: 0 9px 16px rgba(128, 76, 18, 0.14) !important;
+    }
+
+    #shareScreen .idr-share-layout {
+      min-height: 0 !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+    }
+
+    #shareScreen .idr-share-list-card,
+    #shareScreen .idr-selected-card {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+      padding: 22px 24px !important;
+    }
+
+    #shareScreen .idr-share-section-head {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+    }
+
+    #shareScreen .idr-section-title {
+      margin: 0 !important;
+      color: #4d2b10 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      font-size: 28px !important;
+      font-weight: 950 !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.045em !important;
+    }
+
+    #shareScreen .idr-share-count-pill {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 64px !important;
+      height: 36px !important;
+      padding: 0 13px !important;
+      border-radius: 999px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 250, 237, 0.90) !important;
+      color: #9a631e !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    #shareScreen .idr-list-scroll,
+    #shareScreen .idr-selected-content {
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      display: grid !important;
+      align-content: start !important;
+      gap: 12px !important;
+      padding-right: 6px !important;
+    }
+
+    #shareScreen .idr-share-card {
+      padding: 16px 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 252, 244, 0.88) !important;
+      border: 1px solid rgba(181, 117, 37, 0.18) !important;
+      cursor: pointer !important;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease !important;
+    }
+
+    #shareScreen .idr-share-card:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 20px rgba(92, 58, 18, 0.10) !important;
+    }
+
+    #shareScreen .idr-share-card.selected {
+      border-color: rgba(187, 113, 26, 0.58) !important;
+      box-shadow: 0 0 0 3px rgba(199, 139, 45, 0.10), 0 12px 22px rgba(130, 76, 18, 0.11) !important;
+      background: rgba(255, 248, 228, 0.96) !important;
+    }
+
+    #shareScreen .idr-question-card-top {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      margin-bottom: 8px !important;
+      color: #9a631e !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-share-card strong {
+      display: block !important;
+      margin-bottom: 8px !important;
+      color: #4d2b10 !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      line-height: 1.35 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-share-card p {
+      margin: 0 !important;
+      color: #416928 !important;
+      font-size: 13px !important;
+      font-weight: 850 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-best-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 24px !important;
+      padding: 0 9px !important;
+      margin-left: 6px !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #e8bc55, #b87622) !important;
+      color: #fff8e8 !important;
+      font-size: 11px !important;
+      font-weight: 950 !important;
+      vertical-align: middle !important;
+      box-shadow: 0 6px 12px rgba(128, 76, 18, 0.16) !important;
+    }
+
+    #shareScreen .idr-comment-count {
+      color: #9a631e !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    #shareScreen .idr-selected-question,
+    #shareScreen .idr-friend-replies,
+    #shareScreen .idr-reply-box {
+      padding: 18px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 252, 244, 0.90) !important;
+      border: 1px solid rgba(181, 117, 37, 0.18) !important;
+    }
+
+    #shareScreen .idr-selected-question h3 {
+      margin: 0 0 12px !important;
+      color: #4d2b10 !important;
+      font-size: 23px !important;
+      font-weight: 950 !important;
+      line-height: 1.35 !important;
+      letter-spacing: -0.04em !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-answer {
+      margin: 0 !important;
+      padding: 13px 15px !important;
+      border-radius: 16px !important;
+      background: rgba(241, 253, 232, 0.80) !important;
+      border: 1px solid rgba(101, 145, 66, 0.18) !important;
+      color: #355628 !important;
+      font-size: 14px !important;
+      font-weight: 850 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-answer strong {
+      display: block !important;
+      margin-bottom: 4px !important;
+      color: #527831 !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-friend-replies h3 {
+      margin: 0 0 10px !important;
+      color: #4d2b10 !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.03em !important;
+    }
+
+    #shareScreen .idr-reply-item {
+      padding: 12px 13px !important;
+      border-radius: 16px !important;
+      background: rgba(247, 253, 239, 0.84) !important;
+      border: 1px solid rgba(101, 145, 66, 0.18) !important;
+      color: #355628 !important;
+      font-size: 13px !important;
+      font-weight: 850 !important;
+      line-height: 1.42 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-reply-item strong {
+      display: block !important;
+      margin-bottom: 4px !important;
+      color: #527831 !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-reply-box {
+      display: grid !important;
+      gap: 12px !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-field {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-rows: 20px 104px !important;
+      gap: 8px 10px !important;
+    }
+
+    #shareScreen .idr-reply-box label {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      display: flex !important;
+      align-items: center !important;
+      color: #4f2d11 !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      line-height: 1 !important;
+    }
+
+    #shareScreen .idr-reply-box label span {
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      justify-self: end !important;
+      color: #b48938 !important;
+      font-size: 13px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-textarea {
+      grid-column: 1 / -1 !important;
+      grid-row: 2 !important;
+      min-height: 104px !important;
+      height: 104px !important;
+      padding: 14px 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 250, 237, 0.96) !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+      resize: none !important;
+    }
+
+    #shareScreen .idr-reply-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 12px !important;
+    }
+
+    #shareScreen .idr-reply-actions .idr-main-button {
+      height: 52px !important;
+      font-size: 15px !important;
+      font-weight: 950 !important;
+      border-radius: 999px !important;
+    }
+
+    @media (max-height: 760px) {
+      #shareScreen.idr-work-screen.active {
+        grid-template-rows: 76px 176px 62px minmax(0, 1fr) !important;
+        gap: 12px !important;
+      }
+
+      #shareScreen .idr-work-header h1 {
+        font-size: 34px !important;
+      }
+
+      #shareScreen .idr-share-guide-card {
+        grid-template-columns: 130px minmax(0, 1fr) !important;
+        padding: 16px 20px !important;
+      }
+
+      #shareScreen .idr-share-lumi {
+        width: 126px !important;
+      }
+
+      #shareScreen .idr-share-speech {
+        padding: 18px 22px !important;
+        font-size: 19px !important;
+      }
+
+      #shareScreen .idr-share-activity-card {
+        padding: 18px 22px !important;
+        gap: 10px !important;
+      }
+
+      #shareScreen .idr-share-activity-card h2,
+      #shareScreen .idr-section-title {
+        font-size: 24px !important;
+      }
+
+      #shareScreen .idr-share-stat-box {
+        min-height: 66px !important;
+        padding: 11px 13px !important;
+      }
+
+      #shareScreen .idr-share-stat-box strong {
+        font-size: 25px !important;
+      }
+
+      #shareScreen .idr-share-list-card,
+      #shareScreen .idr-selected-card {
+        padding: 18px !important;
+      }
+
+      #shareScreen .idr-reply-box .idr-field {
+        grid-template-rows: 20px 88px !important;
+      }
+
+      #shareScreen .idr-reply-box .idr-textarea {
+        min-height: 88px !important;
+        height: 88px !important;
+      }
+    }
+
+
+    /*
+      =========================================================
+      재수정: 개별읽기 질문 나누기 화면을 연습읽기 화면처럼 정리
+      ---------------------------------------------------------
+      - 댓글 많은 순 선택 상자는 제거
+      - 질문 유형 버튼만 가로로 넓게 배치
+      - 화면 높이에 억지로 끼워 넣지 않고 세로 스크롤 허용
+      - 친구 질문 카드와 오른쪽 작성 영역을 크게 보여줌
+      =========================================================
+    */
+
+    body:has(#shareScreen.active),
+    html:has(#shareScreen.active) {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+
+    body:has(#shareScreen.active) .idr-page {
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow: visible !important;
+      padding-bottom: 38px !important;
+    }
+
+    body:has(#shareScreen.active) .idr-shell {
+      height: auto !important;
+      min-height: calc(100vh - 32px) !important;
+      grid-template-rows: 64px auto !important;
+    }
+
+    #shareScreen.idr-work-screen.active {
+      display: grid !important;
+      grid-template-rows: auto auto auto auto !important;
+      gap: 16px !important;
+      width: min(1190px, 100%) !important;
+      max-width: 1190px !important;
+      margin: 0 auto !important;
+      min-height: 0 !important;
+    }
+
+    #shareScreen .idr-share-title-card {
+      min-height: 88px !important;
+      padding: 15px 24px !important;
+    }
+
+    #shareScreen .idr-work-header h1 {
+      font-size: 40px !important;
+    }
+
+    #shareScreen .idr-work-header p {
+      margin-top: 6px !important;
+      font-size: 15px !important;
+    }
+
+    #shareScreen .idr-share-hero {
+      min-height: 190px !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+    }
+
+    #shareScreen .idr-share-guide-card {
+      min-height: 190px !important;
+      grid-template-columns: 160px minmax(0, 1fr) !important;
+      padding: 16px 24px !important;
+    }
+
+    #shareScreen .idr-share-lumi {
+      width: 152px !important;
+      max-height: 170px !important;
+      object-position: bottom center !important;
+    }
+
+    #shareScreen .idr-share-speech {
+      padding: 22px 26px !important;
+      font-size: 22px !important;
+      line-height: 1.48 !important;
+    }
+
+    #shareScreen .idr-share-activity-card {
+      min-height: 190px !important;
+      padding: 24px 28px !important;
+      display: grid !important;
+      grid-template-rows: auto auto auto !important;
+      align-content: center !important;
+      gap: 14px !important;
+    }
+
+    #shareScreen .idr-share-filter-card {
+      display: block !important;
+      padding: 14px 18px !important;
+      border-radius: 22px !important;
+    }
+
+    #shareScreen .idr-filter-row {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      width: 100% !important;
+    }
+
+    #shareScreen .idr-share-sort-select {
+      display: none !important;
+    }
+
+    #shareScreen .idr-filter-button {
+      height: 46px !important;
+      border-radius: 15px !important;
+      font-size: 14px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-share-layout {
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: start !important;
+      min-height: 0 !important;
+    }
+
+    #shareScreen .idr-share-list-card,
+    #shareScreen .idr-selected-card {
+      min-height: 620px !important;
+      height: auto !important;
+      padding: 24px 26px !important;
+      display: grid !important;
+      grid-template-rows: auto auto !important;
+      gap: 14px !important;
+      overflow: visible !important;
+    }
+
+    #shareScreen .idr-list-scroll,
+    #shareScreen .idr-selected-content {
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      display: grid !important;
+      align-content: start !important;
+      gap: 12px !important;
+      padding-right: 0 !important;
+    }
+
+    #shareScreen .idr-share-card {
+      padding: 18px 18px !important;
+      border-radius: 18px !important;
+    }
+
+    #shareScreen .idr-share-card strong {
+      font-size: 18px !important;
+      line-height: 1.38 !important;
+    }
+
+    #shareScreen .idr-share-card p {
+      font-size: 14px !important;
+      line-height: 1.48 !important;
+    }
+
+    #shareScreen .idr-selected-question {
+      padding: 20px 20px !important;
+      border-radius: 20px !important;
+    }
+
+    #shareScreen .idr-selected-question h3 {
+      font-size: 25px !important;
+      line-height: 1.38 !important;
+    }
+
+    #shareScreen .idr-selected-answer {
+      padding: 16px 18px !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+    }
+
+    #shareScreen .idr-friend-replies {
+      padding: 20px 20px !important;
+    }
+
+    #shareScreen .idr-friend-replies h3 {
+      font-size: 19px !important;
+    }
+
+    #shareScreen .idr-reply-item {
+      padding: 14px 16px !important;
+      font-size: 14px !important;
+      line-height: 1.48 !important;
+      background: rgba(255, 255, 255, 0.70) !important;
+      border-color: rgba(181, 117, 37, 0.16) !important;
+      color: #4f3219 !important;
+    }
+
+    #shareScreen .idr-reply-box {
+      padding: 20px 20px !important;
+      gap: 14px !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-field {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-rows: 22px auto !important;
+      gap: 9px 10px !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-textarea {
+      height: 138px !important;
+      min-height: 138px !important;
+      padding: 15px 17px !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+    }
+
+    #shareScreen #applyQuestionInput {
+      height: 110px !important;
+      min-height: 110px !important;
+    }
+
+    #shareScreen .idr-reply-actions .idr-main-button {
+      height: 54px !important;
+      font-size: 15px !important;
+    }
+
+    @media (max-width: 1100px) {
+      #shareScreen .idr-share-hero,
+      #shareScreen .idr-share-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      #shareScreen .idr-filter-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
+
+
+    /*
+      =========================================================
+      최종 재정리: 질문 나누기 화면 간격/카드 위치/이모지 버튼 보정
+      ---------------------------------------------------------
+      사용자가 보낸 연습읽기 질문 나누기 화면을 기준으로 다시 맞춘 부분입니다.
+      - 상단 루미 이미지는 상반신 이미지로 교체
+      - 질문 종류 버튼은 연습읽기처럼 이모지를 함께 표시
+      - 질문 종류 버튼과 질문 카드 사이의 과한 여백 제거
+      - 친구 질문 카드와 선택한 질문 카드의 내용이 위에서 자연스럽게 시작되도록 보정
+      - 화면은 세로 스크롤을 허용하되, 카드 내부는 억지로 가운데 정렬하지 않음
+      =========================================================
+    */
+
+    body:has(#shareScreen.active),
+    html:has(#shareScreen.active) {
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+
+    body:has(#shareScreen.active) .idr-page {
+      height: auto !important;
+      min-height: 100vh !important;
+      overflow: visible !important;
+      padding: 14px 28px 34px !important;
+    }
+
+    body:has(#shareScreen.active) .idr-shell {
+      height: auto !important;
+      min-height: calc(100vh - 48px) !important;
+      grid-template-rows: 64px auto !important;
+      gap: 10px !important;
+    }
+
+    #shareScreen.idr-work-screen.active {
+      display: grid !important;
+      grid-template-rows: auto auto auto auto !important;
+      gap: 12px !important;
+      width: min(1180px, 100%) !important;
+      max-width: 1180px !important;
+      margin: 0 auto !important;
+      min-height: 0 !important;
+      align-content: start !important;
+    }
+
+    #shareScreen .idr-share-title-card {
+      min-height: 78px !important;
+      padding: 13px 24px !important;
+      display: grid !important;
+      place-items: center !important;
+      text-align: center !important;
+      border-radius: 24px !important;
+    }
+
+    #shareScreen .idr-work-header h1 {
+      margin: 0 !important;
+      font-size: 38px !important;
+      line-height: 1.04 !important;
+    }
+
+    #shareScreen .idr-work-header p {
+      margin: 5px 0 0 !important;
+      font-size: 15px !important;
+      line-height: 1.25 !important;
+    }
+
+    #shareScreen .idr-share-hero {
+      min-height: 170px !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 16px !important;
+      align-items: stretch !important;
+      margin: 0 !important;
+    }
+
+    #shareScreen .idr-share-guide-card {
+      min-height: 170px !important;
+      display: grid !important;
+      grid-template-columns: 154px minmax(0, 1fr) !important;
+      gap: 18px !important;
+      align-items: center !important;
+      padding: 14px 22px !important;
+      border-radius: 24px !important;
+    }
+
+    #shareScreen .idr-share-lumi {
+      width: 150px !important;
+      height: 150px !important;
+      max-height: 150px !important;
+      object-fit: contain !important;
+      object-position: center bottom !important;
+      align-self: end !important;
+      justify-self: center !important;
+      filter: drop-shadow(0 12px 15px rgba(112, 63, 15, 0.16)) !important;
+    }
+
+    #shareScreen .idr-share-speech {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 20px 24px !important;
+      border-radius: 22px !important;
+      font-size: 21px !important;
+      line-height: 1.5 !important;
+      display: grid !important;
+      align-content: center !important;
+    }
+
+    #shareScreen .idr-share-activity-card {
+      min-height: 170px !important;
+      padding: 21px 24px !important;
+      display: grid !important;
+      grid-template-rows: auto auto auto !important;
+      gap: 12px !important;
+      align-content: center !important;
+      border-radius: 24px !important;
+    }
+
+    #shareScreen .idr-share-activity-card h2 {
+      margin: 0 !important;
+      font-size: 27px !important;
+      line-height: 1.1 !important;
+    }
+
+    #shareScreen .idr-share-stat-row {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      margin: 0 !important;
+    }
+
+    #shareScreen .idr-share-stat-box {
+      min-height: 74px !important;
+      padding: 12px 14px !important;
+      border-radius: 16px !important;
+    }
+
+    #shareScreen .idr-share-stat-box strong {
+      margin-top: 5px !important;
+      font-size: 28px !important;
+      line-height: 1 !important;
+    }
+
+    #shareScreen .idr-share-filter-card {
+      margin: 0 !important;
+      padding: 13px 16px !important;
+      border-radius: 22px !important;
+      display: block !important;
+    }
+
+    #shareScreen .idr-filter-row {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    #shareScreen .idr-filter-button {
+      height: 44px !important;
+      border-radius: 14px !important;
+      font-size: 14px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 5px !important;
+    }
+
+    #shareScreen .idr-filter-button.active {
+      border: none !important;
+      color: #fff8e8 !important;
+      background: linear-gradient(180deg, #e6b656, #a8641e) !important;
+      box-shadow: 0 8px 14px rgba(128, 76, 18, 0.15) !important;
+    }
+
+    #shareScreen .idr-share-sort-select {
+      display: none !important;
+    }
+
+    #shareScreen .idr-share-layout {
+      display: grid !important;
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1fr) !important;
+      gap: 16px !important;
+      align-items: start !important;
+      min-height: 0 !important;
+      margin: 2px 0 0 !important;
+    }
+
+    #shareScreen .idr-share-list-card,
+    #shareScreen .idr-selected-card {
+      min-height: 590px !important;
+      height: auto !important;
+      padding: 22px 24px !important;
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+      align-content: start !important;
+      align-items: start !important;
+      overflow: visible !important;
+      border-radius: 24px !important;
+    }
+
+    #shareScreen .idr-share-section-head {
+      min-height: 40px !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+    }
+
+    #shareScreen .idr-section-title {
+      margin: 0 !important;
+      font-size: 27px !important;
+      line-height: 1.12 !important;
+      letter-spacing: -0.045em !important;
+    }
+
+    #shareScreen .idr-list-scroll,
+    #shareScreen .idr-selected-content {
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      display: grid !important;
+      gap: 12px !important;
+      align-content: start !important;
+      align-items: start !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #shareScreen .idr-share-card,
+    #shareScreen .idr-selected-question,
+    #shareScreen .idr-friend-replies,
+    #shareScreen .idr-reply-box {
+      margin: 0 !important;
+      border-radius: 18px !important;
+    }
+
+    #shareScreen .idr-share-card {
+      padding: 15px 17px !important;
+      min-height: 112px !important;
+      display: grid !important;
+      grid-template-rows: auto auto auto !important;
+      gap: 6px !important;
+      align-content: start !important;
+    }
+
+    #shareScreen .idr-share-card.selected {
+      border-color: rgba(187, 113, 26, 0.62) !important;
+      background: rgba(255, 250, 235, 0.94) !important;
+      box-shadow: 0 10px 18px rgba(130, 76, 18, 0.10) !important;
+    }
+
+    #shareScreen .idr-question-card-top {
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+      color: #9a631e !important;
+      font-size: 12px !important;
+      font-weight: 950 !important;
+      line-height: 1.25 !important;
+    }
+
+    #shareScreen .idr-share-card strong {
+      margin: 0 !important;
+      color: #3f2615 !important;
+      font-size: 18px !important;
+      line-height: 1.35 !important;
+      font-weight: 950 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-share-card p {
+      margin: 0 !important;
+      color: #416928 !important;
+      font-size: 14px !important;
+      line-height: 1.45 !important;
+      font-weight: 850 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-question {
+      padding: 18px 20px !important;
+      display: grid !important;
+      gap: 11px !important;
+      align-content: start !important;
+      background: rgba(255, 252, 244, 0.86) !important;
+    }
+
+    #shareScreen .idr-selected-question h3 {
+      margin: 0 !important;
+      font-size: 24px !important;
+      line-height: 1.35 !important;
+      font-weight: 950 !important;
+      word-break: keep-all !important;
+    }
+
+    #shareScreen .idr-selected-answer {
+      margin: 0 !important;
+      padding: 15px 17px !important;
+      border-radius: 16px !important;
+      font-size: 15px !important;
+      line-height: 1.48 !important;
+    }
+
+    #shareScreen .idr-selected-answer strong {
+      display: block !important;
+      margin-bottom: 5px !important;
+      font-size: 14px !important;
+    }
+
+    #shareScreen .idr-friend-replies {
+      padding: 18px 20px !important;
+      display: grid !important;
+      gap: 10px !important;
+      align-content: start !important;
+      background: rgba(255, 250, 238, 0.72) !important;
+      border: 1px solid rgba(181, 117, 37, 0.16) !important;
+    }
+
+    #shareScreen .idr-friend-replies h3 {
+      margin: 0 !important;
+      font-size: 19px !important;
+      line-height: 1.2 !important;
+      color: #4d2b10 !important;
+    }
+
+    #shareScreen .idr-reply-item {
+      margin: 0 !important;
+      padding: 12px 14px !important;
+      border-radius: 15px !important;
+      background: rgba(255, 255, 255, 0.70) !important;
+      border: 1px solid rgba(181, 117, 37, 0.16) !important;
+      color: #4f3219 !important;
+      font-size: 14px !important;
+      line-height: 1.45 !important;
+    }
+
+    #shareScreen .idr-reply-box {
+      padding: 18px 20px !important;
+      display: grid !important;
+      gap: 14px !important;
+      align-content: start !important;
+      background: rgba(255, 252, 244, 0.82) !important;
+      border: 1px solid rgba(181, 117, 37, 0.16) !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-field {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-rows: 22px auto !important;
+      gap: 8px 10px !important;
+      margin: 0 !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-field label,
+    #shareScreen .idr-reply-box .idr-field span {
+      align-self: center !important;
+      font-size: 14px !important;
+      font-weight: 950 !important;
+    }
+
+    #shareScreen .idr-reply-box .idr-textarea {
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      height: 132px !important;
+      min-height: 132px !important;
+      padding: 14px 16px !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
+    }
+
+    #shareScreen #applyQuestionInput {
+      height: 98px !important;
+      min-height: 98px !important;
+    }
+
+    #shareScreen .idr-reply-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px !important;
+      margin: 0 !important;
+    }
+
+    #shareScreen .idr-reply-actions .idr-main-button {
+      height: 52px !important;
+      font-size: 15px !important;
+      border-radius: 16px !important;
+    }
+
+    #shareScreen .idr-empty-box {
+      min-height: 160px !important;
+      height: auto !important;
+      padding: 22px !important;
+      display: grid !important;
+      place-items: center !important;
+      align-self: start !important;
+    }
+
+    @media (max-width: 1100px) {
+      #shareScreen .idr-share-hero,
+      #shareScreen .idr-share-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      #shareScreen .idr-filter-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+    }
+/* =========================================================
+   질문 나누기 화면 간격 최종 조정
+   - 질문 종류 버튼과 아래 질문 카드 사이 여백 줄이기
+   - 친구 질문 카드 / 선택한 질문 카드가 더 위로 올라오게 조정
+   ========================================================= */
+
+/* 질문 나누기 화면 전체 세로 간격을 줄입니다. */
+.idr-share-screen.active,
+.idr-work-screen.active {
+  gap: 8px !important;
+}
+
+/* 상단 안내 영역과 필터 버튼 사이 여백을 줄입니다. */
+.idr-share-hero,
+.idr-share-top,
+.idr-share-summary {
+  margin-bottom: 8px !important;
+}
+
+/* 질문 종류 버튼이 들어있는 필터 영역 아래 여백을 줄입니다. */
+.idr-share-filter-card,
+.idr-filter-card {
+  margin-bottom: 8px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+/* 질문 종류 버튼과 아래 2열 카드 사이의 큰 빈 공간 제거 */
+.idr-share-layout {
+  margin-top: -100 !important;
+  padding-top: 0 !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+/* 친구 질문 카드 / 선택한 질문 카드 자체를 위쪽으로 붙입니다. */
+.idr-share-list-card,
+.idr-selected-card {
+  margin-top: 0 !important;
+  padding-top: 22px !important;
+  align-self: start !important;
+}
+
+/* 카드 안 제목이 너무 아래에서 시작하지 않도록 조정 */
+.idr-share-list-card .idr-panel-head,
+.idr-selected-card .idr-panel-head,
+.idr-share-list-card .section-head,
+.idr-selected-card .section-head {
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+}
+
+/* 친구 질문 카드 목록이 제목 바로 아래에서 시작되도록 조정 */
+.idr-share-list,
+.idr-share-question-list,
+.idr-list-scroll {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 선택한 질문 내용도 제목 바로 아래에서 시작되도록 조정 */
+.idr-selected-content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 필터 버튼 높이는 유지하고, 아래쪽 공간만 줄입니다. */
+.idr-filter-row {
+  margin-bottom: 0 !important;
+}
+
+/* 질문 종류 버튼 영역 아래에 생긴 불필요한 큰 여백 제거 */
+.idr-share-filter-card + .idr-share-layout,
+.idr-filter-card + .idr-share-layout {
+  margin-top: 8px !important;
+}
+/* =========================================================
+   질문 종류 버튼 ↔ 친구 질문 카드 사이 여백 강제 축소
+   - 연습읽기 화면처럼 필터 바로 아래에 카드가 붙도록 조정
+   ========================================================= */
+
+/* 질문 나누기 화면 전체 컨테이너의 큰 세로 간격 제거 */
+.idr-share-screen,
+.idr-work-screen {
+  row-gap: 6px !important;
+}
+
+/* 질문 종류 버튼이 들어있는 흰색 필터 박스 아래 공간 제거 */
+.idr-share-filter-card,
+.idr-filter-card,
+.idr-question-filter,
+.idr-share-filter {
+  margin-bottom: 0 !important;
+  padding-bottom: 10px !important;
+}
+
+/* 필터 버튼 영역 자체 아래 여백 제거 */
+.idr-filter-row,
+.idr-share-filter-row {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 필터 다음에 나오는 친구 질문/선택 질문 2열 영역을 위로 당김 */
+.idr-share-layout {
+  margin-top: -38px !important;
+  padding-top: 0 !important;
+  align-items: start !important;
+}
+
+/* 친구 질문 카드와 선택한 질문 카드의 위쪽 여백 제거 */
+.idr-share-list-card,
+.idr-selected-card {
+  margin-top: 0 !important;
+  padding-top: 34px !important;
+}
+
+/* 카드 안 제목과 실제 질문 카드 사이 간격은 적당히 유지 */
+.idr-share-list-card .idr-panel-head,
+.idr-selected-card .idr-panel-head {
+  margin-bottom: 18px !important;
+}
+
+/* 혹시 중간에 빈 줄 역할을 하는 wrapper가 있으면 같이 제거 */
+.idr-share-body,
+.idr-share-main,
+.idr-work-body {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  gap: 14px !important;
+}
+/* =========================================================
+   질문 종류 버튼 아래 여백 강제 제거 최종본
+   - margin/padding 조정으로 안 줄어드는 경우
+   - 친구 질문 카드 영역 자체를 위로 끌어올립니다.
+   ========================================================= */
+
+/* 질문 나누기 화면에서 필터 버튼 아래 2열 영역을 강제로 위로 올립니다. */
+.idr-share-layout {
+  position: relative !important;
+  top: -56px !important;
+  margin-bottom: -56px !important;
+}
+
+/* 친구 질문 카드 / 선택한 질문 카드도 같이 위쪽 기준으로 붙입니다. */
+.idr-share-list-card,
+.idr-selected-card {
+  position: relative !important;
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* 필터 버튼 박스 아래쪽 공간을 최대한 제거합니다. */
+.idr-filter-card,
+.idr-share-filter-card {
+  margin-bottom: 0 !important;
+  padding-bottom: 10px !important;
+}
+
+/* 필터 버튼 영역 자체도 아래 여백 제거 */
+.idr-filter-row {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 질문 나누기 화면 전체에서 불필요한 grid 간격 제거 */
+.idr-work-screen.active {
+  gap: 0 !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+/* 혹시 share 화면 전용 wrapper가 따로 잡혀 있어도 같이 위로 올립니다. */
+.idr-share-body,
+.idr-share-main,
+.idr-work-body {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* 화면 아래가 너무 당겨져서 잘리는 걸 방지 */
+.idr-page {
+  overflow-y: auto !important;
+}
+/* =========================================================
+   질문 나누기 저장 버튼 1개로 통일
+   - 초등학생이 헷갈리지 않도록 저장 버튼을 하나만 보여줍니다.
+   ========================================================= */
+
+.idr-reply-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+}
+
+/* 왼쪽 '내 생각 저장' 버튼 숨김 */
+.idr-reply-actions .plain-button {
+  display: none !important;
+}
+
+/* 오른쪽 버튼을 전체 너비 저장 버튼으로 사용 */
+.idr-reply-actions .main-button {
+  width: 100% !important;
+  height: 58px !important;
+  border-radius: 18px !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+/* 질문 나누기 저장 버튼을 하나로 통일합니다. */
+#shareScreen .idr-reply-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+}
+
+#shareScreen .idr-reply-actions .idr-main-button {
+  width: 100% !important;
+  height: 58px !important;
+  border-radius: 18px !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+}
+/* =========================================================
+   읽기 중 홈: 완독 버튼 영역
+   - 진행률 저장과 완독 버튼을 구분해서 보여줍니다.
+   ========================================================= */
+
+.idr-progress-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+.idr-finish-reading-button {
+  border: 1px solid rgba(83, 133, 60, 0.34) !important;
+  background: rgba(244, 255, 237, 0.94) !important;
+  color: #355628 !important;
+}
+
+.idr-finish-reading-button:hover {
+  background: rgba(232, 250, 220, 0.98) !important;
+}
+  
+/* =========================================================
+   읽기 중 홈 최종 정리 + 질문 유형 그래프
+   - 루미/말풍선 비중을 줄이고, 질문 유형 균형을 보여줍니다.
+   - 나의 질문 모음 버튼은 독서 보관함으로 통합했습니다.
+   ========================================================= */
+
+.idr-home-layout {
+  grid-template-columns: 0.72fr 0.98fr 1fr !important;
+  grid-template-rows: minmax(0, 1fr) 190px !important;
+  gap: 14px !important;
+}
+
+.idr-hero-card {
+  grid-template-columns: 112px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: 20px 22px !important;
+}
+
+.idr-lumi-home {
+  width: 116px !important;
+  max-height: 210px !important;
+}
+
+.idr-speech {
+  max-width: none !important;
+  padding: 20px 22px !important;
+  border-radius: 24px !important;
+  font-size: 20px !important;
+  line-height: 1.45 !important;
+}
+
+.idr-progress-card {
+  padding: 24px 26px !important;
+}
+
+.idr-progress-card .idr-section-title {
+  font-size: 27px !important;
+}
+
+.idr-progress-body {
+  grid-template-columns: 126px minmax(0, 1fr) !important;
+  gap: 18px !important;
+}
+
+.idr-ring {
+  width: 124px !important;
+  height: 124px !important;
+}
+
+.idr-ring span {
+  font-size: 30px !important;
+}
+
+.idr-progress-book {
+  font-size: 18px !important;
+  padding: 11px 14px !important;
+}
+
+.idr-question-graph-card {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  padding: 22px 24px !important;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 226, 145, 0.30), transparent 42%),
+    rgba(255, 251, 242, 0.88) !important;
+}
+
+.idr-graph-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.idr-graph-head h2 {
+  margin: 0;
+  color: #4e2d10;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 27px;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+.idr-graph-head p {
+  margin: 6px 0 0;
+  color: #795024;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+
+.idr-graph-total {
+  min-width: 58px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 246, 220, 0.92);
+  border: 1px solid rgba(181, 117, 37, 0.18);
+  color: #9a631e;
+  font-size: 14px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.idr-graph-bars {
+  min-height: 0;
+  display: grid;
+  gap: 10px;
+  align-content: center;
+}
+
+.idr-graph-row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 52px;
+  gap: 10px;
+  align-items: center;
+}
+
+.idr-graph-label {
+  color: #4f2d11;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.idr-graph-track {
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(91, 61, 23, 0.12);
+  overflow: hidden;
+}
+
+.idr-graph-fill {
+  height: 100%;
+  min-width: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e5b648, #c88422);
+  transition: width 0.2s ease;
+}
+
+.idr-graph-count {
+  color: #8a561b;
+  font-size: 13px;
+  font-weight: 950;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.idr-graph-feedback {
+  min-height: 52px;
+  display: grid;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 18px;
+  border: 1px solid rgba(181, 117, 37, 0.16);
+  background: rgba(255, 250, 237, 0.82);
+  color: #5f3916;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.idr-graph-feedback.good {
+  background: #eff8e8;
+  border-color: #b7d991;
+  color: #355628;
+}
+
+.idr-graph-feedback.need {
+  background: #fff0df;
+  border-color: #e6b178;
+  color: #6a3d17;
+}
+
+.idr-menu-card {
+  grid-column: 1 / -1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 14px !important;
+  padding: 16px !important;
+}
+
+.idr-menu-button {
+  grid-template-columns: 82px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  padding: 18px 22px !important;
+}
+
+.idr-menu-icon {
+  width: 76px !important;
+  height: 76px !important;
+  border-radius: 24px !important;
+}
+
+.idr-menu-icon img {
+  width: 62px !important;
+  height: 62px !important;
+}
+
+.idr-menu-button strong {
+  font-size: 24px !important;
+}
+
+.idr-menu-button span {
+  font-size: 14px !important;
+}
+
+.idr-home-archive-note {
+  grid-column: 1 / -1;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border: 1px solid rgba(181, 117, 37, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 250, 237, 0.82);
+  color: #6f4720;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+  word-break: keep-all;
+}
+
+@media (max-height: 760px) {
+  .idr-home-layout {
+    grid-template-rows: minmax(0, 1fr) 176px !important;
+    gap: 12px !important;
+  }
+
+  .idr-hero-card {
+    grid-template-columns: 96px minmax(0, 1fr) !important;
+    padding: 18px 20px !important;
+  }
+
+  .idr-lumi-home {
+    width: 100px !important;
+    max-height: 176px !important;
+  }
+
+  .idr-speech {
+    padding: 17px 18px !important;
+    font-size: 18px !important;
+  }
+
+  .idr-question-graph-card {
+    padding: 18px 20px !important;
+    gap: 9px !important;
+  }
+
+  .idr-graph-head h2 {
+    font-size: 24px !important;
+  }
+
+  .idr-graph-head p {
+    font-size: 12px !important;
+  }
+
+  .idr-graph-row {
+    grid-template-columns: 86px minmax(0, 1fr) 46px !important;
+    gap: 8px !important;
+  }
+
+  .idr-menu-icon {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  .idr-menu-icon img {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+/* =========================================================
+   읽기 중 홈 화면 최종 배치 조정 1단계
+   - 카드 안 내용이 한쪽으로 몰리지 않게 중앙 정렬
+   - 루미를 상반신처럼 크게 보이게 조정
+   - 질문 유형 그래프 영역을 넓고 여유 있게 정리
+   - 질문 만들기 / 질문 나누기 카드 안 요소를 중앙으로 올림
+   ========================================================= */
+
+/* 홈 화면을 3열 + 하단 메뉴 구조로 정리합니다. */
+#homeScreen .idr-home-layout {
+  grid-template-columns: 0.78fr 1.06fr 1.16fr !important;
+  grid-template-rows: minmax(0, 1fr) 188px !important;
+  gap: 16px !important;
+}
+
+/* 왼쪽 루미 카드: 이미지와 말풍선을 위아래로 자연스럽게 배치합니다. */
+#homeScreen .idr-hero-card {
+  grid-column: 1 / 2 !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 10px !important;
+  padding: 22px 22px 24px !important;
+  overflow: hidden !important;
+}
+
+/* 루미를 상반신처럼 크게 보이게 합니다. */
+#homeScreen .idr-lumi-home {
+  width: 210px !important;
+  max-height: 255px !important;
+  align-self: end !important;
+  justify-self: center !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  filter: drop-shadow(0 16px 20px rgba(91, 54, 15, 0.20)) !important;
+}
+
+/* 말풍선을 루미 위쪽/중앙에 안정적으로 배치합니다. */
+#homeScreen .idr-speech {
+  width: 100% !important;
+  max-width: 285px !important;
+  align-self: start !important;
+  justify-self: center !important;
+  padding: 18px 20px !important;
+  border-radius: 24px !important;
+  font-size: 20px !important;
+  line-height: 1.42 !important;
+  text-align: center !important;
+}
+
+/* 세로 배치에서는 말풍선 꼬리를 제거해 어색함을 줄입니다. */
+#homeScreen .idr-speech::before {
+  display: none !important;
+}
+
+/* 가운데 진행 상황 카드: 내용이 아래로 몰리지 않게 카드 전체 중앙에 둡니다. */
+#homeScreen .idr-progress-card {
+  grid-column: 2 / 3 !important;
+  padding: 28px 34px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 18px !important;
+  align-content: center !important;
+}
+
+/* 진행 상황 카드 제목 위치 정리 */
+#homeScreen .idr-progress-card .idr-section-title {
+  align-self: end !important;
+  margin: 0 !important;
+}
+
+/* 진행률 원형과 입력 영역을 카드 안에서 균형 있게 배치합니다. */
+#homeScreen .idr-progress-body {
+  grid-template-columns: 150px minmax(0, 1fr) !important;
+  gap: 24px !important;
+  align-items: center !important;
+}
+
+#homeScreen .idr-ring {
+  width: 144px !important;
+  height: 144px !important;
+}
+
+#homeScreen .idr-ring span {
+  font-size: 34px !important;
+}
+
+/* 오른쪽 질문 유형 그래프 카드 */
+#homeScreen .idr-question-graph-card {
+  grid-column: 3 / 4 !important;
+  padding: 28px 30px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+  align-content: center !important;
+}
+
+/* 그래프 제목 영역을 넓게 사용합니다. */
+#homeScreen .idr-graph-head {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+}
+
+#homeScreen .idr-graph-head h2 {
+  margin: 0 !important;
+  font-size: 30px !important;
+  line-height: 1.15 !important;
+}
+
+#homeScreen .idr-graph-head p {
+  margin-top: 6px !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+
+/* 총 질문 수 배지 */
+#homeScreen .idr-graph-total {
+  min-width: 58px !important;
+  height: 42px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 999px !important;
+  background: rgba(255, 246, 220, 0.92) !important;
+  border: 1px solid rgba(181, 117, 37, 0.18) !important;
+  color: #9a631e !important;
+  font-size: 15px !important;
+  font-weight: 950 !important;
+}
+
+/* 그래프 막대들이 몰리지 않게 간격을 넓힙니다. */
+#homeScreen .idr-graph-bars {
+  display: grid !important;
+  gap: 16px !important;
+  align-content: center !important;
+  padding: 6px 0 !important;
+}
+
+/* 그래프 한 줄 크기 확대 */
+#homeScreen .idr-graph-row {
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr) 68px !important;
+  gap: 14px !important;
+  align-items: center !important;
+}
+
+/* 그래프 라벨 */
+#homeScreen .idr-graph-label {
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  color: #5b3514 !important;
+  white-space: nowrap !important;
+}
+
+/* 그래프 막대 배경 */
+#homeScreen .idr-graph-track {
+  height: 18px !important;
+  border-radius: 999px !important;
+  background: rgba(91, 61, 23, 0.13) !important;
+  overflow: hidden !important;
+}
+
+/* 그래프 막대 채움 */
+#homeScreen .idr-graph-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #e6b656, #bf7923) !important;
+}
+
+/* 그래프 수치 */
+#homeScreen .idr-graph-count {
+  text-align: right !important;
+  color: #9a631e !important;
+  font-size: 14px !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+}
+
+/* 그래프 피드백 박스 */
+#homeScreen .idr-graph-feedback {
+  min-height: 58px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 13px 16px !important;
+  border-radius: 18px !important;
+  font-size: 13px !important;
+  line-height: 1.42 !important;
+}
+
+/* 하단 메뉴 카드: 2개 버튼을 넓게 배치합니다. */
+#homeScreen .idr-menu-card {
+  grid-column: 1 / 4 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: minmax(0, 1fr) auto !important;
+  gap: 14px !important;
+  padding: 16px !important;
+}
+
+/* 질문 만들기/질문 나누기 카드 안의 그림과 글자를 중앙으로 올립니다. */
+#homeScreen .idr-menu-button {
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-columns: 88px minmax(0, 1fr) !important;
+  gap: 20px !important;
+  align-items: center !important;
+  padding: 18px 24px !important;
+  border-radius: 26px !important;
+}
+
+#homeScreen .idr-menu-icon {
+  width: 78px !important;
+  height: 78px !important;
+  border-radius: 24px !important;
+  align-self: center !important;
+}
+
+#homeScreen .idr-menu-icon img {
+  width: 64px !important;
+  height: 64px !important;
+}
+
+#homeScreen .idr-menu-button strong {
+  font-size: 25px !important;
+  line-height: 1.15 !important;
+}
+
+#homeScreen .idr-menu-button span {
+  margin-top: 6px !important;
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+
+/* 저장 안내 문구는 얇게 정리합니다. */
+#homeScreen .idr-home-archive-note {
+  grid-column: 1 / -1 !important;
+  min-height: 38px !important;
+  padding: 8px 14px !important;
+  font-size: 13px !important;
+}
+
+/* 낮은 화면에서도 깨지지 않게 조정합니다. */
+@media (max-height: 760px) {
+  #homeScreen .idr-home-layout {
+    grid-template-rows: minmax(0, 1fr) 172px !important;
+    gap: 12px !important;
+  }
+
+  #homeScreen .idr-hero-card {
+    padding: 18px 18px 20px !important;
+  }
+
+  #homeScreen .idr-lumi-home {
+    width: 178px !important;
+    max-height: 218px !important;
+  }
+
+  #homeScreen .idr-speech {
+    max-width: 260px !important;
+    padding: 15px 17px !important;
+    font-size: 18px !important;
+  }
+
+  #homeScreen .idr-progress-card,
+  #homeScreen .idr-question-graph-card {
+    padding: 22px 24px !important;
+  }
+
+  #homeScreen .idr-graph-head h2 {
+    font-size: 26px !important;
+  }
+
+  #homeScreen .idr-graph-bars {
+    gap: 11px !important;
+  }
+
+  #homeScreen .idr-graph-row {
+    grid-template-columns: 96px minmax(0, 1fr) 58px !important;
+    gap: 10px !important;
+  }
+
+  #homeScreen .idr-menu-button {
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    padding: 16px 20px !important;
+  }
+
+  #homeScreen .idr-menu-icon {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  #homeScreen .idr-menu-icon img {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  #homeScreen .idr-menu-button strong {
+    font-size: 23px !important;
+  }
+}
+/* =========================================================
+   읽기 중 홈 하단 메뉴 버튼 내부 위치 조정
+   - 질문 만들기 / 질문 나누기 카드 안의 그림과 글을 살짝 위로 올립니다.
+   ========================================================= */
+
+#homeScreen .idr-menu-button {
+  align-items: start !important;
+  padding-top: 18px !important;
+  padding-bottom: 12px !important;
+}
+
+#homeScreen .idr-menu-icon {
+  margin-top: -4px !important;
+}
+
+#homeScreen .idr-menu-button > div:last-child {
+  margin-top: -2px !important;
+}
+/* =========================================================
+   개별읽기 공통: 나의 힘 팝업
+   - 읽기 전/중/후/보관함 화면에서도 같은 팝업을 재사용합니다.
+   ========================================================= */
+
+.individual-power-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(54, 35, 15, 0.46);
+  backdrop-filter: blur(5px);
+}
+
+.individual-power-backdrop.hidden {
+  display: none;
+}
+
+.individual-power-modal {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 30px 32px 28px;
+  border: 1px solid rgba(186, 120, 32, 0.34);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 225, 151, 0.46), transparent 34%),
+    rgba(255, 250, 238, 0.97);
+  color: #573313;
+  box-shadow: 0 24px 60px rgba(79, 50, 18, 0.24);
+}
+
+.individual-power-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(126, 77, 20, 0.10);
+  color: #6a3d15;
+  font-size: 24px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.individual-power-kicker {
+  margin: 0 0 8px;
+  color: #b2731d;
+  font-size: 15px;
+  font-weight: 950;
+  text-align: center;
+}
+
+.individual-power-title {
+  margin: 0 0 20px;
+  color: #4f2f13;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 31px;
+  font-weight: 950;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.individual-power-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.individual-power-card {
+  padding: 15px 16px;
+  border: 1px solid rgba(177, 112, 29, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 243, 214, 0.82);
+}
+
+.individual-power-card strong {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #5d3615;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.individual-power-card span {
+  display: block;
+  margin-top: 6px;
+  color: #765025;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.42;
+  word-break: keep-all;
+}
+
+.individual-power-bar {
+  height: 10px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(129, 84, 31, 0.15);
+  overflow: hidden;
+}
+
+.individual-power-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #87501b, #b97624, #dca746);
+}
+
+.individual-power-confirm {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #dca94f, #a8641e);
+  color: #fff9e8;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18);
+}
   </style>
 </head>
 
@@ -1286,11 +4324,16 @@
         </div>
 
         <div class="idr-top-actions">
-          <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
-          <button type="button" class="idr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
-          <button type="button" class="idr-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-          <button type="button" class="idr-top-button" onclick="goIndividualReading()">🏠</button>
-        </div>
+  <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
+  <span class="idr-top-button idr-top-date" id="todayDateTop">오늘 날짜</span>
+
+  <!-- 개별읽기 활동 중에도 현재 능력치를 확인할 수 있는 버튼입니다. -->
+  <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+
+  <button type="button" class="idr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
+  <button type="button" class="idr-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+  <button type="button" class="idr-top-button" onclick="goIndividualReading()">🏠</button>
+</div>
       </header>
 
       <!-- 화면 1. 읽기 중 홈 -->
@@ -1305,7 +4348,7 @@
 
             <div class="idr-speech">
               오늘 읽은 부분에서<br>
-              떠오른 질문을 만들어 보자!
+              떠오른 질문을 기록해 보자!
             </div>
           </article>
 
@@ -1340,14 +4383,40 @@
                   </div>
                 </div>
 
-                <button type="button" class="idr-main-button primary" onclick="saveProgressData()">
-                  나의 진행률 저장하기
-                </button>
+                <div class="idr-progress-actions">
+  <!-- 오늘 읽은 쪽수를 저장하는 버튼입니다. -->
+  <button type="button" class="idr-main-button primary" onclick="saveProgressData()">
+    나의 진행률 저장하기
+  </button>
+
+  <!-- 책을 완독했을 때 읽기 후 활동을 열어 주는 버튼입니다. -->
+  <button type="button" class="idr-main-button idr-finish-reading-button" onclick="finishCurrentBook()">
+    책 다 읽었어요
+  </button>
+</div>
               </div>
             </div>
           </article>
 
+          <!-- 읽기 중 질문 유형 그래프입니다. 질문을 저장할 때마다 자동으로 갱신됩니다. -->
+          <article class="idr-card idr-question-graph-card">
+            <div class="idr-graph-head">
+              <div>
+                <h2>질문 유형 그래프</h2>
+                <p>읽기 중에 만든 질문이 네 가지 유형에 골고루 쌓이는지 살펴봐요.</p>
+              </div>
+              <span class="idr-graph-total" id="questionGraphTotal">0개</span>
+            </div>
+
+            <div class="idr-graph-bars" id="questionGraphBars"></div>
+
+            <div class="idr-graph-feedback" id="questionGraphFeedback">
+              아직 질문이 없어요. 오늘 읽은 부분에서 질문을 만들어 보세요.
+            </div>
+          </article>
+
           <article class="idr-card idr-menu-card">
+            <!-- 오늘 읽은 부분에서 내 질문과 생각을 기록하는 활동입니다. -->
             <button type="button" class="idr-menu-button" onclick="showScreen('question')">
               <div class="idr-menu-icon">
                 <img src="../assets/images/individual-reading/individual-during-menu-question.png" alt="질문 만들기">
@@ -1358,25 +4427,21 @@
               </div>
             </button>
 
+            <!-- 친구 질문을 읽고 내 책에도 적용해 보는 활동입니다. -->
             <button type="button" class="idr-menu-button" onclick="showScreen('share')">
               <div class="idr-menu-icon">
                 <img src="../assets/images/individual-reading/individual-during-menu-share.png" alt="질문 나누기">
               </div>
               <div>
                 <strong>질문 나누기</strong>
-                <span>친구 질문에 내 생각을 남기고 내 책에도 적용해요.</span>
+                <span>친구 질문에 생각을 남기고 내 책에도 적용해요.</span>
               </div>
             </button>
 
-            <button type="button" class="idr-menu-button" onclick="showScreen('collection')">
-              <div class="idr-menu-icon">
-                <img src="../assets/images/individual-reading/individual-during-menu-collection.png" alt="나의 질문 모음">
-              </div>
-              <div>
-                <strong>나의 질문 모음</strong>
-                <span>날짜별로 내가 만든 질문과 답을 모아 봐요.</span>
-              </div>
-            </button>
+            <!-- 질문 모음은 나의 독서 보관함으로 통합합니다. -->
+            <div class="idr-home-archive-note">
+              저장한 질문과 답은 <b>나의 독서 보관함</b>에서 책별로 다시 볼 수 있어요.
+            </div>
           </article>
         </div>
       </section>
@@ -1491,32 +4556,76 @@
 
       <!-- 화면 3. 질문 나누기 -->
       <section class="idr-screen idr-work-screen" id="shareScreen">
-        <article class="idr-card idr-work-header">
+        <!-- 연습읽기 질문 나누기 화면과 비슷하게, 제목/안내/현황/필터/2열 활동판으로 분리합니다. -->
+        <article class="idr-card idr-work-header idr-share-title-card">
           <div>
             <h1>질문 나누기</h1>
-            <p>친구가 만든 질문을 읽고 내 생각을 남겨 봐요. 같은 책이 아니어도 괜찮아요.</p>
-          </div>
-
-          <div class="idr-work-actions">
-            <button type="button" class="idr-pill-button" onclick="showScreen('question')">질문 만들기</button>
-            <button type="button" class="idr-pill-button" onclick="showScreen('home')">읽기 중 홈</button>
+            <p>친구가 만든 질문을 읽고 내 생각을 남겨 봐요.</p>
           </div>
         </article>
 
+        <section class="idr-share-hero">
+          <article class="idr-card idr-share-guide-card">
+            <img
+              src="../assets/images/individual-reading/today-reading-lumi-guide.png"
+              alt="용사 루미"
+              class="idr-share-lumi"
+            >
+            <div class="idr-share-speech">
+              친구들이 만든 질문을 살펴보고<br>
+              내 생각을 답으로 적어보자!
+            </div>
+          </article>
+
+          <article class="idr-card idr-share-activity-card">
+            <h2>질문 나누기 활동</h2>
+
+            <div class="idr-share-stat-row">
+              <div class="idr-share-stat-box">
+                <span>참여한 친구</span>
+                <strong id="shareFriendCount">0명</strong>
+              </div>
+
+              <div class="idr-share-stat-box">
+                <span>공유된 질문</span>
+                <strong id="shareQuestionCount">0개</strong>
+              </div>
+
+              <div class="idr-share-stat-box">
+                <span>내가 답한 수</span>
+                <strong id="shareMyReplyCount">0개</strong>
+              </div>
+            </div>
+
+            <p>친구들이 나눈 질문과 답을 살펴보고, 나도 내 생각을 답으로 적어 봐요.</p>
+          </article>
+        </section>
+
+        <section class="idr-card idr-share-filter-card">
+          <div class="idr-filter-row" id="shareFilterRow"></div>
+
+        </section>
+
         <div class="idr-share-layout">
           <article class="idr-card idr-share-list-card">
-            <h2 class="idr-section-title">친구 질문 카드</h2>
-            <div class="idr-filter-row" id="shareFilterRow"></div>
+            <div class="idr-share-section-head">
+              <h2 class="idr-section-title">친구 질문 카드</h2>
+              <span class="idr-share-count-pill" id="shareVisibleCount">0개</span>
+            </div>
+
             <div class="idr-list-scroll" id="shareQuestionList"></div>
           </article>
 
           <article class="idr-card idr-selected-card">
-            <h2 class="idr-section-title">선택한 질문</h2>
+            <div class="idr-share-section-head">
+              <h2 class="idr-section-title">선택한 질문</h2>
+              <span class="idr-share-count-pill">내 생각 쓰기</span>
+            </div>
 
             <div class="idr-selected-content" id="selectedQuestionArea">
               <div class="idr-empty-box">
                 왼쪽에서 친구 질문을 골라 보세요.<br>
-                친구 책 내용을 몰라도 질문을 보고 든 생각을 나눌 수 있어요.
+                질문을 고르면 내 생각과 비슷한 질문을 적을 수 있어요.
               </div>
             </div>
           </article>
@@ -1565,6 +4674,67 @@
         </div>
       </section>
     </div>
+    <!-- 개별읽기 공통: 현재까지 모은 나의 힘 확인 팝업입니다. -->
+<div id="individualPowerModal" class="individual-power-backdrop hidden">
+  <div class="individual-power-modal">
+    <button type="button" class="individual-power-close" onclick="closeIndividualPowerModal()">
+      ×
+    </button>
+
+    <p class="individual-power-kicker">현재까지 모은 나의 힘</p>
+    <h2 class="individual-power-title">책을 읽고 질문을 만들며<br>네 가지 힘이 자라고 있어요</h2>
+
+    <div class="individual-power-grid">
+      <div class="individual-power-card">
+        <strong>
+          마법력
+          <em id="powerMagicText">8 / 100</em>
+        </strong>
+        <span>좋은 질문을 만들 힘이에요.</span>
+        <div class="individual-power-bar">
+          <div class="individual-power-fill" id="powerMagicFill" style="width: 8%;"></div>
+        </div>
+      </div>
+
+      <div class="individual-power-card">
+        <strong>
+          체력
+          <em id="powerHealthText">8 / 100</em>
+        </strong>
+        <span>끝까지 읽고 버티는 힘이에요.</span>
+        <div class="individual-power-bar">
+          <div class="individual-power-fill" id="powerHealthFill" style="width: 8%;"></div>
+        </div>
+      </div>
+
+      <div class="individual-power-card">
+        <strong>
+          지혜
+          <em id="powerWisdomText">8 / 100</em>
+        </strong>
+        <span>질문을 깊고 정확하게 다듬는 힘이에요.</span>
+        <div class="individual-power-bar">
+          <div class="individual-power-fill" id="powerWisdomFill" style="width: 8%;"></div>
+        </div>
+      </div>
+
+      <div class="individual-power-card">
+        <strong>
+          용기
+          <em id="powerCourageText">8 / 100</em>
+        </strong>
+        <span>내 생각을 기록하고 나누는 힘이에요.</span>
+        <div class="individual-power-bar">
+          <div class="individual-power-fill" id="powerCourageFill" style="width: 8%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="individual-power-confirm" onclick="closeIndividualPowerModal()">
+      확인했어
+    </button>
+  </div>
+</div>
   </main>
 
   <script src="../js/auth.js"></script>
@@ -1613,6 +4783,14 @@
           {
             name: "민서",
             text: "나도 내 책에서 주인공이 친구를 도와주는 장면이 떠올랐어."
+          },
+          {
+            name: "지후",
+            text: "내 책에서도 작은 선택이 큰 변화를 만드는 장면이 있었어."
+          },
+          {
+            name: "서연",
+            text: "책은 달라도 이 질문으로 주인공의 마음을 다시 생각해볼 수 있었어."
           }
         ]
       },
@@ -1624,7 +4802,12 @@
         date: "06.11 09:10",
         question: "주인공은 왜 숲으로 들어갔을까?",
         answer: "잃어버린 것을 찾기 위해 숲으로 들어갔을 것 같아요.",
-        replies: []
+        replies: [
+          {
+            name: "하준",
+            text: "주인공이 어떤 마음으로 떠났는지 생각해보게 됐어."
+          }
+        ]
       },
       {
         id: "friend-3",
@@ -1653,7 +4836,17 @@
       const today = new Date().toISOString().slice(0, 10);
 
       document.getElementById("readDateInput").value = today;
-      document.getElementById("todayDatePill").textContent = "오늘 날짜 " + formatFullKoreanDate(today);
+      const todayDateTop = document.getElementById("todayDateTop");
+
+      if (todayDateTop) {
+        todayDateTop.textContent = "오늘 날짜 " + formatFullKoreanDate(today);
+      }
+
+      const todayDatePill = document.getElementById("todayDatePill");
+
+      if (todayDatePill) {
+        todayDatePill.textContent = "오늘 날짜 " + formatFullKoreanDate(today);
+      }
 
       const savedTotalPages = sessionStorage.getItem(STORAGE_KEYS.totalPages);
       const savedCurrentPage = sessionStorage.getItem(STORAGE_KEYS.currentPage);
@@ -1670,12 +4863,22 @@
       document.getElementById("totalPageInput").addEventListener("input", renderProgress);
       document.getElementById("currentPageInput").addEventListener("input", renderProgress);
       document.getElementById("toPageInput").addEventListener("input", syncCurrentPageFromQuestionForm);
+
+      /* 질문 나누기 정렬 선택이 바뀌면 목록과 선택 영역을 다시 그립니다. */
+      const shareSortSelect = document.getElementById("shareSortSelect");
+      if (shareSortSelect) {
+        shareSortSelect.addEventListener("change", () => {
+          selectedShareQuestionId = null;
+          renderShareQuestionList();
+        });
+      }
     }
 
     function renderAll() {
       renderQuestionTypeButtons();
       renderFilterButtons();
       renderProgress();
+      renderQuestionBalanceGraph();
       renderTodayQuestionList();
       renderShareQuestionList();
       renderCollection();
@@ -1691,6 +4894,7 @@
       if (screenName === "home") {
         document.getElementById("homeScreen").classList.add("active");
         renderProgress();
+        renderQuestionBalanceGraph();
       }
 
       if (screenName === "question") {
@@ -1823,7 +5027,37 @@
 
       renderProgress();
     }
+// 책을 다 읽었을 때 읽기 후 활동을 열어 줍니다.
+function finishCurrentBook() {
+  const totalPages = Number(document.getElementById("totalPageInput").value || 0);
+  const currentPage = Number(document.getElementById("currentPageInput").value || 0);
 
+  if (!totalPages || totalPages < 1) {
+    alert("먼저 전체 쪽수를 적어줘!");
+    return;
+  }
+
+  if (!currentPage || currentPage < totalPages) {
+    alert("아직 완독률이 100%가 아니야. 오늘 읽은 곳을 마지막 쪽수까지 적어줘!");
+    return;
+  }
+
+  // 현재 책 진행 상황을 저장합니다.
+  sessionStorage.setItem(STORAGE_KEYS.totalPages, String(totalPages));
+  sessionStorage.setItem(STORAGE_KEYS.currentPage, String(currentPage));
+
+  // 읽기 후 활동을 열 수 있도록 상태를 저장합니다.
+  sessionStorage.setItem(STORAGE_KEYS.duringDone, "true");
+  sessionStorage.setItem(STORAGE_KEYS.stage, "after");
+
+  // 오늘의 독서 모험 화면에서도 읽기 후 카드가 열렸는지 확인할 수 있게 별도 키를 저장합니다.
+  sessionStorage.setItem("individualAfterUnlocked_" + studentId, "true");
+
+  alert("좋아! 이제 읽기 후 활동이 열렸어.");
+
+  // 오늘의 독서 모험 화면으로 이동해서 읽기 후 활동을 선택할 수 있게 합니다.
+  location.href = "./today-reading-adventure.html";
+}
     function syncCurrentPageFromQuestionForm() {
       const toPage = document.getElementById("toPageInput").value;
 
@@ -1867,7 +5101,8 @@
 
     function renderOneFilterRow(elementId, activeKey, onClick) {
       const row = document.getElementById(elementId);
-      const filterItems = [{ key: "all", label: "전체" }, ...questionTypes];
+      const isShareFilter = elementId === "shareFilterRow";
+      const filterItems = [{ key: "all", label: isShareFilter ? "전체 보기" : "전체" }, ...questionTypes];
 
       row.innerHTML = "";
 
@@ -1876,10 +5111,23 @@
         button.type = "button";
         button.className = "idr-filter-button";
         button.classList.toggle("active", activeKey === item.key);
-        button.textContent = item.label.replace(/^[^가-힣A-Za-z]+/, "");
+        // 질문 나누기 화면은 연습읽기 화면처럼 질문 종류 이모지를 함께 보여줍니다.
+        button.textContent = isShareFilter ? getShareFilterLabel(item.key) : item.label.replace(/^[^가-힣A-Za-z]+/, "");
         button.onclick = () => onClick(item.key);
         row.appendChild(button);
       });
+    }
+
+    function getShareFilterLabel(typeKey) {
+      const shareLabels = {
+        all: "전체 보기",
+        find: "🔍 바로 답 찾기",
+        infer: "💡 답 짐작하기",
+        feel: "💛 생각·느낌",
+        connect: "🔗 내 삶 연결"
+      };
+
+      return shareLabels[typeKey] || "질문";
     }
 
     function updateTextCounts() {
@@ -1970,12 +5218,119 @@
       questions.unshift(newQuestion);
       saveMyQuestions(questions);
 
+      // 질문을 저장할 때마다 읽기 중 홈의 질문 유형 그래프도 바로 갱신합니다.
+      renderQuestionBalanceGraph();
+
       if (toPage > currentPage) {
         sessionStorage.setItem(STORAGE_KEYS.currentPage, String(toPage));
         document.getElementById("currentPageInput").value = toPage;
       }
 
       renderProgress();
+    }
+
+    // 읽기 중 질문 유형 그래프를 그립니다.
+    // 질문 만들기 화면에서 저장한 질문의 type 값을 기준으로 네 종류 질문 수를 누적합니다.
+    function renderQuestionBalanceGraph() {
+      const graphBars = document.getElementById("questionGraphBars");
+      const graphTotal = document.getElementById("questionGraphTotal");
+      const graphFeedback = document.getElementById("questionGraphFeedback");
+
+      if (!graphBars || !graphTotal || !graphFeedback) return;
+
+      const questions = getMyQuestions();
+      const today = document.getElementById("readDateInput") ? document.getElementById("readDateInput").value : new Date().toISOString().slice(0, 10);
+      const counts = getQuestionTypeCounts(questions);
+      const todayCounts = getQuestionTypeCounts(questions.filter(function (item) {
+        return item.date === today;
+      }));
+      const total = questionTypes.reduce(function (sum, type) {
+        return sum + counts[type.key];
+      }, 0);
+      const maxCount = Math.max(1, ...questionTypes.map(function (type) {
+        return counts[type.key];
+      }));
+
+      graphTotal.textContent = total + "개";
+
+      graphBars.innerHTML = questionTypes.map(function (type) {
+        const count = counts[type.key];
+        const todayCount = todayCounts[type.key];
+        const percent = total === 0 ? 0 : Math.round((count / total) * 100);
+        const width = total === 0 ? 4 : Math.max(8, Math.round((count / maxCount) * 100));
+        const todayText = todayCount > 0 ? " · 오늘 +" + todayCount : "";
+
+        return `
+          <div class="idr-graph-row">
+            <div class="idr-graph-label">${type.label}</div>
+            <div class="idr-graph-track" aria-label="${type.label} ${count}개">
+              <div class="idr-graph-fill" style="width:${width}%;"></div>
+            </div>
+            <div class="idr-graph-count">${count}개 ${percent}%${todayText}</div>
+          </div>
+        `;
+      }).join("");
+
+      const balance = getQuestionBalanceFeedback(counts, total);
+      graphFeedback.classList.remove("good", "need");
+      graphFeedback.classList.add(balance.state);
+      graphFeedback.textContent = balance.message;
+    }
+
+    // 질문 유형별 개수를 계산합니다.
+    function getQuestionTypeCounts(questions) {
+      const counts = {};
+
+      questionTypes.forEach(function (type) {
+        counts[type.key] = 0;
+      });
+
+      questions.forEach(function (question) {
+        const typeKey = question.type || "find";
+
+        if (counts[typeKey] === undefined) {
+          counts[typeKey] = 0;
+        }
+
+        counts[typeKey] += 1;
+      });
+
+      return counts;
+    }
+
+    // 질문 유형 비율을 보고 많은 질문과 부족한 질문을 알려줍니다.
+    function getQuestionBalanceFeedback(counts, total) {
+      if (total === 0) {
+        return {
+          state: "need",
+          message: "아직 읽기 중 질문이 없어요. 네 가지 질문을 골고루 만들어 보면 책을 더 깊게 읽을 수 있어요."
+        };
+      }
+
+      const values = questionTypes.map(function (type) {
+        return {
+          key: type.key,
+          label: type.label.replace(/^[^가-힣A-Za-z]+/, ""),
+          count: counts[type.key]
+        };
+      });
+
+      const maxCount = Math.max(...values.map(function (item) { return item.count; }));
+      const minCount = Math.min(...values.map(function (item) { return item.count; }));
+      const manyTypes = values.filter(function (item) { return item.count === maxCount && item.count > 0; }).map(function (item) { return item.label; });
+      const weakTypes = values.filter(function (item) { return item.count === minCount; }).map(function (item) { return item.label; });
+
+      if (maxCount - minCount <= 1 && total >= 4) {
+        return {
+          state: "good",
+          message: "좋아! 네 가지 질문을 꽤 골고루 만들고 있어. 바로 찾기, 짐작하기, 생각·느낌, 삶과 연결 질문이 고르게 쌓이면 책을 더 깊게 이해할 수 있어."
+        };
+      }
+
+      return {
+        state: "need",
+        message: "많은 질문: " + manyTypes.join(", ") + " / 부족한 질문: " + weakTypes.join(", ") + ". 한 가지 질문만 많이 쓰기보다 네 종류 질문을 골고루 만들어 보는 게 중요해."
+      };
     }
 
     function resetQuestionForm(clearFeedback = true) {
@@ -2021,7 +5376,6 @@
         <article class="idr-question-card">
           <div class="idr-question-card-top">
             <span>${formatDate(item.date)} · ${getTypeLabel(item.type)}</span>
-            <span>${item.fromPage || "-"}쪽 ~ ${item.toPage || "-"}쪽</span>
           </div>
           <strong>${escapeHtml(item.question)}</strong>
           <p>내 답: ${escapeHtml(item.answer)}</p>
@@ -2063,13 +5417,79 @@
         const button = document.getElementById(id);
 
         if (button) {
-          button.disabled = selectedIds.length === 0;
+          button.disabled = selectedIds.length !== 3;
         }
       });
     }
 
     function renderShareQuestionList() {
+      const sortedQuestions = getPreparedShareQuestions();
+
+      updateShareStats(sortedQuestions);
+
+      const list = document.getElementById("shareQuestionList");
+      const visibleCount = document.getElementById("shareVisibleCount");
+
+      if (visibleCount) {
+        visibleCount.textContent = sortedQuestions.length + "개";
+      }
+
+      if (sortedQuestions.length === 0) {
+        list.innerHTML = `
+          <div class="idr-empty-box">
+            아직 나눌 질문이 없어요.<br>
+            질문 만들기에서 질문을 선택해 보세요.
+          </div>
+        `;
+
+        document.getElementById("selectedQuestionArea").innerHTML = `
+          <div class="idr-empty-box">
+            왼쪽에 표시할 질문이 아직 없어요.<br>
+            질문 만들기에서 질문 3개를 선택해 보세요.
+          </div>
+        `;
+        return;
+      }
+
+      if (!selectedShareQuestionId || !sortedQuestions.some((item) => item.id === selectedShareQuestionId)) {
+        selectedShareQuestionId = sortedQuestions[0].id;
+      }
+
+      const selectedItem = sortedQuestions.find((item) => item.id === selectedShareQuestionId) || sortedQuestions[0];
+      const bestQuestionId = sortedQuestions.length > 0 && sortedQuestions[0].replyCount > 0
+        ? sortedQuestions[0].id
+        : null;
+
+      list.innerHTML = "";
+
+      sortedQuestions.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "idr-share-card";
+        card.classList.toggle("selected", selectedShareQuestionId === item.id);
+
+        const bestBadge = item.id === bestQuestionId
+          ? `<span class="idr-best-badge">BEST 질문</span>`
+          : "";
+
+        card.innerHTML = `
+          <div class="idr-question-card-top">
+            <span>${item.name || "친구"} · ${getTypeLabel(item.type)} ${bestBadge}</span>
+            <span class="idr-comment-count">댓글 ${item.replyCount}개</span>
+          </div>
+          <strong>${escapeHtml(item.question)}</strong>
+          <p>친구의 답: ${escapeHtml(item.answer || "")}</p>
+        `;
+
+        card.onclick = () => selectShareQuestion(item);
+        list.appendChild(card);
+      });
+
+      renderSelectedShareQuestion(selectedItem);
+    }
+
+    function getPreparedShareQuestions() {
       const selectedIds = getShareSelectedIds();
+
       const myQuestions = getMyQuestions()
         .filter((item) => selectedIds.includes(item.id))
         .map((item) => ({
@@ -2079,47 +5499,79 @@
           replies: []
         }));
 
-      const allQuestions = [...myQuestions, ...friendQuestions];
+      const replies = getReplies();
+
+      const allQuestions = [...myQuestions, ...friendQuestions].map((item) => {
+        const defaultReplyCount = item.replies ? item.replies.length : 0;
+        const savedReplyCount = replies[item.id] ? replies[item.id].length : 0;
+
+        return {
+          ...item,
+          replyCount: defaultReplyCount + savedReplyCount
+        };
+      });
+
       const filtered = activeShareFilter === "all"
         ? allQuestions
         : allQuestions.filter((item) => item.type === activeShareFilter);
 
-      const list = document.getElementById("shareQuestionList");
+      /*
+        질문 나누기 화면에서는 별도 정렬 선택 상자를 두지 않습니다.
+        댓글이 많은 질문은 자동으로 위에 오고, 댓글 수가 같으면 최신 질문이 위에 오게 합니다.
+      */
+      return [...filtered].sort((a, b) => {
+        if (b.replyCount !== a.replyCount) {
+          return b.replyCount - a.replyCount;
+        }
 
-      if (filtered.length === 0) {
-        list.innerHTML = `
-          <div class="idr-empty-box">
-            아직 나눌 질문이 없어요.<br>
-            질문 만들기에서 질문을 선택해 보세요.
-          </div>
-        `;
-        return;
+        return getQuestionTimeValue(b) - getQuestionTimeValue(a);
+      });
+    }
+
+    function getQuestionTimeValue(item) {
+      if (item.createdAt) {
+        return new Date(item.createdAt).getTime();
       }
 
-      list.innerHTML = "";
+      /*
+        예시 데이터의 06.11 09:31 같은 날짜도 최신순 비교가 되도록
+        현재 연도를 붙여서 시간값으로 바꿉니다.
+      */
+      if (item.date && item.date.includes(".")) {
+        const year = new Date().getFullYear();
+        return new Date(`${year}.${item.date.replace(" ", "T")}`).getTime() || 0;
+      }
 
-      filtered.forEach((item) => {
-        const card = document.createElement("article");
-        card.className = "idr-share-card";
-        card.classList.toggle("selected", selectedShareQuestionId === item.id);
+      return 0;
+    }
 
-        card.innerHTML = `
-          <div class="idr-question-card-top">
-            <span>${item.name || "친구"} · ${getTypeLabel(item.type)}</span>
-            <span>${item.date ? formatDate(item.date) : item.date}</span>
-          </div>
-          <strong>${escapeHtml(item.question)}</strong>
-          <p>${escapeHtml(item.answer || "")}</p>
-        `;
+    function updateShareStats(questions) {
+      const friendNames = new Set(
+        questions
+          .filter((item) => item.name && item.name !== "나")
+          .map((item) => item.name)
+      );
 
-        card.onclick = () => selectShareQuestion(item);
-        list.appendChild(card);
-      });
+      const replies = getReplies();
+      const myReplyCount = Object.values(replies).reduce((sum, list) => {
+        return sum + list.filter((reply) => reply.name === "나").length;
+      }, 0);
+
+      const friendCountEl = document.getElementById("shareFriendCount");
+      const questionCountEl = document.getElementById("shareQuestionCount");
+      const myReplyCountEl = document.getElementById("shareMyReplyCount");
+
+      if (friendCountEl) friendCountEl.textContent = friendNames.size + "명";
+      if (questionCountEl) questionCountEl.textContent = questions.length + "개";
+      if (myReplyCountEl) myReplyCountEl.textContent = myReplyCount + "개";
     }
 
     function selectShareQuestion(item) {
       selectedShareQuestionId = item.id;
+      renderShareQuestionList();
+    }
 
+    function renderSelectedShareQuestion(item) {
       const area = document.getElementById("selectedQuestionArea");
       const replies = getReplies();
       const savedReplies = replies[item.id] || [];
@@ -2127,51 +5579,99 @@
       const allReplies = [...defaultReplies, ...savedReplies];
 
       area.innerHTML = `
-        <div class="idr-selected-question">
+        <section class="idr-selected-question">
           <div class="idr-question-card-top">
             <span>${item.name || "친구"}의 질문 · ${getTypeLabel(item.type)}</span>
             <span>${item.bookTitle || "책 제목 없음"}</span>
           </div>
+
           <h3>${escapeHtml(item.question)}</h3>
-          <p>친구의 생각: ${escapeHtml(item.answer || "")}</p>
-        </div>
 
-        <div class="idr-reply-box">
-          <div class="idr-field">
-            <label for="shareReplyInput">이 질문을 보고 든 내 생각</label>
-            <textarea
-              class="idr-textarea"
-              id="shareReplyInput"
-              placeholder="친구의 질문을 보고 떠오른 내 생각을 적어봐."
-            ></textarea>
+          <div class="idr-selected-answer">
+            <strong>친구가 쓴 답</strong>
+            ${escapeHtml(item.answer || "")}
           </div>
+        </section>
 
-          <div class="idr-field">
-            <label for="applyQuestionInput">내 책에도 비슷하게 적용해 보기</label>
-            <textarea
-              class="idr-textarea"
-              id="applyQuestionInput"
-              placeholder="내 책에도 적용할 수 있는 비슷한 질문을 만들어봐."
-            ></textarea>
-          </div>
-
-          <div class="idr-reply-actions">
-            <button type="button" class="idr-main-button" onclick="saveShareReply('${item.id}')">내 생각 저장</button>
-            <button type="button" class="idr-main-button primary" onclick="saveAppliedQuestion('${item.id}')">내 책 질문으로 저장</button>
-          </div>
-        </div>
-
-        <div class="idr-reply-list" id="replyListArea">
+        <section class="idr-reply-list idr-friend-replies" id="replyListArea">
+          <h3>다른 친구들의 생각</h3>
           ${allReplies.length === 0 ? "<div class='idr-empty-box'>아직 남긴 생각이 없어요.</div>" : allReplies.map((reply) => `
             <div class="idr-reply-item">
-              <strong>${escapeHtml(reply.name)}</strong>
+              <strong>${escapeHtml(reply.name)}의 생각</strong>
               ${escapeHtml(reply.text)}
             </div>
           `).join("")}
-        </div>
+        </section>
+
+        <section class="idr-reply-box">
+          <div class="idr-field">
+            <label for="shareReplyInput">이 질문에 대한 내 생각 쓰기</label>
+            <span id="shareReplyLength">0 / 400자</span>
+            <textarea
+              class="idr-textarea"
+              id="shareReplyInput"
+              maxlength="400"
+              placeholder="친구의 질문과 답을 읽고 내 생각을 적어 봐요."
+              oninput="updateShareTextCounts()"
+            ></textarea>
+          </div>
+
+          <div class="idr-field">
+            <label for="applyQuestionInput">내 책에 맞게 비슷한 질문 만들기</label>
+            <span id="applyQuestionLength">0 / 200자</span>
+            <textarea
+              class="idr-textarea"
+              id="applyQuestionInput"
+              maxlength="200"
+              placeholder="예) 내 책의 주인공은 왜 그런 선택을 했을까?"
+              oninput="updateShareTextCounts()"
+            ></textarea>
+          </div>
+
+          <div class="idr-field">
+            <label for="applyAnswerInput">바꾼 질문에 대한 답 적어보기</label>
+            <span id="applyAnswerLength">0 / 400자</span>
+            <textarea
+              class="idr-textarea"
+              id="applyAnswerInput"
+              maxlength="400"
+              placeholder="내가 바꾼 질문에 대한 생각이나 답을 적어 봐요."
+              oninput="updateShareTextCounts()"
+            ></textarea>
+          </div>
+
+         <div class="idr-reply-actions">
+  <!-- 초등학생이 헷갈리지 않도록 저장 버튼을 하나로 통일합니다. -->
+  <button type="button" class="idr-main-button primary" onclick="saveShareActivity('${item.id}')">
+    저장하기
+  </button>
+</div>
+        </section>
       `;
 
-      renderShareQuestionList();
+      updateShareTextCounts();
+    }
+
+    function updateShareTextCounts() {
+      const replyInput = document.getElementById("shareReplyInput");
+      const applyInput = document.getElementById("applyQuestionInput");
+      const applyAnswerInput = document.getElementById("applyAnswerInput");
+
+      const replyLength = document.getElementById("shareReplyLength");
+      const applyLength = document.getElementById("applyQuestionLength");
+      const applyAnswerLength = document.getElementById("applyAnswerLength");
+
+      if (replyInput && replyLength) {
+        replyLength.textContent = replyInput.value.length + " / 400자";
+      }
+
+      if (applyInput && applyLength) {
+        applyLength.textContent = applyInput.value.length + " / 200자";
+      }
+
+      if (applyAnswerInput && applyAnswerLength) {
+        applyAnswerLength.textContent = applyAnswerInput.value.length + " / 400자";
+      }
     }
 
     function saveShareReply(questionId) {
@@ -2205,34 +5705,89 @@
     }
 
     function saveAppliedQuestion(questionId) {
-      const input = document.getElementById("applyQuestionInput");
-      const text = input.value.trim();
+      const questionInput = document.getElementById("applyQuestionInput");
+      const answerInput = document.getElementById("applyAnswerInput");
+      const questionText = questionInput.value.trim();
+      const answerText = answerInput ? answerInput.value.trim() : "";
 
-      if (!text) {
+      if (!questionText) {
         alert("내 책에 적용할 질문을 먼저 적어줘!");
         return;
       }
 
-      document.getElementById("questionInput").value = text;
-      document.getElementById("answerInput").value = "";
+      if (!answerText) {
+        alert("바꾼 질문에 대한 내 생각이나 답도 함께 적어줘!");
+        return;
+      }
+
+      document.getElementById("questionInput").value = questionText;
+      document.getElementById("answerInput").value = answerText;
       showScreen("question");
       updateTextCounts();
 
-      alert("질문 만들기 화면에 적용 질문을 옮겨놨어. 내 생각/답을 적고 저장하면 돼!");
+      alert("질문 만들기 화면에 질문과 답을 옮겨놨어. 저장하면 나의 질문 모음과 질문 나누기에 반영돼!");
+    }
+// 질문 나누기 화면의 내 생각, 비슷한 질문, 답을 한 번에 저장합니다.
+function saveShareActivity(questionId) {
+  const replyInput = document.getElementById("shareReplyInput");
+  const applyQuestionInput = document.getElementById("applyQuestionInput");
+  const applyAnswerInput = document.getElementById("applyAnswerInput");
+
+  const replyText = replyInput ? replyInput.value.trim() : "";
+  const applyQuestionText = applyQuestionInput ? applyQuestionInput.value.trim() : "";
+  const applyAnswerText = applyAnswerInput ? applyAnswerInput.value.trim() : "";
+
+  // 세 칸 중 아무것도 안 썼으면 저장하지 않습니다.
+  if (!replyText && !applyQuestionText && !applyAnswerText) {
+    alert("내 생각이나 비슷한 질문을 먼저 적어줘!");
+    return;
+  }
+
+  // 친구 질문에 대한 내 생각이 있으면 저장합니다.
+  if (replyText) {
+    const replies = getReplies();
+
+    if (!replies[questionId]) {
+      replies[questionId] = [];
     }
 
-    function findShareQuestionById(questionId) {
-      const selectedIds = getShareSelectedIds();
-      const myQuestions = getMyQuestions()
-        .filter((item) => selectedIds.includes(item.id))
-        .map((item) => ({
-          ...item,
-          name: "나",
-          id: item.id,
-          replies: []
-        }));
+    replies[questionId].push({
+      name: "나",
+      text: replyText
+    });
 
-      return [...myQuestions, ...friendQuestions].find((item) => item.id === questionId);
+    saveReplies(replies);
+  }
+
+  // 비슷한 질문을 만들었으면 질문 만들기 화면에도 옮겨둡니다.
+  if (applyQuestionText) {
+    const questionInput = document.getElementById("questionInput");
+    const answerInput = document.getElementById("answerInput");
+
+    if (questionInput) {
+      questionInput.value = applyQuestionText;
+    }
+
+    if (answerInput) {
+      answerInput.value = applyAnswerText;
+    }
+
+    updateTextCounts();
+  }
+
+  alert("저장했어!");
+
+  // 현재 선택한 질문 화면을 다시 그려서 저장된 생각이 바로 보이게 합니다.
+  const item = findShareQuestionById(questionId);
+
+  if (item) {
+    selectShareQuestion(item);
+  }
+}
+    function findShareQuestionById(questionId) {
+      return getPreparedShareQuestions().find((item) => item.id === questionId)
+        || friendQuestions.find((item) => item.id === questionId)
+        || getMyQuestions().find((item) => item.id === questionId);
     }
 
     function renderCollection() {
@@ -2320,13 +5875,92 @@
         .replaceAll("'", "&#039;");
     }
 
-    function goTodayAdventure() {
-      location.href = "./today-reading-adventure.html";
-    }
+    /*
+  오늘의 독서 모험 화면으로 이동합니다.
+  읽기 중 화면에서 돌아갈 때는 읽기 중 단계까지 활성화되도록 저장합니다.
+*/
+function goTodayAdventure() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+  // 오늘의 독서 모험에서 읽기 중까지 열리도록 현재 단계를 저장합니다.
+  sessionStorage.setItem("individualAdventureStage_" + studentId, "during");
+
+  // 읽기 전 활동은 이미 끝난 상태로 처리합니다.
+  sessionStorage.setItem("individualBeforeDone_" + studentId, "true");
+
+  location.href = "./today-reading-adventure.html";
+}
 
     function goIndividualReading() {
       location.href = "./individual-reading.html";
     }
+    // 질문 나누기 화면의 저장 버튼 문구를 하나로 통일합니다.
+document.addEventListener("DOMContentLoaded", function () {
+  const saveButtons = document.querySelectorAll(".idr-reply-actions .main-button");
+
+  saveButtons.forEach(function (button) {
+    button.textContent = "저장하기";
+  });
+});
+/*
+  개별읽기 공통: 현재까지 모은 나의 힘 팝업을 엽니다.
+  지금은 기본값 8을 사용하고, 나중에 보상 시스템과 연결하면 sessionStorage 값을 바꾸면 됩니다.
+*/
+function openIndividualPowerModal() {
+  renderIndividualPowerModal();
+  document.getElementById("individualPowerModal").classList.remove("hidden");
+}
+
+/*
+  개별읽기 공통: 나의 힘 팝업을 닫습니다.
+*/
+function closeIndividualPowerModal() {
+  document.getElementById("individualPowerModal").classList.add("hidden");
+}
+
+/*
+  개별읽기 공통: sessionStorage에 저장된 능력치가 있으면 불러오고,
+  없으면 연습읽기 완료 보상 기본값 8을 보여줍니다.
+*/
+function getPowerValue(key) {
+  return Number(sessionStorage.getItem("individualPower_" + key + "_" + studentId) || 8);
+}
+
+/*
+  개별읽기 공통: 팝업 안의 숫자와 막대를 갱신합니다.
+*/
+function renderIndividualPowerModal() {
+  const powers = {
+    magic: getPowerValue("magic"),
+    health: getPowerValue("health"),
+    wisdom: getPowerValue("wisdom"),
+    courage: getPowerValue("courage")
+  };
+
+  updatePowerItem("powerMagicText", "powerMagicFill", powers.magic);
+  updatePowerItem("powerHealthText", "powerHealthFill", powers.health);
+  updatePowerItem("powerWisdomText", "powerWisdomFill", powers.wisdom);
+  updatePowerItem("powerCourageText", "powerCourageFill", powers.courage);
+}
+
+/*
+  개별읽기 공통: 능력치 한 줄을 갱신합니다.
+*/
+function updatePowerItem(textId, fillId, value) {
+  const safeValue = Math.max(0, Math.min(100, value));
+  const textElement = document.getElementById(textId);
+  const fillElement = document.getElementById(fillId);
+
+  if (textElement) {
+    textElement.textContent = safeValue + " / 100";
+  }
+
+  if (fillElement) {
+    fillElement.style.width = safeValue + "%";
+  }
+}
   </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
 </body>
-</html>
+</html>ㄴ

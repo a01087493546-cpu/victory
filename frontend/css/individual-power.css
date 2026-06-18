@@ -1,0 +1,141 @@
+/*
+  파일명: individual-power.css
+  역할: 개별읽기 공통 '나의 힘' 팝업 디자인입니다.
+*/
+
+.individual-power-backdrop,
+.individual-power-backdrop * {
+  box-sizing: border-box;
+  font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+}
+
+.individual-power-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(54, 35, 15, 0.46);
+  backdrop-filter: blur(5px);
+}
+
+.individual-power-backdrop.hidden {
+  display: none;
+}
+
+.individual-power-modal {
+  position: relative;
+  width: min(560px, 100%);
+  padding: 30px 32px 28px;
+  border: 1px solid rgba(186, 120, 32, 0.34);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 225, 151, 0.46), transparent 34%),
+    rgba(255, 250, 238, 0.97);
+  color: #573313;
+  box-shadow: 0 24px 60px rgba(79, 50, 18, 0.24);
+}
+
+.individual-power-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(126, 77, 20, 0.10);
+  color: #6a3d15;
+  font-size: 24px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.individual-power-kicker {
+  margin: 0 0 8px;
+  color: #b2731d;
+  font-size: 15px;
+  font-weight: 950;
+  text-align: center;
+}
+
+.individual-power-title {
+  margin: 0 0 20px;
+  color: #4f2f13;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 31px;
+  font-weight: 950;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.individual-power-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.individual-power-card {
+  padding: 15px 16px;
+  border: 1px solid rgba(177, 112, 29, 0.18);
+  border-radius: 20px;
+  background: rgba(255, 243, 214, 0.82);
+}
+
+.individual-power-card strong {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #5d3615;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.individual-power-card em {
+  color: #9a631e;
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.individual-power-card span {
+  display: block;
+  margin-top: 6px;
+  color: #765025;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.42;
+  word-break: keep-all;
+}
+
+.individual-power-bar {
+  height: 10px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(129, 84, 31, 0.15);
+  overflow: hidden;
+}
+
+.individual-power-fill {
+  width: 8%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #87501b, #b97624, #dca746);
+}
+
+.individual-power-confirm {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #dca94f, #a8641e);
+  color: #fff9e8;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18);
+}

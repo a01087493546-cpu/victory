@@ -27,7 +27,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=today-reading-adventure-clean-1">
-
+<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
   <style>
     html,
     body {
@@ -714,6 +715,8 @@
         </div>
 
         <div class="tra-top-actions">
+          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="tra-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="tra-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
           <button type="button" class="tra-top-button" onclick="goIndividualReading()">🏠</button>
         </div>
@@ -739,9 +742,8 @@
 
           <div class="tra-stage-grid" id="stageGrid"></div>
 
-          <div class="tra-bottom-note" id="bottomNote">
-            이번 모험에서 읽을 책을 정하고, 책 속으로 들어가기 전 질문을 만들어 봐요.
-          </div>
+          <!-- 아래 안내 문구 바는 화면을 깔끔하게 보이도록 제거했습니다. -->
+<div class="tra-bottom-note" id="bottomNote" style="display: none;"></div>
         </article>
 
         <aside class="tra-lumi-card">
@@ -918,21 +920,21 @@
       if (currentStage === "before") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-point.png";
         lumiBubble.innerHTML = "이번 모험은 읽기 전부터 시작이야.<br>어떤 책을 읽을지 먼저 알려줘!";
-        bottomNote.textContent = "이번 모험에서 읽을 책을 정하고, 책 속으로 들어가기 전 질문을 만들어 봐요.";
+        
         return;
       }
 
       if (currentStage === "during") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-reading.png";
         lumiBubble.innerHTML = `${bookTitle ? "「" + bookTitle + "」" : "책"}을 읽으며<br>떠오르는 질문을 붙잡아 보자!`;
-        bottomNote.textContent = "책을 읽으며 반짝 떠오른 질문과 생각을 모험 기록으로 남겨 봐요.";
+        
         return;
       }
 
       if (currentStage === "after") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-guide.png";
         lumiBubble.innerHTML = "완독까지 거의 다 왔어!<br>읽은 내용을 정리하면 모험이 마무리돼.";
-        bottomNote.textContent = "마지막으로 책 속에서 찾은 중요한 내용과 내 생각을 정리해 봐요.";
+        
       }
     }
 
@@ -940,5 +942,7 @@
       location.href = "./individual-reading.html";
     }
   </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
 </body>
 </html>

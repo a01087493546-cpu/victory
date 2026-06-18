@@ -29,7 +29,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=individual-before-reading-v2">
-
+<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
   <style>
     html,
     body {
@@ -1190,6 +1191,8 @@
           <button type="button" class="ibr-count-button" onclick="showFirstIncompleteQuestion()">
             내가 만든 질문 <span id="questionCountTop">(0/4)</span>
           </button>
+          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="ibr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="ibr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
           <button type="button" class="ibr-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
           <button type="button" class="ibr-top-button" onclick="goIndividualReading()">🏠</button>
@@ -1780,13 +1783,24 @@
       renderAll();
     }
 
-    function goTodayAdventure() {
-      location.href = "./today-reading-adventure.html";
-    }
+    /*
+  오늘의 독서 모험 화면으로 이동합니다.
+  읽기 전 화면에서 돌아갈 때는 읽기 전 단계까지만 활성화되도록 저장합니다.
+*/
+function goTodayAdventure() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+  // 오늘의 독서 모험에서 읽기 전 단계가 열린 상태로 보이게 저장합니다.
+  sessionStorage.setItem("individualAdventureStage_" + studentId, "before");
+
+  location.href = "./today-reading-adventure.html";
+}
 
     function goIndividualReading() {
       location.href = "./individual-reading.html";
     }
   </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
 </body>
 </html>
