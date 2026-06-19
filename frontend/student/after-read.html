@@ -1,0 +1,2542 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 읽기 후</title>
+
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #fff1cc;
+      background:
+        linear-gradient(180deg, rgba(9, 5, 2, 0.10), rgba(9, 5, 2, 0.68)),
+        url("../assets/images/after-read/after-reading-main-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    button,
+    input,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .ar-page {
+      width: 100vw;
+      height: 100vh;
+      padding: 14px 22px 18px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255, 213, 111, 0.14), transparent 30%),
+        linear-gradient(90deg, rgba(4, 2, 1, 0.58), rgba(4, 2, 1, 0.08), rgba(4, 2, 1, 0.58));
+    }
+
+    .ar-shell {
+      width: min(1480px, 100%);
+      height: calc(100vh - 32px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: 66px minmax(0, 1fr);
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .ar-topbar {
+      height: 66px;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr) 260px;
+      align-items: center;
+      gap: 14px;
+      padding: 0 16px;
+      border-radius: 26px;
+      border: 1.5px solid rgba(255, 203, 112, 0.68);
+      background:
+        linear-gradient(90deg, rgba(12, 7, 3, 0.94), rgba(50, 27, 10, 0.78), rgba(12, 7, 3, 0.94));
+      box-shadow:
+        0 18px 36px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 237, 184, 0.20);
+    }
+
+    .ar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff4cf;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      white-space: nowrap;
+      text-shadow: 0 3px 14px rgba(0, 0, 0, 0.42);
+    }
+
+    .ar-brand-mark {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 220, 141, 0.72);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255, 242, 190, 0.42), transparent 42%),
+        linear-gradient(180deg, rgba(126, 78, 27, 0.94), rgba(38, 21, 9, 0.98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 10px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .ar-brand-mark img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .ar-title {
+      text-align: center;
+      color: #ffe9a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1px;
+      text-shadow:
+        0 2px 0 rgba(60, 31, 8, 0.96),
+        0 0 18px rgba(255, 211, 111, 0.30),
+        0 8px 24px rgba(0, 0, 0, 0.42);
+    }
+
+    .ar-top-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .ar-pill-button {
+      height: 39px;
+      padding: 0 17px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 215, 132, 0.72);
+      background: linear-gradient(180deg, rgba(130, 78, 26, 0.98), rgba(62, 30, 8, 0.98));
+      color: #fff1c9;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow:
+        0 5px 0 rgba(27, 13, 4, 0.76),
+        inset 0 1px 0 rgba(255, 238, 190, 0.18);
+    }
+
+    .ar-screen {
+      display: none;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .ar-screen.is-active {
+      display: grid;
+    }
+
+    .ar-menu-screen.is-active {
+      height: 100%;
+      grid-template-rows: 245px minmax(0, 1fr);
+      gap: 18px;
+      overflow: hidden;
+    }
+
+    .ar-guide-area {
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr) 320px;
+      grid-template-areas: "lumi speech status";
+      gap: 18px;
+      align-items: end;
+      padding: 4px 2px 0;
+    }
+
+    .ar-lumi-area {
+      grid-area: lumi;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: visible;
+    }
+
+    .ar-lumi-img {
+      width: 195px;
+      max-height: 240px;
+      object-fit: contain;
+      object-position: bottom center;
+      transform: translateY(8px);
+      filter:
+        drop-shadow(0 18px 22px rgba(0, 0, 0, 0.50))
+        drop-shadow(0 0 18px rgba(255, 205, 105, 0.16));
+    }
+
+    .ar-speech-card {
+      grid-area: speech;
+      position: relative;
+      align-self: center;
+      min-height: 108px;
+      display: flex;
+      align-items: center;
+      padding: 22px 30px;
+      border-radius: 26px;
+      border: 1.5px solid rgba(255, 221, 149, 0.66);
+      background:
+        radial-gradient(circle at 96% 0%, rgba(255, 232, 172, 0.23), transparent 34%),
+        linear-gradient(180deg, rgba(255, 250, 235, 0.94), rgba(245, 221, 181, 0.90));
+      color: #452710;
+      font-family: "Noto Serif KR", serif;
+      font-size: clamp(20px, 1.75vw, 27px);
+      font-weight: 900;
+      line-height: 1.42;
+      letter-spacing: -0.8px;
+      word-break: keep-all;
+      box-shadow:
+        0 18px 32px rgba(0, 0, 0, 0.30),
+        0 5px 0 rgba(83, 43, 12, 0.30),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    }
+
+    .ar-speech-card::before {
+      content: "";
+      position: absolute;
+      left: -15px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-right: 16px solid rgba(255, 250, 235, 0.94);
+    }
+
+    .ar-menu-status {
+      grid-area: status;
+      align-self: center;
+      height: 210px;
+      padding: 14px 16px;
+      border-radius: 26px;
+      border: 1.5px solid rgba(255, 205, 112, 0.52);
+      background:
+        radial-gradient(circle at 70% 0%, rgba(255, 212, 109, 0.14), transparent 38%),
+        linear-gradient(180deg, rgba(23, 13, 6, 0.88), rgba(12, 7, 3, 0.92));
+      box-shadow:
+        0 18px 32px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 235, 184, 0.10);
+      overflow: hidden;
+    }
+
+    .ar-menu-status h2 {
+      margin-bottom: 10px;
+      text-align: center;
+      color: #ffe9a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 21px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+    }
+
+    .ar-status-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .ar-status-chip {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 239, 211, 0.18);
+      background: rgba(255, 246, 227, 0.90);
+      color: #4b2a12;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ar-status-chip span {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(88, 58, 27, 0.16);
+      color: #5c3414;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ar-status-chip.is-active {
+      border-color: rgba(146, 218, 93, 0.32);
+      background: linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8e3;
+    }
+
+    .ar-status-chip.is-active span {
+      background: #fff4cf;
+      color: #2f651d;
+    }
+
+    .ar-type-board {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+      padding: 28px 30px 30px;
+      border-radius: 32px;
+      border: 1.5px solid rgba(255, 205, 112, 0.66);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 218, 128, 0.16), transparent 32%),
+        linear-gradient(180deg, rgba(16, 10, 5, 0.82), rgba(23, 13, 6, 0.88));
+      box-shadow:
+        0 24px 44px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 236, 184, 0.16),
+        inset 0 0 46px rgba(255, 201, 92, 0.06);
+      overflow: hidden;
+    }
+
+    .ar-board-title {
+      text-align: center;
+    }
+
+    .ar-board-title h2 {
+      color: #ffe9a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 31px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      text-shadow:
+        0 2px 0 rgba(45, 22, 5, 0.88),
+        0 0 18px rgba(255, 205, 105, 0.28);
+    }
+
+    .ar-board-title p {
+      margin-top: 5px;
+      color: rgba(255, 235, 188, 0.88);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .ar-type-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    .ar-type-card {
+      height: 100%;
+      padding: 22px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 24px;
+      border: 1.5px solid rgba(255, 215, 132, 0.54);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255, 210, 104, 0.14), transparent 28%),
+        linear-gradient(180deg, rgba(255, 249, 226, 0.15), rgba(51, 30, 12, 0.60)),
+        rgba(18, 11, 6, 0.68);
+      color: #fff2c8;
+      box-shadow:
+        0 18px 30px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 250, 225, 0.18),
+        inset 0 -30px 54px rgba(0, 0, 0, 0.14);
+      overflow: hidden;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .ar-type-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 224, 151, 0.82);
+      box-shadow:
+        0 22px 34px rgba(0, 0, 0, 0.36),
+        0 0 22px rgba(255, 198, 92, 0.14),
+        inset 0 1px 0 rgba(255, 250, 225, 0.22);
+    }
+
+    .ar-type-card > div {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .ar-type-icon {
+      width: 90px;
+      height: 90px;
+      flex: 0 0 90px;
+      margin: 0 0 4px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 35% 25%, #fffdf3 0%, #f9ecd0 44%, #e8c777 78%, #b8832d 100%);
+      border: 2px solid rgba(255, 224, 145, 0.98);
+      box-shadow:
+        0 0 0 4px rgba(105, 68, 25, 0.24),
+        0 0 22px rgba(255, 204, 95, 0.34),
+        0 8px 15px rgba(0, 0, 0, 0.20),
+        inset 0 2px 9px rgba(255, 255, 255, 0.68),
+        inset 0 -6px 10px rgba(126, 76, 22, 0.18);
+    }
+
+    .ar-type-icon img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      display: block;
+      filter:
+        drop-shadow(0 4px 5px rgba(52, 27, 7, 0.34))
+        drop-shadow(0 0 7px rgba(255, 226, 148, 0.38));
+    }
+
+    .ar-type-card h3 {
+      margin: 4px 0 0;
+      color: #fff2c8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.7px;
+      text-shadow:
+        0 2px 0 rgba(42, 22, 7, 0.86),
+        0 0 12px rgba(255, 205, 105, 0.18);
+    }
+
+    .ar-type-card p {
+      max-width: 230px;
+      margin: 0 auto;
+      color: rgba(255, 236, 190, 0.90);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.42;
+      letter-spacing: -0.2px;
+      word-break: keep-all;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
+    }
+
+    .ar-study-screen.is-active {
+      height: 100%;
+      grid-template-rows: 112px minmax(0, 1fr);
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .ar-study-header {
+      height: 112px;
+      padding: 13px 18px 14px;
+      border-radius: 26px;
+      border: 1.5px solid rgba(255, 205, 112, 0.52);
+      background:
+        radial-gradient(circle at 80% 0%, rgba(255, 217, 124, 0.12), transparent 38%),
+        linear-gradient(180deg, rgba(24, 14, 7, 0.88), rgba(12, 7, 3, 0.92));
+      box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 235, 184, 0.10);
+      overflow: hidden;
+    }
+
+    .ar-study-header-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .ar-study-title {
+      color: #ffe9a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.8px;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+    }
+
+    .ar-study-stepbar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .ar-study-step {
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 239, 211, 0.20);
+      background: rgba(255, 246, 227, 0.88);
+      color: #4b2a12;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .ar-study-step span {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #fff4cf;
+      color: #5c3414;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .ar-study-step.is-active {
+      background: linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8e3;
+    }
+
+    .ar-study-step.is-active span {
+      color: #2f651d;
+    }
+
+    .ar-study-board {
+      height: 100%;
+      min-height: 0;
+      padding: 16px 22px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(255, 205, 112, 0.62);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 218, 128, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(18, 11, 6, 0.82), rgba(26, 14, 6, 0.90));
+      box-shadow:
+        0 24px 44px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 236, 184, 0.14),
+        inset 0 0 48px rgba(255, 201, 92, 0.06);
+      overflow: hidden;
+    }
+
+    .ar-study-panel {
+      display: none;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .ar-study-panel.is-active {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) 84px auto;
+      gap: 8px;
+    }
+
+    .ar-panel-title {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .ar-panel-title h2 {
+      color: #ffe9a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.9px;
+      text-shadow:
+        0 2px 0 rgba(45, 22, 5, 0.86),
+        0 0 14px rgba(255, 205, 105, 0.20);
+    }
+
+    .ar-panel-title p {
+      margin-top: 4px;
+      color: rgba(255, 235, 188, 0.86);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .ar-panel-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 0;
+      flex-wrap: wrap;
+    }
+
+    .ar-action-button {
+      min-width: 104px;
+      height: 40px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8e3;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 5px 0 rgba(24, 45, 12, 0.78);
+    }
+
+    .ar-action-button.is-brown {
+      background: linear-gradient(180deg, #965d25, #562b0c);
+      box-shadow: 0 5px 0 rgba(45, 22, 7, 0.78);
+    }
+
+    .ar-study-card {
+      min-width: 0;
+      min-height: 0;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1.5px solid rgba(255, 215, 132, 0.46);
+      background:
+        linear-gradient(180deg, rgba(255, 249, 226, 0.92), rgba(244, 224, 180, 0.84));
+      color: #3f230e;
+      box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      overflow: hidden;
+    }
+
+    .ar-study-card h3 {
+      margin-bottom: 12px;
+      color: #42240e;
+      font-family: "Noto Serif KR", serif;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .ar-method-layout {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      overflow: hidden;
+    }
+
+    .ar-method-layout .ar-study-card {
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 26px 30px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 245, 207, 0.95), rgba(248, 227, 183, 0.88) 55%, rgba(215, 176, 104, 0.78));
+      border: 1.5px solid rgba(255, 222, 145, 0.72);
+    }
+
+    .ar-method-layout .ar-study-card h3 {
+      font-size: 24px;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .ar-method-sentence {
+      min-height: 190px;
+      padding: 28px 36px;
+      text-align: center;
+      font-family: "Noto Serif KR", serif;
+      font-size: 27px;
+      font-weight: 900;
+      line-height: 1.75;
+      letter-spacing: -0.7px;
+      word-break: keep-all;
+      border-radius: 24px;
+      background: rgba(255, 253, 246, 0.92);
+      border: 2px solid rgba(204, 151, 66, 0.32);
+      color: #3f230e;
+    }
+
+    .ar-tip-box {
+      margin-top: 18px;
+      padding: 16px 20px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.55;
+      border-radius: 18px;
+      border: 1px solid rgba(76, 113, 48, 0.28);
+      background: rgba(74, 120, 52, 0.16);
+      color: #42511c;
+      word-break: keep-all;
+    }
+
+    .method-reveal-word {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      margin: 0 6px;
+    }
+
+    .method-blank-button {
+      min-width: 96px;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 218, 134, 0.88);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.55), transparent 42%),
+        linear-gradient(180deg, #f8ead0, #c99d54);
+      color: #5a3513;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .method-keyword {
+      display: none;
+      min-width: 104px;
+      height: 38px;
+      padding: 0 16px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 224, 145, 0.88);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.36), transparent 42%),
+        linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8df;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .method-reveal-word.revealed .method-blank-button {
+      display: none;
+    }
+
+    .method-reveal-word.revealed .method-keyword {
+      display: inline-flex;
+    }
+
+    .ar-builder-layout,
+    .ar-practice-write-layout,
+    .ar-summary-layout {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    .ar-practice-reading-card {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .ar-practice-question-card,
+    .ar-practice-write-card {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 12px;
+    }
+
+    .ar-material-guide {
+      padding: 11px 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(76, 113, 48, 0.26);
+      background: rgba(76, 113, 48, 0.16);
+      color: #3f4e1c;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .ar-practice-text,
+    .ar-extra-practice-text {
+      min-height: 250px;
+      padding: 22px 24px;
+      border-radius: 20px;
+      border: 2px solid rgba(211, 157, 68, 0.40);
+      background: rgba(255, 253, 246, 0.92);
+      color: #3f230e;
+      font-family: "Noto Serif KR", serif;
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.75;
+      word-break: keep-all;
+      white-space: pre-line;
+      overflow-y: auto;
+    }
+
+    .ar-practice-guide {
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(76, 113, 48, 0.24);
+      background: rgba(76, 113, 48, 0.14);
+      color: #3f4e1c;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .ar-practice-question-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ar-practice-question-button {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(131, 82, 36, 0.26);
+      background: rgba(255, 250, 238, 0.94);
+      color: #4b2a12;
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: left;
+      word-break: keep-all;
+      box-shadow: 0 3px 0 rgba(126, 73, 22, 0.14);
+    }
+
+    .ar-practice-question-button.is-selected {
+      border-color: rgba(255, 224, 147, 0.78);
+      background: linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8e3;
+    }
+
+    .ar-practice-question-button.is-wrong {
+      border-color: rgba(188, 86, 55, 0.52);
+      background: rgba(255, 236, 229, 0.94);
+      color: #7d321c;
+    }
+
+    .ar-practice-choice-feedback {
+      min-height: 46px;
+      padding: 11px 13px;
+      border-radius: 14px;
+      border: 1px solid rgba(211, 157, 68, 0.30);
+      background: rgba(255, 253, 246, 0.78);
+      color: #5b3a1a;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+      flex: 0 0 auto;
+    }
+
+    .ar-practice-choice-feedback.is-good {
+      border-color: rgba(76, 113, 48, 0.30);
+      background: rgba(76, 113, 48, 0.15);
+      color: #315e22;
+    }
+
+    .ar-practice-choice-feedback.is-need {
+      border-color: rgba(188, 86, 55, 0.38);
+      background: rgba(255, 236, 229, 0.92);
+      color: #7d321c;
+    }
+
+    .ar-practice-answer-area {
+      margin-top: 6px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(211, 157, 68, 0.30);
+      flex: 0 0 auto;
+    }
+
+    .ar-practice-answer-area h3 {
+      margin-bottom: 8px;
+    }
+
+    .ar-practice-answer-list {
+      min-height: 72px;
+      max-height: 190px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      overflow-y: auto;
+      color: #6b431c;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .ar-practice-answer-item,
+    .ar-practice-write-item {
+      padding: 10px 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(131, 82, 36, 0.22);
+      background: rgba(255, 253, 246, 0.82);
+    }
+
+    .ar-practice-answer-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #315e22;
+      font-weight: 900;
+    }
+
+    .ar-check-feedback {
+      display: none;
+      flex: 0 0 auto;
+      margin-top: 4px;
+      padding: 9px 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(76, 113, 48, 0.28);
+      background: rgba(76, 113, 48, 0.16);
+      color: #3f4e1c;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .ar-check-feedback.is-show {
+      display: block;
+    }
+
+    .ar-practice-write-list {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .ar-write-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .ar-qa-card {
+      min-height: 0;
+      padding: 14px;
+      border-radius: 19px;
+      border: 2px solid rgba(211, 157, 68, 0.48);
+      background: rgba(255, 250, 236, 0.84);
+      overflow: hidden;
+    }
+
+    .ar-qa-card h3 {
+      margin-bottom: 8px;
+      color: #45270f;
+      font-family: "Noto Serif KR", serif;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .ar-input-label {
+      display: block;
+      margin: 8px 0 5px;
+      color: #674019;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .ar-question-input,
+    .ar-answer-input,
+    .ar-practice-answer-input,
+    .ar-summary-textarea {
+      width: 100%;
+      border: 2px solid rgba(135, 82, 34, 0.24);
+      border-radius: 14px;
+      background: rgba(255, 253, 246, 0.94);
+      color: #3e2310;
+      font-size: 13px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .ar-question-input {
+      height: 38px;
+      padding: 0 11px;
+    }
+
+    .ar-answer-input {
+      height: 88px;
+      padding: 10px 11px;
+      resize: none;
+      line-height: 1.45;
+    }
+
+    .ar-practice-answer-input {
+      height: 42px;
+      padding: 0 10px;
+      font-weight: 800;
+    }
+
+    .ar-question-input:focus,
+    .ar-answer-input:focus,
+    .ar-practice-answer-input:focus,
+    .ar-summary-textarea:focus {
+      border-color: rgba(63, 132, 46, 0.78);
+      box-shadow: 0 0 0 3px rgba(63, 132, 46, 0.14);
+    }
+
+    .ar-connect-list {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+
+    .ar-connect-item {
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(211, 157, 68, 0.38);
+      background: rgba(255, 253, 246, 0.84);
+      color: #44240e;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.34;
+      word-break: keep-all;
+    }
+
+    .ar-connect-item strong {
+      color: #2d6a1d;
+      font-weight: 900;
+    }
+
+    .ar-summary-textarea {
+      height: 230px;
+      padding: 12px;
+      resize: none;
+      line-height: 1.55;
+    }
+
+    .ar-share-list {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .ar-share-item {
+      min-height: 0;
+      padding: 14px;
+      border-radius: 18px;
+      border: 2px solid rgba(211, 157, 68, 0.48);
+      background: rgba(255, 250, 236, 0.86);
+      color: #42240e;
+      overflow: hidden;
+    }
+
+    .ar-share-item strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #45270f;
+      font-family: "Noto Serif KR", serif;
+      font-size: 16px;
+    }
+
+    .ar-share-tag {
+      display: inline-block;
+      margin-bottom: 9px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #3f842e;
+      color: #fff8e3;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .ar-share-item p {
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.38;
+      white-space: pre-line;
+      word-break: keep-all;
+    }
+
+    .ar-empty {
+      grid-column: 1 / -1;
+      padding: 30px;
+      border-radius: 20px;
+      border: 2px dashed rgba(135, 82, 34, 0.34);
+      background: rgba(255, 253, 246, 0.78);
+      color: #5c3414;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .ar-after-feedback-card {
+      height: 84px;
+      min-height: 84px;
+      margin-top: 0;
+      padding: 10px 16px;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      border-radius: 18px;
+      border: 1.5px solid rgba(255, 215, 132, 0.46);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 219, 129, 0.18), transparent 38%),
+        linear-gradient(180deg, rgba(255, 249, 226, 0.94), rgba(244, 224, 180, 0.88));
+      color: #3f230e;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.46);
+    }
+
+    .ar-after-feedback-lumi {
+      width: 66px;
+      max-height: 70px;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 8px 10px rgba(70, 38, 8, 0.22))
+        drop-shadow(0 0 10px rgba(255, 205, 105, 0.16));
+    }
+
+    .ar-after-feedback-content {
+      min-width: 0;
+    }
+
+    .ar-after-feedback-title {
+      margin-bottom: 5px;
+      color: #45270f;
+      font-family: "Noto Serif KR", serif;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .ar-after-feedback-message {
+      min-height: 38px;
+      max-height: 48px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(186, 130, 58, 0.28);
+      background: rgba(255, 253, 246, 0.72);
+      color: #4f3219;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.35;
+      word-break: keep-all;
+      overflow-y: auto;
+    }
+
+    .ar-after-feedback-message.good {
+      border-color: rgba(97, 155, 72, 0.42);
+      background: rgba(250, 255, 245, 0.82);
+      color: #315e22;
+    }
+
+    .ar-after-feedback-message.need {
+      border-color: rgba(209, 146, 48, 0.44);
+      background: rgba(255, 250, 238, 0.86);
+      color: #7d4a16;
+    }
+
+    @media (max-width: 1180px) {
+      body {
+        overflow: auto;
+      }
+
+      .ar-page {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+
+      .ar-shell {
+        height: auto;
+        grid-template-rows: auto auto;
+      }
+
+      .ar-topbar {
+        height: auto;
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+
+      .ar-brand,
+      .ar-top-actions {
+        justify-content: center;
+      }
+
+      .ar-guide-area {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "lumi"
+          "speech"
+          "status";
+      }
+
+      .ar-lumi-area {
+        height: 190px;
+      }
+
+      .ar-menu-screen.is-active,
+      .ar-study-screen.is-active {
+        height: auto;
+        grid-template-rows: auto auto;
+      }
+
+      .ar-type-board,
+      .ar-study-board,
+      .ar-study-header {
+        height: auto;
+        overflow: visible;
+      }
+
+      .ar-study-panel.is-active {
+        grid-template-rows: auto auto auto auto;
+      }
+
+      .ar-type-grid,
+      .ar-builder-layout,
+      .ar-practice-write-layout,
+      .ar-write-grid,
+      .ar-summary-layout,
+      .ar-share-list {
+        grid-template-columns: 1fr;
+      }
+
+      .ar-study-stepbar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ar-page">
+    <div class="ar-shell">
+      <header class="ar-topbar">
+        <div class="ar-brand">
+          <div class="ar-brand-mark">
+            <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          </div>
+          <span>문답책</span>
+        </div>
+
+        <h1 class="ar-title">읽기 후</h1>
+
+        <div class="ar-top-actions">
+          <button class="ar-pill-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+        </div>
+      </header>
+
+      <main class="ar-screen ar-menu-screen is-active" id="menuScreen">
+        <section class="ar-guide-area">
+          <div class="ar-lumi-area">
+            <img
+              class="ar-lumi-img"
+              src="../assets/images/after-read/after-read-lumi-guide.png"
+              alt="루미"
+            >
+          </div>
+
+          <div class="ar-speech-card">
+            책마다 간추리는 방법이 달라!<br>
+            먼저 내가 읽은 책의 종류를 골라 보자.
+          </div>
+
+          <aside class="ar-menu-status">
+            <h2>읽기 후 순서</h2>
+            <div class="ar-status-list">
+              <div class="ar-status-chip is-active"><span>1</span> 책 유형 고르기</div>
+              <div class="ar-status-chip"><span>2</span> 간추리기 비법</div>
+              <div class="ar-status-chip"><span>3</span> 질문으로 간추리기</div>
+              <div class="ar-status-chip"><span>4</span> 간추리기 공유</div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="ar-type-board">
+          <div class="ar-board-title">
+            <h2>✦ 책의 종류를 골라요 ✦</h2>
+            <p>내가 읽은 책에 어울리는 간추리기 방법을 선택해요.</p>
+          </div>
+
+          <div class="ar-type-grid">
+            <button class="ar-type-card" type="button" onclick="selectBookType('story')">
+              <div>
+                <div class="ar-type-icon">
+                  <img src="../assets/images/after-read/after-read-icon-story.png" alt="이야기 책 아이콘">
+                </div>
+                <h3>이야기 책</h3>
+                <p>시간의 흐름이나 장소의 변화에 따라<br>일어난 일을 간추리는 책</p>
+              </div>
+            </button>
+
+            <button class="ar-type-card" type="button" onclick="selectBookType('info')">
+              <div>
+                <div class="ar-type-icon">
+                  <img src="../assets/images/after-read/after-read-icon-info.png" alt="정보를 담은 책 아이콘">
+                </div>
+                <h3>정보를 담은 책</h3>
+                <p>문단이나 각 장의 중심 내용을<br>찾아 간추리는 책</p>
+              </div>
+            </button>
+
+            <button class="ar-type-card" type="button" onclick="selectBookType('opinion')">
+              <div>
+                <div class="ar-type-icon">
+                  <img src="../assets/images/after-read/after-read-icon-opinion.png" alt="주장을 담은 책 아이콘">
+                </div>
+                <h3>주장을 담은 책</h3>
+                <p>글쓴이의 주장과 이유를 찾아<br>생각을 정리하는 책</p>
+              </div>
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <main class="ar-screen ar-study-screen" id="studyScreen">
+        <section class="ar-study-header">
+          <div class="ar-study-header-main">
+            <div>
+              <h1 class="ar-study-title" id="studyTitle">간추리기 비법</h1>
+            </div>
+          </div>
+
+          <div class="ar-study-stepbar">
+            <div class="ar-study-step" id="stepBar1"><span>1</span> 책 유형 고르기</div>
+            <div class="ar-study-step" id="stepBar2"><span>2</span> 간추리기 비법</div>
+            <div class="ar-study-step" id="stepBar3"><span>3</span> 질문으로 간추리기</div>
+            <div class="ar-study-step" id="stepBar4"><span>4</span> 간추리기 공유</div>
+          </div>
+        </section>
+
+        <section class="ar-study-board">
+          <section class="ar-study-panel ar-method-panel" id="methodPanel">
+            <div class="ar-panel-title">
+              <h2 id="methodTitle">간추리기 비법</h2>
+              <p>먼저 이 책을 어떻게 간추리면 좋은지 알아봐요.</p>
+            </div>
+
+            <div class="ar-method-layout">
+              <article class="ar-study-card">
+                <h3>간추리기 비법 문장</h3>
+                <div class="ar-method-sentence" id="methodSentence"></div>
+                <div class="ar-tip-box" id="methodTip"></div>
+              </article>
+            </div>
+
+            <div></div>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button" type="button" onclick="showStudyPanel('builder')">다음으로</button>
+            </div>
+          </section>
+
+          <section class="ar-study-panel ar-builder-panel" id="builderPanel">
+            <div class="ar-panel-title">
+              <h2>짧은 글로 질문 연습하기</h2>
+              <p>짧은 글을 읽고, 간추리기에 도움이 되는 질문을 골라 답해 봐요.</p>
+            </div>
+
+            <div class="ar-builder-layout">
+              <article class="ar-study-card ar-practice-reading-card">
+                <h3>짧은 글 읽기</h3>
+                <div class="ar-material-guide" id="builderGuide">
+                  짧은 글을 읽고 중요한 내용을 떠올려 봐요.
+                </div>
+                <div class="ar-practice-text" id="practiceText">
+                  책 유형을 고르면 짧은 글이 나타나요.
+                </div>
+              </article>
+
+              <article class="ar-study-card ar-practice-question-card">
+                <h3>간추리기 질문 고르기</h3>
+
+                <p class="ar-practice-guide">
+                  이 글을 간추리는 데 도움이 되는 질문을 골라요.
+                </p>
+
+                <div class="ar-practice-question-list" id="practiceQuestionList"></div>
+
+                <div class="ar-practice-choice-feedback" id="practiceChoiceFeedback">
+                  간추리기에 도움이 되는 질문을 골라 보세요.
+                </div>
+
+                <div class="ar-practice-answer-area">
+                  <h3>고른 좋은 질문에 답해 보기</h3>
+                  <div class="ar-practice-answer-list" id="practiceAnswerList">
+                    간추리기에 도움이 되는 질문을 고르면 답을 쓰는 칸이 나타나요.
+                  </div>
+                </div>
+
+                <div class="ar-check-feedback" id="goodQuestionFeedback">
+                  좋아요! 방금 고른 질문처럼 다른 글에도 질문을 직접 만들어 봐요.
+                </div>
+              </article>
+            </div>
+
+            <div></div>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('method')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="goPracticeWritePanel()">다른 글로 직접 연습</button>
+            </div>
+          </section>
+
+          <section class="ar-study-panel ar-practice-write-panel" id="practiceWritePanel">
+            <div class="ar-panel-title">
+              <h2>다른 짧은 글로 직접 질문 만들기</h2>
+              <p>이번에는 질문을 직접 만들고, 그 질문에 대한 답을 써 봐요.</p>
+            </div>
+
+            <div class="ar-practice-write-layout">
+              <article class="ar-study-card">
+                <h3>새로운 짧은 글 읽기</h3>
+                <div class="ar-material-guide" id="extraPracticeGuide">
+                  책 유형에 맞는 기준을 떠올리며 읽어 봐요.
+                </div>
+                <div class="ar-extra-practice-text" id="extraPracticeText">
+                  짧은 글이 나타나요.
+                </div>
+              </article>
+
+              <article class="ar-study-card ar-practice-write-card">
+                <h3>질문과 답 직접 쓰기</h3>
+
+                <div class="ar-practice-write-list">
+                  <div class="ar-practice-write-item">
+                    <label class="ar-input-label" for="practiceQuestion1">질문 1</label>
+                    <input
+                      class="ar-question-input"
+                      id="practiceQuestion1"
+                      type="text"
+                      placeholder="예) 이 글에서 가장 중요한 일은 무엇인가요?"
+                      oninput="checkExtraPracticeDone()"
+                    >
+
+                    <label class="ar-input-label" for="practiceAnswer1">답 1</label>
+                    <textarea
+                      class="ar-answer-input"
+                      id="practiceAnswer1"
+                      placeholder="질문 1에 대한 답을 짧은 글에서 찾아 써 보세요."
+                      oninput="checkExtraPracticeDone()"
+                    ></textarea>
+                  </div>
+
+                  <div class="ar-practice-write-item">
+                    <label class="ar-input-label" for="practiceQuestion2">질문 2</label>
+                    <input
+                      class="ar-question-input"
+                      id="practiceQuestion2"
+                      type="text"
+                      placeholder="예) 이 글을 한 문장으로 정리하면 무엇인가요?"
+                      oninput="checkExtraPracticeDone()"
+                    >
+
+                    <label class="ar-input-label" for="practiceAnswer2">답 2</label>
+                    <textarea
+                      class="ar-answer-input"
+                      id="practiceAnswer2"
+                      placeholder="질문 2에 대한 답을 짧은 글에서 찾아 써 보세요."
+                      oninput="checkExtraPracticeDone()"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="ar-check-feedback" id="extraPracticeFeedback">
+                  좋아요! 이제 같은 방법으로 내가 읽은 책에 맞는 질문을 직접 써 봐요.
+                </div>
+              </article>
+            </div>
+
+            <article class="ar-after-feedback-card">
+              <img
+                class="ar-after-feedback-lumi"
+                src="../assets/images/class-reading/class-reading-lumi-feedback.png"
+                alt="루미"
+              >
+              <div class="ar-after-feedback-content">
+                <div class="ar-after-feedback-title">✦ AI 루미 피드백</div>
+                <div class="ar-after-feedback-message" id="extraPracticeAiFeedback">
+                  질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게.
+                </div>
+              </div>
+            </article>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('builder')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="goWritePanelAfterPractice()">내 책 질문 쓰기</button>
+            </div>
+          </section>
+
+          <section class="ar-study-panel ar-write-panel" id="writePanel">
+            <div class="ar-panel-title">
+              <h2>내 책에 맞는 질문을 직접 써요</h2>
+              <p>질문에 답하면 간추리기의 재료가 돼요.</p>
+            </div>
+
+            <div class="ar-write-grid">
+              <article class="ar-qa-card">
+                <h3>질문 1</h3>
+                <label class="ar-input-label" for="question1">간추리기 질문</label>
+                <input class="ar-question-input" id="question1" type="text" oninput="checkBookQuestionFeedback()">
+                <label class="ar-input-label" for="answer1">질문에 대한 답</label>
+                <textarea class="ar-answer-input" id="answer1" oninput="checkBookQuestionFeedback()"></textarea>
+              </article>
+
+              <article class="ar-qa-card">
+                <h3>질문 2</h3>
+                <label class="ar-input-label" for="question2">간추리기 질문</label>
+                <input class="ar-question-input" id="question2" type="text" oninput="checkBookQuestionFeedback()">
+                <label class="ar-input-label" for="answer2">질문에 대한 답</label>
+                <textarea class="ar-answer-input" id="answer2" oninput="checkBookQuestionFeedback()"></textarea>
+              </article>
+
+              <article class="ar-qa-card">
+                <h3>질문 3</h3>
+                <label class="ar-input-label" for="question3">간추리기 질문</label>
+                <input class="ar-question-input" id="question3" type="text" oninput="checkBookQuestionFeedback()">
+                <label class="ar-input-label" for="answer3">질문에 대한 답</label>
+                <textarea class="ar-answer-input" id="answer3" oninput="checkBookQuestionFeedback()"></textarea>
+              </article>
+            </div>
+
+            <article class="ar-after-feedback-card">
+              <img
+                class="ar-after-feedback-lumi"
+                src="../assets/images/class-reading/class-reading-lumi-feedback.png"
+                alt="루미"
+              >
+              <div class="ar-after-feedback-content">
+                <div class="ar-after-feedback-title">✦ AI 루미 피드백</div>
+                <div class="ar-after-feedback-message" id="bookQuestionAiFeedback">
+                  내 책에 맞는 질문과 답을 쓰면 루미가 간추리기 재료로 알맞은지 살펴봐 줄게.
+                </div>
+              </div>
+            </article>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('practiceWrite')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="makeSummaryGuide()">답을 모아 간추리기</button>
+            </div>
+          </section>
+
+          <section class="ar-study-panel ar-summary-panel" id="summaryPanel">
+            <div class="ar-panel-title">
+              <h2>내 간추리기 완성</h2>
+              <p>질문에 답한 내용을 모아 책의 핵심을 정리해요.</p>
+            </div>
+
+            <div class="ar-summary-layout">
+              <article class="ar-study-card">
+                <h3>질문에서 간추리기로 이어져요</h3>
+                <div class="ar-connect-list" id="connectBox"></div>
+              </article>
+
+              <article class="ar-study-card">
+                <h3>내가 쓴 간추리기</h3>
+                <textarea class="ar-summary-textarea" id="summaryText" oninput="checkSummaryFeedback()"></textarea>
+              </article>
+            </div>
+
+            <article class="ar-after-feedback-card">
+              <img
+                class="ar-after-feedback-lumi"
+                src="../assets/images/class-reading/class-reading-lumi-feedback.png"
+                alt="루미"
+              >
+              <div class="ar-after-feedback-content">
+                <div class="ar-after-feedback-title">✦ AI 루미 피드백</div>
+                <div class="ar-after-feedback-message" id="summaryAiFeedback">
+                  간추리기를 쓰면 루미가 핵심 내용이 잘 모였는지 살펴봐 줄게.
+                </div>
+              </div>
+            </article>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('write')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="saveSummary()">저장하고 공유하기</button>
+            </div>
+          </section>
+
+          <section class="ar-study-panel ar-share-panel" id="sharePanel">
+            <div class="ar-panel-title">
+              <h2>우리 반 간추리기 모음</h2>
+              <p>내가 간추린 내용을 친구들과 함께 볼 수 있어요.</p>
+            </div>
+
+            <div class="ar-share-list" id="shareList"></div>
+
+            <div></div>
+
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('summary')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "afterReadSummaries";
+
+    const bookTypeData = {
+      story: {
+        label: "이야기 책",
+        icon: "📖",
+        method: "이야기 책은 시간의 흐름이나 장소의 변화에 따라 등장인물에게 일어난 일을 중심으로 간추려요.",
+        tip: "처음, 가운데, 마지막에 인물에게 어떤 일이 일어났는지 떠올리면 간추리기 질문을 만들기 쉬워요.",
+        blanks: ["시간의 흐름", "장소의 변화", "등장인물"],
+        builderGuide: "이야기 책은 시간의 흐름이나 장소의 변화에 따라 등장인물에게 일어난 일을 중심으로 간추려요.",
+        practiceText:
+          "어느 날, 민수는 학교에 가는 길에 작은 강아지를 보았습니다.\n" +
+          "강아지는 길을 잃은 것처럼 떨고 있었습니다.\n" +
+          "민수는 선생님께 말씀드렸고, 강아지는 주인을 다시 만났습니다.",
+        extraPracticeGuide: "시간의 흐름이나 장소의 변화에 따라 인물에게 일어난 일을 떠올리며 질문을 만들어 봐요.",
+        extraPracticeText:
+          "수아는 전학 온 첫날 교실 문 앞에서 한참 서 있었습니다.\n" +
+          "쉬는 시간에 지민이가 먼저 다가와 함께 운동장에 가자고 말했습니다.\n" +
+          "수아는 지민이와 이야기를 나누며 조금씩 마음이 편해졌습니다.",
+        practiceQuestions: [
+          {
+            text: "처음에 민수는 무엇을 보았나요?",
+            good: true,
+            reason: "처음에 일어난 일을 묻는 질문이라 이야기의 흐름을 간추리는 데 도움이 돼요.",
+            answerGuide: "민수가 처음 본 것을 써요."
+          },
+          {
+            text: "강아지에게 어떤 문제가 있었나요?",
+            good: true,
+            reason: "등장인물에게 일어난 중요한 문제를 묻는 질문이라 간추리기에 알맞아요.",
+            answerGuide: "강아지에게 생긴 문제를 써요."
+          },
+          {
+            text: "마지막에 강아지는 어떻게 되었나요?",
+            good: true,
+            reason: "마지막에 일이 어떻게 끝났는지 묻는 질문이라 이야기의 끝을 간추릴 수 있어요.",
+            answerGuide: "마지막에 강아지가 어떻게 되었는지 써요."
+          },
+          {
+            text: "민수는 무슨 색 옷을 입었나요?",
+            good: false,
+            reason: "옷 색깔은 세부 내용이에요. 이야기의 시간 흐름이나 중요한 사건을 간추리는 질문으로는 덜 알맞아요.",
+            answerGuide: ""
+          }
+        ],
+        examples: [
+          "처음에 인물에게 무슨 일이 있었나요?",
+          "가운데에 어떤 문제가 생겼나요?",
+          "마지막에는 어떻게 되었나요?"
+        ],
+        summaryTemplate:
+          "처음에는 __________________________.\n가운데에는 ________________________.\n마지막에는 ________________________.\n그래서 이 책은 ____________________ 이야기입니다."
+      },
+
+      info: {
+        label: "정보를 담은 책",
+        icon: "🔍",
+        method: "정보를 담은 책은 문단이나 각 장의 중심 내용을 중심으로 간추려요.",
+        tip: "문단이나 장에서 가장 중요한 내용이 무엇인지 묻는 질문을 만들면 중심 내용을 찾기 쉬워요.",
+        blanks: ["문단", "각 장", "중심 내용"],
+        builderGuide: "정보를 담은 책은 문단이나 각 장의 중심 내용을 중심으로 간추려요.",
+        practiceText:
+          "펭귄은 날개가 있지만 하늘을 날지는 못합니다.\n" +
+          "대신 물속에서 헤엄을 아주 잘 칩니다.\n" +
+          "펭귄의 두꺼운 깃털은 추운 곳에서 몸을 따뜻하게 지켜 줍니다.",
+        extraPracticeGuide: "문단이나 글 전체의 중심 내용을 찾을 수 있는 질문을 만들어 봐요.",
+        extraPracticeText:
+          "꿀벌은 꽃에서 꿀과 꽃가루를 모읍니다.\n" +
+          "꿀벌이 꽃가루를 옮기면 식물이 열매를 맺는 데 도움이 됩니다.\n" +
+          "그래서 꿀벌은 자연에서 중요한 역할을 합니다.",
+        practiceQuestions: [
+          {
+            text: "이 글은 어떤 동물에 대해 알려 주나요?",
+            good: true,
+            reason: "글에서 설명하는 대상을 찾는 질문이라 중심 내용을 파악하는 데 도움이 돼요.",
+            answerGuide: "글에서 설명하는 동물을 써요."
+          },
+          {
+            text: "펭귄은 무엇을 잘하나요?",
+            good: true,
+            reason: "펭귄의 중요한 특징을 묻는 질문이라 정보를 간추리는 데 알맞아요.",
+            answerGuide: "펭귄이 잘하는 것을 써요."
+          },
+          {
+            text: "펭귄의 깃털은 어떤 일을 하나요?",
+            good: true,
+            reason: "펭귄의 특징과 역할을 묻는 질문이라 중요한 정보를 정리할 수 있어요.",
+            answerGuide: "펭귄 깃털의 역할을 써요."
+          },
+          {
+            text: "펭귄은 왜 귀엽나요?",
+            good: false,
+            reason: "내 느낌을 묻는 질문이에요. 정보 글의 문단이나 중심 내용을 간추리는 질문으로는 덜 알맞아요.",
+            answerGuide: ""
+          }
+        ],
+        examples: [
+          "이 부분은 무엇에 대해 알려 주나요?",
+          "가장 중요한 내용은 무엇인가요?",
+          "꼭 기억할 정보는 무엇인가요?"
+        ],
+        summaryTemplate:
+          "이 책은 __________________에 대해 알려 줍니다.\n첫 번째 중심 내용은 __________________입니다.\n또 다른 중심 내용은 __________________입니다.\n그래서 이 책은 __________________에 대한 책입니다."
+      },
+
+      opinion: {
+        label: "주장을 담은 책",
+        icon: "📣",
+        method: "주장을 담은 책은 글쓴이의 주장과 이유를 중심으로 간추려요.",
+        tip: "글쓴이가 무엇을 주장하는지, 왜 그렇게 생각하는지 묻는 질문을 만들면 주장 글을 간추리기 쉬워요.",
+        blanks: ["글쓴이의 주장", "이유"],
+        builderGuide: "주장을 담은 책은 글쓴이의 주장과 이유를 중심으로 간추려요.",
+        practiceText:
+          "우리는 물을 아껴 써야 합니다.\n" +
+          "물을 함부로 쓰면 필요한 물이 부족해질 수 있기 때문입니다.\n" +
+          "양치할 때 컵을 사용하면 물을 아낄 수 있습니다.",
+        extraPracticeGuide: "글쓴이의 주장과 이유를 찾을 수 있는 질문을 만들어 봐요.",
+        extraPracticeText:
+          "우리는 교실 불을 아껴 써야 합니다.\n" +
+          "불을 켜 둔 채 나가면 전기를 낭비하게 됩니다.\n" +
+          "교실을 나갈 때 불을 끄면 에너지를 아낄 수 있습니다.",
+        practiceQuestions: [
+          {
+            text: "글쓴이는 무엇을 주장하나요?",
+            good: true,
+            reason: "글쓴이의 주장을 직접 묻는 질문이라 주장 글을 간추리는 데 꼭 필요해요.",
+            answerGuide: "글쓴이가 말하고 싶은 생각을 써요."
+          },
+          {
+            text: "왜 물을 아껴 써야 한다고 했나요?",
+            good: true,
+            reason: "주장을 뒷받침하는 이유를 묻는 질문이라 간추리기에 알맞아요.",
+            answerGuide: "글쓴이가 든 이유를 써요."
+          },
+          {
+            text: "물을 아끼는 방법에는 무엇이 있나요?",
+            good: true,
+            reason: "주장을 뒷받침하는 예나 방법을 찾는 질문이라 내용을 정리하는 데 도움이 돼요.",
+            answerGuide: "글에서 나온 물을 아끼는 방법을 써요."
+          },
+          {
+            text: "나는 어떤 물을 좋아하나요?",
+            good: false,
+            reason: "내 취향을 묻는 질문이에요. 글쓴이의 주장과 이유를 찾는 질문으로는 덜 알맞아요.",
+            answerGuide: ""
+          }
+        ],
+        examples: [
+          "글쓴이는 무엇을 주장하나요?",
+          "글쓴이가 그렇게 생각한 이유는 무엇인가요?",
+          "주장을 뒷받침하는 예는 무엇인가요?"
+        ],
+        summaryTemplate:
+          "글쓴이는 __________________라고 주장합니다.\n그 이유는 __________________입니다.\n또 __________________라는 예가 있습니다.\n나는 __________________라고 생각합니다."
+      }
+    };
+
+    let selectedBookType = null;
+    let selectedPracticeQuestionIndexes = [];
+    let lastPracticeFeedback = null;
+
+    function selectBookType(type) {
+      selectedBookType = type;
+      selectedPracticeQuestionIndexes = [];
+      lastPracticeFeedback = null;
+
+      const data = bookTypeData[type];
+
+      document.getElementById("studyTitle").textContent = data.label + " 간추리기 비법";
+      document.getElementById("methodTitle").textContent = data.label + " 간추리기 비법";
+      document.getElementById("methodSentence").innerHTML = makeMethodRevealSentence(data);
+      document.getElementById("methodTip").textContent = data.tip;
+
+      clearQuestionInputs();
+      renderQuestionBuilder();
+
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+      showStudyPanel("method");
+    }
+
+    function goTypeMenu() {
+      document.getElementById("studyScreen").classList.remove("is-active");
+      document.getElementById("menuScreen").classList.add("is-active");
+    }
+
+    function showStudyPanel(panelName) {
+      document.querySelectorAll(".ar-study-panel").forEach(function(panel) {
+        panel.classList.remove("is-active");
+      });
+
+      document.querySelectorAll(".ar-study-step").forEach(function(step) {
+        step.classList.remove("is-active");
+      });
+
+      if (panelName === "method") {
+        document.getElementById("methodPanel").classList.add("is-active");
+        document.getElementById("stepBar2").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = bookTypeData[selectedBookType].label + " 간추리기 비법";
+      }
+
+      if (panelName === "builder") {
+        document.getElementById("builderPanel").classList.add("is-active");
+        document.getElementById("stepBar3").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = "질문으로 간추리기";
+        renderQuestionBuilder();
+      }
+
+      if (panelName === "practiceWrite") {
+        document.getElementById("practiceWritePanel").classList.add("is-active");
+        document.getElementById("stepBar3").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = "다른 글로 직접 질문 만들기";
+        renderExtraPracticeWrite();
+      }
+
+      if (panelName === "write") {
+        document.getElementById("writePanel").classList.add("is-active");
+        document.getElementById("stepBar3").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = "내 책에 맞는 질문 쓰기";
+        checkBookQuestionFeedback();
+      }
+
+      if (panelName === "summary") {
+        document.getElementById("summaryPanel").classList.add("is-active");
+        document.getElementById("stepBar4").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = "내 간추리기 완성";
+        checkSummaryFeedback();
+      }
+
+      if (panelName === "share") {
+        document.getElementById("sharePanel").classList.add("is-active");
+        document.getElementById("stepBar4").classList.add("is-active");
+        document.getElementById("studyTitle").textContent = "우리 반 간추리기 모음";
+      }
+    }
+
+    function makeMethodRevealSentence(data) {
+      let sentence = data.method;
+
+      data.blanks.forEach(function(keyword) {
+        const safeKeyword = escapeHtml(keyword);
+
+        const revealHtml =
+          '<span class="method-reveal-word">' +
+            '<button class="method-blank-button" type="button" onclick="revealMethodKeyword(this)">빈칸</button>' +
+            '<span class="method-keyword">' + safeKeyword + '</span>' +
+          '</span>';
+
+        sentence = sentence.replace(keyword, revealHtml);
+      });
+
+      return sentence;
+    }
+
+    function revealMethodKeyword(button) {
+      const wordBox = button.closest(".method-reveal-word");
+
+      if (wordBox) {
+        wordBox.classList.add("revealed");
+      }
+    }
+
+    function renderQuestionBuilder() {
+      const data = bookTypeData[selectedBookType];
+      const builderGuide = document.getElementById("builderGuide");
+      const practiceText = document.getElementById("practiceText");
+      const practiceQuestionList = document.getElementById("practiceQuestionList");
+      const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+      const practiceChoiceFeedback = document.getElementById("practiceChoiceFeedback");
+
+      if (!data || !practiceText || !practiceQuestionList) {
+        return;
+      }
+
+      builderGuide.textContent = data.builderGuide;
+      practiceText.textContent = data.practiceText;
+
+      practiceQuestionList.innerHTML = data.practiceQuestions.map(function(question, index) {
+        const isSelected = selectedPracticeQuestionIndexes.includes(index);
+        const selectedClass = isSelected && question.good ? " is-selected" : "";
+        const wrongClass = isSelected && !question.good ? " is-wrong" : "";
+
+        return (
+          '<button ' +
+            'type="button" ' +
+            'class="ar-practice-question-button' + selectedClass + wrongClass + '" ' +
+            'onclick="togglePracticeQuestion(' + index + ')">' +
+            escapeHtml(question.text) +
+          '</button>'
+        );
+      }).join("");
+
+      renderPracticeAnswers();
+
+      if (lastPracticeFeedback) {
+        const stateClass = lastPracticeFeedback.state === "good" ? " is-good" : " is-need";
+        practiceChoiceFeedback.className = "ar-practice-choice-feedback" + stateClass;
+        practiceChoiceFeedback.innerHTML =
+          "<strong>" + escapeHtml(lastPracticeFeedback.title) + "</strong><br>" +
+          escapeHtml(lastPracticeFeedback.message);
+      } else {
+        practiceChoiceFeedback.className = "ar-practice-choice-feedback";
+        practiceChoiceFeedback.textContent = "간추리기에 도움이 되는 질문을 골라 보세요.";
+      }
+
+      goodQuestionFeedback.classList.remove("is-show");
+      checkPracticeAnswersDone();
+    }
+
+    function togglePracticeQuestion(index) {
+      const data = bookTypeData[selectedBookType];
+      const question = data.practiceQuestions[index];
+
+      if (selectedPracticeQuestionIndexes.includes(index)) {
+        selectedPracticeQuestionIndexes = selectedPracticeQuestionIndexes.filter(function(item) {
+          return item !== index;
+        });
+
+        lastPracticeFeedback = null;
+        renderQuestionBuilder();
+        return;
+      }
+
+      selectedPracticeQuestionIndexes.push(index);
+
+      if (question.good) {
+        lastPracticeFeedback = {
+          state: "good",
+          title: "좋은 질문이에요.",
+          message: question.reason
+        };
+      } else {
+        lastPracticeFeedback = {
+          state: "need",
+          title: "다시 생각해 볼 질문이에요.",
+          message: question.reason
+        };
+      }
+
+      renderQuestionBuilder();
+    }
+
+    function renderPracticeAnswers() {
+      const data = bookTypeData[selectedBookType];
+      const practiceAnswerList = document.getElementById("practiceAnswerList");
+      const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+
+      const goodSelectedIndexes = selectedPracticeQuestionIndexes.filter(function(index) {
+        return data.practiceQuestions[index].good;
+      });
+
+      if (goodSelectedIndexes.length === 0) {
+        practiceAnswerList.innerHTML = "간추리기에 도움이 되는 좋은 질문을 고르면 답을 쓰는 칸이 나타나요.";
+        goodQuestionFeedback.classList.remove("is-show");
+        return;
+      }
+
+      practiceAnswerList.innerHTML = goodSelectedIndexes.map(function(index) {
+        const question = data.practiceQuestions[index];
+
+        return (
+          '<div class="ar-practice-answer-item">' +
+            '<strong>Q. ' + escapeHtml(question.text) + '</strong>' +
+            '<input ' +
+              'class="ar-practice-answer-input" ' +
+              'type="text" ' +
+              'placeholder="' + escapeHtml(question.answerGuide) + '" ' +
+              'oninput="checkPracticeAnswersDone()" ' +
+            '>' +
+          '</div>'
+        );
+      }).join("");
+
+      checkPracticeAnswersDone();
+    }
+
+    function checkPracticeAnswersDone() {
+      const goodQuestionFeedback = document.getElementById("goodQuestionFeedback");
+      const answerInputs = document.querySelectorAll(".ar-practice-answer-input");
+
+      if (answerInputs.length === 0) {
+        goodQuestionFeedback.classList.remove("is-show");
+        return;
+      }
+
+      const allFilled = Array.from(answerInputs).every(function(input) {
+        return input.value.trim().length > 0;
+      });
+
+      if (allFilled) {
+        goodQuestionFeedback.classList.add("is-show");
+      } else {
+        goodQuestionFeedback.classList.remove("is-show");
+      }
+    }
+
+    function goPracticeWritePanel() {
+      const answerInputs = document.querySelectorAll(".ar-practice-answer-input");
+
+      if (answerInputs.length === 0) {
+        alert("먼저 간추리기에 도움이 되는 좋은 질문을 고르고 답을 써 주세요.");
+        return;
+      }
+
+      const allFilled = Array.from(answerInputs).every(function(input) {
+        return input.value.trim().length > 0;
+      });
+
+      if (!allFilled) {
+        alert("고른 좋은 질문에 대한 답을 모두 써 주세요.");
+        return;
+      }
+
+      showStudyPanel("practiceWrite");
+    }
+
+    function renderExtraPracticeWrite() {
+      const data = bookTypeData[selectedBookType];
+
+      if (!data) {
+        return;
+      }
+
+      document.getElementById("extraPracticeGuide").textContent = data.extraPracticeGuide;
+      document.getElementById("extraPracticeText").textContent = data.extraPracticeText;
+
+      document.getElementById("practiceQuestion1").placeholder = "예) " + data.examples[0];
+      document.getElementById("practiceQuestion2").placeholder = "예) " + data.examples[1];
+
+      document.getElementById("practiceAnswer1").placeholder = "질문 1에 대한 답을 짧은 글에서 찾아 써 보세요.";
+      document.getElementById("practiceAnswer2").placeholder = "질문 2에 대한 답을 짧은 글에서 찾아 써 보세요.";
+
+      checkExtraPracticeDone();
+    }
+
+    function checkExtraPracticeDone() {
+      const feedback = document.getElementById("extraPracticeFeedback");
+      const q1 = document.getElementById("practiceQuestion1").value.trim();
+      const a1 = document.getElementById("practiceAnswer1").value.trim();
+      const q2 = document.getElementById("practiceQuestion2").value.trim();
+      const a2 = document.getElementById("practiceAnswer2").value.trim();
+
+      if (!feedback) {
+        return;
+      }
+
+      const allFilled = q1 && a1 && q2 && a2;
+
+      if (allFilled) {
+        feedback.classList.add("is-show");
+
+        if (!isAfterQuestionForm(q1) || !isAfterQuestionForm(q2)) {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "need",
+            "질문 중에 물어보는 문장처럼 보이지 않는 것이 있어. 끝을 ‘나요?’, ‘까요?’, ‘무엇인가요?’처럼 바꿔 보면 좋아."
+          );
+          return;
+        }
+
+        if (q1.length < 6 || q2.length < 6) {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "need",
+            "질문이 조금 짧아. 누가, 무엇을, 왜, 어떻게 같은 말을 넣어 조금 더 자세히 써 보자."
+          );
+          return;
+        }
+
+        if (a1.length < 6 || a2.length < 6) {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "need",
+            "답이 조금 짧아. 짧은 글에서 찾은 내용을 한 문장으로 더 자세히 써 보자."
+          );
+          return;
+        }
+
+        setAfterAiFeedback(
+          "extraPracticeAiFeedback",
+          "good",
+          "좋아! 질문 2개와 답 2개가 모두 채워졌어. 이제 이 질문들이 짧은 글의 중요한 내용을 묻고 있는지 한 번 더 살펴보자."
+        );
+      } else {
+        feedback.classList.remove("is-show");
+
+        if (!q1 && !a1 && !q2 && !a2) {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "",
+            "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
+          );
+        } else {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "need",
+            "아직 비어 있는 칸이 있어. 질문과 답은 짝이 되어야 간추리기 재료로 쓸 수 있어."
+          );
+        }
+      }
+    }
+
+    function goWritePanelAfterPractice() {
+      const ids = [
+        "practiceQuestion1",
+        "practiceAnswer1",
+        "practiceQuestion2",
+        "practiceAnswer2"
+      ];
+
+      const allFilled = ids.every(function(id) {
+        const element = document.getElementById(id);
+        return element && element.value.trim().length > 0;
+      });
+
+      if (!allFilled) {
+        alert("다른 짧은 글을 읽고 질문 2개와 답 2개를 모두 써 주세요.");
+        return;
+      }
+
+      goWritePanel();
+    }
+
+    function goWritePanel() {
+      setQuestionPlaceholders();
+      showStudyPanel("write");
+    }
+
+    function setQuestionPlaceholders() {
+      const data = bookTypeData[selectedBookType];
+
+      document.getElementById("question1").placeholder = "예) " + data.examples[0];
+      document.getElementById("question2").placeholder = "예) " + data.examples[1];
+      document.getElementById("question3").placeholder = "예) " + data.examples[2];
+
+      document.getElementById("answer1").placeholder = "질문 1에 대한 답을 책에서 찾아 적어 봐요.";
+      document.getElementById("answer2").placeholder = "질문 2에 대한 답을 책에서 찾아 적어 봐요.";
+      document.getElementById("answer3").placeholder = "질문 3에 대한 답을 책에서 찾아 적어 봐요.";
+    }
+
+    function getQuestionAnswerData() {
+      return [
+        {
+          question: document.getElementById("question1").value.trim(),
+          answer: document.getElementById("answer1").value.trim()
+        },
+        {
+          question: document.getElementById("question2").value.trim(),
+          answer: document.getElementById("answer2").value.trim()
+        },
+        {
+          question: document.getElementById("question3").value.trim(),
+          answer: document.getElementById("answer3").value.trim()
+        }
+      ];
+    }
+
+    function checkBookQuestionFeedback() {
+      const box = document.getElementById("bookQuestionAiFeedback");
+
+      if (!box) {
+        return;
+      }
+
+      const qaData = getQuestionAnswerData();
+
+      const filledCount = qaData.filter(function(item) {
+        return item.question && item.answer;
+      }).length;
+
+      const hasQuestionOnly = qaData.some(function(item) {
+        return item.question && !item.answer;
+      });
+
+      const hasAnswerOnly = qaData.some(function(item) {
+        return !item.question && item.answer;
+      });
+
+      const hasShortQuestion = qaData.some(function(item) {
+        return item.question && item.question.length < 6;
+      });
+
+      const hasShortAnswer = qaData.some(function(item) {
+        return item.answer && item.answer.length < 6;
+      });
+
+      const hasNotQuestionForm = qaData.some(function(item) {
+        return item.question && !isAfterQuestionForm(item.question);
+      });
+
+      if (filledCount === 0 && !hasQuestionOnly && !hasAnswerOnly) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "",
+          "내 책에 맞는 질문과 답을 쓰면 루미가 간추리기 재료로 알맞은지 살펴봐 줄게."
+        );
+        return;
+      }
+
+      if (hasQuestionOnly || hasAnswerOnly) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "질문과 답은 짝이 되어야 해. 질문을 썼다면 그 질문에 대한 답도 함께 써 보자."
+        );
+        return;
+      }
+
+      if (hasNotQuestionForm) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "질문 중에 물어보는 문장처럼 보이지 않는 것이 있어. 끝을 ‘나요?’, ‘까요?’, ‘무엇인가요?’처럼 바꿔 보면 좋아."
+        );
+        return;
+      }
+
+      if (hasShortQuestion) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "질문이 조금 짧은 것이 있어. 누가, 무엇을, 왜, 어떻게 같은 말을 넣어 더 자세히 써 보자."
+        );
+        return;
+      }
+
+      if (hasShortAnswer) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "답이 조금 짧은 것이 있어. 책에서 찾은 내용을 한 문장 더 붙이면 간추리기 재료가 더 좋아져."
+        );
+        return;
+      }
+
+      if (filledCount < 3) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "잘 쓰고 있어! 아직 질문과 답이 모두 채워지지 않은 칸이 있어. 3개를 모두 채우면 간추리기 재료가 더 충분해져."
+        );
+        return;
+      }
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "good",
+        "좋아! 질문 3개와 답 3개가 모두 간추리기 재료로 쓸 수 있게 준비되었어. 이제 답을 모아 간추리기로 이어 가 보자."
+      );
+    }
+
+    function makeSummaryGuide() {
+      const qaData = getQuestionAnswerData();
+
+      const isFilled = qaData.every(function(item) {
+        return item.question && item.answer;
+      });
+
+      if (!isFilled) {
+        alert("질문 3개와 답 3개를 모두 적어 주세요.");
+        return;
+      }
+
+      const connectBox = document.getElementById("connectBox");
+      connectBox.innerHTML = "";
+
+      qaData.forEach(function(item, index) {
+        const div = document.createElement("div");
+        div.className = "ar-connect-item";
+        div.innerHTML =
+          "<strong>질문 " + (index + 1) + "</strong><br>" +
+          "Q. " + escapeHtml(item.question) + "<br>" +
+          "A. " + escapeHtml(item.answer);
+
+        connectBox.appendChild(div);
+      });
+
+      const data = bookTypeData[selectedBookType];
+      const answerText = qaData.map(function(item) {
+        return item.answer;
+      }).join(" ");
+
+      document.getElementById("summaryText").value =
+        data.summaryTemplate + "\n\n" +
+        "내 답을 모아 쓰기: " + answerText;
+
+      showStudyPanel("summary");
+      setTimeout(checkSummaryFeedback, 0);
+    }
+
+    function checkSummaryFeedback() {
+      const summaryTextElement = document.getElementById("summaryText");
+
+      if (!summaryTextElement) {
+        return;
+      }
+
+      const summaryText = summaryTextElement.value.trim();
+
+      if (!summaryText) {
+        setAfterAiFeedback(
+          "summaryAiFeedback",
+          "",
+          "간추리기를 쓰면 루미가 핵심 내용이 잘 모였는지 살펴봐 줄게."
+        );
+        return;
+      }
+
+      if (summaryText.length < 20) {
+        setAfterAiFeedback(
+          "summaryAiFeedback",
+          "need",
+          "간추리기가 아직 조금 짧아. 질문에 답한 내용 중 중요한 말을 한두 문장 더 넣어 보자."
+        );
+        return;
+      }
+
+      if (summaryText.includes("________________")) {
+        setAfterAiFeedback(
+          "summaryAiFeedback",
+          "need",
+          "아직 빈칸이 남아 있어. 빈칸을 내 말로 채우면 더 완성된 간추리기가 돼."
+        );
+        return;
+      }
+
+      setAfterAiFeedback(
+        "summaryAiFeedback",
+        "good",
+        "좋아! 질문에 답한 내용이 모여 간추리기가 되었어. 저장하고 친구들과 함께 볼 수 있어."
+      );
+    }
+
+    function saveSummary() {
+      const summaryText = document.getElementById("summaryText").value.trim();
+
+      if (!summaryText) {
+        alert("간추리기 내용을 적어 주세요.");
+        return;
+      }
+
+      if (summaryText.includes("________________")) {
+        alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
+        return;
+      }
+
+      const savedList = loadSummaries();
+      const data = bookTypeData[selectedBookType];
+
+      const newSummary = {
+        name: "나",
+        type: selectedBookType,
+        typeLabel: data.label,
+        icon: data.icon,
+        summary: summaryText,
+        questions: getQuestionAnswerData(),
+        createdAt: getTodayText()
+      };
+
+      savedList.unshift(newSummary);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
+
+      renderShareList();
+      alert("간추리기가 저장되었어요!");
+      showStudyPanel("share");
+    }
+
+    function loadSummaries() {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+
+      if (!savedData) {
+        return [];
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+        return Array.isArray(parsedData) ? parsedData : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function renderShareList() {
+      const shareList = document.getElementById("shareList");
+      const savedList = loadSummaries();
+
+      const sampleList = [
+        {
+          name: "민지",
+          typeLabel: "이야기 책",
+          icon: "📖",
+          summary: "처음에는 주인공이 길을 잃었습니다.\n가운데에는 친구를 만나 도움을 받았습니다.\n마지막에는 집으로 돌아왔습니다."
+        },
+        {
+          name: "서준",
+          typeLabel: "정보를 담은 책",
+          icon: "🔍",
+          summary: "이 책은 동물의 겨울나기에 대해 알려 줍니다.\n첫 번째 중심 내용은 동물들이 겨울을 준비하는 방법입니다.\n또 다른 중심 내용은 겨울잠을 자는 동물들의 특징입니다."
+        },
+        {
+          name: "하윤",
+          typeLabel: "주장을 담은 책",
+          icon: "📣",
+          summary: "글쓴이는 쓰레기를 줄여야 한다고 주장합니다.\n그 이유는 환경을 지킬 수 있기 때문입니다."
+        }
+      ];
+
+      const allList = savedList.concat(sampleList);
+
+      if (allList.length === 0) {
+        shareList.innerHTML = '<div class="ar-empty">아직 공유된 간추리기가 없어요.</div>';
+        return;
+      }
+
+      shareList.innerHTML = allList.slice(0, 3).map(function(item) {
+        return (
+          '<article class="ar-share-item">' +
+            '<strong>' + escapeHtml(item.name) + '의 간추리기</strong>' +
+            '<span class="ar-share-tag">' + (item.icon || "📘") + ' ' + escapeHtml(item.typeLabel) + '</span>' +
+            '<p>' + escapeHtml(item.summary) + '</p>' +
+          '</article>'
+        );
+      }).join("");
+    }
+
+    function clearQuestionInputs() {
+      [
+        "question1", "question2", "question3",
+        "answer1", "answer2", "answer3",
+        "practiceQuestion1", "practiceQuestion2",
+        "practiceAnswer1", "practiceAnswer2"
+      ].forEach(function(id) {
+        const element = document.getElementById(id);
+
+        if (element) {
+          element.value = "";
+        }
+      });
+
+      const summaryText = document.getElementById("summaryText");
+
+      if (summaryText) {
+        summaryText.value = "";
+      }
+
+      setAfterAiFeedback(
+        "extraPracticeAiFeedback",
+        "",
+        "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
+      );
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "",
+        "내 책에 맞는 질문과 답을 쓰면 루미가 간추리기 재료로 알맞은지 살펴봐 줄게."
+      );
+
+      setAfterAiFeedback(
+        "summaryAiFeedback",
+        "",
+        "간추리기를 쓰면 루미가 핵심 내용이 잘 모였는지 살펴봐 줄게."
+      );
+    }
+
+    function setAfterAiFeedback(id, state, message) {
+      const box = document.getElementById(id);
+
+      if (!box) {
+        return;
+      }
+
+      box.className = "ar-after-feedback-message" + (state ? " " + state : "");
+      box.innerHTML = message;
+    }
+
+    function isAfterQuestionForm(text) {
+      const trimmed = text.trim();
+
+      if (trimmed.includes("?") || trimmed.includes("？")) {
+        return true;
+      }
+
+      const normalized = normalizeAfterText(trimmed);
+      const endings = [
+        "나요",
+        "까요",
+        "했나요",
+        "했을까요",
+        "있나요",
+        "없나요",
+        "무엇인가요",
+        "어떤가요",
+        "어떨까요"
+      ];
+
+      return endings.some(function(ending) {
+        return normalized.endsWith(normalizeAfterText(ending));
+      });
+    }
+
+    function normalizeAfterText(text) {
+      return String(text || "")
+        .replace(/\s/g, "")
+        .replace(/[?？!！.,，。'‘’"“”]/g, "")
+        .toLowerCase();
+    }
+
+    function getTodayText() {
+      const today = new Date();
+
+      return (
+        today.getFullYear() +
+        "." +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "." +
+        String(today.getDate()).padStart(2, "0")
+      );
+    }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function goClassReading() {
+      location.href = "./class-reading.html";
+    }
+
+    renderShareList();
+  </script>
+</body>
+</html>

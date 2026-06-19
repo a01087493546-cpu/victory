@@ -385,4 +385,356 @@ var sourceData = [
     modified: "파일명 변경, 투명 배경 PNG로 정리, 화면 배치에 맞게 CSS로 크기 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
+  ,
+{
+  title: "읽기 중 인트로 배경 이미지",
+  category: "이미지",
+  fileName: "during-reading-intro-bg.png",
+  description: "읽기 중 활동 인트로 화면에 사용되는 신비로운 도서관 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기 중 활동 인트로 1~3장면 공통 배경",
+  modified: "파일명 변경 및 인트로 화면 비율에 맞게 CSS로 크기와 위치 조정 예정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기 중 인트로 루미 장면 1 이미지",
+  category: "이미지",
+  fileName: "during-reading-lumi-01-goodjob.png",
+  description: "읽기 전 활동을 끝낸 학생을 칭찬하는 루미 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기 중 활동 인트로 1장면",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 캐릭터 크기와 위치 통일 예정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기 중 인트로 루미 장면 2 이미지",
+  category: "이미지",
+  fileName: "during-reading-lumi-02-question-note.png",
+  description: "책을 읽으며 생긴 궁금함에 답해 보는 활동을 안내하는 루미 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기 중 활동 인트로 2장면",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 캐릭터 크기와 위치 통일 예정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기 중 인트로 루미 장면 3 이미지",
+  category: "이미지",
+  fileName: "during-reading-lumi-03-practice.png",
+  description: "읽기 중 질문의 종류를 하나씩 연습하고 책읽기에 적용해 보자고 안내하는 루미 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기 중 활동 인트로 3장면",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 캐릭터 크기와 위치 통일 예정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "읽기 중 질문 연습 배경 이미지",
+  file: "frontend/assets/images/during-reading/intro/during-reading-practice-bg.png",
+  description: "읽기 중 질문 연습 화면의 마법 도서관 배경 이미지",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 화면 배경",
+  createdDate: "2026-06-04",
+  modified: "크기 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "책 내용에서 바로 답을 찾는 질문 아이콘",
+  file: "frontend/assets/images/during-reading/intro/icon-direct-answer.png",
+  description: "책 속 문장에서 바로 답을 찾는 질문 유형을 나타내는 아이콘",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 - 질문 종류 선택 화면",
+  createdDate: "2026-06-04",
+  modified: "크기 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "책 내용에서 답을 짐작하는 질문 아이콘",
+  file: "frontend/assets/images/during-reading/intro/icon-infer-answer.png",
+  description: "글 속 단서를 바탕으로 답을 짐작하는 질문 유형을 나타내는 아이콘",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 - 질문 종류 선택 화면",
+  createdDate: "2026-06-04",
+  modified: "크기 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "생각이나 느낌 질문 아이콘",
+  file: "frontend/assets/images/during-reading/intro/icon-thought-feeling.png",
+  description: "책을 읽고 떠오른 생각이나 느낌을 묻는 질문 유형을 나타내는 아이콘",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 - 질문 종류 선택 화면",
+  createdDate: "2026-06-04",
+  modified: "크기 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "삶과 관련짓는 질문 아이콘",
+  file: "frontend/assets/images/during-reading/intro/icon-life-connection.png",
+  description: "책 속 내용과 자신의 경험을 연결하는 질문 유형을 나타내는 아이콘",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 - 질문 종류 선택 화면",
+  createdDate: "2026-06-04",
+  modified: "크기 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  category: "이미지",
+  name: "읽기 중 질문 연습 루미 이미지",
+  file: "frontend/assets/images/during-reading/intro/during-reading-lumi-03-practice.png",
+  description: "읽기 중 질문 연습에서 학생에게 안내와 피드백을 제공하는 루미 캐릭터 이미지",
+  source: "ChatGPT 생성 이미지",
+  license: "OpenAI 이용약관에 따름",
+  usage: "읽기 중 질문 연습 - 방법 알기 화면, 기본 연습 피드백 박스",
+  createdDate: "2026-06-04",
+  modified: "투명 배경 처리 및 파일명 수정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},{
+title: "우리반 책읽기 배경 이미지",
+category: "이미지",
+fileName: "class-reading-bg.png",
+description: "우리반 책읽기 메인 화면의 어두운 판타지 도서관 분위기 배경 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 배경",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "우리반 책읽기 루미 이미지",
+category: "이미지",
+fileName: "class-reading-lumi.png",
+description: "우리반 책읽기 메인 화면에서 안내 역할을 하는 루미 캐릭터 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 안내 영역",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-create.png",
+description: "우리반 책읽기 메인 화면의 질문 만들기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 만들기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 나누기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-share.png",
+description: "우리반 책읽기 메인 화면의 질문 나누기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 나누기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 모음 보기 아이콘",
+category: "이미지",
+fileName: "class-reading-icon-collection.png",
+description: "우리반 책읽기 메인 화면의 질문 모음 보기 활동을 나타내는 아이콘",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 메인 화면 - 질문 모음 보기 카드",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 밝은 도서관 배경 이미지",
+category: "이미지",
+fileName: "class-reading-question-bg.png",
+description: "질문 만들기, 질문 나누기, 나의 질문 모음 화면에 사용되는 밝은 판타지 도서관 배경 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 - 질문 만들기 / 질문 나누기 / 나의 질문 모음 화면 배경",
+modified: "크기 및 파일명 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+title: "질문 만들기 피드백 루미 이미지",
+category: "이미지",
+fileName: "class-reading-lumi-feedback.png",
+description: "질문 만들기 화면에서 학생 질문에 대한 피드백을 안내하는 루미 캐릭터 이미지",
+source: "ChatGPT 생성 이미지",
+usage: "우리반 책읽기 - 질문 만들기 피드백 영역 / 질문 나누기 안내 영역",
+modified: "배경 투명 처리 및 크기 수정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},  {
+    category: "이미지",
+    title: "개별읽기 메인 배경 이미지",
+    fileName: "individual-reading.png",
+    description: "개별읽기 메인 화면의 밝은 판타지 도서관 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 메인 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "개별읽기 메인 루미 이미지",
+    fileName: "home-lumi.png",
+    description: "개별읽기 메인 화면에서 학생을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 메인 화면 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "책 추천 받기 배경 이미지",
+    fileName: "book-recommend-bg.png",
+    description: "책 추천 받기 화면의 따뜻하고 신비로운 도서관 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "책 추천 받기 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "책 추천 받기 루미 이미지",
+    fileName: "book-recommend-lumi.png",
+    description: "책 추천 받기 화면에서 학생에게 질문을 던지고 책 추천을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "책 추천 받기 화면 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "오늘의 독서 모험 배경 이미지",
+    fileName: "today-reading-adventure-bg.png",
+    description: "오늘의 독서 모험 화면의 밝고 신비로운 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 전 활동 아이콘 이미지",
+    fileName: "today-reading-before-icon.png",
+    description: "읽기 전 활동을 나타내는 책과 질문 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 읽기 전 카드 아이콘",
+    modified: "크기 및 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 중 활동 아이콘 이미지",
+    fileName: "today-reading-during-icon.png",
+    description: "읽기 중 활동을 나타내는 책과 기록 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 읽기 중 카드 아이콘",
+    modified: "크기 및 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 후 활동 아이콘 이미지",
+    fileName: "today-reading-after-icon.png",
+    description: "읽기 후 활동을 나타내는 기록지와 정리 활동 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 읽기 후 카드 아이콘",
+    modified: "크기 및 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "오늘의 독서 모험 루미 안내 이미지",
+    fileName: "today-reading-lumi-guide.png",
+    description: "오늘의 독서 모험 화면에서 활동 순서를 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "오늘의 독서 모험 루미 강조 이미지",
+    fileName: "today-reading-lumi-point.png",
+    description: "오늘의 독서 모험 화면에서 특정 활동을 강조하며 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "오늘의 독서 모험 활동 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "독서 안내 루미 이미지",
+    fileName: "today-reading-lumi-reading.png",
+    description: "책을 들고 독서 활동을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "읽기 전·읽기 중 활동 안내 및 피드백 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "개별읽기 읽기 중 배경 이미지",
+    fileName: "individual-during-bg.png",
+    description: "개별읽기 읽기 중 활동 화면의 따뜻한 독서 공간 분위기를 나타내는 배경 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 활동 화면 배경",
+    modified: "크기 및 화면 비율에 맞게 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "개별읽기 읽기 중 루미 안내 이미지",
+    fileName: "individual-during-lumi-guide.png",
+    description: "개별읽기 읽기 중 화면에서 질문 만들기와 독서 진행을 안내하는 용사 루미 캐릭터 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 메인 및 피드백 안내 캐릭터",
+    modified: "투명 배경 처리 및 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 중 질문 만들기 아이콘 이미지",
+    fileName: "individual-during-question-icon.png",
+    description: "읽기 중 질문 만들기 활동을 나타내는 책과 질문 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 질문 만들기 활동 아이콘",
+    modified: "크기 및 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 중 질문 만들기 메뉴 아이콘 이미지",
+    fileName: "individual-during-menu-question.png",
+    description: "읽기 중 메인 화면의 질문 만들기 메뉴를 나타내는 책과 질문 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 메인 질문 만들기 메뉴 아이콘",
+    modified: "크기 및 메뉴 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 중 질문 나누기 메뉴 아이콘 이미지",
+    fileName: "individual-during-menu-share.png",
+    description: "읽기 중 메인 화면의 질문 나누기 메뉴를 나타내는 소통 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 메인 질문 나누기 메뉴 아이콘",
+    modified: "크기 및 메뉴 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    category: "이미지",
+    title: "읽기 중 나의 질문 모음 메뉴 아이콘 이미지",
+    fileName: "individual-during-menu-collection.png",
+    description: "읽기 중 메인 화면의 나의 질문 모음 메뉴를 나타내는 책장과 기록 아이콘 이미지",
+    source: "ChatGPT 생성 이미지",
+    usage: "개별읽기 읽기 중 메인 나의 질문 모음 메뉴 아이콘",
+    modified: "크기 및 메뉴 카드 배치에 맞게 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  }
+
 ];

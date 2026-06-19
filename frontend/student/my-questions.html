@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 나의 질문 모음</title>
+
+  <style>
+    /*
+      파일명: my-questions.html
+      역할: 우리반 책읽기 - 나의 질문 모음 화면입니다.
+
+      이 화면에서 하는 일:
+      1. 내가 만든 질문과 답을 날짜별로 모아 봅니다.
+      2. 질문 유형별 필터와 검색 기능을 제공합니다.
+      3. 질문을 다시 선택하면 오른쪽에서 질문과 답을 자세히 봅니다.
+      4. 읽기 전/읽기 중/읽기 후 사이드바와 루미 말풍선은 사용하지 않습니다.
+    */
+
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+.brand-icon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #3f2615;
+      background:
+        linear-gradient(180deg, rgba(255, 248, 226, 0.46), rgba(255, 238, 199, 0.58)),
+        url("../assets/images/class-reading/class-reading-question-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px 28px 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 34%),
+        linear-gradient(90deg, rgba(255, 246, 224, 0.70), rgba(255, 255, 255, 0.16), rgba(255, 246, 224, 0.70));
+    }
+
+    .shell {
+      width: min(1160px, calc(100vw - 56px));
+      margin: 0 auto;
+    }
+
+    /* =========================
+       상단
+    ========================= */
+
+    .top {
+      position: relative;
+      display: grid;
+      grid-template-columns: 180px 1fr 280px;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
+    }
+
+    .brand-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #bf8740, #6d3a0d);
+      color: #fff5d6;
+      border: 1px solid rgba(255, 224, 158, 0.78);
+      box-shadow: 0 8px 16px rgba(91, 47, 10, 0.18);
+      font-size: 22px;
+    }
+
+    .title-area {
+      text-align: center;
+    }
+
+    .main-title {
+      font-family: "Noto Serif KR", serif;
+      color: #4b2a13;
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -1.5px;
+      text-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.72),
+        0 8px 18px rgba(122, 72, 25, 0.12);
+    }
+
+    .main-desc {
+      margin-top: 8px;
+      color: #6e4b2e;
+      font-size: 17px;
+      font-weight: 850;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .nav-button {
+      height: 42px;
+      padding: 0 15px;
+      border-radius: 15px;
+      border: 1px solid rgba(177, 122, 57, 0.34);
+      background: rgba(255, 250, 238, 0.82);
+      color: #4f2e16;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow:
+        0 7px 14px rgba(116, 71, 20, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    }
+
+    .nav-button.primary {
+      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+      color: #fff9ec;
+      border-color: rgba(176, 111, 25, 0.40);
+    }
+
+    /* =========================
+       요약 카드
+    ========================= */
+
+    .summary-card {
+      margin-bottom: 18px;
+      padding: 18px 24px;
+      border-radius: 24px;
+      border: 1px solid rgba(193, 133, 61, 0.34);
+      background:
+        linear-gradient(180deg, rgba(255, 254, 249, 0.92), rgba(255, 247, 231, 0.90));
+      box-shadow:
+        0 14px 28px rgba(123, 75, 25, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(2px);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .summary-item {
+      min-height: 86px;
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-right: 1px solid rgba(186, 130, 58, 0.20);
+    }
+
+    .summary-item:last-child {
+      border-right: 0;
+    }
+
+    .summary-icon {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(224, 166, 72, 0.16);
+      color: #b06d0d;
+      font-size: 24px;
+    }
+
+    .summary-label {
+      color: #7f6247;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .summary-value {
+      margin-top: 4px;
+      color: #4a2a10;
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+    }
+
+    .summary-value small {
+      font-size: 17px;
+      font-weight: 850;
+    }
+
+    .type-pill {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(113, 174, 84, 0.18);
+      color: #4f7130;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    /* =========================
+       메인 보드
+    ========================= */
+
+    .board {
+      padding: 20px 22px 18px;
+      border-radius: 25px;
+      border: 1px solid rgba(193, 133, 61, 0.34);
+      background:
+        linear-gradient(180deg, rgba(255, 254, 249, 0.92), rgba(255, 247, 231, 0.90));
+      box-shadow:
+        0 14px 28px rgba(123, 75, 25, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(2px);
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid rgba(186, 130, 58, 0.22);
+    }
+
+    .board-title {
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .board-count {
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(190, 130, 55, 0.26);
+      background: rgba(255, 249, 235, 0.88);
+      color: #8c5c1e;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) 1.15fr 130px;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .type-button,
+    .search-input,
+    .sort-select {
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(192, 130, 55, 0.34);
+      background: rgba(255, 252, 245, 0.84);
+      color: #5a3820;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .type-button.active {
+      border-color: rgba(190, 125, 32, 0.82);
+      background: linear-gradient(180deg, #f3c978, #c9902d);
+      color: #4a2a10;
+      box-shadow: 0 7px 13px rgba(176, 112, 25, 0.16);
+    }
+
+    .search-input {
+      padding: 0 14px;
+      outline: none;
+      font-weight: 750;
+    }
+
+    .sort-select {
+      padding: 0 10px;
+      outline: none;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .question-card {
+      min-width: 0;
+      min-height: 154px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto 1fr auto;
+      gap: 9px 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(186, 130, 58, 0.25);
+      background: rgba(255, 255, 255, 0.66);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .question-card.active {
+      border-color: rgba(203, 139, 44, 0.72);
+      box-shadow:
+        0 0 0 3px rgba(216, 162, 68, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .question-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      grid-column: 1 / 2;
+    }
+
+    .date-pill,
+    .question-type {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .date-pill {
+      background: rgba(255, 249, 235, 0.88);
+      color: #7a5a3b;
+      border: 1px solid rgba(186, 130, 58, 0.18);
+    }
+
+    .question-type.direct {
+      background: rgba(109, 181, 91, 0.18);
+      color: #4f7130;
+    }
+
+    .question-type.infer {
+      background: rgba(99, 174, 222, 0.18);
+      color: #336a91;
+    }
+
+    .question-type.feeling {
+      background: rgba(218, 153, 232, 0.18);
+      color: #87509b;
+    }
+
+    .question-type.life {
+      background: rgba(225, 166, 75, 0.20);
+      color: #96621d;
+    }
+
+    .question-card h3 {
+      grid-column: 1 / -1;
+      color: #3f2615;
+      font-size: 19px;
+      font-weight: 900;
+      line-height: 1.43;
+      word-break: keep-all;
+    }
+
+    .answer-preview {
+      grid-column: 1 / 2;
+      color: #6f4e2f;
+      font-size: 15px;
+      font-weight: 760;
+      line-height: 1.45;
+      word-break: keep-all;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .answer-preview strong {
+      color: #4f7130;
+      font-weight: 900;
+    }
+
+    .view-button {
+      grid-column: 2;
+      grid-row: 2 / 4;
+      align-self: end;
+      justify-self: end;
+      height: 36px;
+      padding: 0 15px;
+      border-radius: 999px;
+      border: 1px solid rgba(177, 122, 57, 0.28);
+      background: rgba(255, 250, 238, 0.82);
+      color: #7a4d1e;
+      font-size: 14px;
+      font-weight: 900;
+    }
+/* 다시 보기 팝업 배경 */
+.question-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(68, 42, 17, 0.34);
+  backdrop-filter: blur(4px);
+}
+
+/* 다시 보기 팝업 카드 */
+.question-modal {
+  width: min(620px, 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(193, 133, 61, 0.38);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 220, 135, 0.22), transparent 34%),
+    linear-gradient(180deg, rgba(255, 254, 249, 0.98), rgba(255, 246, 225, 0.96));
+  box-shadow:
+    0 24px 60px rgba(87, 49, 18, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  overflow: hidden;
+}
+
+.question-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid rgba(186, 130, 58, 0.22);
+}
+
+.question-modal-title {
+  color: #4b2a13;
+  font-family: "Noto Serif KR", serif;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+}
+
+.question-modal-close {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(177, 122, 57, 0.28);
+  border-radius: 50%;
+  background: rgba(255, 250, 238, 0.82);
+  color: #6b3f1d;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.question-modal-body {
+  padding: 22px;
+}
+
+.question-modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.question-modal-question {
+  margin-bottom: 16px;
+  color: #3f2615;
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.question-modal-answer {
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(83, 133, 60, 0.20);
+  background: rgba(243, 255, 236, 0.70);
+  color: #4f3219;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.question-modal-answer strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #4f7130;
+  font-weight: 900;
+}
+
+.question-modal-actions {
+  padding: 0 22px 22px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.question-modal-button {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(176, 111, 25, 0.40);
+  background: linear-gradient(180deg, #e4ad45, #b06d0d);
+  color: #fff9ec;
+  font-size: 15px;
+  font-weight: 900;
+}
+    .empty-box {
+      grid-column: 1 / -1;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      border: 1px dashed rgba(177, 122, 57, 0.30);
+      background: rgba(255, 255, 255, 0.50);
+      color: #92745a;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.55;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .bottom-note {
+      margin-top: 14px;
+      text-align: center;
+      color: #7e5d3a;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 1050px) {
+      .top {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions {
+        justify-content: center;
+      }
+
+      .summary-grid,
+      .question-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-item {
+        border-right: 0;
+        border-bottom: 1px solid rgba(186, 130, 58, 0.20);
+      }
+
+      .summary-item:last-child {
+        border-bottom: 0;
+      }
+
+      .control-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="shell">
+      <header class="top">
+      <div class="brand">
+  <div class="brand-icon">
+    <img src="../assets/images/logo-book.png" alt="문답책 로고">
+  </div>
+  <span>문답책</span>
+</div>
+
+        <div class="title-area">
+          <h1 class="main-title">나의 질문 모음</h1>
+          <p class="main-desc">내가 만든 질문과 생각을 날짜별로 모아 볼 수 있어요.</p>
+        </div>
+
+        <div class="top-actions">
+          <button class="nav-button primary" type="button" onclick="goClassReading()">우리반 책읽기</button>
+          <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
+        </div>
+      </header>
+
+      <section class="summary-card">
+        <div class="summary-grid">
+          <article class="summary-item">
+            <div class="summary-icon">📖</div>
+            <div>
+              <p class="summary-label">전체 질문</p>
+              <p class="summary-value"><span id="totalCount">0</span><small>개</small></p>
+            </div>
+          </article>
+
+        <article class="summary-item">
+  <div class="summary-icon">🗓️</div>
+  <div>
+    <p class="summary-label">이번 주 만든 질문</p>
+    <p class="summary-value"><span id="weekCount">0</span><small>개</small></p>
+  </div>
+</article>
+
+          <article class="summary-item">
+  <div class="summary-icon">💡</div>
+  <div>
+    <p class="summary-label">가장 많이 만든 유형</p>
+    <p class="type-pill" id="mostTypeText">아직 없음</p>
+  </div>
+</article>
+        </div>
+      </section>
+
+      <section class="board">
+        <div class="board-head">
+          <h2 class="board-title">질문 모아 보기</h2>
+          <span class="board-count" id="filteredCount">0개의 질문</span>
+        </div>
+
+        <div class="control-grid">
+          <button class="type-button active" type="button" data-type="all">전체</button>
+          <button class="type-button" type="button" data-type="direct">바로 답 찾기</button>
+          <button class="type-button" type="button" data-type="infer">답 짐작하기</button>
+          <button class="type-button" type="button" data-type="feeling">생각·느낌</button>
+          <button class="type-button" type="button" data-type="life">삶과 연결</button>
+
+          <input class="search-input" id="searchInput" type="search" placeholder="내 질문 검색">
+
+          <select class="sort-select" id="sortSelect">
+            <option value="latest">최신순</option>
+            <option value="oldest">오래된순</option>
+            <option value="type">유형별</option>
+          </select>
+        </div>
+
+        <div class="question-grid" id="questionGrid"></div>
+      </section>
+
+      <p class="bottom-note">질문을 다시 보고 싶다면 “다시 보기” 버튼을 눌러 보세요!</p>
+    </div>
+  </main>
+
+  <script>
+    /*
+      =========================================================
+      기본 설정
+      =========================================================
+    */
+
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    const studentName = sessionStorage.getItem("name") || "나";
+
+    const typeMap = {
+      direct: "바로 답 찾기",
+      infer: "답 짐작하기",
+      feeling: "생각·느낌",
+      life: "삶과 연결",
+      opinion: "생각·느낌",
+      connect: "삶과 연결"
+    };
+
+    let selectedType = "all";
+    let allQuestions = [];
+
+    const typeButtons = document.querySelectorAll(".type-button");
+    const questionGrid = document.getElementById("questionGrid");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+
+    init();
+
+    function init() {
+      allQuestions = loadMyQuestions();
+
+      bindEvents();
+      render();
+    }
+
+    function bindEvents() {
+      typeButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          typeButtons.forEach(function(item) {
+            item.classList.remove("active");
+          });
+
+          button.classList.add("active");
+          selectedType = button.dataset.type;
+
+          render();
+        });
+      });
+
+      searchInput.addEventListener("input", render);
+      sortSelect.addEventListener("change", render);
+    }
+
+    /*
+      =========================================================
+      질문 데이터 불러오기
+      =========================================================
+    */
+
+    function loadMyQuestions() {
+      const questions = [];
+
+      // 1. 질문 만들기 화면에서 오늘 날짜별로 저장한 질문을 모두 찾습니다.
+      Object.keys(localStorage).forEach(function(key) {
+        if (!key.startsWith("classReadingQuestions_" + studentId + "_")) {
+          return;
+        }
+
+        try {
+          const savedQuestions = JSON.parse(localStorage.getItem(key));
+
+          if (!Array.isArray(savedQuestions)) {
+            return;
+          }
+
+          savedQuestions.forEach(function(question) {
+            questions.push(normalizeQuestion(question));
+          });
+        } catch (error) {
+          console.error("질문 데이터를 불러오지 못했습니다.", error);
+        }
+      });
+
+      // 2. 질문 나누기로 공유한 질문도 함께 가져옵니다.
+      try {
+        const sharedData = JSON.parse(localStorage.getItem("mySharedQuestions") || "null");
+
+        if (sharedData && Array.isArray(sharedData.questions)) {
+          sharedData.questions.forEach(function(question) {
+            questions.push(normalizeQuestion(question, true));
+          });
+        }
+      } catch (error) {
+        console.error("공유 질문 데이터를 불러오지 못했습니다.", error);
+      }
+
+      // 3. 같은 질문이 중복 저장된 경우 한 번만 보여줍니다.
+      const uniqueMap = {};
+
+      questions.forEach(function(question) {
+        const uniqueKey = question.text + "|" + question.answer + "|" + question.dateKey;
+
+        if (!uniqueMap[uniqueKey]) {
+          uniqueMap[uniqueKey] = question;
+        }
+      });
+
+      return Object.values(uniqueMap);
+    }
+
+    function normalizeQuestion(question, isShared) {
+      const normalizedType = normalizeType(question.type);
+      const dateText = extractDateText(question);
+      const dateKey = dateText.replaceAll(".", "-").replaceAll(" ", "");
+
+      return {
+        id: Date.now() + "-" + Math.random(),
+        text: question.text || "질문 내용이 없습니다.",
+        answer: question.answer || "아직 적은 답이 없습니다.",
+        type: normalizedType,
+        typeLabel: question.typeLabel || getTypeText(normalizedType),
+        createdAt: question.createdAt || question.dateText || dateText,
+        dateText: dateText,
+        dateKey: dateKey,
+        isShared: !!isShared
+      };
+    }
+
+    function extractDateText(question) {
+      const rawDate = String(question.dateText || question.createdAt || "");
+
+      const match = rawDate.match(/\d{4}\.\d{2}\.\d{2}|\d{4}-\d{2}-\d{2}|\d{2}\.\d{2}/);
+
+      if (match) {
+        const text = match[0];
+
+        if (text.length === 5) {
+          const year = new Date().getFullYear();
+          return year + "." + text;
+        }
+
+        return text.replaceAll("-", ".");
+      }
+
+      return getTodayText();
+    }
+
+    function normalizeType(type) {
+      if (type === "opinion") return "feeling";
+      if (type === "connect") return "life";
+      return type || "direct";
+    }
+
+    function getTypeText(type) {
+      return typeMap[type] || "질문";
+    }
+
+    /*
+      =========================================================
+      렌더링
+      =========================================================
+    */
+
+    function render() {
+      const questions = getFilteredQuestions();
+
+      renderSummary();
+      renderQuestionCards(questions);
+    }
+
+    function getFilteredQuestions() {
+      const keyword = searchInput.value.trim().toLowerCase();
+
+      let questions = allQuestions.slice();
+
+      if (selectedType !== "all") {
+        questions = questions.filter(function(question) {
+          return question.type === selectedType;
+        });
+      }
+
+      if (keyword) {
+        questions = questions.filter(function(question) {
+          return (
+            question.text.toLowerCase().includes(keyword) ||
+            question.answer.toLowerCase().includes(keyword) ||
+            question.typeLabel.toLowerCase().includes(keyword)
+          );
+        });
+      }
+
+      if (sortSelect.value === "oldest") {
+        questions.sort(function(a, b) {
+          return a.dateText.localeCompare(b.dateText);
+        });
+      } else if (sortSelect.value === "type") {
+        questions.sort(function(a, b) {
+          return a.typeLabel.localeCompare(b.typeLabel, "ko");
+        });
+      } else {
+        questions.sort(function(a, b) {
+          return b.dateText.localeCompare(a.dateText);
+        });
+      }
+
+      return questions;
+    }
+
+    function renderSummary() {
+      document.getElementById("totalCount").textContent = allQuestions.length;
+      document.getElementById("weekCount").textContent = getThisWeekCount();
+      document.getElementById("mostTypeText").textContent = getMostTypeText();
+    }
+
+    function renderQuestionCards(questions) {
+      document.getElementById("filteredCount").textContent = questions.length + "개의 질문";
+
+      if (allQuestions.length === 0) {
+        questionGrid.innerHTML = `
+          <div class="empty-box">
+            아직 만든 질문이 없어요.<br>
+            우리반 책읽기에서 질문을 먼저 만들어 봐요.
+          </div>
+        `;
+        return;
+      }
+
+      if (questions.length === 0) {
+        questionGrid.innerHTML = `
+          <div class="empty-box">
+            조건에 맞는 질문이 없어요.<br>
+            다른 유형을 누르거나 검색어를 바꿔 보세요.
+          </div>
+        `;
+        return;
+      }
+
+      questionGrid.innerHTML = questions.map(function(question) {
+        return `
+          <article class="question-card" id="question-${question.id}">
+            <div class="question-meta">
+              <span class="date-pill">🗓️ ${escapeHtml(question.dateText)}</span>
+              <span class="question-type ${question.type}">${escapeHtml(question.typeLabel)}</span>
+            </div>
+
+            <h3>${escapeHtml(question.text)}</h3>
+
+            <p class="answer-preview">
+              <strong>내 답:</strong>
+              ${escapeHtml(question.answer)}
+            </p>
+
+            <button class="view-button" type="button" onclick="focusQuestion('${question.id}')">
+              다시 보기 ›
+            </button>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function focusQuestion(id) {
+  const question = allQuestions.find(function(item) {
+    return item.id === id;
+  });
+
+  if (!question) {
+    return;
+  }
+
+  // 기존 팝업이 있으면 먼저 지웁니다.
+  const oldModal = document.querySelector(".question-modal-backdrop");
+
+  if (oldModal) {
+    oldModal.remove();
+  }
+
+  const modal = document.createElement("div");
+  modal.className = "question-modal-backdrop";
+
+  modal.innerHTML = `
+    <section class="question-modal">
+      <div class="question-modal-head">
+        <h2 class="question-modal-title">질문 다시 보기</h2>
+        <button class="question-modal-close" type="button" onclick="closeQuestionModal()">×</button>
+      </div>
+
+      <div class="question-modal-body">
+        <div class="question-modal-meta">
+          <span class="date-pill">🗓️ ${escapeHtml(question.dateText)}</span>
+          <span class="question-type ${question.type}">${escapeHtml(question.typeLabel)}</span>
+        </div>
+
+        <div class="question-modal-question">
+          ${escapeHtml(question.text)}
+        </div>
+
+        <div class="question-modal-answer">
+          <strong>내가 쓴 답</strong>
+          ${escapeHtml(question.answer)}
+        </div>
+      </div>
+
+      <div class="question-modal-actions">
+        <button class="question-modal-button" type="button" onclick="closeQuestionModal()">
+          확인
+        </button>
+      </div>
+    </section>
+  `;
+
+  document.body.appendChild(modal);
+}
+function closeQuestionModal() {
+  const modal = document.querySelector(".question-modal-backdrop");
+
+  if (modal) {
+    modal.remove();
+  }
+}
+    /*
+      =========================================================
+      통계
+      =========================================================
+    */
+
+    function getThisWeekCount() {
+      const today = new Date();
+      const day = today.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + diffToMonday);
+      monday.setHours(0, 0, 0, 0);
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23, 59, 59, 999);
+
+      return allQuestions.filter(function(question) {
+        const date = parseDate(question.dateText);
+        return date >= monday && date <= sunday;
+      }).length;
+    }
+
+    function getMostTypeText() {
+      if (allQuestions.length === 0) {
+        return "아직 없음";
+      }
+
+      const count = {
+        direct: 0,
+        infer: 0,
+        feeling: 0,
+        life: 0
+      };
+
+      allQuestions.forEach(function(question) {
+        if (count[question.type] !== undefined) {
+          count[question.type] += 1;
+        }
+      });
+
+      let mostType = "direct";
+      let mostCount = 0;
+
+      Object.keys(count).forEach(function(type) {
+        if (count[type] > mostCount) {
+          mostType = type;
+          mostCount = count[type];
+        }
+      });
+
+      if (mostCount === 0) {
+        return "아직 없음";
+      }
+
+      return getTypeText(mostType);
+    }
+
+    function parseDate(dateText) {
+      const cleaned = String(dateText || "").replaceAll(".", "-");
+      const date = new Date(cleaned);
+
+      if (Number.isNaN(date.getTime())) {
+        return new Date();
+      }
+
+      return date;
+    }
+
+    function getTodayText() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const date = String(today.getDate()).padStart(2, "0");
+
+      return year + "." + month + "." + date;
+    }
+
+    /*
+      =========================================================
+      이동 / 보안 출력
+      =========================================================
+    */
+
+    function goClassReading() {
+      location.href = "./class-reading.html";
+    }
+
+    function goHome() {
+      location.href = "./home.html";
+    }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>

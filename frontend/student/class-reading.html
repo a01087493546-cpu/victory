@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 - 우리반 책읽기</title>
+
+  <style>
+    /*
+      파일명: class-reading.html
+      역할: 문답책 프로젝트 - 우리반 책읽기 메인 화면입니다.
+
+      이 화면에서 하는 일:
+      1. 우리반 책읽기 진행 상황을 보여줍니다.
+      2. 질문 만들기 / 질문 나누기 / 질문 모음 보기 활동으로 이동합니다.
+      3. 우리 반이 책을 다 읽으면 읽기 후 단계가 열리도록 저장합니다.
+
+      사용 이미지:
+      - ../assets/images/class-reading/class-reading-bg.png
+      - ../assets/images/class-reading/class-reading-lumi.png
+      - ../assets/images/class-reading/class-reading-icon-create.png
+      - ../assets/images/class-reading/class-reading-icon-share.png
+      - ../assets/images/class-reading/class-reading-icon-collection.png
+      - ../assets/images/logo-emblem.png
+    */
+
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: auto;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #fff1cf;
+      background:
+        linear-gradient(180deg, rgba(28, 16, 8, 0.18), rgba(20, 10, 4, 0.52)),
+        url("../assets/images/class-reading/class-reading-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .class-reading-page {
+      min-width: 1180px;
+      min-height: 100vh;
+      padding: 22px 34px 24px;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 225, 150, 0.18), transparent 32%),
+        radial-gradient(circle at 12% 90%, rgba(111, 63, 24, 0.22), transparent 34%),
+        linear-gradient(90deg, rgba(5, 3, 2, 0.62), rgba(5, 3, 2, 0.20), rgba(5, 3, 2, 0.62));
+    }
+
+    .page-shell {
+      width: min(1460px, 100%);
+      min-width: 1120px;
+      min-height: calc(100vh - 46px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto minmax(276px, auto) minmax(226px, auto) auto;
+      gap: 12px;
+    }
+
+    /* 상단 */
+    .top-header {
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff3cf;
+      font-family: "Noto Serif KR", serif;
+      font-size: 28px;
+      font-weight: 900;
+      text-shadow: 0 5px 16px rgba(0, 0, 0, 0.44);
+    }
+
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 222, 145, 0.72);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(255, 245, 200, 0.4), transparent 40%),
+        linear-gradient(180deg, rgba(145, 91, 31, 0.96), rgba(56, 31, 12, 0.98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 246, 214, 0.14),
+        0 10px 22px rgba(0, 0, 0, 0.28);
+    }
+
+    .brand-logo-img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .page-title {
+      text-align: center;
+      font-family: "Noto Serif KR", serif;
+      color: #fff4d2;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1.8px;
+      text-shadow:
+        0 2px 0 rgba(74, 42, 14, 0.88),
+        0 8px 22px rgba(0, 0, 0, 0.46),
+        0 0 20px rgba(237, 183, 88, 0.22);
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .top-pill {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 222, 145, 0.62);
+      background: rgba(37, 22, 10, 0.72);
+      color: #ffe9b3;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
+      transition: 0.18s ease;
+    }
+
+    .top-pill:hover {
+      transform: translateY(-1px);
+      background: rgba(73, 43, 16, 0.84);
+    }
+
+    /* 상단 메인 패널 */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.06fr 0.94fr;
+      gap: 18px;
+    }
+
+    .lumi-panel,
+    .status-panel,
+    .action-card {
+      border: 1px solid rgba(228, 171, 75, 0.56);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 219, 135, 0.12), transparent 36%),
+        linear-gradient(180deg, rgba(35, 23, 13, 0.82), rgba(12, 8, 5, 0.88));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 239, 196, 0.06),
+        0 22px 44px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(2px);
+    }
+
+    .lumi-panel {
+      position: relative;
+      min-height: 276px;
+      overflow: hidden;
+      border-radius: 30px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      align-items: center;
+      padding: 20px 28px 0;
+    }
+
+    .lumi-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 45% 48%, rgba(255, 209, 91, 0.14), transparent 36%),
+        radial-gradient(circle at 55% 46%, rgba(255, 237, 180, 0.12), transparent 30%);
+      pointer-events: none;
+    }
+
+    .lumi-img {
+      position: relative;
+      z-index: 1;
+      align-self: end;
+      width: 305px;
+      max-height: 284px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter:
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.36))
+        drop-shadow(0 0 18px rgba(243, 190, 93, 0.18));
+    }
+
+    .speech-box {
+      position: relative;
+      z-index: 1;
+      max-width: 470px;
+      padding: 24px 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 226, 155, 0.58);
+      background:
+        linear-gradient(180deg, rgba(255, 247, 225, 0.94), rgba(242, 218, 170, 0.92));
+      color: #4c2b13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1.55;
+      letter-spacing: -0.8px;
+      word-break: keep-all;
+      box-shadow:
+        0 18px 32px rgba(0, 0, 0, 0.22),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    }
+
+    .speech-box::before {
+      content: "";
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 13px solid transparent;
+      border-bottom: 13px solid transparent;
+      border-right: 15px solid rgba(255, 247, 225, 0.94);
+    }
+
+    .status-panel {
+      min-height: 276px;
+      border-radius: 30px;
+      padding: 26px 30px;
+      display: grid;
+      align-content: center;
+      gap: 17px;
+    }
+
+    .panel-title {
+      color: #fff1c9;
+      font-family: "Noto Serif KR", serif;
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .status-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .status-chip {
+      min-height: 82px;
+      padding: 15px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(232, 180, 91, 0.34);
+      background: rgba(11, 8, 5, 0.36);
+    }
+
+    .status-chip span {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(255, 222, 160, 0.76);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .status-chip strong {
+      display: block;
+      color: #fff0c8;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .progress-box {
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      align-items: center;
+      gap: 20px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(232, 180, 91, 0.28);
+      background: rgba(255, 238, 191, 0.07);
+    }
+
+    .progress-ring {
+      width: 90px;
+      height: 90px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(32, 20, 11, 0.96) 50%, transparent 52%),
+        conic-gradient(#72c05f 0 68%, rgba(236, 205, 130, 0.28) 68% 100%);
+      color: #fff2c8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 27px;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 1px rgba(255, 230, 170, 0.2);
+    }
+
+    .progress-title {
+      color: #fff0c8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .progress-track {
+      height: 13px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(9, 7, 4, 0.58);
+      border: 1px solid rgba(255, 229, 158, 0.14);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 68%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #3a7d33, #81d769);
+      box-shadow: 0 0 16px rgba(121, 222, 102, 0.42);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      color: rgba(255, 229, 176, 0.75);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    /* 하단 활동 카드 */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .action-card {
+      position: relative;
+      min-height: 226px;
+      overflow: hidden;
+      border-radius: 28px;
+      padding: 24px 26px 22px;
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      grid-template-rows: auto auto;
+      align-content: center;
+      gap: 18px 18px;
+    }
+
+    .action-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255, 206, 94, 0.10), transparent 64%);
+      pointer-events: none;
+    }
+
+    .action-icon-box {
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 222, 145, 0.45);
+      background:
+        radial-gradient(circle at 45% 30%, rgba(255, 238, 178, 0.20), transparent 50%),
+        rgba(12, 8, 5, 0.36);
+      box-shadow: inset 0 0 0 1px rgba(255, 238, 190, 0.08);
+    }
+
+    .action-icon-box img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      filter: drop-shadow(0 7px 10px rgba(0, 0, 0, 0.3));
+    }
+
+    .action-copy {
+      min-width: 0;
+      align-self: center;
+    }
+
+    .action-title {
+      margin-bottom: 10px;
+      color: #fff0c8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .action-desc {
+      color: rgba(255, 229, 184, 0.86);
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.52;
+      word-break: keep-all;
+    }
+
+    .action-button {
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 52px;
+      margin-top: 4px;
+      border: 1px solid rgba(255, 229, 158, 0.48);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #bd8a3e, #70400f);
+      color: #fff5df;
+      font-family: "Noto Serif KR", serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.3px;
+      box-shadow:
+        0 8px 0 rgba(45, 24, 7, 0.88),
+        inset 0 1px 0 rgba(255, 248, 220, 0.25);
+      transition: 0.18s ease;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, #d0a04f, #805018);
+    }
+
+    /* 우리반 책읽기 완료 버튼 영역 */
+    .complete-area {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      margin-top: 0;
+    }
+
+    .complete-reading-button {
+      min-width: 290px;
+      height: 48px;
+      padding: 0 26px;
+      border: 1px solid rgba(255, 229, 158, 0.7);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #d6a653, #85501a);
+      color: #fff7e6;
+      font-family: "Noto Serif KR", serif;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      box-shadow:
+        0 6px 0 rgba(49, 27, 8, 0.82),
+        0 12px 18px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 248, 220, 0.32);
+      transition: 0.18s ease;
+    }
+
+    .complete-reading-button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, #e6bb67, #965f25);
+    }
+
+    .complete-help-text {
+      color: rgba(255, 231, 184, 0.76);
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    /* 아주 작은 화면에서만 세로형으로 바뀌게 합니다. */
+    @media (max-width: 760px) {
+      .class-reading-page {
+        min-width: 0;
+        padding: 18px;
+      }
+
+      .page-shell {
+        min-width: 0;
+        min-height: auto;
+      }
+
+      .top-header,
+      .hero-grid,
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 36px;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .lumi-panel {
+        grid-template-columns: 1fr;
+        padding: 24px;
+      }
+
+      .lumi-img {
+        width: 220px;
+        justify-self: center;
+      }
+
+      .speech-box::before {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="class-reading-page">
+    <div class="page-shell">
+
+      <header class="top-header">
+        <div class="brand">
+          <div class="brand-mark">
+            <img src="../assets/images/logo-emblem.png" alt="문답책 로고" class="brand-logo-img">
+          </div>
+          <span>문답책</span>
+        </div>
+
+        <h1 class="page-title">우리반 책읽기</h1>
+
+        <div class="top-actions">
+          <button class="top-pill" type="button" onclick="goStepSelect()">단계 선택</button>
+          <button class="top-pill" type="button" onclick="goHome()">홈으로</button>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="lumi-panel">
+          <img
+            class="lumi-img"
+            src="../assets/images/class-reading/class-reading-lumi.png"
+            alt="루미"
+          >
+
+          <div class="speech-box">
+            친구들은 어떤 질문을 만들었을까?<br>
+            친구들의 생각을 살펴보며<br>
+            더 깊이 읽어보자!
+          </div>
+        </article>
+
+        <article class="status-panel">
+          <h2 class="panel-title">우리반 책 진행 상황 ✦</h2>
+
+          <div class="status-info-grid">
+            <div class="status-chip">
+              <span>투표로 정해진 책</span>
+              <strong>투표로 정해진 책 제목</strong>
+            </div>
+
+            <div class="status-chip">
+              <span>현재 읽는 구간</span>
+              <strong>현재 읽는 구간</strong>
+            </div>
+          </div>
+
+          <div class="progress-box">
+            <div class="progress-ring">68%</div>
+
+            <div>
+              <div class="progress-title">우리 반 68% 완료</div>
+              <div class="progress-track">
+                <div class="progress-fill"></div>
+              </div>
+              <div class="progress-caption">총 25명 참여 중</div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="action-grid">
+        <article class="action-card">
+          <div class="action-icon-box">
+            <img src="../assets/images/class-reading/class-reading-icon-create.png" alt="질문 만들기 아이콘">
+          </div>
+
+          <div class="action-copy">
+            <h2 class="action-title">질문 만들기</h2>
+            <p class="action-desc">
+              책을 읽으며 떠오른 질문을 만들고,<br>
+              친구와 나누고 싶은 질문을 골라요.
+            </p>
+          </div>
+
+          <button class="action-button" type="button" onclick="goQuestionCreate()">질문 만들기 →</button>
+        </article>
+
+        <article class="action-card">
+          <div class="action-icon-box">
+            <img src="../assets/images/class-reading/class-reading-icon-share.png" alt="질문 나누기 아이콘">
+          </div>
+
+          <div class="action-copy">
+            <h2 class="action-title">질문 나누기</h2>
+            <p class="action-desc">
+              친구들이 올린 질문을 보고<br>
+              내 생각을 담은 답을 적어봐요.
+            </p>
+          </div>
+
+          <button class="action-button" type="button" onclick="goFriendQuestion()">질문 나누기 →</button>
+        </article>
+
+        <article class="action-card">
+          <div class="action-icon-box">
+            <img src="../assets/images/class-reading/class-reading-icon-collection.png" alt="질문 모음 보기 아이콘">
+          </div>
+
+          <div class="action-copy">
+            <h2 class="action-title">질문 모음 보기</h2>
+            <p class="action-desc">
+              내가 만든 질문과 오늘의 질문을<br>
+              메모장처럼 모아 볼 수 있어요.
+            </p>
+          </div>
+
+          <button class="action-button" type="button" onclick="goQuestionCollection()">질문 모음 보기 →</button>
+        </article>
+      </section>
+
+      <div class="complete-area">
+        <button class="complete-reading-button" type="button" onclick="completeClassReading()">
+          다음 읽기 단계로 넘어가기 →
+        </button>
+
+        <p class="complete-help-text">
+          우리 반이 책을 다 읽었다면 읽기 후 활동으로 이어져요.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      =========================================================
+      우리반 책읽기 메인 화면 이동 함수
+      =========================================================
+    */
+
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+    // 우리반 책읽기 질문 만들기 화면으로 이동합니다.
+    function goQuestionCreate() {
+      location.href = "./during-read.html";
+    }
+
+    // 우리반 책읽기 질문 나누기 화면으로 이동합니다.
+    function goFriendQuestion() {
+      location.href = "./friend-question.html";
+    }
+
+    // 나의 질문 모음 화면으로 이동합니다.
+    function goQuestionCollection() {
+      location.href = "./my-questions.html";
+    }
+
+    // 우리반 책읽기를 완료 처리하고, 읽기 후 단계를 열어 줍니다.
+    function completeClassReading() {
+      const progressKey = `practiceProgress_${studentId}`;
+
+      // 기존 연습하기 진행 상태를 불러옵니다.
+      const savedProgress = JSON.parse(sessionStorage.getItem(progressKey)) || {
+        book: false,
+        before: false,
+        during: false,
+        classRead: false,
+        after: false
+      };
+
+      // 앞 단계와 우리반 책읽기 완료 상태를 함께 저장합니다.
+      savedProgress.book = true;
+      savedProgress.before = true;
+      savedProgress.during = true;
+      savedProgress.classRead = true;
+
+      sessionStorage.setItem(progressKey, JSON.stringify(savedProgress));
+
+      // practice.html에서도 확인할 수 있도록 별도 완료 표시를 남깁니다.
+      sessionStorage.setItem("classReadingCompleted_" + studentId, "true");
+
+      alert("우리반 책읽기를 완료했어요! 이제 읽기 후 활동이 열려요.");
+
+      // 단계 선택 화면으로 이동합니다.
+      location.href = "./practice.html";
+    }
+
+    // 단계 선택 화면으로 이동합니다.
+    function goStepSelect() {
+      location.href = "./practice.html";
+    }
+
+    // 홈 화면으로 이동합니다.
+    function goHome() {
+      location.href = "./home.html";
+    }
+  </script>
+</body>
+</html>
