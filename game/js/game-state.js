@@ -22,6 +22,7 @@ const GameState = (() => {
         stamina:  playerData.stamina,
         courage:  playerData.courage,
         isDefending: false,
+        defenseMode: null, // 현재 방어 종류: null / 'guard' / 'ironWall'
       },
 
       // 적 상태
@@ -35,8 +36,14 @@ const GameState = (() => {
 
       // 쿨타임 (ms)
       cooldowns: {
-        normal: 0,
-        heavy:  0,
+        normal:     0,
+        heavy:      0,
+        ilgyeok:    0,
+        yeonsoek:   0,
+        bangeo:     0,
+        cheolbyeok: 0,
+        bulkkot:    0,
+        hwayeom:    0,
       },
 
       // 전투 진행 여부
@@ -59,9 +66,15 @@ const GameState = (() => {
   }
 
   // 방어 상태 변경
-  function setDefending(value) {
+  // mode 값:
+  // - 'guard'    : 일반 방어
+  // - 'ironWall' : 철벽 방어
+  // - null       : 방어 해제
+  function setDefending(value, mode) {
     if (!_state) return;
+
     _state.player.isDefending = value;
+    _state.player.defenseMode = value ? (mode || 'guard') : null;
   }
 
   // 타이머 감소

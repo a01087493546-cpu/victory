@@ -2,8 +2,13 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  /* 문답책 프론트 공통 폰트 기준입니다. */
+  --md-font-main: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
 body {
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: var(--md-font-main);
   background: #070503;
   color: #efe3c5;
   min-height: 100vh;
@@ -115,7 +120,7 @@ body {
 }
 
 .map-title {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: clamp(40px, 4.4vw, 64px);
   font-weight: 700;
   color: #f7dc8a;
@@ -323,7 +328,7 @@ body {
 
 .list-name {
   margin-bottom: 7px;
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 21px;
   font-weight: 700;
   color: #efe3c5;
@@ -491,7 +496,7 @@ body {
 
 .detail-name {
   margin-bottom: 10px;
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: clamp(38px, 3.6vw, 56px);
   font-weight: 700;
   color: #f6e3b0;
@@ -649,7 +654,7 @@ body {
   color: #180b02;
   background:
     linear-gradient(180deg, #ffe08a 0%, #e0a33d 44%, #a9691c 100%);
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: clamp(24px, 2.4vw, 36px);
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -884,7 +889,7 @@ body {
 }
 
 .topbar-dungeon {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   color: #f7dc8a;
   font-size: 22px;
   font-weight: 900;
@@ -1151,7 +1156,7 @@ body {
 /* 전투 배경 */
 .battle-bg {
   flex: 1;
-  height: calc(100vh - 72px - 236px);
+  height: calc(100vh - 72px - 256px);
   min-height: 110px;
   position: relative;
   display: grid;
@@ -1732,7 +1737,7 @@ body {
 }
 
 .fighter-name {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 18px;
   color: #f6e3b0;
   font-weight: 800;
@@ -1800,100 +1805,75 @@ body {
 .log-box {
   width: 360px;
   min-width: 360px;
-  height: 230px;
-  margin-top: -70px;
+  height: 260px;
+  margin-top: -16px;
   position: relative;
   z-index: 5;
   background:
-    linear-gradient(180deg, rgba(14, 10, 4, 0.95), rgba(3, 2, 1, 0.93));
-  border: 1px solid rgba(214, 168, 74, 0.42);
+    linear-gradient(180deg, rgba(16, 11, 4, 0.98), rgba(4, 3, 1, 0.96));
+  border: 1px solid rgba(214, 168, 74, 0.55);
   box-shadow:
-    0 0 22px rgba(0, 0, 0, 0.5),
-    inset 0 0 22px rgba(255, 216, 117, 0.025);
+    0 0 28px rgba(0, 0, 0, 0.65),
+    inset 0 0 24px rgba(255, 216, 117, 0.04);
   overflow: hidden;
 }
 
 .log-title {
-  height: 34px;
+  height: 38px;
   display: flex;
   align-items: center;
-  padding: 0 13px;
-  color: #f1d27a;
-  font-size: 15px;
+  padding: 0 14px;
+  color: #f5dc91;
+  font-size: 16px;
   font-weight: 900;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid rgba(214, 168, 74, 0.24);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(214, 168, 74, 0.3);
   background:
-    linear-gradient(90deg, rgba(255, 216, 117, 0.08), transparent 72%);
+    linear-gradient(90deg, rgba(255,216,117,0.10), transparent 72%);
+  text-shadow: 0 0 10px rgba(255,216,117,0.3);
 }
 
 .battle-log {
-  height: calc(100% - 34px);
+  height: calc(100% - 38px);
   overflow-y: auto;
   padding: 10px 14px;
-  color: #efe3c5;
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.65;
 }
 
-.battle-log::-webkit-scrollbar {
-  width: 4px;
-}
-
+.battle-log::-webkit-scrollbar { width: 4px; }
 .battle-log::-webkit-scrollbar-thumb {
   background: rgba(184, 134, 43, 0.55);
   border-radius: 2px;
 }
 
-.log-line {
-  color: #efe3c5;
-  margin-bottom: 3px;
-}
-
-.log-line.player {
-  color: #8fdcff;
-}
-
-.log-line.enemy {
-  color: #ff8f80;
-}
-
-.log-line.crit {
-  color: #ffd875;
-  font-weight: 900;
-  text-shadow: 0 0 12px rgba(255, 216, 117, 0.3);
-}
-
-.log-line.defend {
-  color: #8ee8ff;
-}
-
-.log-line.warning {
-  color: #ffb347;
-  font-weight: 900;
-}
-
-.log-line.system {
-  color: #c9b57a;
-}
+.log-line { color: #d8c99a; margin-bottom: 3px; }
+.log-line.player { color: #8fdcff; }
+.log-line.enemy { color: #ff8f80; }
+.log-line.crit { color: #ffd875; font-weight: 900; text-shadow: 0 0 10px rgba(255,216,117,0.3); }
+.log-line.defend { color: #8ee8ff; }
+.log-line.warning { color: #ffb347; font-weight: 900; }
+.log-line.system { color: #b9a77a; }
 
 /* 하단 전투 UI */
 .battle-bottom {
-  height: 270px;
+  min-height: 286px;
   display: grid;
-  grid-template-rows: 168px 72px;
+  grid-template-rows: 218px 56px;
   gap: 8px;
-  padding: 8px 18px 10px 18px;
+  padding: 8px 18px 8px;
+  margin-top: -32px;
   background:
     radial-gradient(circle at 50% 0%, rgba(255, 216, 117, 0.06), transparent 34%),
     linear-gradient(180deg, rgba(14, 9, 4, 0.96), rgba(5, 4, 2, 0.99));
-  border-top: 1px solid rgba(214, 168, 74, 0.58);
+  border-top: none;
   box-shadow:
     0 -12px 28px rgba(0, 0, 0, 0.58),
     inset 0 1px 0 rgba(255, 216, 117, 0.08);
   flex-shrink: 0;
   position: relative;
   z-index: 60;
+  align-content: space-between;
 }
 
 .battle-bottom::before {
@@ -1901,7 +1881,7 @@ body {
   position: absolute;
   left: 7%;
   right: 7%;
-  top: 0;
+  top: -20px;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.85), transparent);
   box-shadow: 0 0 16px rgba(255, 216, 117, 0.4);
@@ -1909,42 +1889,182 @@ body {
 
 /* 왼쪽 로그 + 오른쪽 스킬 */
 .battle-command-row {
+  margin-top: -45px;
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 12px;
   min-width: 0;
-  align-items: end;
+  align-items: start;
 }
 
-/* 스킬 버튼 묶음 */
+/* 공격 / 방어 / 필살 3섹션 */
 .action-buttons {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  align-items: stretch;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   min-width: 0;
+  position: relative;
+  transform: translateY(-12px);
+  z-index: 80;
+}
+
+.skill-section {
+  position: relative;
+  display: grid;
+  grid-template-rows: 46px 198px;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 0 4px;
+  overflow: visible;
+  background:
+    linear-gradient(180deg, rgba(255, 216, 117, 0.035), rgba(0, 0, 0, 0.05));
+  border: 1px solid rgba(214, 168, 74, 0.18);
+  box-shadow:
+    inset 0 0 24px rgba(0, 0, 0, 0.28),
+    0 8px 18px rgba(0, 0, 0, 0.22);
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%, 0 12px);
+}
+
+.skill-section::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 56px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 216, 117, 0.58), transparent);
+  opacity: 0.75;
+}
+
+.atk-section {
+  border-color: rgba(236, 188, 74, 0.36);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 210, 80, 0.09), transparent 42%),
+    linear-gradient(180deg, rgba(35, 23, 5, 0.82), rgba(5, 4, 2, 0.78));
+}
+
+.def-section {
+  border-color: rgba(92, 184, 255, 0.32);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(92, 184, 255, 0.09), transparent 42%),
+    linear-gradient(180deg, rgba(4, 19, 37, 0.82), rgba(3, 5, 10, 0.78));
+}
+
+.hvy-section {
+  border-color: rgba(255, 90, 56, 0.34);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 95, 36, 0.12), transparent 42%),
+    linear-gradient(180deg, rgba(42, 6, 7, 0.84), rgba(7, 2, 2, 0.8));
+}
+
+/* 섹션 헤더 */
+.skill-section-header {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  clip-path: polygon(
+    6px 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    6px 100%,
+    0 calc(100% - 6px),
+    0 6px
+  );
+}
+
+.skill-section-header span {
+  font-size: 24px;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 216, 117, 0.35));
+}
+
+.skill-section-header::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 2px;
+  height: 2px;
+  pointer-events: none;
+}
+
+.atk-header {
+  color: #fff0b4;
+  border: 1px solid rgba(236,188,74,0.9);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255,215,90,0.34), transparent 48%),
+    linear-gradient(180deg, rgba(112,76,14,0.94), rgba(18,11,3,0.98));
+  box-shadow:
+    inset 0 0 30px rgba(255,202,73,0.17),
+    0 0 22px rgba(255,202,73,0.2);
+  text-shadow: 0 0 16px rgba(255,215,90,0.66), 0 3px 6px rgba(0,0,0,0.96);
+}
+.atk-header::after { background: linear-gradient(90deg, transparent, #ffd66b, transparent); box-shadow: 0 0 14px rgba(255, 210, 80, 0.72); }
+
+.def-header {
+  color: #d8f0ff;
+  border: 1px solid rgba(92,184,255,0.9);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(100,190,255,0.32), transparent 48%),
+    linear-gradient(180deg, rgba(11,54,96,0.94), rgba(3,10,22,0.98));
+  box-shadow:
+    inset 0 0 30px rgba(74,168,255,0.17),
+    0 0 22px rgba(74,168,255,0.2);
+  text-shadow: 0 0 16px rgba(100,190,255,0.66), 0 3px 6px rgba(0,0,0,0.96);
+}
+.def-header::after { background: linear-gradient(90deg, transparent, #8fdcff, transparent); box-shadow: 0 0 14px rgba(74, 168, 255, 0.72); }
+
+.hvy-header {
+  color: #ffd6a6;
+  border: 1px solid rgba(255,90,56,0.95);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255,95,36,0.4), transparent 48%),
+    linear-gradient(180deg, rgba(125,14,17,0.96), rgba(22,3,4,0.99));
+  box-shadow:
+    inset 0 0 34px rgba(255,76,36,0.22),
+    0 0 26px rgba(255,76,36,0.24);
+  text-shadow: 0 0 18px rgba(255,100,40,0.72), 0 3px 6px rgba(0,0,0,0.96);
+}
+.hvy-header::after { background: linear-gradient(90deg, transparent, #ff7348, transparent); box-shadow: 0 0 16px rgba(255, 76, 36, 0.78); }
+
+/* 스킬 슬롯 */
+.skill-section-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  height: 198px;
+  padding: 6px 7px 7px;
+  margin-top: 0;
+  overflow: visible;
 }
 
 /* 스킬 카드 공통 */
 .action-btn {
   position: relative;
   min-width: 0;
-  height: 110px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 0 20px;
-  border: 1px solid rgba(214, 168, 74, 0.58);
+  height: 190px;
+  display: block;
+  padding: 0;
+  border: 1px solid rgba(214,168,74,0.72);
   color: #f6e6bc;
   cursor: pointer;
   overflow: hidden;
   background:
-    radial-gradient(circle at 18% 22%, rgba(255, 216, 117, 0.13), transparent 42%),
-    linear-gradient(180deg, rgba(39, 26, 8, 0.97), rgba(10, 7, 3, 0.96));
+    radial-gradient(circle at 50% 18%, rgba(255,216,117,0.36), transparent 52%),
+    linear-gradient(180deg, rgba(40,25,6,0.99), rgba(4,3,2,0.99));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 0 20px rgba(255, 216, 117, 0.035),
-    0 8px 18px rgba(0, 0, 0, 0.34);
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 0 42px rgba(255,216,117,0.12),
+    0 0 22px rgba(255,216,117,0.13),
+    0 12px 26px rgba(0,0,0,0.66);
   clip-path: polygon(
     12px 0,
     calc(100% - 12px) 0,
@@ -1955,37 +2075,36 @@ body {
     0 calc(100% - 12px),
     0 12px
   );
-  transition:
-    transform 0.14s ease,
-    filter 0.14s ease,
-    box-shadow 0.14s ease;
+  transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
 }
 
 .action-btn::before {
   content: '';
   position: absolute;
   inset: 5px;
-  border: 1px solid rgba(255, 216, 117, 0.12);
+  border: 1px solid rgba(255,216,117,0.16);
   pointer-events: none;
   clip-path: inherit;
+  z-index: 2;
 }
 
 .action-btn::after {
   content: '';
   position: absolute;
-  left: -35%;
+  left: -42%;
   top: 0;
-  width: 34%;
+  width: 38%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
   transform: skewX(-18deg);
   opacity: 0;
   pointer-events: none;
+  z-index: 3;
 }
 
 .action-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  filter: brightness(1.15);
+  filter: brightness(1.18);
 }
 
 .action-btn:hover:not(:disabled)::after {
@@ -1993,190 +2112,332 @@ body {
   animation: skillShine 0.7s ease forwards;
 }
 
-.action-btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.99);
-}
-
+.action-btn:active:not(:disabled) { transform: translateY(0) scale(0.99); }
 .action-btn:disabled,
 .action-btn.disabled {
-  opacity: 0.46;
+  opacity: 0.42;
   cursor: not-allowed;
-  filter: grayscale(0.45) brightness(0.72);
-  transform: none;
-}
-
-.action-btn:disabled,
-.action-btn.disabled {
-  opacity: 0.46;
-  cursor: not-allowed;
-  filter: grayscale(0.45) brightness(0.72);
+  filter: grayscale(0.5) brightness(0.68);
   transform: none;
 }
 
 @keyframes skillShine {
-  from {
-    left: -35%;
-  }
-
-  to {
-    left: 110%;
-  }
+  from { left: -42%; }
+  to { left: 112%; }
 }
 
-/* 스킬 번호 */
+/* 숫자 배지 */
 .skill-key {
   width: 34px;
   height: 34px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  color: #2a1906;
-  background:
-    radial-gradient(circle at 35% 30%, #fff2ba, #d7a84a 60%, #8b611b);
-  border: 1px solid rgba(255, 238, 170, 0.7);
-  font-size: 14px;
+  border-radius: 8px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
   font-weight: 900;
+  font-size: 15px;
+  color: #1c1004;
+  background: linear-gradient(180deg, #ffe89a 0%, #b77821 58%, #5b3510 100%);
+  border: 1px solid rgba(255,237,170,0.78);
   box-shadow:
-    0 0 14px rgba(255, 216, 117, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  flex-shrink: 0;
-  z-index: 2;
+    0 0 14px rgba(255,216,117,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    0 4px 8px rgba(0,0,0,0.68);
+  z-index: 6;
+}
+
+.defend-btn .skill-key {
+  color: #061322;
+  background:
+    radial-gradient(circle at 35% 25%, #d7f3ff 0%, #69b6ff 40%, #1d5792 73%, #092141 100%);
+  border-color: rgba(166, 222, 255, 0.82);
+  box-shadow:
+    0 0 12px rgba(90,180,255,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.52),
+    0 4px 8px rgba(0,0,0,0.68);
+}
+
+.heavy-btn .skill-key {
+  color: #2a0802;
+  background:
+    radial-gradient(circle at 35% 25%, #ffd6a6 0%, #ff8a35 38%, #b22b16 72%, #4d0906 100%);
+  border-color: rgba(255, 180, 120, 0.84);
+  box-shadow:
+    0 0 13px rgba(255,86,36,0.38),
+    inset 0 1px 0 rgba(255,255,255,0.42),
+    0 4px 8px rgba(0,0,0,0.68);
 }
 
 /* 스킬 아이콘 */
 .skill-icon {
-  width: 72px;
-  height: 72px;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 132px;
+  height: 92px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  font-size: 38px;
-  flex-shrink: 0;
-  z-index: 2;
-  position: relative;
-  box-shadow:
-    0 0 20px rgba(0, 0, 0, 0.5),
-    inset 0 0 18px rgba(255, 216, 117, 0.08);
+  transform: translateX(-50%);
+  z-index: 3;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 .skill-icon::before {
   content: '';
   position: absolute;
-  inset: 0;
+  width: 78px;
+  height: 54px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 216, 117, 0.4);
+  filter: blur(3px);
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.skill-icon img {
+  width: 112px !important;
+  height: 112px !important;
+  object-fit: contain !important;
+  position: relative;
+  z-index: 1;
+}
+
+.attack-btn .skill-icon::before {
+  background: radial-gradient(circle, rgba(255, 214, 107, 0.32), transparent 70%);
+}
+.attack-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 12px rgba(255, 216, 117, 0.36))
+    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.82));
+}
+
+.defend-btn .skill-icon::before {
+  background: radial-gradient(circle, rgba(90, 180, 255, 0.32), transparent 70%);
+}
+.defend-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 12px rgba(90, 180, 255, 0.38))
+    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.82));
+}
+
+.heavy-btn .skill-icon::before {
+  background: radial-gradient(circle, rgba(255, 86, 36, 0.38), transparent 70%);
+}
+.heavy-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 14px rgba(255, 90, 36, 0.46))
+    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.85));
 }
 
 /* 스킬 텍스트 */
 .skill-text {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 6px;
   min-width: 0;
-  z-index: 2;
-  flex: 1;
+  z-index: 4;
+  text-align: center;
 }
 
 .skill-text strong {
   display: block;
-  color: #fff0bd;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  margin-bottom: 6px;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.02;
+  margin-bottom: 9px;
+  color: #fff3cf;
+  white-space: nowrap;
+  letter-spacing: -0.04em;
   text-shadow:
-    0 0 14px rgba(255, 216, 117, 0.22),
-    0 3px 6px rgba(0, 0, 0, 0.9);
+    0 0 14px rgba(255, 226, 150, 0.32),
+    0 3px 8px rgba(0,0,0,0.95);
 }
 
 .skill-text small {
-  display: block;
-  color: #d5bd78;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 카드 안에서 너무 길게 뻗지 않고, 목표 이미지처럼 둥근 캡슐로 보이게 */
+  width: fit-content;
+  min-width: 118px;
+  max-width: 82%;
+  height: 24px;
+  margin: 4px auto 0;
+  padding: 0 18px;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff8df;
+  white-space: nowrap;
+
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.32) 0%,
+      rgba(255,255,255,0.12) 35%,
+      rgba(0,0,0,0.18) 70%,
+      rgba(0,0,0,0.34) 100%
+    ),
+    linear-gradient(180deg,
+      rgba(206, 153, 45, 0.98) 0%,
+      rgba(126, 82, 20, 0.98) 100%
+    );
+
+  border: 1px solid rgba(255, 226, 145, 0.75);
+  border-radius: 999px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.42),
+    inset 0 -2px 0 rgba(0,0,0,0.38),
+    0 2px 5px rgba(0,0,0,0.48);
+
+  clip-path: none;
+
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.9);
 }
 
-/* 공격 버튼 */
+.skill-text small::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 3px;
+  height: 3px;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, transparent, rgba(255,255,230,1), transparent);
+  box-shadow:
+    0 0 10px rgba(255, 238, 160, 0.9),
+    0 0 18px rgba(255, 202, 64, 0.6);
+}
+
+.skill-text small::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, transparent 0%, transparent 38%, rgba(255,255,255,0.28) 48%, transparent 58%, transparent 100%);
+  opacity: 0.9;
+  animation: skillLabelShine 1.8s ease-in-out infinite;
+}
+
+@keyframes skillLabelShine {
+  0% {
+    transform: translateX(-120%);
+  }
+  55% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.attack-btn .skill-text strong { color: #fff0b4; }
+.defend-btn .skill-text strong { color: #d8f0ff; }
+.heavy-btn .skill-text strong { color: #ffd1a3; }
+
+.attack-btn .skill-text small {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,231,130,0.10) 38%, rgba(0,0,0,0.34) 100%),
+    linear-gradient(90deg, rgba(38,22,5,0.98) 0%, rgba(194,132,30,0.98) 50%, rgba(38,22,5,0.98) 100%);
+  border-top-color: rgba(255, 244, 174, 1);
+  border-left-color: rgba(255, 220, 104, 0.78);
+  border-right-color: rgba(255, 220, 104, 0.78);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.38),
+    inset 0 -2px 0 rgba(0,0,0,0.72),
+    inset 0 0 20px rgba(255, 220, 100, 0.30),
+    0 0 22px rgba(255, 198, 56, 0.46),
+    0 4px 10px rgba(0,0,0,0.55);
+}
+
+.defend-btn .skill-text small {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(150,225,255,0.10) 38%, rgba(0,0,0,0.34) 100%),
+    linear-gradient(90deg, rgba(6,26,58,0.98) 0%, rgba(48,144,220,0.98) 50%, rgba(6,26,58,0.98) 100%);
+  border-top-color: rgba(180, 238, 255, 1);
+  border-left-color: rgba(110, 210, 255, 0.78);
+  border-right-color: rgba(110, 210, 255, 0.78);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.38),
+    inset 0 -2px 0 rgba(0,0,0,0.72),
+    inset 0 0 20px rgba(100, 200, 255, 0.28),
+    0 0 22px rgba(80, 180, 255, 0.44),
+    0 4px 10px rgba(0,0,0,0.55);
+}
+
+.heavy-btn .skill-text small {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,150,92,0.12) 38%, rgba(0,0,0,0.38) 100%),
+    linear-gradient(90deg, rgba(58,8,6,0.99) 0%, rgba(214,58,26,0.98) 50%, rgba(58,8,6,0.99) 100%);
+  border-top-color: rgba(255, 172, 118, 1);
+  border-left-color: rgba(255, 120, 80, 0.82);
+  border-right-color: rgba(255, 120, 80, 0.82);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.38),
+    inset 0 -2px 0 rgba(0,0,0,0.76),
+    inset 0 0 22px rgba(255, 96, 48, 0.34),
+    0 0 24px rgba(255, 78, 38, 0.50),
+    0 4px 10px rgba(0,0,0,0.58);
+}
+
+/* 공격 카드 */
 .attack-btn {
-  border-color: rgba(255, 196, 76, 0.7);
+  border-color: rgba(236,188,74,0.86);
   background:
-    radial-gradient(circle at 15% 50%, rgba(255, 196, 76, 0.22), transparent 45%),
-    linear-gradient(135deg, rgba(82, 58, 14, 0.98) 0%, rgba(50, 35, 8, 0.98) 50%, rgba(32, 22, 7, 0.98) 100%);
+    radial-gradient(circle at 28% 20%, rgba(255,220,84,0.32), transparent 42%),
+    linear-gradient(180deg, rgba(91,63,12,0.99), rgba(12,8,3,0.99));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 30px rgba(255, 196, 76, 0.08),
-    0 0 20px rgba(255, 196, 76, 0.15),
-    0 8px 18px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 0 32px rgba(255,202,73,0.14),
+    0 0 20px rgba(255,202,73,0.2),
+    0 10px 22px rgba(0,0,0,0.55);
 }
 
-/* 방어 버튼 */
+/* 방어 카드 */
 .defend-btn {
-  border-color: rgba(91, 158, 229, 0.65);
+  border-color: rgba(92,184,255,0.82);
   background:
-    radial-gradient(circle at 15% 50%, rgba(91, 158, 229, 0.2), transparent 45%),
-    linear-gradient(135deg, rgba(17, 45, 90, 0.98) 0%, rgba(10, 30, 65, 0.98) 50%, rgba(7, 20, 45, 0.98) 100%);
+    radial-gradient(circle at 28% 20%, rgba(95,190,255,0.3), transparent 42%),
+    linear-gradient(180deg, rgba(9,43,82,0.99), rgba(3,9,18,0.99));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 30px rgba(91, 158, 229, 0.08),
-    0 0 20px rgba(91, 158, 229, 0.15),
-    0 8px 18px rgba(0, 0, 0, 0.4);
-}
-
-/* 강공격 버튼 */
-.heavy-btn {
-  border-color: rgba(255, 82, 65, 0.65);
-  background:
-    radial-gradient(circle at 15% 50%, rgba(255, 82, 65, 0.2), transparent 45%),
-    linear-gradient(135deg, rgba(100, 16, 22, 0.98) 0%, rgba(70, 10, 15, 0.98) 50%, rgba(44, 7, 11, 0.98) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 30px rgba(255, 82, 65, 0.08),
-    0 0 20px rgba(255, 82, 65, 0.15),
-    0 8px 18px rgba(0, 0, 0, 0.4);
-}
-
-.attack-btn .skill-icon {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 220, 100, 0.25), rgba(120, 80, 10, 0.9) 60%, rgba(60, 40, 5, 0.95));
-  color: #ffd875;
-  text-shadow: 0 0 18px rgba(255, 196, 76, 0.9);
-  border-color: rgba(255, 196, 76, 0.6);
-}
-
-.attack-btn .skill-icon::before {
-  border-color: rgba(255, 196, 76, 0.5);
-  box-shadow: 0 0 16px rgba(255, 196, 76, 0.35);
-}
-
-.defend-btn .skill-icon {
-  background:
-    radial-gradient(circle at 40% 35%, rgba(120, 180, 255, 0.25), rgba(20, 60, 120, 0.9) 60%, rgba(10, 30, 70, 0.95));
-  color: #a7d2ff;
-  text-shadow: 0 0 18px rgba(91, 158, 229, 0.9);
-}
-
-.defend-btn .skill-icon::before {
-  border-color: rgba(91, 158, 229, 0.5);
-  box-shadow: 0 0 16px rgba(91, 158, 229, 0.35);
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 0 32px rgba(74,168,255,0.14),
+    0 0 20px rgba(74,168,255,0.19),
+    0 10px 22px rgba(0,0,0,0.55);
 }
 
 .defend-btn.defending {
-  filter: brightness(1.2);
+  filter: brightness(1.25);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    0 0 30px rgba(91, 158, 229, 0.5),
-    0 8px 18px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 0 40px rgba(74,168,255,0.55),
+    0 10px 22px rgba(0,0,0,0.5);
 }
 
-.heavy-btn .skill-icon {
+/* 필살 카드 */
+.heavy-btn {
+  border-color: rgba(255,90,56,0.9);
   background:
-    radial-gradient(circle at 40% 35%, rgba(255, 120, 80, 0.25), rgba(140, 20, 20, 0.9) 60%, rgba(80, 10, 10, 0.95));
-  color: #ff9d55;
-  text-shadow: 0 0 18px rgba(255, 82, 65, 0.9);
-}
-
-.heavy-btn .skill-icon::before {
-  border-color: rgba(255, 82, 65, 0.5);
-  box-shadow: 0 0 16px rgba(255, 82, 65, 0.35);
+    radial-gradient(circle at 28% 20%, rgba(255,120,42,0.4), transparent 42%),
+    linear-gradient(180deg, rgba(110,12,16,0.99), rgba(18,3,4,0.99));
+  box-shadow:
+    inset 0 1px 0 rgba(255,180,80,0.18),
+    inset 0 0 36px rgba(255,76,36,0.22),
+    0 0 26px rgba(255,76,36,0.26),
+    0 10px 22px rgba(0,0,0,0.55);
 }
 
 .heavy-btn:disabled {
@@ -2187,13 +2448,17 @@ body {
 
 /* 튜토리얼 바 */
 .battle-guide-box {
+  width: 100%;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 62px 1fr;
+  grid-template-columns: 54px 1fr;
   align-items: center;
   gap: 16px;
   min-width: 0;
-  height: 62px;
-  padding: 0 20px;
+  height: 74px;
+  padding: 0 10px;
+  position: relative;
+  top: -14px;
   background:
     radial-gradient(circle at 6% 50%, rgba(255, 216, 117, 0.1), transparent 32%),
     linear-gradient(180deg, rgba(22, 14, 5, 0.98), rgba(8, 5, 3, 0.98));
@@ -2204,37 +2469,49 @@ body {
 }
 
 .battle-guide-icon {
-  width: 50px;
-  height: 50px;
+  align-self: start;
+  margin-top: -13px;
+  margin-left: -25px;
+  width: 96px;
+  height: 96px;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255, 216, 117, 0.25), rgba(80, 50, 5, 0.95) 60%);
-  border: 1px solid rgba(214, 168, 74, 0.6);
-  border-radius: 50%;
-  color: #ffd875;
-  font-size: 26px;
-  box-shadow:
-    0 0 18px rgba(255, 216, 117, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.battle-guide-icon img {
+  width: 100px !important;
+  height: 100px !important;
+  object-fit: contain !important;
+  filter:
+    drop-shadow(0 0 12px rgba(255, 216, 117, 0.32))
+    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.72));
 }
 
 .battle-guide-title {
   color: #ffd875;
-  font-size: 14px;
+  font-size: 19px;
   font-weight: 900;
-  margin-bottom: 3px;
+  margin-bottom: 7px;
   letter-spacing: 0.06em;
   text-shadow: 0 0 12px rgba(255, 216, 117, 0.4);
+  position: relative;
+  top: -9px;
 }
 
 .battle-guide-box p {
   margin: 0;
-  color: #c8a85a;
-  font-size: 12px;
+  color: #ffffff;
+  font-size: 14px;
   line-height: 1.4;
   font-weight: 700;
+  position: relative;
+  top: -8px;
 }
+
 
 /* 데미지 숫자 / 크리티컬 */
 .dmg-popup {
@@ -2250,7 +2527,7 @@ body {
 }
 
 .dmg-popup .dmg-num {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 54px;
   font-weight: 900;
   line-height: 0.94;
@@ -2284,7 +2561,7 @@ body {
 
 .critical-label {
   margin-bottom: 5px;
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 28px;
   font-weight: 900;
   color: #fff0b8;
@@ -2309,7 +2586,7 @@ body {
   transform: translate(-50%, -50%);
   padding: 7px 18px;
   color: #fff5d0;
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 26px;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -2525,7 +2802,7 @@ body {
 .result-emoji { font-size: 72px; margin-bottom: 16px; }
 
 .result-title {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   font-size: 23px;
   font-weight: 700;
   color: #ffd875;
@@ -2570,7 +2847,7 @@ body {
 .hud-section { padding: 0; }
 
 .hud-title {
-  font-family: 'Noto Serif KR', serif;
+  font-family: var(--md-font-main);
   color: #f1d27a;
   font-size: 13px;
   font-weight: 700;
@@ -2608,4 +2885,1873 @@ body {
   font-size: 12px;
   line-height: 1.85;
   font-style: italic;
+}
+
+/* 강공격 화이트 플래시 */
+@keyframes whiteFlashFade {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 강한 화면 흔들림 */
+.screen-shake-strong {
+  animation: battleShakeStrong 0.5s ease;
+}
+
+@keyframes battleShakeStrong {
+  0%,100% { transform: translateX(0) translateY(0); }
+  10% { transform: translateX(-12px) translateY(-4px); }
+  25% { transform: translateX(12px)  translateY(4px); }
+  40% { transform: translateX(-10px) translateY(-3px); }
+  55% { transform: translateX(9px)   translateY(3px); }
+  70% { transform: translateX(-7px)  translateY(-2px); }
+  85% { transform: translateX(5px)   translateY(1px); }
+}
+
+/* 충격파 링 */
+.impact-effect.shockwave {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 180, 60, 0.9);
+  background: transparent;
+  box-shadow: 0 0 18px rgba(255, 150, 30, 0.7);
+  animation: shockwaveExpand 0.55s ease-out forwards;
+}
+
+@keyframes shockwaveExpand {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.3); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(4.5); }
+}
+
+/* 스파크 파티클 */
+.spark-particle {
+  position: absolute;
+  z-index: 75;
+  pointer-events: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffd875;
+  box-shadow: 0 0 8px rgba(255, 216, 117, 0.9);
+  animation: sparkFly 0.5s ease-out forwards;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes sparkFly {
+  0%   { opacity: 1; transform: translate(-50%, -50%) translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.2); }
+}
+
+/* 크리티컬 배너 */
+@keyframes critBannerIn {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(-6deg); opacity: 0; }
+  60%  { transform: translate(-50%, -50%) scale(1.18) rotate(-6deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(-6deg); opacity: 1; }
+}
+
+@keyframes critBannerOut {
+  0%   { transform: translate(-50%, -50%) scale(1) rotate(-6deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.7) rotate(-6deg); opacity: 0; }
+}
+
+/* 차징 포즈 */
+.fighter.left.charging .sprite {
+  animation: chargingPulse 0.3s ease-in-out infinite alternate !important;
+  filter:
+    drop-shadow(0 0 28px rgba(255, 216, 117, 0.9))
+    drop-shadow(0 0 54px rgba(255, 150, 30, 0.6))
+    drop-shadow(0 14px 18px rgba(0,0,0,0.88)) !important;
+}
+
+@keyframes chargingPulse {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-8px) scale(1.08); }
+}
+
+/* 차징 슬롯 멘트 전용 */
+.text-popup.charging-slot {
+  font-family: var(--md-font-main);
+  font-size: 22px;
+  font-weight: 900;
+  color: #f6e3b0;
+  background: rgba(3, 2, 1, 0.82);
+  border: 1px solid rgba(214, 168, 74, 0.7);
+  text-shadow:
+    0 0 18px rgba(255, 216, 117, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.95);
+  letter-spacing: 0.06em;
+  box-shadow:
+    0 0 24px rgba(214, 168, 74, 0.25),
+    inset 0 0 16px rgba(255, 216, 117, 0.04);
+}
+
+/* 아이콘 glow */
+.attack-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 14px rgba(255,220,80,0.38))
+    drop-shadow(0 8px 14px rgba(0,0,0,0.8));
+}
+
+.defend-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 14px rgba(90,190,255,0.38))
+    drop-shadow(0 8px 14px rgba(0,0,0,0.8));
+}
+
+.heavy-btn .skill-icon img {
+  filter:
+    drop-shadow(0 0 16px rgba(255,100,36,0.45))
+    drop-shadow(0 0 8px rgba(255,200,80,0.25))
+    drop-shadow(0 8px 14px rgba(0,0,0,0.8));
+}
+
+/* 헤더 아이콘 공통 - 네모 테두리/배경 제거 */
+.header-icon {
+  display: inline-block;
+  margin-right: 8px;
+  width: auto;
+  height: auto;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  line-height: 1;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
+/* 공격 - 기존 검 느낌 + 업그레이드 */
+.atk-icon {
+  font-size: 24px;
+  color: #ffe08a;
+  text-shadow:
+    0 0 4px rgba(255, 240, 180, 0.75),
+    0 0 10px rgba(255, 201, 74, 0.65),
+    0 0 18px rgba(255, 170, 30, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.85);
+  transform: translateY(1px);
+}
+
+/* 방어 - 기존 방패 느낌 + 더 단단하고 묵직하게 */
+.def-icon {
+  font-size: 24px;
+  color: #d7ebff;
+  text-shadow:
+    0 0 4px rgba(220, 240, 255, 0.75),
+    0 0 10px rgba(106, 184, 255, 0.55),
+    0 0 16px rgba(58, 126, 214, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateY(1px);
+}
+
+/* 필살 - 기존 불꽃 느낌 + 더 강렬하게 */
+.hvy-icon {
+  font-size: 25px;
+  color: #ffcf8f;
+  text-shadow:
+    0 0 4px rgba(255, 232, 180, 0.8),
+    0 0 10px rgba(255, 140, 60, 0.85),
+    0 0 18px rgba(255, 72, 0, 0.65),
+    0 0 26px rgba(255, 40, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.9);
+  transform: translateY(1px);
+}
+
+/* ================================
+   연속 베기 2타 전용 모션
+   - 1타는 기존 hero-lunge 유지
+   - 2타는 용사 이미지를 좌우 반전시켜
+     반대 방향으로 베는 것처럼 보이게 함
+================================ */
+
+.fighter.left.hero-combo-second {
+  animation: heroComboSecondMove 640ms cubic-bezier(.16,.92,.3,1.18);
+}
+
+/* 2타 때 용사 스프라이트 자체를 순간적으로 좌우 반전 */
+.fighter.left.hero-combo-second #hero-spr {
+  animation: heroComboSecondSlash 640ms ease-out;
+  transform-origin: center center;
+}
+
+@keyframes heroComboSecondMove {
+  0% {
+    transform: translateX(0) translateY(0) scale(1);
+    filter: brightness(1);
+  }
+
+  25% {
+    transform: translateX(18px) translateY(-2px) scale(1.02);
+    filter: brightness(1.12);
+  }
+
+  58% {
+    transform: translateX(42px) translateY(0) scale(1.05);
+    filter: brightness(1.35);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes heroComboSecondSlash {
+  0% {
+    transform: scaleX(1) rotate(0deg);
+  }
+
+  12% {
+    transform: scaleX(-1) rotate(4deg);
+  }
+
+  62% {
+    transform: scaleX(-1) rotate(-8deg);
+  }
+
+  100% {
+    transform: scaleX(1) rotate(0deg);
+  }
+}
+
+/* ================================
+   방어 / 철벽 전용 임팩트
+   - 기존 UI 배치는 건드리지 않고
+   - 용사 주변 방어 효과만 강화
+================================ */
+
+/* 일반 방어: 짧고 선명한 파란 방어막 */
+.fighter.left.guard-burst::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 170px;
+  height: 170px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  border: 3px solid rgba(120, 220, 255, 0.95);
+  box-shadow:
+    0 0 18px rgba(90, 210, 255, 0.95),
+    inset 0 0 28px rgba(90, 210, 255, 0.35);
+  animation: guardBurstPulse 650ms ease-out forwards;
+}
+
+/* 일반 방어: 중심부 빛 */
+.fighter.left.guard-burst::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 110px;
+  height: 110px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(circle, rgba(140,230,255,0.38), rgba(80,180,255,0.08) 55%, transparent 72%);
+  animation: guardCoreFlash 650ms ease-out forwards;
+}
+
+/* 철벽: 일반 방어보다 크고 두꺼운 방어막 */
+.fighter.left.ironwall-burst::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 210px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  border: 5px solid rgba(190, 235, 255, 1);
+  box-shadow:
+    0 0 28px rgba(100, 220, 255, 1),
+    0 0 58px rgba(60, 170, 255, 0.75),
+    inset 0 0 34px rgba(190, 235, 255, 0.45);
+  animation: ironWallPulse 900ms ease-out forwards;
+}
+
+/* 철벽: 안쪽에 사각 방패 느낌 추가 */
+.fighter.left.ironwall-burst::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 120px;
+  height: 92px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 5;
+  border: 3px solid rgba(220, 245, 255, 0.95);
+  background: linear-gradient(
+    135deg,
+    rgba(210, 245, 255, 0.30),
+    rgba(70, 160, 255, 0.12)
+  );
+  box-shadow:
+    0 0 18px rgba(150, 225, 255, 0.8),
+    inset 0 0 18px rgba(255, 255, 255, 0.24);
+  clip-path: polygon(50% 0%, 100% 22%, 86% 100%, 50% 84%, 14% 100%, 0% 22%);
+  animation: ironWallShield 900ms ease-out forwards;
+}
+
+@keyframes guardBurstPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  70% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+}
+
+@keyframes guardCoreFlash {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.65);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.22);
+  }
+}
+
+@keyframes ironWallPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  65% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+@keyframes ironWallShield {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.62);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  75% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+/* ================================
+   불꽃 베기 전용 이펙트
+   - 휘어진 불꽃 칼날
+   - 맞는 순간 불꽃 폭발
+   - 불씨 파편 확산
+================================ */
+
+.fire-slash-effect {
+  position: absolute;
+  width: 220px;
+  height: 130px;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: 46;
+  opacity: 0;
+  animation: fireSlashArc 700ms ease-out forwards;
+}
+
+/* 불꽃 검격 본체 */
+.fire-slash-effect::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 40px;
+  width: 185px;
+  height: 65px;
+  border-radius: 50%;
+  border-top: 22px solid rgba(255, 220, 110, 0.98);
+  border-right: 14px solid rgba(255, 95, 10, 0.95);
+  border-bottom: 0;
+  border-left: 0;
+  filter:
+    drop-shadow(0 0 10px rgba(255, 210, 90, 0.95))
+    drop-shadow(0 0 22px rgba(255, 120, 20, 0.95))
+    drop-shadow(0 0 40px rgba(220, 35, 0, 0.72));
+}
+
+/* 안쪽 뜨거운 칼날 심 */
+.fire-slash-effect::after {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: 52px;
+  width: 138px;
+  height: 34px;
+  border-radius: 50%;
+  border-top: 7px solid rgba(255, 250, 220, 0.96);
+  border-right: 6px solid rgba(255, 205, 90, 0.92);
+  border-bottom: 0;
+  border-left: 0;
+  filter: blur(0.3px);
+}
+
+/* 맞는 순간 중심 폭발 */
+.fire-burst-effect {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 47;
+  opacity: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,245,210,0.95) 0 10%, rgba(255,180,60,0.88) 18%, rgba(255,90,0,0.55) 42%, rgba(180,20,0,0.18) 64%, transparent 74%);
+  box-shadow:
+    0 0 18px rgba(255, 220, 120, 0.9),
+    0 0 40px rgba(255, 120, 20, 0.9),
+    0 0 75px rgba(220, 30, 0, 0.55);
+  animation: fireBurstPop 900ms ease-out forwards;
+}
+
+/* 불씨 파편 */
+.fire-slash-ember {
+  position: absolute;
+  width: 260px;
+  height: 180px;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  pointer-events: none;
+  z-index: 45;
+  opacity: 0;
+  background:
+    radial-gradient(circle at 22% 55%, rgba(255,235,120,0.95) 0 4px, transparent 5px),
+    radial-gradient(circle at 30% 40%, rgba(255,160,40,0.9) 0 5px, transparent 6px),
+    radial-gradient(circle at 42% 62%, rgba(255,90,10,0.88) 0 5px, transparent 6px),
+    radial-gradient(circle at 58% 38%, rgba(255,190,60,0.82) 0 4px, transparent 5px),
+    radial-gradient(circle at 66% 58%, rgba(255,70,0,0.82) 0 6px, transparent 7px),
+    radial-gradient(circle at 78% 44%, rgba(255,220,90,0.72) 0 4px, transparent 5px),
+    radial-gradient(circle at 86% 60%, rgba(215,30,0,0.72) 0 7px, transparent 8px);
+  filter: blur(0.2px);
+  animation: fireSlashEmbers 900ms ease-out forwards;
+}
+
+@keyframes fireSlashArc {
+  0% {
+    opacity: 0;
+    transform: translate(-58%, -48%) rotate(-26deg) scale(0.56);
+    filter: brightness(1);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  48% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-18deg) scale(1.08);
+    filter: brightness(1.5);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-42%, -55%) rotate(-9deg) scale(1.18);
+    filter: brightness(0.94);
+  }
+}
+
+@keyframes fireBurstPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  55% {
+    opacity: 0.92;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+}
+
+@keyframes fireSlashEmbers {
+  0% {
+    opacity: 0;
+    transform: translate(-54%, -46%) rotate(-20deg) scale(0.74);
+  }
+
+  24% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-40%, -66%) rotate(-8deg) scale(1.3);
+  }
+}
+
+/* ================================
+   불꽃 베기 - 실제 불씨 파편
+================================ */
+
+.fire-ember-particle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 90;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fffbe0 0%,
+    #ffd35a 32%,
+    #ff6a00 62%,
+    #d82900 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 14px rgba(255, 230, 120, 1),
+    0 0 30px rgba(255, 110, 0, 0.95),
+    0 0 48px rgba(220, 35, 0, 0.72);
+  animation: fireEmberFly 1350ms ease-out forwards;
+}
+
+@keyframes fireEmberFly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+
+  48% {
+    opacity: 0.95;
+    transform: translate(
+      calc(-50% + var(--ex) * 0.58),
+      calc(-50% + var(--ey) * 0.58)
+    ) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--ex)),
+      calc(-50% + var(--ey))
+    ) scale(0.35);
+  }
+}
+
+/* ================================
+   화염 폭발 전용 이펙트
+   - 큰 중심 폭발
+   - 바깥 화염 고리
+   - 불꽃 파편 확산
+================================ */
+
+.flame-explosion-core {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 88;
+  opacity: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle,
+      rgba(255, 250, 220, 0.98) 0%,
+      rgba(255, 210, 90, 0.92) 16%,
+      rgba(255, 125, 20, 0.88) 38%,
+      rgba(255, 60, 0, 0.55) 60%,
+      rgba(165, 20, 0, 0.16) 78%,
+      transparent 86%);
+  box-shadow:
+    0 0 26px rgba(255, 235, 130, 0.95),
+    0 0 56px rgba(255, 120, 20, 0.92),
+    0 0 110px rgba(220, 35, 0, 0.68);
+  animation: flameExplosionCoreAnim 950ms ease-out forwards;
+}
+
+.flame-explosion-ring {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 87;
+  opacity: 0;
+  border-radius: 50%;
+  border: 12px solid rgba(255, 160, 30, 0.82);
+  box-shadow:
+    0 0 20px rgba(255, 225, 110, 0.88),
+    0 0 46px rgba(255, 90, 0, 0.9),
+    inset 0 0 26px rgba(255, 210, 90, 0.25);
+  animation: flameExplosionRingAnim 980ms ease-out forwards;
+}
+
+.flame-explosion-particle {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 89;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fffbe8 0%,
+    #ffd468 28%,
+    #ff7a12 58%,
+    #db2600 82%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 14px rgba(255, 225, 120, 0.98),
+    0 0 32px rgba(255, 110, 10, 0.96),
+    0 0 54px rgba(220, 30, 0, 0.7);
+  animation: flameExplosionParticleAnim 1200ms ease-out forwards;
+}
+
+@keyframes flameExplosionCoreAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.28);
+    filter: brightness(1);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.12);
+    filter: brightness(1.55);
+  }
+
+  55% {
+    opacity: 0.96;
+    transform: translate(-50%, -50%) scale(0.98);
+    filter: brightness(1.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.38);
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes flameExplosionRingAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.24);
+  }
+
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.42);
+  }
+}
+
+@keyframes flameExplosionParticleAnim {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(calc(var(--scale) * 1.1));
+  }
+
+  48% {
+    opacity: 0.95;
+    transform: translate(
+      calc(-50% + var(--ex) * 0.55),
+      calc(-50% + var(--ey) * 0.55)
+    ) scale(var(--scale));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--ex)),
+      calc(-50% + var(--ey))
+    ) scale(calc(var(--scale) * 0.45));
+  }
+}
+
+/* ================================
+   우측 능력치 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 심볼 + 광원으로 판타지 UI 느낌만 유지
+================================ */
+
+.stat-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  margin-right: 6px;
+  border-radius: 999px;
+  font-family: var(--md-font-main);
+  font-size: 0.82em;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: -0.08em;
+  color: #fff6d2;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.45), transparent 34%),
+    linear-gradient(145deg, rgba(80, 56, 32, 0.92), rgba(30, 22, 18, 0.96));
+  border: 1px solid rgba(255, 214, 130, 0.45);
+  box-shadow:
+    inset 0 0 8px rgba(255, 230, 160, 0.18),
+    0 0 10px rgba(255, 188, 88, 0.18);
+  text-shadow:
+    0 0 8px rgba(255, 220, 130, 0.65),
+    0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+  box-shadow:
+    inset 0 0 8px rgba(235, 205, 145, 0.22),
+    0 0 10px rgba(220, 160, 90, 0.22);
+}
+
+.magic-symbol {
+  color: #ffe7a3;
+  border-color: rgba(255, 211, 112, 0.65);
+  box-shadow:
+    inset 0 0 10px rgba(255, 225, 140, 0.28),
+    0 0 14px rgba(255, 196, 78, 0.35);
+}
+
+.hp-symbol {
+  color: #ffd1c2;
+  border-color: rgba(255, 138, 112, 0.58);
+  box-shadow:
+    inset 0 0 10px rgba(255, 120, 98, 0.22),
+    0 0 13px rgba(255, 90, 70, 0.26);
+}
+
+.courage-symbol {
+  color: #ffc06e;
+  border-color: rgba(255, 152, 66, 0.6);
+  box-shadow:
+    inset 0 0 10px rgba(255, 142, 50, 0.24),
+    0 0 14px rgba(255, 95, 30, 0.28);
+}
+
+.coin-symbol {
+  color: #ffe28a;
+  border-color: rgba(255, 210, 86, 0.7);
+  box-shadow:
+    inset 0 0 10px rgba(255, 226, 120, 0.28),
+    0 0 15px rgba(255, 190, 64, 0.32);
+}
+
+/* ================================
+   우측 상단바 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 기존 배치는 유지
+================================ */
+
+.top-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 999px;
+  font-family: var(--md-font-main);
+  font-size: 0.9em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff6d2;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(86, 60, 34, 0.92), rgba(28, 21, 17, 0.96));
+  border: 1px solid rgba(255, 214, 130, 0.45);
+  box-shadow:
+    inset 0 0 8px rgba(255, 230, 160, 0.16),
+    0 0 10px rgba(255, 190, 88, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 220, 130, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.top-stat-icon.magic-symbol {
+  color: #ffe7a3;
+  border-color: rgba(255, 211, 112, 0.65);
+  box-shadow:
+    inset 0 0 10px rgba(255, 225, 140, 0.28),
+    0 0 14px rgba(255, 196, 78, 0.32);
+}
+
+.top-stat-icon.hp-symbol {
+  color: #ffd1c2;
+  border-color: rgba(255, 138, 112, 0.58);
+  box-shadow:
+    inset 0 0 10px rgba(255, 120, 98, 0.22),
+    0 0 13px rgba(255, 90, 70, 0.24);
+}
+
+.top-stat-icon.courage-symbol {
+  color: #ffc06e;
+  border-color: rgba(255, 152, 66, 0.6);
+  box-shadow:
+    inset 0 0 10px rgba(255, 142, 50, 0.24),
+    0 0 14px rgba(255, 95, 30, 0.26);
+}
+
+.top-stat-icon.coin-symbol {
+  color: #ffe28a;
+  border-color: rgba(255, 210, 86, 0.7);
+  box-shadow:
+    inset 0 0 10px rgba(255, 226, 120, 0.28),
+    0 0 15px rgba(255, 190, 64, 0.3);
+}
+
+/* 알림 / 설정 버튼 안 심볼 */
+.top-ui-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45em;
+  height: 1.45em;
+  font-family: var(--md-font-main);
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #f7ebc6;
+  text-shadow:
+    0 0 10px rgba(255, 220, 130, 0.65),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+.top-ui-symbol.notice-symbol {
+  color: #ffe1a0;
+}
+
+.top-ui-symbol.setting-symbol {
+  color: #eadbb6;
+  font-size: 1.02em;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 배치는 건드리지 않음
+================================ */
+
+.detail-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 999px;
+  font-family: var(--md-font-main);
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff3cf;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(88, 60, 30, 0.94), rgba(24, 18, 15, 0.98));
+  border: 1px solid rgba(255, 213, 126, 0.48);
+  box-shadow:
+    inset 0 0 8px rgba(255, 229, 158, 0.18),
+    0 0 10px rgba(255, 187, 84, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 224, 132, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+/* 아이콘별 색감만 살짝 다르게 */
+.detail-book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+}
+
+.detail-time-symbol {
+  color: #ffd89c;
+  border-color: rgba(255, 186, 104, 0.58);
+  box-shadow:
+    inset 0 0 9px rgba(255, 210, 120, 0.2),
+    0 0 12px rgba(255, 160, 70, 0.2);
+}
+
+.detail-enemy-symbol {
+  color: #ffd5b5;
+  border-color: rgba(255, 150, 110, 0.55);
+  box-shadow:
+    inset 0 0 9px rgba(255, 160, 120, 0.18),
+    0 0 12px rgba(255, 105, 75, 0.2);
+}
+
+.detail-difficulty-symbol {
+  color: #f2e1b8;
+  border-color: rgba(233, 202, 138, 0.56);
+}
+
+.detail-reward-symbol {
+  color: #ffe391;
+  border-color: rgba(255, 215, 98, 0.66);
+  box-shadow:
+    inset 0 0 10px rgba(255, 232, 132, 0.24),
+    0 0 14px rgba(255, 198, 72, 0.28);
+}
+
+.detail-recommend-symbol {
+  color: #ffdca0;
+  border-color: rgba(255, 197, 98, 0.62);
+  box-shadow:
+    inset 0 0 10px rgba(255, 219, 122, 0.22),
+    0 0 14px rgba(255, 178, 68, 0.24);
+}
+
+/* 입장 버튼 안 아이콘은 버튼 톤에 맞게 조금 더 크게 */
+.enter-btn-symbol {
+  width: 1.55em;
+  height: 1.55em;
+  font-size: 0.95em;
+  color: #4d2b00;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.35), transparent 34%),
+    linear-gradient(145deg, rgba(255, 232, 160, 0.96), rgba(224, 171, 63, 0.98));
+  border: 1px solid rgba(145, 92, 20, 0.32);
+  box-shadow:
+    inset 0 0 8px rgba(255, 248, 220, 0.22),
+    0 0 8px rgba(255, 202, 92, 0.15);
+  text-shadow: none;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 정리
+   - 기본 이모지 느낌 제거
+   - 배치는 건드리지 않음
+================================ */
+
+.detail-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 999px;
+  font-family: var(--md-font-main);
+  font-size: 0.92em;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff3cf;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.42), transparent 34%),
+    linear-gradient(145deg, rgba(88, 60, 30, 0.94), rgba(24, 18, 15, 0.98));
+  border: 1px solid rgba(255, 213, 126, 0.48);
+  box-shadow:
+    inset 0 0 8px rgba(255, 229, 158, 0.18),
+    0 0 10px rgba(255, 187, 84, 0.16);
+  text-shadow:
+    0 0 8px rgba(255, 224, 132, 0.62),
+    0 1px 2px rgba(0, 0, 0, 0.72);
+}
+
+/* 아이콘별 색감만 살짝 다르게 */
+.detail-book-symbol {
+  color: #f3ddb0;
+  border-color: rgba(223, 182, 118, 0.55);
+}
+
+.detail-time-symbol {
+  color: #ffd89c;
+  border-color: rgba(255, 186, 104, 0.58);
+  box-shadow:
+    inset 0 0 9px rgba(255, 210, 120, 0.2),
+    0 0 12px rgba(255, 160, 70, 0.2);
+}
+
+.detail-enemy-symbol {
+  color: #ffd5b5;
+  border-color: rgba(255, 150, 110, 0.55);
+  box-shadow:
+    inset 0 0 9px rgba(255, 160, 120, 0.18),
+    0 0 12px rgba(255, 105, 75, 0.2);
+}
+
+.detail-difficulty-symbol {
+  color: #f2e1b8;
+  border-color: rgba(233, 202, 138, 0.56);
+}
+
+.detail-reward-symbol {
+  color: #ffe391;
+  border-color: rgba(255, 215, 98, 0.66);
+  box-shadow:
+    inset 0 0 10px rgba(255, 232, 132, 0.24),
+    0 0 14px rgba(255, 198, 72, 0.28);
+}
+
+.detail-recommend-symbol {
+  color: #ffdca0;
+  border-color: rgba(255, 197, 98, 0.62);
+  box-shadow:
+    inset 0 0 10px rgba(255, 219, 122, 0.22),
+    0 0 14px rgba(255, 178, 68, 0.24);
+}
+
+/* 입장 버튼 안 아이콘은 버튼 톤에 맞게 조금 더 크게 */
+.enter-btn-symbol {
+  width: 1.55em;
+  height: 1.55em;
+  font-size: 0.95em;
+  color: #4d2b00;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,0.35), transparent 34%),
+    linear-gradient(145deg, rgba(255, 232, 160, 0.96), rgba(224, 171, 63, 0.98));
+  border: 1px solid rgba(145, 92, 20, 0.32);
+  box-shadow:
+    inset 0 0 8px rgba(255, 248, 220, 0.22),
+    0 0 8px rgba(255, 202, 92, 0.15);
+  text-shadow: none;
+}
+
+/* ================================
+   던전 입장 화면 아이콘 바깥 네모 테두리 제거
+   - 안쪽 동그란 아이콘(detail-symbol)은 유지
+   - 바깥 네모 박스만 제거
+================================ */
+
+.dungeon-detail .info-card-icon,
+.dungeon-detail .reward-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 버튼 안 아이콘 바깥 박스도 제거 */
+.dungeon-detail .btn-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 동그란 아이콘 자체는 유지 */
+.dungeon-detail .detail-symbol {
+  border-radius: 999px;
+}
+
+/* ================================
+   오른쪽 상단 버튼 팝업
+   - 알림 / 전투 도움말 / 설정
+   - 기존 전투 화면 배치에는 영향 없음
+================================ */
+
+.top-hud-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 72px 18px 0 0;
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.top-hud-popup.visible {
+  display: flex;
+  pointer-events: auto;
+}
+
+.top-hud-popup-card {
+  position: relative;
+  width: 310px;
+  padding: 18px 18px 16px;
+  border: 1px solid rgba(226, 178, 86, 0.62);
+  background:
+    radial-gradient(circle at 25% 0%, rgba(255, 210, 110, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(42, 29, 16, 0.96), rgba(14, 10, 8, 0.98));
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.58),
+    inset 0 0 20px rgba(255, 214, 127, 0.08);
+  color: #f7e6b8;
+  animation: topHudPopupIn 180ms ease-out forwards;
+}
+
+.top-hud-popup-kicker {
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d8a84f;
+  letter-spacing: 0.12em;
+}
+
+.top-hud-popup-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffe4a4;
+}
+
+.top-hud-popup-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 242, 205, 0.86);
+}
+
+.top-hud-popup-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  color: #d9b66b;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.top-hud-popup-close:hover {
+  color: #fff0bd;
+}
+
+@keyframes topHudPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ================================
+   오른쪽 상단 팝업 확장 UI
+   - 알림 스택 / 도움말 / 설정창
+   - 기존 전투 화면 배치는 건드리지 않음
+================================ */
+
+.top-hud-popup-card.notice-mode {
+  width: 360px;
+}
+
+.top-hud-popup-card.guide-mode {
+  width: 360px;
+}
+
+.top-hud-popup-card.setting-mode {
+  width: 620px;
+  min-height: 430px;
+}
+
+.top-hud-popup-body {
+  margin-top: 12px;
+}
+
+/* 알림 스택 */
+.notice-stack-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notice-stack-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(226, 178, 86, 0.28);
+  color: #ffe3a3;
+  font-weight: 900;
+}
+
+.notice-stack-head small {
+  color: rgba(255, 230, 180, 0.58);
+  font-size: 11px;
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.notice-item {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  padding: 11px 11px;
+  border: 1px solid rgba(209, 156, 74, 0.26);
+  background:
+    linear-gradient(180deg, rgba(56, 38, 20, 0.76), rgba(20, 14, 10, 0.82));
+  box-shadow: inset 0 0 12px rgba(255, 210, 120, 0.04);
+}
+
+.notice-item.newest {
+  border-color: rgba(255, 201, 95, 0.56);
+  box-shadow:
+    0 0 16px rgba(255, 174, 54, 0.14),
+    inset 0 0 14px rgba(255, 210, 120, 0.08);
+}
+
+.notice-dot-icon {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: #ffcc66;
+  box-shadow: 0 0 12px rgba(255, 190, 80, 0.92);
+}
+
+.notice-dot-icon.muted {
+  background: #7c6a4b;
+  box-shadow: none;
+}
+
+.notice-content strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #ffe4a7;
+  font-size: 14px;
+}
+
+.notice-content p {
+  margin: 0 0 4px;
+  color: rgba(255, 239, 205, 0.78);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.notice-content small {
+  color: rgba(255, 220, 160, 0.48);
+  font-size: 11px;
+}
+
+/* 도움말 */
+.guide-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guide-row {
+  padding: 12px 12px;
+  border: 1px solid rgba(214, 162, 74, 0.28);
+  background: rgba(20, 14, 10, 0.72);
+}
+
+.guide-row strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffe0a1;
+}
+
+.guide-row p {
+  margin: 0;
+  color: rgba(255, 240, 210, 0.8);
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+/* 설정창 */
+.setting-panel {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 14px;
+  min-height: 330px;
+}
+
+.setting-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 10px;
+  border-right: 1px solid rgba(226, 178, 86, 0.24);
+}
+
+.setting-tab {
+  height: 38px;
+  border: 1px solid rgba(197, 145, 67, 0.28);
+  background: rgba(18, 13, 10, 0.68);
+  color: rgba(255, 232, 190, 0.78);
+  font-weight: 800;
+  text-align: left;
+  padding-left: 12px;
+  cursor: pointer;
+}
+
+.setting-tab.active {
+  color: #1b1107;
+  background: linear-gradient(180deg, #f4c76a, #b87a22);
+  border-color: rgba(255, 224, 135, 0.74);
+  box-shadow: 0 0 14px rgba(255, 190, 80, 0.28);
+}
+
+.setting-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-section-title {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(226, 178, 86, 0.26);
+  color: #ffe4a8;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 12px;
+  border: 1px solid rgba(204, 151, 70, 0.24);
+  background: rgba(18, 12, 8, 0.7);
+}
+
+.setting-row strong {
+  display: block;
+  color: #fce3ad;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.setting-row p {
+  margin: 0;
+  color: rgba(255, 236, 200, 0.58);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.setting-fake-select,
+.setting-toggle {
+  flex: 0 0 auto;
+  min-width: 86px;
+  height: 30px;
+  border: 1px solid rgba(255, 208, 116, 0.48);
+  background: linear-gradient(180deg, rgba(77, 55, 30, 0.92), rgba(29, 21, 15, 0.95));
+  color: #ffe0a1;
+  font-weight: 800;
+}
+
+.setting-toggle.on {
+  color: #1b1107;
+  background: linear-gradient(180deg, #f7d175, #b77a24);
+}
+
+.setting-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.setting-apply-btn,
+.setting-cancel-btn {
+  min-width: 74px;
+  height: 32px;
+  border: 1px solid rgba(255, 214, 128, 0.45);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.setting-apply-btn {
+  color: #1b1107;
+  background: linear-gradient(180deg, #f6cf72, #b77a24);
+}
+
+.setting-cancel-btn {
+  color: #e8d0a0;
+  background: rgba(20, 14, 10, 0.82);
+}
+
+/* ================================
+   우측 상단 기능 버튼 아이콘 정리
+   - hover 라벨 없이 아이콘만 직관적으로 표시
+================================ */
+
+.top-ui-symbol.notice-symbol {
+  font-size: 1.05em;
+  filter: sepia(0.4) saturate(0.85) brightness(0.95);
+  text-shadow:
+    0 0 8px rgba(255, 215, 120, 0.55),
+    0 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+.top-ui-symbol.guide-symbol {
+  font-family: var(--md-font-main);
+  font-size: 1.22em;
+  font-weight: 900;
+  color: #ffe7ad;
+  text-shadow:
+    0 0 10px rgba(255, 220, 130, 0.72),
+    0 1px 2px rgba(0, 0, 0, 0.78);
+}
+
+.top-ui-symbol.setting-symbol {
+  font-size: 1.08em;
+  color: #eadbb6;
+  text-shadow:
+    0 0 9px rgba(255, 220, 140, 0.54),
+    0 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+/* ================================
+   알림 센터 스크롤바 커스텀
+   - 기본 회색 스크롤바를 던전 UI 톤으로 변경
+================================ */
+
+.notice-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(218, 169, 82, 0.82) rgba(24, 16, 10, 0.72);
+}
+
+.notice-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notice-list::-webkit-scrollbar-track {
+  background:
+    linear-gradient(180deg, rgba(28, 19, 11, 0.95), rgba(9, 7, 5, 0.95));
+  border-left: 1px solid rgba(214, 162, 74, 0.22);
+}
+
+.notice-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, #f2c56a, #a86c22);
+  border: 1px solid rgba(255, 228, 150, 0.42);
+  box-shadow:
+    0 0 8px rgba(255, 190, 80, 0.35),
+    inset 0 0 6px rgba(255, 240, 180, 0.2);
+}
+
+.notice-list::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, #ffe08a, #c4872f);
+}
+
+/* ================================
+   전투 종료 화면 개선
+   - 패배/시간초과 결과 화면을 고급 카드형 UI로 정리
+================================ */
+
+/* 결과 화면 전체 배경 */
+#s-result {
+  background:
+    radial-gradient(circle at center, rgba(104, 67, 25, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(8, 5, 3, 0.96), rgba(0, 0, 0, 0.98));
+}
+
+/* 결과 카드 */
+#s-result .result-card {
+  position: relative;
+  width: 520px;
+  min-height: 420px;
+  padding: 58px 54px 46px;
+  border: 1px solid rgba(215, 158, 62, 0.82);
+  background:
+    radial-gradient(circle at center 12%, rgba(255, 202, 99, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(28, 22, 15, 0.96), rgba(9, 7, 5, 0.98));
+  box-shadow:
+    0 0 46px rgba(207, 137, 40, 0.16),
+    0 22px 60px rgba(0, 0, 0, 0.62),
+    inset 0 0 28px rgba(255, 211, 128, 0.045);
+  color: #f5dfaa;
+  text-align: center;
+}
+
+/* 카드 모서리 장식 */
+#s-result .result-card::before,
+#s-result .result-card::after {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-color: rgba(238, 181, 76, 0.88);
+  pointer-events: none;
+}
+
+#s-result .result-card::before {
+  left: -1px;
+  top: -1px;
+  border-left: 2px solid;
+  border-top: 2px solid;
+}
+
+#s-result .result-card::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+}
+
+/* 결과 아이콘 */
+#r-emoji {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(213, 160, 78, 0.62);
+  background:
+    radial-gradient(circle at center, rgba(255, 215, 128, 0.12), rgba(31, 23, 14, 0.92));
+  box-shadow:
+    0 0 22px rgba(255, 180, 70, 0.16),
+    inset 0 0 18px rgba(255, 225, 160, 0.06);
+  color: #d7c09a;
+  font-size: 0;
+}
+
+#r-emoji::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(202, 145, 61, 0.25);
+}
+
+/* 제목 */
+#r-title {
+  margin: 0 0 18px;
+  font-family: var(--md-font-main);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: #f3cd76;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.78),
+    0 0 18px rgba(255, 196, 92, 0.16);
+}
+
+/* 설명 */
+#r-sub {
+  margin: 0 auto;
+  max-width: 390px;
+  color: rgba(255, 238, 205, 0.78);
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 700;
+}
+
+/* 보상/힌트 영역 */
+#r-rewards {
+  position: relative;
+  margin: 28px auto 30px;
+  padding-top: 24px;
+  max-width: 390px;
+}
+
+#r-rewards::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 280px;
+  height: 1px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(90deg, transparent, rgba(219, 166, 73, 0.72), transparent);
+}
+
+#r-rewards::after {
+  content: "◆";
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  transform: translateX(-50%);
+  color: #d7a54c;
+  font-size: 12px;
+}
+
+.result-tip-line {
+  color: rgba(238, 196, 119, 0.72);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+/* 기존 결과 버튼 영역 */
+#s-result .result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 기존 버튼 공통 덮어쓰기 */
+#s-result .result-actions button,
+#s-result .result-card button {
+  width: 330px;
+  height: 48px;
+  border-radius: 0;
+  font-family: var(--md-font-main);
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* 첫 번째 버튼: 주 버튼 */
+#s-result .result-actions button:first-child,
+#s-result .result-card button:first-of-type {
+  border: 1px solid rgba(255, 220, 132, 0.82);
+  background:
+    linear-gradient(180deg, #f2c96f 0%, #b57a24 100%);
+  color: #1a0f05;
+  box-shadow:
+    0 0 20px rgba(255, 183, 64, 0.16),
+    inset 0 1px 0 rgba(255, 245, 190, 0.48);
+}
+
+/* 두 번째 버튼: 보조 버튼 */
+#s-result .result-actions button:nth-child(2),
+#s-result .result-card button:nth-of-type(2) {
+  border: 1px solid rgba(216, 161, 72, 0.48);
+  background:
+    linear-gradient(180deg, rgba(39, 29, 18, 0.96), rgba(15, 11, 8, 0.98));
+  color: #ead09b;
+  box-shadow: inset 0 0 14px rgba(255, 207, 120, 0.04);
+}
+
+/* 버튼 hover */
+#s-result .result-actions button:hover,
+#s-result .result-card button:hover {
+  filter: brightness(1.08);
+}
+
+/* ================================
+   전투 종료 화면 최종 정리
+   - result-wrap 구조 기준
+================================ */
+
+#s-result {
+  background:
+    radial-gradient(circle at center, rgba(110, 72, 28, 0.2), transparent 38%),
+    linear-gradient(180deg, rgba(8, 5, 3, 0.96), rgba(0, 0, 0, 0.98));
+}
+
+#s-result .result-wrap {
+  position: relative;
+  width: 500px;
+  min-height: 430px;
+  padding: 44px 50px 38px;
+  border: 1px solid rgba(215, 158, 62, 0.82);
+  background:
+    radial-gradient(circle at center 12%, rgba(255, 202, 99, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(28, 22, 15, 0.96), rgba(9, 7, 5, 0.98));
+  box-shadow:
+    0 0 46px rgba(207, 137, 40, 0.16),
+    0 22px 60px rgba(0, 0, 0, 0.62),
+    inset 0 0 28px rgba(255, 211, 128, 0.045);
+  color: #f5dfaa;
+  text-align: center;
+}
+
+/* 결과 아이콘 */
+#s-result .result-emoji {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 82px;
+  height: 82px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(213, 160, 78, 0.62);
+  background:
+    radial-gradient(circle at center, rgba(255, 215, 128, 0.12), rgba(31, 23, 14, 0.92));
+  box-shadow:
+    0 0 22px rgba(255, 180, 70, 0.16),
+    inset 0 0 18px rgba(255, 225, 160, 0.06);
+  color: #d9c7a5;
+  font-size: 38px;
+  line-height: 1;
+  filter: grayscale(1) sepia(0.22) brightness(0.94);
+}
+
+#s-result .result-emoji::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(202, 145, 61, 0.25);
+}
+
+/* 제목 */
+#s-result .result-title {
+  margin: 0 0 16px;
+  font-family: var(--md-font-main);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: #f3cd76;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.78),
+    0 0 18px rgba(255, 196, 92, 0.16);
+}
+
+/* 설명 */
+#s-result .result-sub {
+  margin: 0 auto;
+  max-width: 390px;
+  color: rgba(255, 238, 205, 0.82);
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 700;
+}
+
+/* 힌트/보상 영역 */
+#s-result .reward-row {
+  position: relative;
+  margin: 24px auto 26px;
+  padding-top: 24px;
+  max-width: 390px;
+}
+
+#s-result .reward-row::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 280px;
+  height: 1px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(90deg, transparent, rgba(219, 166, 73, 0.72), transparent);
+}
+
+#s-result .reward-row::after {
+  content: "◆";
+  position: absolute;
+  left: 50%;
+  top: -9px;
+  transform: translateX(-50%);
+  color: #d7a54c;
+  font-size: 12px;
+}
+
+#s-result .result-tip-line {
+  color: rgba(238, 196, 119, 0.78);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+/* 버튼 영역 */
+#s-result .result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+}
+
+/* 버튼 공통 */
+#s-result .result-primary-btn,
+#s-result .result-secondary-btn {
+  width: 320px;
+  height: 46px;
+  border-radius: 0;
+  font-family: var(--md-font-main);
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* 다시 도전하기 */
+#s-result .result-primary-btn {
+  border: 1px solid rgba(255, 220, 132, 0.82);
+  background:
+    linear-gradient(180deg, #f2c96f 0%, #b57a24 100%);
+  color: #1a0f05;
+  box-shadow:
+    0 0 20px rgba(255, 183, 64, 0.16),
+    inset 0 1px 0 rgba(255, 245, 190, 0.48);
+}
+
+/* 던전 선택으로 돌아가기 */
+#s-result .result-secondary-btn {
+  border: 1px solid rgba(216, 161, 72, 0.48);
+  background:
+    linear-gradient(180deg, rgba(39, 29, 18, 0.96), rgba(15, 11, 8, 0.98));
+  color: #ead09b;
+  box-shadow: inset 0 0 14px rgba(255, 207, 120, 0.04);
+}
+
+#s-result .result-primary-btn:hover,
+#s-result .result-secondary-btn:hover {
+  filter: brightness(1.08);
 }
