@@ -27,12 +27,13 @@
     courage: "용기"
   };
 
-  // 능력치 설명 표시용
+    // 능력치 설명 표시용입니다.
+  // ability-intro.html의 능력치 안내 문구와 의미가 맞도록 정리합니다.
   const POWER_DESCRIPTIONS = {
     magic: "좋은 질문을 만들고 떠올리는 힘이에요.",
-    stamina: "끝까지 읽고 활동을 마무리하는 힘이에요.",
+    stamina: "책을 끝까지 읽고, 내용을 간추리며 쌓는 힘이에요.",
     wisdom: "질문을 더 깊고 정확하게 다듬는 힘이에요.",
-    courage: "내 생각을 남기고 친구와 나누는 힘이에요."
+    courage: "내 질문과 생각을 친구들과 나누며 쌓는 힘이에요."
   };
 
   // 보상 모달에 표시할 아이콘 경로입니다.
@@ -57,9 +58,11 @@
   // 2. 임시 보상 규칙
   // ==============================
   // rewardId로 언제든 호출할 수 있게 미리 정리합니다.
-  // ※ 전부 임시 세팅값입니다. 나중에 변경 가능하게 구성해 둡니다.
+  // ※ 전부 임시 세팅값입니다. 나중에 게임 능력치와 맞춰 변경할 수 있습니다.
   const REWARD_PRESETS = {
-    // 연습읽기 최종 완료 보상
+    // 연습읽기 최종 완료 보상입니다.
+    // 연습읽기에서는 능력치를 본격적으로 쌓기보다,
+    // 읽기 후 간추리기 공유까지 끝냈을 때 개별읽기 시작 보상으로 지급합니다.
     practice_all_complete: {
       title: "연습읽기 완료 보상",
       subtitle: "수고했어! 이제 개별읽기 모험을 시작할 준비가 되었어.",
@@ -69,16 +72,6 @@
         stamina: BASE_START_POWER,
         wisdom: BASE_START_POWER,
         courage: BASE_START_POWER
-      }
-    },
-
-    // 개별읽기 - 읽기 전 활동 완료
-    individual_before_complete: {
-      title: "읽기 전 활동 완료 보상",
-      subtitle: "책을 읽기 전에 궁금한 점을 잘 준비했어.",
-      conditionText: "개별읽기 읽기 전 활동을 완료했어요.",
-      rewards: {
-        stamina: 2
       }
     },
 
@@ -102,34 +95,66 @@
       }
     },
 
-    // 개별읽기 - 질문 나누기/댓글/공유
-    individual_share_success: {
-      title: "생각 나누기 보상",
-      subtitle: "친구와 생각을 나누는 용기를 보여줬어요.",
-      conditionText: "질문 나누기 또는 댓글 남기기 활동을 완료했어요.",
+    // 개별읽기 - 책수다방 글쓰기
+    individual_book_chat_post: {
+      title: "책수다방 보상",
+      subtitle: "책을 읽고 떠오른 생각을 친구들과 나누었어요.",
+      conditionText: "책수다방에 글을 썼어요.",
       rewards: {
         courage: 1
       }
     },
 
-    // 개별읽기 - 읽기 후 완료
-    individual_after_complete: {
-      title: "읽기 후 활동 완료 보상",
-      subtitle: "질문과 간추리기로 책 내용을 잘 정리했어요.",
-      conditionText: "개별읽기 읽기 후 활동을 완료했어요.",
+    // 개별읽기 - 질문 공유
+    individual_question_shared: {
+      title: "질문 나누기 보상",
+      subtitle: "내가 만든 질문을 친구들과 나누었어요.",
+      conditionText: "내 질문을 친구들에게 나누었어요.",
       rewards: {
-        stamina: 2,
-        wisdom: 1
+        courage: 1
       }
     },
 
-    // 개별읽기 - 책 다 읽음
-    individual_book_finished: {
-      title: "완독 보상",
-      subtitle: "한 권의 책을 끝까지 읽어 냈어요.",
-      conditionText: "읽기 중 화면에서 ‘책 다 읽었어요’ 조건을 충족했어요.",
+    // 개별읽기 - 간추리기 공유
+    individual_summary_shared: {
+      title: "간추리기 나누기 보상",
+      subtitle: "내가 정리한 책 내용을 친구들과 나누었어요.",
+      conditionText: "내 간추리기를 친구들에게 나누었어요.",
       rewards: {
-        stamina: 3
+        courage: 1
+      }
+    },
+
+    // 개별읽기 - 친구 글에 생각 남기기
+    individual_thought_comment: {
+      title: "생각 나누기 보상",
+      subtitle: "친구의 글을 읽고 내 생각을 남겼어요.",
+      conditionText: "친구의 질문이나 글에 내 생각을 남겼어요.",
+      rewards: {
+        courage: 1
+      }
+    },
+
+    // 기존 코드와 연결되어 있을 수 있어서 남겨두는 통합 용기 보상입니다.
+    // 나중에 실제 기능별로 위의 보상 preset을 각각 연결하면 됩니다.
+    individual_share_success: {
+      title: "생각 나누기 보상",
+      subtitle: "친구와 생각을 나누는 용기를 보여줬어요.",
+      conditionText: "책수다방에 글을 쓰거나, 내 질문과 생각을 친구들에게 나누었어요.",
+      rewards: {
+        courage: 1
+      }
+    },
+
+    // 개별읽기 - 읽기 후 간추리기 완료
+    // 체력은 책을 끝까지 읽고 간추리기 활동까지 마쳤을 때 올라가도록 정리합니다.
+    individual_after_complete: {
+      title: "읽기 후 간추리기 보상",
+      subtitle: "책을 끝까지 읽고 내용을 잘 간추렸어요.",
+      conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
+      rewards: {
+        stamina: 5,
+        wisdom: 1
       }
     }
   };
@@ -360,15 +385,31 @@
   // ==============================
   // 8. 공통 보상 지급 함수
   // ==============================
-  /*
+    /*
     사용 예시:
     givePowerRewardOnce("practice_all_complete");
-    givePowerRewardOnce("individual_before_complete");
     givePowerRewardOnce("individual_after_complete");
 
-    날짜별/질문별로 다르게 줄 때:
+    질문을 만들 때처럼 날짜별/질문별로 다르게 줄 때:
     givePowerRewardOnce("individual_question_created_20260619_q1", {
       presetKey: "individual_question_created"
+    });
+
+    용기 보상을 기능별로 줄 때:
+    givePowerRewardOnce("book_chat_post_20260619_1", {
+      presetKey: "individual_book_chat_post"
+    });
+
+    givePowerRewardOnce("question_shared_20260619_q1", {
+      presetKey: "individual_question_shared"
+    });
+
+    givePowerRewardOnce("summary_shared_20260619_1", {
+      presetKey: "individual_summary_shared"
+    });
+
+    givePowerRewardOnce("thought_comment_20260619_1", {
+      presetKey: "individual_thought_comment"
     });
   */
   function givePowerRewardOnce(rewardKey, options = {}) {
