@@ -681,10 +681,10 @@
         </div>
 
         <div class="bs-top-actions">
-          <button class="bs-pill" type="button">교사 송은정</button>
-          <button class="bs-pill" type="button">4학년 1반</button>
-          <button class="bs-home-btn" type="button" onclick="goWholeReading()">온책읽기</button>
-        </div>
+  <button class="bs-pill" type="button">교사 송은정</button>
+  <button class="bs-pill" type="button">4학년 1반</button>
+  <button class="bs-home-btn" type="button" onclick="goTeacherPractice()">← 수업차례로</button>
+</div>
       </header>
 
       <section class="bs-header">
@@ -1244,9 +1244,9 @@
         : '<span class="student-chip done">모두 완료</span>';
     }
 
-    function goWholeReading() {
-      location.href = "whole-reading.html";
-    }
+    function goTeacherPractice() {
+  location.href = "practice-teacher.html";
+}
 
     function escapeHtml(text) {
       return String(text || "")

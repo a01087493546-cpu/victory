@@ -6,6 +6,26 @@
   <title>문답책 - 읽기 후</title>
 
   <style>
+    .teacher-return-button {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  border: 1px solid rgba(255, 215, 132, 0.72);
+  border-radius: 999px;
+  padding: 13px 20px;
+  background: linear-gradient(180deg, #965d25, #562b0c);
+  color: #fff5df;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow:
+    0 7px 0 rgba(45, 22, 7, 0.78),
+    0 12px 22px rgba(0, 0, 0, 0.28);
+}
+
+.teacher-return-button:hover {
+  transform: translateY(-2px);
+}
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700;900&display=swap");
 
@@ -1229,6 +1249,9 @@
 </head>
 
 <body>
+  <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
+  ← 교사용 수업차례로
+</button>
   <div class="ar-page">
     <div class="ar-shell">
       <header class="ar-topbar">
@@ -2490,6 +2513,38 @@
     }
 
     renderShareList();
+openAfterReadTargetFromUrl();
+
+function openAfterReadTargetFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const target = params.get("open");
+
+  if (target !== "share") {
+    return;
+  }
+
+  document.getElementById("menuScreen").classList.remove("is-active");
+  document.getElementById("studyScreen").classList.add("is-active");
+
+  showStudyPanel("share");
+  renderShareList();
+}
+function isTeacherMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("mode") === "teacher";
+}
+
+function goTeacherPractice() {
+  location.href = "../teacher/practice-teacher.html";
+}
+
+if (isTeacherMode()) {
+  const teacherReturnButton = document.getElementById("teacherReturnButton");
+
+  if (teacherReturnButton) {
+    teacherReturnButton.style.display = "block";
+  }
+}
   </script>
 </body>
 </html>

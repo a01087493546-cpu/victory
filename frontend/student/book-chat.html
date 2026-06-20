@@ -909,10 +909,33 @@
         grid-template-columns: 1fr;
       }
     }
+    .teacher-return-button {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  border: 1px solid rgba(255, 215, 132, 0.72);
+  border-radius: 999px;
+  padding: 13px 20px;
+  background: linear-gradient(180deg, #965d25, #562b0c);
+  color: #fff5df;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow:
+    0 7px 0 rgba(45, 22, 7, 0.78),
+    0 12px 22px rgba(0, 0, 0, 0.28);
+}
+
+.teacher-return-button:hover {
+  transform: translateY(-2px);
+}
   </style>
 </head>
 
 <body>
+  <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
+  ← 교사용 수업차례로
+</button>
   <main class="page">
     <div class="shell">
       <header class="top">
@@ -2050,6 +2073,22 @@
     function escapeAttribute(text) {
       return escapeHtml(text).replaceAll("`", "&#096;");
     }
-  </script>
+    function isTeacherMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("mode") === "teacher";
+}
+
+function goTeacherPractice() {
+  location.href = "../teacher/practice-teacher.html";
+}
+
+if (isTeacherMode()) {
+  const teacherReturnButton = document.getElementById("teacherReturnButton");
+
+  if (teacherReturnButton) {
+    teacherReturnButton.style.display = "block";
+  }
+}
+</script>
 </body>
 </html>
