@@ -26,7 +26,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=book-recommend-fixed-1">
-
+<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
   <style>
     html,
     body {
@@ -706,6 +707,8 @@
         </div>
 
         <div class="br-top-actions">
+          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="br-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="br-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
           <button type="button" class="br-top-button" onclick="goIndividualReading()">🏠</button>
         </div>
@@ -1030,5 +1033,7 @@ optionList.classList.toggle("six-options", question.options.length === 6);
     }
 
   </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
 </body>
 </html>

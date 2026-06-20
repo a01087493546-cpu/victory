@@ -1,0 +1,892 @@
+<!--
+  파일명: individual-reading-archive.html
+  역할: 문답책 개별읽기 - 나의 독서 보관함 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 읽은 책을 책 단위로 보여줍니다.
+  2. 책을 누르면 읽기 전 / 읽는 중 / 읽은 후 / 간추린 내용 기록을 나누어 확인합니다.
+  3. 현재는 sessionStorage에 저장된 데이터를 불러옵니다.
+  4. 저장된 데이터가 없을 때는 화면 확인용 예시 데이터를 보여줍니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나의 독서 보관함 - 문답책</title>
+
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .ira-page,
+    .ira-page * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    }
+
+    .ira-page {
+      position: relative;
+      min-height: 100vh;
+      padding: 14px 28px 28px;
+      color: #4a2a10;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 246, 222, 0.80) 0%,
+          rgba(255, 238, 205, 0.72) 48%,
+          rgba(255, 226, 181, 0.80) 100%
+        ),
+        url("../assets/images/individual-reading/individual-during-home-bg.png") center / cover fixed no-repeat;
+    }
+
+    .ira-page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 232, 165, 0.38), transparent 30%),
+        radial-gradient(circle at 82% 40%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(90deg, rgba(255, 246, 224, 0.42), rgba(255,255,255,0.10), rgba(255, 246, 224, 0.42));
+      z-index: 0;
+    }
+
+    .ira-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1280px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .ira-top-bar {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 22px;
+      border: 1px solid rgba(182, 119, 38, 0.28);
+      border-radius: 24px;
+      background: rgba(255, 250, 236, 0.94);
+      box-shadow: 0 12px 24px rgba(92, 58, 18, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .ira-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ira-logo img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .ira-logo span {
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      color: #5a3415;
+    }
+
+    .ira-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ira-top-button,
+    .ira-main-button,
+    .ira-small-button {
+      height: 42px;
+      padding: 0 18px;
+      border: 1px solid rgba(168, 106, 31, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.94);
+      color: #633915;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(98, 59, 15, 0.10);
+    }
+
+    .ira-top-button.primary,
+    .ira-main-button.primary,
+    .ira-small-button.primary {
+      border: none;
+      background: linear-gradient(180deg, #e6b656, #a8641e);
+      color: #fff9e8;
+    }
+
+    .ira-main-button {
+      min-width: 148px;
+      height: 50px;
+      padding: 0 22px;
+      font-size: 15px;
+      font-weight: 950;
+    }
+
+    /* 상단 소개 영역을 작고 효율적으로 정리합니다. */
+    .ira-hero-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 30px;
+      border: 1px solid rgba(180, 116, 34, 0.20);
+      border-radius: 30px;
+      background: rgba(255, 251, 242, 0.86);
+      box-shadow: 0 14px 26px rgba(92, 58, 18, 0.10);
+      backdrop-filter: blur(8px);
+    }
+
+    .ira-kicker {
+      margin: 0 0 6px;
+      color: #b5761f;
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .ira-hero-card h1 {
+      margin: 0;
+      color: #4d2b10;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 36px;
+      font-weight: 950;
+      line-height: 1.13;
+      letter-spacing: -0.055em;
+      word-break: keep-all;
+    }
+
+    .ira-hero-card p {
+      margin: 10px 0 0;
+      color: #6f4720;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .ira-hero-summary {
+      min-width: 172px;
+      display: grid;
+      gap: 6px;
+      padding: 15px 18px;
+      border-radius: 22px;
+      background: rgba(255, 246, 220, 0.82);
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      text-align: center;
+    }
+
+    .ira-hero-summary strong {
+      display: block;
+      color: #4e2d10;
+      font-size: 26px;
+      font-weight: 950;
+      line-height: 1.05;
+    }
+
+    .ira-hero-summary span {
+      color: #8a5a22;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .ira-view {
+      display: none;
+    }
+
+    .ira-view.active {
+      display: block;
+    }
+
+    /* 책 목록 영역 비중을 키우기 위해 패널 높이와 여백을 다시 잡습니다. */
+    .ira-panel {
+      min-height: 560px;
+      padding: 30px 32px;
+      border: 1px solid rgba(180, 116, 34, 0.22);
+      border-radius: 32px;
+      background: rgba(255, 251, 242, 0.88);
+      box-shadow:
+        0 18px 34px rgba(92, 58, 18, 0.13),
+        inset 0 0 0 1px rgba(255,255,255,0.58);
+      backdrop-filter: blur(8px);
+    }
+
+    .ira-section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .ira-section-head h2 {
+      margin: 0;
+      color: #4d2b10;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 32px;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .ira-section-head p {
+      margin: 6px 0 0;
+      color: #795024;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .ira-book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .ira-book-card {
+      min-height: 250px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 14px;
+      padding: 24px;
+      border: 1px solid rgba(181, 117, 37, 0.20);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255, 226, 145, 0.20), transparent 42%),
+        rgba(255, 252, 244, 0.90);
+      box-shadow: 0 12px 22px rgba(101, 63, 18, 0.08);
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .ira-book-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(187, 113, 26, 0.42);
+      box-shadow: 0 18px 30px rgba(101, 63, 18, 0.13);
+    }
+
+    .ira-book-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .ira-book-title {
+      margin: 0;
+      color: #4d2b10;
+      font-size: 32px;
+      font-weight: 950;
+      letter-spacing: -0.045em;
+      word-break: keep-all;
+    }
+
+    .ira-book-date {
+      flex: 0 0 auto;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(181, 117, 37, 0.16);
+      background: rgba(255, 246, 220, 0.92);
+      color: #9a631e;
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .ira-book-status-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ira-stage-chip {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 250, 237, 0.92);
+      border: 1px solid rgba(181, 117, 37, 0.14);
+      color: #6a451c;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .ira-stage-chip.done {
+      background: #e9f5de;
+      color: #356221;
+      border-color: rgba(101, 145, 66, 0.20);
+    }
+
+    .ira-book-help {
+      margin: 0;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 250, 237, 0.76);
+      border: 1px solid rgba(181, 117, 37, 0.12);
+      color: #6f4720;
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .ira-book-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .ira-detail-header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .ira-back-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ira-detail-title {
+      margin: 0;
+      color: #4d2b10;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 38px;
+      font-weight: 950;
+      letter-spacing: -0.055em;
+    }
+
+    .ira-detail-desc {
+      margin: 0;
+      color: #6f4720;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .ira-tab-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 18px 0;
+      padding: 10px;
+      border-radius: 22px;
+      background: rgba(255, 250, 237, 0.72);
+      border: 1px solid rgba(181, 117, 37, 0.14);
+    }
+
+    .ira-tab-button {
+      height: 42px;
+      border: 1px solid rgba(174, 109, 27, 0.20);
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.92);
+      color: #654018;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .ira-tab-button.active {
+      border: none;
+      background: linear-gradient(180deg, #e6b656, #a8641e);
+      color: #fff9e8;
+      box-shadow: 0 9px 16px rgba(128, 76, 18, 0.14);
+    }
+
+    .ira-record-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ira-record-card {
+      padding: 18px 20px;
+      border-radius: 22px;
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      background: rgba(255, 252, 244, 0.90);
+      box-shadow: 0 10px 18px rgba(101, 63, 18, 0.06);
+    }
+
+    .ira-record-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ira-badge {
+      width: fit-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e9f5de;
+      color: #356221;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .ira-badge.brown {
+      background: rgba(255, 238, 198, 0.9);
+      color: #8a561b;
+    }
+
+    .ira-badge.gray {
+      background: rgba(245, 238, 223, 0.92);
+      color: #7a6a58;
+    }
+
+    .ira-record-card h3 {
+      margin: 0 0 8px;
+      color: #4d2b10;
+      font-size: 20px;
+      font-weight: 950;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .ira-record-card p {
+      margin: 0;
+      color: #416928;
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.55;
+      word-break: keep-all;
+      white-space: pre-wrap;
+    }
+
+    .ira-summary-card {
+      padding: 24px;
+      border-radius: 26px;
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 226, 145, 0.22), transparent 42%),
+        rgba(255, 252, 244, 0.92);
+      box-shadow: 0 12px 22px rgba(101, 63, 18, 0.08);
+    }
+
+    .ira-summary-card h3 {
+      margin: 0 0 14px;
+      color: #4d2b10;
+      font-size: 25px;
+      font-weight: 950;
+    }
+
+    .ira-summary-card p {
+      margin: 0;
+      color: #4d2b10;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.75;
+      word-break: keep-all;
+      white-space: pre-wrap;
+    }
+
+    .ira-empty {
+      min-height: 180px;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      border: 2px dashed rgba(181, 117, 37, 0.20);
+      border-radius: 24px;
+      background: rgba(255, 250, 237, 0.56);
+      color: #7a5123;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      .ira-book-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      .ira-hero-card,
+      .ira-book-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ira-tab-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="ira-page">
+    <div class="ira-shell">
+      <header class="ira-top-bar">
+        <div class="ira-logo">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+
+        <div class="ira-top-actions">
+            <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="ira-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="ira-top-button" onclick="goAdventure()">오늘의 독서 모험</button>
+          <button type="button" class="ira-top-button primary" onclick="goIndividualHome()">개별읽기 홈</button>
+        </div>
+      </header>
+
+      <section class="ira-hero-card">
+        <div>
+          <p class="ira-kicker">나의 독서 보관함</p>
+          <h1>내가 읽은 책을 모아 봐요</h1>
+          <p>책을 누르면 읽기 전, 읽는 중, 읽은 후 기록과 간추린 내용을 확인할 수 있어요.</p>
+        </div>
+
+        <div class="ira-hero-summary">
+          <span>보관된 책</span>
+          <strong id="archiveBookCount">0권</strong>
+        </div>
+      </section>
+
+      <section class="ira-view active" id="bookListView">
+        <article class="ira-panel">
+          <div class="ira-section-head">
+            <div>
+              <h2>읽은 책 목록</h2>
+              <p>책 카드를 누르면 그 책에서 만든 질문과 간추리기를 볼 수 있어요.</p>
+            </div>
+          </div>
+
+          <div class="ira-book-grid" id="bookGrid"></div>
+        </article>
+      </section>
+
+      <section class="ira-view" id="bookDetailView">
+        <article class="ira-panel">
+          <div class="ira-detail-header">
+            <div class="ira-back-line">
+              <button type="button" class="ira-main-button" onclick="showBookList()">← 책 목록으로</button>
+              <span class="ira-book-date" id="detailCompletedAt">완료일 없음</span>
+            </div>
+
+            <div>
+              <h2 class="ira-detail-title" id="detailBookTitle">책 제목</h2>
+              <p class="ira-detail-desc" id="detailBookDescription">읽기 기록을 단계별로 확인해 봐요.</p>
+            </div>
+          </div>
+
+          <div class="ira-tab-row">
+            <button type="button" class="ira-tab-button active" data-tab="all" onclick="changeArchiveTab('all')">전체 보기</button>
+            <button type="button" class="ira-tab-button" data-tab="before" onclick="changeArchiveTab('before')">읽기 전</button>
+            <button type="button" class="ira-tab-button" data-tab="during" onclick="changeArchiveTab('during')">읽는 중</button>
+            <button type="button" class="ira-tab-button" data-tab="after" onclick="changeArchiveTab('after')">읽은 후</button>
+            <button type="button" class="ira-tab-button" data-tab="summary" onclick="changeArchiveTab('summary')">간추린 내용</button>
+          </div>
+
+          <div class="ira-record-list" id="recordList"></div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // 개발 중 화면 확인을 위해 로그인 정보가 없으면 임시 학생 아이디를 사용합니다.
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+    // 나의 독서 보관함에서 사용하는 저장 키입니다.
+    const ARCHIVE_KEY = "individualReadingArchive_" + studentId;
+
+    let archiveBooks = [];
+    let selectedBook = null;
+    let currentTab = "all";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      archiveBooks = getArchiveBooks();
+      renderArchiveSummary();
+      renderBookList();
+    });
+
+    // sessionStorage에 저장된 책 단위 보관함을 불러옵니다.
+    // 아직 자동 저장 데이터가 없으면 화면 확인용 예시 데이터를 보여줍니다.
+    function getArchiveBooks() {
+      const stored = safeJsonParse(sessionStorage.getItem(ARCHIVE_KEY), []);
+
+      if (stored.length > 0) {
+        return stored;
+      }
+
+      return getExampleArchiveBooks();
+    }
+
+    // 화면 확인용 예시 데이터입니다.
+    // 학생이 직접 입력하기 어려운 책 설명은 카드에서 보여주지 않습니다.
+    function getExampleArchiveBooks() {
+      return [
+        {
+          id: "book-20260617-001",
+          title: "아몬드",
+          completedAt: "2026.06.17",
+          beforeQuestions: [
+            {
+              source: "제목을 보고 질문 만들기",
+              question: "주인공은 왜 감정을 느끼지 못할까?"
+            },
+            {
+              source: "차례를 보고 질문 만들기",
+              question: "주인공은 어떤 일을 겪으며 달라질까?"
+            }
+          ],
+          duringQuestions: [
+            {
+              date: "2026.06.16",
+              type: "생각·느낌",
+              question: "주인공이 외로웠던 순간은 언제였을까?",
+              answer: "친구들과 마음을 나누지 못했을 때 외로웠을 것 같습니다."
+            },
+            {
+              date: "2026.06.16",
+              type: "삶과 연결",
+              question: "내가 주인공이라면 어떤 말을 듣고 싶었을까?",
+              answer: "괜찮다고 말해 주는 친구의 말을 듣고 싶었을 것 같습니다."
+            }
+          ],
+          afterQuestions: [
+            {
+              question: "처음에는 어떤 일이 있었나요?",
+              answer: "처음에는 주인공이 다른 사람의 감정을 잘 이해하지 못했습니다."
+            },
+            {
+              question: "가운데에는 어떤 문제가 생겼나요?",
+              answer: "주인공이 친구와 갈등을 겪으며 마음을 이해하는 일이 어려웠습니다."
+            },
+            {
+              question: "마지막에는 어떻게 되었나요?",
+              answer: "주인공은 조금씩 다른 사람을 이해하게 되었습니다."
+            }
+          ],
+          summary: "이 책은 감정을 느끼지 못하는 소년이 여러 사람을 만나면서 조금씩 마음을 이해하게 되는 이야기입니다. 처음에는 주인공이 다른 사람의 감정을 잘 알지 못했지만, 가운데에는 친구와 여러 사건을 겪으며 변화합니다. 마지막에는 다른 사람의 마음을 조금씩 받아들이게 됩니다."
+        }
+      ];
+    }
+
+    function renderArchiveSummary() {
+      const bookCount = archiveBooks.length;
+      document.getElementById("archiveBookCount").textContent = bookCount + "권";
+    }
+
+    function renderBookList() {
+      const bookGrid = document.getElementById("bookGrid");
+
+      if (archiveBooks.length === 0) {
+        bookGrid.innerHTML = `
+          <div class="ira-empty" style="grid-column: 1 / -1;">
+            아직 보관된 책이 없어요.<br>
+            오늘의 독서 모험에서 읽기 후 활동을 완료하면 이곳에 자동으로 저장돼요.
+          </div>
+        `;
+        return;
+      }
+
+      bookGrid.innerHTML = archiveBooks.map(function (book) {
+        const hasBefore = (book.beforeQuestions || []).length > 0;
+        const hasDuring = (book.duringQuestions || []).length > 0;
+        const hasAfter = (book.afterQuestions || []).length > 0;
+        const hasSummary = Boolean(book.summary);
+
+        return `
+          <article class="ira-book-card" onclick="showBookDetail('${escapeHtml(book.id)}')">
+            <div class="ira-book-card-head">
+              <h3 class="ira-book-title">${escapeHtml(book.title || "제목 없는 책")}</h3>
+              <span class="ira-book-date">${escapeHtml(book.completedAt || "완료일 없음")}</span>
+            </div>
+
+            <div class="ira-book-status-line">
+              <span class="ira-stage-chip ${hasBefore ? "done" : ""}">읽기 전</span>
+              <span class="ira-stage-chip ${hasDuring ? "done" : ""}">읽는 중</span>
+              <span class="ira-stage-chip ${hasAfter ? "done" : ""}">읽은 후</span>
+              <span class="ira-stage-chip ${hasSummary ? "done" : ""}">간추리기</span>
+            </div>
+
+            <p class="ira-book-help">
+              이 책에서 만든 질문과 답, 마지막 간추리기를 한 번에 볼 수 있어요.
+            </p>
+
+            <div class="ira-book-actions">
+              <button type="button" class="ira-main-button primary" onclick="event.stopPropagation(); showBookDetail('${escapeHtml(book.id)}')">기록 보기</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function showBookDetail(bookId) {
+      selectedBook = archiveBooks.find(function (book) {
+        return book.id === bookId;
+      });
+
+      if (!selectedBook) {
+        alert("책 기록을 찾지 못했어.");
+        return;
+      }
+
+      currentTab = "all";
+      document.getElementById("bookListView").classList.remove("active");
+      document.getElementById("bookDetailView").classList.add("active");
+      document.getElementById("detailBookTitle").textContent = selectedBook.title || "제목 없는 책";
+      document.getElementById("detailBookDescription").textContent = "읽기 전, 읽는 중, 읽은 후, 간추린 내용을 단계별로 확인해 봐요.";
+      document.getElementById("detailCompletedAt").textContent = selectedBook.completedAt || "완료일 없음";
+
+      changeArchiveTab("all");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showBookList() {
+      selectedBook = null;
+      document.getElementById("bookDetailView").classList.remove("active");
+      document.getElementById("bookListView").classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function changeArchiveTab(tab) {
+      currentTab = tab;
+
+      const buttons = document.querySelectorAll(".ira-tab-button");
+      buttons.forEach(function (button) {
+        button.classList.toggle("active", button.dataset.tab === tab);
+      });
+
+      renderRecords();
+    }
+
+    function renderRecords() {
+      const recordList = document.getElementById("recordList");
+      if (!selectedBook) return;
+
+      const records = getRecordsByTab(selectedBook, currentTab);
+
+      if (records.length === 0) {
+        recordList.innerHTML = `
+          <div class="ira-empty">
+            이 카테고리에 저장된 기록이 없어요.<br>
+            독서 활동을 완료하면 자동으로 기록이 채워져요.
+          </div>
+        `;
+        return;
+      }
+
+      recordList.innerHTML = records.map(function (record) {
+        if (record.category === "summary") {
+          return `
+            <article class="ira-summary-card">
+              <div class="ira-record-meta">
+                <span class="ira-badge">간추린 내용</span>
+                <span class="ira-badge brown">${escapeHtml(selectedBook.completedAt || "완료일 없음")}</span>
+              </div>
+              <h3>내가 쓴 간추리기</h3>
+              <p>${escapeHtml(record.summary)}</p>
+            </article>
+          `;
+        }
+
+        return `
+          <article class="ira-record-card">
+            <div class="ira-record-meta">
+              <span class="ira-badge">${escapeHtml(record.label)}</span>
+              ${record.date ? `<span class="ira-badge brown">${escapeHtml(record.date)}</span>` : ""}
+              ${record.source ? `<span class="ira-badge gray">${escapeHtml(record.source)}</span>` : ""}
+            </div>
+            <h3>Q. ${escapeHtml(record.question || "질문 없음")}</h3>
+            <p>${escapeHtml(record.answer || "아직 답은 없어요.")}</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function getRecordsByTab(book, tab) {
+      const beforeRecords = (book.beforeQuestions || []).map(function (item) {
+        return {
+          category: "before",
+          label: "읽기 전",
+          source: item.source || "읽기 전 질문",
+          question: item.question,
+          answer: "읽기 전에 만든 예상 질문이에요."
+        };
+      });
+
+      const duringRecords = (book.duringQuestions || []).map(function (item) {
+        return {
+          category: "during",
+          label: "읽는 중",
+          date: item.date,
+          source: item.type || "읽는 중 질문",
+          question: item.question,
+          answer: item.answer
+        };
+      });
+
+      const afterRecords = (book.afterQuestions || []).map(function (item, index) {
+        return {
+          category: "after",
+          label: "읽은 후 질문 " + (index + 1),
+          source: "간추리기 질문",
+          question: item.question,
+          answer: item.answer
+        };
+      });
+
+      const summaryRecords = book.summary ? [{ category: "summary", summary: book.summary }] : [];
+
+      if (tab === "before") return beforeRecords;
+      if (tab === "during") return duringRecords;
+      if (tab === "after") return afterRecords;
+      if (tab === "summary") return summaryRecords;
+
+      return [...beforeRecords, ...duringRecords, ...afterRecords, ...summaryRecords];
+    }
+
+    function safeJsonParse(value, fallback) {
+      try {
+        return JSON.parse(value || "");
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function goAdventure() {
+      location.href = "./today-reading-adventure.html";
+    }
+
+    function goIndividualHome() {
+      location.href = "./individual-reading.html";
+    }
+  </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
+</body>
+</html>

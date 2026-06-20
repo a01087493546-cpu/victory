@@ -23,6 +23,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=friend-book-shelf-1">
+  <!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
 
   <style>
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
@@ -84,6 +86,343 @@
     @media (max-height:760px) {
       .fs-page{padding:12px 24px}.fs-shell{grid-template-rows:58px minmax(0,1fr);gap:10px}.fs-main{grid-template-columns:300px minmax(0,1fr);gap:14px}.fs-side-card{padding:20px 18px}.fs-side-title{font-size:28px}.fs-side-desc{margin-bottom:14px}.fs-guide-box{gap:8px;margin-bottom:12px}.fs-guide-item{padding:9px 10px}.fs-form{gap:7px;padding:13px}.fs-input{height:38px}.fs-textarea{height:50px}.fs-content-card{grid-template-rows:112px minmax(0,1fr);padding:20px 24px}.fs-content-header h1{font-size:36px}.fs-best-card{min-height:154px;padding:15px}.fs-card-title{font-size:18px}.fs-book-card{min-height:130px;padding:13px}
     }
+        /*
+      왼쪽 영역 수정:
+      설명글과 작은 입력칸을 제거하고,
+      루미 + 큰 추천하기 버튼 중심으로 구성합니다.
+    */
+
+    .fs-side-card {
+      position: relative !important;
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) auto !important;
+      padding: 26px 22px 24px !important;
+      overflow: hidden !important;
+    }
+
+    .fs-lumi-bubble {
+      position: relative;
+      z-index: 3;
+      padding: 18px 16px;
+      border: 1px solid rgba(179, 117, 36, 0.24);
+      border-radius: 26px;
+      background: rgba(255, 252, 242, 0.96);
+      color: #5b3515;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
+    }
+
+    .fs-lumi-wrap {
+      position: relative;
+      min-height: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .fs-lumi {
+      position: relative;
+      z-index: 2;
+      width: 280px;
+      max-height: 470px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter: drop-shadow(0 18px 22px rgba(91, 54, 15, 0.22));
+    }
+
+    .fs-lumi-glow {
+      position: absolute;
+      left: 50%;
+      bottom: 52px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(255, 218, 121, 0.36), transparent 68%);
+      z-index: 1;
+    }
+
+    .fs-side-bottom {
+      position: relative;
+      z-index: 4;
+    }
+
+    .fs-write-big-button {
+      width: 100%;
+      min-height: 104px;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 12px;
+      align-items: center;
+      padding: 18px 18px;
+      border: none;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #e8bd5e, #a8641e);
+      color: #fff9e8;
+      cursor: pointer;
+      box-shadow: 0 16px 28px rgba(128, 76, 18, 0.24);
+      text-align: left;
+    }
+
+    .fs-write-big-button span {
+      grid-row: 1 / 3;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: rgba(255, 250, 236, 0.22);
+      font-size: 28px;
+    }
+
+    .fs-write-big-button strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .fs-write-big-button em {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 249, 232, 0.9);
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 800;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .fs-write-big-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 32px rgba(128, 76, 18, 0.28);
+    }
+
+    @media (max-height: 760px) {
+      .fs-lumi-bubble {
+        padding: 14px 13px;
+        font-size: 15px;
+      }
+
+      .fs-lumi {
+        width: 240px;
+        max-height: 380px;
+      }
+
+      .fs-write-big-button {
+        min-height: 88px;
+        padding: 14px 16px;
+      }
+
+      .fs-write-big-button strong {
+        font-size: 19px;
+      }
+    }
+        /*
+      왼쪽 영역 최종 수정:
+      루미는 작게 위쪽에 배치하고,
+      기존 안내 카드 3개를 다시 보여줍니다.
+    */
+
+    .fs-side-card {
+      display: grid !important;
+      grid-template-rows: 170px auto auto !important;
+      gap: 16px !important;
+      padding: 22px 22px 24px !important;
+      overflow: hidden !important;
+    }
+
+    .fs-mini-lumi-area {
+      position: relative;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 104px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .fs-mini-bubble {
+      align-self: start;
+      margin-top: 4px;
+      padding: 15px 14px;
+      border: 1px solid rgba(179, 117, 36, 0.24);
+      border-radius: 24px;
+      background: rgba(255, 252, 242, 0.96);
+      color: #5b3515;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.45;
+      text-align: center;
+      word-break: keep-all;
+      box-shadow: 0 10px 18px rgba(98, 59, 15, 0.1);
+    }
+
+    .fs-mini-lumi {
+      width: 104px;
+      height: 154px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter: drop-shadow(0 12px 14px rgba(91, 54, 15, 0.18));
+    }
+
+    .fs-guide-box {
+      display: grid !important;
+      gap: 10px !important;
+      margin-bottom: 0 !important;
+    }
+
+    .fs-guide-item {
+      display: grid !important;
+      grid-template-columns: 52px 1fr !important;
+      gap: 12px !important;
+      align-items: center !important;
+      padding: 14px 14px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 246, 220, 0.82) !important;
+      border: 1px solid rgba(181, 117, 37, 0.16) !important;
+    }
+
+    .fs-guide-icon {
+      width: 52px !important;
+      height: 52px !important;
+      display: grid !important;
+      place-items: center !important;
+      border-radius: 17px !important;
+      background: linear-gradient(180deg, #edc261, #a9651e) !important;
+      color: #fff9e8 !important;
+      font-size: 24px !important;
+      box-shadow: 0 8px 14px rgba(129, 76, 18, 0.16) !important;
+    }
+
+    .fs-guide-item strong {
+      display: block !important;
+      margin-bottom: 3px !important;
+      color: #5c3615 !important;
+      font-size: 17px !important;
+      font-weight: 900 !important;
+    }
+
+    .fs-guide-item span {
+      display: block !important;
+      color: #7a5123 !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      line-height: 1.35 !important;
+      word-break: keep-all !important;
+    }
+
+    .fs-write-big-button {
+      width: 100%;
+      min-height: 96px;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 12px;
+      align-items: center;
+      padding: 17px 18px;
+      border: none;
+      border-radius: 26px;
+      background: linear-gradient(180deg, #e8bd5e, #a8641e);
+      color: #fff9e8;
+      cursor: pointer;
+      box-shadow: 0 16px 28px rgba(128, 76, 18, 0.24);
+      text-align: left;
+    }
+
+    .fs-write-big-button span {
+      grid-row: 1 / 3;
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: rgba(255, 250, 236, 0.22);
+      font-size: 28px;
+    }
+
+    .fs-write-big-button strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .fs-write-big-button em {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 249, 232, 0.9);
+      font-size: 13px;
+      font-style: normal;
+      font-weight: 800;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    /*
+      이전에 크게 넣었던 루미 관련 스타일은 화면에 남아 있어도
+      새 HTML에서는 사용하지 않으므로 보이지 않습니다.
+    */
+    .fs-lumi,
+    .fs-lumi-wrap,
+    .fs-lumi-glow,
+    .fs-lumi-bubble,
+    .fs-side-bottom {
+      display: none !important;
+    }
+
+    @media (max-height: 760px) {
+      .fs-side-card {
+        grid-template-rows: 145px auto auto !important;
+        gap: 12px !important;
+        padding: 18px 18px 20px !important;
+      }
+
+      .fs-mini-lumi-area {
+        grid-template-columns: minmax(0, 1fr) 90px;
+      }
+
+      .fs-mini-bubble {
+        padding: 12px 11px;
+        font-size: 13px;
+      }
+
+      .fs-mini-lumi {
+        width: 90px;
+        height: 132px;
+      }
+
+      .fs-guide-item {
+        padding: 11px 12px !important;
+      }
+
+      .fs-guide-icon {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 21px !important;
+      }
+
+      .fs-guide-item strong {
+        font-size: 15px !important;
+      }
+
+      .fs-guide-item span {
+        font-size: 12px !important;
+      }
+
+      .fs-write-big-button {
+        min-height: 82px;
+        padding: 13px 15px;
+      }
+
+      .fs-write-big-button strong {
+        font-size: 19px;
+      }
+    }
   </style>
 </head>
 
@@ -96,35 +435,62 @@
           <span>문답책</span>
         </div>
         <div class="fs-top-actions">
-          <button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
-          <button type="button" class="fs-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-          <button type="button" class="fs-top-button" onclick="goIndividualReading()">🏠</button>
+          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="fs-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+<button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
+<button type="button" class="fs-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+<button type="button" class="fs-top-button" onclick="goIndividualReading()">🏠</button>
         </div>
       </header>
 
       <section class="fs-main">
-        <aside class="fs-side-card">
-          <div>
-            <p class="fs-side-kicker">CLASS BOOK SHELF</p>
-            <h1 class="fs-side-title">우리 반 친구들이<br>추천한 책장이야</h1>
-            <p class="fs-side-desc">좋아요를 많이 받은 책은 자동으로 BEST에 올라가. 네가 재미있게 읽은 책도 친구들에게 추천해줘!</p>
-          </div>
+      <aside class="fs-side-card">
+  <!-- 왼쪽 안내 영역입니다. 루미는 작게 넣고, 기존 안내 카드 3개는 유지합니다. -->
+  <div class="fs-mini-lumi-area">
+    <div class="fs-mini-bubble">
+      친구들이 추천한 책을 살펴보고,<br>
+      마음에 드는 책에는 좋아요를 눌러줘!
+    </div>
 
-          <div class="fs-guide-box">
-            <div class="fs-guide-item"><div class="fs-guide-icon">🏆</div><div><strong>BEST 추천책</strong><span>좋아요가 많은 책이 위로 올라와요.</span></div></div>
-            <div class="fs-guide-item"><div class="fs-guide-icon">💬</div><div><strong>친구 추천 이유</strong><span>왜 추천했는지 함께 살펴봐요.</span></div></div>
-            <div class="fs-guide-item"><div class="fs-guide-icon">✍️</div><div><strong>나도 추천하기</strong><span>책 제목과 추천 이유를 적어 등록해요.</span></div></div>
-          </div>
+    <img
+      src="../assets/images/book-recommend/book-recommend-lumi.png"
+      alt="용사 루미"
+      class="fs-mini-lumi"
+    >
+  </div>
 
-          <form class="fs-form" onsubmit="addMyBook(event)">
-            <h2 class="fs-form-title">나도 책 추천하기</h2>
-            <input id="bookTitleInput" class="fs-input" type="text" placeholder="책 제목" autocomplete="off">
-            <input id="bookAuthorInput" class="fs-input" type="text" placeholder="지은이" autocomplete="off">
-            <textarea id="bookReasonInput" class="fs-textarea" placeholder="추천 이유"></textarea>
-            <textarea id="bookTargetInput" class="fs-textarea" placeholder="이런 친구에게 추천해요"></textarea>
-            <button type="submit" class="fs-submit-button">추천 등록하기</button>
-          </form>
-        </aside>
+  <div class="fs-guide-box">
+    <div class="fs-guide-item">
+      <div class="fs-guide-icon">🏆</div>
+      <div>
+        <strong>BEST 추천책</strong>
+        <span>좋아요가 많은 책이 위로 올라와요.</span>
+      </div>
+    </div>
+
+    <div class="fs-guide-item">
+      <div class="fs-guide-icon">💬</div>
+      <div>
+        <strong>친구 추천 이유</strong>
+        <span>왜 추천했는지 함께 살펴봐요.</span>
+      </div>
+    </div>
+
+    <div class="fs-guide-item">
+      <div class="fs-guide-icon">✍️</div>
+      <div>
+        <strong>나도 추천하기</strong>
+        <span>책 제목과 추천 이유를 적어 등록해요.</span>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="fs-write-big-button" onclick="goFriendBookWrite()">
+    <span>✍️</span>
+    <strong>나도 책 추천하기</strong>
+    <em>내가 재미있게 읽은 책을 친구들에게 소개하기</em>
+  </button>
+</aside>
 
         <article class="fs-content-card">
           <div class="fs-content-header">
@@ -158,7 +524,7 @@
       </section>
     </div>
   </main>
-
+  
   <script src="../js/auth.js"></script>
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -310,6 +676,21 @@
 
       changeTab("mine");
     }
+        /*
+      나도 책 추천하기 작성 화면으로 이동합니다.
+      다음 단계에서 friend-book-write.html 파일을 새로 만들 예정입니다.
+    */
+    function goFriendBookWrite() {
+      window.location.href = "./friend-book-write.html";
+    }
+        /*
+      나도 책 추천하기 작성 화면으로 이동합니다.
+    */
+    function goFriendBookWrite() {
+      window.location.href = "./friend-book-write.html";
+    }
   </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
 </body>
 </html>

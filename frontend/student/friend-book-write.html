@@ -1,0 +1,553 @@
+<!--
+  파일명: friend-book-write.html
+  역할: 문답책 개별읽기 - 나도 책 추천하기 작성 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 학생이 자신이 읽고 좋았던 책을 추천글로 작성합니다.
+  2. 책 제목, 지은이, 추천 이유, 추천하고 싶은 친구 유형을 입력합니다.
+  3. 현재는 서버 저장 없이 작성 완료 안내 후 우리 반 추천 책장으로 돌아갑니다.
+
+  참고:
+  - 실제 서버/DB를 붙이면 submitFriendBook() 함수 안의 임시 처리 부분을 API 호출로 교체하면 됩니다.
+  - 책 표지는 저작권 문제가 있을 수 있어 사용하지 않습니다.
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>나도 책 추천하기 - 문답책</title>
+
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <link rel="stylesheet" href="../css/common.css?v=friend-book-write-1">
+  <!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .fw-page,
+    .fw-page * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    }
+
+    .fw-page {
+      width: 100vw;
+      height: 100vh;
+      padding: 16px 28px 20px;
+      color: #4a2a10;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255, 248, 229, 0.92) 0%,
+          rgba(255, 248, 229, 0.74) 48%,
+          rgba(255, 248, 229, 0.52) 100%
+        ),
+        radial-gradient(circle at 16% 18%, rgba(255, 224, 142, 0.42), transparent 34%),
+        radial-gradient(circle at 86% 80%, rgba(162, 98, 29, 0.22), transparent 32%),
+        linear-gradient(135deg, #f8ecd2 0%, #d8b16d 48%, #84521f 100%);
+    }
+
+    .fw-shell {
+      width: 100%;
+      max-width: 1480px;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: 64px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .fw-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 22px;
+      border: 1px solid rgba(182, 119, 38, 0.28);
+      border-radius: 24px;
+      background: rgba(255, 250, 236, 0.92);
+      box-shadow: 0 12px 24px rgba(92, 58, 18, 0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .fw-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fw-logo img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .fw-logo span {
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      color: #5a3415;
+    }
+
+    .fw-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fw-top-button {
+      height: 42px;
+      padding: 0 18px;
+      border: 1px solid rgba(168, 106, 31, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.94);
+      color: #633915;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1);
+    }
+
+    .fw-main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .fw-lumi-card,
+    .fw-form-card {
+      min-height: 0;
+      border: 1px solid rgba(180, 116, 34, 0.24);
+      border-radius: 34px;
+      background: rgba(255, 251, 242, 0.92);
+      box-shadow:
+        0 18px 34px rgba(92, 58, 18, 0.13),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .fw-lumi-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      padding: 26px 24px 24px;
+    }
+
+    .fw-bubble {
+      position: relative;
+      z-index: 3;
+      padding: 18px 16px;
+      border: 1px solid rgba(179, 117, 36, 0.24);
+      border-radius: 26px;
+      background: rgba(255, 252, 242, 0.96);
+      color: #5b3515;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
+    }
+
+    .fw-lumi-wrap {
+      position: relative;
+      min-height: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .fw-lumi {
+      position: relative;
+      z-index: 2;
+      width: 265px;
+      max-height: 430px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter: drop-shadow(0 18px 22px rgba(91, 54, 15, 0.22));
+    }
+
+    .fw-lumi-glow {
+      position: absolute;
+      left: 50%;
+      bottom: 52px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(255, 218, 121, 0.36), transparent 68%);
+      z-index: 1;
+    }
+
+    .fw-help-box {
+      position: relative;
+      z-index: 4;
+      padding: 16px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(181, 117, 37, 0.16);
+      background: rgba(255, 246, 220, 0.82);
+      margin-top: 12px;
+    }
+
+    .fw-help-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #5c3615;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .fw-help-box span {
+      display: block;
+      color: #7a5123;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .fw-form-card {
+      display: grid;
+      grid-template-rows: 112px minmax(0, 1fr) 82px;
+      padding: 28px 34px 30px;
+    }
+
+    .fw-header {
+      border-bottom: 1px solid rgba(181, 117, 37, 0.16);
+      padding-bottom: 18px;
+    }
+
+    .fw-kicker {
+      margin: 0 0 8px;
+      color: #b5761f;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .fw-header h1 {
+      margin: 0;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      color: #4d2b10;
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -0.055em;
+    }
+
+    .fw-form {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+      padding: 22px 0;
+    }
+
+    .fw-field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .fw-field.full {
+      grid-column: 1 / 3;
+    }
+
+    .fw-field label {
+      color: #5c3615;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .fw-input,
+    .fw-textarea {
+      width: 100%;
+      border: 1px solid rgba(171, 108, 31, 0.22);
+      border-radius: 20px;
+      background: rgba(255, 250, 237, 0.9);
+      color: #4d2b10;
+      font-size: 17px;
+      font-weight: 800;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.42);
+    }
+
+    .fw-input {
+      height: 58px;
+      padding: 0 18px;
+    }
+
+    .fw-textarea {
+      min-height: 118px;
+      height: 100%;
+      padding: 16px 18px;
+      resize: none;
+      line-height: 1.5;
+    }
+
+    .fw-input::placeholder,
+    .fw-textarea::placeholder {
+      color: rgba(111, 72, 29, 0.52);
+    }
+
+    .fw-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 16px;
+      align-items: center;
+      border-top: 1px solid rgba(181, 117, 37, 0.16);
+      padding-top: 22px;
+    }
+
+    .fw-button {
+      height: 58px;
+      border-radius: 999px;
+      border: 1px solid rgba(174, 109, 27, 0.26);
+      background: rgba(255, 250, 237, 0.88);
+      color: #5f3714;
+      font-size: 19px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 18px rgba(100, 61, 16, 0.1);
+    }
+
+    .fw-button.primary {
+      border: none;
+      background: linear-gradient(180deg, #e6b656, #a8641e);
+      color: #fff9e8;
+      box-shadow: 0 12px 22px rgba(128, 76, 18, 0.22);
+    }
+
+    .fw-complete-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(42, 25, 8, 0.42);
+      z-index: 20;
+    }
+
+    .fw-complete-modal.show {
+      display: grid;
+    }
+
+    .fw-modal-box {
+      width: min(520px, calc(100vw - 44px));
+      padding: 34px 30px 30px;
+      border-radius: 30px;
+      border: 1px solid rgba(184, 116, 30, 0.28);
+      background: rgba(255, 250, 236, 0.98);
+      box-shadow: 0 24px 60px rgba(47, 28, 8, 0.26);
+      text-align: center;
+    }
+
+    .fw-modal-icon {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #e8bd5e, #a8641e);
+      color: #fff9e8;
+      font-size: 36px;
+      box-shadow: 0 14px 24px rgba(128, 76, 18, 0.24);
+    }
+
+    .fw-modal-box h2 {
+      margin: 0 0 10px;
+      color: #4d2b10;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .fw-modal-box p {
+      margin: 0 0 22px;
+      color: #765026;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    @media (max-height: 760px) {
+      .fw-page { padding: 12px 24px; }
+      .fw-shell { grid-template-rows: 58px minmax(0, 1fr); gap: 10px; }
+      .fw-main { grid-template-columns: 310px minmax(0, 1fr); gap: 14px; }
+      .fw-lumi-card { padding: 20px 20px; }
+      .fw-bubble { padding: 14px 13px; font-size: 15px; }
+      .fw-lumi { width: 230px; max-height: 350px; }
+      .fw-form-card { grid-template-rows: 92px minmax(0, 1fr) 72px; padding: 22px 28px 24px; }
+      .fw-header h1 { font-size: 34px; }
+      .fw-form { gap: 12px; padding: 16px 0; }
+      .fw-input { height: 50px; font-size: 15px; }
+      .fw-textarea { min-height: 92px; font-size: 15px; }
+      .fw-button { height: 52px; font-size: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="fw-page">
+    <div class="fw-shell">
+      <header class="fw-top-bar">
+        <div class="fw-logo">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+
+        <div class="fw-top-actions">
+          <button type="button" class="fw-top-button" onclick="goFriendBookShelf()">우리 반 추천 책장</button>
+         <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="fw-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="fw-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+          <button type="button" class="fw-top-button" onclick="goIndividualReading()">🏠</button>
+        </div>
+      </header>
+
+      <section class="fw-main">
+        <aside class="fw-lumi-card">
+         <div class="fw-bubble">
+  네가 재미있게 읽은 책을<br>
+  친구들에게 소개해줘!
+</div>
+
+<div class="fw-help-box">
+  <strong>추천 이유는 이렇게 써봐</strong>
+  <span>
+    “어떤 장면이 기억에 남았는지”, “어떤 친구에게 어울릴지”를 쓰면 친구들이 책을 고르기 쉬워져.
+  </span>
+</div>
+
+<div class="fw-lumi-wrap">
+  <div class="fw-lumi-glow"></div>
+  <img
+    src="../assets/images/book-recommend/book-recommend-lumi.png"
+    alt="용사 루미"
+    class="fw-lumi"
+  >
+</div>
+        </aside>
+
+        <article class="fw-form-card">
+          <div class="fw-header">
+            
+            <h1>책 추천하기</h1>
+          </div>
+
+          <form class="fw-form" id="friendBookForm" onsubmit="submitFriendBook(event)">
+            <div class="fw-field">
+              <label for="bookTitleInput">책 제목</label>
+              <input
+                id="bookTitleInput"
+                class="fw-input"
+                type="text"
+                placeholder="예: 긴긴밤"
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="fw-field">
+              <label for="bookAuthorInput">지은이</label>
+              <input
+                id="bookAuthorInput"
+                class="fw-input"
+                type="text"
+                placeholder="예: 루리"
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="fw-field full">
+              <label for="bookReasonInput">추천 이유</label>
+              <textarea
+                id="bookReasonInput"
+                class="fw-textarea"
+                placeholder="이 책에서 기억에 남는 장면이나 좋았던 점을 적어줘."
+              ></textarea>
+            </div>
+
+            <div class="fw-field full">
+              <label for="bookTargetInput">이런 친구에게 추천해요</label>
+              <textarea
+                id="bookTargetInput"
+                class="fw-textarea"
+                placeholder="예: 감동적인 이야기를 좋아하는 친구, 모험 이야기를 좋아하는 친구"
+              ></textarea>
+            </div>
+          </form>
+
+          <div class="fw-actions">
+            <button type="button" class="fw-button" onclick="goFriendBookShelf()">취소하고 돌아가기</button>
+            <button type="submit" form="friendBookForm" class="fw-button primary">추천 등록하기</button>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <div class="fw-complete-modal" id="completeModal">
+    <div class="fw-modal-box">
+      <div class="fw-modal-icon">📚</div>
+      <h2>추천글이 등록됐어!</h2>
+      <p>
+        지금은 화면 확인용이라 서버에는 저장되지 않아.<br>
+        다음 단계에서 우리 반 추천 책장과 연결해줄게.
+      </p>
+      <button type="button" class="fw-button primary" onclick="goFriendBookShelf()">책장으로 돌아가기</button>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+
+  <script>
+    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
+    // checkLogin();
+
+    function goIndividualReading() {
+      window.location.href = "./individual-reading.html";
+    }
+
+    function goFriendBookShelf() {
+      window.location.href = "./friend-book-shelf.html";
+    }
+
+    /*
+      추천글 작성 완료 처리입니다.
+      현재는 입력값 검증 후 완료 모달만 보여줍니다.
+      나중에 서버/DB 연결 시 이 함수 안에서 저장 API를 호출하면 됩니다.
+    */
+    function submitFriendBook(event) {
+      event.preventDefault();
+
+      const title = document.getElementById("bookTitleInput").value.trim();
+      const author = document.getElementById("bookAuthorInput").value.trim();
+      const reason = document.getElementById("bookReasonInput").value.trim();
+      const target = document.getElementById("bookTargetInput").value.trim();
+
+      if (!title || !author || !reason || !target) {
+        alert("책 제목, 지은이, 추천 이유, 추천 대상을 모두 적어줘!");
+        return;
+      }
+
+      document.getElementById("completeModal").classList.add("show");
+    }
+  </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
+</body>
+</html>

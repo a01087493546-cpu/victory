@@ -1,0 +1,948 @@
+<!--
+  파일명: today-reading-adventure.html
+  역할: 문답책 개별읽기 - 오늘의 독서 모험 단계 선택 화면입니다.
+
+  이 화면에서 하는 일:
+  1. 개별읽기에서 읽기 전 / 읽기 중 / 읽기 후 활동 단계만 보여줍니다.
+  2. 처음에는 읽기 전만 활성화됩니다.
+  3. 읽기 전 활동을 마치면 읽기 중이 열리고, 읽기 중을 마치면 읽기 후가 열립니다.
+  4. 읽기 후까지 완료하면 다시 새 책을 위한 읽기 전 단계로 돌아가는 구조입니다.
+
+  사용 이미지:
+  - 배경: ../assets/images/individual-reading/today-reading-adventure-bg.png
+  - 안내 루미: ../assets/images/individual-reading/today-reading-lumi-guide.png
+  - 가리키는 루미: ../assets/images/individual-reading/today-reading-lumi-point.png
+  - 책 읽는 루미: ../assets/images/individual-reading/today-reading-lumi-reading.png
+  - 읽기 전 아이콘: ../assets/images/individual-reading/today-reading-before-icon.png
+  - 읽기 중 아이콘: ../assets/images/individual-reading/today-reading-during-icon.png
+  - 읽기 후 아이콘: ../assets/images/individual-reading/today-reading-after-icon.png
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오늘의 독서 모험 - 문답책</title>
+
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
+  <link rel="stylesheet" href="../css/common.css?v=today-reading-adventure-clean-1">
+<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+<link rel="stylesheet" href="../css/individual-power.css">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .tra-page,
+    .tra-page * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    }
+
+    .tra-page {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      padding: 16px 28px 20px;
+      color: #4a2a10;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255, 247, 226, 0.82) 0%,
+          rgba(255, 247, 226, 0.5) 42%,
+          rgba(255, 247, 226, 0.18) 100%
+        ),
+        url("../assets/images/individual-reading/today-reading-adventure-bg.png") center / cover no-repeat;
+    }
+
+    .tra-page::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 14% 14%, rgba(255, 232, 165, 0.46), transparent 30%),
+        radial-gradient(circle at 76% 42%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(111, 67, 22, 0.08));
+      z-index: 0;
+    }
+
+    .tra-shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1480px;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: 64px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .tra-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 22px;
+      border: 1px solid rgba(182, 119, 38, 0.28);
+      border-radius: 24px;
+      background: rgba(255, 250, 236, 0.9);
+      box-shadow: 0 12px 24px rgba(92, 58, 18, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .tra-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tra-logo img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .tra-logo span {
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 29px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      color: #5a3415;
+    }
+
+    .tra-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tra-top-button {
+      height: 42px;
+      padding: 0 18px;
+      border: 1px solid rgba(168, 106, 31, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.94);
+      color: #633915;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1);
+    }
+
+    .tra-main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .tra-content-card,
+    .tra-lumi-card {
+      min-height: 0;
+      border: 1px solid rgba(180, 116, 34, 0.24);
+      border-radius: 34px;
+      background: rgba(255, 251, 242, 0.76);
+      box-shadow:
+        0 18px 34px rgba(92, 58, 18, 0.13),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .tra-content-card {
+      display: grid;
+      grid-template-rows: 176px minmax(0, 1fr) 70px;
+      padding: 30px 34px 28px;
+    }
+
+    .tra-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 28px;
+      align-items: start;
+      border-bottom: 1px solid rgba(181, 117, 37, 0.16);
+      padding-bottom: 22px;
+    }
+
+    .tra-kicker {
+      margin: 0 0 8px;
+      color: #b5761f;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .tra-header h1 {
+      margin: 0 0 12px;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      color: #4d2b10;
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.06em;
+      word-break: keep-all;
+    }
+
+    .tra-header p {
+      margin: 0;
+      max-width: 720px;
+      color: #795024;
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .tra-book-status {
+      padding: 17px 18px;
+      border-radius: 24px;
+      background: rgba(255, 246, 220, 0.84);
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      box-shadow: 0 10px 18px rgba(101, 63, 18, 0.08);
+    }
+
+    .tra-book-status span {
+      display: block;
+      margin-bottom: 6px;
+      color: #a1661d;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tra-book-status strong {
+      display: block;
+      color: #4e2d10;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.28;
+      word-break: keep-all;
+    }
+
+    .tra-stage-grid {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+      align-items: stretch;
+      padding: 28px 0 22px;
+    }
+
+    .tra-stage-button {
+      position: relative;
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 24px 22px 22px;
+      border: 2px solid rgba(188, 126, 39, 0.16);
+      border-radius: 30px;
+      background: rgba(255, 252, 244, 0.72);
+      color: #533114;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(101, 63, 18, 0.08);
+      transition: 0.18s ease;
+      overflow: hidden;
+    }
+
+    .tra-stage-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(255, 225, 142, 0.3), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,0.38), transparent);
+      pointer-events: none;
+    }
+
+    .tra-stage-button > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tra-stage-button.active {
+      border-color: rgba(187, 113, 26, 0.76);
+      background:
+        radial-gradient(circle at 14% 8%, rgba(255, 227, 151, 0.74), transparent 42%),
+        linear-gradient(180deg, rgba(255, 251, 239, 0.94), rgba(255, 237, 190, 0.9));
+      box-shadow: 0 18px 30px rgba(130, 76, 18, 0.17);
+    }
+
+    .tra-stage-button.done {
+      border-color: rgba(109, 145, 71, 0.36);
+      background: rgba(247, 253, 239, 0.82);
+    }
+
+    .tra-stage-button.locked {
+      opacity: 0.58;
+      cursor: not-allowed;
+      filter: grayscale(0.2);
+    }
+
+    .tra-stage-button:not(.locked):hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 32px rgba(130, 76, 18, 0.16);
+    }
+
+    .tra-stage-number {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #e8bd5e, #a8641e);
+      color: #fff9e8;
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 8px 16px rgba(128, 76, 18, 0.18);
+    }
+
+    .tra-stage-icon {
+      width: 148px;
+      height: 148px;
+      display: grid;
+      place-items: center;
+      margin: 0 0 20px;
+      border-radius: 28px;
+      background: rgba(255, 247, 226, 0.86);
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+      overflow: hidden;
+    }
+
+    .tra-stage-icon img {
+      display: block;
+      width: 128px;
+      height: 128px;
+      object-fit: contain;
+      opacity: 1;
+      visibility: visible;
+      filter: drop-shadow(0 10px 14px rgba(94, 56, 15, 0.16));
+    }
+
+    .tra-stage-button.locked .tra-stage-icon img {
+      opacity: 0.5;
+      filter: grayscale(0.28) drop-shadow(0 8px 12px rgba(94, 56, 15, 0.1));
+    }
+
+    .tra-stage-text {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .tra-stage-button h2 {
+      margin: 0 0 10px;
+      color: #4e2d10;
+      font-size: 31px;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.045em;
+    }
+
+    .tra-stage-button p {
+      margin: 0;
+      color: #785024;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.48;
+      word-break: keep-all;
+    }
+
+    .tra-stage-state {
+      width: 100%;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin-top: 22px;
+      border-radius: 999px;
+      background: rgba(255, 246, 220, 0.9);
+      color: #8b581c;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .tra-stage-button.active .tra-stage-state {
+      background: linear-gradient(180deg, #e6b656, #a8641e);
+      color: #fff9e8;
+    }
+
+    .tra-stage-button.done .tra-stage-state {
+      background: #e9f5de;
+      color: #456225;
+    }
+
+    .tra-bottom-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 20px;
+      border-radius: 22px;
+      background: rgba(255, 246, 220, 0.78);
+      border: 1px solid rgba(181, 117, 37, 0.16);
+      color: #6f481d;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .tra-lumi-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 20px;
+      padding: 28px 24px 24px;
+      background: rgba(255, 251, 242, 0.72);
+    }
+
+    .tra-lumi-bubble {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      padding: 20px 18px;
+      border: 1px solid rgba(179, 117, 36, 0.24);
+      border-radius: 26px;
+      background: rgba(255, 252, 242, 0.96);
+      color: #5b3515;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
+    }
+
+    .tra-lumi-wrap {
+      position: relative;
+      min-height: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .tra-lumi {
+      position: relative;
+      z-index: 2;
+      width: 300px;
+      max-height: 500px;
+      object-fit: contain;
+      object-position: bottom center;
+      filter: drop-shadow(0 18px 22px rgba(91, 54, 15, 0.22));
+    }
+
+    .tra-lumi-glow {
+      position: absolute;
+      left: 50%;
+      bottom: 70px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(255, 218, 121, 0.38), transparent 68%);
+      z-index: 1;
+    }
+
+    @media (max-height: 760px) {
+      .tra-page { padding: 12px 24px; }
+      .tra-shell { grid-template-rows: 58px minmax(0, 1fr); gap: 10px; }
+      .tra-main { grid-template-columns: minmax(0, 1fr) 310px; gap: 14px; }
+      .tra-content-card { grid-template-rows: 150px minmax(0, 1fr) 60px; padding: 22px 28px 22px; }
+      .tra-header h1 { font-size: 36px; }
+      .tra-header p { font-size: 15px; }
+      .tra-book-status { min-width: 196px; padding: 13px 15px; }
+      .tra-stage-grid { gap: 14px; padding: 20px 0 16px; }
+      .tra-stage-button { min-height: 320px; padding: 18px 16px 16px; border-radius: 26px; }
+      .tra-stage-number { width: 40px; height: 40px; margin-bottom: 12px; }
+      .tra-stage-icon { width: 112px; height: 112px; margin-bottom: 14px; }
+      .tra-stage-icon img { width: 96px; height: 96px; }
+      .tra-stage-button h2 { font-size: 24px; }
+      .tra-stage-button p { font-size: 14px; }
+      .tra-stage-state { height: 48px; font-size: 16px; margin-top: 14px; }
+      .tra-lumi-card { padding: 20px 18px; gap: 14px; }
+      .tra-lumi-bubble { padding: 16px 15px; font-size: 15px; }
+      .tra-lumi { width: 260px; max-height: 390px; }
+      .tra-lumi-glow { bottom: 48px; width: 220px; height: 220px; }
+    }
+        /*
+      읽기 전 / 읽기 중 / 읽기 후 카드 내부 정리
+      - 아이콘, 제목, 설명, 버튼이 겹치지 않도록 카드 내부 구조를 다시 잡습니다.
+      - 잠긴 카드도 글자는 읽히도록 투명도를 조정합니다.
+    */
+
+    .tra-stage-grid {
+      gap: 22px !important;
+      padding: 26px 0 20px !important;
+    }
+
+    .tra-stage-button {
+      min-height: 410px !important;
+      padding: 26px 22px 22px !important;
+      display: grid !important;
+      grid-template-rows: 48px 150px auto 1fr 58px !important;
+      gap: 10px !important;
+      align-items: start !important;
+    }
+
+    .tra-stage-number {
+      width: 46px !important;
+      height: 46px !important;
+      margin: 0 !important;
+      font-size: 18px !important;
+    }
+
+    .tra-stage-icon {
+      width: 146px !important;
+      height: 146px !important;
+      margin: 0 !important;
+      border-radius: 28px !important;
+    }
+
+    .tra-stage-icon img {
+      width: 124px !important;
+      height: 124px !important;
+      object-fit: contain !important;
+    }
+
+    .tra-stage-text {
+      min-height: 0 !important;
+      display: block !important;
+    }
+
+    .tra-stage-button h2 {
+      margin: 0 0 10px !important;
+      font-size: 30px !important;
+      line-height: 1.15 !important;
+      color: #4e2d10 !important;
+    }
+
+    .tra-stage-button p {
+      margin: 0 !important;
+      font-size: 16px !important;
+      line-height: 1.45 !important;
+      color: #6f481d !important;
+      font-weight: 850 !important;
+      word-break: keep-all !important;
+    }
+
+    .tra-stage-state {
+      width: 100% !important;
+      height: 56px !important;
+      margin: 0 !important;
+      align-self: end !important;
+      font-size: 17px !important;
+    }
+
+    .tra-stage-button.locked {
+      opacity: 0.72 !important;
+      filter: none !important;
+    }
+
+    .tra-stage-button.locked .tra-stage-icon img {
+      opacity: 0.42 !important;
+      filter: grayscale(0.35) drop-shadow(0 8px 12px rgba(94, 56, 15, 0.1)) !important;
+    }
+
+    .tra-stage-button.locked h2 {
+      color: #6b5239 !important;
+    }
+
+    .tra-stage-button.locked p {
+      color: #8a7358 !important;
+    }
+
+    .tra-stage-button.locked .tra-stage-state {
+      background: rgba(255, 248, 230, 0.9) !important;
+      color: #9b7d5c !important;
+    }
+        /*
+      읽기 전 / 읽기 중 / 읽기 후 카드 버튼 위치 수정
+      - 버튼을 카드 맨 아래로 고정합니다.
+      - 제목과 설명이 버튼에 가려지지 않도록 여백을 확보합니다.
+    */
+
+    .tra-stage-button {
+      min-height: 410px !important;
+      padding: 26px 22px 22px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+    }
+
+    .tra-stage-number {
+      flex: 0 0 auto !important;
+      margin-bottom: 16px !important;
+    }
+
+    .tra-stage-icon {
+      flex: 0 0 auto !important;
+      margin-bottom: 18px !important;
+    }
+
+    .tra-stage-text {
+      flex: 1 1 auto !important;
+      min-height: 120px !important;
+      padding-bottom: 18px !important;
+    }
+
+    .tra-stage-button h2 {
+      margin: 0 0 10px !important;
+      font-size: 30px !important;
+      line-height: 1.15 !important;
+    }
+
+    .tra-stage-button p {
+      margin: 0 !important;
+      font-size: 16px !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    .tra-stage-state {
+      flex: 0 0 auto !important;
+      width: 100% !important;
+      height: 56px !important;
+      margin-top: auto !important;
+      display: grid !important;
+      place-items: center !important;
+      border-radius: 999px !important;
+      font-size: 17px !important;
+      font-weight: 900 !important;
+    }
+        /*
+      읽기 전 / 읽기 중 / 읽기 후 카드 최종 정리
+      - 이미지 크기를 조금 줄입니다.
+      - 카드 안에서 제목/설명/버튼이 자연스럽게 보이도록 높이를 다시 맞춥니다.
+      - 버튼이 카드 밖으로 밀리지 않게 합니다.
+    */
+
+    .tra-stage-grid {
+      padding: 22px 0 18px !important;
+      gap: 22px !important;
+      align-items: stretch !important;
+    }
+
+    .tra-stage-button {
+      min-height: 375px !important;
+      height: 375px !important;
+      padding: 22px 20px 20px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      overflow: hidden !important;
+    }
+
+    .tra-stage-number {
+      width: 42px !important;
+      height: 42px !important;
+      margin: 0 0 12px !important;
+      flex: 0 0 auto !important;
+      font-size: 17px !important;
+    }
+
+    .tra-stage-icon {
+      width: 118px !important;
+      height: 118px !important;
+      margin: 0 0 16px !important;
+      flex: 0 0 auto !important;
+      border-radius: 24px !important;
+    }
+
+    .tra-stage-icon img {
+      width: 98px !important;
+      height: 98px !important;
+      object-fit: contain !important;
+    }
+
+    .tra-stage-text {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      padding-bottom: 14px !important;
+      overflow: hidden !important;
+    }
+
+    .tra-stage-button h2 {
+      margin: 0 0 8px !important;
+      font-size: 28px !important;
+      line-height: 1.15 !important;
+    }
+
+    .tra-stage-button p {
+      margin: 0 !important;
+      font-size: 15px !important;
+      line-height: 1.42 !important;
+      word-break: keep-all !important;
+    }
+
+    .tra-stage-state {
+      flex: 0 0 auto !important;
+      width: 100% !important;
+      height: 54px !important;
+      margin-top: auto !important;
+      display: grid !important;
+      place-items: center !important;
+      border-radius: 999px !important;
+      font-size: 17px !important;
+      font-weight: 900 !important;
+    }
+
+    .tra-bottom-note {
+      height: 58px !important;
+      min-height: 58px !important;
+      padding: 12px 18px !important;
+      font-size: 17px !important;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="tra-page">
+    <div class="tra-shell">
+      <header class="tra-top-bar">
+        <div class="tra-logo">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+
+        <div class="tra-top-actions">
+          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
+<button type="button" class="tra-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="tra-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+          <button type="button" class="tra-top-button" onclick="goIndividualReading()">🏠</button>
+        </div>
+      </header>
+
+      <section class="tra-main">
+        <article class="tra-content-card">
+          <div class="tra-header">
+            <div>
+              <p class="tra-kicker">오늘의 독서 모험</p>
+              <h1>오늘의 독서 모험을<br>떠나볼까요?</h1>
+              <p>
+                루미와 함께 이번 책 속으로 들어가 봐요.<br>
+                먼저 읽기 전 질문을 만들고, 책을 읽으며 떠오른 생각을 모아 봐요.
+              </p>
+            </div>
+
+            <div class="tra-book-status">
+              <span>지금 읽고 있는 책</span>
+              <strong id="currentBookTitle">아직 정하지 않았어요</strong>
+            </div>
+          </div>
+
+          <div class="tra-stage-grid" id="stageGrid"></div>
+
+          <!-- 아래 안내 문구 바는 화면을 깔끔하게 보이도록 제거했습니다. -->
+<div class="tra-bottom-note" id="bottomNote" style="display: none;"></div>
+        </article>
+
+        <aside class="tra-lumi-card">
+          <div class="tra-lumi-bubble" id="lumiBubble">
+            이번 모험은 읽기 전부터 시작이야.<br>
+            어떤 책을 읽을지 먼저 알려줘!
+          </div>
+
+          <div class="tra-lumi-wrap">
+            <div class="tra-lumi-glow"></div>
+            <img
+              id="lumiImage"
+              src="../assets/images/individual-reading/today-reading-lumi-guide.png"
+              alt="용사 루미"
+              class="tra-lumi"
+            >
+          </div>
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+
+  <script>
+    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
+    // checkLogin();
+
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+    const STORAGE_KEYS = {
+      stage: "individualAdventureStage_" + studentId,
+      bookTitle: "individualCurrentBookTitle_" + studentId,
+      beforeDone: "individualBeforeDone_" + studentId,
+      duringDone: "individualDuringDone_" + studentId,
+      afterDone: "individualAfterDone_" + studentId
+    };
+
+    const stages = [
+      {
+        key: "before",
+        number: "01",
+        title: "읽기 전",
+        iconImage: "../assets/images/individual-reading/today-reading-before-icon.png",
+        desc: "읽을 책을 정하고, 책을 읽기 전에 궁금한 질문을 만들어요.",
+        activeLabel: "시작하기",
+        doneLabel: "완료",
+        lockedLabel: "먼저 시작하세요",
+        url: "./individual-before-reading.html"
+      },
+      {
+        key: "during",
+        number: "02",
+        title: "읽기 중",
+        iconImage: "../assets/images/individual-reading/today-reading-during-icon.png",
+        desc: "책을 읽으면서 떠오른 질문과 생각을 기록해요.",
+        activeLabel: "이어서 하기",
+        doneLabel: "완료",
+        lockedLabel: "읽기 전 완료 필요",
+        url: "./individual-during-reading.html"
+      },
+      {
+        key: "after",
+        number: "03",
+        title: "읽기 후",
+        iconImage: "../assets/images/individual-reading/today-reading-after-icon.png",
+        desc: "책을 다 읽고 중요한 내용과 내 생각을 정리해요.",
+        activeLabel: "정리하기",
+        doneLabel: "완료",
+        lockedLabel: "읽기 중 완료 필요",
+        url: "./individual-after-reading.html"
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      prepareDefaultState();
+      renderAdventure();
+    });
+
+    function prepareDefaultState() {
+      if (!sessionStorage.getItem(STORAGE_KEYS.stage)) {
+        sessionStorage.setItem(STORAGE_KEYS.stage, "before");
+      }
+    }
+
+    function getCurrentStage() {
+      return sessionStorage.getItem(STORAGE_KEYS.stage) || "before";
+    }
+
+    function getCurrentBookTitle() {
+      return sessionStorage.getItem(STORAGE_KEYS.bookTitle) || "";
+    }
+
+    function isStageDone(stageKey) {
+      if (stageKey === "before") return sessionStorage.getItem(STORAGE_KEYS.beforeDone) === "true";
+      if (stageKey === "during") return sessionStorage.getItem(STORAGE_KEYS.duringDone) === "true";
+      if (stageKey === "after") return sessionStorage.getItem(STORAGE_KEYS.afterDone) === "true";
+      return false;
+    }
+
+    function isStageUnlocked(stageKey) {
+      const currentStage = getCurrentStage();
+
+      if (stageKey === "before") return currentStage === "before" || isStageDone("before");
+      if (stageKey === "during") return isStageDone("before") || currentStage === "during";
+      if (stageKey === "after") return isStageDone("during") || currentStage === "after";
+
+      return false;
+    }
+
+    function renderAdventure() {
+      renderBookStatus();
+      renderStageCards();
+      renderLumiGuide();
+    }
+
+    function renderBookStatus() {
+      const bookTitle = getCurrentBookTitle();
+      document.getElementById("currentBookTitle").textContent = bookTitle || "아직 정하지 않았어요";
+    }
+
+    function renderStageCards() {
+      const stageGrid = document.getElementById("stageGrid");
+      const currentStage = getCurrentStage();
+
+      stageGrid.innerHTML = "";
+
+      stages.forEach((stage) => {
+        const done = isStageDone(stage.key);
+        const unlocked = isStageUnlocked(stage.key);
+        const active = currentStage === stage.key && !done;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "tra-stage-button";
+        button.classList.toggle("active", active);
+        button.classList.toggle("done", done);
+        button.classList.toggle("locked", !unlocked);
+
+        const stateLabel = done ? stage.doneLabel : active ? stage.activeLabel : unlocked ? stage.activeLabel : stage.lockedLabel;
+
+        button.innerHTML = `
+          <div class="tra-stage-number">${stage.number}</div>
+          <div class="tra-stage-icon">
+            <img src="${stage.iconImage}" alt="${stage.title} 이미지">
+          </div>
+          <div class="tra-stage-text">
+            <h2>${stage.title}</h2>
+            <p>${stage.desc}</p>
+          </div>
+          <div class="tra-stage-state">${stateLabel}</div>
+        `;
+
+        button.onclick = () => {
+          if (!unlocked) {
+            alert("앞 단계 활동을 먼저 완료하면 열려요!");
+            return;
+          }
+
+          location.href = stage.url;
+        };
+
+        stageGrid.appendChild(button);
+      });
+    }
+
+    function renderLumiGuide() {
+      const currentStage = getCurrentStage();
+      const bookTitle = getCurrentBookTitle();
+      const lumiBubble = document.getElementById("lumiBubble");
+      const lumiImage = document.getElementById("lumiImage");
+      const bottomNote = document.getElementById("bottomNote");
+
+      if (currentStage === "before") {
+        lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-point.png";
+        lumiBubble.innerHTML = "이번 모험은 읽기 전부터 시작이야.<br>어떤 책을 읽을지 먼저 알려줘!";
+        
+        return;
+      }
+
+      if (currentStage === "during") {
+        lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-reading.png";
+        lumiBubble.innerHTML = `${bookTitle ? "「" + bookTitle + "」" : "책"}을 읽으며<br>떠오르는 질문을 붙잡아 보자!`;
+        
+        return;
+      }
+
+      if (currentStage === "after") {
+        lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-guide.png";
+        lumiBubble.innerHTML = "완독까지 거의 다 왔어!<br>읽은 내용을 정리하면 모험이 마무리돼.";
+        
+      }
+    }
+
+    function goIndividualReading() {
+      location.href = "./individual-reading.html";
+    }
+  </script>
+  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+<script src="../js/individual-power.js"></script>
+</body>
+</html>
