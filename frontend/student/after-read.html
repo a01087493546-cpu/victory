@@ -1096,6 +1096,50 @@
       white-space: pre-line;
       word-break: keep-all;
     }
+        .ar-share-footer {
+      margin-top: 11px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .ar-share-like-button {
+      min-width: 72px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(186, 94, 72, 0.32);
+      background: rgba(255, 246, 236, 0.94);
+      color: #8a3d2a;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 3px 0 rgba(126, 73, 22, 0.14);
+    }
+
+    .ar-share-like-button.is-liked {
+      background: linear-gradient(180deg, #f7d7c9, #d7876b);
+      color: #642310;
+      border-color: rgba(155, 55, 35, 0.45);
+    }
+
+    .ar-practice-write-panel .ar-practice-write-layout {
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    }
+
+    .ar-practice-write-panel .ar-practice-write-layout > .ar-study-card:first-child {
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+      padding: 16px 18px;
+    }
+
+    .ar-practice-write-panel .ar-extra-practice-text {
+      min-height: 0;
+      height: 100%;
+      padding: 18px 20px;
+      font-size: 20px;
+      line-height: 1.65;
+    }
 
     .ar-empty {
       grid-column: 1 / -1;
@@ -1611,10 +1655,11 @@
 
             <div></div>
 
-            <div class="ar-panel-actions">
+                        <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('summary')">이전 화면</button>
-              <button class="ar-action-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+              <button class="ar-action-button is-brown" type="button" onclick="goClassReading()">우리반 책읽기</button>
+              <button class="ar-action-button" type="button" onclick="goIndividualReading()">개별읽기하러 가기</button>
             </div>
           </section>
         </section>
@@ -1623,7 +1668,8 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "afterReadSummaries";
+        const STORAGE_KEY = "afterReadSummaries";
+    const LIKE_STORAGE_KEY = "afterReadSummaryLikes";
 
     const bookTypeData = {
       story: {
@@ -2257,14 +2303,9 @@
         connectBox.appendChild(div);
       });
 
-      const data = bookTypeData[selectedBookType];
-      const answerText = qaData.map(function(item) {
-        return item.answer;
-      }).join(" ");
+            const data = bookTypeData[selectedBookType];
 
-      document.getElementById("summaryText").value =
-        data.summaryTemplate + "\n\n" +
-        "내 답을 모아 쓰기: " + answerText;
+      document.getElementById("summaryText").value = data.summaryTemplate;
 
       showStudyPanel("summary");
       setTimeout(checkSummaryFeedback, 0);
@@ -2329,7 +2370,8 @@
       const savedList = loadSummaries();
       const data = bookTypeData[selectedBookType];
 
-      const newSummary = {
+           const newSummary = {
+        id: "my-summary-" + Date.now(),
         name: "나",
         type: selectedBookType,
         typeLabel: data.label,
@@ -2362,28 +2404,34 @@
       }
     }
 
-    function renderShareList() {
+        function renderShareList() {
       const shareList = document.getElementById("shareList");
       const savedList = loadSummaries();
 
       const sampleList = [
         {
+          id: "sample-minji",
           name: "민지",
           typeLabel: "이야기 책",
           icon: "📖",
-          summary: "처음에는 주인공이 길을 잃었습니다.\n가운데에는 친구를 만나 도움을 받았습니다.\n마지막에는 집으로 돌아왔습니다."
+          summary: "처음에는 주인공이 길을 잃었습니다.\n가운데에는 친구를 만나 도움을 받았습니다.\n마지막에는 집으로 돌아왔습니다.",
+          baseLikes: 2
         },
         {
+          id: "sample-seojun",
           name: "서준",
           typeLabel: "정보를 담은 책",
           icon: "🔍",
-          summary: "이 책은 동물의 겨울나기에 대해 알려 줍니다.\n첫 번째 중심 내용은 동물들이 겨울을 준비하는 방법입니다.\n또 다른 중심 내용은 겨울잠을 자는 동물들의 특징입니다."
+          summary: "이 책은 동물의 겨울나기에 대해 알려 줍니다.\n첫 번째 중심 내용은 동물들이 겨울을 준비하는 방법입니다.\n또 다른 중심 내용은 겨울잠을 자는 동물들의 특징입니다.",
+          baseLikes: 1
         },
         {
+          id: "sample-hayoon",
           name: "하윤",
           typeLabel: "주장을 담은 책",
           icon: "📣",
-          summary: "글쓴이는 쓰레기를 줄여야 한다고 주장합니다.\n그 이유는 환경을 지킬 수 있기 때문입니다."
+          summary: "글쓴이는 쓰레기를 줄여야 한다고 주장합니다.\n그 이유는 환경을 지킬 수 있기 때문입니다.",
+          baseLikes: 3
         }
       ];
 
@@ -2394,15 +2442,69 @@
         return;
       }
 
-      shareList.innerHTML = allList.slice(0, 3).map(function(item) {
+      const likedIds = loadLikedSummaryIds();
+
+      shareList.innerHTML = allList.slice(0, 3).map(function(item, index) {
+        const itemId = item.id || "summary-" + index;
+        const isLiked = likedIds.includes(itemId);
+        const likeCount = Number(item.baseLikes || 0) + (isLiked ? 1 : 0);
+
         return (
           '<article class="ar-share-item">' +
             '<strong>' + escapeHtml(item.name) + '의 간추리기</strong>' +
             '<span class="ar-share-tag">' + (item.icon || "📘") + ' ' + escapeHtml(item.typeLabel) + '</span>' +
             '<p>' + escapeHtml(item.summary) + '</p>' +
+            '<div class="ar-share-footer">' +
+              '<button ' +
+                'type="button" ' +
+                'class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
+                'onclick="toggleSummaryLike(\'' + escapeJsString(itemId) + '\')">' +
+                (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
+              '</button>' +
+            '</div>' +
           '</article>'
         );
       }).join("");
+    }
+
+    function loadLikedSummaryIds() {
+      const savedData = localStorage.getItem(LIKE_STORAGE_KEY);
+
+      if (!savedData) {
+        return [];
+      }
+
+      try {
+        const parsedData = JSON.parse(savedData);
+        return Array.isArray(parsedData) ? parsedData : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveLikedSummaryIds(ids) {
+      localStorage.setItem(LIKE_STORAGE_KEY, JSON.stringify(ids));
+    }
+
+    function toggleSummaryLike(summaryId) {
+      let likedIds = loadLikedSummaryIds();
+
+      if (likedIds.includes(summaryId)) {
+        likedIds = likedIds.filter(function(id) {
+          return id !== summaryId;
+        });
+      } else {
+        likedIds.push(summaryId);
+      }
+
+      saveLikedSummaryIds(likedIds);
+      renderShareList();
+    }
+
+    function escapeJsString(text) {
+      return String(text || "")
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'");
     }
 
     function clearQuestionInputs() {
@@ -2508,8 +2610,8 @@
         .replaceAll("'", "&#039;");
     }
 
-    function goClassReading() {
-      location.href = "./class-reading.html";
+        function goIndividualReading() {
+      location.href = "./individual-reading.html";
     }
 
     renderShareList();

@@ -181,21 +181,23 @@
     }
 
     .tr-card-icon {
-      width: 116px;
-      height: 116px;
-      margin-top: 34px;
-      border-radius: 30px;
-      border: 2px solid rgba(255, 224, 151, 0.85);
-      background:
-        radial-gradient(circle at 45% 35%, #67d7ff 0%, #42b5f2 34%, #6b67ef 100%);
-      box-shadow:
-        inset 0 0 20px rgba(255, 255, 255, 0.25),
-        0 10px 18px rgba(75, 45, 18, 0.24);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 54px;
-    }
+  width: 116px;
+  height: 116px;
+  margin-top: 34px;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 224, 151, 0.85);
+  background:
+    radial-gradient(circle at 38% 28%, rgba(255, 223, 151, 0.95) 0%, rgba(196, 133, 59, 0.96) 42%, rgba(93, 49, 17, 0.98) 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 244, 211, 0.28),
+    inset 0 -8px 18px rgba(61, 29, 8, 0.28),
+    0 10px 18px rgba(75, 45, 18, 0.24),
+    0 0 16px rgba(255, 205, 108, 0.18);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 54px;
+}
 
     .tr-menu-title {
       margin: 24px 0 8px;
@@ -356,18 +358,18 @@
           </button>
         </article>
 
-        <article class="tr-menu-card disabled">
-          <span class="tr-card-badge">준비 중</span>
-          <div class="tr-card-icon">📖</div>
-          <h2 class="tr-menu-title">온책읽기</h2>
-          <p class="tr-menu-desc">
-            우리 반이 함께 읽는 책과<br>
-            활동을 관리해요.
-          </p>
-          <button class="tr-action-button secondary" type="button" onclick="readyMenu('온책읽기')">
-            온책읽기 들어가기
-          </button>
-        </article>
+        <article class="tr-menu-card ready">
+  <span class="tr-card-badge">연결됨</span>
+  <div class="tr-card-icon">📖</div>
+  <h2 class="tr-menu-title">온책읽기</h2>
+  <p class="tr-menu-desc">
+    우리 반이 함께 읽는 책과<br>
+    활동을 관리해요.
+  </p>
+  <button class="tr-action-button" type="button" onclick="goBookManage()">
+    온책읽기 들어가기
+  </button>
+</article>
 
         <article class="tr-menu-card disabled">
           <span class="tr-card-badge">준비 중</span>
@@ -384,8 +386,8 @@
       </div>
 
       <div class="tr-guide-box">
-        ※ 현재는 <strong>계정관리</strong> 화면만 연결되어 있어요.  
-        온책읽기와 개별읽기는 화면을 만든 뒤 링크를 연결하면 됩니다.
+        ※ 현재는 <strong>계정관리</strong>와 <strong>온책읽기</strong> 화면이 연결되어 있어요.  
+개별읽기는 화면을 만든 뒤 링크를 연결하면 됩니다.
       </div>
     </section>
   </main>
@@ -398,6 +400,9 @@
     function goTeacherRegister() {
       location.href = "teacher-register.html";
     }
+    function goBookManage() {
+  location.href = "book-manage.html";
+}
 
     function readyMenu(menuName) {
       alert(menuName + " 화면은 아직 준비 중이에요.");
