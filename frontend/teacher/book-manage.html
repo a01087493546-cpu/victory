@@ -1288,14 +1288,14 @@
               </div>
 
               <div class="wr-main-buttons">
-                <button class="wr-big-button primary" type="button" onclick="goBookSelect()">
-                  <span>도서 선정하기</span>
-                  <span class="wr-big-button-icon">📚</span>
-                </button>
-
-                <button class="wr-big-button" type="button" onclick="goBookChatCheck()">
-  <span>책수다방 확인</span>
+                <button class="wr-big-button" type="button" onclick="goBookChatManage()">
+  <span>책수다방 관리</span>
   <span class="wr-big-button-icon">💬</span>
+</button>
+
+               <button class="wr-big-button green" type="button" onclick="goLesson()">
+  <span>수업하기</span>
+  <span class="wr-big-button-icon">✏️</span>
 </button>
               </div>
             </div>
@@ -1547,13 +1547,16 @@
       location.href = "home.html";
     }
 
-    function goBookSelect() {
-  location.href = "book-select.html";
+ function goBookChatManage() {
+  location.href = "book-chat-manage.html";
 }
 
    function goBookChatCheck() {
   alert("책수다방 확인 화면은 아직 준비 중이에요.");
   // location.href = "book-chat-check.html";
+}
+function goLesson() {
+  location.href = "practice-teacher.html";
 }
 
     renderStudentPreview();

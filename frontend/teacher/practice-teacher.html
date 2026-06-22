@@ -564,9 +564,9 @@
         <span>문답책</span>
       </div>
 
-      <button class="home-button" onclick="goTeacherWholeReading()">
-        ← 온책읽기 관리
-      </button>
+      <button class="home-button" onclick="location.href='./book-manage.html'">
+  ← 온책읽기 관리
+</button>
     </header>
 
     <main class="practice-card">
@@ -740,30 +740,33 @@
       location.href = "../teacher/whole-reading.html";
     }
 
-    // 책 고르기 화면으로 이동합니다.
-    function goQuestionBundlePage() {
-      location.href = "./question-bundle.html";
-    }
+   // 책 고르기 화면으로 이동합니다.
+function goQuestionBundlePage() {
+  location.href = "./book-select.html";
+}
 
-    // 읽기 전 인트로 화면으로 이동합니다.
-    function goBeforeIntroPage() {
-      location.href = "./read-before-intro.html";
-    }
+// 읽기 전 공유 화면으로 이동합니다.
+// mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
+function goBeforeIntroPage() {
+  location.href = "../student/before-reading-share.html?mode=teacher";
+}
 
-    // 읽기 중 인트로 화면으로 이동합니다.
-    function goDuringReadingIntro() {
-      location.href = "./during-reading-intro.html";
-    }
+// 읽기 중 화면은 아직 연결하지 않습니다.
+function goDuringReadingIntro() {
+  alert("읽기 중 화면은 아직 연결되지 않았어요.");
+}
 
-    // 우리반 책읽기 화면으로 이동합니다.
-    function goClassReadingPage() {
-      location.href = "./class-reading.html";
-    }
+// 책수다방 화면으로 이동합니다.
+// mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
+function goClassReadingPage() {
+  location.href = "../student/book-chat.html?mode=teacher";
+}
 
-    // 읽기 후 활동 화면으로 이동합니다.
-    function goAfterReadingPage() {
-      location.href = "./after-read.html";
-    }
+// 읽기 후 화면의 간추리기 공유로 이동합니다.
+// open=share는 간추리기 공유 화면 바로 열기, mode=teacher는 교사용 돌아가기 버튼 표시용입니다.
+function goAfterReadingPage() {
+  location.href = "../student/after-read.html?open=share&mode=teacher";
+}
   </script>
 </body>
 </html>

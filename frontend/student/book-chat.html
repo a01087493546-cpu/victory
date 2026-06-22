@@ -171,18 +171,18 @@
         drop-shadow(0 0 15px rgba(255,198,94,0.14));
     }
 
-    .speech-box {
-      position: relative;
-      padding: 21px 26px;
-      border-radius: 22px;
-      border: 1px solid rgba(186, 130, 58, 0.28);
-      background: rgba(255, 254, 248, 0.78);
-      color: #4f2d15;
-      font-size: 21px;
-      font-weight: 900;
-      line-height: 1.55;
-      word-break: keep-all;
-    }
+   .speech-box {
+  position: relative;
+  padding: 18px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(186, 130, 58, 0.28);
+  background: rgba(255, 254, 248, 0.78);
+  color: #4f2d15;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.35;
+  word-break: keep-all;
+}
 
     .speech-box::before {
       content: "";
@@ -213,12 +213,12 @@
       letter-spacing: -0.7px;
     }
 
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 16px;
-    }
+   .stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
 
     .stat-box {
       min-height: 76px;
@@ -255,12 +255,12 @@
       padding: 14px 18px;
     }
 
-    .filter-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr) 150px;
-      gap: 10px;
-      align-items: center;
-    }
+   .filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 150px;
+  gap: 10px;
+  align-items: center;
+}
 
     .filter-button,
     .sort-select {
@@ -909,10 +909,33 @@
         grid-template-columns: 1fr;
       }
     }
+    .teacher-return-button {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 9999;
+  border: 1px solid rgba(255, 215, 132, 0.72);
+  border-radius: 999px;
+  padding: 13px 20px;
+  background: linear-gradient(180deg, #965d25, #562b0c);
+  color: #fff5df;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow:
+    0 7px 0 rgba(45, 22, 7, 0.78),
+    0 12px 22px rgba(0, 0, 0, 0.28);
+}
+
+.teacher-return-button:hover {
+  transform: translateY(-2px);
+}
   </style>
 </head>
 
 <body>
+  <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
+  ← 교사용 수업차례로
+</button>
   <main class="page">
     <div class="shell">
       <header class="top">
@@ -936,9 +959,8 @@
         <article class="hero-left">
           <img class="lumi-img" src="../assets/images/class-reading/class-reading-lumi-feedback.png" alt="루미">
           <div class="speech-box">
-            친구들과 이야기해 보고 싶은 질문을 골라 봐!<br>
-            책에서 찾은 근거를 함께 말하면 생각이 더 깊어져.
-          </div>
+  친구들과 이야기해 보고 싶은 질문을 골라 봐!
+</div>
         </article>
 
         <article class="activity-card">
@@ -957,32 +979,25 @@
               <p class="stat-label">이어쓰기</p>
               <p class="stat-value" id="myReplyCount">0개</p>
             </div>
-            <div class="stat-box">
-              <p class="stat-label">깊어진 질문</p>
-              <p class="stat-value" id="deepQuestionCount">0개</p>
-            </div>
-          </div>
+            
 
           <p class="activity-desc">
-            질문을 고른 뒤 내 생각을 쓰고, 친구 생각에 이어 쓰고, 마지막에는 처음 질문을 더 좋은 질문으로 바꿔 봐요.
+            질문을 고른 뒤 내 생각을 쓰고 친구 생각에 이어쓰며 의견을 나눠봐요.
           </p>
         </article>
       </section>
 
       <section class="filter-card">
         <div class="filter-row">
-          <button class="filter-button active" type="button" data-type="all">전체 보기</button>
-          <button class="filter-button" type="button" data-type="direct">🔍 책 내용 질문</button>
-          <button class="filter-button" type="button" data-type="infer">💡 짐작 질문</button>
-          <button class="filter-button" type="button" data-type="feeling">💛 생각·느낌</button>
-          <button class="filter-button" type="button" data-type="life">🔗 나의 삶 연결</button>
+  <button class="filter-button active" type="button" data-type="quiz">📖 책 퀴즈</button>
+  <button class="filter-button" type="button" data-type="talk">💬 생각 나누기</button>
 
-          <select class="sort-select" id="sortSelect">
-            <option value="talk">수다 많은 순</option>
-            <option value="latest">최신순</option>
-            <option value="name">이름순</option>
-          </select>
-        </div>
+  <select class="sort-select" id="sortSelect">
+    <option value="talk">수다 많은 순</option>
+    <option value="latest">최신순</option>
+    <option value="name">이름순</option>
+  </select>
+</div>
       </section>
 
       <section class="board-grid">
@@ -1003,7 +1018,7 @@
         <article class="selected-card">
           <div class="section-head">
             <h2 class="section-title">생각 나누기</h2>
-            <span class="count-pill">질문 → 생각 → 이어쓰기 → 깊은 질문</span>
+            <span class="count-pill">질문 → 생각 → 이어쓰기</span>
           </div>
 
           <div id="talkArea"></div>
@@ -1011,7 +1026,7 @@
       </section>
 
       <p class="bottom-note">
-        책수다방은 정답을 찾는 곳이 아니라, 책을 더 깊이 읽기 위해 생각을 나누는 곳이에요.
+        책수다방은 친구들과 질문을 고르고, 생각을 이어 쓰며 의견을 나누는 곳이에요.
       </p>
     </div>
   </main>
@@ -1021,13 +1036,12 @@
     const studentName = sessionStorage.getItem("name") || "나";
 
     const typeInfo = {
-      direct: { label: "책 내용 질문", icon: "🔍" },
-      infer: { label: "짐작 질문", icon: "💡" },
-      feeling: { label: "생각·느낌 질문", icon: "💛" },
-      life: { label: "나의 삶 연결 질문", icon: "🔗" }
-    };
-
-    let currentType = "all";
+  direct: { label: "책 퀴즈", icon: "📖" },
+  infer: { label: "생각 나누기", icon: "💬" },
+  feeling: { label: "생각 나누기", icon: "💬" },
+  life: { label: "생각 나누기", icon: "💬" }
+};
+   let currentType = "quiz";
     let selectedQuestionId = null;
     let openedSection = "thought";
     let activeReplyTarget = null;
@@ -1277,11 +1291,17 @@
     function getFilteredQuestions() {
       let questions = allQuestions.slice();
 
-      if (currentType !== "all") {
-        questions = questions.filter(function(question) {
-          return question.type === currentType;
-        });
-      }
+      if (currentType === "quiz") {
+  questions = questions.filter(function(question) {
+    return question.type === "direct";
+  });
+}
+
+if (currentType === "talk") {
+  questions = questions.filter(function(question) {
+    return question.type !== "direct";
+  });
+}
 
       if (sortSelect.value === "name") {
         questions.sort(function(a, b) {
@@ -1383,16 +1403,9 @@
           renderCommentList(selectedQuestion, comments)
         )}
 
-        ${renderAccordion(
-          "deep",
-          "3단계 · 깊어진 질문 만들기",
-          "친구들의 생각을 읽고 처음 질문을 더 깊은 질문으로 바꿔요.",
-          renderDeepQuestionForm(selectedQuestion)
-        )}
       `;
 
       fillSavedThought(selectedQuestion.id);
-      fillSavedDeepQuestion(selectedQuestion.id);
     }
 
     function renderAccordion(sectionId, title, caption, bodyHtml) {
@@ -1920,7 +1933,6 @@
     function updateCounts(filteredQuestions) {
       const allThoughts = getAllThoughts();
       const allReplies = getAllNestedReplies();
-      const allDeepQuestions = getAllDeepQuestions();
 
       let replyCount = 0;
 
@@ -1933,7 +1945,6 @@
       document.getElementById("questionCount").textContent = allQuestions.length + "개";
       document.getElementById("myThoughtCount").textContent = Object.keys(allThoughts).length + "개";
       document.getElementById("myReplyCount").textContent = replyCount + "개";
-      document.getElementById("deepQuestionCount").textContent = Object.keys(allDeepQuestions).length + "개";
       document.getElementById("visibleQuestionCount").textContent = filteredQuestions.length + "개";
     }
 
@@ -2050,6 +2061,22 @@
     function escapeAttribute(text) {
       return escapeHtml(text).replaceAll("`", "&#096;");
     }
-  </script>
+    function isTeacherMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("mode") === "teacher";
+}
+
+function goTeacherPractice() {
+  location.href = "../teacher/practice-teacher.html";
+}
+
+if (isTeacherMode()) {
+  const teacherReturnButton = document.getElementById("teacherReturnButton");
+
+  if (teacherReturnButton) {
+    teacherReturnButton.style.display = "block";
+  }
+}
+</script>
 </body>
 </html>
