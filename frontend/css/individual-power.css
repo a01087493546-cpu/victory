@@ -139,3 +139,202 @@
   cursor: pointer;
   box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18);
 }
+/* ==============================
+  보상 획득 팝업 디자인
+  역할: 능력치를 얻었을 때 현재 화면 위에 보상 화면을 띄웁니다.
+============================== */
+
+.individual-reward-overlay,
+.individual-reward-overlay * {
+  box-sizing: border-box;
+  font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+}
+
+.individual-reward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(54, 35, 15, 0.52);
+  backdrop-filter: blur(6px);
+}
+
+.individual-reward-modal {
+  position: relative;
+  width: min(620px, 100%);
+  padding: 32px 34px 30px;
+  border: 1px solid rgba(194, 131, 43, 0.42);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 230, 160, 0.62), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(214, 157, 69, 0.28), transparent 30%),
+    rgba(255, 250, 238, 0.98);
+  color: #573313;
+  box-shadow: 0 28px 70px rgba(72, 45, 16, 0.32);
+}
+
+.individual-reward-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(126, 77, 20, 0.12);
+  color: #6a3d15;
+  font-size: 24px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.individual-reward-top-text {
+  margin-bottom: 8px;
+  color: #b2731d;
+  font-size: 15px;
+  font-weight: 950;
+  text-align: center;
+}
+
+.individual-reward-title {
+  margin: 0;
+  color: #4f2f13;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 32px;
+  font-weight: 950;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.individual-reward-subtitle {
+  margin: 12px 0 20px;
+  color: #735026;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.55;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.individual-reward-condition-box {
+  margin-bottom: 18px;
+  padding: 15px 18px;
+  border: 1px solid rgba(177, 112, 29, 0.22);
+  border-radius: 20px;
+  background: rgba(255, 243, 214, 0.78);
+}
+
+.individual-reward-condition-label {
+  margin-bottom: 6px;
+  color: #9a631e;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.individual-reward-condition-text {
+  color: #5d3615;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.individual-reward-list {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.individual-reward-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(177, 112, 29, 0.18);
+  border-radius: 22px;
+  background: rgba(255, 248, 232, 0.92);
+}
+
+.individual-reward-icon-wrap {
+  flex: 0 0 auto;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff4cf, #e9bf69);
+  box-shadow: inset 0 0 0 1px rgba(146, 86, 22, 0.15);
+}
+
+.individual-reward-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.individual-reward-fallback {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.individual-reward-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.individual-reward-name {
+  color: #5d3615;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.individual-reward-amount {
+  margin-top: 2px;
+  color: #b2731d;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.individual-reward-desc {
+  margin-top: 4px;
+  color: #765025;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.individual-reward-notice {
+  margin: 14px 0 18px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(126, 77, 20, 0.08);
+  color: #7a5528;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.individual-reward-confirm {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #dca94f, #a8641e);
+  color: #fff9e8;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 9px 18px rgba(119, 72, 19, 0.20);
+}

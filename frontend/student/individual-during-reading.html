@@ -1813,7 +1813,7 @@
     }
 
     #shareScreen::after {
-      content: "친구들이 만든 질문을 살펴보고\A내 생각을 답으로 적어보자!";
+      content: "내가 읽은 책의 장면을 소개하고\A친구들과 생각을 나눠요!";
       white-space: pre-line !important;
       grid-row: 2 !important;
       grid-column: 1 / -1 !important;
@@ -3583,7 +3583,7 @@
 }
   
 /* =========================================================
-   읽기 중 홈 최종 정리 + 질문 유형 그래프
+   읽기 중 홈 최종 정리 + 책 종류 그래프
    - 루미/말풍선 비중을 줄이고, 질문 유형 균형을 보여줍니다.
    - 나의 질문 모음 버튼은 독서 보관함으로 통합했습니다.
    ========================================================= */
@@ -3866,7 +3866,7 @@
    읽기 중 홈 화면 최종 배치 조정 1단계
    - 카드 안 내용이 한쪽으로 몰리지 않게 중앙 정렬
    - 루미를 상반신처럼 크게 보이게 조정
-   - 질문 유형 그래프 영역을 넓고 여유 있게 정리
+   - 책 종류 그래프 영역을 넓고 여유 있게 정리
    - 질문 만들기 / 질문 나누기 카드 안 요소를 중앙으로 올림
    ========================================================= */
 
@@ -3951,7 +3951,7 @@
   font-size: 34px !important;
 }
 
-/* 오른쪽 질문 유형 그래프 카드 */
+/* 오른쪽 책 종류 그래프카드 */
 #homeScreen .idr-question-graph-card {
   grid-column: 3 / 4 !important;
   padding: 28px 30px !important;
@@ -4323,7 +4323,7 @@
           <span>문답책</span>
         </div>
 
-        <div class="idr-top-actions">
+       <div class="idr-top-actions">
   <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
   <span class="idr-top-button idr-top-date" id="todayDateTop">오늘 날짜</span>
 
@@ -4332,7 +4332,6 @@
 
   <button type="button" class="idr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
   <button type="button" class="idr-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-  <button type="button" class="idr-top-button" onclick="goIndividualReading()">🏠</button>
 </div>
       </header>
 
@@ -4398,20 +4397,22 @@
             </div>
           </article>
 
-          <!-- 읽기 중 질문 유형 그래프입니다. 질문을 저장할 때마다 자동으로 갱신됩니다. -->
+          <!-- 읽기 중 책 종류 그래프입니다. 질문을 저장할 때마다 자동으로 갱신됩니다. -->
           <article class="idr-card idr-question-graph-card">
             <div class="idr-graph-head">
               <div>
-                <h2>질문 유형 그래프</h2>
-                <p>읽기 중에 만든 질문이 네 가지 유형에 골고루 쌓이는지 살펴봐요.</p>
+                <h2>읽은 책 종류</h2>
+                <p>내가 고른 책이 어떤 종류인지 살펴봐요.</p>
               </div>
-              <span class="idr-graph-total" id="questionGraphTotal">0개</span>
+             <span class="idr-graph-total" id="questionGraphTotal">0권</span>
             </div>
 
             <div class="idr-graph-bars" id="questionGraphBars"></div>
 
             <div class="idr-graph-feedback" id="questionGraphFeedback">
-              아직 질문이 없어요. 오늘 읽은 부분에서 질문을 만들어 보세요.
+             <div class="idr-graph-feedback" id="questionGraphFeedback">
+  아직 책 종류가 없어요. 읽기 전 활동에서 책 종류를 선택하면 여기에 표시돼요.
+</div>
             </div>
           </article>
 
@@ -4419,24 +4420,24 @@
             <!-- 오늘 읽은 부분에서 내 질문과 생각을 기록하는 활동입니다. -->
             <button type="button" class="idr-menu-button" onclick="showScreen('question')">
               <div class="idr-menu-icon">
-                <img src="../assets/images/individual-reading/individual-during-menu-question.png" alt="질문 만들기">
+                <img src="../assets/images/individual-reading/individual-during-menu-question.png" alt="책 속 생각쓰기">
               </div>
               <div>
-                <strong>질문 만들기</strong>
-                <span>오늘 읽은 부분에서 질문과 내 생각을 기록해요.</span>
+               <strong>책 속 생각쓰기</strong>
+<span>오늘 읽은 부분에서 떠오른 질문과 생각을 기록해요.</span>
               </div>
             </button>
 
-            <!-- 친구 질문을 읽고 내 책에도 적용해 보는 활동입니다. -->
-            <button type="button" class="idr-menu-button" onclick="showScreen('share')">
-              <div class="idr-menu-icon">
-                <img src="../assets/images/individual-reading/individual-during-menu-share.png" alt="질문 나누기">
-              </div>
-              <div>
-                <strong>질문 나누기</strong>
-                <span>친구 질문에 생각을 남기고 내 책에도 적용해요.</span>
-              </div>
-            </button>
+            <!-- 책수다방: 내가 읽은 책의 장면을 소개하고 친구들과 밸런스 선택으로 생각을 나누는 활동입니다. -->
+<button type="button" class="idr-menu-button" onclick="showScreen('bookChat')">
+  <div class="idr-menu-icon">
+    <img src="../assets/images/individual-reading/individual-during-menu-share.png" alt="책수다방">
+  </div>
+  <div>
+    <strong>책수다방</strong>
+    <span>내 책의 장면을 소개하고, 밸런스 선택으로 친구들과 생각을 나눠요.</span>
+  </div>
+</button>
 
             <!-- 질문 모음은 나의 독서 보관함으로 통합합니다. -->
             <div class="idr-home-archive-note">
@@ -4559,8 +4560,8 @@
         <!-- 연습읽기 질문 나누기 화면과 비슷하게, 제목/안내/현황/필터/2열 활동판으로 분리합니다. -->
         <article class="idr-card idr-work-header idr-share-title-card">
           <div>
-            <h1>질문 나누기</h1>
-            <p>친구가 만든 질문을 읽고 내 생각을 남겨 봐요.</p>
+            <h1>오늘의 책수다방</h1>
+<p>오늘 읽은 책 속 장면을 소개하고, 친구들과 A/B 선택으로 생각을 나눠요.</p>
           </div>
         </article>
 
@@ -4641,7 +4642,7 @@
           </div>
 
           <div class="idr-work-actions">
-            <button type="button" class="idr-pill-button" onclick="showScreen('question')">질문 만들기</button>
+            <button type="button" class="idr-pill-button" onclick="showScreen('question')">책 속 생각쓰기</button>
             <button type="button" class="idr-pill-button" onclick="showScreen('home')">읽기 중 홈</button>
           </div>
         </article>
@@ -4748,6 +4749,8 @@
     const STORAGE_KEYS = {
       bookTitle: "individualCurrentBookTitle_" + studentId,
       bookAuthor: "individualCurrentBookAuthor_" + studentId,
+      bookType: "individualCurrentBookType_" + studentId,
+      bookTypeHistory: "individualBookTypeHistory_" + studentId,
       totalPages: "individualTotalPages_" + studentId,
       currentPage: "individualCurrentPage_" + studentId,
       duringQuestions: "individualDuringQuestions_" + studentId,
@@ -4756,7 +4759,25 @@
       duringDone: "individualDuringDone_" + studentId,
       shareSelected: "individualDuringShareSelected_" + studentId
     };
+const BOOK_TYPE_LABELS = {
+  story: "이야기 책",
+  info: "정보를 담은 책",
+  opinion: "주장을 담은 책",
+  etc: "그 밖의 책"
+};
 
+const BOOK_TYPE_ICONS = {
+  story: "📖",
+  info: "🔍",
+  opinion: "📣",
+  etc: "✨"
+};
+const bookTypes = [
+  { key: "story", label: "📖 이야기 책" },
+  { key: "info", label: "🔍 정보를 담은 책" },
+  { key: "opinion", label: "📣 주장을 담은 책" },
+  { key: "etc", label: "✨ 그 밖의 책" }
+];
     const questionTypes = [
       { key: "find", label: "🔎 바로 찾기" },
       { key: "infer", label: "💡 짐작하기" },
@@ -4887,32 +4908,923 @@
     }
 
     function showScreen(screenName) {
-      document.querySelectorAll(".idr-screen").forEach((screen) => {
-        screen.classList.remove("active");
-      });
+  document.querySelectorAll(".idr-screen").forEach((screen) => {
+    screen.classList.remove("active");
+  });
 
-      if (screenName === "home") {
-        document.getElementById("homeScreen").classList.add("active");
-        renderProgress();
-        renderQuestionBalanceGraph();
-      }
+  if (screenName === "home") {
+    document.getElementById("homeScreen").classList.add("active");
+    renderProgress();
+    renderQuestionBalanceGraph();
+  }
 
-      if (screenName === "question") {
-        document.getElementById("questionScreen").classList.add("active");
-        renderTodayQuestionList();
-        updateShareButtons();
-      }
+  if (screenName === "question") {
+    document.getElementById("questionScreen").classList.add("active");
+    renderTodayQuestionList();
+    updateShareButtons();
+  }
+/*
+  개별읽기 책수다방 화면을 그립니다.
+  - 왼쪽 목록에서 글을 클릭하면 오른쪽 상세 화면이 해당 글 내용으로 바뀝니다.
+  - 내가 쓴 글은 localStorage에서 불러오고, 샘플 친구 글과 함께 보여줍니다.
+*/
+function renderBookChatRoom(selectedIndex = 0) {
+  const shareScreen = document.getElementById("shareScreen");
 
-      if (screenName === "share") {
-        document.getElementById("shareScreen").classList.add("active");
-        renderShareQuestionList();
-      }
+  if (!shareScreen) return;
 
-      if (screenName === "collection") {
-        document.getElementById("collectionScreen").classList.add("active");
-        renderCollection();
-      }
+  // 현재 학생이 작성한 책수다 글을 임시 저장소에서 불러옵니다.
+  // 나중에 백엔드가 연결되면 GET API로 바꿀 부분입니다.
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  const storageKey = "individualBookChatPosts_" + studentId;
+  const myBookChatPosts = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+  // 화면 테스트용 친구 글입니다. 나중에는 DB에서 가져온 친구 글 목록으로 바꾸면 됩니다.
+  const friendBookChatPosts = [
+    {
+      id: "sample-book-chat-1",
+      writer: "지민",
+      label: "👑 인기글 · 지민",
+      bookTitle: "모험 이야기",
+      title: "안전한 길 vs 새로운 도전",
+      scene: "책 속 주인공이 익숙한 곳을 떠나 새로운 곳으로 가야 하는 장면이 나와. 너라면 어떤 선택을 할래?",
+      optionA: "안전한 길",
+      optionB: "새로운 도전",
+      imageData: "",
+      createdDate: getTodayDateKey(),
+      replies: [
+        {
+          writer: "서준",
+          choice: "B",
+          content: "위험해도 내가 원하는 일을 해 보는 게 더 멋지다고 생각해."
+        },
+        {
+          writer: "하은",
+          choice: "A",
+          content: "아직 준비가 안 됐다면 안전한 곳에서 더 힘을 기르는 것도 좋을 것 같아."
+        },
+        {
+          writer: "도윤",
+          choice: "B",
+          content: "새로운 도전을 해야 주인공이 더 성장할 수 있을 것 같아."
+        }
+      ]
+    },
+    {
+      id: "sample-book-chat-2",
+      writer: "민수",
+      label: "민수",
+      bookTitle: "친구 이야기",
+      title: "친구를 도와주기 vs 내 일을 먼저 하기",
+      scene: "주인공이 친구를 도와주면 자기 일이 늦어지는 상황이야. 너라면 어떻게 할래?",
+      optionA: "친구를 도와주기",
+      optionB: "내 일을 먼저 하기",
+      imageData: "",
+      createdDate: getTodayDateKey(),
+      replies: [
+        {
+          writer: "유나",
+          choice: "A",
+          content: "친구가 정말 힘든 상황이면 먼저 도와주는 게 좋다고 생각해."
+        },
+        {
+          writer: "건우",
+          choice: "B",
+          content: "내가 맡은 일도 약속이니까 먼저 끝내고 도와줄 것 같아."
+        }
+      ]
     }
+  ];
+
+  // 내가 쓴 글에는 목록에서 '나의 글' 표시를 붙입니다.
+  const myPosts = myBookChatPosts.map(function (post) {
+    return {
+      ...post,
+      label: "나의 글"
+    };
+  });
+
+  // 선택한 날짜에 작성된 책수다 글만 보여줍니다.
+// createdDate가 없는 예전 글은 createdAt에서 날짜만 잘라서 사용합니다.
+// 저장된 댓글/생각을 글 id 기준으로 불러옵니다.
+const savedThoughts = getSavedBookChatThoughts();
+
+// 내가 쓴 글 + 친구 샘플 글을 합친 뒤,
+// 저장된 댓글을 각 글의 replies 뒤에 붙입니다.
+const postsWithSavedThoughts = [...myPosts, ...friendBookChatPosts].map(function (post) {
+  const savedReplies = savedThoughts[post.id] || [];
+
+  return {
+    ...post,
+    replies: [...(post.replies || []), ...savedReplies]
+  };
+});
+
+// 선택한 날짜에 작성된 책수다 글만 보여줍니다.
+// createdDate가 없는 예전 글은 createdAt에서 날짜만 잘라서 사용합니다.
+const allBookChatPosts = postsWithSavedThoughts.filter(function (post) {
+  const postDate = post.createdDate || (post.createdAt ? post.createdAt.slice(0, 10) : getTodayDateKey());
+  return postDate === selectedBookChatDate;
+});
+// 선택한 날짜에 책수다 글이 하나도 없으면 빈 화면을 보여줍니다.
+// 이 처리가 없으면 이전 날짜로 이동했을 때 오른쪽 상세가 이전 글처럼 남을 수 있습니다.
+if (allBookChatPosts.length === 0) {
+  shareScreen.innerHTML = `
+    <section class="idr-card idr-work-header">
+      <div>
+        <h1>오늘의 책수다방</h1>
+        <p>오늘 읽은 책 속 장면을 소개하고, 친구들과 A/B 선택으로 생각을 나눠요.</p>
+      </div>
+      <div class="idr-work-actions">
+        <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
+      </div>
+    </section>
+
+    <section class="idr-card" style="padding: 22px; display: grid; gap: 14px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+        <h2 class="idr-section-title">책수다방 활동</h2>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button
+            class="idr-top-button"
+            type="button"
+            onclick="window.moveBookChatDate(-1)"
+            style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+          >
+            이전날
+          </button>
+
+          <span style="min-width: 160px; text-align: center; color: #5f3714; font-size: 15px; font-weight: 950;">
+            ${formatBookChatDate(selectedBookChatDate)}
+          </span>
+
+          <button
+            class="idr-top-button"
+            type="button"
+            onclick="window.goTodayBookChatDate()"
+            style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+          >
+            오늘
+          </button>
+
+          <button
+            class="idr-top-button"
+            type="button"
+            onclick="window.moveBookChatDate(1)"
+            style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+            ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+          >
+            다음날
+          </button>
+        </div>
+      </div>
+
+      <p style="margin: 0; color: #6f4720; font-size: 15px; font-weight: 900; line-height: 1.5;">
+        선택한 날짜에 올라온 책수다만 보여요.
+      </p>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: -2px;">
+        <button
+          class="idr-top-button primary"
+          type="button"
+          onclick="window.renderBookChatWriteScreen()"
+          style="min-width: 92px; height: 40px; padding: 0 18px;"
+        >
+          글쓰기
+        </button>
+      </div>
+    </section>
+
+    <section class="idr-share-layout">
+      <article class="idr-card idr-share-list-card">
+        <div class="idr-share-section-head">
+          <h2 class="idr-section-title">친구들의 책수다</h2>
+          <span class="idr-share-count-pill">0개</span>
+        </div>
+
+        <div class="idr-empty-box">
+          이 날짜에는 아직 올라온 책수다가 없어요.<br>
+          오늘 읽은 장면을 친구들과 나눠 보세요.
+        </div>
+      </article>
+
+      <article class="idr-card idr-selected-card">
+        <div class="idr-share-section-head">
+          <h2 class="idr-section-title">선택하고 이유 남기기</h2>
+        </div>
+
+        <div class="idr-empty-box">
+          왼쪽에 책수다 글이 생기면<br>
+          A/B 선택과 이유를 남길 수 있어요.
+        </div>
+      </article>
+    </section>
+  `;
+
+  selectedBookChatChoice = "";
+  return;
+}
+  if (selectedIndex < 0 || selectedIndex >= allBookChatPosts.length) {
+    selectedIndex = 0;
+  }
+
+  const selectedPost = allBookChatPosts[selectedIndex];
+
+// 댓글 저장 시 어느 글에 남기는지 알 수 있도록 현재 글 id와 순서를 기억합니다.
+// 일반 변수와 window 변수에 모두 저장해서, 아래쪽 최종 저장 함수에서도 안전하게 읽을 수 있게 합니다.
+selectedBookChatPostId = selectedPost.id;
+selectedBookChatIndex = selectedIndex;
+
+window.selectedBookChatPostId = selectedPost.id;
+window.selectedBookChatIndex = selectedIndex;
+
+/*
+  localStorage에 저장된 내 댓글을 불러옵니다.
+  기존 selectedPost.replies는 기본 댓글이고,
+  savedReplies는 내가 새로 남긴 댓글입니다.
+*/
+const savedBookChatThoughts = getSavedBookChatThoughts();
+const savedReplies = savedBookChatThoughts[selectedPost.id] || [];
+
+/*
+  화면에 보여줄 전체 댓글입니다.
+  - 기본 댓글 + 내가 저장한 댓글
+  - 저장 후 새로고침해도 localStorage 댓글이 다시 보입니다.
+*/
+const displayReplies = [
+  ...(selectedPost.replies || []),
+  ...savedReplies
+];
+
+ function getChoiceCount(post, choice) {
+  /*
+    기본 댓글 + localStorage에 저장된 댓글을 합쳐서 숫자를 계산합니다.
+    그래야 새로 남긴 댓글도 A/B 숫자에 바로 반영됩니다.
+  */
+  const savedThoughts = getSavedBookChatThoughts();
+  const savedReplies = savedThoughts[post.id] || [];
+
+  const allReplies = [
+    ...(post.replies || []),
+    ...savedReplies
+  ];
+
+  return allReplies.filter(function (reply) {
+    return reply.choice === choice;
+  }).length;
+}
+
+  function getTotalCount(post) {
+    return getChoiceCount(post, "A") + getChoiceCount(post, "B");
+  }
+
+  const totalReplyCount = allBookChatPosts.reduce(function (sum, post) {
+    return sum + getTotalCount(post);
+  }, 0);
+
+  const bookChatListHtml = allBookChatPosts.map(function (post, index) {
+    const aCount = getChoiceCount(post, "A");
+    const bCount = getChoiceCount(post, "B");
+    const totalCount = aCount + bCount;
+    const selectedClass = index === selectedIndex ? "selected" : "";
+
+    return `
+      <button
+        class="idr-share-card ${selectedClass}"
+        type="button"
+        onclick="window.renderBookChatRoom(${index})"
+      >
+        <div class="idr-question-card-top">
+          <span>${post.label || post.writer}</span>
+          <span class="idr-comment-count">참여 ${totalCount} · A ${aCount}명 · B ${bCount}명</span>
+        </div>
+
+        ${
+          post.imageData
+            ? `
+              <img
+                src="${post.imageData}"
+                alt="책수다 첨부 사진"
+                style="
+                  width: 100%;
+                  height: 92px;
+                  margin: 8px 0 10px;
+                  border-radius: 16px;
+                  object-fit: cover;
+                  border: 1px solid rgba(181, 117, 37, 0.18);
+                "
+              >
+            `
+            : ""
+        }
+
+        <strong>${post.title}</strong>
+        <p>${post.scene}</p>
+      </button>
+    `;
+  }).join("");
+
+  const selectedACount = getChoiceCount(selectedPost, "A");
+  const selectedBCount = getChoiceCount(selectedPost, "B");
+
+  const selectedRepliesHtml = displayReplies && displayReplies.length > 0
+  ? displayReplies.map(function (reply) {
+    return `
+      <div class="idr-reply-item">
+        <strong>${reply.writer} · ${reply.choice} 선택</strong>
+        ${reply.content}
+      </div>
+    `;
+  }).join("")
+  : `
+    <div class="idr-empty-box" style="min-height: 90px;">
+      아직 남겨진 생각이 없어요.<br>
+      첫 번째 생각을 남겨 보세요.
+    </div>
+  `;
+
+  shareScreen.innerHTML = `
+    <section class="idr-card idr-work-header">
+      <div>
+        <h1>책수다방</h1>
+        <p>내가 읽은 책의 장면을 소개하고, 친구들과 밸런스 선택으로 생각을 나눠요.</p>
+      </div>
+      <div class="idr-work-actions">
+        <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
+      </div>
+    </section>
+
+    <section class="idr-card" style="padding: 22px; display: grid; gap: 14px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+  <h2 class="idr-section-title">책수다방 활동</h2>
+
+  <div style="display: flex; align-items: center; gap: 8px;">
+   <button
+  class="idr-top-button"
+  type="button"
+  onclick="window.moveBookChatDate(-1)"
+  style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+>
+  이전날
+</button>
+
+    <span style="min-width: 160px; text-align: center; color: #5f3714; font-size: 15px; font-weight: 950;">
+      ${formatBookChatDate(selectedBookChatDate)}
+    </span>
+
+   <button
+  class="idr-top-button"
+  type="button"
+  onclick="window.goTodayBookChatDate()"
+  style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+>
+  오늘
+</button>
+
+   <button
+  class="idr-top-button"
+  type="button"
+  onclick="window.moveBookChatDate(1)"
+  style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
+  ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+>
+  다음날
+</button>
+  </div>
+</div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+        <div class="idr-stat-box">
+          <span>공유된 글</span>
+          <strong>${allBookChatPosts.length}개</strong>
+        </div>
+        <div class="idr-stat-box">
+          <span>모인 생각</span>
+          <strong>${totalReplyCount}개</strong>
+        </div>
+        <div class="idr-stat-box">
+          <span>오늘의 표시</span>
+          <strong>👑 인기글</strong>
+        </div>
+      </div>
+
+      <p style="margin: 0; color: #6f4720; font-size: 15px; font-weight: 900; line-height: 1.5;">
+        친구가 책을 몰라도 이해할 수 있게 장면을 설명하고,
+        A/B 선택과 이유를 함께 나누는 공간이에요.
+      </p>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: -2px;">
+        <button
+          class="idr-top-button primary"
+          type="button"
+          onclick="window.renderBookChatWriteScreen()"
+          style="min-width: 92px; height: 40px; padding: 0 18px;"
+        >
+          글쓰기
+        </button>
+      </div>
+    </section>
+
+    <section class="idr-share-layout">
+      <article class="idr-card idr-share-list-card">
+        <div class="idr-share-section-head">
+          <h2 class="idr-section-title">친구들의 책수다</h2>
+          <span class="idr-share-count-pill">${allBookChatPosts.length}개</span>
+        </div>
+
+        <div class="idr-list-scroll">
+          ${
+  allBookChatPosts.length > 0
+    ? bookChatListHtml
+    : `
+      <div class="idr-empty-box">
+        이 날짜에는 아직 올라온 책수다가 없어요.<br>
+        오늘 읽은 장면을 친구들과 나눠 보세요.
+      </div>
+    `
+}
+        </div>
+      </article>
+
+      <article class="idr-card idr-selected-card">
+        <div class="idr-share-section-head">
+          <h2 class="idr-section-title">선택하고 이유 남기기</h2>
+        </div>
+
+        <div class="idr-selected-content">
+          <div class="idr-selected-question">
+            <h3>${selectedPost.title}</h3>
+
+            ${
+              selectedPost.imageData
+                ? `
+                  <img
+                    src="${selectedPost.imageData}"
+                    alt="선택한 책수다 첨부 사진"
+                    style="
+                      width: 100%;
+                      max-height: 230px;
+                      margin: 10px 0 12px;
+                      border-radius: 18px;
+                      object-fit: cover;
+                      border: 1px solid rgba(181, 117, 37, 0.18);
+                    "
+                  >
+                `
+                : ""
+            }
+
+            <p>
+              <strong>상황 설명</strong>
+              ${selectedPost.scene}
+            </p>
+          </div>
+
+          <div class="idr-reply-box">
+            <label class="idr-label">나는 어떤 선택을 할까?</label>
+
+            <div class="idr-reply-actions">
+              <button
+                class="idr-main-button"
+                id="bookChatChoiceAButton"
+                data-book-chat-choice="A"
+                type="button"
+                onclick="window.selectBookChatChoice('A')"
+              >
+                A. ${selectedPost.optionA} · <span id="bookChatACount">${selectedACount}</span>명
+              </button>
+
+              <button
+                class="idr-main-button"
+                id="bookChatChoiceBButton"
+                data-book-chat-choice="B"
+                type="button"
+                onclick="window.selectBookChatChoice('B')"
+              >
+                B. ${selectedPost.optionB} · <span id="bookChatBCount">${selectedBCount}</span>명
+              </button>
+            </div>
+
+            <div class="idr-field">
+              <label for="bookChatReasonInput">선택한 이유</label>
+              <textarea
+                class="idr-textarea"
+                id="bookChatReasonInput"
+                placeholder="왜 그렇게 생각했는지 이유를 적어 보세요."
+                style="height: 120px;"
+              ></textarea>
+            </div>
+
+            <button class="idr-main-button primary" type="button" onclick="window.saveBookChatThought()">
+              내 생각 남기기
+            </button>
+          </div>
+
+          <div class="idr-reply-list" id="bookChatThoughtList">
+            ${selectedRepliesHtml}
+          </div>
+        </div>
+      </article>
+    </section>
+  `;
+
+  // 글을 새로 선택했을 때 이전 A/B 선택 상태를 초기화합니다.
+  selectedBookChatChoice = "";
+  window.selectedBookChatChoice = "";
+}
+/*
+  책수다방 글쓰기 화면입니다.
+  학생이 읽은 책의 장면을 설명하고,
+  친구들에게 A/B 밸런스 선택을 묻는 글을 작성합니다.
+*/
+function renderBookChatWriteScreen() {
+  const shareScreen = document.getElementById("shareScreen");
+
+  if (!shareScreen) return;
+
+  shareScreen.innerHTML = `
+    <section class="idr-card idr-work-header">
+      <div>
+        <h1>책수다 글쓰기</h1>
+        <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
+      </div>
+
+      <div class="idr-work-actions">
+        <button class="idr-top-button" type="button" onclick="renderBookChatRoom()">
+          책수다방
+        </button>
+      </div>
+    </section>
+
+    <section class="idr-card" style="padding: 26px; display: grid; gap: 18px; overflow-y: auto;">
+      <div style="display: grid; gap: 8px;">
+        <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
+        <p style="margin: 0; color: #795024; font-size: 15px; font-weight: 900; line-height: 1.5;">
+          책 속 장면을 친구들이 이해할 수 있게 알려 준 뒤, 두 가지 선택지로 생각을 물어봐요.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="idr-field">
+          <label for="bookChatBookInput">내가 읽은 책</label>
+          <input
+            class="idr-small-input"
+            id="bookChatBookInput"
+            type="text"
+            placeholder="예) 마당을 나온 암탉"
+          >
+        </div>
+
+        <div class="idr-field">
+          <label for="bookChatTitleInput">밸런스 제목</label>
+          <input
+            class="idr-small-input"
+            id="bookChatTitleInput"
+            type="text"
+            placeholder="예) 안전한 길 vs 새로운 도전"
+          >
+        </div>
+      </div>
+
+      <div class="idr-field">
+        <label for="bookChatSceneInput">장면 설명</label>
+        <textarea
+          class="idr-textarea"
+          id="bookChatSceneInput"
+          placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요."
+          style="height: 150px;"
+        ></textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="idr-field">
+          <label for="bookChatOptionAInput">A 선택지</label>
+          <input
+            class="idr-small-input"
+            id="bookChatOptionAInput"
+            type="text"
+            placeholder="예) 안전한 길"
+          >
+        </div>
+
+        <div class="idr-field">
+          <label for="bookChatOptionBInput">B 선택지</label>
+          <input
+            class="idr-small-input"
+            id="bookChatOptionBInput"
+            type="text"
+            placeholder="예) 새로운 도전"
+          >
+        </div>
+      </div>
+
+      <div class="idr-field">
+        <label for="bookChatImageInput">사진 첨부</label>
+        <input
+          id="bookChatImageInput"
+          type="file"
+          accept="image/*"
+          style="padding: 12px; border-radius: 16px; background: rgba(255, 250, 237, 0.96); border: 1px solid rgba(171, 108, 31, 0.22); color: #5f3714; font-weight: 900;"
+        >
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">
+  취소
+</button>
+
+     <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">
+  책수다 올리기
+</button>
+      </div>
+    </section>
+  `;
+}
+/*
+  책수다 글쓰기 내용을 임시 저장하는 함수입니다.
+  지금은 백엔드 DB가 없기 때문에 localStorage에 잠깐 저장합니다.
+  나중에 DB가 연결되면 이 부분을 POST API로 바꾸면 됩니다.
+*/
+function saveBookChatPost() {
+  const bookInput = document.getElementById("bookChatBookInput");
+  const titleInput = document.getElementById("bookChatTitleInput");
+  const sceneInput = document.getElementById("bookChatSceneInput");
+  const optionAInput = document.getElementById("bookChatOptionAInput");
+  const optionBInput = document.getElementById("bookChatOptionBInput");
+  const imageInput = document.getElementById("bookChatImageInput");
+
+  const bookTitle = bookInput ? bookInput.value.trim() : "";
+  const title = titleInput ? titleInput.value.trim() : "";
+  const scene = sceneInput ? sceneInput.value.trim() : "";
+  const optionA = optionAInput ? optionAInput.value.trim() : "";
+  const optionB = optionBInput ? optionBInput.value.trim() : "";
+
+  if (!bookTitle || !title || !scene || !optionA || !optionB) {
+    alert("책 제목, 밸런스 제목, 장면 설명, A/B 선택지를 모두 적어 주세요.");
+    return;
+  }
+
+  const studentName = sessionStorage.getItem("name") || "나";
+
+  const post = {
+    id: "book-chat-" + Date.now(),
+    writer: studentName,
+    bookTitle: bookTitle,
+    title: title,
+    scene: scene,
+    optionA: optionA,
+    optionB: optionB,
+    imageData: "",
+    // 책수다방은 날짜별로 볼 수 있도록 작성 날짜를 함께 저장합니다.
+    createdAt: new Date().toISOString(),
+    createdDate: getTodayDateKey(),
+    replies: []
+  };
+
+  /*
+    사진이 있으면 이미지 데이터를 저장합니다.
+    지금은 임시 구현이라 localStorage에 저장하고,
+    나중에 백엔드에서는 이미지 파일 업로드 API로 바꾸면 됩니다.
+  */
+  const file = imageInput && imageInput.files && imageInput.files[0];
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = function () {
+      post.imageData = reader.result;
+      saveBookChatPostToStorage(post);
+    };
+
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  saveBookChatPostToStorage(post);
+}
+
+/*
+  책수다 글을 localStorage에 저장한 뒤,
+  책수다방 목록 화면으로 돌아갑니다.
+*/
+function saveBookChatPostToStorage(post) {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  const storageKey = "individualBookChatPosts_" + studentId;
+
+  const savedPosts = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+  savedPosts.unshift(post);
+
+  localStorage.setItem(storageKey, JSON.stringify(savedPosts));
+
+  alert("책수다가 올라갔어요!");
+
+  renderBookChatRoom();
+}
+/*
+  책수다방에서 현재 선택한 A/B 값을 저장합니다.
+  아직 DB 연결 전이라 화면 안에서만 임시로 사용합니다.
+*/
+// 책수다방에서 현재 보고 있는 날짜입니다.
+// 기본값은 오늘 날짜입니다.
+let selectedBookChatDate = getTodayDateKey();
+
+/*
+  오늘 날짜를 YYYY-MM-DD 형태로 만듭니다.
+  예) 2026-06-21
+*/
+function getTodayDateKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/*
+  YYYY-MM-DD 날짜를 학생이 보기 쉬운 형태로 바꿉니다.
+  예) 2026-06-21 → 2026년 6월 21일
+*/
+function formatBookChatDate(dateKey) {
+  const parts = dateKey.split("-");
+  return `${Number(parts[0])}년 ${Number(parts[1])}월 ${Number(parts[2])}일`;
+}
+
+/*
+  책수다방 날짜를 하루씩 이동합니다.
+  direction 값이 -1이면 이전날, 1이면 다음날입니다.
+*/
+function moveBookChatDate(direction) {
+  const currentDate = new Date(selectedBookChatDate);
+  currentDate.setDate(currentDate.getDate() + direction);
+
+  const nextDateKey = currentDate.toISOString().slice(0, 10);
+  const todayKey = getTodayDateKey();
+
+  // 미래 날짜는 볼 수 없게 막습니다.
+  if (nextDateKey > todayKey) {
+    alert("아직 오지 않은 날짜예요.");
+    return;
+  }
+
+  selectedBookChatDate = nextDateKey;
+  renderBookChatRoom(0);
+}
+
+/*
+  책수다방 날짜를 오늘로 되돌립니다.
+*/
+function goTodayBookChatDate() {
+  selectedBookChatDate = getTodayDateKey();
+  renderBookChatRoom(0);
+}
+/*
+  책수다방 현재 선택 상태입니다.
+  - showScreen 함수 안에 let으로 두면
+    맨 아래 window.saveBookChatThought 함수에서 값을 읽지 못합니다.
+  - 그래서 window에 붙여 전역 상태로 관리합니다.
+*/
+window.selectedBookChatChoice = "";
+window.selectedBookChatPostId = "";
+window.selectedBookChatIndex = 0;
+/*
+  책수다방 댓글/생각 저장소 key를 만듭니다.
+  지금은 localStorage 임시 저장이고, 나중에 DB 댓글 테이블로 바꾸면 됩니다.
+*/
+function getBookChatThoughtStorageKey() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  return "individualBookChatThoughts_" + studentId;
+}
+
+/*
+  저장된 책수다방 댓글/생각을 불러옵니다.
+  구조:
+  {
+    "글id": [
+      { writer: "나", choice: "A", content: "이유", createdAt: "..." }
+    ]
+  }
+*/
+function getSavedBookChatThoughts() {
+  try {
+    return JSON.parse(localStorage.getItem(getBookChatThoughtStorageKey()) || "{}");
+  } catch (error) {
+    console.warn("책수다방 댓글을 불러오지 못했습니다.", error);
+    return {};
+  }
+}
+/*
+  책수다방 A/B 선택 버튼을 눌렀을 때 실행됩니다.
+*/
+function selectBookChatChoice(choice) {
+  selectedBookChatChoice = choice;
+
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  if (!aButton || !bButton) return;
+
+  if (choice === "A") {
+    aButton.classList.add("primary");
+    bButton.classList.remove("primary");
+  }
+
+  if (choice === "B") {
+    bButton.classList.add("primary");
+    aButton.classList.remove("primary");
+  }
+}
+
+/*
+  책수다방에서 선택한 이유를 남기는 함수입니다.
+  A/B 중 하나를 고르고 이유를 적어야 저장됩니다.
+*/
+function saveBookChatThought() {
+  const reasonInput = document.getElementById("bookChatReasonInput");
+  const thoughtList = document.getElementById("bookChatThoughtList");
+  const aCountElement = document.getElementById("bookChatACount");
+  const bCountElement = document.getElementById("bookChatBCount");
+
+  if (!selectedBookChatChoice) {
+    alert("A 또는 B 중 하나를 먼저 골라 주세요.");
+    return;
+  }
+
+  if (!reasonInput) return;
+
+  const reason = reasonInput.value.trim();
+
+  if (!reason) {
+    alert("왜 그렇게 생각했는지 이유를 적어 주세요.");
+    return;
+  }
+
+  if (!thoughtList) return;
+
+  /*
+    선택한 쪽의 숫자를 1 올립니다.
+    지금은 화면용 임시 처리이고, 나중에는 DB 댓글 수로 계산하면 됩니다.
+  */
+  if (selectedBookChatChoice === "A" && aCountElement) {
+    aCountElement.textContent = Number(aCountElement.textContent || 0) + 1;
+  }
+
+  if (selectedBookChatChoice === "B" && bCountElement) {
+    bCountElement.textContent = Number(bCountElement.textContent || 0) + 1;
+  }
+
+  thoughtList.insertAdjacentHTML("afterbegin", `
+    <div class="idr-reply-item">
+      <strong>나 · ${selectedBookChatChoice} 선택</strong>
+      ${reason}
+    </div>
+  `);
+
+  reasonInput.value = "";
+  selectedBookChatChoice = "";
+
+  /*
+    생각을 남겼을 때 용기 보상을 지급합니다.
+    같은 글에 여러 번 테스트할 수 있도록 임시로 시간값을 붙였습니다.
+    나중에 실제 DB 연결 후에는 댓글 ID 기준으로 중복 방지하면 됩니다.
+  */
+  if (typeof givePowerRewardOnce === "function") {
+    givePowerRewardOnce("book_chat_thought_" + Date.now(), {
+      presetKey: "individual_thought_comment"
+    });
+  }
+}
+
+// HTML onclick에서 책수다방 선택 함수를 찾을 수 있게 연결합니다.
+window.selectBookChatChoice = selectBookChatChoice;
+// 예전 댓글 저장 함수는 localStorage 저장을 하지 않으므로 연결하지 않습니다.
+// window.saveBookChatThought = saveBookChatThought;
+
+// HTML onclick에서 저장 함수를 찾을 수 있게 연결합니다.
+window.saveBookChatPost = saveBookChatPost;
+// HTML onclick에서 글쓰기 화면 함수를 찾을 수 있게 연결합니다.
+window.renderBookChatWriteScreen = renderBookChatWriteScreen;
+// HTML onclick에서 책수다방 목록 화면 함수를 찾을 수 있게 연결합니다.
+window.renderBookChatRoom = renderBookChatRoom;
+// HTML onclick에서 책수다방 날짜 이동 함수를 찾을 수 있게 연결합니다.
+window.moveBookChatDate = moveBookChatDate;
+window.goTodayBookChatDate = goTodayBookChatDate;
+  /*
+    책수다방 화면입니다.
+    기존 질문 나누기 화면 영역을 먼저 재사용하고,
+    다음 단계에서 안쪽 내용을 책수다방 구조로 바꿉니다.
+  */
+ if (screenName === "bookChat") {
+  document.getElementById("shareScreen").classList.add("active");
+  renderBookChatRoom();
+}
+
+  if (screenName === "share") {
+    document.getElementById("shareScreen").classList.add("active");
+    renderShareQuestionList();
+  }
+
+  if (screenName === "collection") {
+    document.getElementById("collectionScreen").classList.add("active");
+    renderCollection();
+  }
+}
 
     function getBookTitle() {
       return sessionStorage.getItem(STORAGE_KEYS.bookTitle) || sessionStorage.getItem("individualCurrentBookTitle_" + studentId) || "아직 읽을 책을 정하지 않았어요";
@@ -5218,7 +6130,7 @@ function finishCurrentBook() {
       questions.unshift(newQuestion);
       saveMyQuestions(questions);
 
-      // 질문을 저장할 때마다 읽기 중 홈의 질문 유형 그래프도 바로 갱신합니다.
+      // 질문을 저장할 때마다 읽기 중 홈의 책 종류 그래프도 바로 갱신합니다.
       renderQuestionBalanceGraph();
 
       if (toPage > currentPage) {
@@ -5229,75 +6141,87 @@ function finishCurrentBook() {
       renderProgress();
     }
 
-    // 읽기 중 질문 유형 그래프를 그립니다.
+    // 읽기 중 책 종류 그래프를 그립니다.
     // 질문 만들기 화면에서 저장한 질문의 type 값을 기준으로 네 종류 질문 수를 누적합니다.
-    function renderQuestionBalanceGraph() {
-      const graphBars = document.getElementById("questionGraphBars");
-      const graphTotal = document.getElementById("questionGraphTotal");
-      const graphFeedback = document.getElementById("questionGraphFeedback");
+    // 읽기 중 홈의 책 종류 그래프를 그립니다.
+// 읽기 전 화면에서 고른 책 종류를 기준으로 표시합니다.
+function renderQuestionBalanceGraph() {
+  const graphBars = document.getElementById("questionGraphBars");
+  const graphTotal = document.getElementById("questionGraphTotal");
+  const graphFeedback = document.getElementById("questionGraphFeedback");
 
-      if (!graphBars || !graphTotal || !graphFeedback) return;
+  if (!graphBars || !graphTotal || !graphFeedback) return;
 
-      const questions = getMyQuestions();
-      const today = document.getElementById("readDateInput") ? document.getElementById("readDateInput").value : new Date().toISOString().slice(0, 10);
-      const counts = getQuestionTypeCounts(questions);
-      const todayCounts = getQuestionTypeCounts(questions.filter(function (item) {
-        return item.date === today;
-      }));
-      const total = questionTypes.reduce(function (sum, type) {
-        return sum + counts[type.key];
-      }, 0);
-      const maxCount = Math.max(1, ...questionTypes.map(function (type) {
-        return counts[type.key];
-      }));
+  const counts = getBookTypeCounts();
 
-      graphTotal.textContent = total + "개";
+  const total = bookTypes.reduce(function (sum, type) {
+    return sum + counts[type.key];
+  }, 0);
 
-      graphBars.innerHTML = questionTypes.map(function (type) {
-        const count = counts[type.key];
-        const todayCount = todayCounts[type.key];
-        const percent = total === 0 ? 0 : Math.round((count / total) * 100);
-        const width = total === 0 ? 4 : Math.max(8, Math.round((count / maxCount) * 100));
-        const todayText = todayCount > 0 ? " · 오늘 +" + todayCount : "";
+  
 
-        return `
-          <div class="idr-graph-row">
-            <div class="idr-graph-label">${type.label}</div>
-            <div class="idr-graph-track" aria-label="${type.label} ${count}개">
-              <div class="idr-graph-fill" style="width:${width}%;"></div>
-            </div>
-            <div class="idr-graph-count">${count}개 ${percent}%${todayText}</div>
-          </div>
-        `;
-      }).join("");
+  graphTotal.textContent = total + "권";
 
-      const balance = getQuestionBalanceFeedback(counts, total);
-      graphFeedback.classList.remove("good", "need");
-      graphFeedback.classList.add(balance.state);
-      graphFeedback.textContent = balance.message;
-    }
+  graphBars.innerHTML = bookTypes.map(function (type) {
+    const count = counts[type.key];
+    const percent = total === 0 ? 0 : Math.round((count / total) * 100);
+    const width = total === 0 || count === 0 ? 4 : Math.max(8, percent);
 
-    // 질문 유형별 개수를 계산합니다.
-    function getQuestionTypeCounts(questions) {
-      const counts = {};
+    return `
+      <div class="idr-graph-row">
+        <div class="idr-graph-label">${type.label}</div>
+        <div class="idr-graph-track" aria-label="${type.label} ${count}권">
+          <div class="idr-graph-fill" style="width:${width}%;"></div>
+        </div>
+        <div class="idr-graph-count">${count}권 ${percent}%</div>
+      </div>
+    `;
+  }).join("");
 
-      questionTypes.forEach(function (type) {
-        counts[type.key] = 0;
-      });
+  graphFeedback.classList.remove("good", "need");
 
-      questions.forEach(function (question) {
-        const typeKey = question.type || "find";
+  if (total === 0) {
+    graphFeedback.classList.add("need");
+    graphFeedback.textContent = "아직 책 종류를 고르지 않았어요. 읽기 전 활동에서 책 종류를 선택하면 여기에 표시돼요.";
+    return;
+  }
 
-        if (counts[typeKey] === undefined) {
-          counts[typeKey] = 0;
-        }
+  graphFeedback.classList.add("good");
+graphFeedback.textContent = "지금까지 고른 책 종류가 이렇게 쌓였어요. 여러 종류의 책을 읽으면 그래프가 더 다양해져요.";
+}
+/*
+  책 종류별 개수를 계산합니다.
+  1순위: 읽기 전 화면에서 누적 저장한 책 종류 기록
+  2순위: 누적 기록이 없으면 현재 선택된 책 종류를 임시로 1권 표시
+*/
+function getBookTypeCounts() {
+  const counts = {};
 
-        counts[typeKey] += 1;
-      });
+  bookTypes.forEach(function (type) {
+    counts[type.key] = 0;
+  });
 
-      return counts;
-    }
+  const bookTypeHistory = JSON.parse(sessionStorage.getItem(STORAGE_KEYS.bookTypeHistory) || "[]");
 
+  if (bookTypeHistory.length > 0) {
+    bookTypeHistory.forEach(function (book) {
+      if (book.type && counts[book.type] !== undefined) {
+        counts[book.type] += 1;
+      }
+    });
+
+    return counts;
+  }
+
+  // 누적 기록이 아직 없을 때는 현재 고른 책 종류라도 그래프에 보여줍니다.
+  const currentBookType = sessionStorage.getItem(STORAGE_KEYS.bookType);
+
+  if (currentBookType && counts[currentBookType] !== undefined) {
+    counts[currentBookType] += 1;
+  }
+
+  return counts;
+}
     // 질문 유형 비율을 보고 많은 질문과 부족한 질문을 알려줍니다.
     function getQuestionBalanceFeedback(counts, total) {
       if (total === 0) {
@@ -5496,6 +6420,8 @@ function finishCurrentBook() {
           ...item,
           name: "나",
           id: item.id,
+          createdDate: getTodayDateKey(),
+          createdDate: getTodayDateKey(),
           replies: []
         }));
 
@@ -5902,65 +6828,611 @@ document.addEventListener("DOMContentLoaded", function () {
     button.textContent = "저장하기";
   });
 });
+
 /*
-  개별읽기 공통: 현재까지 모은 나의 힘 팝업을 엽니다.
-  지금은 기본값 8을 사용하고, 나중에 보상 시스템과 연결하면 sessionStorage 값을 바꾸면 됩니다.
+  책수다방 A/B 선택과 댓글 저장을 최종 연결합니다.
+  - 기존에 중복으로 있던 예전 함수보다 이 코드가 마지막에 실행됩니다.
+  - 댓글은 localStorage에 저장되어 새로고침 후에도 유지됩니다.
+  - 선택값이 변수에서 사라져도 버튼 상태를 보고 다시 판단합니다.
 */
-function openIndividualPowerModal() {
-  renderIndividualPowerModal();
-  document.getElementById("individualPowerModal").classList.remove("hidden");
+window.selectedBookChatChoice = "";
+
+function setBookChatChoiceValue(choice) {
+  const finalChoice = String(choice || "").trim().toUpperCase();
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  if (finalChoice !== "A" && finalChoice !== "B") return;
+
+  // 전역 변수와 window 변수에 모두 저장합니다.
+  selectedBookChatChoice = finalChoice;
+  window.selectedBookChatChoice = finalChoice;
+
+  if (aButton) {
+    aButton.classList.toggle("primary", finalChoice === "A");
+    aButton.setAttribute("aria-pressed", finalChoice === "A" ? "true" : "false");
+  }
+
+  if (bButton) {
+    bButton.classList.toggle("primary", finalChoice === "B");
+    bButton.setAttribute("aria-pressed", finalChoice === "B" ? "true" : "false");
+  }
+
+  const replyBox = document.querySelector("#shareScreen .idr-reply-box");
+  if (replyBox) {
+    replyBox.dataset.selectedChoice = finalChoice;
+  }
+}
+
+window.selectBookChatChoice = function (choice) {
+  setBookChatChoiceValue(choice);
+};
+
+function getCurrentBookChatChoice() {
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+  const replyBox = document.querySelector("#shareScreen .idr-reply-box");
+
+  let choice = String(selectedBookChatChoice || window.selectedBookChatChoice || "").trim().toUpperCase();
+
+  if (!choice && replyBox && replyBox.dataset.selectedChoice) {
+    choice = String(replyBox.dataset.selectedChoice).trim().toUpperCase();
+  }
+
+  if (!choice && aButton && aButton.classList.contains("primary")) {
+    choice = "A";
+  }
+
+  if (!choice && bButton && bButton.classList.contains("primary")) {
+    choice = "B";
+  }
+
+  if (choice !== "A" && choice !== "B") return "";
+  return choice;
+}
+
+window.saveBookChatThought = function () {
+  const reasonInput = document.getElementById("bookChatReasonInput");
+  const choice = getCurrentBookChatChoice();
+
+  if (!choice) {
+    alert("A 또는 B 중 하나를 먼저 골라 주세요.");
+    return;
+  }
+
+  if (!reasonInput) {
+    alert("선택한 이유 입력칸을 찾지 못했어요.");
+    return;
+  }
+
+  if (!selectedBookChatPostId) {
+    alert("댓글을 남길 책수다 글을 찾지 못했어요.");
+    return;
+  }
+
+  const reason = reasonInput.value.trim();
+
+  if (!reason) {
+    alert("왜 그렇게 생각했는지 이유를 적어 주세요.");
+    return;
+  }
+
+  // 기존에 저장된 댓글/생각을 불러옵니다.
+  const savedThoughts = getSavedBookChatThoughts();
+
+  if (!savedThoughts[selectedBookChatPostId]) {
+    savedThoughts[selectedBookChatPostId] = [];
+  }
+
+  // 현재 글 id에 내 댓글을 저장합니다.
+  savedThoughts[selectedBookChatPostId].push({
+    writer: "나",
+    choice: choice,
+    content: reason,
+    createdAt: new Date().toISOString()
+  });
+
+  localStorage.setItem(getBookChatThoughtStorageKey(), JSON.stringify(savedThoughts));
+
+  reasonInput.value = "";
+  selectedBookChatChoice = "";
+  window.selectedBookChatChoice = "";
+
+  // 저장 후 같은 글을 다시 보여주면서 댓글 목록과 A/B 숫자를 갱신합니다.
+  renderBookChatRoom(selectedBookChatIndex);
+
+  if (typeof givePowerRewardOnce === "function") {
+    givePowerRewardOnce("book_chat_thought_" + Date.now(), {
+      presetKey: "individual_thought_comment"
+    });
+  }
+};
+
+/*
+  혹시 inline onclick이 브라우저에서 꼬여도 클릭 자체를 잡아서 A/B 선택을 저장합니다.
+*/
+document.addEventListener("click", function (event) {
+  const choiceButton = event.target.closest("[data-book-chat-choice]");
+  if (!choiceButton) return;
+  setBookChatChoiceValue(choiceButton.dataset.bookChatChoice);
+});
+/*
+  =========================================================
+  책수다방 댓글 저장 최종 연결 코드
+  ---------------------------------------------------------
+  문제:
+  - '내 생각 남기기' 버튼은 window.saveBookChatThought()를 호출합니다.
+  - 그런데 기존 코드에서 함수가 여러 번 생기거나 주석 처리되어
+    버튼 클릭이 제대로 연결되지 않을 수 있습니다.
+
+  해결:
+  - 화면 맨 아래에서 window.saveBookChatThought를 다시 정의해서
+    무조건 이 함수가 실행되도록 만듭니다.
+  - 댓글은 localStorage에 저장해서 새로고침 후에도 유지되게 합니다.
+  =========================================================
+*/
+
+window.saveBookChatThought = function () {
+  const reasonInput = document.getElementById("bookChatReasonInput");
+
+  if (!reasonInput) {
+    alert("선택한 이유 입력칸을 찾지 못했어요.");
+    return;
+  }
+
+  const reason = reasonInput.value.trim();
+
+  if (!reason) {
+    alert("왜 그렇게 생각했는지 이유를 적어 주세요.");
+    return;
+  }
+
+  /*
+    A/B 선택값을 여러 방법으로 확인합니다.
+    1. window.selectedBookChatChoice 값
+    2. A 버튼에 primary 클래스가 있는지
+    3. B 버튼에 primary 클래스가 있는지
+  */
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  let choice = "";
+
+  if (window.selectedBookChatChoice === "A" || window.selectedBookChatChoice === "B") {
+    choice = window.selectedBookChatChoice;
+  }
+
+  if (!choice && aButton && aButton.classList.contains("primary")) {
+    choice = "A";
+  }
+
+  if (!choice && bButton && bButton.classList.contains("primary")) {
+    choice = "B";
+  }
+
+  if (!choice) {
+    alert("A 또는 B 중 하나를 먼저 골라 주세요.");
+    return;
+  }
+
+  /*
+    현재 선택된 책수다 글 id를 찾습니다.
+    기존 코드에서 window.selectedBookChatPostId를 쓰도록 수정했기 때문에
+    우선 그 값을 사용합니다.
+  */
+  // 현재 선택된 책수다 글 id를 안전하게 가져옵니다.
+const postId = window.selectedBookChatPostId;
+
+  if (!postId) {
+    alert("댓글을 남길 책수다 글을 찾지 못했어요.");
+    return;
+  }
+
+  /*
+    localStorage에 저장된 댓글 목록을 불러옵니다.
+    getSavedBookChatThoughts 함수가 있으면 기존 함수를 사용하고,
+    없으면 직접 localStorage에서 꺼냅니다.
+  */
+  let savedThoughts = {};
+
+  if (typeof getSavedBookChatThoughts === "function") {
+    savedThoughts = getSavedBookChatThoughts();
+  } else {
+    try {
+      savedThoughts = JSON.parse(localStorage.getItem("bookChatThoughts") || "{}");
+    } catch (error) {
+      savedThoughts = {};
+    }
+  }
+
+  if (!savedThoughts[postId]) {
+    savedThoughts[postId] = [];
+  }
+
+  savedThoughts[postId].push({
+    writer: sessionStorage.getItem("name") || "나",
+    choice: choice,
+    content: reason,
+    createdAt: new Date().toISOString()
+  });
+
+  /*
+    기존 저장 키 함수가 있으면 그 키를 사용합니다.
+    없으면 bookChatThoughts라는 기본 키를 사용합니다.
+  */
+  const storageKey =
+    typeof getBookChatThoughtStorageKey === "function"
+      ? getBookChatThoughtStorageKey()
+      : "bookChatThoughts";
+
+  localStorage.setItem(storageKey, JSON.stringify(savedThoughts));
+
+  // 입력창과 선택값 초기화
+  reasonInput.value = "";
+  window.selectedBookChatChoice = "";
+  if (typeof selectedBookChatChoice !== "undefined") {
+    selectedBookChatChoice = "";
+  }
+
+  /*
+    저장 후 같은 글을 다시 보여줍니다.
+    그래야 댓글 목록과 A/B 숫자가 바로 갱신됩니다.
+  */
+  if (typeof renderBookChatRoom === "function") {
+    renderBookChatRoom(window.selectedBookChatIndex || selectedBookChatIndex || 0);
+  }
+};
+/*
+  =========================================================
+  책수다방 댓글 저장/표시 최종 강제 수정 코드
+  ---------------------------------------------------------
+  이 코드는 기존에 꼬인 saveBookChatThought 함수들을
+  맨 아래에서 최종으로 덮어씁니다.
+
+  해결하는 문제:
+  1. 내 생각 남기기 버튼은 눌리는데 댓글이 안 보이는 문제
+  2. 새로고침하면 댓글이 사라지는 문제
+  3. selectedBookChatPostId가 꼬여서 저장 위치를 못 찾는 문제
+  4. renderBookChatRoom이 다시 그려져도 저장 댓글을 다시 붙이지 못하는 문제
+  =========================================================
+*/
+
+/*
+  책수다방 저장 key입니다.
+  학생별로 댓글이 섞이지 않게 studentId를 붙입니다.
+*/
+function getFinalBookChatStorageKey() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  return "individualBookChatThoughts_" + studentId;
 }
 
 /*
-  개별읽기 공통: 나의 힘 팝업을 닫습니다.
+  현재 선택된 책수다 글을 구분할 key를 가져옵니다.
+  기존 selectedBookChatPostId가 꼬여도,
+  화면에 보이는 글 제목을 fallback으로 사용해서 무조건 저장되게 합니다.
 */
-function closeIndividualPowerModal() {
-  document.getElementById("individualPowerModal").classList.add("hidden");
+function getFinalCurrentBookChatPostKey() {
+  let postKey = "";
+
+  // 1순위: 일반 변수 selectedBookChatPostId
+  try {
+    if (typeof selectedBookChatPostId !== "undefined" && selectedBookChatPostId) {
+      postKey = String(selectedBookChatPostId);
+    }
+  } catch (error) {}
+
+  // 2순위: window 변수
+  if (!postKey && window.selectedBookChatPostId) {
+    postKey = String(window.selectedBookChatPostId);
+  }
+
+  // 3순위: 화면 오른쪽에 보이는 선택 글 제목
+  if (!postKey) {
+    const titleElement = document.querySelector("#shareScreen .idr-selected-question h3");
+    if (titleElement && titleElement.textContent.trim()) {
+      postKey = "title_" + titleElement.textContent.trim();
+    }
+  }
+
+  // 그래도 없으면 임시 key
+  if (!postKey) {
+    postKey = "default_book_chat_post";
+  }
+
+  return postKey;
 }
 
 /*
-  개별읽기 공통: sessionStorage에 저장된 능력치가 있으면 불러오고,
-  없으면 연습읽기 완료 보상 기본값 8을 보여줍니다.
+  localStorage에서 책수다방 댓글 전체를 불러옵니다.
 */
-function getPowerValue(key) {
-  return Number(sessionStorage.getItem("individualPower_" + key + "_" + studentId) || 8);
+function getFinalSavedBookChatThoughts() {
+  try {
+    return JSON.parse(localStorage.getItem(getFinalBookChatStorageKey()) || "{}");
+  } catch (error) {
+    console.warn("책수다방 댓글 불러오기 실패", error);
+    return {};
+  }
 }
 
 /*
-  개별읽기 공통: 팝업 안의 숫자와 막대를 갱신합니다.
+  localStorage에 책수다방 댓글 전체를 저장합니다.
 */
-function renderIndividualPowerModal() {
-  const powers = {
-    magic: getPowerValue("magic"),
-    health: getPowerValue("health"),
-    wisdom: getPowerValue("wisdom"),
-    courage: getPowerValue("courage")
+function setFinalSavedBookChatThoughts(data) {
+  localStorage.setItem(getFinalBookChatStorageKey(), JSON.stringify(data));
+}
+
+/*
+  현재 A/B 선택값을 화면에서 직접 확인합니다.
+  기존 selectedBookChatChoice 변수가 꼬여도 버튼 상태를 보고 판단합니다.
+*/
+function getFinalBookChatChoice() {
+  let choice = "";
+
+  try {
+    if (typeof selectedBookChatChoice !== "undefined" && selectedBookChatChoice) {
+      choice = String(selectedBookChatChoice).trim().toUpperCase();
+    }
+  } catch (error) {}
+
+  if (!choice && window.selectedBookChatChoice) {
+    choice = String(window.selectedBookChatChoice).trim().toUpperCase();
+  }
+
+  const replyBox = document.querySelector("#shareScreen .idr-reply-box");
+  if (!choice && replyBox && replyBox.dataset.selectedChoice) {
+    choice = String(replyBox.dataset.selectedChoice).trim().toUpperCase();
+  }
+
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  if (!choice && aButton && aButton.classList.contains("primary")) {
+    choice = "A";
+  }
+
+  if (!choice && bButton && bButton.classList.contains("primary")) {
+    choice = "B";
+  }
+
+  if (choice !== "A" && choice !== "B") {
+    return "";
+  }
+
+  return choice;
+}
+
+/*
+  저장된 댓글을 현재 화면 댓글 목록에 다시 붙입니다.
+  renderBookChatRoom이 화면을 새로 그린 뒤에도 이 함수가 실행되면
+  localStorage 댓글이 다시 보입니다.
+*/
+function renderFinalSavedBookChatThoughts() {
+  const thoughtList = document.getElementById("bookChatThoughtList");
+
+  if (!thoughtList) {
+    return;
+  }
+
+  const postKey = getFinalCurrentBookChatPostKey();
+  const savedThoughts = getFinalSavedBookChatThoughts();
+  const replies = savedThoughts[postKey] || [];
+
+  if (!replies.length) {
+    return;
+  }
+
+  /*
+    기존 기본 댓글 아래에 저장 댓글을 추가합니다.
+    중복 표시를 막기 위해 data-final-saved="true" 댓글은 먼저 제거합니다.
+  */
+  thoughtList.querySelectorAll('[data-final-saved="true"]').forEach(function (item) {
+    item.remove();
+  });
+
+  const savedHtml = replies.map(function (reply) {
+    return `
+      <div class="idr-reply-item" data-final-saved="true">
+        <strong>${reply.writer || "나"} · ${reply.choice} 선택</strong>
+        ${reply.content}
+      </div>
+    `;
+  }).join("");
+
+  thoughtList.insertAdjacentHTML("afterbegin", savedHtml);
+}
+
+/*
+  A/B 선택 함수도 최종으로 덮어씁니다.
+  버튼 색상과 선택값을 확실히 저장합니다.
+*/
+window.selectBookChatChoice = function (choice) {
+  const finalChoice = String(choice || "").trim().toUpperCase();
+
+  if (finalChoice !== "A" && finalChoice !== "B") {
+    return;
+  }
+
+  try {
+    if (typeof selectedBookChatChoice !== "undefined") {
+      selectedBookChatChoice = finalChoice;
+    }
+  } catch (error) {}
+
+  window.selectedBookChatChoice = finalChoice;
+
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  if (aButton) {
+    aButton.classList.toggle("primary", finalChoice === "A");
+    aButton.setAttribute("aria-pressed", finalChoice === "A" ? "true" : "false");
+  }
+
+  if (bButton) {
+    bButton.classList.toggle("primary", finalChoice === "B");
+    bButton.setAttribute("aria-pressed", finalChoice === "B" ? "true" : "false");
+  }
+
+  const replyBox = document.querySelector("#shareScreen .idr-reply-box");
+  if (replyBox) {
+    replyBox.dataset.selectedChoice = finalChoice;
+  }
+};
+
+/*
+  내 생각 남기기 버튼 최종 함수입니다.
+  버튼이 누르면 무조건 이 함수가 실행되도록 덮어씁니다.
+*/
+window.saveBookChatThought = function () {
+  const reasonInput = document.getElementById("bookChatReasonInput");
+  const thoughtList = document.getElementById("bookChatThoughtList");
+
+  if (!reasonInput) {
+    alert("선택한 이유 입력칸을 찾지 못했어요.");
+    return;
+  }
+
+  if (!thoughtList) {
+    alert("댓글 목록 영역을 찾지 못했어요.");
+    return;
+  }
+
+  const choice = getFinalBookChatChoice();
+
+  if (!choice) {
+    alert("A 또는 B 중 하나를 먼저 골라 주세요.");
+    return;
+  }
+
+  const reason = reasonInput.value.trim();
+
+  if (!reason) {
+    alert("왜 그렇게 생각했는지 이유를 적어 주세요.");
+    return;
+  }
+
+  const postKey = getFinalCurrentBookChatPostKey();
+  const savedThoughts = getFinalSavedBookChatThoughts();
+
+  if (!savedThoughts[postKey]) {
+    savedThoughts[postKey] = [];
+  }
+
+  const newReply = {
+    writer: sessionStorage.getItem("name") || "나",
+    choice: choice,
+    content: reason,
+    createdAt: new Date().toISOString()
   };
 
-  updatePowerItem("powerMagicText", "powerMagicFill", powers.magic);
-  updatePowerItem("powerHealthText", "powerHealthFill", powers.health);
-  updatePowerItem("powerWisdomText", "powerWisdomFill", powers.wisdom);
-  updatePowerItem("powerCourageText", "powerCourageFill", powers.courage);
+  // localStorage에 저장
+  savedThoughts[postKey].push(newReply);
+  setFinalSavedBookChatThoughts(savedThoughts);
+
+  // 화면에도 즉시 추가
+  thoughtList.insertAdjacentHTML("afterbegin", `
+    <div class="idr-reply-item" data-final-saved="true">
+      <strong>${newReply.writer} · ${newReply.choice} 선택</strong>
+      ${newReply.content}
+    </div>
+  `);
+
+  // A/B 숫자도 즉시 증가
+  const aCountElement = document.getElementById("bookChatACount");
+  const bCountElement = document.getElementById("bookChatBCount");
+
+  if (choice === "A" && aCountElement) {
+    aCountElement.textContent = String(Number(aCountElement.textContent || 0) + 1);
+  }
+
+  if (choice === "B" && bCountElement) {
+    bCountElement.textContent = String(Number(bCountElement.textContent || 0) + 1);
+  }
+
+  // 입력창 초기화
+  reasonInput.value = "";
+
+  try {
+    if (typeof selectedBookChatChoice !== "undefined") {
+      selectedBookChatChoice = "";
+    }
+  } catch (error) {}
+
+  window.selectedBookChatChoice = "";
+
+  const replyBox = document.querySelector("#shareScreen .idr-reply-box");
+  if (replyBox) {
+    replyBox.dataset.selectedChoice = "";
+  }
+
+  const aButton = document.getElementById("bookChatChoiceAButton");
+  const bButton = document.getElementById("bookChatChoiceBButton");
+
+  if (aButton) {
+    aButton.classList.remove("primary");
+    aButton.setAttribute("aria-pressed", "false");
+  }
+
+  if (bButton) {
+    bButton.classList.remove("primary");
+    bButton.setAttribute("aria-pressed", "false");
+  }
+
+  /*
+    생각을 남겼을 때 용기 보상 지급
+    기존 보상 함수가 있을 때만 실행됩니다.
+  */
+  if (typeof givePowerRewardOnce === "function") {
+    givePowerRewardOnce("book_chat_thought_" + Date.now(), {
+      presetKey: "individual_thought_comment"
+    });
+  }
+};
+
+/*
+  renderBookChatRoom도 감싸서 수정합니다.
+  기존 renderBookChatRoom이 화면을 다시 그린 뒤,
+  localStorage 댓글을 다시 붙입니다.
+*/
+if (typeof window.renderBookChatRoom === "function") {
+  const originalRenderBookChatRoom = window.renderBookChatRoom;
+
+  window.renderBookChatRoom = function () {
+    const result = originalRenderBookChatRoom.apply(this, arguments);
+
+    setTimeout(function () {
+      renderFinalSavedBookChatThoughts();
+    }, 0);
+
+    return result;
+  };
 }
 
 /*
-  개별읽기 공통: 능력치 한 줄을 갱신합니다.
+  책수다방 A/B 선택 버튼 보조 연결 코드
+  ---------------------------------------------------------
+  저장 버튼은 이미 HTML에서 onclick="window.saveBookChatThought()"로
+  직접 연결되어 있으므로 여기서 다시 실행하면 함수가 2번 실행됩니다.
+
+  그래서 여기서는 A/B 선택 버튼만 보조로 처리합니다.
 */
-function updatePowerItem(textId, fillId, value) {
-  const safeValue = Math.max(0, Math.min(100, value));
-  const textElement = document.getElementById(textId);
-  const fillElement = document.getElementById(fillId);
+document.addEventListener("click", function (event) {
+  const choiceButton = event.target.closest("[data-book-chat-choice]");
 
-  if (textElement) {
-    textElement.textContent = safeValue + " / 100";
+  if (choiceButton) {
+    window.selectBookChatChoice(choiceButton.dataset.bookChatChoice);
   }
+});
 
-  if (fillElement) {
-    fillElement.style.width = safeValue + "%";
-  }
-}
+/*
+  페이지가 열릴 때 이미 저장된 댓글이 있으면 붙입니다.
+*/
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(function () {
+    renderFinalSavedBookChatThoughts();
+  }, 100);
+});
   </script>
-  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js"></script>
+  <script src="../js/individual-power.js?v=power-common-2"></script>
 </body>
-</html>ㄴ
+</html>
