@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문답책 | 도서 선정하기</title>
+
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --book-brown: #4b2a13;
+      --book-brown-soft: #6e4b2e;
+      --book-gold: #e4ad45;
+      --book-gold-deep: #b06d0d;
+      --book-cream: #fff7e7;
+      --book-cream-deep: #f3dfbc;
+      --book-line: rgba(193, 133, 61, 0.34);
+      --book-shadow: 0 14px 28px rgba(123, 75, 25, 0.15);
+      --green: #7e9f58;
+      --green-deep: #617d35;
+      --red: #b65b36;
+      --paper-white: rgba(255, 254, 249, 0.94);
+      --paper-warm: rgba(255, 247, 231, 0.92);
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #3f2615;
+      background:
+        linear-gradient(180deg, rgba(255, 246, 222, 0.42), rgba(255, 232, 184, 0.46)),
+        url("../assets/images/class-reading/class-reading-question-bg.png");
+      background-size: cover;
+      background-position: center;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+       .bs-page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 14px 20px 18px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 35%),
+        linear-gradient(90deg, rgba(255, 246, 224, 0.72), rgba(255, 255, 255, 0.18), rgba(255, 246, 224, 0.72));
+    }
+
+    .bs-shell {
+      width: min(1240px, calc(100vw - 48px));
+      margin: 0 auto;
+    }
+
+        .bs-topbar {
+      width: 100%;
+      min-height: 58px;
+      padding: 10px 18px;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255, 254, 249, 0.92), rgba(255, 247, 231, 0.9));
+      border: 1.5px solid var(--book-line);
+      box-shadow:
+        var(--book-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      backdrop-filter: blur(2px);
+    }
+
+    .bs-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--book-brown);
+      font-family: "Noto Serif KR", serif;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
+    }
+
+    .bs-brand-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #bf8740, #6d3a0d);
+      border: 1px solid rgba(255, 224, 158, 0.78);
+      box-shadow: 0 8px 16px rgba(91, 47, 10, 0.18);
+    }
+
+    .bs-brand-icon img {
+      width: 31px;
+      height: 31px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .bs-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bs-pill,
+    .bs-home-btn {
+      min-height: 38px;
+      border-radius: 14px;
+      border: 1px solid rgba(177, 122, 57, 0.34);
+      background: rgba(255, 250, 238, 0.82);
+      color: #4f2e16;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow:
+        0 7px 14px rgba(116, 71, 20, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+      padding: 0 14px;
+    }
+
+    .bs-home-btn {
+      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+      color: #fff9ec;
+      border-color: rgba(176, 111, 25, 0.40);
+      box-shadow:
+        0 5px 0 rgba(105, 57, 5, 0.58),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+        .bs-header {
+      margin: 12px 0 12px;
+    }
+
+        .bs-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 250, 238, 0.82);
+      border: 1px solid rgba(177, 122, 57, 0.30);
+      color: #7a4b24;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 7px 14px rgba(116, 71, 20, 0.10);
+    }
+
+        .bs-main-title {
+      font-family: "Noto Serif KR", serif;
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--book-brown);
+      letter-spacing: -1.2px;
+      text-shadow: 0 3px 0 rgba(255, 255, 255, 0.72);
+    }
+
+        .bs-subtitle {
+      margin-top: 6px;
+      color: var(--book-brown-soft);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.55;
+    }
+
+        .bs-dashboard {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+        .bs-left,
+    .bs-right {
+      display: grid;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .bs-card {
+      position: relative;
+      border-radius: 30px;
+      background:
+        linear-gradient(180deg, var(--paper-white), var(--paper-warm));
+      border: 1.5px solid var(--book-line);
+      box-shadow:
+        var(--book-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+
+    .bs-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 219, 129, 0.12), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.42), transparent 42%);
+      pointer-events: none;
+    }
+
+        .bs-card-inner {
+      position: relative;
+      z-index: 1;
+      padding: 16px;
+    }
+
+        .bs-card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+        .bs-card-title {
+      font-family: "Noto Serif KR", serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--book-brown);
+      letter-spacing: -0.5px;
+    }
+
+        .bs-card-sub {
+      margin-top: 4px;
+      color: #7a5a3b;
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .bs-small-tag {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 249, 235, 0.86);
+      color: #8c5c1e;
+      font-size: 13px;
+      font-weight: 900;
+      border: 1px solid rgba(190, 130, 55, 0.26);
+    }
+
+        .book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+        .book-card {
+      border-radius: 20px;
+      padding: 11px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 219, 129, 0.13), transparent 40%),
+        rgba(255, 250, 238, 0.86);
+      border: 1px solid rgba(190, 130, 55, 0.28);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
+    }
+
+        .book-number {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto 7px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+      color: #fff9ec;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: 0 4px 0 rgba(105, 57, 5, 0.45);
+    }
+
+        .cover-box {
+      position: relative;
+      width: 100%;
+      height: 124px;
+      border-radius: 18px;
+      border: 1px dashed rgba(177, 122, 57, 0.36);
+      background: rgba(255, 255, 255, 0.62);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .cover-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .camera-placeholder {
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      color: #8a5a21;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+        .camera-icon {
+      width: 46px;
+      height: 38px;
+      border-radius: 14px;
+      background: #4b2a13;
+      display: grid;
+      place-items: center;
+      color: #fff9ec;
+      font-size: 26px;
+      box-shadow: 0 7px 14px rgba(78, 43, 13, 0.18);
+    }
+
+    .cover-input {
+      display: none;
+    }
+
+    .cover-button {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      height: 34px;
+      border: 1px solid rgba(176, 111, 25, 0.36);
+      border-radius: 999px;
+      background: rgba(255, 250, 238, 0.88);
+      color: #6e4b2e;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .field-label {
+      display: block;
+      margin: 10px 0 6px;
+      color: var(--book-brown);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .book-input,
+    .book-textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(196, 138, 69, 0.34);
+      background: rgba(255, 255, 255, 0.78);
+      color: #452713;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      outline: none;
+    }
+
+        .book-input {
+      height: 36px;
+    }
+
+    .book-textarea {
+      height: 58px;
+      resize: none;
+      line-height: 1.45;
+    }
+
+    .book-input:focus,
+    .book-textarea:focus {
+      border-color: rgba(203, 139, 44, 0.72);
+      box-shadow: 0 0 0 3px rgba(216, 162, 68, 0.13);
+    }
+
+        .teacher-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .action-button {
+      min-height: 42px;
+      border: 1px solid rgba(176, 111, 25, 0.40);
+      border-radius: 18px;
+      color: #fff9ec;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow:
+        0 6px 0 rgba(105, 57, 5, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+    .action-button.gold {
+      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+    }
+
+    .action-button.green {
+      background: linear-gradient(180deg, #9caf66, #617d35);
+      box-shadow:
+        0 6px 0 rgba(70, 83, 31, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    .action-button.brown {
+      background: linear-gradient(180deg, #9b6330, #5e3414);
+    }
+
+    .action-button.red {
+      background: linear-gradient(180deg, #d17c55, #9d4226);
+      box-shadow:
+        0 6px 0 rgba(105, 57, 5, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    }
+
+    .action-button:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 rgba(105, 57, 5, 0.55);
+    }
+
+    .status-box {
+      padding: 12px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 219, 129, 0.13), transparent 40%),
+        rgba(255, 250, 238, 0.86);
+      border: 1px solid rgba(190, 130, 55, 0.28);
+    }
+
+    .status-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .status-label {
+      color: #7a5a3b;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .status-value {
+      color: #a76315;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: #f1dfc4;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f0c36f, #b06d0d);
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+
+    .student-status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .student-status-card {
+      min-height: 112px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(190, 130, 55, 0.22);
+      padding: 14px;
+    }
+
+    .student-status-title {
+      margin-bottom: 10px;
+      color: var(--book-brown);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .student-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .student-chip {
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: rgba(255, 250, 238, 0.9);
+      border: 1px solid rgba(190, 130, 55, 0.24);
+      color: #6e4b2e;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .student-chip.done {
+      background: rgba(241, 207, 120, 0.32);
+      color: #8a5a21;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 8px;
+    }
+
+        .result-item {
+      display: grid;
+      grid-template-columns: 48px 1fr 46px;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(190, 130, 55, 0.22);
+    }
+
+    .result-cover {
+      width: 42px;
+      height: 54px;
+      border-radius: 12px;
+      background: #fff7e7;
+      border: 1px solid rgba(190, 130, 55, 0.22);
+      object-fit: cover;
+      display: block;
+    }
+
+    .result-cover.empty-cover {
+      display: grid;
+      place-items: center;
+      color: #8a5a21;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .result-title {
+      color: var(--book-brown);
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .result-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      background: #f1dfc4;
+      overflow: hidden;
+    }
+
+    .result-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f0c36f, #b06d0d);
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+
+    .result-vote {
+      text-align: right;
+      color: #a76315;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+        .winner-box {
+      margin-top: 9px;
+      padding: 10px 12px;
+      border-radius: 20px;
+      background: rgba(241, 207, 120, 0.28);
+      border: 1px solid rgba(190, 130, 55, 0.28);
+      color: #6e4b2e;
+      font-size: 15px;
+      font-weight: 900;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .notice-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px dashed rgba(177, 122, 57, 0.30);
+      color: #7a5a3b;
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 1100px) {
+      .bs-dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .book-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .bs-page {
+        padding: 16px;
+      }
+
+      .bs-shell {
+        width: 100%;
+      }
+
+      .bs-topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .bs-brand,
+      .bs-top-actions {
+        justify-content: center;
+      }
+
+      .bs-main-title {
+        font-size: 32px;
+      }
+
+      .teacher-actions,
+      .student-status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-item {
+        grid-template-columns: 54px 1fr;
+      }
+
+      .result-vote {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="bs-page">
+    <div class="bs-shell">
+      <header class="bs-topbar">
+        <div class="bs-brand">
+          <div class="bs-brand-icon">
+            <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          </div>
+          <span>문답책</span>
+        </div>
+
+        <div class="bs-top-actions">
+  <button class="bs-pill" type="button">교사 송은정</button>
+  <button class="bs-pill" type="button">4학년 1반</button>
+  <button class="bs-home-btn" type="button" onclick="goTeacherPractice()">← 수업차례로</button>
+</div>
+      </header>
+
+      <section class="bs-header">
+        <div class="bs-eyebrow">📚 도서 선정하기</div>
+        <h1 class="bs-main-title">우리 반이 함께 읽을 책을 골라요</h1>
+        <p class="bs-subtitle">
+          교사가 후보 도서를 등록하고 투표를 시작하면 학생 화면에서 바로 투표할 수 있어요.
+          투표 완료 후 교사가 먼저 결과를 확인하고, 학생들에게 공개할 수 있어요.
+        </p>
+      </section>
+
+      <section class="bs-dashboard">
+        <div class="bs-left">
+          <article class="bs-card">
+            <div class="bs-card-inner">
+              <div class="bs-card-title-row">
+                <div>
+                  <h2 class="bs-card-title">투표할 도서 후보 등록</h2>
+                  <p class="bs-card-sub">책 표지 사진, 책 이름, 줄거리를 입력해 주세요.</p>
+                </div>
+                <span class="bs-small-tag">후보 3권</span>
+              </div>
+
+              <div class="book-grid" id="bookGrid">
+                <!-- JS로 생성 -->
+              </div>
+
+              <div class="teacher-actions">
+                <button class="action-button gold" type="button" onclick="startVote()">
+                  투표 진행하기
+                </button>
+                <button class="action-button red" type="button" onclick="endVote()">
+                  투표 완료
+                </button>
+                <button class="action-button green" type="button" onclick="revealResultToStudents()">
+                  투표 결과 공개하기
+                </button>
+                <button class="action-button brown" type="button" onclick="resetVote()">
+                  투표 초기화
+                </button>
+              </div>
+
+              <div class="notice-box">
+                <strong>사용 흐름</strong><br>
+                1. 도서 후보를 입력해요. → 2. 투표 진행하기를 눌러요. → 3. 학생들이 투표해요.
+                → 4. 교사가 투표 완료를 눌러 종료해요. → 5. 결과를 확인한 뒤 학생들에게 공개해요.
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="bs-right">
+          <article class="bs-card">
+            <div class="bs-card-inner">
+              <div class="bs-card-title-row">
+                <div></div>
+                  <h2 class="bs-card-title">실시간 투표 결과</h2>
+                  <p class="bs-card-sub">학생들이 투표하면 표 수가 자동으로 반영돼요.</p>
+                </div>
+                <span class="bs-small-tag" id="voteStateText">대기 중</span>
+              </div>
+
+              <div class="result-list" id="resultList">
+                <!-- JS로 생성 -->
+              </div>
+
+              <div class="winner-box" id="winnerBox">
+                아직 투표 결과가 없어요.
+              </div>
+            </div>
+          </article>
+                  <h2 class="bs-card-title">투표 진행 상황</h2>
+                  <p class="bs-card-sub">투표 완료 학생과 미완료 학생을 확인해요.</p>
+                </div>
+                <span class="bs-small-tag" id="voteCountTag">0 / 0명</span>
+              </div>
+
+              <div class="status-box">
+                <div class="status-main">
+                  <div>
+                    <div class="status-label">투표 진행률</div>
+                    <div class="status-value" id="progressText">0%</div>
+                  </div>
+                  <div class="status-value" id="doneCountText">0명</div>
+                </div>
+
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="student-status-grid">
+                  <div class="student-status-card">
+                    <div class="student-status-title">투표 완료</div>
+                    <div class="student-list" id="doneStudentList">
+                      <!-- JS로 생성 -->
+                    </div>
+                  </div>
+
+                  <div class="student-status-card">
+                    <div class="student-status-title">투표 미완료</div>
+                    <div class="student-list" id="notDoneStudentList">
+                      <!-- JS로 생성 -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const CANDIDATES_KEY = "bookVoteCandidates";
+    const STATUS_KEY = "bookVoteStatus";
+    const RECORDS_KEY = "bookVoteRecords";
+
+    const fallbackStudents = [
+      { id: "s01", name: "김민지" },
+      { id: "s02", name: "송은정" },
+      { id: "s03", name: "이재훈" },
+      { id: "s04", name: "김수현" },
+      { id: "s05", name: "박하윤" },
+      { id: "s06", name: "최도윤" }
+    ];
+
+    let candidates = [];
+    let students = [];
+
+    initPage();
+
+    function initPage() {
+      students = loadStudents();
+      candidates = loadCandidates();
+
+      if (candidates.length === 0) {
+        candidates = [
+          { id: "book1", title: "", summary: "", cover: "" },
+          { id: "book2", title: "", summary: "", cover: "" },
+          { id: "book3", title: "", summary: "", cover: "" }
+        ];
+      }
+
+      renderBookInputs();
+      refreshDashboard();
+
+      setInterval(refreshDashboard, 900);
+      window.addEventListener("storage", refreshDashboard);
+    }
+
+    function loadStudents() {
+      const saved = localStorage.getItem("teacherRegisterData");
+
+      if (!saved) {
+        return fallbackStudents;
+      }
+
+      try {
+        const data = JSON.parse(saved);
+
+        if (Array.isArray(data.students)) {
+          return data.students.map(function(student, index) {
+            return {
+              id: student.id || student.studentId || "s" + String(index + 1).padStart(2, "0"),
+              name: student.name || "학생" + (index + 1)
+            };
+          });
+        }
+
+        if (Array.isArray(data.studentAccounts)) {
+          return data.studentAccounts.map(function(student, index) {
+            return {
+              id: student.id || student.studentId || "s" + String(index + 1).padStart(2, "0"),
+              name: student.name || "학생" + (index + 1)
+            };
+          });
+        }
+
+        return fallbackStudents;
+      } catch (error) {
+        return fallbackStudents;
+      }
+    }
+
+    function loadCandidates() {
+      const saved = localStorage.getItem(CANDIDATES_KEY);
+
+      if (!saved) {
+        return [];
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveCandidates() {
+      localStorage.setItem(CANDIDATES_KEY, JSON.stringify(candidates));
+    }
+
+    function getStatus() {
+      const saved = localStorage.getItem(STATUS_KEY);
+
+      if (!saved) {
+        return {
+          isOpen: false,
+          isEnded: false,
+          revealResults: false,
+          startedAt: "",
+          endedAt: ""
+        };
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        return {
+          isOpen: false,
+          isEnded: false,
+          revealResults: false,
+          startedAt: "",
+          endedAt: ""
+        };
+      }
+    }
+
+    function setStatus(status) {
+      localStorage.setItem(STATUS_KEY, JSON.stringify(status));
+    }
+
+    function getRecords() {
+      const saved = localStorage.getItem(RECORDS_KEY);
+
+      if (!saved) {
+        return {};
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function renderBookInputs() {
+      const grid = document.getElementById("bookGrid");
+
+      grid.innerHTML = candidates.map(function(book, index) {
+        const coverHtml = book.cover
+          ? '<img class="cover-preview" style="display:block;" src="' + book.cover + '" alt="책 표지">'
+          : '<div class="camera-placeholder"><div class="camera-icon">📷</div><div>표지 사진 넣기</div></div>';
+
+        return `
+          <article class="book-card">
+            <div class="book-number">${index + 1}</div>
+
+            <div class="cover-box">
+              ${coverHtml}
+              <input class="cover-input" id="coverInput${index}" type="file" accept="image/*" onchange="handleCoverUpload(event, ${index})">
+              <button class="cover-button" type="button" onclick="document.getElementById('coverInput${index}').click()">
+                사진 첨부하기
+              </button>
+            </div>
+
+            <label class="field-label" for="bookTitle${index}">책 이름</label>
+            <input
+              id="bookTitle${index}"
+              class="book-input"
+              type="text"
+              value="${escapeHtml(book.title)}"
+              placeholder="책 이름"
+              oninput="updateBookTitle(${index}, this.value)"
+            >
+
+            <label class="field-label" for="bookSummary${index}">줄거리</label>
+            <textarea
+              id="bookSummary${index}"
+              class="book-textarea"
+              placeholder="짧은 줄거리"
+              oninput="updateBookSummary(${index}, this.value)"
+            >${escapeHtml(book.summary)}</textarea>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function handleCoverUpload(event, index) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(loadEvent) {
+        candidates[index].cover = loadEvent.target.result;
+        saveCandidates();
+        renderBookInputs();
+        refreshDashboard();
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function updateBookTitle(index, value) {
+      candidates[index].title = value;
+      saveCandidates();
+      refreshDashboard();
+    }
+
+    function updateBookSummary(index, value) {
+      candidates[index].summary = value;
+      saveCandidates();
+    }
+
+    function startVote() {
+      const validBooks = candidates.filter(function(book) {
+        return book.title.trim();
+      });
+
+      if (validBooks.length < 2) {
+        alert("투표를 시작하려면 책 이름이 적힌 후보가 2권 이상 필요해요.");
+        return;
+      }
+
+      saveCandidates();
+
+      setStatus({
+        isOpen: true,
+        isEnded: false,
+        revealResults: false,
+        startedAt: new Date().toISOString(),
+        endedAt: ""
+      });
+
+      localStorage.setItem(RECORDS_KEY, JSON.stringify({}));
+
+      alert("투표를 시작했어요. 이제 학생들이 book-vote.html에서 투표할 수 있어요.");
+      refreshDashboard();
+    }
+
+    function endVote() {
+      const status = getStatus();
+
+      if (!status.isOpen && status.isEnded) {
+        alert("이미 종료된 투표예요.");
+        return;
+      }
+
+      const ok = confirm("아직 투표하지 않은 학생이 있어도 투표를 끝낼까요?");
+
+      if (!ok) return;
+
+      setStatus({
+        isOpen: false,
+        isEnded: true,
+        revealResults: false,
+        startedAt: status.startedAt || "",
+        endedAt: new Date().toISOString()
+      });
+
+      alert("투표가 종료되었어요. 교사 화면에서 결과를 먼저 확인한 뒤 학생들에게 공개할 수 있어요.");
+      refreshDashboard();
+    }
+
+    function revealResultToStudents() {
+      const status = getStatus();
+
+      if (!status.isEnded) {
+        alert("먼저 투표 완료 버튼으로 투표를 끝내 주세요.");
+        return;
+      }
+
+      setStatus({
+        isOpen: false,
+        isEnded: true,
+        revealResults: true,
+        startedAt: status.startedAt || "",
+        endedAt: status.endedAt || new Date().toISOString()
+      });
+
+      alert("학생들에게 투표 결과를 공개했어요.");
+      refreshDashboard();
+    }
+
+    function resetVote() {
+      const ok = confirm("도서 후보, 투표 기록, 공개 상태를 모두 초기화할까요?");
+
+      if (!ok) return;
+
+      localStorage.removeItem(CANDIDATES_KEY);
+      localStorage.removeItem(STATUS_KEY);
+      localStorage.removeItem(RECORDS_KEY);
+
+      candidates = [
+        { id: "book1", title: "", summary: "", cover: "" },
+        { id: "book2", title: "", summary: "", cover: "" },
+        { id: "book3", title: "", summary: "", cover: "" }
+      ];
+
+      saveCandidates();
+      renderBookInputs();
+      refreshDashboard();
+    }
+
+    function refreshDashboard() {
+      candidates = loadCandidates();
+
+      if (candidates.length === 0) {
+        candidates = [
+          { id: "book1", title: "", summary: "", cover: "" },
+          { id: "book2", title: "", summary: "", cover: "" },
+          { id: "book3", title: "", summary: "", cover: "" }
+        ];
+      }
+
+      renderResults();
+      renderStudentStatus();
+      renderVoteState();
+    }
+
+    function renderVoteState() {
+      const status = getStatus();
+      const text = document.getElementById("voteStateText");
+
+      if (status.isOpen) {
+        text.textContent = "투표 진행 중";
+      } else if (status.isEnded && status.revealResults) {
+        text.textContent = "결과 공개됨";
+      } else if (status.isEnded) {
+        text.textContent = "교사 확인 중";
+      } else {
+        text.textContent = "대기 중";
+      }
+    }
+
+    function renderResults() {
+      const resultList = document.getElementById("resultList");
+      const winnerBox = document.getElementById("winnerBox");
+      const records = getRecords();
+      const votes = Object.values(records);
+      const totalVotes = votes.length;
+
+      const voteCounts = {};
+
+      candidates.forEach(function(book) {
+        voteCounts[book.id] = 0;
+      });
+
+      votes.forEach(function(record) {
+        if (voteCounts[record.bookId] !== undefined) {
+          voteCounts[record.bookId] += 1;
+        }
+      });
+
+      resultList.innerHTML = candidates.map(function(book) {
+        const count = voteCounts[book.id] || 0;
+        const percent = totalVotes === 0 ? 0 : Math.round((count / totalVotes) * 100);
+        const title = book.title.trim() || "책 이름";
+
+        const coverHtml = book.cover
+          ? `<img class="result-cover" src="${book.cover}" alt="${escapeHtml(title)}">`
+          : `<div class="result-cover empty-cover">📷</div>`;
+
+        return `
+          <div class="result-item">
+            ${coverHtml}
+            <div>
+              <div class="result-title">${escapeHtml(title)}</div>
+              <div class="result-bar">
+                <div class="result-fill" style="width:${percent}%;"></div>
+              </div>
+            </div>
+            <div class="result-vote">${count}표</div>
+          </div>
+        `;
+      }).join("");
+
+      if (totalVotes === 0) {
+        winnerBox.textContent = "아직 투표 결과가 없어요.";
+        return;
+      }
+
+      let maxCount = -1;
+      let winners = [];
+
+      candidates.forEach(function(book) {
+        const count = voteCounts[book.id] || 0;
+
+        if (count > maxCount) {
+          maxCount = count;
+          winners = [book];
+        } else if (count === maxCount) {
+          winners.push(book);
+        }
+      });
+
+      const winnerNames = winners
+        .map(function(book) {
+          return book.title.trim() || "책 이름";
+        })
+        .join(", ");
+
+      winnerBox.innerHTML =
+        "현재 1위는 <strong>" + escapeHtml(winnerNames) + "</strong>입니다. " +
+        "총 " + totalVotes + "명이 투표했어요.";
+    }
+
+    function renderStudentStatus() {
+      const records = getRecords();
+      const doneList = document.getElementById("doneStudentList");
+      const notDoneList = document.getElementById("notDoneStudentList");
+      const progressText = document.getElementById("progressText");
+      const doneCountText = document.getElementById("doneCountText");
+      const voteCountTag = document.getElementById("voteCountTag");
+      const progressFill = document.getElementById("progressFill");
+
+      const doneStudents = students.filter(function(student) {
+        return !!records[student.id];
+      });
+
+      const notDoneStudents = students.filter(function(student) {
+        return !records[student.id];
+      });
+
+      const total = students.length;
+      const doneCount = doneStudents.length;
+      const percent = total === 0 ? 0 : Math.round((doneCount / total) * 100);
+
+      progressText.textContent = percent + "%";
+      doneCountText.textContent = doneCount + "명";
+      voteCountTag.textContent = doneCount + " / " + total + "명";
+      progressFill.style.width = percent + "%";
+
+      doneList.innerHTML = doneStudents.length
+        ? doneStudents.map(function(student) {
+            return '<span class="student-chip done">' + escapeHtml(student.name) + '</span>';
+          }).join("")
+        : '<span class="student-chip">아직 없음</span>';
+
+      notDoneList.innerHTML = notDoneStudents.length
+        ? notDoneStudents.map(function(student) {
+            return '<span class="student-chip">' + escapeHtml(student.name) + '</span>';
+          }).join("")
+        : '<span class="student-chip done">모두 완료</span>';
+    }
+
+    function goTeacherPractice() {
+  location.href = "practice-teacher.html";
+}
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>

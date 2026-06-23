@@ -303,7 +303,82 @@
     .fw-textarea::placeholder {
       color: rgba(111, 72, 29, 0.52);
     }
+/* =========================================================
+   이 책이 궁금해지는 질문 선택 영역
+   - 읽기 중/읽기 후에 만든 질문 중 3개를 골라 추천글에 함께 보여줍니다.
+   ========================================================= */
 
+.fw-question-box {
+  grid-column: 1 / 3;
+  padding: 16px;
+  border: 1px solid rgba(181, 117, 37, 0.18);
+  border-radius: 24px;
+  background: rgba(255, 248, 229, 0.72);
+}
+
+.fw-question-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.fw-question-head strong {
+  color: #5c3615;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.fw-question-count {
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 250, 237, 0.95);
+  color: #9a5d1d;
+  font-size: 13px;
+  font-weight: 950;
+  border: 1px solid rgba(174, 109, 27, 0.18);
+}
+
+.fw-question-list {
+  display: grid;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.fw-question-item {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid rgba(171, 108, 31, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 252, 242, 0.94);
+  color: #5b3515;
+  font-size: 14px;
+  font-weight: 850;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.fw-question-item.selected {
+  border-color: rgba(168, 100, 30, 0.5);
+  background: rgba(232, 189, 94, 0.24);
+  color: #7a4618;
+}
+
+.fw-question-empty {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 252, 242, 0.78);
+  color: #7a5123;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.45;
+  text-align: center;
+}
     .fw-actions {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
@@ -331,7 +406,123 @@
       color: #fff9e8;
       box-shadow: 0 12px 22px rgba(128, 76, 18, 0.22);
     }
+/* =========================================================
+   질문 선택 팝업
+   - 추천글에 넣을 질문을 최대 3개 선택합니다.
+   ========================================================= */
 
+.fw-question-guide {
+  margin: 0 0 12px;
+  color: #7a5123;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.fw-question-open-button {
+  width: 100%;
+  height: 48px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #e8bd5e, #a8641e);
+  color: #fff9e8;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(128, 76, 18, 0.18);
+}
+
+.fw-selected-question-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fw-selected-question-item {
+  padding: 10px 12px;
+  border: 1px solid rgba(171, 108, 31, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 252, 242, 0.94);
+  color: #5b3515;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.fw-question-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(42, 25, 8, 0.42);
+  z-index: 19;
+}
+
+.fw-question-modal.show {
+  display: grid;
+}
+
+.fw-question-modal-box {
+  width: min(680px, calc(100vw - 44px));
+  max-height: min(620px, calc(100vh - 44px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 26px;
+  border-radius: 30px;
+  border: 1px solid rgba(184, 116, 30, 0.28);
+  background: rgba(255, 250, 236, 0.98);
+  box-shadow: 0 24px 60px rgba(47, 28, 8, 0.26);
+}
+
+.fw-question-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fw-question-modal-head strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #4d2b10;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.fw-question-modal-head p {
+  margin: 0;
+  color: #765026;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.fw-question-close-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(174, 109, 27, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 250, 237, 0.9);
+  color: #7a4618;
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.fw-question-list.modal {
+  max-height: none;
+  min-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.fw-question-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+}
     .fw-complete-modal {
       position: fixed;
       inset: 0;
@@ -415,21 +606,21 @@
          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="fw-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="fw-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-          <button type="button" class="fw-top-button" onclick="goIndividualReading()">🏠</button>
+         
         </div>
       </header>
 
       <section class="fw-main">
         <aside class="fw-lumi-card">
-         <div class="fw-bubble">
-  네가 재미있게 읽은 책을<br>
-  친구들에게 소개해줘!
+        <div class="fw-bubble">
+  읽기 후 활동을 마친 책을<br>
+  친구들에게 추천해 보자!
 </div>
 
 <div class="fw-help-box">
   <strong>추천 이유는 이렇게 써봐</strong>
   <span>
-    “어떤 장면이 기억에 남았는지”, “어떤 친구에게 어울릴지”를 쓰면 친구들이 책을 고르기 쉬워져.
+    “기억에 남는 장면”, “재미있었던 점”, “친구에게 추천하고 싶은 까닭”을 쓰면 좋아.
   </span>
 </div>
 
@@ -480,15 +671,28 @@
                 placeholder="이 책에서 기억에 남는 장면이나 좋았던 점을 적어줘."
               ></textarea>
             </div>
+<div class="fw-question-box">
+  <div class="fw-question-head">
+    <strong>이 책이 궁금해지는 질문</strong>
+    <span class="fw-question-count" id="selectedQuestionCount">선택한 질문 0/3</span>
+  </div>
 
-            <div class="fw-field full">
-              <label for="bookTargetInput">이런 친구에게 추천해요</label>
-              <textarea
-                id="bookTargetInput"
-                class="fw-textarea"
-                placeholder="예: 감동적인 이야기를 좋아하는 친구, 모험 이야기를 좋아하는 친구"
-              ></textarea>
-            </div>
+  <p class="fw-question-guide">
+    친구들이 이 책을 읽고 싶어지도록, 궁금증을 주는 질문을 최대 3개 골라줘.
+  </p>
+
+  <button type="button" class="fw-question-open-button" onclick="openQuestionPicker()">
+    질문 선택하기
+  </button>
+
+  <div class="fw-selected-question-list" id="selectedQuestionList">
+    <div class="fw-question-empty">
+      아직 선택한 질문이 없어.<br>
+      질문 선택하기를 눌러 질문을 골라줘.
+    </div>
+  </div>
+</div>
+            
           </form>
 
           <div class="fw-actions">
@@ -499,7 +703,28 @@
       </section>
     </div>
   </main>
+  <div class="fw-question-modal" id="questionPickerModal">
+    <div class="fw-question-modal-box">
+      <div class="fw-question-modal-head">
+        <div>
+          <strong>질문 선택하기</strong>
+          <p>친구들이 이 책을 궁금해할 만한 질문을 최대 3개 골라줘.</p>
+        </div>
+        <button type="button" class="fw-question-close-button" onclick="closeQuestionPicker()">×</button>
+      </div>
 
+      <div class="fw-question-list modal" id="questionSelectList">
+        <div class="fw-question-empty">
+          불러올 질문을 준비하고 있어.
+        </div>
+      </div>
+
+      <div class="fw-question-modal-actions">
+        <button type="button" class="fw-button" onclick="closeQuestionPicker()">취소</button>
+        <button type="button" class="fw-button primary" onclick="confirmQuestionPicker()">선택 완료</button>
+      </div>
+    </div>
+  </div>
   <div class="fw-complete-modal" id="completeModal">
     <div class="fw-modal-box">
       <div class="fw-modal-icon">📚</div>
@@ -517,7 +742,136 @@
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
     // checkLogin();
+const studentId = sessionStorage.getItem("studentId") || "student-demo";
+const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
 
+function getSavedFriendBooks() {
+  try {
+    return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_KEY) || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+// 추천글에 함께 넣을 질문은 최대 3개까지 선택합니다.
+let selectedTeaserQuestions = [];
+
+// 읽기 중/읽기 후에 만든 질문을 불러옵니다.
+// 답은 추천글에 보여주지 않고, 질문만 보여줍니다.
+function getMyReadingQuestionsForRecommend() {
+  const questionList = [];
+
+  // 읽기 중 질문 불러오기
+  try {
+    const duringQuestions = JSON.parse(
+      sessionStorage.getItem("individualDuringQuestions_" + studentId) || "[]"
+    );
+
+    duringQuestions.forEach(function (item) {
+      const questionText = item.question || item.questionText || item.text || "";
+      if (questionText.trim()) {
+        questionList.push({
+          id: "during-" + questionList.length,
+          text: questionText.trim(),
+          source: "읽기 중"
+        });
+      }
+    });
+  } catch (error) {
+    console.log("읽기 중 질문을 불러오지 못했습니다.", error);
+  }
+
+  // 읽기 후 질문 불러오기
+  try {
+    const afterQuestions = JSON.parse(
+      sessionStorage.getItem("individualAfterQuestionAnswers_" + studentId) || "[]"
+    );
+
+    afterQuestions.forEach(function (item) {
+      const questionText = item.question || item.questionText || item.text || "";
+      if (questionText.trim()) {
+        questionList.push({
+          id: "after-" + questionList.length,
+          text: questionText.trim(),
+          source: "읽기 후"
+        });
+      }
+    });
+  } catch (error) {
+    console.log("읽기 후 질문을 불러오지 못했습니다.", error);
+  }
+
+  return questionList;
+}
+// 질문 선택 목록을 화면에 보여줍니다.
+function renderQuestionSelectList() {
+  const questionSelectList = document.getElementById("questionSelectList");
+  const selectedQuestionCount = document.getElementById("selectedQuestionCount");
+
+  if (!questionSelectList || !selectedQuestionCount) {
+    return;
+  }
+
+  const questions = getMyReadingQuestionsForRecommend();
+
+  selectedQuestionCount.textContent = "선택한 질문 " + selectedTeaserQuestions.length + "/3";
+
+  if (questions.length === 0) {
+    questionSelectList.innerHTML = `
+      <div class="fw-question-empty">
+        아직 불러올 질문이 없어.<br>
+        읽기 중이나 읽기 후 활동에서 질문을 만든 뒤 다시 와줘.
+      </div>
+    `;
+    return;
+  }
+
+  questionSelectList.innerHTML = questions.map(function (item) {
+    const isSelected = selectedTeaserQuestions.includes(item.text);
+
+    return `
+      <button
+        type="button"
+        class="fw-question-item ${isSelected ? "selected" : ""}"
+        onclick="toggleTeaserQuestion('${encodeURIComponent(item.text)}')"
+      >
+        <span>[${item.source}]</span> ${escapeHtml(item.text)}
+      </button>
+    `;
+  }).join("");
+}
+// 질문을 선택하거나 선택 해제합니다.
+function toggleTeaserQuestion(questionText) {
+  const decodedQuestion = decodeURIComponent(questionText);
+  const alreadySelected = selectedTeaserQuestions.includes(decodedQuestion);
+
+  if (alreadySelected) {
+    selectedTeaserQuestions = selectedTeaserQuestions.filter(function (item) {
+      return item !== decodedQuestion;
+    });
+  } else {
+    if (selectedTeaserQuestions.length >= 3) {
+      alert("질문은 최대 3개까지만 선택할 수 있어!");
+      return;
+    }
+
+    selectedTeaserQuestions.push(decodedQuestion);
+  }
+
+  renderQuestionSelectList();
+}
+
+// HTML에 안전하게 넣기 위한 함수입니다.
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+document.addEventListener("DOMContentLoaded", function () {
+  renderQuestionSelectList();
+});
     function goIndividualReading() {
       window.location.href = "./individual-reading.html";
     }
@@ -537,17 +891,30 @@
       const title = document.getElementById("bookTitleInput").value.trim();
       const author = document.getElementById("bookAuthorInput").value.trim();
       const reason = document.getElementById("bookReasonInput").value.trim();
-      const target = document.getElementById("bookTargetInput").value.trim();
+      
 
-      if (!title || !author || !reason || !target) {
-        alert("책 제목, 지은이, 추천 이유, 추천 대상을 모두 적어줘!");
-        return;
-      }
+      if (!title || !author || !reason) {
+  alert("책 제목, 지은이, 추천 이유를 모두 적어줘!");
+  return;
+}
+const savedBooks = getSavedFriendBooks();
 
+const newBook = {
+  id: Date.now(),
+  title,
+  author,
+  reason,
+  recommender: "나",
+  likes: 0,
+  mine: true,
+  createdAt: new Date().toISOString()
+};
+
+sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify([newBook, ...savedBooks]));
       document.getElementById("completeModal").classList.add("show");
     }
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js"></script>
+<script src="../js/individual-power.js?v=power-common-2"></script>
 </body>
 </html>

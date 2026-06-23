@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>문답책 - 책수다방 관리</title>
+
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #3f2615;
+      background:
+        linear-gradient(180deg, rgba(255, 246, 222, 0.48), rgba(255, 232, 184, 0.50)),
+        url("../assets/images/class-reading/class-reading-question-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    button,
+    textarea,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 20px 28px 28px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 34%),
+        linear-gradient(90deg, rgba(255, 246, 224, 0.72), rgba(255, 255, 255, 0.18), rgba(255, 246, 224, 0.72));
+    }
+
+    .shell {
+      width: min(1240px, calc(100vw - 56px));
+      margin: 0 auto;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: 220px 1fr 300px;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
+    }
+
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #bf8740, #6d3a0d);
+      border: 1px solid rgba(255, 224, 158, 0.78);
+      box-shadow: 0 8px 16px rgba(91, 47, 10, 0.18);
+    }
+
+    .brand-icon img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .title-area {
+      text-align: center;
+    }
+
+    .main-title {
+      font-family: "Noto Serif KR", serif;
+      color: #4b2a13;
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1.4px;
+      text-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.72),
+        0 8px 18px rgba(122, 72, 25, 0.12);
+    }
+
+    .main-desc {
+      margin-top: 7px;
+      color: #6e4b2e;
+      font-size: 16px;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .nav-button {
+      height: 43px;
+      padding: 0 16px;
+      border-radius: 15px;
+      border: 1px solid rgba(177, 122, 57, 0.34);
+      background: rgba(255, 250, 238, 0.84);
+      color: #4f2e16;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow:
+        0 7px 14px rgba(116, 71, 20, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    }
+
+    .nav-button.primary {
+      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+      color: #fff9ec;
+      border-color: rgba(176, 111, 25, 0.40);
+      box-shadow:
+        0 5px 0 rgba(105, 57, 5, 0.58),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: stretch;
+    }
+
+    .lumi-card,
+    .summary-card,
+    .filter-card,
+    .list-card,
+    .detail-card,
+    .history-card {
+      border-radius: 24px;
+      border: 1px solid rgba(193, 133, 61, 0.34);
+      background: linear-gradient(180deg, rgba(255, 254, 249, 0.92), rgba(255, 247, 231, 0.90));
+      box-shadow:
+        0 14px 28px rgba(123, 75, 25, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(2px);
+    }
+
+    .lumi-card {
+      min-height: 154px;
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      align-items: center;
+      padding: 16px 20px;
+    }
+
+    .lumi-img {
+      width: 130px;
+      align-self: end;
+      filter:
+        drop-shadow(0 12px 15px rgba(112, 63, 15, 0.16))
+        drop-shadow(0 0 15px rgba(255, 198, 94, 0.14));
+    }
+
+    .speech-box {
+      position: relative;
+      padding: 18px 22px;
+      border-radius: 22px;
+      border: 1px solid rgba(186, 130, 58, 0.28);
+      background: rgba(255, 254, 248, 0.78);
+      color: #4f2d15;
+      font-size: 19px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .speech-box::before {
+      content: "";
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      transform: translateY(-50%);
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-right: 14px solid rgba(255, 254, 248, 0.92);
+    }
+
+    .summary-card {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .summary-title {
+      margin-bottom: 13px;
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat-box {
+      min-height: 78px;
+      padding: 13px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(192, 130, 55, 0.28);
+      background: rgba(255, 255, 255, 0.54);
+    }
+
+    .stat-label {
+      color: #8b6a46;
+      font-size: 13px;
+      font-weight: 900;
+      word-break: keep-all;
+    }
+
+    .stat-value {
+      margin-top: 6px;
+      color: #4a2a10;
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    .filter-card {
+      margin-bottom: 14px;
+      padding: 14px 18px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) 160px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .filter-button,
+    .sort-select {
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(192, 130, 55, 0.34);
+      background: rgba(255, 252, 245, 0.84);
+      color: #5a3820;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    }
+
+    .filter-button.active {
+      border-color: rgba(190, 125, 32, 0.82);
+      background: linear-gradient(180deg, #f3c978, #c9902d);
+      color: #4a2a10;
+      box-shadow: 0 7px 13px rgba(176, 112, 25, 0.16);
+    }
+
+    .sort-select {
+      padding: 0 12px;
+      outline: none;
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .list-card,
+    .detail-card {
+      padding: 22px 24px;
+      min-width: 0;
+      min-height: 650px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.7px;
+    }
+
+    .count-pill {
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(190, 130, 55, 0.26);
+      background: rgba(255, 249, 235, 0.88);
+      color: #8c5c1e;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .guide-box {
+      margin-bottom: 13px;
+      padding: 14px 16px;
+      border-radius: 17px;
+      border: 1px dashed rgba(178, 122, 55, 0.36);
+      background: rgba(255, 255, 255, 0.48);
+      color: #694729;
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .post-list {
+      display: grid;
+      gap: 10px;
+      max-height: 640px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .post-button {
+      width: 100%;
+      border: 1px solid rgba(186, 130, 58, 0.26);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.66);
+      padding: 15px 17px;
+      text-align: left;
+      color: #4d321a;
+      transition: 0.15s ease;
+    }
+
+    .post-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 14px rgba(123, 75, 25, 0.10);
+    }
+
+    .post-button.active {
+      border-color: rgba(83, 133, 60, 0.65);
+      background: rgba(243, 255, 236, 0.82);
+      box-shadow:
+        0 0 0 3px rgba(110, 169, 80, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .post-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      flex-wrap: wrap;
+    }
+
+    .student-name {
+      color: #4b2a13;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .type-badge,
+    .status-badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .type-badge {
+      background: rgba(222, 168, 79, 0.18);
+      color: #8b5a1d;
+    }
+
+    .status-badge.pending {
+      background: rgba(229, 174, 69, 0.20);
+      color: #8b5a1d;
+    }
+
+    .status-badge.approved {
+      background: rgba(88, 139, 62, 0.14);
+      color: #47722c;
+    }
+
+    .status-badge.rejected {
+      background: rgba(184, 82, 55, 0.13);
+      color: #9b4228;
+    }
+
+    .time-text {
+      margin-left: auto;
+      color: #9c7141;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .post-question {
+      color: #3f2615;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .post-preview {
+      margin-top: 9px;
+      color: #6f4e2f;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .empty-list,
+    .detail-empty {
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      border: 1px dashed rgba(177, 122, 57, 0.30);
+      background: rgba(255, 255, 255, 0.50);
+      color: #92745a;
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.5;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .empty-list {
+      min-height: 230px;
+    }
+
+    .detail-empty {
+      min-height: 560px;
+    }
+
+    .detail-box,
+    .reject-box,
+    .teacher-note-box,
+    .history-card {
+      border-radius: 18px;
+      border: 1px solid rgba(186, 130, 58, 0.28);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .detail-box {
+      padding: 18px 19px;
+      margin-bottom: 14px;
+    }
+
+    .detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .detail-name {
+      color: #4b2a13;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .detail-question {
+      color: #3f2615;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .detail-lines {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .line-card {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 250, 238, 0.70);
+      border: 1px solid rgba(186, 130, 58, 0.20);
+      color: #4f3219;
+      font-size: 16px;
+      font-weight: 820;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .line-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #4f7130;
+      font-weight: 950;
+    }
+
+    .reject-box,
+    .teacher-note-box {
+      padding: 16px 17px;
+      margin-top: 12px;
+      background: rgba(255, 255, 250, 0.74);
+    }
+
+    .box-title {
+      margin-bottom: 10px;
+      color: #4b2a13;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .reason-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .reason-option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 11px;
+      border-radius: 14px;
+      border: 1px solid rgba(186, 130, 58, 0.22);
+      background: rgba(255, 255, 255, 0.58);
+      color: #5a3820;
+      font-size: 14px;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    .reason-option input {
+      width: 16px;
+      height: 16px;
+      accent-color: #b06d0d;
+      flex-shrink: 0;
+    }
+
+    .text-area {
+      width: 100%;
+      min-height: 88px;
+      outline: none;
+      resize: vertical;
+      padding: 13px 15px;
+      border-radius: 15px;
+      border: 1px solid rgba(196, 138, 69, 0.34);
+      background: rgba(255, 255, 255, 0.74);
+      color: #452713;
+      font-size: 15px;
+      font-weight: 760;
+      line-height: 1.45;
+    }
+
+    .text-area:focus {
+      border-color: rgba(203, 139, 44, 0.72);
+      box-shadow:
+        0 0 0 3px rgba(216, 162, 68, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .button-row.three {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .plain-button,
+    .main-button,
+    .danger-button,
+    .brown-button {
+      min-height: 50px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .plain-button {
+      border: 1px solid rgba(175, 119, 53, 0.34);
+      background: rgba(255, 252, 245, 0.78);
+      color: #654220;
+    }
+
+    .main-button {
+      border: 1px solid rgba(68, 124, 42, 0.38);
+      background: linear-gradient(180deg, #3f842e, #245716);
+      color: #fff8dd;
+      box-shadow:
+        0 7px 0 rgba(31, 70, 18, 0.78),
+        inset 0 1px 0 rgba(255, 255, 255, 0.26);
+    }
+
+    .danger-button {
+      border: 1px solid rgba(151, 67, 42, 0.38);
+      background: linear-gradient(180deg, #c87952, #93401f);
+      color: #fff8dd;
+      box-shadow:
+        0 7px 0 rgba(95, 39, 19, 0.72),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .brown-button {
+      border: 1px solid rgba(120, 73, 24, 0.38);
+      background: linear-gradient(180deg, #965d25, #562b0c);
+      color: #fff8dd;
+      box-shadow:
+        0 7px 0 rgba(52, 24, 8, 0.78),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    }
+
+    .plain-button:active,
+    .main-button:active,
+    .danger-button:active,
+    .brown-button:active,
+    .nav-button:active {
+      transform: translateY(3px);
+      box-shadow: none;
+    }
+
+    .feedback-box {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border-radius: 15px;
+      border: 1px solid rgba(209, 146, 48, 0.42);
+      background: rgba(255, 250, 238, 0.78);
+      color: #5b3a1f;
+      font-size: 15px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .feedback-box.good {
+      border-color: rgba(97, 155, 72, 0.40);
+      background: rgba(250, 255, 245, 0.78);
+      color: #355628;
+    }
+
+    .feedback-box.bad {
+      border-color: rgba(177, 79, 45, 0.36);
+      background: rgba(255, 245, 240, 0.78);
+      color: #8f3d24;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .history-card {
+      padding: 18px 20px;
+      min-height: 230px;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(186, 130, 58, 0.18);
+      background: rgba(255, 255, 255, 0.62);
+      color: #4f3219;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
+
+    .history-item strong {
+      color: #4b2a13;
+      font-weight: 950;
+    }
+
+    .history-item .mini {
+      display: block;
+      margin-top: 4px;
+      color: #8b6a46;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .bottom-note {
+      margin-top: 16px;
+      text-align: center;
+      color: #7e5d3a;
+      font-size: 16px;
+      font-weight: 850;
+      word-break: keep-all;
+    }
+
+    @media (max-width: 1080px) {
+      .top,
+      .hero,
+      .board-grid,
+      .history-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-actions {
+        justify-content: center;
+      }
+
+      .filter-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .lumi-card {
+        grid-template-columns: 120px 1fr;
+      }
+
+      .lumi-img {
+        width: 120px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 14px 14px 20px;
+      }
+
+      .shell {
+        width: 100%;
+      }
+
+      .main-title {
+        font-size: 34px;
+      }
+
+      .lumi-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .lumi-img {
+        margin: 0 auto;
+      }
+
+      .speech-box::before {
+        display: none;
+      }
+
+      .filter-row,
+      .button-row,
+      .button-row.three,
+      .reason-grid,
+      .stat-row {
+        grid-template-columns: 1fr;
+      }
+
+      .list-card,
+      .detail-card {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="shell">
+      <header class="top">
+        <div class="brand">
+          <div class="brand-icon">
+            <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          </div>
+          <span>문답책</span>
+        </div>
+
+        <div class="title-area">
+          <h1 class="main-title">책수다방 관리</h1>
+          <p class="main-desc">학생들이 올린 글을 확인하고, 승인된 글만 책수다방에 보여요.</p>
+        </div>
+
+        <div class="top-actions">
+          <button class="nav-button" type="button" onclick="goTeacherHome()">교사 홈</button>
+          <button class="nav-button primary" type="button" onclick="goPracticeTeacher()">수업차례로</button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <article class="lumi-card">
+          <img class="lumi-img" src="../assets/images/class-reading/class-reading-lumi-feedback.png" alt="루미">
+          <div class="speech-box">
+            친구들이 나누기에 좋은 글인지 살펴봐요.<br>
+            승인하면 책수다방에 글이 보여요!
+          </div>
+        </article>
+
+        <article class="summary-card">
+          <h2 class="summary-title">승인 현황</h2>
+
+          <div class="stat-row">
+            <div class="stat-box">
+              <p class="stat-label">승인 대기</p>
+              <p class="stat-value" id="pendingCount">0개</p>
+            </div>
+
+            <div class="stat-box">
+              <p class="stat-label">승인됨</p>
+              <p class="stat-value" id="approvedCount">0개</p>
+            </div>
+
+            <div class="stat-box">
+              <p class="stat-label">거절됨</p>
+              <p class="stat-value" id="rejectedCount">0개</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="filter-card">
+        <div class="filter-row">
+          <button class="filter-button active" type="button" data-status="pending">승인 대기</button>
+          <button class="filter-button" type="button" data-status="approved">승인됨</button>
+          <button class="filter-button" type="button" data-status="rejected">거절됨</button>
+          <button class="filter-button" type="button" data-status="all">전체 보기</button>
+
+          <select class="sort-select" id="sortSelect">
+            <option value="latest">최신순</option>
+            <option value="name">이름순</option>
+            <option value="type">유형순</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="board-grid">
+        <article class="list-card">
+          <div class="section-head">
+            <h2 class="section-title">학생 게시물</h2>
+            <span class="count-pill" id="visibleCount">0개</span>
+          </div>
+
+          <div class="guide-box">
+            왼쪽 목록에서 글을 선택해요.<br>
+            승인하면 학생 책수다방에 보이고, 거절하면 고칠 점을 남길 수 있어요.
+          </div>
+
+          <div class="post-list" id="postList"></div>
+        </article>
+
+        <article class="detail-card">
+          <div class="section-head">
+            <h2 class="section-title">게시물 확인</h2>
+            <span class="count-pill" id="detailStatusPill">선택 필요</span>
+          </div>
+
+          <div id="detailArea"></div>
+        </article>
+      </section>
+
+      <section class="history-grid">
+        <article class="history-card">
+          <div class="section-head">
+            <h2 class="section-title">최근 승인 글</h2>
+            <span class="count-pill" id="approvedMiniCount">0개</span>
+          </div>
+          <div class="history-list" id="approvedHistoryList"></div>
+        </article>
+
+        <article class="history-card">
+          <div class="section-head">
+            <h2 class="section-title">최근 거절 글</h2>
+            <span class="count-pill" id="rejectedMiniCount">0개</span>
+          </div>
+          <div class="history-list" id="rejectedHistoryList"></div>
+        </article>
+      </section>
+
+      <p class="bottom-note">
+        책수다방 관리는 친구들과 나누기 좋은 글을 안전하게 공개하기 위한 교사용 화면이에요.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const PENDING_KEY = "bookChatPendingPosts";
+    const APPROVED_KEY = "bookChatApprovedPosts";
+    const REJECTED_KEY = "bookChatRejectedPosts";
+    const MY_SHARED_KEY = "mySharedQuestions";
+
+    const statusInfo = {
+      pending: { label: "승인 대기", className: "pending" },
+      approved: { label: "승인됨", className: "approved" },
+      rejected: { label: "거절됨", className: "rejected" }
+    };
+
+    const typeInfo = {
+      quiz: { label: "책 퀴즈", icon: "📖" },
+      talk: { label: "생각 나누기", icon: "💬" },
+      direct: { label: "책 퀴즈", icon: "📖" },
+      infer: { label: "생각 나누기", icon: "💬" },
+      feeling: { label: "생각 나누기", icon: "💬" },
+      life: { label: "생각 나누기", icon: "💬" }
+    };
+
+    let currentStatus = "pending";
+    let selectedPostId = null;
+    let allPosts = [];
+
+    const filterButtons = document.querySelectorAll(".filter-button");
+    const sortSelect = document.getElementById("sortSelect");
+    const postList = document.getElementById("postList");
+    const detailArea = document.getElementById("detailArea");
+
+    initPage();
+
+    function initPage() {
+      ensureSampleData();
+      ensureMySharedQuestionsInPending();
+
+      bindEvents();
+      renderAll();
+    }
+
+    function bindEvents() {
+      filterButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          filterButtons.forEach(function(btn) {
+            btn.classList.remove("active");
+          });
+
+          button.classList.add("active");
+          currentStatus = button.dataset.status;
+          selectedPostId = null;
+          renderAll();
+        });
+      });
+
+      sortSelect.addEventListener("change", function() {
+        renderAll();
+      });
+    }
+
+    function renderAll() {
+      allPosts = getAllPosts();
+      const filteredPosts = getFilteredPosts();
+
+      if (!selectedPostId && filteredPosts.length > 0) {
+        selectedPostId = filteredPosts[0].id;
+      }
+
+      renderPostList(filteredPosts);
+      renderDetail(filteredPosts);
+      renderCounts(filteredPosts);
+      renderHistory();
+    }
+
+    function getAllPosts() {
+      return []
+        .concat(loadList(PENDING_KEY))
+        .concat(loadList(APPROVED_KEY))
+        .concat(loadList(REJECTED_KEY));
+    }
+
+    function getFilteredPosts() {
+      let posts = allPosts.slice();
+
+      if (currentStatus !== "all") {
+        posts = posts.filter(function(post) {
+          return post.status === currentStatus;
+        });
+      }
+
+      if (sortSelect.value === "name") {
+        posts.sort(function(a, b) {
+          return String(a.studentName).localeCompare(String(b.studentName), "ko");
+        });
+      } else if (sortSelect.value === "type") {
+        posts.sort(function(a, b) {
+          return getSimpleType(a.type).localeCompare(getSimpleType(b.type), "ko");
+        });
+      } else {
+        posts.sort(function(a, b) {
+          return String(b.submittedAt || "").localeCompare(String(a.submittedAt || ""));
+        });
+      }
+
+      return posts;
+    }
+
+    function renderPostList(posts) {
+      if (posts.length === 0) {
+        postList.innerHTML = '<div class="empty-list">이 목록에 표시할 게시물이 없어요.</div>';
+        return;
+      }
+
+      postList.innerHTML = posts.map(function(post) {
+        const isActive = selectedPostId === post.id;
+        const type = getTypeDisplay(post.type);
+        const status = statusInfo[post.status] || statusInfo.pending;
+
+        return `
+          <button class="post-button ${isActive ? "active" : ""}" type="button" onclick="selectPost('${escapeAttribute(post.id)}')">
+            <div class="post-top">
+              <span class="student-name">${escapeHtml(post.studentName || "학생")}</span>
+              <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
+              <span class="status-badge ${status.className}">${status.label}</span>
+              <span class="time-text">${escapeHtml(post.submittedText || "오늘")}</span>
+            </div>
+
+            <div class="post-question">${escapeHtml(post.question || "질문 없음")}</div>
+
+            <div class="post-preview">
+              ${escapeHtml(post.thought || post.reason || post.answer || "아직 내용이 없어요.")}
+            </div>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderDetail(posts) {
+      const selectedPost = allPosts.find(function(post) {
+        return post.id === selectedPostId;
+      });
+
+      if (!selectedPost) {
+        document.getElementById("detailStatusPill").textContent = "선택 필요";
+        detailArea.innerHTML = `
+          <div class="detail-empty">
+            왼쪽에서 게시물을 선택해 주세요.<br>
+            선택한 글을 확인하고 승인하거나 거절할 수 있어요.
+          </div>
+        `;
+        return;
+      }
+
+      const type = getTypeDisplay(selectedPost.type);
+      const status = statusInfo[selectedPost.status] || statusInfo.pending;
+
+      document.getElementById("detailStatusPill").textContent = status.label;
+
+      detailArea.innerHTML = `
+        <article class="detail-box">
+          <div class="detail-meta">
+            <span class="detail-name">${escapeHtml(selectedPost.studentName || "학생")}의 글</span>
+            <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
+            <span class="status-badge ${status.className}">${status.label}</span>
+            <span class="time-text">${escapeHtml(selectedPost.submittedText || "오늘")}</span>
+          </div>
+
+          <div class="detail-question">${escapeHtml(selectedPost.question || "질문 없음")}</div>
+
+          <div class="detail-lines">
+            ${renderLineCard("내 생각은", selectedPost.thought || selectedPost.answer || "내용 없음")}
+            ${renderLineCard("그렇게 생각한 까닭은", selectedPost.reason || "아직 적힌 까닭이 없어요.")}
+            ${renderLineCard("책에서 찾은 부분은", selectedPost.evidence || "아직 적힌 근거가 없어요.")}
+          </div>
+        </article>
+
+        ${renderTeacherActionArea(selectedPost)}
+      `;
+    }
+
+    function renderLineCard(title, text) {
+      return `
+        <div class="line-card">
+          <strong>${escapeHtml(title)}</strong>
+          ${escapeHtml(text)}
+        </div>
+      `;
+    }
+
+    function renderTeacherActionArea(post) {
+      if (post.status === "pending") {
+        return `
+          <div class="teacher-note-box">
+            <div class="box-title">승인 전 교사 메모</div>
+            <textarea class="text-area" id="teacherNoteInput" maxlength="300" placeholder="선택 사항: 승인 전에 참고할 메모를 남길 수 있어요."></textarea>
+
+            <div class="button-row">
+              <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
+              <button class="danger-button" type="button" onclick="focusRejectBox()">거절 이유 쓰기</button>
+            </div>
+
+            <div class="feedback-box good">
+              승인하면 이 글은 학생 책수다방에 공개돼요.
+            </div>
+          </div>
+
+          <div class="reject-box" id="rejectBox">
+            <div class="box-title">거절할 때 알려줄 점</div>
+
+            <div class="reason-grid">
+              <label class="reason-option">
+                <input type="checkbox" name="rejectReason" value="질문이 책 내용과 잘 이어지지 않아요.">
+                질문이 책 내용과 잘 이어지지 않아요.
+              </label>
+
+              <label class="reason-option">
+                <input type="checkbox" name="rejectReason" value="친구들과 이야기하기 어려운 질문이에요.">
+                친구들과 이야기하기 어려운 질문이에요.
+              </label>
+
+              <label class="reason-option">
+                <input type="checkbox" name="rejectReason" value="표현을 조금 더 바르게 고치면 좋아요.">
+                표현을 조금 더 바르게 고치면 좋아요.
+              </label>
+
+              <label class="reason-option">
+                <input type="checkbox" name="rejectReason" value="내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.">
+                내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.
+              </label>
+            </div>
+
+            <textarea class="text-area" id="rejectCommentInput" maxlength="400" placeholder="선택 사항: 예) 질문은 좋아요. 다만 책 속 어느 장면에서 그렇게 생각했는지 한 문장 더 써서 다시 올려 봐요."></textarea>
+
+            <div class="button-row">
+              <button class="plain-button" type="button" onclick="clearRejectForm()">내용 지우기</button>
+              <button class="danger-button" type="button" onclick="rejectPost('${escapeAttribute(post.id)}')">거절하기</button>
+            </div>
+
+            <div class="feedback-box bad" id="rejectGuide">
+              거절 이유는 필수는 아니지만, 적어 주면 학생이 고쳐서 다시 올리기 좋아요.
+            </div>
+          </div>
+        `;
+      }
+
+      if (post.status === "approved") {
+        return `
+          <div class="teacher-note-box">
+            <div class="box-title">승인된 글</div>
+            <div class="feedback-box good">
+              이 글은 현재 학생 책수다방에 공개되는 글이에요.
+            </div>
+
+            <div class="button-row">
+              <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">승인 취소</button>
+              <button class="danger-button" type="button" onclick="hideApprovedPost('${escapeAttribute(post.id)}')">거절 목록으로 보내기</button>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="teacher-note-box">
+          <div class="box-title">거절된 글</div>
+
+          <div class="feedback-box bad">
+            <strong>학생에게 남긴 말</strong><br>
+            ${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}
+          </div>
+
+          <div class="button-row">
+            <button class="main-button" type="button" onclick="approveRejectedPost('${escapeAttribute(post.id)}')">다시 승인하기</button>
+            <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">대기로 돌리기</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCounts(filteredPosts) {
+      const pending = loadList(PENDING_KEY);
+      const approved = loadList(APPROVED_KEY);
+      const rejected = loadList(REJECTED_KEY);
+
+      document.getElementById("pendingCount").textContent = pending.length + "개";
+      document.getElementById("approvedCount").textContent = approved.length + "개";
+      document.getElementById("rejectedCount").textContent = rejected.length + "개";
+      document.getElementById("visibleCount").textContent = filteredPosts.length + "개";
+      document.getElementById("approvedMiniCount").textContent = approved.length + "개";
+      document.getElementById("rejectedMiniCount").textContent = rejected.length + "개";
+    }
+
+    function renderHistory() {
+      const approved = loadList(APPROVED_KEY).slice().reverse();
+      const rejected = loadList(REJECTED_KEY).slice().reverse();
+
+      const approvedHistoryList = document.getElementById("approvedHistoryList");
+      const rejectedHistoryList = document.getElementById("rejectedHistoryList");
+
+      approvedHistoryList.innerHTML = approved.length
+        ? approved.slice(0, 8).map(function(post) {
+            return `
+              <div class="history-item">
+                <strong>${escapeHtml(post.studentName || "학생")}</strong> · ${escapeHtml(post.question || "질문 없음")}
+                <span class="mini">승인: ${escapeHtml(post.reviewedText || "오늘")}</span>
+              </div>
+            `;
+          }).join("")
+        : '<div class="empty-list">아직 승인된 글이 없어요.</div>';
+
+      rejectedHistoryList.innerHTML = rejected.length
+        ? rejected.slice(0, 8).map(function(post) {
+            return `
+              <div class="history-item">
+                <strong>${escapeHtml(post.studentName || "학생")}</strong> · ${escapeHtml(post.question || "질문 없음")}
+                <span class="mini">거절: ${escapeHtml(post.reviewedText || "오늘")}</span>
+              </div>
+            `;
+          }).join("")
+        : '<div class="empty-list">아직 거절된 글이 없어요.</div>';
+    }
+
+    function selectPost(id) {
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function approvePost(id) {
+      const post = findPostById(id);
+
+      if (!post) return;
+
+      const noteInput = document.getElementById("teacherNoteInput");
+      const note = noteInput ? noteInput.value.trim() : "";
+
+      movePost(id, post.status, "approved", {
+        teacherNote: note,
+        reviewedAt: new Date().toISOString(),
+        reviewedText: getTodayText(),
+        rejectReason: ""
+      });
+
+      currentStatus = "approved";
+      setActiveFilter("approved");
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function rejectPost(id) {
+      const post = findPostById(id);
+
+      if (!post) return;
+
+      const checkedReasons = Array.from(document.querySelectorAll('input[name="rejectReason"]:checked'))
+        .map(function(input) {
+          return input.value;
+        });
+
+      const commentInput = document.getElementById("rejectCommentInput");
+      const directComment = commentInput ? commentInput.value.trim() : "";
+
+      const reasonParts = checkedReasons.slice();
+
+      if (directComment) {
+        reasonParts.push(directComment);
+      }
+
+      const rejectReason = reasonParts.length > 0
+        ? reasonParts.join("\n")
+        : "고쳐서 다시 올리면 더 좋은 책수다방 글이 될 수 있어요.";
+
+      movePost(id, post.status, "rejected", {
+        rejectReason: rejectReason,
+        reviewedAt: new Date().toISOString(),
+        reviewedText: getTodayText()
+      });
+
+      currentStatus = "rejected";
+      setActiveFilter("rejected");
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function approveRejectedPost(id) {
+      const post = findPostById(id);
+
+      if (!post) return;
+
+      movePost(id, post.status, "approved", {
+        reviewedAt: new Date().toISOString(),
+        reviewedText: getTodayText(),
+        rejectReason: ""
+      });
+
+      currentStatus = "approved";
+      setActiveFilter("approved");
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function returnToPending(id) {
+      const post = findPostById(id);
+
+      if (!post) return;
+
+      movePost(id, post.status, "pending", {
+        reviewedAt: "",
+        reviewedText: "",
+        rejectReason: ""
+      });
+
+      currentStatus = "pending";
+      setActiveFilter("pending");
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function hideApprovedPost(id) {
+      const ok = confirm("이 글을 학생 책수다방에서 숨기고 거절 목록으로 보낼까요?");
+
+      if (!ok) return;
+
+      const post = findPostById(id);
+
+      if (!post) return;
+
+      movePost(id, post.status, "rejected", {
+        rejectReason: "교사가 다시 확인한 뒤 책수다방에서 숨겼어요.",
+        reviewedAt: new Date().toISOString(),
+        reviewedText: getTodayText()
+      });
+
+      currentStatus = "rejected";
+      setActiveFilter("rejected");
+      selectedPostId = id;
+      renderAll();
+    }
+
+    function movePost(id, fromStatus, toStatus, extraFields) {
+      const fromKey = getKeyByStatus(fromStatus);
+      const toKey = getKeyByStatus(toStatus);
+
+      if (!fromKey || !toKey) return;
+
+      const fromList = loadList(fromKey);
+      const postIndex = fromList.findIndex(function(item) {
+        return item.id === id;
+      });
+
+      if (postIndex === -1) return;
+
+      const post = fromList.splice(postIndex, 1)[0];
+
+      const movedPost = Object.assign({}, post, extraFields || {}, {
+        status: toStatus
+      });
+
+      saveList(fromKey, fromList);
+
+      const toList = loadList(toKey).filter(function(item) {
+        return item.id !== id;
+      });
+
+      toList.push(movedPost);
+      saveList(toKey, toList);
+    }
+
+    function findPostById(id) {
+      return getAllPosts().find(function(post) {
+        return post.id === id;
+      });
+    }
+
+    function getKeyByStatus(status) {
+      if (status === "pending") return PENDING_KEY;
+      if (status === "approved") return APPROVED_KEY;
+      if (status === "rejected") return REJECTED_KEY;
+      return "";
+    }
+
+    function setActiveFilter(status) {
+      filterButtons.forEach(function(button) {
+        button.classList.toggle("active", button.dataset.status === status);
+      });
+    }
+
+    function focusRejectBox() {
+      const rejectBox = document.getElementById("rejectBox");
+
+      if (rejectBox) {
+        rejectBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function clearRejectForm() {
+      document.querySelectorAll('input[name="rejectReason"]').forEach(function(input) {
+        input.checked = false;
+      });
+
+      const commentInput = document.getElementById("rejectCommentInput");
+
+      if (commentInput) {
+        commentInput.value = "";
+      }
+    }
+
+    function getTypeDisplay(type) {
+      return typeInfo[type] || typeInfo.talk;
+    }
+
+    function getSimpleType(type) {
+      const simple = getTypeDisplay(type);
+      return simple.label;
+    }
+
+    function loadList(key) {
+      const saved = localStorage.getItem(key);
+
+      if (!saved) return [];
+
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveList(key, list) {
+      localStorage.setItem(key, JSON.stringify(list));
+    }
+
+    function ensureMySharedQuestionsInPending() {
+      const sharedData = localStorage.getItem(MY_SHARED_KEY);
+
+      if (!sharedData) return;
+
+      let parsedData = null;
+
+      try {
+        parsedData = JSON.parse(sharedData);
+      } catch (error) {
+        return;
+      }
+
+      if (!parsedData || !Array.isArray(parsedData.questions)) return;
+
+      const pending = loadList(PENDING_KEY);
+      const approved = loadList(APPROVED_KEY);
+      const rejected = loadList(REJECTED_KEY);
+
+      const existingIds = new Set(
+        pending.concat(approved).concat(rejected).map(function(post) {
+          return post.sourceId || post.id;
+        })
+      );
+
+      parsedData.questions.forEach(function(question, index) {
+        const sourceId = "mySharedQuestions-" + index + "-" + String(question.text || "");
+
+        if (existingIds.has(sourceId)) return;
+
+        pending.push({
+          id: "pending-" + Date.now() + "-" + index,
+          sourceId: sourceId,
+          status: "pending",
+          studentName: parsedData.name || "학생",
+          type: normalizeType(question.type),
+          question: question.text || "",
+          thought: question.answer || "",
+          reason: question.reason || "",
+          evidence: question.evidence || "",
+          answer: question.answer || "",
+          submittedAt: new Date().toISOString(),
+          submittedText: getTodayText(),
+          reviewedAt: "",
+          reviewedText: "",
+          rejectReason: ""
+        });
+      });
+
+      saveList(PENDING_KEY, pending);
+    }
+
+    function ensureSampleData() {
+      const hasAnyData =
+        loadList(PENDING_KEY).length > 0 ||
+        loadList(APPROVED_KEY).length > 0 ||
+        loadList(REJECTED_KEY).length > 0;
+
+      if (hasAnyData) return;
+
+      const samplePosts = [
+        {
+          id: "sample-pending-1",
+          sourceId: "sample-pending-1",
+          status: "pending",
+          studentName: "민지",
+          type: "talk",
+          question: "주인공은 왜 무서웠는데도 친구를 도왔을까?",
+          thought: "주인공이 친구를 소중하게 생각했기 때문이라고 생각한다.",
+          reason: "무서웠지만 친구가 혼자 있으면 더 위험할 수 있다고 생각했을 것 같기 때문이다.",
+          evidence: "주인공이 뒤를 돌아보다가 친구에게 다시 가는 장면이다.",
+          submittedAt: "2026-06-11T09:10:00",
+          submittedText: "06.11 09:10",
+          reviewedAt: "",
+          reviewedText: "",
+          rejectReason: ""
+        },
+        {
+          id: "sample-pending-2",
+          sourceId: "sample-pending-2",
+          status: "pending",
+          studentName: "서준",
+          type: "quiz",
+          question: "주인공이 다시 돌아간 장면에서 알 수 있는 것은 무엇일까?",
+          thought: "주인공이 친구를 걱정했다는 것을 알 수 있다.",
+          reason: "그냥 도망가지 않고 다시 친구 쪽으로 갔기 때문이다.",
+          evidence: "주인공이 친구의 이름을 부르는 장면이다.",
+          submittedAt: "2026-06-11T09:25:00",
+          submittedText: "06.11 09:25",
+          reviewedAt: "",
+          reviewedText: "",
+          rejectReason: ""
+        },
+        {
+          id: "sample-pending-3",
+          sourceId: "sample-pending-3",
+          status: "pending",
+          studentName: "하윤",
+          type: "talk",
+          question: "나라면 주인공처럼 친구를 도울 수 있었을까?",
+          thought: "나도 친구를 도우려고 했을 것 같다.",
+          reason: "친구가 힘들 때 모른 척하면 마음이 불편할 것 같기 때문이다.",
+          evidence: "주인공이 무서워도 친구를 두고 가지 못하는 장면이다.",
+          submittedAt: "2026-06-11T09:37:00",
+          submittedText: "06.11 09:37",
+          reviewedAt: "",
+          reviewedText: "",
+          rejectReason: ""
+        }
+      ];
+
+      saveList(PENDING_KEY, samplePosts);
+      saveList(APPROVED_KEY, []);
+      saveList(REJECTED_KEY, []);
+    }
+
+    function normalizeType(type) {
+      if (type === "direct" || type === "quiz") return "quiz";
+      if (type === "infer" || type === "feeling" || type === "life" || type === "opinion" || type === "connect") {
+        return "talk";
+      }
+
+      return "talk";
+    }
+
+    function getTodayText() {
+      const now = new Date();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const date = String(now.getDate()).padStart(2, "0");
+      const hour = String(now.getHours()).padStart(2, "0");
+      const minute = String(now.getMinutes()).padStart(2, "0");
+
+      return month + "." + date + " " + hour + ":" + minute;
+    }
+
+    function goTeacherHome() {
+      location.href = "./home.html";
+    }
+
+    function goPracticeTeacher() {
+      location.href = "./practice-teacher.html";
+    }
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(text) {
+      return escapeHtml(text).replaceAll("`", "&#096;");
+    }
+  </script>
+</body>
+</html>

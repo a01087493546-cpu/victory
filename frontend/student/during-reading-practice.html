@@ -3034,15 +3034,22 @@ function renderReviewGate() {
     }
 
     function goNextBasicQuestion() {
-      const questions = getCurrentBasicQuestions();
-      if (currentBasicIndex < questions.length - 1) {
-        currentBasicIndex += 1;
-        selectedBasicChoice = null;
-        renderBasicPracticeScreen();
-      } else {
-        goDeepPracticeScreen();
-      }
-    }
+  const questions = getCurrentBasicQuestions();
+
+  if (currentBasicIndex < questions.length - 1) {
+    currentBasicIndex += 1;
+    selectedBasicChoice = null;
+    renderBasicPracticeScreen();
+    return;
+  }
+
+  // 기본 연습을 끝내면 바로 해당 질문 종류 완료 처리
+  progress[selectedQuestionType] = true;
+  sessionStorage.setItem(progressKey, JSON.stringify(progress));
+
+  // 심화 연습 없이 질문 종류 선택 화면으로 돌아가기
+  goSelectScreen();
+}
 
     /*
       =========================================================
