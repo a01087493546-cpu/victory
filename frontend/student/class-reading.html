@@ -598,14 +598,14 @@
           </div>
 
           <div class="action-copy">
-            <h2 class="action-title">질문 만들기</h2>
+            <h2 class="action-title">책 속 생각쓰기</h2>
             <p class="action-desc">
-              책을 읽으며 떠오른 질문을 만들고,<br>
-              친구와 나누고 싶은 질문을 골라요.
+              책을 읽으며 떠오른 생각을 적고,<br>
+              친구와 나누고 싶은 생각을 골라요.
             </p>
           </div>
 
-          <button class="action-button" type="button" onclick="goQuestionCreate()">질문 만들기 →</button>
+          <button class="action-button" type="button" onclick="goQuestionCreate()">책 속 생각쓰기 →</button>
         </article>
 
         <article class="action-card">
@@ -614,14 +614,14 @@
           </div>
 
           <div class="action-copy">
-            <h2 class="action-title">질문 나누기</h2>
+            <h2 class="action-title">책수다방</h2>
             <p class="action-desc">
               친구들이 올린 질문을 보고<br>
               내 생각을 담은 답을 적어봐요.
             </p>
           </div>
 
-          <button class="action-button" type="button" onclick="goFriendQuestion()">질문 나누기 →</button>
+          <button class="action-button" type="button" onclick="goFriendQuestion()">책수다방 →</button>
         </article>
 
         <article class="action-card">
@@ -630,14 +630,14 @@
           </div>
 
           <div class="action-copy">
-            <h2 class="action-title">질문 모음 보기</h2>
+            <h2 class="action-title">생각 모음 보기</h2>
             <p class="action-desc">
-              내가 만든 질문과 오늘의 질문을<br>
+              내가 만든 생각과 오늘의 생각을<br>
               메모장처럼 모아 볼 수 있어요.
             </p>
           </div>
 
-          <button class="action-button" type="button" onclick="goQuestionCollection()">질문 모음 보기 →</button>
+          <button class="action-button" type="button" onclick="goQuestionCollection()">생각 모음 보기 →</button>
         </article>
       </section>
 
@@ -662,17 +662,17 @@
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 
-    // 우리반 책읽기 질문 만들기 화면으로 이동합니다.
+    // 우리반 책읽기 책 속 생각쓰기 화면으로 이동합니다.
     function goQuestionCreate() {
       location.href = "./during-read.html";
     }
 
-    // 우리반 책읽기 질문 나누기 화면으로 이동합니다.
+    // 우리반 책읽기 책수다방 화면으로 이동합니다.
     function goFriendQuestion() {
-      location.href = "./friend-question.html";
+      location.href = "./book-chat.html";
     }
 
-    // 나의 질문 모음 화면으로 이동합니다.
+    // 나의 생각 모음 화면으로 이동합니다.
     function goQuestionCollection() {
       location.href = "./my-questions.html";
     }
