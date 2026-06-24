@@ -2,11 +2,12 @@
   파일명: practice-teacher.html
   역할: 문답책 프로젝트의 교사용 수업차례 화면입니다.
 
-  이 화면에서 하는 일:
-  1. 기존 practice.html 디자인을 그대로 사용합니다.
-  2. 교사가 학생 활동 화면에 언제든 들어갈 수 있도록 모든 단계를 활성화합니다.
-  3. 백엔드 기능 없이 프론트 화면 이동만 합니다.
-  4. 학생용 practice.html과 분리하여 학생의 잠금 흐름에는 영향을 주지 않습니다.
+  수정 내용:
+  1. 기존 03단계 '읽기 중' 독립 카드를 삭제했습니다.
+  2. 기존 '우리반 책읽기' 카드가 03단계가 되도록 변경했습니다.
+  3. 카드 제목은 '읽기 중', 소제목은 '우리반 책읽기'로 변경했습니다.
+  4. '함께 읽기' 문구를 '우리반 책읽기'로 변경했습니다.
+  5. 4단계 구조에 맞게 카드 비율과 크기를 조정했습니다.
 -->
 
 <!DOCTYPE html>
@@ -19,10 +20,8 @@
   <title>문답책 - 교사용 수업차례</title>
 
   <style>
-  /* 제목/로고/단계 제목에 사용할 Noto Serif KR 폰트입니다. */
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
 
-  /* 전체 기본 설정 */
   * {
     box-sizing: border-box;
     margin: 0;
@@ -135,7 +134,7 @@
     z-index: 1;
     max-width: 1230px;
     margin: 0 auto;
-    padding: 44px 34px 34px;
+    padding: 42px 34px 34px;
     border-radius: 36px;
     background:
       radial-gradient(circle at 80% 7%, rgba(255, 213, 137, 0.28), transparent 35%),
@@ -174,7 +173,7 @@
   .title-area {
     position: relative;
     z-index: 1;
-    margin-bottom: 34px;
+    margin-bottom: 30px;
   }
 
   .title-badge {
@@ -196,7 +195,7 @@
   .title-area h1 {
     margin-bottom: 18px;
     font-family: "Noto Serif KR", serif;
-    font-size: 48px;
+    font-size: 46px;
     font-weight: 900;
     line-height: 1.24;
     letter-spacing: -1.6px;
@@ -221,15 +220,15 @@
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-top: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 26px;
   }
 
   .step-card {
     position: relative;
-    min-height: 390px;
-    padding: 22px 20px;
+    min-height: 370px;
+    padding: 23px 21px;
     border: 1.5px solid rgba(224, 169, 94, 0.62);
     border-radius: 28px;
     background:
@@ -284,14 +283,15 @@
 
   .step-number {
     color: #f1c982;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 900;
     margin-bottom: 12px;
   }
 
   .step-icon-box {
-    width: 150px;
-    height: 118px;
+    width: 100%;
+    max-width: 178px;
+    height: 122px;
     margin-bottom: 20px;
     border-radius: 24px;
     background:
@@ -308,8 +308,8 @@
   }
 
   .step-icon-box img {
-    width: 138px;
-    height: 104px;
+    width: 148px;
+    height: 108px;
     object-fit: contain;
     filter:
       drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
@@ -319,7 +319,7 @@
   .step-main-title {
     margin-bottom: 6px;
     font-family: "Noto Serif KR", serif;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 900;
     color: #fff7e5;
     letter-spacing: -0.7px;
@@ -338,7 +338,7 @@
 
   .step-card p {
     color: #ffe4c0;
-    font-size: 15px;
+    font-size: 15.5px;
     line-height: 1.68;
     font-weight: 800;
     letter-spacing: -0.1px;
@@ -346,9 +346,9 @@
 
   .step-button {
     width: 100%;
-    margin-top: 18px;
+    margin-top: 20px;
     border-radius: 16px;
-    padding: 13px 10px;
+    padding: 14px 10px;
     color: #fff8eb;
     font-size: 16px;
     font-weight: 900;
@@ -452,28 +452,6 @@
     color: #e9a967;
   }
 
-  /* 5단계: 밝은 딥 브라운 */
-  .step-card:nth-child(5) {
-    border-color: rgba(181, 111, 64, 0.82);
-    background:
-      radial-gradient(circle at 76% 0%, rgba(181, 111, 64, 0.24), transparent 42%),
-      linear-gradient(180deg, rgba(98, 58, 36, 0.95) 0%, rgba(62, 36, 24, 0.96) 100%);
-  }
-
-  .step-card:nth-child(5) .step-button {
-    border: 1px solid rgba(181, 111, 64, 0.72);
-    background: linear-gradient(180deg, #965c32 0%, #623719 100%);
-  }
-
-  .step-card:nth-child(5) .step-button:hover {
-    background: linear-gradient(180deg, #a86b3c 0%, #744522 100%);
-  }
-
-  .step-card:nth-child(5) .step-sub-title,
-  .step-card:nth-child(5) .step-number {
-    color: #d89059;
-  }
-
   .guide-box {
     position: relative;
     z-index: 1;
@@ -507,6 +485,10 @@
 
     .title-area h1 {
       font-size: 40px;
+    }
+
+    .step-card {
+      min-height: 340px;
     }
   }
 
@@ -550,6 +532,10 @@
     .title-area p {
       font-size: 16px;
     }
+
+    .step-card {
+      min-height: 330px;
+    }
   }
 </style>
 </head>
@@ -565,8 +551,8 @@
       </div>
 
       <button class="home-button" onclick="location.href='./book-manage.html'">
-  ← 온책읽기 관리
-</button>
+        ← 온책읽기 관리
+      </button>
     </header>
 
     <main class="practice-card">
@@ -575,11 +561,11 @@
       <section class="title-area">
         <span class="title-badge">교사용 수업차례</span>
 
-        <h1>책 속 이야기를 함께 따라가 볼까요?</h1>
+        <h1>책 속 생각을 함께 살펴볼까요?</h1>
 
         <p>
           교사는 책 고르기부터 읽기 전·중·후 활동까지<br>
-          학생들이 공부하는 화면에 언제든 들어갈 수 있어요.
+          학생들이 남긴 질문과 생각을 확인하며 수업 흐름을 살펴볼 수 있어요.
         </p>
       </section>
 
@@ -603,8 +589,8 @@
             <div class="step-sub-title">함께 읽을 책 고르기</div>
 
             <p>
-              질문하며 읽기의 중요성을 알아보고,<br>
-              우리 반이 함께 읽을 책을 골라요.
+              우리 반이 함께 읽을 책을 고르고,<br>
+              독서 활동을 시작할 준비를 해요.
             </p>
           </div>
 
@@ -630,7 +616,8 @@
             <div class="step-sub-title">생각 열기</div>
 
             <p>
-              제목, 표지, 그림 등을 보며 책에서 어떤 이야기가 펼쳐질지 떠올려요.
+              제목, 표지, 그림을 보며<br>
+              학생들이 떠올린 생각과 예상을 살펴봐요.
             </p>
           </div>
 
@@ -640,49 +627,24 @@
         </article>
 
         <!-- 3단계 -->
-        <article class="step-card active" id="stepDuring">
+        <article class="step-card active" id="stepClass">
           <div>
             <div class="step-number">03</div>
 
             <div class="step-icon-box">
               <img
-                src="../assets/images/practice/practice-during-reading.png"
-                alt="읽기 중 아이콘"
-                onerror="this.onerror=null; this.src='../assets/images/ability/ability-wisdom.png';"
-              >
-            </div>
-
-            <h2 class="step-main-title">읽기 중</h2>
-            <div class="step-sub-title">질문하며 깊이 읽기</div>
-
-            <p>
-              읽으면서 궁금한 점을 질문으로 만들고, 더 알고 싶은 생각을 따라가요.
-            </p>
-          </div>
-
-          <button class="step-button" id="duringButton" type="button" onclick="goDuringReadingIntro()">
-            들어가기
-          </button>
-        </article>
-
-        <!-- 4단계 -->
-        <article class="step-card active" id="stepClass">
-          <div>
-            <div class="step-number">04</div>
-
-            <div class="step-icon-box">
-              <img
                 src="../assets/images/practice/practice-class-reading.png"
-                alt="우리반 책읽기 아이콘"
+                alt="읽기 중 아이콘"
                 onerror="this.onerror=null; this.src='../assets/images/home/home-individual-icon.png';"
               >
             </div>
 
-            <h2 class="step-main-title">우리반 책읽기</h2>
-            <div class="step-sub-title">함께 읽기</div>
+            <h2 class="step-main-title">읽기 중</h2>
+            <div class="step-sub-title">우리반 책읽기</div>
 
             <p>
-              친구들과 같은 책을 읽으며 서로의 질문과 생각을 함께 살펴봐요.
+              학생들이 책을 읽으며 만든 질문과<br>
+              친구들에게 공유한 생각을 함께 살펴봐요.
             </p>
           </div>
 
@@ -691,10 +653,10 @@
           </button>
         </article>
 
-        <!-- 5단계 -->
+        <!-- 4단계 -->
         <article class="step-card active" id="stepAfter">
           <div>
-            <div class="step-number">05</div>
+            <div class="step-number">04</div>
 
             <div class="step-icon-box">
               <img
@@ -708,7 +670,8 @@
             <div class="step-sub-title">내용 간추리기</div>
 
             <p>
-              책에서 중요한 사건과 생각을 정리하며 읽은 내용을 간단히 간추려요.
+              책을 읽고 난 뒤 학생들이 정리한<br>
+              중요한 내용과 생각을 확인해요.
             </p>
           </div>
 
@@ -721,7 +684,7 @@
 
       <!-- 교사용 안내 -->
       <div class="guide-box" id="guideText">
-        <strong>교사용 전체 활성화 화면</strong>이에요. 원하는 독서 단계로 바로 들어가 학생 활동 화면을 확인할 수 있어요.
+        <strong>교사용 전체 활성화 화면</strong>이에요. 원하는 독서 단계로 바로 들어가 학생 활동 화면과 공유된 질문을 확인할 수 있어요.
       </div>
 
     </main>
@@ -733,6 +696,7 @@
 
       이 화면은 기능 구현용이 아니라 디자인 및 수업 진행 확인용입니다.
       학생용 practice.html과 다르게 모든 단계가 처음부터 활성화되어 있습니다.
+      4단계 구조: 책 고르기 → 읽기 전 → 읽기 중/우리반 책읽기 → 읽기 후
     */
 
     // 교사 온책읽기 관리 화면으로 이동합니다.
@@ -740,33 +704,28 @@
       location.href = "../teacher/whole-reading.html";
     }
 
-   // 책 고르기 화면으로 이동합니다.
-function goQuestionBundlePage() {
-  location.href = "./book-select.html";
-}
+    // 책 고르기 화면으로 이동합니다.
+    function goQuestionBundlePage() {
+      location.href = "./book-select.html";
+    }
 
-// 읽기 전 공유 화면으로 이동합니다.
-// mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
-function goBeforeIntroPage() {
-  location.href = "../student/before-reading-share.html?mode=teacher";
-}
+    // 읽기 전 공유 화면으로 이동합니다.
+    // mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
+    function goBeforeIntroPage() {
+      location.href = "../student/before-reading-share.html?mode=teacher";
+    }
 
-// 읽기 중 화면은 아직 연결하지 않습니다.
-function goDuringReadingIntro() {
-  alert("읽기 중 화면은 아직 연결되지 않았어요.");
-}
+    // 읽기 중 / 우리반 책읽기 화면으로 이동합니다.
+    // mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
+    function goClassReadingPage() {
+      location.href = "../student/book-chat.html?mode=teacher";
+    }
 
-// 책수다방 화면으로 이동합니다.
-// mode=teacher를 붙여서 학생 화면 안에 '교사용 수업차례로' 버튼이 보이게 합니다.
-function goClassReadingPage() {
-  location.href = "../student/book-chat.html?mode=teacher";
-}
-
-// 읽기 후 화면의 간추리기 공유로 이동합니다.
-// open=share는 간추리기 공유 화면 바로 열기, mode=teacher는 교사용 돌아가기 버튼 표시용입니다.
-function goAfterReadingPage() {
-  location.href = "../student/after-read.html?open=share&mode=teacher";
-}
+    // 읽기 후 화면의 간추리기 공유로 이동합니다.
+    // open=share는 간추리기 공유 화면 바로 열기, mode=teacher는 교사용 돌아가기 버튼 표시용입니다.
+    function goAfterReadingPage() {
+      location.href = "../student/after-read.html?open=share&mode=teacher";
+    }
   </script>
 </body>
 </html>
