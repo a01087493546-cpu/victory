@@ -189,29 +189,28 @@ function getRewardHistoryKey() {
   }
 
   function getPowerState() {
-    const saved = localStorage.getItem(getPowerStorageKey());
+  const saved = sessionStorage.getItem(getPowerStorageKey());
 
-    if (!saved) {
-      const defaultState = getDefaultPowerState();
-      localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-      return defaultState;
-    }
-
-    try {
-      const parsed = JSON.parse(saved);
-      return {
-        magic: clampPowerValue(parsed.magic),
-        stamina: clampPowerValue(parsed.stamina),
-        wisdom: clampPowerValue(parsed.wisdom),
-        courage: clampPowerValue(parsed.courage)
-      };
-    } catch (error) {
-      const defaultState = getDefaultPowerState();
-      localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-      return defaultState;
-    }
+  if (!saved) {
+    const defaultState = getDefaultPowerState();
+    sessionStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
+    return defaultState;
   }
 
+  try {
+    const parsed = JSON.parse(saved);
+    return {
+      magic: clampPowerValue(parsed.magic),
+      stamina: clampPowerValue(parsed.stamina),
+      wisdom: clampPowerValue(parsed.wisdom),
+      courage: clampPowerValue(parsed.courage)
+    };
+  } catch (error) {
+    const defaultState = getDefaultPowerState();
+    sessionStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
+    return defaultState;
+  }
+}
   function savePowerState(powerState) {
     const normalized = {
       magic: clampPowerValue(powerState.magic),
@@ -231,26 +230,26 @@ function getRewardHistoryKey() {
   // 5. 보상 이력 저장
   // ==============================
   // 같은 보상이 중복으로 계속 들어가지 않게 기록합니다.
-  function getRewardHistory() {
-    const saved = localStorage.getItem(getRewardHistoryKey());
+function getRewardHistory() {
+  const saved = sessionStorage.getItem(getRewardHistoryKey());
 
-    if (!saved) {
-      localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
-      return [];
-    }
+  if (!saved) {
+    sessionStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
+    return [];
   }
+
+  try {
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    sessionStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
+    return [];
+  }
+}
 
   function saveRewardHistory(history) {
-    localStorage.setItem(getRewardHistoryKey(), JSON.stringify(history));
-  }
+  sessionStorage.setItem(getRewardHistoryKey(), JSON.stringify(history));
+}
 
   function hasRewardHistory(rewardKey) {
     return getRewardHistory().includes(rewardKey);
