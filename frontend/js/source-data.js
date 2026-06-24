@@ -735,6 +735,275 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     usage: "개별읽기 읽기 중 메인 나의 질문 모음 메뉴 아이콘",
     modified: "크기 및 메뉴 카드 배치에 맞게 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  }
-
+  },
+  {
+  title: "게임 던전 지도 배경 이미지",
+  category: "이미지",
+  fileName: "bg_map.png",
+  description: "던전 선택 화면에서 모험의 시작 분위기를 보여주는 판타지 지도 배경 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 던전 선택 화면 배경",
+  modified: "파일명 변경 및 게임 화면 비율에 맞게 CSS로 크기와 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 초급 던전 배경 이미지",
+  category: "이미지",
+  fileName: "bg_hatchling.png",
+  description: "초급 던전 전투 화면에 사용되는 해츨링 던전 배경 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 초급 던전 전투 화면 배경",
+  modified: "파일명 변경 및 전투 화면 비율에 맞게 CSS로 크기와 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 중급 던전 배경 이미지",
+  category: "이미지",
+  fileName: "bg_dragon.png",
+  description: "중급 던전 전투 화면에 사용되는 드래곤 던전 배경 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 중급 던전 전투 화면 배경",
+  modified: "파일명 변경 및 전투 화면 비율에 맞게 CSS로 크기와 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 고급 던전 배경 이미지",
+  category: "이미지",
+  fileName: "bg_elder.png",
+  description: "고급 던전 전투 화면에 사용되는 엘더 드래곤 던전 배경 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 고급 던전 전투 화면 배경",
+  modified: "파일명 변경 및 전투 화면 비율에 맞게 CSS로 크기와 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 용사 기본 자세 이미지",
+  category: "이미지",
+  fileName: "hero_idle.png",
+  description: "전투 화면에서 용사가 기본 자세로 서 있는 상태를 표현한 캐릭터 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 전투 화면 용사 기본 상태",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 용사 공격 자세 이미지",
+  category: "이미지",
+  fileName: "hero_attack.png",
+  description: "전투 화면에서 용사가 공격하는 동작을 표현한 캐릭터 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 전투 화면 용사 공격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 공격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 용사 피격 이미지",
+  category: "이미지",
+  fileName: "hero_hit.png",
+  description: "전투 화면에서 용사가 공격을 받아 피격된 상태를 표현한 캐릭터 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 전투 화면 용사 피격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 피격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 용사 쓰러짐 이미지",
+  category: "이미지",
+  fileName: "hero_dead.png",
+  description: "전투 실패 시 용사가 쓰러진 상태를 표현한 캐릭터 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 전투 실패 화면 및 용사 쓰러짐 연출",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 결과 화면 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 해츨링 기본 자세 이미지",
+  category: "이미지",
+  fileName: "hatchling_idle.png",
+  description: "초급 던전 몬스터인 해츨링의 기본 자세를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 초급 던전 전투 화면 몬스터 기본 상태",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 해츨링 공격 이미지",
+  category: "이미지",
+  fileName: "hatchling_attack.png",
+  description: "초급 던전 몬스터인 해츨링이 공격하는 동작을 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 초급 던전 전투 화면 몬스터 공격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 공격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 해츨링 피격 이미지",
+  category: "이미지",
+  fileName: "hatchling_hit.png",
+  description: "초급 던전 몬스터인 해츨링이 공격을 받아 피격된 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 초급 던전 전투 화면 몬스터 피격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 피격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 해츨링 쓰러짐 이미지",
+  category: "이미지",
+  fileName: "hatchling_dead.png",
+  description: "초급 던전 몬스터인 해츨링이 쓰러진 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 초급 던전 전투 승리 화면 및 몬스터 쓰러짐 연출",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 결과 화면 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 드래곤 기본 자세 이미지",
+  category: "이미지",
+  fileName: "dragon_idle.png",
+  description: "중급 던전 몬스터인 드래곤의 기본 자세를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 중급 던전 전투 화면 몬스터 기본 상태",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 드래곤 공격 이미지",
+  category: "이미지",
+  fileName: "dragon_attack.png",
+  description: "중급 던전 몬스터인 드래곤이 공격하는 동작을 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 중급 던전 전투 화면 몬스터 공격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 공격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 드래곤 피격 이미지",
+  category: "이미지",
+  fileName: "dragon_hit.png",
+  description: "중급 던전 몬스터인 드래곤이 공격을 받아 피격된 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 중급 던전 전투 화면 몬스터 피격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 피격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 드래곤 쓰러짐 이미지",
+  category: "이미지",
+  fileName: "dragon_dead.png",
+  description: "중급 던전 몬스터인 드래곤이 쓰러진 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 중급 던전 전투 승리 화면 및 몬스터 쓰러짐 연출",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 결과 화면 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 엘더 드래곤 기본 자세 이미지",
+  category: "이미지",
+  fileName: "elder_idle.png",
+  description: "고급 던전 몬스터인 엘더 드래곤의 기본 자세를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 고급 던전 전투 화면 몬스터 기본 상태",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 엘더 드래곤 공격 이미지",
+  category: "이미지",
+  fileName: "elder_attack.png",
+  description: "고급 던전 몬스터인 엘더 드래곤이 공격하는 동작을 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 고급 던전 전투 화면 몬스터 공격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 공격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 엘더 드래곤 피격 이미지",
+  category: "이미지",
+  fileName: "elder_hit.png",
+  description: "고급 던전 몬스터인 엘더 드래곤이 공격을 받아 피격된 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 고급 던전 전투 화면 몬스터 피격 모션",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 피격 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 엘더 드래곤 쓰러짐 이미지",
+  category: "이미지",
+  fileName: "elder_dead.png",
+  description: "고급 던전 몬스터인 엘더 드래곤이 쓰러진 상태를 표현한 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 고급 던전 전투 승리 화면 및 몬스터 쓰러짐 연출",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 결과 화면 연출에 맞게 위치 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 방어 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_bangeo.png",
+  description: "게임 전투에서 일반 방어 스킬을 나타내는 아이콘 이미지",
+  source: "Microsoft Copilot 이미지 생성",
+  usage: "게임 전투 화면 방어 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "Copilot 생성 이미지 / Microsoft 서비스 약관 증빙자료 확보"
+},
+{
+  title: "게임 튜토리얼 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_tutorial.png",
+  description: "게임 화면에서 튜토리얼 또는 도움말 기능을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 튜토리얼 바 아이콘",
+  modified: "파일명 변경 및 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "게임 일격 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_ilgyeok.png",
+  description: "게임 전투에서 일격 스킬을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 일격 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "게임 연속 베기 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_yeonsoek.png",
+  description: "게임 전투에서 연속 베기 스킬을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 연속 베기 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "게임 철벽 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_cheolbyeok.png",
+  description: "게임 전투에서 철벽 스킬을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 철벽 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "게임 불꽃 베기 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_bulkkot.png",
+  description: "게임 전투에서 불꽃 베기 스킬을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 불꽃 베기 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "게임 화염 폭발 아이콘 이미지",
+  category: "이미지",
+  fileName: "icon_hwayeom.png",
+  description: "게임 전투에서 화염 폭발 스킬을 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "게임 전투 화면 화염 폭발 스킬 버튼 아이콘",
+  modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+}
 ];
