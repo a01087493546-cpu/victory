@@ -269,7 +269,7 @@
       grid-template-rows: auto auto 1fr auto;
       gap: 14px;
       padding: 24px;
-      border: 1px solid rgba(181, 117, 37, 0.20);
+     border: 2px solid rgba(181, 117, 37, 0.26);
       border-radius: 28px;
       background:
         radial-gradient(circle at 18% 0%, rgba(255, 226, 145, 0.20), transparent 42%),
@@ -305,7 +305,7 @@
       flex: 0 0 auto;
       padding: 7px 11px;
       border-radius: 999px;
-      border: 1px solid rgba(181, 117, 37, 0.16);
+      border: 1.5px solid rgba(181, 117, 37, 0.24);
       background: rgba(255, 246, 220, 0.92);
       color: #9a631e;
       font-size: 12px;
@@ -313,28 +313,79 @@
       white-space: nowrap;
     }
 
-    .ira-book-status-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
+    /* =========================================================
+   읽은 책 카드 정보
+   - 책 제목, 지은이, 완독 날짜, 별점, 대표 질문을 보여줍니다.
+   ========================================================= */
 
-    .ira-stage-chip {
-      padding: 8px 11px;
-      border-radius: 999px;
-      background: rgba(255, 250, 237, 0.92);
-      border: 1px solid rgba(181, 117, 37, 0.14);
-      color: #6a451c;
-      font-size: 13px;
-      font-weight: 950;
-    }
+.ira-book-meta-line {
+  display: grid;
+  gap: 7px;
+}
 
-    .ira-stage-chip.done {
-      background: #e9f5de;
-      color: #356221;
-      border-color: rgba(101, 145, 66, 0.20);
-    }
+.ira-book-author {
+  margin: 0;
+  color: #8a5b22;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ira-book-finish-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ira-book-info-pill {
+  width: fit-content;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(255, 247, 228, 0.96);
+border: 1.5px solid rgba(181, 117, 37, 0.22);
+  color: #6a451c;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.ira-book-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  letter-spacing: 0.04em;
+  font-weight: 950;
+}
+
+.ira-rating-filled {
+  color: #b97921;
+  text-shadow: 0 1px 0 rgba(120, 70, 18, 0.08);
+}
+
+.ira-rating-empty {
+  color: #d8c5a3;
+}
+
+.ira-represent-question-box {
+  margin: 0;
+  padding: 15px 16px;
+  border-radius: 20px;
+  background: rgba(255, 248, 231, 0.90);
+border: 1.5px solid rgba(181, 117, 37, 0.20);
+  color: #6f4720;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ira-represent-question-box strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #3f220d;
+  font-size: 13px;
+  font-weight: 950;
+}
 
     .ira-book-help {
       margin: 0;
@@ -611,7 +662,15 @@
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 
     // 나의 독서 보관함에서 사용하는 저장 키입니다.
-    const ARCHIVE_KEY = "individualReadingArchive_" + studentId;
+const ARCHIVE_KEY = "individualReadingArchive_" + studentId;
+
+// 읽기 후 활동을 마무리할 때 저장한 별점/대표 질문 기록입니다.
+const FINISH_RECORD_KEY = "individualBookFinishRecord_" + studentId;
+
+// 읽기 후 활동에서 만든 질문과 답, 간추리기 기록입니다.
+// 보관함 상세 보기에서 함께 보여주기 위해 사용합니다.
+const AFTER_QUESTION_KEY = "individualAfterQuestionAnswers_" + studentId;
+const AFTER_SUMMARY_KEY = "individualAfterSummary_" + studentId;
 
     let archiveBooks = [];
     let selectedBook = null;
@@ -626,15 +685,49 @@
     // sessionStorage에 저장된 책 단위 보관함을 불러옵니다.
     // 아직 자동 저장 데이터가 없으면 화면 확인용 예시 데이터를 보여줍니다.
     function getArchiveBooks() {
-      const stored = safeJsonParse(sessionStorage.getItem(ARCHIVE_KEY), []);
+  const stored = safeJsonParse(sessionStorage.getItem(ARCHIVE_KEY), []);
+  const finishedBook = getFinishedBookFromAfterReading();
 
-      if (stored.length > 0) {
-        return stored;
-      }
+  // 이 책 마무리하기로 저장한 기록이 있으면 보관함 목록 맨 앞에 보여줍니다.
+  if (finishedBook) {
+    const filteredStored = stored.filter(function (book) {
+      return book.id !== finishedBook.id;
+    });
 
-      return getExampleArchiveBooks();
-    }
+    return [finishedBook, ...filteredStored];
+  }
 
+  if (stored.length > 0) {
+    return stored;
+  }
+
+  return getExampleArchiveBooks();
+}
+// 읽기 후 활동에서 최종 마무리한 책 기록을 보관함 카드용 데이터로 바꿉니다.
+function getFinishedBookFromAfterReading() {
+  const finishRecord = safeJsonParse(sessionStorage.getItem(FINISH_RECORD_KEY), null);
+
+  if (!finishRecord) {
+    return null;
+  }
+
+  const afterQuestions = safeJsonParse(sessionStorage.getItem(AFTER_QUESTION_KEY), []);
+  const summary = sessionStorage.getItem(AFTER_SUMMARY_KEY) || "";
+
+  return {
+    id: "finished-book-" + studentId,
+    title: finishRecord.bookTitle || "내가 읽은 책",
+    author: finishRecord.author || "지은이 없음",
+    completedAt: finishRecord.finishedAt || "완독 날짜 없음",
+    finishedAt: finishRecord.finishedAt || "완독 날짜 없음",
+    rating: finishRecord.rating || 0,
+    representativeQuestion: finishRecord.representativeQuestion || "",
+    beforeQuestions: [],
+    duringQuestions: [],
+    afterQuestions: afterQuestions,
+    summary: summary
+  };
+}
     // 화면 확인용 예시 데이터입니다.
     // 학생이 직접 입력하기 어려운 책 설명은 카드에서 보여주지 않습니다.
     function getExampleArchiveBooks() {
@@ -686,10 +779,37 @@
       ];
     }
 
-    function renderArchiveSummary() {
-      const bookCount = archiveBooks.length;
-      document.getElementById("archiveBookCount").textContent = bookCount + "권";
-    }
+   // 별점 숫자를 별 모양으로 바꿔 보여줍니다.
+function getRatingStars(rating) {
+  const safeRating = Math.max(0, Math.min(5, Number(rating || 0)));
+  const filledStars = "★".repeat(safeRating);
+  const emptyStars = "☆".repeat(5 - safeRating);
+
+  return `
+    <span class="ira-rating-filled">${filledStars}</span>
+    <span class="ira-rating-empty">${emptyStars}</span>
+  `;
+}
+
+// 대표 질문이 저장되지 않은 예전 데이터는 읽기 후 질문 중 첫 번째 질문을 대신 보여줍니다.
+function getDefaultRepresentativeQuestion(book) {
+  const afterQuestions = book.afterQuestions || [];
+
+  if (book.representativeQuestion) {
+    return book.representativeQuestion;
+  }
+
+  if (afterQuestions.length > 0 && afterQuestions[0].question) {
+    return afterQuestions[0].question;
+  }
+
+  return "아직 대표 질문이 저장되지 않았어요.";
+}
+
+function renderArchiveSummary() {
+  const bookCount = archiveBooks.length;
+  document.getElementById("archiveBookCount").textContent = bookCount + "권";
+}
 
     function renderBookList() {
       const bookGrid = document.getElementById("bookGrid");
@@ -705,35 +825,47 @@
       }
 
       bookGrid.innerHTML = archiveBooks.map(function (book) {
-        const hasBefore = (book.beforeQuestions || []).length > 0;
-        const hasDuring = (book.duringQuestions || []).length > 0;
-        const hasAfter = (book.afterQuestions || []).length > 0;
-        const hasSummary = Boolean(book.summary);
+  const title = book.title || book.bookTitle || "제목 없는 책";
+  const author = book.author || "지은이 없음";
+  const completedAt = book.finishedAt || book.completedAt || "완독 날짜 없음";
+  const rating = Number(book.rating || 0);
+  const representativeQuestion = getDefaultRepresentativeQuestion(book);
+  const ratingStars = getRatingStars(rating);
 
-        return `
-          <article class="ira-book-card" onclick="showBookDetail('${escapeHtml(book.id)}')">
-            <div class="ira-book-card-head">
-              <h3 class="ira-book-title">${escapeHtml(book.title || "제목 없는 책")}</h3>
-              <span class="ira-book-date">${escapeHtml(book.completedAt || "완료일 없음")}</span>
-            </div>
+  return `
+    <article class="ira-book-card" onclick="showBookDetail('${escapeHtml(book.id)}')">
+      <div class="ira-book-card-head">
+        <div>
+          <h3 class="ira-book-title">${escapeHtml(title)}</h3>
+          <p class="ira-book-author">${escapeHtml(author)} 지음</p>
+        </div>
+        <span class="ira-book-date">${escapeHtml(completedAt)}</span>
+      </div>
 
-            <div class="ira-book-status-line">
-              <span class="ira-stage-chip ${hasBefore ? "done" : ""}">읽기 전</span>
-              <span class="ira-stage-chip ${hasDuring ? "done" : ""}">읽는 중</span>
-              <span class="ira-stage-chip ${hasAfter ? "done" : ""}">읽은 후</span>
-              <span class="ira-stage-chip ${hasSummary ? "done" : ""}">간추리기</span>
-            </div>
+      <div class="ira-book-meta-line">
+        <div class="ira-book-finish-info">
+          <span class="ira-book-info-pill">완독 날짜 ${escapeHtml(completedAt)}</span>
+          <span class="ira-book-info-pill ira-book-rating">${ratingStars}</span>
+        </div>
 
-            <p class="ira-book-help">
-              이 책에서 만든 질문과 답, 마지막 간추리기를 한 번에 볼 수 있어요.
-            </p>
+        <p class="ira-represent-question-box">
+          <strong>대표 질문</strong>
+          ${escapeHtml(representativeQuestion)}
+        </p>
+      </div>
 
-            <div class="ira-book-actions">
-              <button type="button" class="ira-main-button primary" onclick="event.stopPropagation(); showBookDetail('${escapeHtml(book.id)}')">기록 보기</button>
-            </div>
-          </article>
-        `;
-      }).join("");
+      <div class="ira-book-actions">
+        <button
+          type="button"
+          class="ira-main-button primary"
+          onclick="event.stopPropagation(); showBookDetail('${escapeHtml(book.id)}')"
+        >
+          기록 보기
+        </button>
+      </div>
+    </article>
+  `;
+}).join("");
     }
 
     function showBookDetail(bookId) {
