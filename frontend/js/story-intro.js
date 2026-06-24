@@ -28,8 +28,8 @@ if (typeof checkLogin === "function") {
 // 현재 Live Server 주소 구조에 맞춰 이미지 기본 경로를 자동으로 정합니다.
 // 실제 이미지 폴더가 frontend/assets/story/에 있으므로 images는 넣지 않습니다.
 const storyImagePath = window.location.pathname.includes("/frontend/")
-  ? "/frontend/assets/story/"
-  : "/assets/story/";
+  ? "/victory/frontend/assets/story/"
+  : "/victory/assets/story/";
 
 // 스토리 장면 목록입니다.
 // 이미지 파일명은 frontend/assets/images/story 폴더 안의 실제 파일명과 맞춰야 합니다.

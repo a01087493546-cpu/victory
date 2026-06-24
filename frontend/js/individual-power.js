@@ -36,15 +36,13 @@
     courage: "내 질문과 생각을 친구들과 나누며 쌓는 힘이에요."
   };
 
-  // 보상 모달에 표시할 아이콘 경로입니다.
-  // ※ 아래 경로는 네 프로젝트의 실제 아이콘 경로로 맞추면 됩니다.
-  // ※ 아직 정확한 파일명이 다르면 그대로 두고, 나중에 아이콘 경로만 수정하면 됩니다.
-  const POWER_ICON_MAP = {
-    magic: "../assets/images/ability/magic-icon.png",
-    stamina: "../assets/images/ability/stamina-icon.png",
-    wisdom: "../assets/images/ability/wisdom-icon.png",
-    courage: "../assets/images/ability/courage-icon.png"
-  };
+  // 보상 팝업과 나의 힘 팝업에서 사용할 능력치 아이콘 경로입니다.
+const POWER_ICON_MAP = {
+  magic: "../assets/images/ability/ability-magic.png",
+  stamina: "../assets/images/ability/ability-health.png",
+  wisdom: "../assets/images/ability/ability-wisdom.png",
+  courage: "../assets/images/ability/ability-courage.png"
+};
 
   // 이미지가 없을 때 보여줄 대체 이모지
   const POWER_ICON_FALLBACK = {
@@ -153,9 +151,8 @@
       subtitle: "책을 끝까지 읽고 내용을 잘 간추렸어요.",
       conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
       rewards: {
-        stamina: 5,
-        wisdom: 1
-      }
+  stamina: 5
+}
     }
   };
 
@@ -166,25 +163,25 @@
     return sessionStorage.getItem("studentId") || "student-demo";
   }
 
-  function getPowerStorageKey() {
-    return `individualPower_${getStudentId()}`;
-  }
+ function getPowerStorageKey() {
+  return `individualPower_v2_${getStudentId()}`;
+}
 
-  function getRewardHistoryKey() {
-    return `individualRewardHistory_${getStudentId()}`;
-  }
+function getRewardHistoryKey() {
+  return `individualRewardHistory_v2_${getStudentId()}`;
+}
 
   // ==============================
   // 4. 능력치 저장/불러오기
   // ==============================
   function getDefaultPowerState() {
-    return {
-      magic: 0,
-      stamina: 0,
-      wisdom: 0,
-      courage: 0
-    };
-  }
+  return {
+    magic: BASE_START_POWER,
+    stamina: BASE_START_POWER,
+    wisdom: BASE_START_POWER,
+    courage: BASE_START_POWER
+  };
+}
 
   function clampPowerValue(value) {
     const number = Number(value) || 0;
@@ -289,34 +286,32 @@
   // 7. 보상 모달 HTML
   // ==============================
   function buildRewardItemHTML(type, amount) {
-    const label = POWER_LABELS[type];
-    const description = POWER_DESCRIPTIONS[type];
-    const imagePath = POWER_ICON_MAP[type] || "";
-    const fallback = POWER_ICON_FALLBACK[type] || "⭐";
+  const label = POWER_LABELS[type];
 
-    if (!amount || amount <= 0) {
-      return "";
-    }
-
-    return `
-      <div class="individual-reward-item">
-        <div class="individual-reward-icon-wrap">
-          ${
-            imagePath
-              ? `<img src="${imagePath}" alt="${label}" class="individual-reward-icon"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
-              : ""
-          }
-          <div class="individual-reward-fallback" ${imagePath ? 'style="display:none;"' : ""}>${fallback}</div>
-        </div>
-        <div class="individual-reward-text">
-          <div class="individual-reward-name">${label}</div>
-          <div class="individual-reward-amount">+${amount}</div>
-          <div class="individual-reward-desc">${description}</div>
-        </div>
-      </div>
-    `;
+  if (!amount || amount <= 0) {
+    return "";
   }
+
+  /*
+    보상 모달에서는 보조 설명을 제거하고,
+    이번에 오른 능력치를 가로 그래프로 보여줍니다.
+    예: 마법력 +8
+  */
+  const percent = Math.round((amount / MAX_POWER) * 100);
+
+  return `
+    <div class="individual-reward-item">
+      <div class="individual-reward-row-head">
+        <div class="individual-reward-name">${label}</div>
+        <div class="individual-reward-amount">+${amount}</div>
+      </div>
+
+      <div class="individual-reward-bar">
+        <div class="individual-reward-bar-fill" style="width: ${percent}%;"></div>
+      </div>
+    </div>
+  `;
+}
 
   function buildRewardListHTML(rewards) {
     return Object.keys(POWER_LABELS)
@@ -332,9 +327,12 @@
   }
 
   function showRewardModal(preset) {
-    removeRewardModal();
+  removeRewardModal();
 
-    const overlay = document.createElement("div");
+  // 보상 모달에서도 가로 그래프 스타일을 사용할 수 있게 합니다.
+  ensurePowerBarStyle();
+
+  const overlay = document.createElement("div");
     overlay.id = "individualRewardOverlay";
     overlay.className = "individual-reward-overlay";
 
@@ -355,9 +353,7 @@
           ${buildRewardListHTML(preset.rewards)}
         </div>
 
-        <div class="individual-reward-notice">
-          ※ 현재 보상값은 임시 세팅값이며, 나중에 게임 능력치와 맞춰 조정될 수 있어요.
-        </div>
+       
 
         <button type="button" class="individual-reward-confirm" id="individualRewardConfirmBtn">
           확인했어
@@ -451,60 +447,294 @@
   }
 
   function buildPowerRowHTML(type, value) {
-    return `
-      <div class="individual-power-row">
-        <div class="individual-power-row-name">${POWER_LABELS[type]} ${value} / ${MAX_POWER}</div>
-        <div class="individual-power-row-desc">${POWER_DESCRIPTIONS[type]}</div>
+  // 능력치 값이 0~100 사이를 넘지 않도록 정리합니다.
+  const safeValue = clampPowerValue(value);
+
+  // 가로 그래프의 채워질 비율입니다.
+  const percent = Math.round((safeValue / MAX_POWER) * 100);
+
+  return `
+    <div class="individual-power-row">
+      <div class="individual-power-row-head">
+        <div class="individual-power-row-name">${POWER_LABELS[type]}</div>
+        <div class="individual-power-row-value">${safeValue} / ${MAX_POWER}</div>
       </div>
-    `;
+
+      <div class="individual-power-bar">
+        <div class="individual-power-bar-fill" style="width: ${percent}%;"></div>
+      </div>
+    </div>
+  `;
+}
+function ensurePowerBarStyle() {
+  // 이미 스타일을 넣었다면 중복으로 넣지 않습니다.
+  if (document.getElementById("individualPowerBarStyle")) {
+    return;
   }
 
+  const style = document.createElement("style");
+  style.id = "individualPowerBarStyle";
+
+  style.textContent = `
+      .individual-power-overlay,
+    .individual-reward-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 24px !important;
+      background: rgba(54, 35, 15, 0.48) !important;
+      backdrop-filter: blur(5px) !important;
+    }
+
+    .individual-power-modal,
+    .individual-reward-modal {
+      position: relative !important;
+      width: min(520px, 100%) !important;
+      max-height: calc(100vh - 48px) !important;
+      overflow-y: auto !important;
+      padding: 32px 32px 28px !important;
+      border: 1px solid rgba(186, 120, 32, 0.34) !important;
+      border-radius: 28px !important;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255, 225, 151, 0.42), transparent 34%),
+        rgba(255, 250, 238, 0.98) !important;
+      color: #573313 !important;
+      box-shadow: 0 24px 60px rgba(79, 50, 18, 0.28) !important;
+      text-align: center !important;
+    }
+
+    .individual-power-close,
+    .individual-reward-close {
+      position: absolute !important;
+      top: 14px !important;
+      right: 16px !important;
+      width: 34px !important;
+      height: 34px !important;
+      border: none !important;
+      border-radius: 50% !important;
+      background: rgba(126, 77, 20, 0.1) !important;
+      color: #6a3d15 !important;
+      font-size: 24px !important;
+      font-weight: 900 !important;
+      cursor: pointer !important;
+    }
+
+    .individual-power-top-text,
+    .individual-reward-top-text {
+      margin: 0 0 10px !important;
+      color: #b2731d !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+    }
+
+    .individual-power-title,
+    .individual-reward-title {
+      margin: 0 0 22px !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      color: #4f2f13 !important;
+      font-size: 28px !important;
+      font-weight: 900 !important;
+      line-height: 1.35 !important;
+      letter-spacing: -0.04em !important;
+    }
+
+    .individual-power-list,
+    .individual-reward-list {
+      display: grid !important;
+      gap: 12px !important;
+      margin-bottom: 20px !important;
+      text-align: left !important;
+    }
+
+    .individual-power-notice {
+      margin: 4px 0 18px !important;
+      padding: 12px 14px !important;
+      border-radius: 16px !important;
+      background: rgba(255, 238, 190, 0.72) !important;
+      color: #7a5123 !important;
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      line-height: 1.45 !important;
+      word-break: keep-all !important;
+    }
+
+    .individual-reward-condition-box {
+      margin: 0 0 16px !important;
+      padding: 14px 16px !important;
+      border-radius: 18px !important;
+      background: rgba(255, 238, 190, 0.72) !important;
+      text-align: left !important;
+    }
+
+    .individual-reward-condition-label {
+      margin-bottom: 5px !important;
+      color: #b2731d !important;
+      font-size: 13px !important;
+      font-weight: 900 !important;
+    }
+
+    .individual-reward-condition-text {
+      color: #5d3615 !important;
+      font-size: 15px !important;
+      font-weight: 850 !important;
+      line-height: 1.4 !important;
+    }
+
+    .individual-power-confirm,
+    .individual-reward-confirm {
+      width: 100% !important;
+      height: 48px !important;
+      border: none !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #dca94f, #a8641e) !important;
+      color: #fff9e8 !important;
+      font-size: 16px !important;
+      font-weight: 900 !important;
+      cursor: pointer !important;
+      box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18) !important;
+    }
+
+
+    .individual-power-row {
+      padding: 16px 18px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 246, 220, 0.82) !important;
+    }
+
+    .individual-power-row-head {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin-bottom: 10px !important;
+    }
+
+    .individual-power-row-name {
+      color: #4e2d10 !important;
+      font-size: 18px !important;
+      font-weight: 950 !important;
+      line-height: 1.1 !important;
+    }
+
+    .individual-power-row-value {
+      color: #6f431b !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    .individual-power-bar {
+      width: 100% !important;
+      height: 14px !important;
+      border-radius: 999px !important;
+      background: rgba(94, 58, 18, 0.14) !important;
+      overflow: hidden !important;
+      box-shadow: inset 0 1px 2px rgba(74, 42, 12, 0.12) !important;
+    }
+
+    .individual-power-bar-fill {
+      height: 100% !important;
+      border-radius: 999px !important;
+      background: linear-gradient(90deg, #e8bc55, #a8641e) !important;
+      transition: width 0.25s ease !important;
+    }
+          .individual-reward-item {
+      padding: 16px 18px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      background: rgba(255, 246, 220, 0.82) !important;
+    }
+
+    .individual-reward-row-head {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin-bottom: 10px !important;
+    }
+
+    .individual-reward-name {
+      color: #4e2d10 !important;
+      font-size: 18px !important;
+      font-weight: 950 !important;
+      line-height: 1.1 !important;
+    }
+
+    .individual-reward-amount {
+      color: #6f431b !important;
+      font-size: 17px !important;
+      font-weight: 950 !important;
+      white-space: nowrap !important;
+    }
+
+    .individual-reward-bar {
+      width: 100% !important;
+      height: 14px !important;
+      border-radius: 999px !important;
+      background: rgba(94, 58, 18, 0.14) !important;
+      overflow: hidden !important;
+      box-shadow: inset 0 1px 2px rgba(74, 42, 12, 0.12) !important;
+    }
+
+    .individual-reward-bar-fill {
+      height: 100% !important;
+      border-radius: 999px !important;
+      background: linear-gradient(90deg, #e8bc55, #a8641e) !important;
+      transition: width 0.25s ease !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
   function openIndividualPowerModal() {
-    removePowerModal();
+  removePowerModal();
 
-    const power = getPowerState();
+  // 나의 힘 팝업에서 가로 그래프 스타일을 사용할 수 있게 합니다.
+  ensurePowerBarStyle();
 
-    const overlay = document.createElement("div");
-    overlay.id = "individualPowerModalOverlay";
-    overlay.className = "individual-power-overlay";
+  const power = getPowerState();
 
-    overlay.innerHTML = `
-      <div class="individual-power-modal">
-        <button type="button" class="individual-power-close" id="individualPowerCloseBtn">×</button>
+  const overlay = document.createElement("div");
+  overlay.id = "individualPowerModalOverlay";
+  overlay.className = "individual-power-overlay";
 
-        <div class="individual-power-top-text">현재까지 모은 나의 힘</div>
-        <h2 class="individual-power-title">네 가지 힘이 얼마나 자랐는지 볼 수 있어요</h2>
+  overlay.innerHTML = `
+    <div class="individual-power-modal">
+      <button type="button" class="individual-power-close" id="individualPowerCloseBtn">×</button>
 
-        <div class="individual-power-list" id="individualPowerListArea">
-          ${buildPowerRowHTML("magic", power.magic)}
-          ${buildPowerRowHTML("stamina", power.stamina)}
-          ${buildPowerRowHTML("wisdom", power.wisdom)}
-          ${buildPowerRowHTML("courage", power.courage)}
-        </div>
+      <div class="individual-power-top-text">현재까지 모은 나의 힘</div>
+      <h2 class="individual-power-title">책을 읽고 질문하며<br>네 가지 힘을 길러요</h2>
 
-        <div class="individual-power-notice">
-          ※ 현재 능력치와 보상값은 임시 세팅값이며, 추후 게임 능력치 기준에 맞춰 바뀔 수 있어요.
-        </div>
-
-        <button type="button" class="individual-power-confirm" id="individualPowerConfirmBtn">
-          확인했어
-        </button>
+      <div class="individual-power-list" id="individualPowerListArea">
+        ${buildPowerRowHTML("magic", power.magic)}
+        ${buildPowerRowHTML("stamina", power.stamina)}
+        ${buildPowerRowHTML("wisdom", power.wisdom)}
+        ${buildPowerRowHTML("courage", power.courage)}
       </div>
-    `;
 
-    document.body.appendChild(overlay);
+      <button type="button" class="individual-power-confirm" id="individualPowerConfirmBtn">
+        확인했어
+      </button>
+    </div>
+  `;
 
-    const closeModal = () => overlay.remove();
+  document.body.appendChild(overlay);
 
-    document.getElementById("individualPowerCloseBtn").addEventListener("click", closeModal);
-    document.getElementById("individualPowerConfirmBtn").addEventListener("click", closeModal);
+  const closeModal = () => overlay.remove();
 
-    overlay.addEventListener("click", function (event) {
-      if (event.target === overlay) {
-        closeModal();
-      }
-    });
-  }
+  document.getElementById("individualPowerCloseBtn").addEventListener("click", closeModal);
+  document.getElementById("individualPowerConfirmBtn").addEventListener("click", closeModal);
+
+  overlay.addEventListener("click", function (event) {
+    if (event.target === overlay) {
+      closeModal();
+    }
+  });
+}
 
   function refreshPowerModalIfOpen() {
     const modal = document.getElementById("individualPowerModalOverlay");

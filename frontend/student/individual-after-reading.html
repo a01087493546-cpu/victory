@@ -597,7 +597,50 @@
       gap: 8px;
       align-items: center;
     }
+/* =========================================================
+   우리 반 간추리기 모음: 좋아요 버튼
+   - 댓글 대신 가볍게 공감할 수 있도록 합니다.
+   ========================================================= */
 
+.iar-like-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.iar-like-button {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(174, 109, 27, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 246, 220, 0.94);
+  color: #7a4618;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 8px 14px rgba(101, 63, 18, 0.08);
+}
+
+.iar-like-button span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin-left: 6px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #a8641e;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.iar-like-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(101, 63, 18, 0.12);
+}
     .iar-comment-input {
       width: 100%;
       height: 42px;
@@ -1048,10 +1091,9 @@
 <div class="iar-share-grid" id="shareSummaryList"></div>
 
           <div class="iar-bottom-actions">
-            <button type="button" class="iar-main-button" onclick="showSummaryScreen()">이전 화면</button>
-            <button type="button" class="iar-main-button primary" onclick="goAdventure()">오늘의 독서 모험</button>
-            <button type="button" class="iar-main-button green" onclick="goClassReading()">우리 반 책읽기</button>
-          </div>
+  <button type="button" class="iar-main-button primary" onclick="goIndividualHome()">개별읽기 홈</button>
+  <button type="button" class="iar-main-button green" onclick="goFriendBookShelf()">책 추천하러 가기</button>
+</div>
         </article>
       </section>
     </div>
@@ -1066,6 +1108,8 @@
       summary: "individualAfterSummary_" + studentId,
       sharedSummaries: "individualAfterSharedSummaries_" + studentId,
       shareComments: "individualAfterShareComments_" + studentId,
+      shareLikes: "individualAfterShareLikes_" + studentId,
+      myLikedSummaries: "individualAfterMyLikedSummaries_" + studentId,
       afterArchive: "individualAfterArchive_" + studentId,
       afterDone: "individualAfterDone_" + studentId,
       stage: "individualAdventureStage_" + studentId
@@ -1650,8 +1694,8 @@ let currentShareFilter = "all";
     return getSummaryTypeKey(item) === currentShareFilter;
   });
 
-  const comments = getShareComments();
-
+  const likes = getShareLikes();
+  const myLikedSummaries = getMyLikedSummaries();
   if (summaries.length === 0) {
     list.innerHTML = `
       <div class="iar-share-empty">
@@ -1663,12 +1707,8 @@ let currentShareFilter = "all";
   }
 
   list.innerHTML = summaries.map(function (item) {
-    const itemComments = comments[item.id] || [];
-    const commentHtml = itemComments.length === 0
-      ? '<div class="iar-comment-item"><strong>안내</strong>아직 댓글이 없어요. 친구의 간추리기를 읽고 생각을 남겨 봐요.</div>'
-      : itemComments.map(function (comment) {
-          return `<div class="iar-comment-item"><strong>${escapeHtml(comment.name)}</strong>${escapeHtml(comment.text)}</div>`;
-        }).join("");
+    const likeCount = likes[item.id] || 0;
+    const isLiked = myLikedSummaries.includes(item.id);
 
     return `
       <article class="iar-share-card">
@@ -1683,59 +1723,60 @@ let currentShareFilter = "all";
 
         <div class="iar-share-summary">${escapeHtml(item.summary)}</div>
 
-        <div class="iar-comment-list">${commentHtml}</div>
-
-        <div class="iar-comment-write">
-          <input
-            id="comment-${item.id}"
-            class="iar-comment-input"
-            type="text"
-            placeholder="예) 내 책과 비슷한 장면이 있었어."
-          >
-          <button type="button" class="iar-small-button" onclick="saveShareComment('${item.id}')">댓글 저장</button>
-        </div>
+        <div class="iar-like-box">
+  <button
+    type="button"
+    class="iar-like-button ${isLiked ? "liked" : ""}"
+    onclick="toggleShareLike('${item.id}')"
+  >
+    👍 좋아요 <span>${likeCount}</span>
+  </button>
+</div>
       </article>
     `;
   }).join("");
 }
+// 우리 반 간추리기 모음의 좋아요 정보를 가져옵니다.
+function getShareLikes() {
+  try {
+    return JSON.parse(sessionStorage.getItem(AFTER_KEYS.shareLikes) || "{}");
+  } catch (error) {
+    return {};
+  }
+}
+// 내가 좋아요를 누른 간추리기 카드 목록을 가져옵니다.
+function getMyLikedSummaries() {
+  try {
+    return JSON.parse(sessionStorage.getItem(AFTER_KEYS.myLikedSummaries) || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+// 간추리기 카드의 좋아요를 누르거나 취소합니다.
+// 한 카드에 한 번만 좋아요를 누를 수 있고, 다시 누르면 좋아요가 취소됩니다.
+function toggleShareLike(summaryId) {
+  const likes = getShareLikes();
+  let myLikedSummaries = getMyLikedSummaries();
 
-    function getShareComments() {
-      try {
-        return JSON.parse(sessionStorage.getItem(AFTER_KEYS.shareComments) || "{}");
-      } catch (error) {
-        return {};
-      }
-    }
+  if (!likes[summaryId]) {
+    likes[summaryId] = 0;
+  }
 
-    function saveShareComment(summaryId) {
-      const input = document.getElementById("comment-" + summaryId);
-      const text = input ? input.value.trim() : "";
+  const alreadyLiked = myLikedSummaries.includes(summaryId);
 
-      if (!text) {
-        alert("댓글을 먼저 적어줘!");
-        return;
-      }
+  if (alreadyLiked) {
+    likes[summaryId] = Math.max(0, likes[summaryId] - 1);
 
-      const comments = getShareComments();
-      if (!comments[summaryId]) comments[summaryId] = [];
+    myLikedSummaries = myLikedSummaries.filter(function (id) {
+      return id !== summaryId;
+    });
+  } else {
+    likes[summaryId] += 1;
+    myLikedSummaries.push(summaryId);
+  }
 
-      comments[summaryId].push({
-        name: "나",
-        text: text
-      });
-
-      sessionStorage.setItem(AFTER_KEYS.shareComments, JSON.stringify(comments));
-      renderShareSummaries();
-    }
-// 우리 반 간추리기 모음에서 책 종류 필터를 바꿉니다.
-function changeShareFilter(filterType) {
-  currentShareFilter = filterType;
-
-  const buttons = document.querySelectorAll(".iar-share-filter-button");
-
-  buttons.forEach(function (button) {
-    button.classList.toggle("active", button.dataset.filter === filterType);
-  });
+  sessionStorage.setItem(AFTER_KEYS.shareLikes, JSON.stringify(likes));
+  sessionStorage.setItem(AFTER_KEYS.myLikedSummaries, JSON.stringify(myLikedSummaries));
 
   renderShareSummaries();
 }
@@ -1773,7 +1814,9 @@ function getTodayText() {
     function getCurrentBookTitle() {
       return sessionStorage.getItem("individualCurrentBookTitle_" + studentId) || "내가 읽은 책";
     }
-
+function goFriendBookShelf() {
+  location.href = "./friend-book-shelf.html";
+}
     function goClassReading() {
       location.href = "./class-reading.html";
     }
@@ -1825,6 +1868,6 @@ function goAdventure() {
     }
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js"></script>
+<script src="../js/individual-power.js?v=power-common-2"></script>
 </body>
 </html>

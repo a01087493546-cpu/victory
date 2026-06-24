@@ -439,7 +439,7 @@
 <button type="button" class="fs-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
 <button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
 <button type="button" class="fs-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-<button type="button" class="fs-top-button" onclick="goIndividualReading()">🏠</button>
+
         </div>
       </header>
 
@@ -630,7 +630,6 @@
           <h3 class="fs-card-title">${book.title}</h3>
           <p class="fs-card-author">${book.author} 지음 · ${book.recommender} 추천</p>
           <p class="fs-card-reason">${book.reason}</p>
-          <p class="fs-card-reason"><strong>추천 대상:</strong> ${book.target}</p>
           <div class="fs-like-row">
             <span class="fs-rec-by">👍 ${book.likes}</span>
             <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">좋아요</button>
@@ -683,14 +682,9 @@
     function goFriendBookWrite() {
       window.location.href = "./friend-book-write.html";
     }
-        /*
-      나도 책 추천하기 작성 화면으로 이동합니다.
-    */
-    function goFriendBookWrite() {
-      window.location.href = "./friend-book-write.html";
-    }
+      
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js"></script>
+<script src="../js/individual-power.js?v=power-common-2"></script>
 </body>
 </html>

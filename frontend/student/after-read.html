@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>문답책 - 읽기 후</title>
-
+<link rel="stylesheet" href="../css/individual-power.css" />
   <style>
     .teacher-return-button {
   position: fixed;
@@ -2355,39 +2355,51 @@
     }
 
     function saveSummary() {
-      const summaryText = document.getElementById("summaryText").value.trim();
+  const summaryText = document.getElementById("summaryText").value.trim();
 
-      if (!summaryText) {
-        alert("간추리기 내용을 적어 주세요.");
-        return;
-      }
+  if (!summaryText) {
+    alert("간추리기 내용을 적어 주세요.");
+    return;
+  }
 
-      if (summaryText.includes("________________")) {
-        alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
-        return;
-      }
+  if (summaryText.includes("________________")) {
+    alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
+    return;
+  }
 
-      const savedList = loadSummaries();
-      const data = bookTypeData[selectedBookType];
+  const savedList = loadSummaries();
+  const data = bookTypeData[selectedBookType];
 
-           const newSummary = {
-        id: "my-summary-" + Date.now(),
-        name: "나",
-        type: selectedBookType,
-        typeLabel: data.label,
-        icon: data.icon,
-        summary: summaryText,
-        questions: getQuestionAnswerData(),
-        createdAt: getTodayText()
-      };
+const newSummary = {
+  id: "my-summary-" + Date.now(),
+  name: "나",
+  type: selectedBookType,
+  typeLabel: data.label,
+  icon: data.icon,
+  summary: summaryText,
+  questions: getQuestionAnswerData(),
+  createdAt: getTodayText()
+};
 
-      savedList.unshift(newSummary);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
+  savedList.unshift(newSummary);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
 
-      renderShareList();
-      alert("간추리기가 저장되었어요!");
-      showStudyPanel("share");
-    }
+  renderShareList();
+  showStudyPanel("share");
+
+  // 연습읽기 최종 완료 보상입니다.
+  // 읽기 후 간추리기 공유까지 마무리했을 때,
+  // 개별읽기를 시작할 기본 능력치를 4개 모두 지급합니다.
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+  if (typeof givePowerRewardOnce === "function") {
+   givePowerRewardOnce("practice_all_complete_" + studentId, {
+  presetKey: "practice_all_complete"
+});
+  } else {
+    alert("간추리기가 저장되었어요!");
+  }
+}
 
     function loadSummaries() {
       const savedData = localStorage.getItem(STORAGE_KEY);
@@ -2648,5 +2660,8 @@ if (isTeacherMode()) {
   }
 }
   </script>
+
+<!-- 연습읽기 완료 보상 / 나의 힘 기능을 연결합니다. -->
+<script src="../js/individual-power.js"></script>
 </body>
 </html>
