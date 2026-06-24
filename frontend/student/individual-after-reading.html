@@ -2076,29 +2076,51 @@ let currentShareFilter = "all";
     }
 
     function updateQuestionProgress() {
-      const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
-      const passedCount = cards.filter(function (card) {
-        return card.dataset.feedbackPassed === "true";
-      }).length;
-      const goSummaryButton = document.getElementById("goSummaryButton");
-      const enoughCards = cards.length >= 3;
-      const allPassed = enoughCards && passedCount === cards.length;
+  const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
+  const passedCount = cards.filter(function (card) {
+    return card.dataset.feedbackPassed === "true";
+  }).length;
+  const goSummaryButton = document.getElementById("goSummaryButton");
+  const enoughCards = cards.length >= 3;
+  const allPassed = enoughCards && passedCount === cards.length;
 
-      questionFeedbackPassed = allPassed;
+  questionFeedbackPassed = allPassed;
 
-      if (goSummaryButton) {
-        goSummaryButton.disabled = !allPassed;
-      }
+  if (goSummaryButton) {
+    goSummaryButton.disabled = !allPassed;
+  }
 
-      if (allPassed) {
-        setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 이제 간추리기 화면으로 넘어가도 돼.");
-      } else {
-        const nextNumber = Math.min(passedCount + 1, cards.length);
-        setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
-      }
+  if (allPassed) {
+    const rewardKey = "individual_after_questions_pass_" + studentId;
 
-      updateSequentialQuestionLock();
+    const rewardResult =
+      typeof givePowerRewardOnce === "function"
+        ? givePowerRewardOnce(rewardKey, {
+            presetKey: "individual_after_questions_pass",
+            showModal: false
+          })
+        : false;
+
+    if (rewardResult && typeof openMiniRewardModal === "function") {
+      openMiniRewardModal({
+        badge: "✨ 지혜 성장!",
+        title: "간추리기 질문을 모두 다듬었어요!",
+        desc: "질문과 답 3개를 차근차근 완성해서<br>책을 간추릴 준비가 되었어요.",
+        message: "루미: 질문을 잘 다듬었어! 이제 간추리기도 잘할 수 있겠다!",
+        rewards: [
+          { type: "wisdom", name: "지혜", point: "+3" }
+        ]
+      });
     }
+
+    setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 지혜가 +3 자랐어. 이제 간추리기 화면으로 넘어가도 돼.");
+  } else {
+    const nextNumber = Math.min(passedCount + 1, cards.length);
+    setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
+  }
+
+  updateSequentialQuestionLock();
+}
 
     // 혹시 예전 전체 피드백 버튼 코드가 남아 있어도, 실제로는 각 카드 피드백을 안내합니다.
     function checkQuestionFeedback() {
@@ -2161,32 +2183,53 @@ let currentShareFilter = "all";
     }
 
     function checkSummaryFeedback() {
-      const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
-      const questionAnswers = savedData ? JSON.parse(savedData) : [];
-      const summaryText = document.getElementById("summaryInput").value.trim();
-      const problems = [];
+  const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
+  const questionAnswers = savedData ? JSON.parse(savedData) : [];
+  const summaryText = document.getElementById("summaryInput").value.trim();
+  const problems = [];
 
-      if (summaryText.replace(/\s/g, "").length < 35) {
-        problems.push("간추린 내용이 너무 짧아. 질문과 답을 보고 중요한 내용을 조금 더 자세히 이어 써줘.");
-      }
+  if (summaryText.replace(/\s/g, "").length < 35) {
+    problems.push("간추린 내용이 너무 짧아. 질문과 답을 보고 중요한 내용을 조금 더 자세히 이어 써줘.");
+  }
 
-      const overlapCount = countAnswerKeywordOverlap(summaryText, questionAnswers);
-      if (overlapCount < 2) {
-        problems.push("앞에서 쓴 질문과 답의 핵심 말이 충분히 들어가지 않았어. 질문과 답에서 중요한 낱말을 2개 이상 넣어줘.");
-      }
+  const overlapCount = countAnswerKeywordOverlap(summaryText, questionAnswers);
+  if (overlapCount < 2) {
+    problems.push("앞에서 쓴 질문과 답의 핵심 말이 충분히 들어가지 않았어. 질문과 답에서 중요한 낱말을 2개 이상 넣어줘.");
+  }
 
-      if (problems.length > 0) {
-        summaryFeedbackPassed = false;
-        document.getElementById("finishAfterButton").disabled = true;
-        setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
-        return;
-      }
+  if (problems.length > 0) {
+    summaryFeedbackPassed = false;
+    document.getElementById("finishAfterButton").disabled = true;
+    setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
+    return;
+  }
 
-      summaryFeedbackPassed = true;
-      document.getElementById("finishAfterButton").disabled = false;
-      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
-      setFeedback("summaryFeedback", "good", "좋아! 질문과 답에서 중요한 내용을 가져와 자연스럽게 간추렸어. 이제 읽기 후 활동을 완료해도 돼.");
-    }
+  summaryFeedbackPassed = true;
+  document.getElementById("finishAfterButton").disabled = false;
+  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+
+  const rewardResult =
+    typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce("individual_after_summary_pass_" + studentId, {
+          presetKey: "individual_after_summary_pass",
+          showModal: false
+        })
+      : false;
+
+  if (rewardResult && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 지혜 성장!",
+      title: "간추리기를 완성했어요!",
+      desc: "질문과 답을 바탕으로 중요한 내용을 잘 이어서<br>나만의 간추리기를 완성했어요.",
+      message: "루미: 책의 핵심을 잘 정리했어!",
+      rewards: [
+        { type: "wisdom", name: "지혜", point: "+2" }
+      ]
+    });
+  }
+
+  setFeedback("summaryFeedback", "good", "좋아! 질문과 답에서 중요한 내용을 가져와 자연스럽게 간추렸어. 지혜가 +2 자랐어. 이제 읽기 후 활동을 완료해도 돼.");
+}
 
     function countAnswerKeywordOverlap(summaryText, questionAnswers) {
       const sourceText = questionAnswers.map(function (item) {
@@ -2210,23 +2253,57 @@ let currentShareFilter = "all";
     }
 
     function finishAfterReading() {
-      if (!summaryFeedbackPassed) {
-        alert("먼저 루미 피드백을 통과해야 해!");
-        return;
-      }
+  if (!summaryFeedbackPassed) {
+    alert("먼저 루미 피드백을 통과해야 해!");
+    return;
+  }
 
-      const summaryText = document.getElementById("summaryInput").value.trim();
-      const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
+  const summaryText = document.getElementById("summaryInput").value.trim();
+  const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
 
-      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
-      sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
-      sessionStorage.setItem(AFTER_KEYS.stage, "after");
-      sessionStorage.setItem("individualCompletedBookCount_" + studentId, String(getCompletedBookCount() + 1));
+  /*
+    이미 이 책의 읽기 후 활동을 완료했다면
+    완료 횟수와 체력 보상이 중복으로 올라가지 않게 막습니다.
+  */
+  const alreadyAfterDone = sessionStorage.getItem(AFTER_KEYS.afterDone) === "true";
 
-      saveAfterArchive(questionAnswers, summaryText);
-      saveMySummaryForShare(summaryText);
-      showShareScreen();
+  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+  sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
+  sessionStorage.setItem(AFTER_KEYS.stage, "after");
+
+  if (!alreadyAfterDone) {
+    const nextCompletedBookCount = getCompletedBookCount() + 1;
+
+    sessionStorage.setItem(
+      "individualCompletedBookCount_" + studentId,
+      String(nextCompletedBookCount)
+    );
+
+    /*
+      읽기 후 완료 보상:
+      individual-power.js의 individual_after_complete preset을 사용합니다.
+      현재 설정은 체력 +5입니다.
+    */
+    const rewardResult =
+      typeof givePowerRewardOnce === "function"
+        ? givePowerRewardOnce("individual_after_complete_" + nextCompletedBookCount, {
+            presetKey: "individual_after_complete",
+            showModal: false
+          })
+        : false;
+
+    /*
+      읽기 후 화면에 이미 만들어 둔 보상페이지가 있으면 그대로 보여줍니다.
+    */
+    if (rewardResult && typeof openMiniRewardModal === "function") {
+      openMiniRewardModal();
     }
+  }
+
+  saveAfterArchive(questionAnswers, summaryText);
+  saveMySummaryForShare(summaryText);
+  showShareScreen();
+}
 
     function showShareScreen() {
       switchScreen("shareScreen");
@@ -2368,10 +2445,10 @@ function saveBookFinishRecord() {
   title: "책 한 권을 끝까지 마무리했어요!",
   desc: "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.",
   rewards: [
-    { type: "stamina", name: "체력", point: "+3" },
-    { type: "wisdom", name: "지혜", point: "+1" },
-    { type: "courage", name: "용기", point: "+1" }
-  ],
+  { type: "stamina", name: "체력", point: "+5" },
+  { type: "wisdom", name: "지혜", point: "+1" },
+  { type: "courage", name: "용기", point: "+1" }
+],
   message: "루미: 정말 멋지게 마무리했어!",
   nextAction: function () {
     const completeModal = document.getElementById("bookFinishCompleteModal");
@@ -2414,7 +2491,7 @@ function openMiniRewardModal(rewardData) {
 
   const data = rewardData || {};
   const rewards = data.rewards || [
-    { type: "stamina", name: "체력", point: "+3" },
+    { type: "stamina", name: "체력", point: "+5" },
     { type: "wisdom", name: "지혜", point: "+1" },
     { type: "courage", name: "용기", point: "+1" }
   ];

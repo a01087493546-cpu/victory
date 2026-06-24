@@ -1358,9 +1358,25 @@ function confirmFriendRewardModal() {
 
       sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify([newBook, ...savedBooks]));
 
-      // 추천글 저장 후 완료 팝업을 바로 띄우지 않고,
-// 먼저 용기 성장 보상 미니 모달을 보여줍니다.
-openFriendRewardModal();
+     // 추천글 저장 성공 후, 용기 점수를 공통 능력치 저장소에 반영합니다.
+const rewardResult =
+  typeof givePowerRewardOnce === "function"
+    ? givePowerRewardOnce("friend_book_recommend_" + newBook.id, {
+        presetKey: "individual_friend_book_recommend",
+        showModal: false
+      })
+    : false;
+
+// 점수가 실제로 올랐을 때만 책 추천 전용 보상 모달을 보여줍니다.
+if (rewardResult && typeof openFriendRewardModal === "function") {
+  openFriendRewardModal();
+} else {
+  const completeModal = document.getElementById("completeModal");
+
+  if (completeModal) {
+    completeModal.classList.add("show");
+  }
+}
     }
 
     document.addEventListener("DOMContentLoaded", function () {

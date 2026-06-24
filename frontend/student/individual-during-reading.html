@@ -5934,9 +5934,17 @@ function saveBookChatPostToStorage(post) {
   */
   renderBookChatRoom();
 
-  if (typeof openBookChatRewardModal === "function") {
-    openBookChatRewardModal();
-  }
+  const rewardResult =
+  typeof givePowerRewardOnce === "function"
+    ? givePowerRewardOnce("book_chat_post_" + post.id, {
+        presetKey: "individual_book_chat_post",
+        showModal: false
+      })
+    : false;
+
+if (rewardResult && typeof openBookChatRewardModal === "function") {
+  openBookChatRewardModal();
+}
 }
 /*
   책수다방에서 현재 선택한 A/B 값을 저장합니다.
@@ -6369,6 +6377,89 @@ function finishCurrentBook() {
 // 읽기 중 질문 만들기 보상 미니 모달을 엽니다.
 // 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
 // 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
+function getIndividualPowerStorageKey() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  return "individualPower_v2_" + studentId;
+}
+
+function getDefaultIndividualPower() {
+  return {
+    magic: 8,
+    stamina: 8,
+    wisdom: 8,
+    courage: 8
+  };
+}
+
+function readIndividualPowerState() {
+  const powerKey = getIndividualPowerStorageKey();
+  const defaultPower = getDefaultIndividualPower();
+
+  let localPower = {};
+  let sessionPower = {};
+
+  try {
+    localPower = JSON.parse(localStorage.getItem(powerKey) || "{}");
+  } catch (error) {
+    localPower = {};
+  }
+
+  try {
+    sessionPower = JSON.parse(sessionStorage.getItem(powerKey) || "{}");
+  } catch (error) {
+    sessionPower = {};
+  }
+
+  /*
+    localStorage와 sessionStorage가 서로 다르게 남아 있어도
+    더 큰 값을 기준으로 보여 줍니다.
+  */
+  return {
+    magic: Math.max(Number(defaultPower.magic), Number(localPower.magic || 0), Number(sessionPower.magic || 0)),
+    stamina: Math.max(Number(defaultPower.stamina), Number(localPower.stamina || 0), Number(sessionPower.stamina || 0)),
+    wisdom: Math.max(Number(defaultPower.wisdom), Number(localPower.wisdom || 0), Number(sessionPower.wisdom || 0)),
+    courage: Math.max(Number(defaultPower.courage), Number(localPower.courage || 0), Number(sessionPower.courage || 0))
+  };
+}
+
+function saveIndividualPowerState(power) {
+  const powerKey = getIndividualPowerStorageKey();
+  localStorage.setItem(powerKey, JSON.stringify(power));
+  sessionStorage.setItem(powerKey, JSON.stringify(power));
+}
+
+function updateIndividualPowerModalFromStorage() {
+  const power = readIndividualPowerState();
+
+  const magicText = document.getElementById("powerMagicText");
+  const healthText = document.getElementById("powerHealthText");
+  const wisdomText = document.getElementById("powerWisdomText");
+  const courageText = document.getElementById("powerCourageText");
+
+  const magicFill = document.getElementById("powerMagicFill");
+  const healthFill = document.getElementById("powerHealthFill");
+  const wisdomFill = document.getElementById("powerWisdomFill");
+  const courageFill = document.getElementById("powerCourageFill");
+
+  if (magicText) magicText.textContent = power.magic + " / 100";
+  if (healthText) healthText.textContent = power.stamina + " / 100";
+  if (wisdomText) wisdomText.textContent = power.wisdom + " / 100";
+  if (courageText) courageText.textContent = power.courage + " / 100";
+
+  if (magicFill) magicFill.style.width = power.magic + "%";
+  if (healthFill) healthFill.style.width = power.stamina + "%";
+  if (wisdomFill) wisdomFill.style.width = power.wisdom + "%";
+  if (courageFill) courageFill.style.width = power.courage + "%";
+}
+
+function addIndividualPowerPoint(type, amount) {
+  /*
+    예전 임시 능력치 증가 함수입니다.
+    이제 실제 점수 증가는 individual-power.js의 givePowerRewardOnce()만 사용합니다.
+    이 함수는 기존 코드 호환용으로만 남겨둡니다.
+  */
+  console.warn("addIndividualPowerPoint는 더 이상 직접 사용하지 않습니다.", type, amount);
+}
 function openDuringRewardModal() {
   const rewardOverlay = document.getElementById("idrRewardOverlay");
 
@@ -6436,11 +6527,21 @@ function confirmDuringRewardModal() {
 
       if (!result.ok) return;
 
-      saveTodayQuestion();
+            const savedQuestion = saveTodayQuestion();
       resetQuestionForm(false);
-// 질문 저장 성공 후, 마법력 성장 보상 미니 모달을 보여줍니다.
-// 실제 점수 누적은 백엔드 연동 때 처리합니다.
-openDuringRewardModal();
+
+      // 질문 저장 성공 후, 마법력 점수를 공통 능력치 저장소에 반영하고 보상 미니 모달을 보여줍니다.
+      const rewardResult =
+        typeof givePowerRewardOnce === "function" && savedQuestion
+          ? givePowerRewardOnce("individual_question_created_" + savedQuestion.id, {
+              presetKey: "individual_question_created",
+              showModal: false
+            })
+          : false;
+
+      if (rewardResult && typeof openDuringRewardModal === "function") {
+        openDuringRewardModal();
+      }
       feedbackBox.classList.add("good");
       feedbackText.textContent = "좋아! 오늘 읽은 부분에서 나온 질문이 저장됐어. 나의 질문 모음과 질문 나누기에 반영됐어.";
 
@@ -6515,7 +6616,9 @@ openDuringRewardModal();
         document.getElementById("currentPageInput").value = toPage;
       }
 
-      renderProgress();
+            renderProgress();
+
+      return newQuestion;
     }
 
     // 읽기 중 책 종류 그래프를 그립니다.
@@ -7318,10 +7421,20 @@ window.saveBookChatThought = function () {
   // 저장 후 같은 글을 다시 보여주면서 댓글 목록과 A/B 숫자를 갱신합니다.
   renderBookChatRoom(selectedBookChatIndex);
 
-  
-    // 책수다방에서 내 생각을 저장한 뒤, 용기 성장 보상 미니 모달을 보여줍니다.
-  // 실제 점수 누적은 백엔드 연동 때 처리합니다.
-  openBookChatRewardModal();
+  /*
+    책수다방에서 내 생각을 저장한 뒤 용기 점수를 올리고,
+    책수다방 전용 보상 화면을 보여줍니다.
+  */
+  if (typeof givePowerRewardOnce === "function") {
+    givePowerRewardOnce("book_chat_thought_" + Date.now(), {
+      presetKey: "individual_thought_comment",
+      showModal: false
+    });
+  }
+
+  if (typeof openBookChatRewardModal === "function") {
+    openBookChatRewardModal();
+  }
 };
 
 /*
@@ -7755,14 +7868,26 @@ window.saveBookChatThought = function () {
   }
 
   /*
-    생각을 남겼을 때 용기 보상 화면을 보여줍니다.
-    실제 능력치 누적과 중복 지급 처리는 나중에 백엔드 보상 기록 API로 연결합니다.
-  */
-  setTimeout(function () {
-    if (typeof openBookChatRewardModal === "function") {
-      openBookChatRewardModal();
-    }
-  }, 0);
+  생각을 남겼을 때 용기 점수를 공통 능력치 저장소에 반영하고,
+  책수다방 전용 보상 화면을 보여줍니다.
+*/
+setTimeout(function () {
+  const thoughtRewardKey =
+    "book_chat_thought_" +
+    Date.now();
+
+  const rewardResult =
+    typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce(thoughtRewardKey, {
+          presetKey: "individual_thought_comment",
+          showModal: false
+        })
+      : false;
+
+  if (rewardResult && typeof openBookChatRewardModal === "function") {
+    openBookChatRewardModal();
+  }
+}, 0);
 
 };
 
@@ -7810,6 +7935,36 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
   </script>
-  <script src="../js/individual-power.js?v=power-common-2"></script>
+  <script src="../js/individual-power.js?v=power-common-fixed-1"></script>
+  <script>
+    /*
+      individual-power.js가 만든 기존 나의 힘 팝업 디자인은 그대로 쓰고,
+      팝업을 열 때 숫자만 현재 localStorage/sessionStorage 값으로 다시 맞춥니다.
+    */
+    document.addEventListener("DOMContentLoaded", function () {
+      updateIndividualPowerModalFromStorage();
+
+      const originalOpenIndividualPowerModal = window.openIndividualPowerModal;
+
+      window.openIndividualPowerModal = function () {
+        updateIndividualPowerModalFromStorage();
+
+        if (typeof originalOpenIndividualPowerModal === "function") {
+          originalOpenIndividualPowerModal.apply(this, arguments);
+        } else {
+          const modal = document.getElementById("individualPowerModal");
+          if (modal) {
+            modal.classList.remove("hidden");
+          }
+        }
+
+        setTimeout(updateIndividualPowerModalFromStorage, 0);
+      };
+
+      window.addEventListener("individualPowerUpdated", function () {
+        updateIndividualPowerModalFromStorage();
+      });
+    });
+  </script>
 </body>
 </html>
