@@ -443,40 +443,6 @@
       box-shadow: 0 0 0 4px rgba(216, 158, 50, 0.14);
     }
 
-    .feedback-box {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-height: 86px;
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: #fff3d5;
-      border: 1px solid #eac675;
-      color: #5a3e19;
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    .feedback-box.good {
-      background: #eff8e8;
-      border-color: #b7d991;
-      color: #355628;
-    }
-
-    .feedback-lumi {
-      width: 72px;
-      height: auto;
-      flex-shrink: 0;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.18));
-    }
-
-    .feedback-message {
-      flex: 1;
-    }
 
     .bottom-actions {
       display: flex;
@@ -948,17 +914,7 @@ ${renderOtherFriendAnswers(selectedQuestion.id)}
             placeholder="친구의 질문을 읽고 내가 생각한 답을 적어 봐요."
           >${savedAnswer}</textarea>
 
-          <div class="feedback-box" id="shareFeedbackBox">
-            <img
-              class="feedback-lumi"
-              src="../assets/images/read-before/intro/pre-reading-lumi-question-note.png"
-              alt="피드백을 주는 루미"
-            >
-
-            <div class="feedback-message">
-              친구의 질문을 보고 네 생각을 적어 봐. 정답이 아니어도 괜찮아!
-            </div>
-          </div>
+          
 
          <div class="bottom-actions">
   <button class="plain-button" type="button" onclick="clearFriendAnswer()">
@@ -998,40 +954,30 @@ ${renderOtherFriendAnswers(selectedQuestion.id)}
     }
 
     function saveFriendAnswer() {
-      const selectedQuestion = mockFriendQuestions.find(function(item) {
-        return item.id === selectedFriendQuestionId;
-      });
+  const selectedQuestion = mockFriendQuestions.find(function(item) {
+    return item.id === selectedFriendQuestionId;
+  });
 
-      const input = document.getElementById("friendAnswerInput");
-      const feedbackBox = document.getElementById("shareFeedbackBox");
-      const feedbackMessage = feedbackBox.querySelector(".feedback-message");
+  const input = document.getElementById("friendAnswerInput");
+  const answer = input.value.trim();
 
-      const answer = input.value.trim();
+  if (!answer) {
+    alert("답이 아직 비어 있어요. 친구 질문을 보고 떠오른 생각을 적어 봐요.");
+    input.focus();
+    return;
+  }
 
-      feedbackBox.classList.remove("good");
+  const key = "beforeReadingFriendAnswer_" + studentId + "_" + selectedQuestion.id;
 
-      if (!answer) {
-        feedbackMessage.textContent = "답이 아직 비어 있어. 친구 질문을 보고 떠오른 생각을 한 문장으로 적어 봐!";
-        return;
-      }
+  sessionStorage.setItem(key, JSON.stringify({
+    friendQuestionId: selectedQuestion.id,
+    friendName: selectedQuestion.friendName,
+    question: selectedQuestion.question,
+    answer: answer
+  }));
 
-      if (answer.length < 8) {
-        feedbackMessage.textContent = "답이 조금 짧아. 왜 그렇게 생각했는지 조금 더 자세히 적어 봐!";
-        return;
-      }
-
-      const key = "beforeReadingFriendAnswer_" + studentId + "_" + selectedQuestion.id;
-
-      sessionStorage.setItem(key, JSON.stringify({
-        friendQuestionId: selectedQuestion.id,
-        friendName: selectedQuestion.friendName,
-        question: selectedQuestion.question,
-        answer: answer
-      }));
-
-      feedbackBox.classList.add("good");
-      feedbackMessage.textContent = "좋아! 친구 질문을 읽고 네 생각을 잘 이어서 적었어.";
-    }
+  alert("답이 저장되었어요.");
+}
 
     function loadFriendAnswer(questionId) {
       const key = "beforeReadingFriendAnswer_" + studentId + "_" + questionId;

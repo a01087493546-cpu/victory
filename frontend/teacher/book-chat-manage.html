@@ -855,12 +855,12 @@
             </div>
 
             <div class="stat-box">
-              <p class="stat-label">승인됨</p>
+              <p class="stat-label">승인</p>
               <p class="stat-value" id="approvedCount">0개</p>
             </div>
 
             <div class="stat-box">
-              <p class="stat-label">거절됨</p>
+              <p class="stat-label">거절</p>
               <p class="stat-value" id="rejectedCount">0개</p>
             </div>
           </div>
@@ -870,8 +870,8 @@
       <section class="filter-card">
         <div class="filter-row">
           <button class="filter-button active" type="button" data-status="pending">승인 대기</button>
-          <button class="filter-button" type="button" data-status="approved">승인됨</button>
-          <button class="filter-button" type="button" data-status="rejected">거절됨</button>
+          <button class="filter-button" type="button" data-status="approved">승인</button>
+          <button class="filter-button" type="button" data-status="rejected">거절</button>
           <button class="filter-button" type="button" data-status="all">전체 보기</button>
 
           <select class="sort-select" id="sortSelect">
@@ -907,23 +907,7 @@
         </article>
       </section>
 
-      <section class="history-grid">
-        <article class="history-card">
-          <div class="section-head">
-            <h2 class="section-title">최근 승인 글</h2>
-            <span class="count-pill" id="approvedMiniCount">0개</span>
-          </div>
-          <div class="history-list" id="approvedHistoryList"></div>
-        </article>
-
-        <article class="history-card">
-          <div class="section-head">
-            <h2 class="section-title">최근 거절 글</h2>
-            <span class="count-pill" id="rejectedMiniCount">0개</span>
-          </div>
-          <div class="history-list" id="rejectedHistoryList"></div>
-        </article>
-      </section>
+    
 
       <p class="bottom-note">
         책수다방 관리는 친구들과 나누기 좋은 글을 안전하게 공개하기 위한 교사용 화면이에요.
@@ -939,8 +923,8 @@
 
     const statusInfo = {
       pending: { label: "승인 대기", className: "pending" },
-      approved: { label: "승인됨", className: "approved" },
-      rejected: { label: "거절됨", className: "rejected" }
+      approved: { label: "승인", className: "approved" },
+      rejected: { label: "거절", className: "rejected" }
     };
 
     const typeInfo = {
@@ -1217,39 +1201,10 @@
       document.getElementById("approvedCount").textContent = approved.length + "개";
       document.getElementById("rejectedCount").textContent = rejected.length + "개";
       document.getElementById("visibleCount").textContent = filteredPosts.length + "개";
-      document.getElementById("approvedMiniCount").textContent = approved.length + "개";
-      document.getElementById("rejectedMiniCount").textContent = rejected.length + "개";
+      
     }
 
-    function renderHistory() {
-      const approved = loadList(APPROVED_KEY).slice().reverse();
-      const rejected = loadList(REJECTED_KEY).slice().reverse();
-
-      const approvedHistoryList = document.getElementById("approvedHistoryList");
-      const rejectedHistoryList = document.getElementById("rejectedHistoryList");
-
-      approvedHistoryList.innerHTML = approved.length
-        ? approved.slice(0, 8).map(function(post) {
-            return `
-              <div class="history-item">
-                <strong>${escapeHtml(post.studentName || "학생")}</strong> · ${escapeHtml(post.question || "질문 없음")}
-                <span class="mini">승인: ${escapeHtml(post.reviewedText || "오늘")}</span>
-              </div>
-            `;
-          }).join("")
-        : '<div class="empty-list">아직 승인된 글이 없어요.</div>';
-
-      rejectedHistoryList.innerHTML = rejected.length
-        ? rejected.slice(0, 8).map(function(post) {
-            return `
-              <div class="history-item">
-                <strong>${escapeHtml(post.studentName || "학생")}</strong> · ${escapeHtml(post.question || "질문 없음")}
-                <span class="mini">거절: ${escapeHtml(post.reviewedText || "오늘")}</span>
-              </div>
-            `;
-          }).join("")
-        : '<div class="empty-list">아직 거절된 글이 없어요.</div>';
-    }
+    
 
     function selectPost(id) {
       selectedPostId = id;
