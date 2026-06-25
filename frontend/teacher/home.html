@@ -371,23 +371,23 @@
   </button>
 </article>
 
-        <article class="tr-menu-card disabled">
-          <span class="tr-card-badge">준비 중</span>
+        <article class="tr-menu-card ready">
+          <span class="tr-card-badge">연결됨</span>
           <div class="tr-card-icon">📝</div>
           <h2 class="tr-menu-title">개별읽기</h2>
           <p class="tr-menu-desc">
             학생별 읽기 활동과<br>
             질문 기록을 살펴봐요.
           </p>
-          <button class="tr-action-button secondary" type="button" onclick="readyMenu('개별읽기')">
+          <button class="tr-action-button" type="button" onclick="goIndividualReadingManage()">
             개별읽기 들어가기
           </button>
         </article>
       </div>
 
       <div class="tr-guide-box">
-        ※ 현재는 <strong>계정관리</strong>와 <strong>온책읽기</strong> 화면이 연결되어 있어요.  
-개별읽기는 화면을 만든 뒤 링크를 연결하면 됩니다.
+        ※ 현재는 <strong>계정관리</strong>, <strong>온책읽기</strong>, <strong>개별읽기</strong> 화면이 연결되어 있어요.  
+원하는 관리 영역으로 들어가 학생 활동을 확인할 수 있습니다.
       </div>
     </section>
   </main>
@@ -404,9 +404,13 @@
   location.href = "book-manage.html";
 }
 
-    function readyMenu(menuName) {
-      alert(menuName + " 화면은 아직 준비 중이에요.");
-    }
+function goIndividualReadingManage() {
+  location.href = "individual-reading-manage.html";
+}
+
+function readyMenu(menuName) {
+  alert(menuName + " 화면은 아직 준비 중이에요.");
+}
   </script>
 </body>
 </html>

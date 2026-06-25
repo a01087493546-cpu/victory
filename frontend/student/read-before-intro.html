@@ -185,6 +185,33 @@
     transform: translateY(-2px);
     background: linear-gradient(180deg, #fff0c8, #e5ca91);
   }
+  .prev-button {
+  min-width: 120px;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 26px;
+  background: linear-gradient(180deg, #9a6a35, #5c3214);
+  color: #fff1d2;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition: 0.2s ease;
+  display: none;
+}
+
+.prev-button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #b47a3a, #6c3b17);
+}
+
+.button-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
 
   @media (max-width: 1100px) {
     .intro-lumi {
@@ -288,93 +315,116 @@ body {
       <div class="story-bottom">
         <div class="dot-row" id="dotRow"></div>
 
-        <button class="next-button" type="button" onclick="nextScene()" id="nextButton">
-          다음
-        </button>
+        <div class="button-row">
+  <button class="prev-button" type="button" onclick="prevScene()" id="prevButton">
+    이전
+  </button>
+
+  <button class="next-button" type="button" onclick="nextScene()" id="nextButton">
+    다음
+  </button>
+</div>
       </div>
     </section>
 
   </main>
 
   <script>
-    // 읽기 전 인트로 장면 데이터입니다.
-    const scenes = [
-      {
-        label: "책을 펼치기 전",
-        text: "바로 펼치기 전에 잠깐!\n\n표지랑 제목에\n이야기의 단서가 숨어 있을지도 몰라.",
-        button: "다음",
-        image: "../assets/images/read-before/intro/pre-reading-lumi-clue-book.png"
-      },
-      {
-        label: "궁금한 점 떠올리기",
-        text: "음… 뭔가 궁금하지 않아?\n\n‘왜 이런 제목일까?’\n‘이 인물에게 무슨 일이 생길까?’",
-        button: "다음",
-        image: "../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
-      },
-      {
-        label: "읽기 전 질문 만들기",
-        text: "이제 읽기 전 질문을 만들어보자.\n\n궁금한 점에 답하다 보면\n책의 내용을 짐작해 볼 수 있어!",
-        button: "질문 만들기 시작",
-        image: "../assets/images/read-before/intro/pre-reading-lumi-question-note.png"
-      }
-    ];
+  // 읽기 전 인트로 장면 데이터입니다.
+  const scenes = [
+    {
+      label: "책을 펼치기 전",
+      text: "바로 펼치기 전에 잠깐!\n\n표지랑 제목에\n이야기의 단서가 숨어 있을지도 몰라.",
+      button: "다음",
+      image: "../assets/images/read-before/intro/pre-reading-lumi-clue-book.png"
+    },
+    {
+      label: "궁금한 점 떠올리기",
+      text: "음… 뭔가 궁금하지 않아?\n\n‘왜 이런 제목일까?’\n‘이 인물에게 무슨 일이 생길까?’",
+      button: "다음",
+      image: "../assets/images/read-before/intro/pre-reading-lumi-thinking.png"
+    },
+    {
+      label: "책 내용 짐작하기",
+      text: "궁금한 점에 답하다 보면\n책의 내용을 짐작해 볼 수 있어!",
+      button: "질문 만들기 시작",
+      image: "../assets/images/read-before/intro/pre-reading-lumi-question-note.png"
+    }
+  ];
 
-    // 현재 보고 있는 장면 번호입니다.
-    let currentSceneIndex = 0;
+  // 현재 보고 있는 장면 번호입니다.
+  let currentSceneIndex = 0;
 
-    // 화면이 열리면 첫 장면을 보여줍니다.
-    renderScene();
+  // 화면이 열리면 첫 장면을 보여줍니다.
+  renderScene();
 
-    // 현재 장면을 화면에 그립니다.
-    function renderScene() {
-      const scene = scenes[currentSceneIndex];
+  // 현재 장면을 화면에 그립니다.
+  function renderScene() {
+    const scene = scenes[currentSceneIndex];
 
-      document.getElementById("sceneLabel").textContent = scene.label;
-      document.getElementById("storyText").textContent = scene.text;
-      document.getElementById("nextButton").textContent = scene.button;
-      const lumiImage = document.getElementById("lumiImage");
+    document.getElementById("sceneLabel").textContent = scene.label;
+    document.getElementById("storyText").textContent = scene.text;
+    document.getElementById("nextButton").textContent = scene.button;
 
-lumiImage.src = scene.image;
+    const prevButton = document.getElementById("prevButton");
 
-/* 장면별 루미 크기를 조절하기 위해 기본 클래스를 다시 설정합니다. */
-lumiImage.className = "intro-lumi";
-
-/* 두 번째 장면만 크기를 따로 보정합니다. */
-if (currentSceneIndex === 1) {
-  lumiImage.classList.add("scene-thinking");
+    // 두 번째 장면부터 이전 버튼을 보여줍니다.
+if (currentSceneIndex > 0) {
+  prevButton.style.display = "inline-block";
+} else {
+  prevButton.style.display = "none";
 }
+    const lumiImage = document.getElementById("lumiImage");
 
-      renderDots();
+    lumiImage.src = scene.image;
+
+    // 장면별 루미 크기를 조절하기 위해 기본 클래스를 다시 설정합니다.
+    lumiImage.className = "intro-lumi";
+
+    // 두 번째 장면만 크기를 따로 보정합니다.
+    if (currentSceneIndex === 1) {
+      lumiImage.classList.add("scene-thinking");
     }
 
-    // 아래 점 표시를 그립니다.
-    function renderDots() {
-      const dotRow = document.getElementById("dotRow");
-      dotRow.innerHTML = "";
+    renderDots();
+  }
 
-      scenes.forEach(function(scene, index) {
-        const dot = document.createElement("span");
-        dot.className = "dot";
+  // 아래 점 표시를 그립니다.
+  function renderDots() {
+    const dotRow = document.getElementById("dotRow");
+    dotRow.innerHTML = "";
 
-        if (index === currentSceneIndex) {
-          dot.classList.add("active");
-        }
+    scenes.forEach(function(scene, index) {
+      const dot = document.createElement("span");
+      dot.className = "dot";
 
-        dotRow.appendChild(dot);
-      });
-    }
-
-    // 다음 장면으로 이동합니다.
-    function nextScene() {
-      if (currentSceneIndex < scenes.length - 1) {
-        currentSceneIndex++;
-        renderScene();
-        return;
+      if (index === currentSceneIndex) {
+        dot.classList.add("active");
       }
 
-      // 마지막 장면 이후에는 읽기 전 활동 화면으로 이동합니다.
-      location.href = "./before-reading.html";
+      dotRow.appendChild(dot);
+    });
+  }
+
+  // 다음 장면으로 이동합니다.
+  function nextScene() {
+    if (currentSceneIndex < scenes.length - 1) {
+      currentSceneIndex++;
+      renderScene();
+      return;
     }
-  </script>
+
+    // 마지막 장면 이후에는 읽기 전 활동 화면으로 이동합니다.
+    location.href = "./before-reading.html";
+  }
+
+  // 이전 장면으로 이동합니다.
+  function prevScene() {
+    if (currentSceneIndex > 0) {
+      currentSceneIndex--;
+      renderScene();
+    }
+  }
+</script>
 </body>
 </html>

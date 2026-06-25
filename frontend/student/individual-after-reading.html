@@ -521,9 +521,9 @@
     }
 
     .iar-share-card {
-      min-height: 360px;
-      display: grid;
-      grid-template-rows: auto auto minmax(90px, auto) auto auto;
+  min-height: 360px;
+  display: grid;
+  grid-template-rows: auto auto minmax(120px, auto) auto;
       gap: 12px;
       padding: 22px;
       border-radius: 26px;
@@ -551,17 +551,20 @@
     }
 
     .iar-share-summary {
-      padding: 14px 15px;
-      border-radius: 18px;
-      border: 1px solid rgba(181, 117, 37, 0.16);
-      background: rgba(255, 250, 237, 0.86);
-      color: #4d2b10;
-      font-size: 14px;
-      font-weight: 850;
-      line-height: 1.55;
-      word-break: keep-all;
-      white-space: pre-wrap;
-    }
+  padding: 14px 15px;
+  border-radius: 18px;
+  border: 1px solid rgba(181, 117, 37, 0.16);
+  background: rgba(255, 250, 237, 0.86);
+  color: #4d2b10;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.55;
+  white-space: pre-wrap;
+
+  /* 긴 문장이나 띄어쓰기 없는 글도 카드 밖으로 나가지 않게 줄바꿈합니다. */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
 
     .iar-comment-list {
       display: grid;
@@ -897,6 +900,594 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* =========================================================
+   이 책 마무리 팝업
+   - 별점과 대표 질문 1개를 선택해 나의 독서 보관함에 저장합니다.
+   ========================================================= */
+
+.iar-finish-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  background: rgba(42, 25, 8, 0.46);
+  z-index: 30;
+}
+
+.iar-finish-modal.show {
+  display: grid;
+}
+
+.iar-finish-modal-box {
+  width: min(720px, calc(100vw - 48px));
+  max-height: min(720px, calc(100vh - 48px));
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  gap: 18px;
+  padding: 28px;
+  border-radius: 32px;
+  border: 1px solid rgba(184, 116, 30, 0.28);
+  background: rgba(255, 250, 236, 0.98);
+  box-shadow: 0 24px 60px rgba(47, 28, 8, 0.28);
+  overflow-y: auto;
+}
+
+.iar-finish-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(181, 117, 37, 0.16);
+}
+
+.iar-finish-modal-head strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #4d2b10;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+}
+
+.iar-finish-modal-head p {
+  margin: 0;
+  color: #765026;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.iar-finish-close-button {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(174, 109, 27, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 250, 237, 0.9);
+  color: #7a4618;
+  font-size: 25px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.iar-finish-section {
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(181, 117, 37, 0.16);
+  background: rgba(255, 248, 229, 0.72);
+}
+
+.iar-finish-section h3 {
+  margin: 0 0 12px;
+  color: #4d2b10;
+  font-size: 19px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.iar-finish-guide {
+  margin: -4px 0 12px;
+  color: #765026;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.iar-star-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iar-star-button {
+  width: 56px;
+  height: 56px;
+  border: 1px solid rgba(174, 109, 27, 0.22);
+  border-radius: 18px;
+  background: rgba(255, 252, 242, 0.94);
+  color: #b97921;
+  font-size: 33px;
+  font-weight: 950;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 14px rgba(101, 63, 18, 0.08);
+}
+
+.iar-star-button.selected {
+  border: none;
+  background: linear-gradient(180deg, #e8bd5e, #a8641e);
+  color: #fff9e8;
+  box-shadow: 0 12px 20px rgba(128, 76, 18, 0.22);
+}
+
+.iar-represent-question-list {
+  display: grid;
+  gap: 9px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.iar-represent-question-button {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(171, 108, 31, 0.18);
+  border-radius: 17px;
+  background: rgba(255, 252, 242, 0.94);
+  color: #5b3515;
+  font-size: 14px;
+  font-weight: 850;
+  text-align: left;
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.iar-represent-question-button.selected {
+  border-color: rgba(168, 100, 30, 0.5);
+  background: rgba(232, 189, 94, 0.24);
+  color: #7a4618;
+  box-shadow: inset 0 0 0 1px rgba(168, 100, 30, 0.12);
+}
+
+.iar-represent-empty {
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 252, 242, 0.78);
+  color: #7a5123;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.iar-finish-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.iar-finish-complete-box {
+  width: min(540px, calc(100vw - 48px));
+  padding: 34px 30px 30px;
+  border-radius: 32px;
+  border: 1px solid rgba(184, 116, 30, 0.28);
+  background: rgba(255, 250, 236, 0.98);
+  box-shadow: 0 24px 60px rgba(47, 28, 8, 0.28);
+  text-align: center;
+}
+
+.iar-finish-complete-icon {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #e8bd5e, #a8641e);
+  color: #fff9e8;
+  font-size: 38px;
+  box-shadow: 0 14px 24px rgba(128, 76, 18, 0.24);
+}
+
+.iar-finish-complete-box h2 {
+  margin: 0 0 10px;
+  color: #4d2b10;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 30px;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.iar-finish-complete-box p {
+  margin: 0 0 24px;
+  color: #765026;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.iar-finish-complete-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 12px;
+}
+/* 능력치 성장 안내 미니 모달 */
+.iar-reward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(42, 25, 10, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.iar-reward-overlay.is-open {
+  display: flex;
+}
+
+.iar-reward-modal {
+  position: relative;
+  width: min(430px, 92vw);
+  padding: 30px 28px 26px;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 2px solid rgba(181, 117, 37, 0.26);
+  background:
+    radial-gradient(circle at top left, rgba(255, 226, 157, 0.5), transparent 38%),
+    linear-gradient(180deg, #fff8e6 0%, #f6ead2 100%);
+  box-shadow: 0 24px 60px rgba(48, 29, 11, 0.32);
+  text-align: center;
+  color: #5a3518;
+}
+
+.iar-reward-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(121, 75, 31, 0.12);
+  color: #6f431f;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.iar-reward-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(201, 137, 43, 0.16);
+  color: #a86618;
+  font-weight: 900;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.iar-reward-title {
+  margin: 0;
+  font-family: "Noto Serif KR", serif;
+  font-size: 1.55rem;
+  line-height: 1.35;
+  color: #4f2f17;
+}
+
+.iar-reward-desc {
+  margin: 14px 0 20px;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #7a5635;
+  font-weight: 700;
+}
+
+.iar-reward-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 22px;
+}
+
+.iar-reward-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(181, 117, 37, 0.22);
+  background: rgba(255, 252, 240, 0.76);
+}
+
+.iar-reward-name {
+  font-weight: 900;
+  color: #5c371a;
+}
+
+.iar-reward-point {
+  font-size: 1.15rem;
+  color: #b97921;
+  font-weight: 950;
+}
+
+.iar-reward-confirm {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 18px;
+  background: linear-gradient(180deg, #e3ad4a 0%, #bf741a 100%);
+  color: #fffdf5;
+  font-size: 1rem;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(145, 84, 20, 0.22);
+}
+
+.iar-reward-confirm:hover,
+.iar-reward-close:hover {
+  transform: translateY(-1px);
+}
+/* 보상 모달 이미지 크기 조정 */
+.iar-reward-lumi {
+  position: absolute;
+  right: -18px;
+  bottom: 68px;
+  width: 118px;
+  height: auto;
+  z-index: 0;
+  opacity: 0.96;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 16px rgba(76, 43, 12, 0.22));
+}
+
+.iar-reward-badge,
+.iar-reward-title,
+.iar-reward-desc,
+.iar-reward-list,
+.iar-reward-lumi-message,
+.iar-reward-confirm,
+.iar-reward-close {
+  position: relative;
+  z-index: 1;
+}
+
+.iar-reward-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iar-reward-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 5px 7px rgba(112, 67, 16, 0.16));
+}
+
+.iar-reward-item {
+  min-height: 58px;
+  padding: 10px 14px;
+}
+
+.iar-reward-list {
+  padding-right: 74px;
+}
+
+.iar-reward-lumi-message {
+  margin: -8px 0 14px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 246, 220, 0.78);
+  border: 1px solid rgba(181, 117, 37, 0.16);
+  color: #795024;
+  font-size: 0.88rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+/* 작은 화면에서는 루미가 내용을 가리지 않게 아래쪽 장식처럼 줄입니다. */
+@media (max-width: 560px) {
+  .iar-reward-lumi {
+    width: 92px;
+    right: -12px;
+    bottom: 78px;
+    opacity: 0.82;
+  }
+
+  .iar-reward-list {
+    padding-right: 52px;
+  }
+
+  .iar-reward-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+/* =========================================================
+   보상 미니 모달 최종 디자인 보정
+   - 더 신비로운 도서관/성장 보상 느낌
+   - 닫기 버튼 오른쪽 끝 정렬
+   - 제목 중앙 정렬
+   ========================================================= */
+
+.iar-reward-modal {
+  width: min(460px, 92vw);
+  padding: 34px 30px 28px;
+  overflow: hidden;
+  border: 2px solid rgba(214, 160, 67, 0.42);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
+    radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
+    linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%);
+  box-shadow:
+    0 28px 70px rgba(49, 28, 8, 0.38),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    inset 0 0 34px rgba(255, 222, 139, 0.24);
+}
+
+/* 보상창 안쪽에 은은한 빛 장식 */
+.iar-reward-modal::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(196, 132, 39, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.iar-reward-modal::after {
+  content: "✦";
+  position: absolute;
+  top: 54px;
+  left: 38px;
+  color: rgba(214, 153, 44, 0.52);
+  font-size: 30px;
+  text-shadow:
+    92px -14px 0 rgba(255, 217, 129, 0.38),
+    286px 96px 0 rgba(255, 217, 129, 0.34),
+    38px 272px 0 rgba(255, 217, 129, 0.34);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* X 버튼을 모달 오른쪽 끝쪽으로 정리 */
+.iar-reward-close {
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  background: rgba(116, 69, 28, 0.12);
+  color: #6d421f;
+  box-shadow: 0 6px 12px rgba(82, 47, 13, 0.08);
+}
+
+/* 상단 뱃지와 제목을 중앙에 안정적으로 배치 */
+.iar-reward-badge {
+  margin: 0 auto 16px;
+}
+
+.iar-reward-title {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.62rem;
+  letter-spacing: -0.055em;
+}
+
+.iar-reward-desc {
+  text-align: center;
+  margin: 14px auto 22px;
+}
+
+/* 능력치 줄을 조금 더 보상 카드처럼 보이게 */
+.iar-reward-list {
+  gap: 11px;
+  padding-right: 76px;
+}
+
+.iar-reward-item {
+  min-height: 60px;
+  border: 1.5px solid rgba(184, 116, 30, 0.24);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78));
+  box-shadow:
+    0 7px 14px rgba(102, 60, 17, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.iar-reward-icon {
+  width: 38px;
+  height: 38px;
+}
+
+.iar-reward-name {
+  font-size: 1rem;
+}
+
+.iar-reward-point {
+  font-size: 1.22rem;
+  color: #b86e17;
+}
+
+/* 루미는 오른쪽 아래에 살짝 겹쳐서 응원하는 느낌 */
+.iar-reward-lumi {
+  right: -12px;
+  bottom: 68px;
+  width: 122px;
+  opacity: 0.98;
+}
+
+/* 루미 말풍선 느낌 */
+.iar-reward-lumi-message {
+  margin: -4px 0 16px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: rgba(255, 249, 232, 0.82);
+  border: 1px solid rgba(184, 116, 30, 0.2);
+  color: #6f441f;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+/* 확인 버튼을 더 보상 버튼처럼 */
+.iar-reward-confirm {
+  height: 50px;
+  background:
+    linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%);
+  box-shadow:
+    0 12px 22px rgba(139, 78, 17, 0.26),
+    inset 0 1px 0 rgba(255, 243, 200, 0.46);
+}
+/* 보상 모달 X 버튼 위치 최종 보정 */
+.iar-reward-close {
+  position: absolute !important;
+  top: 18px !important;
+  right: 18px !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 20 !important;
+
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(126, 78, 32, 0.12) !important;
+  border-radius: 50% !important;
+  background: rgba(116, 69, 28, 0.12) !important;
+  color: #6d421f !important;
+  font-size: 25px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+/* X 버튼 때문에 제목이 밀려 보이지 않도록 상단 여백만 살짝 확보 */
+.iar-reward-modal {
+  padding-top: 38px !important;
+}
   </style>
 </head>
 
@@ -1091,12 +1682,76 @@
 <div class="iar-share-grid" id="shareSummaryList"></div>
 
           <div class="iar-bottom-actions">
-  <button type="button" class="iar-main-button primary" onclick="goIndividualHome()">개별읽기 홈</button>
-  <button type="button" class="iar-main-button green" onclick="goFriendBookShelf()">책 추천하러 가기</button>
+  <!-- 읽기 후 활동의 필수 마무리 단계입니다.
+       별점과 대표 질문을 고른 뒤 나의 독서 보관함에 최종 저장합니다. -->
+  <button type="button" class="iar-main-button primary" onclick="openBookFinishModal()">
+    이 책 마무리하기
+  </button>
 </div>
         </article>
       </section>
     </div>
+    <!-- 이 책 마무리 팝업입니다.
+     별점과 대표 질문 1개를 골라 나의 독서 보관함 카드에 저장합니다. -->
+<div class="iar-finish-modal" id="bookFinishModal">
+  <div class="iar-finish-modal-box">
+    <div class="iar-finish-modal-head">
+      <div>
+        <strong>이 책을 어떻게 기억할까요?</strong>
+        <p>별점과 대표 질문을 골라 나의 독서 보관함에 저장해요.</p>
+      </div>
+      <button type="button" class="iar-finish-close-button" onclick="closeBookFinishModal()">×</button>
+    </div>
+
+    <div class="iar-finish-section">
+      <h3>나의 별점</h3>
+      <div class="iar-star-row" id="ratingStarRow">
+        <button type="button" class="iar-star-button" onclick="selectBookRating(1)">☆</button>
+        <button type="button" class="iar-star-button" onclick="selectBookRating(2)">☆</button>
+        <button type="button" class="iar-star-button" onclick="selectBookRating(3)">☆</button>
+        <button type="button" class="iar-star-button" onclick="selectBookRating(4)">☆</button>
+        <button type="button" class="iar-star-button" onclick="selectBookRating(5)">☆</button>
+      </div>
+    </div>
+
+    <div class="iar-finish-section">
+      <h3>대표 질문 하나 선택</h3>
+      <p class="iar-finish-guide">
+        내가 만든 질문 중 이 책을 가장 잘 떠올리게 하는 질문을 하나 골라요.
+      </p>
+      <div class="iar-represent-question-list" id="representQuestionList">
+        <div class="iar-represent-empty">
+          불러올 질문을 준비하고 있어요.
+        </div>
+      </div>
+    </div>
+
+    <div class="iar-finish-actions">
+      <button type="button" class="iar-main-button" onclick="closeBookFinishModal()">취소</button>
+      <button type="button" class="iar-main-button primary" onclick="saveBookFinishRecord()">
+        나의 독서 보관함에 저장하기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 책 마무리 완료 후 선택 팝업입니다.
+     책 추천은 필수가 아니라 선택 활동으로 제공합니다. -->
+<div class="iar-finish-modal" id="bookFinishCompleteModal">
+  <div class="iar-finish-complete-box">
+    <div class="iar-finish-complete-icon">📚</div>
+    <h2>이 책을 마무리했어요!</h2>
+    <p>
+      나의 독서 보관함에 별점과 대표 질문이 저장됐어요.<br>
+      친구들에게 이 책을 추천해 볼 수도 있어요.
+    </p>
+
+    <div class="iar-finish-complete-actions">
+      <button type="button" class="iar-main-button" onclick="goIndividualHome()">개별읽기 홈</button>
+      <button type="button" class="iar-main-button primary" onclick="goFriendBookShelf()">책 추천하러 가기</button>
+    </div>
+  </div>
+</div>
   </main>
 
   <script>
@@ -1118,7 +1773,11 @@
    let selectedBookType = sessionStorage.getItem(AFTER_KEYS.bookType) || "";
 let questionFeedbackPassed = false;
 let summaryFeedbackPassed = false;
-
+// 이 책 마무리 팝업에서 선택하는 별점과 대표 질문입니다.
+// 별점은 1~5점, 대표 질문은 학생이 만든 질문 중 1개만 선택합니다.
+let selectedBookRating = 0;
+let selectedRepresentQuestion = "";
+let selectedRepresentQuestionIndex = -1;
 // 우리 반 간추리기 모음에서 선택한 책 종류 필터입니다.
 let currentShareFilter = "all";
 
@@ -1417,29 +2076,51 @@ let currentShareFilter = "all";
     }
 
     function updateQuestionProgress() {
-      const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
-      const passedCount = cards.filter(function (card) {
-        return card.dataset.feedbackPassed === "true";
-      }).length;
-      const goSummaryButton = document.getElementById("goSummaryButton");
-      const enoughCards = cards.length >= 3;
-      const allPassed = enoughCards && passedCount === cards.length;
+  const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
+  const passedCount = cards.filter(function (card) {
+    return card.dataset.feedbackPassed === "true";
+  }).length;
+  const goSummaryButton = document.getElementById("goSummaryButton");
+  const enoughCards = cards.length >= 3;
+  const allPassed = enoughCards && passedCount === cards.length;
 
-      questionFeedbackPassed = allPassed;
+  questionFeedbackPassed = allPassed;
 
-      if (goSummaryButton) {
-        goSummaryButton.disabled = !allPassed;
-      }
+  if (goSummaryButton) {
+    goSummaryButton.disabled = !allPassed;
+  }
 
-      if (allPassed) {
-        setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 이제 간추리기 화면으로 넘어가도 돼.");
-      } else {
-        const nextNumber = Math.min(passedCount + 1, cards.length);
-        setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
-      }
+  if (allPassed) {
+    const rewardKey = "individual_after_questions_pass_" + studentId;
 
-      updateSequentialQuestionLock();
+    const rewardResult =
+      typeof givePowerRewardOnce === "function"
+        ? givePowerRewardOnce(rewardKey, {
+            presetKey: "individual_after_questions_pass",
+            showModal: false
+          })
+        : false;
+
+    if (rewardResult && typeof openMiniRewardModal === "function") {
+      openMiniRewardModal({
+        badge: "✨ 지혜 성장!",
+        title: "간추리기 질문을 모두 다듬었어요!",
+        desc: "질문과 답 3개를 차근차근 완성해서<br>책을 간추릴 준비가 되었어요.",
+        message: "루미: 질문을 잘 다듬었어! 이제 간추리기도 잘할 수 있겠다!",
+        rewards: [
+          { type: "wisdom", name: "지혜", point: "+3" }
+        ]
+      });
     }
+
+    setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 지혜가 +3 자랐어. 이제 간추리기 화면으로 넘어가도 돼.");
+  } else {
+    const nextNumber = Math.min(passedCount + 1, cards.length);
+    setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
+  }
+
+  updateSequentialQuestionLock();
+}
 
     // 혹시 예전 전체 피드백 버튼 코드가 남아 있어도, 실제로는 각 카드 피드백을 안내합니다.
     function checkQuestionFeedback() {
@@ -1502,32 +2183,53 @@ let currentShareFilter = "all";
     }
 
     function checkSummaryFeedback() {
-      const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
-      const questionAnswers = savedData ? JSON.parse(savedData) : [];
-      const summaryText = document.getElementById("summaryInput").value.trim();
-      const problems = [];
+  const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
+  const questionAnswers = savedData ? JSON.parse(savedData) : [];
+  const summaryText = document.getElementById("summaryInput").value.trim();
+  const problems = [];
 
-      if (summaryText.replace(/\s/g, "").length < 35) {
-        problems.push("간추린 내용이 너무 짧아. 질문과 답을 보고 중요한 내용을 조금 더 자세히 이어 써줘.");
-      }
+  if (summaryText.replace(/\s/g, "").length < 35) {
+    problems.push("간추린 내용이 너무 짧아. 질문과 답을 보고 중요한 내용을 조금 더 자세히 이어 써줘.");
+  }
 
-      const overlapCount = countAnswerKeywordOverlap(summaryText, questionAnswers);
-      if (overlapCount < 2) {
-        problems.push("앞에서 쓴 질문과 답의 핵심 말이 충분히 들어가지 않았어. 질문과 답에서 중요한 낱말을 2개 이상 넣어줘.");
-      }
+  const overlapCount = countAnswerKeywordOverlap(summaryText, questionAnswers);
+  if (overlapCount < 2) {
+    problems.push("앞에서 쓴 질문과 답의 핵심 말이 충분히 들어가지 않았어. 질문과 답에서 중요한 낱말을 2개 이상 넣어줘.");
+  }
 
-      if (problems.length > 0) {
-        summaryFeedbackPassed = false;
-        document.getElementById("finishAfterButton").disabled = true;
-        setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
-        return;
-      }
+  if (problems.length > 0) {
+    summaryFeedbackPassed = false;
+    document.getElementById("finishAfterButton").disabled = true;
+    setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
+    return;
+  }
 
-      summaryFeedbackPassed = true;
-      document.getElementById("finishAfterButton").disabled = false;
-      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
-      setFeedback("summaryFeedback", "good", "좋아! 질문과 답에서 중요한 내용을 가져와 자연스럽게 간추렸어. 이제 읽기 후 활동을 완료해도 돼.");
-    }
+  summaryFeedbackPassed = true;
+  document.getElementById("finishAfterButton").disabled = false;
+  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+
+  const rewardResult =
+    typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce("individual_after_summary_pass_" + studentId, {
+          presetKey: "individual_after_summary_pass",
+          showModal: false
+        })
+      : false;
+
+  if (rewardResult && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 지혜 성장!",
+      title: "간추리기를 완성했어요!",
+      desc: "질문과 답을 바탕으로 중요한 내용을 잘 이어서<br>나만의 간추리기를 완성했어요.",
+      message: "루미: 책의 핵심을 잘 정리했어!",
+      rewards: [
+        { type: "wisdom", name: "지혜", point: "+2" }
+      ]
+    });
+  }
+
+  setFeedback("summaryFeedback", "good", "좋아! 질문과 답에서 중요한 내용을 가져와 자연스럽게 간추렸어. 지혜가 +2 자랐어. 이제 읽기 후 활동을 완료해도 돼.");
+}
 
     function countAnswerKeywordOverlap(summaryText, questionAnswers) {
       const sourceText = questionAnswers.map(function (item) {
@@ -1551,30 +2253,321 @@ let currentShareFilter = "all";
     }
 
     function finishAfterReading() {
-      if (!summaryFeedbackPassed) {
-        alert("먼저 루미 피드백을 통과해야 해!");
-        return;
-      }
+  if (!summaryFeedbackPassed) {
+    alert("먼저 루미 피드백을 통과해야 해!");
+    return;
+  }
 
-      const summaryText = document.getElementById("summaryInput").value.trim();
-      const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
+  const summaryText = document.getElementById("summaryInput").value.trim();
+  const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
 
-      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
-      sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
-      sessionStorage.setItem(AFTER_KEYS.stage, "after");
-      sessionStorage.setItem("individualCompletedBookCount_" + studentId, String(getCompletedBookCount() + 1));
+  /*
+    이미 이 책의 읽기 후 활동을 완료했다면
+    완료 횟수와 체력 보상이 중복으로 올라가지 않게 막습니다.
+  */
+  const alreadyAfterDone = sessionStorage.getItem(AFTER_KEYS.afterDone) === "true";
 
-      saveAfterArchive(questionAnswers, summaryText);
-      saveMySummaryForShare(summaryText);
-      showShareScreen();
+  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+  sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
+  sessionStorage.setItem(AFTER_KEYS.stage, "after");
+
+  if (!alreadyAfterDone) {
+    const nextCompletedBookCount = getCompletedBookCount() + 1;
+
+    sessionStorage.setItem(
+      "individualCompletedBookCount_" + studentId,
+      String(nextCompletedBookCount)
+    );
+
+    /*
+      읽기 후 완료 보상:
+      individual-power.js의 individual_after_complete preset을 사용합니다.
+      현재 설정은 체력 +5입니다.
+    */
+    const rewardResult =
+      typeof givePowerRewardOnce === "function"
+        ? givePowerRewardOnce("individual_after_complete_" + nextCompletedBookCount, {
+            presetKey: "individual_after_complete",
+            showModal: false
+          })
+        : false;
+
+    /*
+      읽기 후 화면에 이미 만들어 둔 보상페이지가 있으면 그대로 보여줍니다.
+    */
+    if (rewardResult && typeof openMiniRewardModal === "function") {
+      openMiniRewardModal();
     }
+  }
+
+  saveAfterArchive(questionAnswers, summaryText);
+  saveMySummaryForShare(summaryText);
+  showShareScreen();
+}
 
     function showShareScreen() {
       switchScreen("shareScreen");
       setActiveStep("stepShare");
       renderShareSummaries();
     }
+// 이 책 마무리 팝업을 엽니다.
+// 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
+function openBookFinishModal() {
+  selectedBookRating = 0;
+selectedRepresentQuestion = "";
+selectedRepresentQuestionIndex = -1;
 
+  renderRatingStars();
+  renderRepresentQuestionList();
+
+  const modal = document.getElementById("bookFinishModal");
+  if (modal) {
+    modal.classList.add("show");
+  }
+}
+
+// 이 책 마무리 팝업을 닫습니다.
+function closeBookFinishModal() {
+  const modal = document.getElementById("bookFinishModal");
+  if (modal) {
+    modal.classList.remove("show");
+  }
+}
+
+// 별점을 선택합니다.
+function selectBookRating(rating) {
+  selectedBookRating = rating;
+  renderRatingStars();
+}
+
+// 선택한 별점에 맞게 별 모양을 채워 보여줍니다.
+function renderRatingStars() {
+  const starButtons = document.querySelectorAll(".iar-star-button");
+
+  starButtons.forEach(function (button, index) {
+    const starNumber = index + 1;
+    const selected = starNumber <= selectedBookRating;
+
+    button.classList.toggle("selected", selected);
+    button.textContent = selected ? "★" : "☆";
+  });
+}
+
+// 대표 질문 후보를 가져옵니다.
+// 읽기 후 활동에서 학생이 쓴 질문과 답 목록 중 질문만 사용합니다.
+function getRepresentQuestionCandidates() {
+  try {
+    const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
+
+    return questionAnswers
+      .map(function (item) {
+        return item.question || "";
+      })
+      .filter(function (question) {
+        return question.trim().length > 0;
+      });
+  } catch (error) {
+    return [];
+  }
+}
+
+// 대표 질문 목록을 팝업 안에 그립니다.
+function renderRepresentQuestionList() {
+  const list = document.getElementById("representQuestionList");
+  if (!list) return;
+
+  const questions = getRepresentQuestionCandidates();
+
+  if (questions.length === 0) {
+    list.innerHTML = `
+      <div class="iar-represent-empty">
+        아직 고를 수 있는 질문이 없어요.<br>
+        읽기 후 활동에서 질문과 답을 먼저 저장해 주세요.
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = questions
+    .map(function (question, index) {
+      const isSelected = selectedRepresentQuestionIndex === index;
+      return `
+        <button
+          type="button"
+          class="iar-represent-question-button ${isSelected ? "selected" : ""}"
+          onclick="selectRepresentQuestion(${index})"
+        >
+          ${index + 1}. ${escapeHtml(question)}
+        </button>
+      `;
+    })
+    .join("");
+}
+
+// 대표 질문은 하나만 선택합니다.
+function selectRepresentQuestion(questionIndex) {
+  const questions = getRepresentQuestionCandidates();
+
+  selectedRepresentQuestionIndex = questionIndex;
+  selectedRepresentQuestion = questions[questionIndex] || "";
+
+  renderRepresentQuestionList();
+}
+
+// 별점과 대표 질문을 나의 독서 보관함용 데이터로 저장합니다.
+function saveBookFinishRecord() {
+  if (selectedBookRating === 0) {
+    alert("별점을 골라줘!");
+    return;
+  }
+
+  if (selectedRepresentQuestionIndex < 0 || !selectedRepresentQuestion) {
+  alert("대표 질문을 하나 골라줘!");
+  return;
+}
+
+  const finishRecord = {
+    bookTitle: getCurrentBookTitle(),
+    author: sessionStorage.getItem("individualCurrentBookAuthor_" + studentId) || "지은이 없음",
+    finishedAt: getTodayText(),
+    rating: selectedBookRating,
+    representativeQuestion: selectedRepresentQuestion
+  };
+
+  sessionStorage.setItem("individualBookFinishRecord_" + studentId, JSON.stringify(finishRecord));
+
+  closeBookFinishModal();
+
+    // 책 마무리 저장 후, 완료 팝업을 바로 띄우지 않고
+  // 먼저 능력치 성장 안내 미니 모달을 보여줍니다.
+  openMiniRewardModal({
+  badge: "✨ 나의 힘 성장!",
+  title: "책 한 권을 끝까지 마무리했어요!",
+  desc: "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.",
+  rewards: [
+  { type: "stamina", name: "체력", point: "+5" },
+  { type: "wisdom", name: "지혜", point: "+1" },
+  { type: "courage", name: "용기", point: "+1" }
+],
+  message: "루미: 정말 멋지게 마무리했어!",
+  nextAction: function () {
+    const completeModal = document.getElementById("bookFinishCompleteModal");
+
+    if (completeModal) {
+      completeModal.classList.add("show");
+    }
+  }
+});
+}
+// 능력치 성장 안내 미니 모달을 엽니다.
+// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
+// 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
+// 능력치별 이미지 경로를 한곳에서 관리합니다.
+// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리합니다.
+const REWARD_ICON_MAP = {
+  magic: "../assets/images/individual-reading/reward/reward-magic-wand.png",
+  stamina: "../assets/images/individual-reading/reward/reward-stamina-heart.png",
+  wisdom: "../assets/images/individual-reading/reward/reward-wisdom-book.png",
+  courage: "../assets/images/individual-reading/reward/reward-courage-shield.png"
+};
+
+// 보상 안내 확인 후 실행할 다음 동작입니다.
+// 예: 책 마무리 완료 팝업 열기, 추천 책장 이동 등
+let miniRewardNextAction = null;
+
+// 능력치 성장 안내 미니 모달을 엽니다.
+// rewardData를 넘기면 활동별로 제목, 설명, 보상 목록, 루미 메시지를 바꿔 보여줄 수 있습니다.
+function openMiniRewardModal(rewardData) {
+  const rewardOverlay = document.getElementById("iarRewardOverlay");
+  const badge = document.getElementById("iarRewardBadge");
+  const title = document.getElementById("iarRewardTitle");
+  const desc = document.getElementById("iarRewardDesc");
+  const list = document.getElementById("iarRewardList");
+  const message = document.getElementById("iarRewardMessage");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  const data = rewardData || {};
+  const rewards = data.rewards || [
+    { type: "stamina", name: "체력", point: "+5" },
+    { type: "wisdom", name: "지혜", point: "+1" },
+    { type: "courage", name: "용기", point: "+1" }
+  ];
+
+  miniRewardNextAction = typeof data.nextAction === "function" ? data.nextAction : null;
+
+  if (badge) {
+    badge.textContent = data.badge || "✨ 나의 힘 성장!";
+  }
+
+  if (title) {
+    title.textContent = data.title || "책 한 권을 끝까지 마무리했어요!";
+  }
+
+  if (desc) {
+    desc.innerHTML = data.desc || "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.";
+  }
+
+  if (message) {
+    message.textContent = data.message || "루미: 정말 멋지게 마무리했어!";
+  }
+
+  if (list) {
+    list.innerHTML = rewards.map(function (reward) {
+      const iconSrc = REWARD_ICON_MAP[reward.type] || REWARD_ICON_MAP.magic;
+      const rewardName = escapeHtml(reward.name || "능력치");
+      const rewardPoint = escapeHtml(reward.point || "+1");
+
+      return `
+        <div class="iar-reward-item">
+          <div class="iar-reward-left">
+            <img
+              class="iar-reward-icon"
+              src="${iconSrc}"
+              alt="${rewardName}"
+            >
+            <span class="iar-reward-name">${rewardName}</span>
+          </div>
+          <strong class="iar-reward-point">${rewardPoint}</strong>
+        </div>
+      `;
+    }).join("");
+  }
+
+  rewardOverlay.classList.add("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "false");
+}
+
+// 능력치 성장 안내 미니 모달을 닫습니다.
+function closeMiniRewardModal() {
+  const rewardOverlay = document.getElementById("iarRewardOverlay");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  rewardOverlay.classList.remove("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "true");
+}
+
+// 보상 안내를 확인한 뒤 저장해 둔 다음 동작으로 이어갑니다.
+function confirmMiniRewardModal() {
+  closeMiniRewardModal();
+
+  if (typeof miniRewardNextAction === "function") {
+    miniRewardNextAction();
+    miniRewardNextAction = null;
+    return;
+  }
+
+  const completeModal = document.getElementById("bookFinishCompleteModal");
+
+  if (completeModal) {
+    completeModal.classList.add("show");
+  }
+}
     function saveAfterArchive(questionAnswers, summaryText) {
       const archive = getAfterArchive();
       const now = new Date().toISOString().slice(0, 10);
@@ -1869,5 +2862,78 @@ function goAdventure() {
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
 <script src="../js/individual-power.js?v=power-common-2"></script>
+<!-- 능력치 성장 안내 미니 모달: 실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 안내 화면만 보여준다. -->
+<!-- 능력치 성장 안내 미니 모달
+     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
+<!-- 능력치 성장 안내 미니 모달
+     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다.
+     id가 붙은 요소들은 JS에서 활동별 보상 문구와 능력치를 바꿔 넣습니다. -->
+<div class="iar-reward-overlay" id="iarRewardOverlay" aria-hidden="true">
+  <div class="iar-reward-modal">
+    <button class="iar-reward-close" type="button" onclick="closeMiniRewardModal()" aria-label="닫기">×</button>
+
+    <!-- 루미가 보상창을 응원하는 이미지입니다. -->
+    <img
+      class="iar-reward-lumi"
+      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+      alt="응원하는 루미"
+    >
+
+    <div class="iar-reward-badge" id="iarRewardBadge">✨ 나의 힘 성장!</div>
+
+    <h2 class="iar-reward-title" id="iarRewardTitle">책 한 권을 끝까지 마무리했어요!</h2>
+
+    <p class="iar-reward-desc" id="iarRewardDesc">
+      끝까지 읽고 생각을 정리해서<br>
+      나의 힘이 조금 더 자랐어요.
+    </p>
+
+    <div class="iar-reward-list" id="iarRewardList">
+      <div class="iar-reward-item">
+        <div class="iar-reward-left">
+          <img
+            class="iar-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-stamina-heart.png"
+            alt="체력"
+          >
+          <span class="iar-reward-name">체력</span>
+        </div>
+        <strong class="iar-reward-point">+3</strong>
+      </div>
+
+      <div class="iar-reward-item">
+        <div class="iar-reward-left">
+          <img
+            class="iar-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-wisdom-book.png"
+            alt="지혜"
+          >
+          <span class="iar-reward-name">지혜</span>
+        </div>
+        <strong class="iar-reward-point">+1</strong>
+      </div>
+
+      <div class="iar-reward-item">
+        <div class="iar-reward-left">
+          <img
+            class="iar-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-courage-shield.png"
+            alt="용기"
+          >
+          <span class="iar-reward-name">용기</span>
+        </div>
+        <strong class="iar-reward-point">+1</strong>
+      </div>
+    </div>
+
+    <div class="iar-reward-lumi-message" id="iarRewardMessage">
+      루미: 정말 멋지게 마무리했어!
+    </div>
+
+    <button class="iar-reward-confirm" type="button" onclick="confirmMiniRewardModal()">
+      확인했어
+    </button>
+  </div>
+</div>
 </body>
 </html>

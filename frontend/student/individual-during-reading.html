@@ -4311,6 +4311,229 @@
   cursor: pointer;
   box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18);
 }
+/* =========================================================
+   읽기 중 질문 만들기 보상 미니 모달
+   - 질문 저장 성공 후 마법력 +1 안내를 보여줍니다.
+   - 실제 점수 저장은 백엔드 연동 때 처리합니다.
+   ========================================================= */
+
+.idr-reward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(42, 25, 10, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.idr-reward-overlay.is-open {
+  display: flex;
+}
+
+.idr-reward-modal {
+  position: relative;
+  width: min(460px, 92vw);
+  padding: 38px 30px 28px;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 2px solid rgba(214, 160, 67, 0.42);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
+    radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
+    linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%);
+  box-shadow:
+    0 28px 70px rgba(49, 28, 8, 0.38),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    inset 0 0 34px rgba(255, 222, 139, 0.24);
+  text-align: center;
+  color: #5a3518;
+}
+
+.idr-reward-modal::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(196, 132, 39, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.idr-reward-modal::after {
+  content: "✦";
+  position: absolute;
+  top: 54px;
+  left: 38px;
+  color: rgba(214, 153, 44, 0.52);
+  font-size: 30px;
+  text-shadow:
+    92px -14px 0 rgba(255, 217, 129, 0.38),
+    286px 96px 0 rgba(255, 217, 129, 0.34),
+    38px 272px 0 rgba(255, 217, 129, 0.34);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.idr-reward-close {
+  position: absolute !important;
+  top: 18px !important;
+  right: 18px !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 20 !important;
+
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border: 1px solid rgba(126, 78, 32, 0.12) !important;
+  border-radius: 50% !important;
+  background: rgba(116, 69, 28, 0.12) !important;
+  color: #6d421f !important;
+  font-size: 25px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+
+.idr-reward-lumi {
+  position: absolute;
+  right: -12px;
+  bottom: 68px;
+  width: 122px;
+  height: auto;
+  z-index: 0;
+  opacity: 0.98;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 16px rgba(76, 43, 12, 0.22));
+}
+
+.idr-reward-badge,
+.idr-reward-title,
+.idr-reward-desc,
+.idr-reward-list,
+.idr-reward-lumi-message,
+.idr-reward-confirm,
+.idr-reward-close {
+  position: relative;
+  z-index: 1;
+}
+
+.idr-reward-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(201, 137, 43, 0.16);
+  color: #a86618;
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+
+.idr-reward-title {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 1.62rem;
+  line-height: 1.35;
+  letter-spacing: -0.055em;
+  color: #4f2f17;
+}
+
+.idr-reward-desc {
+  margin: 14px auto 22px;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #7a5635;
+  font-weight: 700;
+}
+
+.idr-reward-list {
+  display: grid;
+  gap: 11px;
+  margin: 0 0 18px;
+  padding-right: 76px;
+}
+
+.idr-reward-item {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(184, 116, 30, 0.24);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78));
+  box-shadow:
+    0 7px 14px rgba(102, 60, 17, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.idr-reward-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.idr-reward-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 5px 7px rgba(112, 67, 16, 0.16));
+}
+
+.idr-reward-name {
+  color: #5c371a;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.idr-reward-point {
+  color: #b86e17;
+  font-size: 1.22rem;
+  font-weight: 950;
+}
+
+.idr-reward-lumi-message {
+  margin: -4px 0 16px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: rgba(255, 249, 232, 0.82);
+  border: 1px solid rgba(184, 116, 30, 0.2);
+  color: #6f441f;
+  font-size: 0.88rem;
+  font-weight: 900;
+  line-height: 1.35;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.idr-reward-confirm {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%);
+  color: #fffdf5;
+  font-size: 1rem;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow:
+    0 12px 22px rgba(139, 78, 17, 0.26),
+    inset 0 1px 0 rgba(255, 243, 200, 0.46);
+}
   </style>
 </head>
 
@@ -4737,7 +4960,94 @@
   </div>
 </div>
   </main>
+<!-- 읽기 중 질문 만들기 보상 미니 모달
+     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
+<div class="idr-reward-overlay" id="idrRewardOverlay" aria-hidden="true">
+  <div class="idr-reward-modal">
+    <button class="idr-reward-close" type="button" onclick="closeDuringRewardModal()" aria-label="닫기">×</button>
 
+    <img
+      class="idr-reward-lumi"
+      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+      alt="응원하는 루미"
+    >
+
+    <div class="idr-reward-badge">✨ 나의 힘 성장!</div>
+
+    <h2 class="idr-reward-title">좋은 질문을 만들었어요!</h2>
+
+    <p class="idr-reward-desc">
+      책을 읽으며 떠오른 궁금증을<br>
+      질문으로 바꾸는 힘이 자랐어요.
+    </p>
+
+    <div class="idr-reward-list">
+      <div class="idr-reward-item">
+        <div class="idr-reward-left">
+          <img
+            class="idr-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-magic-wand.png"
+            alt="마법력"
+          >
+          <span class="idr-reward-name">마법력</span>
+        </div>
+        <strong class="idr-reward-point">+1</strong>
+      </div>
+    </div>
+
+    <div class="idr-reward-lumi-message">
+      루미: 질문의 힘이 더 강해졌어!
+    </div>
+
+    <button class="idr-reward-confirm" type="button" onclick="confirmDuringRewardModal()">
+      확인했어
+    </button>
+  </div>
+</div>
+<!-- 책수다방 생각 나누기 보상 미니 모달
+     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
+<div class="idr-reward-overlay" id="bookChatRewardOverlay" aria-hidden="true">
+  <div class="idr-reward-modal">
+    <button class="idr-reward-close" type="button" onclick="closeBookChatRewardModal()" aria-label="닫기">×</button>
+
+    <img
+      class="idr-reward-lumi"
+      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+      alt="응원하는 루미"
+    >
+
+    <div class="idr-reward-badge">✨ 나의 힘 성장!</div>
+
+    <h2 class="idr-reward-title">친구와 생각을 나눴어요!</h2>
+
+    <p class="idr-reward-desc">
+      친구의 글을 읽고 내 선택과 이유를 남기며<br>
+      생각을 나누는 용기가 자랐어요.
+    </p>
+
+    <div class="idr-reward-list">
+      <div class="idr-reward-item">
+        <div class="idr-reward-left">
+          <img
+            class="idr-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-courage-shield.png"
+            alt="용기"
+          >
+          <span class="idr-reward-name">용기</span>
+        </div>
+        <strong class="idr-reward-point">+1</strong>
+      </div>
+    </div>
+
+    <div class="idr-reward-lumi-message">
+      루미: 네 생각을 나눈 용기가 멋져!
+    </div>
+
+    <button class="idr-reward-confirm" type="button" onclick="confirmBookChatRewardModal()">
+      확인했어
+    </button>
+  </div>
+</div>
   <script src="../js/auth.js"></script>
 
   <script>
@@ -5617,9 +5927,24 @@ function saveBookChatPostToStorage(post) {
 
   localStorage.setItem(storageKey, JSON.stringify(savedPosts));
 
-  alert("책수다가 올라갔어요!");
-
+  /*
+    책수다 글을 올린 뒤 목록으로 돌아가고,
+    루미와 능력치 카드가 있는 보상 화면을 보여줍니다.
+    실제 능력치 누적은 나중에 백엔드 보상 기록 API로 연결합니다.
+  */
   renderBookChatRoom();
+
+  const rewardResult =
+  typeof givePowerRewardOnce === "function"
+    ? givePowerRewardOnce("book_chat_post_" + post.id, {
+        presetKey: "individual_book_chat_post",
+        showModal: false
+      })
+    : false;
+
+if (rewardResult && typeof openBookChatRewardModal === "function") {
+  openBookChatRewardModal();
+}
 }
 /*
   책수다방에서 현재 선택한 A/B 값을 저장합니다.
@@ -5757,10 +6082,6 @@ function saveBookChatThought() {
 
   if (!thoughtList) return;
 
-  /*
-    선택한 쪽의 숫자를 1 올립니다.
-    지금은 화면용 임시 처리이고, 나중에는 DB 댓글 수로 계산하면 됩니다.
-  */
   if (selectedBookChatChoice === "A" && aCountElement) {
     aCountElement.textContent = Number(aCountElement.textContent || 0) + 1;
   }
@@ -5778,16 +6099,20 @@ function saveBookChatThought() {
 
   reasonInput.value = "";
   selectedBookChatChoice = "";
+  window.selectedBookChatChoice = "";
 
   /*
     생각을 남겼을 때 용기 보상을 지급합니다.
-    같은 글에 여러 번 테스트할 수 있도록 임시로 시간값을 붙였습니다.
-    나중에 실제 DB 연결 후에는 댓글 ID 기준으로 중복 방지하면 됩니다.
+    지금은 임시 보상 안내이고, 나중에는 댓글 ID 기준으로 DB에 보상 기록을 저장합니다.
   */
   if (typeof givePowerRewardOnce === "function") {
     givePowerRewardOnce("book_chat_thought_" + Date.now(), {
       presetKey: "individual_thought_comment"
     });
+  }
+
+  if (typeof openBookChatRewardModal === "function") {
+    openBookChatRewardModal();
   }
 }
 
@@ -6049,7 +6374,148 @@ function finishCurrentBook() {
       document.getElementById("questionLength").textContent = questionLength + " / 200자";
       document.getElementById("answerLength").textContent = answerLength + " / 400자";
     }
+// 읽기 중 질문 만들기 보상 미니 모달을 엽니다.
+// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
+// 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
+function getIndividualPowerStorageKey() {
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  return "individualPower_v2_" + studentId;
+}
 
+function getDefaultIndividualPower() {
+  return {
+    magic: 8,
+    stamina: 8,
+    wisdom: 8,
+    courage: 8
+  };
+}
+
+function readIndividualPowerState() {
+  const powerKey = getIndividualPowerStorageKey();
+  const defaultPower = getDefaultIndividualPower();
+
+  let localPower = {};
+  let sessionPower = {};
+
+  try {
+    localPower = JSON.parse(localStorage.getItem(powerKey) || "{}");
+  } catch (error) {
+    localPower = {};
+  }
+
+  try {
+    sessionPower = JSON.parse(sessionStorage.getItem(powerKey) || "{}");
+  } catch (error) {
+    sessionPower = {};
+  }
+
+  /*
+    localStorage와 sessionStorage가 서로 다르게 남아 있어도
+    더 큰 값을 기준으로 보여 줍니다.
+  */
+  return {
+    magic: Math.max(Number(defaultPower.magic), Number(localPower.magic || 0), Number(sessionPower.magic || 0)),
+    stamina: Math.max(Number(defaultPower.stamina), Number(localPower.stamina || 0), Number(sessionPower.stamina || 0)),
+    wisdom: Math.max(Number(defaultPower.wisdom), Number(localPower.wisdom || 0), Number(sessionPower.wisdom || 0)),
+    courage: Math.max(Number(defaultPower.courage), Number(localPower.courage || 0), Number(sessionPower.courage || 0))
+  };
+}
+
+function saveIndividualPowerState(power) {
+  const powerKey = getIndividualPowerStorageKey();
+  localStorage.setItem(powerKey, JSON.stringify(power));
+  sessionStorage.setItem(powerKey, JSON.stringify(power));
+}
+
+function updateIndividualPowerModalFromStorage() {
+  const power = readIndividualPowerState();
+
+  const magicText = document.getElementById("powerMagicText");
+  const healthText = document.getElementById("powerHealthText");
+  const wisdomText = document.getElementById("powerWisdomText");
+  const courageText = document.getElementById("powerCourageText");
+
+  const magicFill = document.getElementById("powerMagicFill");
+  const healthFill = document.getElementById("powerHealthFill");
+  const wisdomFill = document.getElementById("powerWisdomFill");
+  const courageFill = document.getElementById("powerCourageFill");
+
+  if (magicText) magicText.textContent = power.magic + " / 100";
+  if (healthText) healthText.textContent = power.stamina + " / 100";
+  if (wisdomText) wisdomText.textContent = power.wisdom + " / 100";
+  if (courageText) courageText.textContent = power.courage + " / 100";
+
+  if (magicFill) magicFill.style.width = power.magic + "%";
+  if (healthFill) healthFill.style.width = power.stamina + "%";
+  if (wisdomFill) wisdomFill.style.width = power.wisdom + "%";
+  if (courageFill) courageFill.style.width = power.courage + "%";
+}
+
+function addIndividualPowerPoint(type, amount) {
+  /*
+    예전 임시 능력치 증가 함수입니다.
+    이제 실제 점수 증가는 individual-power.js의 givePowerRewardOnce()만 사용합니다.
+    이 함수는 기존 코드 호환용으로만 남겨둡니다.
+  */
+  console.warn("addIndividualPowerPoint는 더 이상 직접 사용하지 않습니다.", type, amount);
+}
+function openDuringRewardModal() {
+  const rewardOverlay = document.getElementById("idrRewardOverlay");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  rewardOverlay.classList.add("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "false");
+}
+// 책수다방 생각 나누기 보상 미니 모달을 엽니다.
+// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
+// 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
+function openBookChatRewardModal() {
+  const rewardOverlay = document.getElementById("bookChatRewardOverlay");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  rewardOverlay.classList.add("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "false");
+}
+
+// 책수다방 생각 나누기 보상 미니 모달을 닫습니다.
+function closeBookChatRewardModal() {
+  const rewardOverlay = document.getElementById("bookChatRewardOverlay");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  rewardOverlay.classList.remove("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "true");
+}
+
+// 보상 안내를 확인하면 보상창만 닫고, 책수다방 화면에 그대로 머무릅니다.
+function confirmBookChatRewardModal() {
+  closeBookChatRewardModal();
+}
+// 읽기 중 질문 만들기 보상 미니 모달을 닫습니다.
+function closeDuringRewardModal() {
+  const rewardOverlay = document.getElementById("idrRewardOverlay");
+
+  if (!rewardOverlay) {
+    return;
+  }
+
+  rewardOverlay.classList.remove("is-open");
+  rewardOverlay.setAttribute("aria-hidden", "true");
+}
+
+// 보상 안내를 확인하면 보상창만 닫고, 현재 질문 만들기 화면에 그대로 머무릅니다.
+function confirmDuringRewardModal() {
+  closeDuringRewardModal();
+}
     function checkAndSaveQuestion() {
       const result = validateQuestionForm();
       const feedbackBox = document.getElementById("questionFeedbackBox");
@@ -6061,9 +6527,21 @@ function finishCurrentBook() {
 
       if (!result.ok) return;
 
-      saveTodayQuestion();
+            const savedQuestion = saveTodayQuestion();
       resetQuestionForm(false);
 
+      // 질문 저장 성공 후, 마법력 점수를 공통 능력치 저장소에 반영하고 보상 미니 모달을 보여줍니다.
+      const rewardResult =
+        typeof givePowerRewardOnce === "function" && savedQuestion
+          ? givePowerRewardOnce("individual_question_created_" + savedQuestion.id, {
+              presetKey: "individual_question_created",
+              showModal: false
+            })
+          : false;
+
+      if (rewardResult && typeof openDuringRewardModal === "function") {
+        openDuringRewardModal();
+      }
       feedbackBox.classList.add("good");
       feedbackText.textContent = "좋아! 오늘 읽은 부분에서 나온 질문이 저장됐어. 나의 질문 모음과 질문 나누기에 반영됐어.";
 
@@ -6138,7 +6616,9 @@ function finishCurrentBook() {
         document.getElementById("currentPageInput").value = toPage;
       }
 
-      renderProgress();
+            renderProgress();
+
+      return newQuestion;
     }
 
     // 읽기 중 책 종류 그래프를 그립니다.
@@ -6941,10 +7421,19 @@ window.saveBookChatThought = function () {
   // 저장 후 같은 글을 다시 보여주면서 댓글 목록과 A/B 숫자를 갱신합니다.
   renderBookChatRoom(selectedBookChatIndex);
 
+  /*
+    책수다방에서 내 생각을 저장한 뒤 용기 점수를 올리고,
+    책수다방 전용 보상 화면을 보여줍니다.
+  */
   if (typeof givePowerRewardOnce === "function") {
     givePowerRewardOnce("book_chat_thought_" + Date.now(), {
-      presetKey: "individual_thought_comment"
+      presetKey: "individual_thought_comment",
+      showModal: false
     });
+  }
+
+  if (typeof openBookChatRewardModal === "function") {
+    openBookChatRewardModal();
   }
 };
 
@@ -7379,14 +7868,27 @@ window.saveBookChatThought = function () {
   }
 
   /*
-    생각을 남겼을 때 용기 보상 지급
-    기존 보상 함수가 있을 때만 실행됩니다.
-  */
-  if (typeof givePowerRewardOnce === "function") {
-    givePowerRewardOnce("book_chat_thought_" + Date.now(), {
-      presetKey: "individual_thought_comment"
-    });
+  생각을 남겼을 때 용기 점수를 공통 능력치 저장소에 반영하고,
+  책수다방 전용 보상 화면을 보여줍니다.
+*/
+setTimeout(function () {
+  const thoughtRewardKey =
+    "book_chat_thought_" +
+    Date.now();
+
+  const rewardResult =
+    typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce(thoughtRewardKey, {
+          presetKey: "individual_thought_comment",
+          showModal: false
+        })
+      : false;
+
+  if (rewardResult && typeof openBookChatRewardModal === "function") {
+    openBookChatRewardModal();
   }
+}, 0);
+
 };
 
 /*
@@ -7433,6 +7935,36 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 });
   </script>
-  <script src="../js/individual-power.js?v=power-common-2"></script>
+  <script src="../js/individual-power.js?v=power-common-fixed-1"></script>
+  <script>
+    /*
+      individual-power.js가 만든 기존 나의 힘 팝업 디자인은 그대로 쓰고,
+      팝업을 열 때 숫자만 현재 localStorage/sessionStorage 값으로 다시 맞춥니다.
+    */
+    document.addEventListener("DOMContentLoaded", function () {
+      updateIndividualPowerModalFromStorage();
+
+      const originalOpenIndividualPowerModal = window.openIndividualPowerModal;
+
+      window.openIndividualPowerModal = function () {
+        updateIndividualPowerModalFromStorage();
+
+        if (typeof originalOpenIndividualPowerModal === "function") {
+          originalOpenIndividualPowerModal.apply(this, arguments);
+        } else {
+          const modal = document.getElementById("individualPowerModal");
+          if (modal) {
+            modal.classList.remove("hidden");
+          }
+        }
+
+        setTimeout(updateIndividualPowerModalFromStorage, 0);
+      };
+
+      window.addEventListener("individualPowerUpdated", function () {
+        updateIndividualPowerModalFromStorage();
+      });
+    });
+  </script>
 </body>
 </html>
