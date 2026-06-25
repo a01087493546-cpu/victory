@@ -901,34 +901,6 @@
   }
 }
 /* =========================================================
-<<<<<<< HEAD
-   교사용 간추리기 공유 보기
-   - 교사 화면에서 들어오면 간추리기 공유 부분만 보이게 합니다.
-   ========================================================= */
-
-body.iar-teacher-share-mode .iar-step-card,
-body.iar-teacher-share-mode .iar-top-actions,
-body.iar-teacher-share-mode #typeScreen,
-body.iar-teacher-share-mode #questionScreen,
-body.iar-teacher-share-mode #summaryScreen {
-  display: none !important;
-}
-
-body.iar-teacher-share-mode #shareScreen {
-  display: block !important;
-}
-
-body.iar-teacher-share-mode .iar-bottom-actions {
-  display: none !important;
-}
-
-body.iar-teacher-share-mode .iar-panel {
-  margin-top: 18px;
-}
-
-body.iar-teacher-share-mode .iar-share-guide {
-  text-align: left;
-=======
    이 책 마무리 팝업
    - 별점과 대표 질문 1개를 선택해 나의 독서 보관함에 저장합니다.
    ========================================================= */
@@ -1515,7 +1487,35 @@ body.iar-teacher-share-mode .iar-share-guide {
 /* X 버튼 때문에 제목이 밀려 보이지 않도록 상단 여백만 살짝 확보 */
 .iar-reward-modal {
   padding-top: 38px !important;
->>>>>>> origin/jiao
+}
+
+/* =========================================================
+   교사용 간추리기 공유 보기
+   - 교사 화면에서 들어오면 간추리기 공유 부분만 보이게 합니다.
+   ========================================================= */
+
+body.iar-teacher-share-mode .iar-step-card,
+body.iar-teacher-share-mode .iar-top-actions,
+body.iar-teacher-share-mode #typeScreen,
+body.iar-teacher-share-mode #questionScreen,
+body.iar-teacher-share-mode #summaryScreen {
+  display: none !important;
+}
+
+body.iar-teacher-share-mode #shareScreen {
+  display: block !important;
+}
+
+body.iar-teacher-share-mode .iar-bottom-actions {
+  display: none !important;
+}
+
+body.iar-teacher-share-mode .iar-panel {
+  margin-top: 18px;
+}
+
+body.iar-teacher-share-mode .iar-share-guide {
+  text-align: left;
 }
   </style>
 </head>
@@ -2339,7 +2339,12 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
       setActiveStep("stepShare");
       renderShareSummaries();
     }
-<<<<<<< HEAD
+// 이 책 마무리 팝업을 엽니다.
+// 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
+function openBookFinishModal() {
+  selectedBookRating = 0;
+selectedRepresentQuestion = "";
+selectedRepresentQuestionIndex = -1;
     function activateTeacherSummaryShareMode() {
   document.body.classList.add("iar-teacher-share-mode");
 
@@ -2366,14 +2371,6 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
     `;
   }
 }
-=======
-// 이 책 마무리 팝업을 엽니다.
-// 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
-function openBookFinishModal() {
-  selectedBookRating = 0;
-selectedRepresentQuestion = "";
-selectedRepresentQuestionIndex = -1;
->>>>>>> origin/jiao
 
   renderRatingStars();
   renderRepresentQuestionList();
@@ -2503,7 +2500,7 @@ function saveBookFinishRecord() {
   title: "책 한 권을 끝까지 마무리했어요!",
   desc: "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.",
   rewards: [
-  { type: "stamina", name: "체력", point: "+5" },
+  { type: "stamina", name: "체력", point: "+3" },
   { type: "wisdom", name: "지혜", point: "+1" },
   { type: "courage", name: "용기", point: "+1" }
 ],
