@@ -7,8 +7,7 @@
   1. 평소처럼 읽기
   2. 질문과 함께 읽기
   3. 질문 만들기
-  4. 생각 나누기
-  5. 중요성 알기
+  4. 중요성 알기
 -->
 
 <!DOCTYPE html>
@@ -334,6 +333,16 @@
       color: #3b2412;
     }
 
+    .bundle-subtitle {
+      margin: 10px 0 0;
+      font-size: 17px;
+      line-height: 1.5;
+      font-weight: 800;
+      color: #6b4724;
+      letter-spacing: -0.3px;
+      word-break: keep-all;
+    }
+
     .back-button {
       border: 0;
       border-radius: 999px;
@@ -346,7 +355,7 @@
 
     .step-line {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin-bottom: 22px;
     }
@@ -411,6 +420,7 @@
       line-height: 1.7;
       font-weight: 700;
       color: #6b4724;
+      word-break: keep-all;
     }
 
     .lumi-guide {
@@ -656,65 +666,6 @@
       background: linear-gradient(135deg, #f8e2ae, #e6bc69);
     }
 
-    .friend-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .friend-card {
-      padding: 20px;
-      border-radius: 24px;
-      background: #fff6dc;
-      border: 2px solid rgba(160, 99, 36, 0.15);
-    }
-
-    .friend-name {
-      margin: 0 0 10px;
-      font-size: 17px;
-      font-weight: 900;
-      color: #5b2f16;
-    }
-
-    .friend-thought {
-      margin: 0;
-      font-size: 15px;
-      line-height: 1.7;
-      font-weight: 700;
-      color: #5f4122;
-    }
-
-    .sort-area {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-top: 20px;
-    }
-
-    .sort-box {
-      padding: 22px;
-      border-radius: 26px;
-      background: #fff6dc;
-      border: 2px solid rgba(160, 99, 36, 0.15);
-    }
-
-    .sort-box h3 {
-      margin: 0 0 16px;
-      font-size: 19px;
-      color: #4a2b13;
-    }
-
-    .sort-item {
-      margin-bottom: 10px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      background: #ffffff;
-      color: #4d3219;
-      font-weight: 900;
-      box-shadow: 0 5px 12px rgba(87, 48, 17, 0.08);
-    }
-
     .button-row {
       display: flex;
       justify-content: space-between;
@@ -770,242 +721,7 @@
       border-radius: 8px !important;
     }
 
-    /* ===== 4단계 생각 나누기 ===== */
-    .share-layout {
-      display: grid;
-      gap: 22px;
-    }
-
-    .section-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 7px 14px;
-      margin-bottom: 12px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #7a4a24, #b9823d);
-      color: #fff3d3;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: -0.2px;
-      box-shadow: 0 8px 16px rgba(78, 45, 18, 0.16);
-    }
-
-    .my-question-card {
-      padding: 24px 26px;
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.42), transparent 36%),
-        linear-gradient(135deg, #fff8e7, #ecd2a4);
-      border: 1px solid rgba(138, 83, 33, 0.18);
-      box-shadow:
-        0 14px 28px rgba(79, 47, 21, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.64);
-    }
-
-    .question-owner {
-      margin: 0 0 10px;
-      color: #8a5524;
-      font-size: 14px;
-      font-weight: 900;
-    }
-
-    .question-text {
-      margin: 0 0 10px;
-      font-family: "Noto Serif KR", serif;
-      font-size: 24px;
-      line-height: 1.5;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      color: #3b2412;
-      word-break: keep-all;
-    }
-
-    .question-guide {
-      margin: 0;
-      color: #6a4929;
-      font-size: 14px;
-      line-height: 1.55;
-      font-weight: 700;
-    }
-
-    .friend-question-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .reply-card {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 20px 18px 18px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.36), transparent 34%),
-        linear-gradient(135deg, #fff7e3, #e8c88f);
-      border: 1px solid rgba(128, 76, 28, 0.16);
-      box-shadow:
-        0 12px 24px rgba(85, 49, 21, 0.10),
-        inset 0 1px 0 rgba(255,255,255,0.58);
-      transition: 0.18s ease;
-    }
-
-    .reply-card.active {
-      transform: translateY(-2px);
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.44), transparent 34%),
-        linear-gradient(135deg, #fff4d8, #d9a85a);
-      border-color: rgba(108, 62, 23, 0.34);
-      box-shadow:
-        0 16px 28px rgba(85, 49, 21, 0.17),
-        0 0 0 3px rgba(123, 74, 30, 0.16),
-        inset 0 1px 0 rgba(255,255,255,0.68);
-    }
-
-    .reply-card-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .reply-card-name {
-      color: #4f2d14;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .reply-card-badge {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(91, 52, 20, 0.12);
-      color: #74451f;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .reply-card-question {
-      margin: 0;
-      font-family: "Noto Serif KR", serif;
-      font-size: 18px;
-      line-height: 1.55;
-      font-weight: 800;
-      color: #3b2412;
-      word-break: keep-all;
-    }
-
-    .friend-answer-preview {
-      display: grid;
-      gap: 8px;
-      padding: 13px 14px;
-      border-radius: 18px;
-      background: rgba(255, 252, 241, 0.72);
-      border: 1px solid rgba(112, 69, 29, 0.10);
-    }
-
-    .friend-answer-preview p {
-      margin: 0;
-      color: #5d3d1f;
-      font-size: 13.5px;
-      line-height: 1.55;
-      font-weight: 700;
-      word-break: keep-all;
-    }
-
-    .friend-answer-preview strong {
-      color: #7b4a22;
-      font-weight: 900;
-    }
-
-    .reply-select-button {
-      margin-top: auto;
-      width: 100%;
-      border: 0;
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: linear-gradient(135deg, #7a4a24, #b77935);
-      color: #fff4d7;
-      font-size: 14px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow:
-        0 8px 16px rgba(86, 50, 20, 0.18),
-        inset 0 1px 0 rgba(255,255,255,0.22);
-      transition: 0.18s ease;
-    }
-
-    .reply-panel {
-      padding: 24px;
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.42), transparent 34%),
-        linear-gradient(135deg, #fff9ec, #ead0a0);
-      border: 2px dashed rgba(117, 69, 27, 0.28);
-      box-shadow:
-        0 14px 28px rgba(88, 52, 22, 0.10),
-        inset 0 1px 0 rgba(255,255,255,0.62);
-    }
-
-    .selected-question-box {
-      margin-bottom: 16px;
-      padding: 18px 20px;
-      border-radius: 22px;
-      background: rgba(124, 74, 31, 0.08);
-      border: 1px solid rgba(124, 74, 31, 0.12);
-    }
-
-    .reply-panel h3 {
-      margin: 0 0 8px;
-      font-size: 22px;
-      color: #4a2b13;
-    }
-
-    #replyTargetQuestion {
-      margin: 0;
-      font-family: "Noto Serif KR", serif;
-      font-size: 18px;
-      line-height: 1.6;
-      font-weight: 800;
-      color: #5a3518;
-      word-break: keep-all;
-    }
-
-    .selected-answer-box {
-      margin-bottom: 16px;
-      padding: 18px 20px;
-      border-radius: 22px;
-      background:
-        linear-gradient(135deg, rgba(255, 245, 219, 0.96), rgba(233, 203, 151, 0.88));
-      border: 1px solid rgba(134, 80, 31, 0.14);
-    }
-
-    .selected-answer-box h4 {
-      margin: 0 0 10px;
-      color: #6f421e;
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    #selectedFriendAnswers {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    #selectedFriendAnswers li {
-      margin-bottom: 7px;
-      color: #5b3a1d;
-      font-size: 15px;
-      line-height: 1.55;
-      font-weight: 700;
-      word-break: keep-all;
-    }
-
-    #friendReply {
-      min-height: 170px;
-      font-size: 16px;
-      line-height: 1.65;
-    }
-
-    /* ===== 5단계 카드 분류 활동 ===== */
+    /* ===== 4단계 카드 분류 활동 ===== */
     .sorting-game-area {
       display: grid;
       gap: 24px;
@@ -1023,9 +739,13 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.62);
     }
 
-    .word-card-bank h3 {
+    .word-card-bank h3,
+    .drop-zone h3 {
       margin: 0 0 8px;
+      font-family: "Noto Serif KR", serif;
       font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
       color: #4a2b13;
     }
 
@@ -1098,12 +818,6 @@
         0 18px 34px rgba(88, 52, 22, 0.16),
         0 0 0 3px rgba(188, 139, 71, 0.15),
         inset 0 1px 0 rgba(255,255,255,0.68);
-    }
-
-    .drop-zone h3 {
-      margin: 0 0 8px;
-      font-size: 23px;
-      color: #3b2412;
     }
 
     .drop-zone p {
@@ -1194,16 +908,15 @@
     }
 
     @media (max-width: 900px) {
+      .bundle-header,
       .card-top,
       .reading-grid,
-      .friend-grid,
-      .sort-area,
       .sort-zone-layout {
         grid-template-columns: 1fr;
       }
 
-      .friend-question-grid {
-        grid-template-columns: 1fr;
+      .bundle-header {
+        display: grid;
       }
 
       .step-line {
@@ -1224,25 +937,10 @@
         line-height: 1.48;
       }
 
-      .question-text {
-        font-size: 21px;
-      }
-
-      .reply-card-question {
-        font-size: 17px;
-      }
-
       .drop-zone {
         min-height: 240px;
       }
     }
-    /* 5단계 분류 활동 제목 폰트 통일 */
-.word-card-bank h3,
-.drop-zone h3 {
-  font-family: "Noto Serif KR", serif;
-  font-weight: 900;
-  letter-spacing: -0.4px;
-}
   </style>
 </head>
 
@@ -1301,6 +999,10 @@
           <span class="eyebrow">01 책 고르기 전 활동</span>
 
           <h1 class="bundle-title">질문의 힘 깨우기</h1>
+
+          <p class="bundle-subtitle">
+            책을 읽을 때 질문을 하면 어떤 점이 좋을까?
+          </p>
         </div>
 
         <button class="back-button" type="button" onclick="goPractice()">
@@ -1312,10 +1014,10 @@
         <div class="step-pill active" id="stepPill0">1 평소처럼 읽기</div>
         <div class="step-pill" id="stepPill1">2 질문과 함께 읽기</div>
         <div class="step-pill" id="stepPill2">3 질문 만들기</div>
-        <div class="step-pill" id="stepPill3">4 생각 나누기</div>
-        <div class="step-pill" id="stepPill4">5 중요성 알기</div>
+        <div class="step-pill" id="stepPill3">4 중요성 알기</div>
       </section>
 
+      <!-- 1단계 -->
       <section class="activity-card active" id="card0">
         <div class="card-top">
           <div>
@@ -1356,6 +1058,7 @@
         </div>
       </section>
 
+      <!-- 2단계 -->
       <section class="activity-card" id="card1">
         <div class="card-top">
           <div>
@@ -1429,6 +1132,7 @@
         </div>
       </section>
 
+      <!-- 3단계 -->
       <section class="activity-card" id="card2">
         <div class="card-top">
           <div>
@@ -1471,160 +1175,11 @@
         </div>
       </section>
 
+      <!-- 4단계 -->
       <section class="activity-card" id="card3">
         <div class="card-top">
           <div>
-            <h2 class="card-title">4. 생각 나누기</h2>
-            <p class="card-desc">
-              내가 만든 질문과 친구들이 만든 질문을 함께 살펴보고,
-              친구들의 답을 참고해 내 생각을 이어 적어봅시다.
-            </p>
-          </div>
-
-          <div class="lumi-guide">
-            <img src="../assets/images/character/question-bundle/question-bundle-lumi-step4.png" alt="생각 나누기를 안내하는 루미">
-            <p class="lumi-speech">
-              루미: “같은 글을 읽어도 질문과 답은 서로 다를 수 있어. 친구들의 생각을 보며 내 생각도 넓혀보자!”
-            </p>
-          </div>
-        </div>
-
-        <div class="share-layout">
-          <section class="my-question-panel">
-            <span class="section-chip">내 질문</span>
-
-            <div class="my-question-card">
-              <p class="question-owner">3단계에서 내가 만든 질문</p>
-              <p class="question-text" id="myQuestionPreview">아직 만든 질문이 없어요.</p>
-              <p class="question-guide" id="myQuestionGuide">
-                3단계에서 질문을 적으면 여기에 자동으로 올라옵니다.
-              </p>
-            </div>
-          </section>
-
-          <section class="friend-question-panel">
-            <span class="section-chip">친구 질문과 답</span>
-
-            <div class="friend-question-grid">
-              <article class="reply-card active">
-                <div class="reply-card-head">
-                  <span class="reply-card-name">하윤의 질문</span>
-                  <span class="reply-card-badge">선택됨</span>
-                </div>
-
-                <p class="reply-card-question">
-                  지우는 왜 혼자 카드부터 찾으려고 했을까요?
-                </p>
-
-                <div class="friend-answer-preview">
-                  <p><strong>준서</strong> 처음에는 너무 당황해서 친구에게 바로 말하지 못했을 것 같아요.</p>
-                  <p><strong>소민</strong> 스스로 해결해 보려고 했지만 점점 불안해졌을 것 같아요.</p>
-                </div>
-
-                <button
-                  class="reply-select-button"
-                  type="button"
-                  onclick="selectReplyTarget(
-                    '하윤',
-                    '지우는 왜 혼자 카드부터 찾으려고 했을까요?',
-                    ['준서: 처음에는 너무 당황해서 친구에게 바로 말하지 못했을 것 같아요.', '소민: 스스로 해결해 보려고 했지만 점점 불안해졌을 것 같아요.'],
-                    this
-                  )"
-                >
-                  이 질문에 답장하기
-                </button>
-              </article>
-
-              <article class="reply-card">
-                <div class="reply-card-head">
-                  <span class="reply-card-name">준서의 질문</span>
-                  <span class="reply-card-badge">질문</span>
-                </div>
-
-                <p class="reply-card-question">
-                  민서는 왜 지우를 바로 도와주려고 했을까요?
-                </p>
-
-                <div class="friend-answer-preview">
-                  <p><strong>하윤</strong> 지우가 속상해하는 모습을 보고 그냥 지나칠 수 없었을 것 같아요.</p>
-                  <p><strong>소민</strong> 친구가 어려울 때 함께 해결하고 싶었기 때문이라고 생각해요.</p>
-                </div>
-
-                <button
-                  class="reply-select-button"
-                  type="button"
-                  onclick="selectReplyTarget(
-                    '준서',
-                    '민서는 왜 지우를 바로 도와주려고 했을까요?',
-                    ['하윤: 지우가 속상해하는 모습을 보고 그냥 지나칠 수 없었을 것 같아요.', '소민: 친구가 어려울 때 함께 해결하고 싶었기 때문이라고 생각해요.'],
-                    this
-                  )"
-                >
-                  이 질문에 답장하기
-                </button>
-              </article>
-
-              <article class="reply-card">
-                <div class="reply-card-head">
-                  <span class="reply-card-name">소민의 질문</span>
-                  <span class="reply-card-badge">질문</span>
-                </div>
-
-                <p class="reply-card-question">
-                  발표 카드가 없어졌을 때 지우의 마음은 어땠을까요?
-                </p>
-
-                <div class="friend-answer-preview">
-                  <p><strong>하윤</strong> 열심히 준비했는데 사라져서 속상하고 막막했을 것 같아요.</p>
-                  <p><strong>준서</strong> 발표를 못 하게 될까 봐 걱정했을 것 같아요.</p>
-                </div>
-
-                <button
-                  class="reply-select-button"
-                  type="button"
-                  onclick="selectReplyTarget(
-                    '소민',
-                    '발표 카드가 없어졌을 때 지우의 마음은 어땠을까요?',
-                    ['하윤: 열심히 준비했는데 사라져서 속상하고 막막했을 것 같아요.', '준서: 발표를 못 하게 될까 봐 걱정했을 것 같아요.'],
-                    this
-                  )"
-                >
-                  이 질문에 답장하기
-                </button>
-              </article>
-            </div>
-          </section>
-
-          <section class="reply-panel">
-            <span class="section-chip">내 답장</span>
-
-            <div class="selected-question-box">
-              <h3 id="replyTargetTitle">하윤의 질문에 답장하기</h3>
-              <p id="replyTargetQuestion">“지우는 왜 혼자 카드부터 찾으려고 했을까요?”</p>
-            </div>
-
-            <div class="selected-answer-box">
-              <h4>친구들이 남긴 답</h4>
-              <ul id="selectedFriendAnswers">
-                <li>준서: 처음에는 너무 당황해서 친구에게 바로 말하지 못했을 것 같아요.</li>
-                <li>소민: 스스로 해결해 보려고 했지만 점점 불안해졌을 것 같아요.</li>
-              </ul>
-            </div>
-
-            <textarea id="friendReply" placeholder="친구들의 답을 읽고 내 생각을 이어서 적어보세요."></textarea>
-          </section>
-        </div>
-
-        <div class="button-row">
-          <button class="sub-button" type="button" onclick="showCard(2)">이전</button>
-          <button class="main-button" type="button" onclick="showCard(4)">다음</button>
-        </div>
-      </section>
-
-      <section class="activity-card" id="card4">
-        <div class="card-top">
-          <div>
-            <h2 class="card-title">5. 질문하며 읽기의 중요성 알기</h2>
+            <h2 class="card-title">4. 질문하며 읽기의 중요성 알기</h2>
             <p class="card-desc">
               아래 낱말 카드를 보고, 그냥 읽어도 알 수 있는 것과 질문하며 읽으면 더 잘 보이는 것을 직접 나누어 봅시다.
             </p>
@@ -1694,7 +1249,7 @@
         </div>
 
         <div class="button-row">
-          <button class="sub-button" type="button" onclick="showCard(3)">이전</button>
+          <button class="sub-button" type="button" onclick="showCard(2)">이전</button>
           <button class="main-button" type="button" onclick="goBookVote()">책 고르러 가기</button>
         </div>
       </section>
@@ -1839,7 +1394,10 @@
       });
 
       const targetCard = document.getElementById("card" + index);
-      targetCard.classList.add("active");
+
+      if (targetCard) {
+        targetCard.classList.add("active");
+      }
 
       updateStepPills(index);
 
@@ -1853,12 +1411,6 @@
           openQuestion(0);
         }, 80);
       }
-
-      if (index === 3) {
-        setTimeout(function() {
-          updateMyQuestionPreview();
-        }, 80);
-      }
     }
 
     function updateStepPills(index) {
@@ -1868,7 +1420,11 @@
         pill.classList.remove("active");
       });
 
-      document.getElementById("stepPill" + index).classList.add("active");
+      const targetPill = document.getElementById("stepPill" + index);
+
+      if (targetPill) {
+        targetPill.classList.add("active");
+      }
     }
 
     function openQuestion(index) {
@@ -1914,67 +1470,6 @@
 
       if (questionBags[index]) {
         questionBags[index].classList.add("active");
-      }
-    }
-
-    function updateMyQuestionPreview() {
-      const myQuestionInput = document.getElementById("myQuestion");
-      const myQuestionPreview = document.getElementById("myQuestionPreview");
-      const myQuestionGuide = document.getElementById("myQuestionGuide");
-
-      if (!myQuestionInput || !myQuestionPreview || !myQuestionGuide) {
-        return;
-      }
-
-      const savedQuestion = myQuestionInput.value.trim();
-
-      if (savedQuestion) {
-        myQuestionPreview.textContent = savedQuestion;
-        myQuestionGuide.textContent = "3단계에서 만든 내 질문입니다.";
-      } else {
-        myQuestionPreview.textContent = "아직 만든 질문이 없어요.";
-        myQuestionGuide.textContent = "3단계에서 질문을 적으면 여기에 자동으로 올라옵니다.";
-      }
-    }
-
-    function selectReplyTarget(friendName, questionText, friendAnswers, buttonElement) {
-      const replyTargetTitle = document.getElementById("replyTargetTitle");
-      const replyTargetQuestion = document.getElementById("replyTargetQuestion");
-      const selectedFriendAnswers = document.getElementById("selectedFriendAnswers");
-      const friendReply = document.getElementById("friendReply");
-      const replyCards = document.querySelectorAll(".reply-card");
-
-      replyTargetTitle.textContent = friendName + "의 질문에 답장하기";
-      replyTargetQuestion.textContent = "“" + questionText + "”";
-      friendReply.placeholder = "친구들의 답을 읽고 내 생각을 이어서 적어보세요.";
-
-      selectedFriendAnswers.innerHTML = "";
-
-      friendAnswers.forEach(function(answer) {
-        const answerItem = document.createElement("li");
-        answerItem.textContent = answer;
-        selectedFriendAnswers.appendChild(answerItem);
-      });
-
-      replyCards.forEach(function(card) {
-        card.classList.remove("active");
-
-        const badge = card.querySelector(".reply-card-badge");
-
-        if (badge) {
-          badge.textContent = "질문";
-        }
-      });
-
-      if (buttonElement) {
-        const selectedCard = buttonElement.closest(".reply-card");
-        selectedCard.classList.add("active");
-
-        const selectedBadge = selectedCard.querySelector(".reply-card-badge");
-
-        if (selectedBadge) {
-          selectedBadge.textContent = "선택됨";
-        }
       }
     }
 

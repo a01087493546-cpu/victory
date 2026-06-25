@@ -182,6 +182,17 @@
       gap: 22px;
     }
 
+    #completePanel.is-active {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    #completePanel .tr-complete-wrap {
+      height: 100%;
+      min-height: 0;
+    }
+
     .tr-panel-title {
       text-align: center;
     }
@@ -556,18 +567,18 @@
       display: grid;
       place-items: center;
       border-radius: 50%;
-      background:
-        radial-gradient(circle at 35% 25%, #fffdf3 0%, #f9ecd0 40%, #3f842e 42%, #245716 100%);
-      border: 3px solid rgba(255, 224, 145, 0.98);
+      background: #2f7d32;
+      border: 4px solid rgba(255, 238, 184, 0.95);
       box-shadow:
         0 0 0 5px rgba(105, 68, 25, 0.24),
-        0 0 24px rgba(255, 204, 95, 0.28),
+        0 0 24px rgba(47, 125, 50, 0.32),
         0 10px 18px rgba(0, 0, 0, 0.22),
-        inset 0 2px 9px rgba(255, 255, 255, 0.48);
-      color: #fff8e3;
-      font-size: 76px;
-      font-weight: 900;
-      text-shadow: 0 3px 0 rgba(29, 64, 14, 0.7);
+        inset 0 2px 8px rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      font-size: 82px;
+      font-weight: 1000;
+      line-height: 1;
+      text-shadow: 0 3px 0 rgba(18, 72, 22, 0.7);
     }
 
     .tr-complete-card h2 {
@@ -637,8 +648,9 @@
         overflow: visible;
       }
 
-      .tr-panel.is-active {
-        grid-template-rows: auto auto auto;
+      .tr-panel.is-active,
+      #completePanel.is-active {
+        grid-template-rows: auto;
       }
 
       .tr-choice-grid,
@@ -857,16 +869,13 @@
           </section>
 
           <section class="tr-panel" id="completePanel">
-            <div class="tr-panel-title">
-              <h2>등록 완료</h2>
-              <p>교사 계정과 학생 계정이 준비되었어요.</p>
-            </div>
-
             <div class="tr-complete-wrap">
               <article class="tr-complete-card">
                 <div>
-                  <div class="tr-check-badge">✓</div>
-                  <h2>학생 계정 생성이 완료 되었어요</h2>
+                  <div class="tr-check-badge">✔</div>
+
+                  <h2>학생 계정 생성이 완료되었어요</h2>
+
                   <p>
                     학생들에게 아이디와 비밀번호를 알려주면<br>
                     문답책 활동을 바로 시작할 수 있어요.
@@ -880,8 +889,6 @@
                 </div>
               </article>
             </div>
-
-            <div></div>
           </section>
         </section>
       </main>
@@ -919,11 +926,23 @@
     function showPanel(name) {
       const data = panelMap[name];
 
+      if (!data) {
+        alert("이동할 화면을 찾을 수 없어요.");
+        return;
+      }
+
       document.querySelectorAll(".tr-panel").forEach(function(panel) {
         panel.classList.remove("is-active");
       });
 
-      document.getElementById(data.panelId).classList.add("is-active");
+      const targetPanel = document.getElementById(data.panelId);
+
+      if (!targetPanel) {
+        alert("화면 요소를 찾을 수 없어요: " + data.panelId);
+        return;
+      }
+
+      targetPanel.classList.add("is-active");
       document.getElementById("topTitle").textContent = data.title;
     }
 
@@ -1148,8 +1167,9 @@
     }
 
     function goLogin() {
-  location.href = "../index.html";
-}
+      location.href = "../index.html";
+    }
+
     function escapeHtml(text) {
       return String(text || "")
         .replaceAll("&", "&amp;")
