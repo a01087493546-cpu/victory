@@ -198,7 +198,8 @@ individual_friend_book_recommend: {
   conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
   rewards: {
   stamina: 3,
-  wisdom: 1
+  wisdom: 1,
+  courage: 1
 }
 }
   };
