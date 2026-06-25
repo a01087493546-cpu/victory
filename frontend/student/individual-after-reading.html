@@ -897,6 +897,34 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* =========================================================
+   교사용 간추리기 공유 보기
+   - 교사 화면에서 들어오면 간추리기 공유 부분만 보이게 합니다.
+   ========================================================= */
+
+body.iar-teacher-share-mode .iar-step-card,
+body.iar-teacher-share-mode .iar-top-actions,
+body.iar-teacher-share-mode #typeScreen,
+body.iar-teacher-share-mode #questionScreen,
+body.iar-teacher-share-mode #summaryScreen {
+  display: none !important;
+}
+
+body.iar-teacher-share-mode #shareScreen {
+  display: block !important;
+}
+
+body.iar-teacher-share-mode .iar-bottom-actions {
+  display: none !important;
+}
+
+body.iar-teacher-share-mode .iar-panel {
+  margin-top: 18px;
+}
+
+body.iar-teacher-share-mode .iar-share-guide {
+  text-align: left;
+}
   </style>
 </head>
 
@@ -1123,13 +1151,20 @@ let summaryFeedbackPassed = false;
 let currentShareFilter = "all";
 
     document.addEventListener("DOMContentLoaded", function () {
-      bindBookTypeButtons();
-      bindInputResetEvents();
-      restoreSelectedBookType();
-      prepareQuestionFeedbackCards();
-      updateQuestionProgress();
-      updateSequentialQuestionLock();
-    });
+  bindBookTypeButtons();
+  bindInputResetEvents();
+  restoreSelectedBookType();
+  prepareQuestionFeedbackCards();
+  updateQuestionProgress();
+  updateSequentialQuestionLock();
+
+  const params = new URLSearchParams(location.search);
+  const teacherView = params.get("teacherView");
+
+  if (teacherView === "summaryShare") {
+    activateTeacherSummaryShareMode();
+  }
+});
 
     function bindBookTypeButtons() {
       const typeButtons = document.querySelectorAll(".iar-book-type-button");
@@ -1574,6 +1609,32 @@ let currentShareFilter = "all";
       setActiveStep("stepShare");
       renderShareSummaries();
     }
+    function activateTeacherSummaryShareMode() {
+  document.body.classList.add("iar-teacher-share-mode");
+
+  switchScreen("shareScreen");
+  setActiveStep("stepShare");
+  renderShareSummaries();
+
+  const title = document.querySelector("#shareScreen .iar-panel-head h2");
+  const desc = document.querySelector("#shareScreen .iar-panel-head p");
+  const guide = document.querySelector("#shareScreen .iar-share-guide");
+
+  if (title) {
+    title.textContent = "우리 반 간추리기 확인";
+  }
+
+  if (desc) {
+    desc.textContent = "학생들이 개별읽기 후 작성한 간추리기를 교사가 한눈에 확인해요.";
+  }
+
+  if (guide) {
+    guide.innerHTML = `
+      학생들이 쓴 <b>간추리기 내용</b>, <b>책 종류</b>, <b>책 제목</b>을 확인할 수 있어요.
+      책 종류별 필터를 눌러 필요한 기록만 골라 볼 수 있어요.
+    `;
+  }
+}
 
     function saveAfterArchive(questionAnswers, summaryText) {
       const archive = getAfterArchive();
