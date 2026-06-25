@@ -29,14 +29,18 @@
 
           <aside class="dungeon-list" aria-label="던전 목록">
             <div class="dungeon-list-frame"></div>
+
             <button class="dungeon-list-item active" id="list-0" type="button" onclick="selectDungeon(0)">
-              <div class="list-thumb"><img src="images/hatchling_idle.png" alt="초급 던전"></div>
+              <div class="list-thumb">
+                <img src="images/hatchling_idle.png" alt="초급 던전">
+              </div>
               <div class="list-info">
                 <div class="list-name">초급 던전</div>
                 <div class="list-diff">★ 초급</div>
               </div>
               <div class="list-arrow">›</div>
             </button>
+
             <button class="dungeon-list-item" id="list-1" type="button" onclick="selectDungeon(1)">
               <div class="list-thumb">
                 <img src="images/dragon_idle.png" alt="중급 던전">
@@ -47,6 +51,7 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
+
             <button class="dungeon-list-item" id="list-2" type="button" onclick="selectDungeon(2)">
               <div class="list-thumb">
                 <img src="images/elder_idle.png" alt="고급 던전">
@@ -57,6 +62,7 @@
               </div>
               <div class="list-arrow">›</div>
             </button>
+
             <div class="dungeon-list-bottom-deco" aria-hidden="true">
               <span></span><b>◆</b><span></span>
             </div>
@@ -67,12 +73,14 @@
             <div class="corner corner-rt"></div>
             <div class="corner corner-lb"></div>
             <div class="corner corner-rb"></div>
+
             <div class="detail-header">
               <div class="detail-boss-wrap">
                 <div class="detail-boss-glow" id="detail-boss-glow"></div>
                 <div class="boss-stage-ring"></div>
                 <img class="detail-boss-img" id="detail-boss-img" src="images/hatchling_idle.png" alt="보스">
               </div>
+
               <div class="detail-header-info">
                 <div class="detail-diff-badge" id="detail-diff">★ 초급</div>
                 <h2 class="detail-name" id="detail-name">초급 던전</h2>
@@ -82,61 +90,63 @@
                 </p>
               </div>
             </div>
+
+            <!-- 던전 입장 정보: 5개 카테고리 구조 -->
             <div class="detail-info-grid">
-              <div class="info-card">
-                <div class="info-card-icon"><span class="detail-symbol detail-book-symbol">▤</span></div>
+              <div class="info-card entry-condition-card">
+                <div class="info-card-icon">
+                  <span class="detail-symbol detail-book-symbol">▤</span>
+                </div>
                 <div class="info-card-content">
                   <div class="info-card-label">입장 조건</div>
-                  <div class="info-card-val" id="detail-req">책 10권</div>
+                  <div class="info-card-val entry-condition" id="detail-req">
+                    책 10권 이상<br>
+                    <span class="req-sub">나의 힘 평균 20 이상</span>
+                  </div>
                 </div>
               </div>
+
               <div class="info-card">
-                <div class="info-card-icon"><span class="detail-symbol detail-time-symbol">◷</span></div>
+                <div class="info-card-icon">
+                  <span class="detail-symbol detail-time-symbol">◷</span>
+                </div>
                 <div class="info-card-content">
                   <div class="info-card-label">제한 시간</div>
                   <div class="info-card-val" id="detail-time">3분</div>
                 </div>
               </div>
+
               <div class="info-card">
-                <div class="info-card-icon"><span class="detail-symbol detail-enemy-symbol">⚔</span></div>
-                <div class="info-card-content">
-                  <div class="info-card-label">적 체력</div>
-                  <div class="info-card-val" id="detail-hp">HP 300</div>
+                <div class="info-card-icon">
+                  <span class="detail-symbol detail-difficulty-symbol">◇</span>
                 </div>
-              </div>
-              <div class="info-card">
-                <div class="info-card-icon"><span class="detail-symbol detail-difficulty-symbol">◇</span></div>
                 <div class="info-card-content">
                   <div class="info-card-label">난이도</div>
                   <div class="info-card-val danger-text" id="detail-diff-val">쉬움</div>
                 </div>
               </div>
             </div>
-            <div class="detail-reward-area">
-              <div class="reward-box">
-                <div class="reward-icon"><span class="detail-symbol detail-reward-symbol">✦</span></div>
-                <div>
-                  <div class="reward-box-title">클리어 보상</div>
-                  <div class="reward-chips" id="detail-rewards">
-                    <span class="reward-chip">질문력 +10</span>
-                    <span class="reward-chip">이해력 +5</span>
-                    <span class="reward-chip">용기 +20</span>
-                  </div>
-                </div>
+
+            <!-- 클리어 보상 + 클리어 후 다음 던전 준비 안내 -->
+            <div class="reward-box reward-box-wide">
+              <div class="reward-icon">
+                <span class="detail-symbol detail-reward-symbol">✦</span>
               </div>
-              <div class="reward-box">
-                <div class="reward-icon"><span class="detail-symbol detail-recommend-symbol">◈</span></div>
-                <div>
-                  <div class="reward-box-title">추천 능력치</div>
-                  <div class="reward-chips">
-                    <span class="reward-chip power-chip" id="detail-condition">질문력 50 이상</span>
-                  </div>
+
+              <div class="reward-box-content">
+                <div class="reward-box-title">클리어 보상</div>
+                <div class="reward-main" id="detail-reward-main">나의 힘 +10</div>
+                <div class="reward-note" id="detail-reward-note">
+                  초급 던전 클리어 후, 중급 던전 준비 능력치 평균 10으로 다시 시작합니다.
                 </div>
               </div>
             </div>
+
             <div class="detail-enter-area">
               <button class="enter-btn" id="enter-btn" type="button" onclick="goToBattle(selectedDungeon)">
-                <span class="btn-icon"><span class="detail-symbol enter-btn-symbol">⚔</span></span>
+                <span class="btn-icon">
+                  <span class="detail-symbol enter-btn-symbol">⚔</span>
+                </span>
                 <span>던전 입장하기</span>
               </button>
               <div class="enter-sub">
@@ -171,6 +181,7 @@
                 <strong id="hud-coin">35</strong>
               </div>
             </section>
+
             <section class="hud-section hud-tip">
               <h3 class="hud-title">문답책의 조언</h3>
               <p class="hud-tip-text">
@@ -198,6 +209,7 @@
           <small>던전 전투</small>
         </div>
       </div>
+
       <div class="topbar-center">
         <div class="timer-wrap">
           <span class="timer-icon"></span>
@@ -207,6 +219,7 @@
           </div>
         </div>
       </div>
+
       <div class="topbar-right">
         <div class="top-stat-chip magic-chip">
           <span class="top-stat-icon magic-symbol">✦</span>
@@ -228,6 +241,7 @@
           <small>코인</small>
           <strong>35</strong>
         </div>
+
         <button class="top-icon-btn" type="button" onclick="openTopHudPopup('notice')" title="알림">
           <span class="top-ui-symbol notice-symbol">🔔</span>
           <span class="notice-dot"></span>
@@ -287,6 +301,7 @@
           <img class="sprite idle" id="hero-spr" src="images/hero_idle.png" alt="용사">
           <div class="fighter-floor hero-floor"></div>
         </div>
+
         <div class="fighter right">
           <div class="hp-wrap">
             <div class="fighter-name" id="enemy-lbl2">헤츨링</div>
@@ -329,12 +344,10 @@
           <p>좋은 질문을 만들수록<br>용은 혼란에 빠지고<br>점점 힘을 잃습니다.</p>
         </div>
       </div>
-
     </div>
 
     <!-- 하단 전투 UI -->
     <div class="battle-bottom">
-
       <div class="battle-command-row">
 
         <!-- 전투 로그 -->
@@ -349,18 +362,29 @@
           <!-- 공격 -->
           <div class="skill-section atk-section">
             <div class="skill-section-header atk-header">
-                <span class="header-icon atk-icon">⚔</span>공격
+              <span class="header-icon atk-icon">⚔</span>공격
             </div>
             <div class="skill-section-slots">
               <button class="action-btn attack-btn" id="btn-ilgyeok" onclick="useSkill('ilgyeok')">
                 <span class="skill-key">1</span>
-                <span class="skill-icon"><img src="images/icon_ilgyeok.png" width="96" height="96" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>일격</strong><small>기본 베기</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_ilgyeok.png" width="96" height="96" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>일격</strong>
+                  <small>기본 베기</small>
+                </span>
               </button>
+
               <button class="action-btn attack-btn" id="btn-yeonsoek" onclick="useSkill('yeonsoek')">
                 <span class="skill-key">2</span>
-                <span class="skill-icon"><img src="images/icon_yeonsoek.png" width="80" height="80" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>연속 베기</strong><small>연속 공격</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_yeonsoek.png" width="80" height="80" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>연속 베기</strong>
+                  <small>연속 공격</small>
+                </span>
               </button>
             </div>
           </div>
@@ -368,18 +392,29 @@
           <!-- 방어 -->
           <div class="skill-section def-section">
             <div class="skill-section-header def-header">
-             <span class="header-icon def-icon">🛡</span>방어
+              <span class="header-icon def-icon">🛡</span>방어
             </div>
             <div class="skill-section-slots">
               <button class="action-btn defend-btn" id="btn-bangeo" onmousedown="useSkill('bangeo')" onmouseup="stopDefend()" ontouchstart="useSkill('bangeo')" ontouchend="stopDefend()">
                 <span class="skill-key">1</span>
-                <span class="skill-icon"><img src="images/icon_bangeo.png" width="96" height="96" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>방어</strong><small>기본 막기</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_bangeo.png" width="96" height="96" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>방어</strong>
+                  <small>기본 막기</small>
+                </span>
               </button>
+
               <button class="action-btn defend-btn" id="btn-cheolbyeok" onmousedown="useSkill('cheolbyeok')" onmouseup="stopDefend()" ontouchstart="useSkill('cheolbyeok')" ontouchend="stopDefend()">
                 <span class="skill-key">2</span>
-                <span class="skill-icon"><img src="images/icon_cheolbyeok.png" width="96" height="96" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>철벽</strong><small>완전 방어</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_cheolbyeok.png" width="96" height="96" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>철벽</strong>
+                  <small>완전 방어</small>
+                </span>
               </button>
             </div>
           </div>
@@ -392,17 +427,27 @@
             <div class="skill-section-slots">
               <button class="action-btn heavy-btn" id="btn-bulkkot" onclick="useSkill('bulkkot')">
                 <span class="skill-key">1</span>
-                <span class="skill-icon"><img src="images/icon_bulkkot.png" width="80" height="80" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>불꽃 베기</strong><small>강한 공격</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_bulkkot.png" width="80" height="80" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>불꽃 베기</strong>
+                  <small>강한 공격</small>
+                </span>
               </button>
+
               <button class="action-btn heavy-btn" id="btn-hwayeom" onclick="useSkill('hwayeom')">
                 <span class="skill-key">2</span>
-                <span class="skill-icon"><img src="images/icon_hwayeom.png" width="80" height="80" style="object-fit:contain;"></span>
-                <span class="skill-text"><strong>화염 폭발</strong><small>초강력 필살기</small></span>
+                <span class="skill-icon">
+                  <img src="images/icon_hwayeom.png" width="80" height="80" style="object-fit:contain;">
+                </span>
+                <span class="skill-text">
+                  <strong>화염 폭발</strong>
+                  <small>초강력 필살기</small>
+                </span>
               </button>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -416,9 +461,7 @@
           <p>좋은 질문을 만들수록 용을 혼란에 빠뜨리고, 강한 공격은 방어로 막을 수 있습니다.</p>
         </div>
       </div>
-
     </div>
-
   </div>
 
   <!-- 화면3: 결과 -->
@@ -457,74 +500,87 @@
 
     const DUNGEON_INFO = [
       {
-        img: 'images/hatchling_idle.png', bg: 'images/bg_hatchling.png',
-        diff: '★ 초급', name: '초급 던전',
+        img: 'images/hatchling_idle.png',
+        bg: 'images/bg_hatchling.png',
+        diff: '★ 초급',
+        name: '초급 던전',
         desc: '어린 용이지만 절대 방심은 금물.<br>이곳에서 살아남아야 진짜 모험이 시작됩니다.',
-        req: '책 10권', time: '3분', hp: 'HP 300', diffVal: '쉬움',
-        rewards: ['질문력 +10', '이해력 +5', '용기 +20'], condition: '질문력 50 이상',
+        req: '책 10권 이상<br><span class="req-sub">나의 힘 평균 20 이상</span>',
+        time: '3분',
+        diffVal: '쉬움',
+        rewardMain: '나의 힘 +10',
+        rewardNote: '초급 던전 클리어 후, 중급 던전 준비 능력치 평균 10으로 다시 시작합니다.',
         glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,95,35,0.38), rgba(255,183,74,0.12) 38%, transparent 70%)',
-        locked: false, lockedMessage: ''
+        locked: false,
+        lockedMessage: ''
       },
 
-      // 개발 중 테스트용으로 중급 던전 잠금을 임시 해제한 상태입니다.
-      // 추후 백엔드 연동 시 학생별 읽은 책 수, 클리어 기록 등을 기준으로
-      // 잠금 여부를 다시 판단하도록 수정할 예정입니다.
-      
       {
-        img: 'images/dragon_idle.png', bg: 'images/bg_dragon.png',
-        diff: '★★ 중급', name: '중급 던전',
+        img: 'images/dragon_idle.png',
+        bg: 'images/bg_dragon.png',
+        diff: '★★ 중급',
+        name: '중급 던전',
         desc: '번개를 무기로 삼은 용이 기다리고 있습니다.<br>두려움을 이겨낸 자만이 이 문을 열 수 있습니다.',
-        req: '책 30권', time: '5분', hp: 'HP 600', diffVal: '보통',
-        rewards: ['질문력 +20', '이해력 +10', '용기 +35'], condition: '초급 던전 클리어',
+        req: '책 30권 이상<br><span class="req-sub">초급 던전 클리어</span><span class="req-sub">나의 힘 평균 55 이상</span>',
+        time: '5분',
+        diffVal: '보통',
+        rewardMain: '나의 힘 +15',
+        rewardNote: '중급 던전 클리어 후, 고급 던전 준비 능력치 평균 15로 다시 시작합니다.',
         glowColor: 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
-        locked: true, lockedMessage: '초급 던전 클리어 후 입장 가능'
+        locked: true,
+        lockedMessage: '초급 던전 클리어 후 입장 가능'
       },
 
-      // 개발 중 테스트용으로 고급 던전 잠금을 임시 해제한 상태입니다.
-      // 추후 백엔드 연동 시 학생별 읽은 책 수, 클리어 기록 등을 기준으로
-      // 잠금 여부를 다시 판단하도록 수정할 예정입니다.
-
       {
-        img: 'images/elder_idle.png', bg: 'images/bg_elder.png',
-        diff: '★★★ 고급', name: '고급 던전',
+        img: 'images/elder_idle.png',
+        bg: 'images/bg_elder.png',
+        diff: '★★★ 고급',
+        name: '고급 던전',
         desc: '세상의 모든 지식을 삼킨 자.<br>이 던전에 들어서는 순간, 전설이 시작됩니다.',
-        req: '책 50권', time: '7분', hp: 'HP 1000', diffVal: '어려움',
-        rewards: ['질문력 +40', '이해력 +25', '용기 +60'], condition: '중급 던전 클리어',
+        req: '책 50권 이상<br><span class="req-sub">중급 던전 클리어</span><span class="req-sub">나의 힘 평균 85 이상</span>',
+        time: '7분',
+        diffVal: '어려움',
+        rewardMain: '지식창고 해방 · 문답책 최종 클리어',
+        rewardNote: '고급 던전은 마지막 도전입니다. 클리어하면 지식창고를 되찾고 모험을 마무리합니다.',
         glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,196,76,0.34), rgba(88,55,13,0.2) 40%, transparent 72%)',
-        locked: true, lockedMessage: '중급 던전 클리어 후 입장 가능'
+        locked: true,
+        lockedMessage: '중급 던전 클리어 후 입장 가능'
       }
     ];
 
     function selectDungeon(idx) {
       selectedDungeon = idx;
       const info = DUNGEON_INFO[idx];
+
       document.querySelectorAll('.dungeon-list-item').forEach((el, i) => {
         el.classList.toggle('active', i === idx);
       });
+
       const mapBg = document.getElementById('map-bg');
-      if (mapBg && info.bg) mapBg.style.backgroundImage = `url('${info.bg}'), url('images/bg_map.png')`;
+      if (mapBg && info.bg) {
+        mapBg.style.backgroundImage = `url('${info.bg}'), url('images/bg_map.png')`;
+      }
+
       document.getElementById('detail-boss-img').src = info.img;
       document.getElementById('detail-boss-glow').style.background = info.glowColor;
       document.getElementById('detail-diff').textContent = info.diff;
       document.getElementById('detail-name').textContent = info.name;
       document.getElementById('detail-desc').innerHTML = info.desc;
-      document.getElementById('detail-req').textContent = info.req;
+
+      // 입장 조건은 줄바꿈 태그가 들어가므로 innerHTML 사용
+      document.getElementById('detail-req').innerHTML = info.req;
+
       document.getElementById('detail-time').textContent = info.time;
-      document.getElementById('detail-hp').textContent = info.hp;
       document.getElementById('detail-diff-val').textContent = info.diffVal;
-      document.getElementById('detail-condition').textContent = info.condition;
-      const rewardArea = document.getElementById('detail-rewards');
-      rewardArea.innerHTML = '';
-      info.rewards.forEach((reward) => {
-        const chip = document.createElement('span');
-        chip.className = 'reward-chip';
-        chip.textContent = reward;
-        rewardArea.appendChild(chip);
-      });
+
+      // 클리어 보상 영역
+      document.getElementById('detail-reward-main').textContent = info.rewardMain;
+      document.getElementById('detail-reward-note').textContent = info.rewardNote;
+
       const enterBtn = document.getElementById('enter-btn');
 
       // 개발 중 테스트용: 중급/고급 던전도 임시로 입장 가능하게 합니다.
-      // 실제 제출 전에는 아래 4줄을 원래 locked 조건 코드로 되돌리면 됩니다.
+      // 실제 제출 전에는 locked 조건을 기준으로 버튼 비활성화 처리하면 됩니다.
       enterBtn.disabled = false;
       enterBtn.innerHTML = '<span class="btn-icon">⚔</span><span>던전 입장하기</span>';
       enterBtn.classList.remove('locked');
