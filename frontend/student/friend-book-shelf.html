@@ -82,6 +82,37 @@
     .fs-book-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .fs-book-card { min-height:146px; display:grid; grid-template-columns:54px minmax(0,1fr); gap:13px; padding:15px; border-radius:22px; border:1px solid rgba(181,117,37,.16); background:rgba(255,252,244,.84); box-shadow:0 10px 18px rgba(101,63,18,.08); }
     .fs-book-mark { width:54px; height:64px; display:grid; place-items:center; border-radius:15px 15px 22px 22px; background:linear-gradient(180deg,#e6b656,#9f5d1d); color:#fff9e8; font-size:24px; box-shadow:0 8px 14px rgba(129,76,18,.16); }
+
+    .fs-teaser-box {
+      margin-top: 10px;
+      padding: 10px 11px;
+      border-radius: 16px;
+      background: rgba(255, 248, 229, 0.74);
+      border: 1px solid rgba(181, 117, 37, 0.14);
+    }
+
+    .fs-teaser-title {
+      display: block;
+      margin-bottom: 6px;
+      color: #6a3d16;
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .fs-teaser-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #7a5123;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .fs-teaser-list li + li {
+      margin-top: 3px;
+    }
+
     .fs-empty { display:grid; place-items:center; min-height:280px; border-radius:28px; border:1px dashed rgba(166,103,31,.3); background:rgba(255,248,229,.65); color:#7a5123; font-size:17px; font-weight:900; text-align:center; line-height:1.5; grid-column:1 / -1; }
     @media (max-height:760px) {
       .fs-page{padding:12px 24px}.fs-shell{grid-template-rows:58px minmax(0,1fr);gap:10px}.fs-main{grid-template-columns:300px minmax(0,1fr);gap:14px}.fs-side-card{padding:20px 18px}.fs-side-title{font-size:28px}.fs-side-desc{margin-bottom:14px}.fs-guide-box{gap:8px;margin-bottom:12px}.fs-guide-item{padding:9px 10px}.fs-form{gap:7px;padding:13px}.fs-input{height:38px}.fs-textarea{height:50px}.fs-content-card{grid-template-rows:112px minmax(0,1fr);padding:20px 24px}.fs-content-header h1{font-size:36px}.fs-best-card{min-height:154px;padding:15px}.fs-card-title{font-size:18px}.fs-book-card{min-height:130px;padding:13px}
@@ -530,31 +561,173 @@
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
     // checkLogin();
 
+    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
+// 내가 좋아요를 누른 추천책 ID 목록을 저장하는 키입니다.
+// 같은 책에 좋아요를 여러 번 누르지 않도록 막기 위해 사용합니다.
+const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
     let classBooks = [
-      { id: 1, title: "긴긴밤", author: "루리", reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 감동적이었어.", target: "마음이 따뜻해지는 이야기를 좋아하는 친구", recommender: "민서", likes: 18, mine: false },
-      { id: 2, title: "만복이네 떡집", author: "김리리", reason: "소원을 들어주는 떡집 이야기가 신기하고 재미있었어.", target: "웃기고 따뜻한 이야기를 좋아하는 친구", recommender: "지후", likes: 15, mine: false },
-      { id: 3, title: "푸른 사자 와니니", author: "이현", reason: "와니니가 포기하지 않고 자기 길을 찾는 모습이 멋졌어.", target: "용기 있는 모험 이야기를 좋아하는 친구", recommender: "서아", likes: 13, mine: false },
-      { id: 4, title: "시간 가게", author: "이나영", reason: "시간을 사고판다는 상상이 재미있고, 선택에 대해 생각하게 됐어.", target: "판타지와 생각할 거리를 좋아하는 친구", recommender: "도윤", likes: 9, mine: false },
-      { id: 5, title: "이상한 과자 가게 전천당", author: "히로시마 레이코", reason: "과자마다 다른 일이 생겨서 다음 이야기가 계속 궁금했어.", target: "신비로운 이야기를 좋아하는 친구", recommender: "하린", likes: 8, mine: false },
-      { id: 6, title: "불량한 자전거 여행", author: "김남중", reason: "여행하면서 조금씩 달라지는 주인공이 기억에 남았어.", target: "현실적인 성장 이야기를 좋아하는 친구", recommender: "준서", likes: 6, mine: false }
+      {
+        id: 1,
+        title: "긴긴밤",
+        author: "루리",
+        reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 감동적이었어.",
+        recommender: "민서",
+        likes: 18,
+        mine: false,
+        teaserQuestions: [
+          "서로 다른 친구들은 왜 함께 길을 떠났을까?",
+          "주인공들이 포기하지 않을 수 있었던 힘은 무엇일까?",
+          "나에게도 긴긴밤 같은 시간이 온다면 누구와 함께하고 싶을까?"
+        ]
+      },
+      {
+        id: 2,
+        title: "만복이네 떡집",
+        author: "김리리",
+        reason: "소원을 들어주는 떡집 이야기가 신기하고 재미있었어.",
+        recommender: "지후",
+        likes: 15,
+        mine: false,
+        teaserQuestions: [
+          "소원을 들어주는 떡이 있다면 어떤 일이 생길까?",
+          "만복이는 왜 달라지게 되었을까?",
+          "진짜 행복은 소원이 이루어지는 것일까?"
+        ]
+      },
+      {
+        id: 3,
+        title: "푸른 사자 와니니",
+        author: "이현",
+        reason: "와니니가 포기하지 않고 자기 길을 찾는 모습이 멋졌어.",
+        recommender: "서아",
+        likes: 13,
+        mine: false,
+        teaserQuestions: [
+          "와니니는 왜 자기 무리를 떠나게 되었을까?",
+          "두려운 상황에서도 용기를 낼 수 있었던 까닭은 무엇일까?",
+          "진짜 강한 사자는 어떤 사자일까?"
+        ]
+      },
+      {
+        id: 4,
+        title: "시간 가게",
+        author: "이나영",
+        reason: "시간을 사고판다는 상상이 재미있고, 선택에 대해 생각하게 됐어.",
+        recommender: "도윤",
+        likes: 9,
+        mine: false,
+        teaserQuestions: [
+          "시간을 살 수 있다면 가장 먼저 무엇을 하고 싶을까?",
+          "시간을 사고파는 일은 왜 위험할까?",
+          "주인공의 선택은 옳았을까?"
+        ]
+      },
+      {
+        id: 5,
+        title: "이상한 과자 가게 전천당",
+        author: "히로시마 레이코",
+        reason: "과자마다 다른 일이 생겨서 다음 이야기가 계속 궁금했어.",
+        recommender: "하린",
+        likes: 8,
+        mine: false,
+        teaserQuestions: [
+          "이상한 과자를 먹으면 어떤 일이 벌어질까?",
+          "소원을 쉽게 이루는 것은 항상 좋은 일일까?",
+          "나라면 전천당에서 어떤 과자를 고를까?"
+        ]
+      },
+      {
+        id: 6,
+        title: "불량한 자전거 여행",
+        author: "김남중",
+        reason: "여행하면서 조금씩 달라지는 주인공이 기억에 남았어.",
+        recommender: "준서",
+        likes: 6,
+        mine: false,
+        teaserQuestions: [
+          "주인공은 여행을 하며 무엇을 깨달았을까?",
+          "자전거 여행이 주인공을 어떻게 바꾸었을까?",
+          "나에게도 떠나 보고 싶은 여행이 있을까?"
+        ]
+      }
     ];
 
     let currentTab = "all";
-    document.addEventListener("DOMContentLoaded", () => { renderShelf(); });
 
-    function goIndividualReading() { window.location.href = "./individual-reading.html"; }
-    function goBookRecommend() { window.location.href = "./book-recommend.html"; }
+    document.addEventListener("DOMContentLoaded", function () {
+      renderShelf();
+    });
+
+    function goIndividualReading() {
+      window.location.href = "./individual-reading.html";
+    }
+
+    function goBookRecommend() {
+      window.location.href = "./book-recommend.html";
+    }
+
+    /*
+      나도 책 추천하기 작성 화면으로 이동합니다.
+      추천 작성 화면에서 저장한 글은 sessionStorage에 임시 저장됩니다.
+    */
+    function goFriendBookWrite() {
+      window.location.href = "./friend-book-write.html";
+    }
+
+    // 저장된 내 추천글을 불러옵니다.
+    function getSavedFriendBooks() {
+      try {
+        return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+// 내가 좋아요를 누른 책 ID 목록을 불러옵니다.
+function getLikedBookIds() {
+  try {
+    return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_LIKED_KEY) || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+// 내가 좋아요를 누른 책 ID 목록을 저장합니다.
+function saveLikedBookIds(likedBookIds) {
+  sessionStorage.setItem(FRIEND_BOOK_LIKED_KEY, JSON.stringify(likedBookIds));
+}
+    // 저장된 내 추천글을 다시 저장합니다.
+    function saveSavedFriendBooks(books) {
+      sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify(books));
+    }
+
+    // 기본 추천책과 내가 작성한 추천책을 합쳐서 보여줍니다.
+    function getAllBooks() {
+      return [...getSavedFriendBooks(), ...classBooks];
+    }
+
+    // 화면에 안전하게 글자를 넣기 위한 함수입니다.
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
     function changeTab(tabName) {
       currentTab = tabName;
-      document.querySelectorAll(".fs-tab-button").forEach((button) => {
+
+      document.querySelectorAll(".fs-tab-button").forEach(function (button) {
         button.classList.toggle("active", button.dataset.tab === tabName);
       });
+
       renderShelf();
     }
 
     function getSortedBooks() {
-      return [...classBooks].sort((a, b) => {
+      return getAllBooks().sort(function (a, b) {
         if (b.likes !== a.likes) return b.likes - a.likes;
         return b.id - a.id;
       });
@@ -582,19 +755,25 @@
     function renderBestBooks() {
       const bestBookList = document.getElementById("bestBookList");
       const bestBooks = getSortedBooks().slice(0, 3);
+
       bestBookList.innerHTML = "";
 
-      bestBooks.forEach((book, index) => {
+      bestBooks.forEach(function (book, index) {
+                const likedBookIds = getLikedBookIds();
+        const isLiked = likedBookIds.includes(book.id);
         const card = document.createElement("div");
         card.className = "fs-best-card";
         card.innerHTML = `
           <span class="fs-best-badge">BEST ${index + 1}</span>
-          <h3 class="fs-card-title">${book.title}</h3>
-          <p class="fs-card-author">${book.author} 지음 · ${book.recommender} 추천</p>
-          <p class="fs-card-reason">${book.reason}</p>
+          <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
+          <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
+          <p class="fs-card-reason">${escapeHtml(book.reason)}</p>
+          ${renderTeaserQuestions(book)}
           <div class="fs-like-row">
             <span class="fs-rec-by">👍 ${book.likes}명이 좋아해요</span>
-            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">좋아요</button>
+            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
+  ${isLiked ? "좋아요 완료" : "좋아요"}
+</button>
           </div>
         `;
         bestBookList.appendChild(card);
@@ -604,85 +783,122 @@
     function renderFriendBooks() {
       const friendBookList = document.getElementById("friendBookList");
       const books = getSortedBooks();
+
       friendBookList.innerHTML = "";
-      books.forEach((book) => { friendBookList.appendChild(createBookCard(book)); });
+
+      books.forEach(function (book) {
+        friendBookList.appendChild(createBookCard(book));
+      });
     }
 
     function renderMyBooks() {
       const myBookList = document.getElementById("myBookList");
-      const myBooks = getSortedBooks().filter((book) => book.mine);
+      const myBooks = getSortedBooks().filter(function (book) {
+        return book.mine;
+      });
+
       myBookList.innerHTML = "";
 
       if (myBooks.length === 0) {
-        myBookList.innerHTML = `<div class="fs-empty">아직 내가 추천한 책이 없어.<br>왼쪽에서 친구들에게 추천하고 싶은 책을 등록해봐!</div>`;
+        myBookList.innerHTML = `
+          <div class="fs-empty">
+            아직 내가 추천한 책이 없어.<br>
+            왼쪽에서 친구들에게 추천하고 싶은 책을 등록해봐!
+          </div>
+        `;
         return;
       }
 
-      myBooks.forEach((book) => { myBookList.appendChild(createBookCard(book)); });
+      myBooks.forEach(function (book) {
+        myBookList.appendChild(createBookCard(book));
+      });
+    }
+
+    // 추천 카드에 선택한 질문을 보여줍니다.
+    // 답은 보여주지 않고, 친구들이 궁금해할 질문만 보여줍니다.
+    function renderTeaserQuestions(book) {
+      if (!book.teaserQuestions || book.teaserQuestions.length === 0) {
+        return "";
+      }
+
+      return `
+        <div class="fs-teaser-box">
+          <strong class="fs-teaser-title">이 책이 궁금해지는 질문</strong>
+          <ol class="fs-teaser-list">
+            ${book.teaserQuestions
+              .slice(0, 3)
+              .map(function (question) {
+                return `<li>${escapeHtml(question)}</li>`;
+              })
+              .join("")}
+          </ol>
+        </div>
+      `;
     }
 
     function createBookCard(book) {
+            const likedBookIds = getLikedBookIds();
+      const isLiked = likedBookIds.includes(book.id);
       const card = document.createElement("div");
       card.className = "fs-book-card";
       card.innerHTML = `
         <div class="fs-book-mark">📖</div>
         <div>
-          <h3 class="fs-card-title">${book.title}</h3>
-          <p class="fs-card-author">${book.author} 지음 · ${book.recommender} 추천</p>
-          <p class="fs-card-reason">${book.reason}</p>
+          <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
+          <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
+          <p class="fs-card-reason">${escapeHtml(book.reason)}</p>
+          ${renderTeaserQuestions(book)}
           <div class="fs-like-row">
             <span class="fs-rec-by">👍 ${book.likes}</span>
-            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">좋아요</button>
+            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
+  ${isLiked ? "좋아요 완료" : "좋아요"}
+</button>
           </div>
         </div>
       `;
+
       return card;
     }
 
     function likeBook(bookId) {
-      classBooks = classBooks.map((book) => {
-        if (book.id === bookId) return { ...book, likes: book.likes + 1 };
-        return book;
-      });
-      renderShelf();
+  const likedBookIds = getLikedBookIds();
+
+  // 이미 좋아요를 누른 책이면 다시 올라가지 않게 막습니다.
+  if (likedBookIds.includes(bookId)) {
+    alert("이미 좋아요를 누른 책이야!");
+    return;
+  }
+
+  likedBookIds.push(bookId);
+  saveLikedBookIds(likedBookIds);
+
+  classBooks = classBooks.map(function (book) {
+    if (book.id === bookId) {
+      return {
+        ...book,
+        likes: book.likes + 1
+      };
     }
 
-    function addMyBook(event) {
-      event.preventDefault();
+    return book;
+  });
 
-      const titleInput = document.getElementById("bookTitleInput");
-      const authorInput = document.getElementById("bookAuthorInput");
-      const reasonInput = document.getElementById("bookReasonInput");
-      const targetInput = document.getElementById("bookTargetInput");
-
-      const title = titleInput.value.trim();
-      const author = authorInput.value.trim();
-      const reason = reasonInput.value.trim();
-      const target = targetInput.value.trim();
-
-      if (!title || !author || !reason || !target) {
-        alert("책 제목, 지은이, 추천 이유, 추천 대상을 모두 적어줘!");
-        return;
-      }
-
-      const newBook = { id: Date.now(), title, author, reason, target, recommender: "나", likes: 0, mine: true };
-      classBooks = [newBook, ...classBooks];
-
-      titleInput.value = "";
-      authorInput.value = "";
-      reasonInput.value = "";
-      targetInput.value = "";
-
-      changeTab("mine");
+  // 내가 작성해서 sessionStorage에 저장된 추천글도 좋아요 수를 함께 갱신합니다.
+  const savedBooks = getSavedFriendBooks().map(function (book) {
+    if (book.id === bookId) {
+      return {
+        ...book,
+        likes: book.likes + 1
+      };
     }
-        /*
-      나도 책 추천하기 작성 화면으로 이동합니다.
-      다음 단계에서 friend-book-write.html 파일을 새로 만들 예정입니다.
-    */
-    function goFriendBookWrite() {
-      window.location.href = "./friend-book-write.html";
-    }
-      
+
+    return book;
+  });
+
+  sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify(savedBooks));
+
+  renderShelf();
+}
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
 <script src="../js/individual-power.js?v=power-common-2"></script>

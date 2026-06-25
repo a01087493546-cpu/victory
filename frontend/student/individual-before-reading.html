@@ -1381,6 +1381,150 @@
   justify-content: center !important;
   gap: 2px !important;
 }
+/* 읽기 전 활동 보상 모달 */
+.ibr-before-reward-box {
+  position: relative;
+  width: min(460px, 92vw);
+  padding: 38px 30px 28px;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 2px solid rgba(214, 160, 67, 0.42);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
+    radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
+    linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%);
+  box-shadow:
+    0 28px 70px rgba(49, 28, 8, 0.38),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+    inset 0 0 34px rgba(255, 222, 139, 0.24);
+  text-align: center;
+  color: #5a3518;
+}
+
+.ibr-before-reward-box::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border-radius: 24px;
+  border: 1px solid rgba(196, 132, 39, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ibr-before-reward-lumi {
+  position: absolute;
+  right: -12px;
+  bottom: 68px;
+  width: 122px;
+  height: auto;
+  z-index: 0;
+  opacity: 0.98;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 16px rgba(76, 43, 12, 0.22));
+}
+
+.ibr-before-reward-badge,
+.ibr-before-reward-title,
+.ibr-before-reward-desc,
+.ibr-before-reward-list,
+.ibr-before-reward-message,
+.ibr-before-reward-confirm {
+  position: relative;
+  z-index: 1;
+}
+
+.ibr-before-reward-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(201, 137, 43, 0.16);
+  color: #a86618;
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+
+.ibr-before-reward-title {
+  margin: 0 auto;
+  font-family: "Noto Serif KR", "Noto Sans KR", serif;
+  font-size: 1.62rem;
+  line-height: 1.35;
+  letter-spacing: -0.055em;
+  color: #4f2f17;
+}
+
+.ibr-before-reward-desc {
+  margin: 14px auto 22px;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: #7a5635;
+  font-weight: 800;
+}
+
+.ibr-before-reward-list {
+  display: grid;
+  gap: 11px;
+  margin: 0 0 18px;
+  padding-right: 76px;
+}
+
+.ibr-before-reward-item {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(184, 116, 30, 0.24);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78));
+  box-shadow:
+    0 7px 14px rgba(102, 60, 17, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.ibr-before-reward-name {
+  color: #5c371a;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.ibr-before-reward-point {
+  color: #b86e17;
+  font-size: 1.22rem;
+  font-weight: 950;
+}
+
+.ibr-before-reward-message {
+  margin: -4px 0 16px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  background: rgba(255, 249, 232, 0.82);
+  border: 1px solid rgba(184, 116, 30, 0.2);
+  color: #6f441f;
+  font-size: 0.88rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.ibr-before-reward-confirm {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%);
+  color: #fffdf5;
+  font-size: 1rem;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow:
+    0 12px 22px rgba(139, 78, 17, 0.26),
+    inset 0 1px 0 rgba(255, 243, 200, 0.46);
+}
   </style>
 </head>
 
@@ -1558,7 +1702,54 @@
       </section>
     </div>
   </main>
+<div class="ibr-complete-modal" id="beforeRewardModal">
+  <div class="ibr-before-reward-box">
+    <img
+      class="ibr-before-reward-lumi"
+      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+      alt="응원하는 루미"
+    >
 
+    <div class="ibr-before-reward-badge">✨ 나의 힘 성장!</div>
+
+    <h2 class="ibr-before-reward-title">읽기 전 준비 보상!</h2>
+
+    <p class="ibr-before-reward-desc">
+      책을 읽기 전에 궁금한 점을 만들며<br>
+      모험을 준비했어요.
+    </p>
+
+    <div class="ibr-before-reward-list">
+      <div class="ibr-before-reward-item">
+        <span class="ibr-before-reward-name">마법력</span>
+        <strong class="ibr-before-reward-point">+1</strong>
+      </div>
+
+      <div class="ibr-before-reward-item">
+        <span class="ibr-before-reward-name">지혜</span>
+        <strong class="ibr-before-reward-point">+1</strong>
+      </div>
+    </div>
+
+    <div class="ibr-before-reward-message">
+      루미: 좋아! 이제 읽기 중 모험으로 떠나자!
+    </div>
+
+    <button type="button" class="ibr-before-reward-confirm" onclick="confirmBeforeRewardModal()">
+      확인했어
+    </button>
+  </div>
+</div>
+
+    <p style="margin-top:-6px;">
+      루미: 좋아! 이제 읽기 중 모험으로 떠나자!
+    </p>
+
+    <button type="button" class="ibr-button primary" onclick="confirmBeforeRewardModal()">
+      확인했어
+    </button>
+  </div>
+</div>
   <div class="ibr-complete-modal" id="completeModal">
     <div class="ibr-modal-box">
       <div class="ibr-modal-icon">📖</div>
@@ -2101,15 +2292,49 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
       };
     }
 
-    function completeBeforeReading() {
-      saveBeforeReadingAdventure();
+   function completeBeforeReading() {
+  saveBeforeReadingAdventure();
 
-      sessionStorage.setItem(STORAGE_KEYS.beforeDone, "true");
-      sessionStorage.setItem(STORAGE_KEYS.stage, "during");
+  const alreadyBeforeDone = sessionStorage.getItem(STORAGE_KEYS.beforeDone) === "true";
 
-      document.getElementById("completeModal").classList.add("show");
-    }
+  sessionStorage.setItem(STORAGE_KEYS.beforeDone, "true");
+  sessionStorage.setItem(STORAGE_KEYS.stage, "during");
 
+  const rewardResult =
+    !alreadyBeforeDone && typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce("individual_before_complete_" + studentId, {
+          presetKey: "individual_before_complete",
+          showModal: false
+        })
+      : false;
+
+  if (rewardResult && typeof openBeforeRewardModal === "function") {
+    openBeforeRewardModal();
+    return;
+  }
+
+  document.getElementById("completeModal").classList.add("show");
+}
+function openBeforeRewardModal() {
+  const modal = document.getElementById("beforeRewardModal");
+
+  if (modal) {
+    modal.classList.add("show");
+  }
+}
+
+function confirmBeforeRewardModal() {
+  const rewardModal = document.getElementById("beforeRewardModal");
+  const completeModal = document.getElementById("completeModal");
+
+  if (rewardModal) {
+    rewardModal.classList.remove("show");
+  }
+
+  if (completeModal) {
+    completeModal.classList.add("show");
+  }
+}
     function saveBeforeReadingAdventure() {
       const payload = {
         studentId,

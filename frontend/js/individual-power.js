@@ -82,6 +82,25 @@ const POWER_ICON_MAP = {
         magic: 1
       }
     },
+        // 개별읽기 - 읽기 중 질문 활동 완료
+    individual_during_questions_complete: {
+      title: "읽기 중 질문 활동 보상",
+      subtitle: "책을 읽으며 질문을 만들고 생각을 정리했어요.",
+      conditionText: "읽기 중 질문 활동을 완료했어요.",
+      rewards: {
+        magic: 1,
+        wisdom: 1
+      }
+    },
+    // 개별읽기 - 읽기 전 활동 완료
+individual_before_complete: {
+  title: "읽기 전 준비 보상",
+  subtitle: "책을 읽기 전에 궁금한 점을 만들며 모험을 준비했어요.",
+  conditionText: "읽기 전 질문 4개를 모두 만들었어요.",
+  rewards: {
+  magic: 1
+}
+},
 
     // 개별읽기 - AI/루미 피드백 통과
     individual_feedback_pass: {
@@ -92,7 +111,34 @@ const POWER_ICON_MAP = {
         wisdom: 1
       }
     },
-
+// 개별읽기 - 읽기 후 질문 3개 피드백 모두 통과
+individual_after_questions_pass: {
+  title: "간추리기 질문 보상",
+  subtitle: "질문과 답을 차근차근 다듬어 간추리기 준비를 마쳤어요.",
+  conditionText: "읽기 후 질문 3개가 모두 루미 피드백을 통과했어요.",
+  rewards: {
+  magic: 1,
+  wisdom: 1
+}
+},
+// 개별읽기 - 읽기 후 간추리기 피드백 통과
+individual_after_summary_pass: {
+  title: "간추리기 완성 보상",
+  subtitle: "질문과 답을 바탕으로 책의 중요한 내용을 잘 간추렸어요.",
+  conditionText: "읽기 후 간추리기 루미 피드백을 통과했어요.",
+  rewards: {
+    wisdom: 2
+  }
+},
+// 개별읽기 - 우리 반 추천 책장에 책 추천하기
+individual_friend_book_recommend: {
+  title: "책 추천 보상",
+  subtitle: "내가 읽은 책의 좋은 점을 친구들에게 소개했어요.",
+  conditionText: "우리 반 추천 책장에 책 추천글을 등록했어요.",
+  rewards: {
+    courage: 1
+  }
+},
     // 개별읽기 - 책수다방 글쓰기
     individual_book_chat_post: {
       title: "책수다방 보상",
@@ -147,13 +193,14 @@ const POWER_ICON_MAP = {
     // 개별읽기 - 읽기 후 간추리기 완료
     // 체력은 책을 끝까지 읽고 간추리기 활동까지 마쳤을 때 올라가도록 정리합니다.
     individual_after_complete: {
-      title: "읽기 후 간추리기 보상",
-      subtitle: "책을 끝까지 읽고 내용을 잘 간추렸어요.",
-      conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
-      rewards: {
-  stamina: 5
+  title: "읽기 후 간추리기 보상",
+  subtitle: "책을 끝까지 읽고 내용을 잘 간추렸어요.",
+  conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
+  rewards: {
+  stamina: 3,
+  wisdom: 1
 }
-    }
+}
   };
 
   // ==============================
@@ -189,29 +236,28 @@ function getRewardHistoryKey() {
   }
 
   function getPowerState() {
-    const saved = localStorage.getItem(getPowerStorageKey());
+  const saved = localStorage.getItem(getPowerStorageKey());
 
-    if (!saved) {
-      const defaultState = getDefaultPowerState();
-      localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-      return defaultState;
-    }
-
-    try {
-      const parsed = JSON.parse(saved);
-      return {
-        magic: clampPowerValue(parsed.magic),
-        stamina: clampPowerValue(parsed.stamina),
-        wisdom: clampPowerValue(parsed.wisdom),
-        courage: clampPowerValue(parsed.courage)
-      };
-    } catch (error) {
-      const defaultState = getDefaultPowerState();
-      localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-      return defaultState;
-    }
+  if (!saved) {
+    const defaultState = getDefaultPowerState();
+    localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
+    return defaultState;
   }
 
+  try {
+    const parsed = JSON.parse(saved);
+    return {
+      magic: clampPowerValue(parsed.magic),
+      stamina: clampPowerValue(parsed.stamina),
+      wisdom: clampPowerValue(parsed.wisdom),
+      courage: clampPowerValue(parsed.courage)
+    };
+  } catch (error) {
+    const defaultState = getDefaultPowerState();
+    localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
+    return defaultState;
+  }
+}
   function savePowerState(powerState) {
     const normalized = {
       magic: clampPowerValue(powerState.magic),
@@ -231,26 +277,26 @@ function getRewardHistoryKey() {
   // 5. 보상 이력 저장
   // ==============================
   // 같은 보상이 중복으로 계속 들어가지 않게 기록합니다.
-  function getRewardHistory() {
-    const saved = localStorage.getItem(getRewardHistoryKey());
+function getRewardHistory() {
+  const saved = localStorage.getItem(getRewardHistoryKey());
 
-    if (!saved) {
-      localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
-      return [];
-    }
+  if (!saved) {
+    localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
+    return [];
   }
+
+  try {
+    const parsed = JSON.parse(saved);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    localStorage.setItem(getRewardHistoryKey(), JSON.stringify([]));
+    return [];
+  }
+}
 
   function saveRewardHistory(history) {
-    localStorage.setItem(getRewardHistoryKey(), JSON.stringify(history));
-  }
+  localStorage.setItem(getRewardHistoryKey(), JSON.stringify(history));
+}
 
   function hasRewardHistory(rewardKey) {
     return getRewardHistory().includes(rewardKey);
@@ -409,32 +455,35 @@ function getRewardHistoryKey() {
     });
   */
   function givePowerRewardOnce(rewardKey, options = {}) {
-    // options.presetKey가 있으면 그 preset을 사용하고,
-    // 없으면 rewardKey 자체를 preset key로 사용합니다.
-    const presetKey = options.presetKey || rewardKey;
-    const preset = REWARD_PRESETS[presetKey];
+  // options.presetKey가 있으면 그 preset을 사용하고,
+  // 없으면 rewardKey 자체를 preset key로 사용합니다.
+  const presetKey = options.presetKey || rewardKey;
+  const preset = REWARD_PRESETS[presetKey];
 
-    if (!preset) {
-      console.warn("등록되지 않은 보상 preset입니다:", presetKey);
-      return false;
-    }
-
-    // 이미 받은 보상인지 확인
-    if (hasRewardHistory(rewardKey)) {
-      return false;
-    }
-
-    // 능력치 반영
-    applyRewardValues(preset.rewards);
-
-    // 보상 이력 기록
-    addRewardHistory(rewardKey);
-
-    // 보상 모달 표시
-    showRewardModal(preset);
-
-    return true;
+  if (!preset) {
+    console.warn("등록되지 않은 보상 preset입니다:", presetKey);
+    return false;
   }
+
+  // 이미 받은 보상인지 확인
+  if (hasRewardHistory(rewardKey)) {
+    return false;
+  }
+
+  // 능력치 반영
+  applyRewardValues(preset.rewards);
+
+  // 보상 이력 기록
+  addRewardHistory(rewardKey);
+
+  // showModal이 false가 아닐 때만 공통 보상 모달을 띄웁니다.
+  // 책수다방처럼 전용 보상 화면이 있는 경우에는 showModal: false로 호출합니다.
+  if (options.showModal !== false) {
+    showRewardModal(preset);
+  }
+
+  return true;
+}
 
   // ==============================
   // 9. 나의 힘 모달
