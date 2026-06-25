@@ -4534,6 +4534,81 @@
     0 12px 22px rgba(139, 78, 17, 0.26),
     inset 0 1px 0 rgba(255, 243, 200, 0.46);
 }
+/* 읽기 중 보상 모달 높이 보정: 확인 버튼이 화면 밖으로 밀리지 않게 합니다. */
+#idrRewardOverlay .idr-reward-modal {
+  max-height: 78vh !important;
+  padding: 26px 28px 24px !important;
+  overflow-y: auto !important;
+}
+
+#idrRewardOverlay .idr-reward-title {
+  font-size: 1.45rem !important;
+  margin-bottom: 8px !important;
+}
+
+#idrRewardOverlay .idr-reward-desc {
+  margin: 8px 0 14px !important;
+  line-height: 1.45 !important;
+}
+
+#idrRewardOverlay .idr-reward-list {
+  gap: 10px !important;
+  margin: 0 0 12px !important;
+  padding-right: 78px !important;
+}
+
+#idrRewardOverlay .idr-reward-item {
+  min-height: 56px !important;
+}
+
+#idrRewardOverlay .idr-reward-lumi-message {
+  margin: 0 0 12px !important;
+}
+
+#idrRewardOverlay .idr-reward-confirm {
+  display: block !important;
+  width: 100% !important;
+  height: 48px !important;
+  margin-top: 4px !important;
+}
+/* 읽기 중 보상 모달 최종 보정: 확인 버튼 무조건 보이게 고정 */
+#idrRewardOverlay .idr-reward-modal {
+  width: min(430px, 92vw) !important;
+  max-height: 72vh !important;
+  padding: 24px 26px 22px !important;
+  overflow-y: auto !important;
+}
+
+#idrRewardOverlay .idr-reward-lumi {
+  width: 96px !important;
+  right: -8px !important;
+  bottom: 74px !important;
+}
+
+#idrRewardOverlay .idr-reward-list {
+  padding-right: 58px !important;
+  margin-bottom: 10px !important;
+}
+
+#idrRewardOverlay .idr-reward-lumi-message {
+  display: none !important;
+}
+
+#idrRewardOverlay .idr-reward-confirm {
+  display: block !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 50 !important;
+  width: 100% !important;
+  height: 48px !important;
+  margin-top: 10px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #e8b64f 0%, #a95f15 100%) !important;
+  color: #fffdf5 !important;
+  font-size: 16px !important;
+  font-weight: 950 !important;
+}
   </style>
 </head>
 
@@ -4686,7 +4761,7 @@
           <div class="idr-question-top-actions">
             <button type="button" class="idr-pill-button" onclick="showScreen('home')">읽기 중 홈</button>
             <span class="idr-date-pill" id="todayDatePill">오늘 날짜</span>
-            <button type="button" class="idr-pill-button primary" id="topShareButton" onclick="showScreen('share')" disabled>질문 나누기</button>
+            <button type="button" class="idr-pill-button primary" id="topShareButton" onclick="completeDuringQuestionsAndShare()" disabled>질문 나누기</button>
           </div>
         </article>
 
@@ -4772,7 +4847,7 @@
           <article class="idr-share-panel">
             <h2>질문 나누기</h2>
             <p>선택한 질문만 친구들에게 공유돼요.</p>
-            <button type="button" class="idr-main-button primary" id="bottomShareButton" onclick="showScreen('share')" disabled>질문 나누기</button>
+            <button type="button" class="idr-main-button primary" id="bottomShareButton" onclick="completeDuringQuestionsAndShare()" disabled>질문 나누기</button>
             <span class="idr-share-help">최대 3개까지 선택할 수 있어요.</span>
           </article>
         </section>
@@ -4962,6 +5037,7 @@
   </main>
 <!-- 읽기 중 질문 만들기 보상 미니 모달
      실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
+<!-- 읽기 중 질문 활동 완료 보상 미니 모달 -->
 <div class="idr-reward-overlay" id="idrRewardOverlay" aria-hidden="true">
   <div class="idr-reward-modal">
     <button class="idr-reward-close" type="button" onclick="closeDuringRewardModal()" aria-label="닫기">×</button>
@@ -4974,11 +5050,11 @@
 
     <div class="idr-reward-badge">✨ 나의 힘 성장!</div>
 
-    <h2 class="idr-reward-title">좋은 질문을 만들었어요!</h2>
+    <h2 class="idr-reward-title">읽기 중 질문 활동 보상!</h2>
 
     <p class="idr-reward-desc">
-      책을 읽으며 떠오른 궁금증을<br>
-      질문으로 바꾸는 힘이 자랐어요.
+      책을 읽으며 질문을 만들고<br>
+      생각을 정리하는 힘이 자랐어요.
     </p>
 
     <div class="idr-reward-list">
@@ -4993,10 +5069,18 @@
         </div>
         <strong class="idr-reward-point">+1</strong>
       </div>
-    </div>
 
-    <div class="idr-reward-lumi-message">
-      루미: 질문의 힘이 더 강해졌어!
+      <div class="idr-reward-item">
+        <div class="idr-reward-left">
+          <img
+            class="idr-reward-icon"
+            src="../assets/images/individual-reading/reward/reward-wisdom-book.png"
+            alt="지혜"
+          >
+          <span class="idr-reward-name">지혜</span>
+        </div>
+        <strong class="idr-reward-point">+1</strong>
+      </div>
     </div>
 
     <button class="idr-reward-confirm" type="button" onclick="confirmDuringRewardModal()">
@@ -5055,7 +5139,21 @@
     // checkLogin();
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
+function completeDuringQuestionsAndShare() {
+  const rewardResult =
+    typeof givePowerRewardOnce === "function"
+      ? givePowerRewardOnce("individual_during_questions_complete_" + studentId, {
+          presetKey: "individual_during_questions_complete",
+          showModal: false
+        })
+      : false;
 
+  if (rewardResult && typeof openDuringRewardModal === "function") {
+    openDuringRewardModal();
+  }
+
+  showScreen("share");
+}
     const STORAGE_KEYS = {
       bookTitle: "individualCurrentBookTitle_" + studentId,
       bookAuthor: "individualCurrentBookAuthor_" + studentId,
@@ -5233,6 +5331,7 @@ const bookTypes = [
     renderTodayQuestionList();
     updateShareButtons();
   }
+  
 /*
   개별읽기 책수다방 화면을 그립니다.
   - 왼쪽 목록에서 글을 클릭하면 오른쪽 상세 화면이 해당 글 내용으로 바뀝니다.
@@ -6530,18 +6629,7 @@ function confirmDuringRewardModal() {
             const savedQuestion = saveTodayQuestion();
       resetQuestionForm(false);
 
-      // 질문 저장 성공 후, 마법력 점수를 공통 능력치 저장소에 반영하고 보상 미니 모달을 보여줍니다.
-      const rewardResult =
-        typeof givePowerRewardOnce === "function" && savedQuestion
-          ? givePowerRewardOnce("individual_question_created_" + savedQuestion.id, {
-              presetKey: "individual_question_created",
-              showModal: false
-            })
-          : false;
-
-      if (rewardResult && typeof openDuringRewardModal === "function") {
-        openDuringRewardModal();
-      }
+      
       feedbackBox.classList.add("good");
       feedbackText.textContent = "좋아! 오늘 읽은 부분에서 나온 질문이 저장됐어. 나의 질문 모음과 질문 나누기에 반영됐어.";
 

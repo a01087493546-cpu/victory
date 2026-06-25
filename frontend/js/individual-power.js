@@ -82,15 +82,24 @@ const POWER_ICON_MAP = {
         magic: 1
       }
     },
+        // 개별읽기 - 읽기 중 질문 활동 완료
+    individual_during_questions_complete: {
+      title: "읽기 중 질문 활동 보상",
+      subtitle: "책을 읽으며 질문을 만들고 생각을 정리했어요.",
+      conditionText: "읽기 중 질문 활동을 완료했어요.",
+      rewards: {
+        magic: 1,
+        wisdom: 1
+      }
+    },
     // 개별읽기 - 읽기 전 활동 완료
 individual_before_complete: {
   title: "읽기 전 준비 보상",
   subtitle: "책을 읽기 전에 궁금한 점을 만들며 모험을 준비했어요.",
   conditionText: "읽기 전 질문 4개를 모두 만들었어요.",
   rewards: {
-    magic: 1,
-    wisdom: 1
-  }
+  magic: 1
+}
 },
 
     // 개별읽기 - AI/루미 피드백 통과
@@ -108,8 +117,9 @@ individual_after_questions_pass: {
   subtitle: "질문과 답을 차근차근 다듬어 간추리기 준비를 마쳤어요.",
   conditionText: "읽기 후 질문 3개가 모두 루미 피드백을 통과했어요.",
   rewards: {
-    wisdom: 3
-  }
+  magic: 1,
+  wisdom: 1
+}
 },
 // 개별읽기 - 읽기 후 간추리기 피드백 통과
 individual_after_summary_pass: {
@@ -187,10 +197,9 @@ individual_friend_book_recommend: {
   subtitle: "책을 끝까지 읽고 내용을 잘 간추렸어요.",
   conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
   rewards: {
-    stamina: 5,
-    wisdom: 1,
-    courage: 1
-  }
+  stamina: 3,
+  wisdom: 1
+}
 }
   };
 
