@@ -1005,5 +1005,55 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   usage: "게임 전투 화면 화염 폭발 스킬 버튼 아이콘",
   modified: "파일명 변경 및 스킬 버튼 크기에 맞게 CSS로 크기 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "엔딩 인트로 배경 이미지",
+  category: "이미지",
+  fileName: "bg-ending-library-golden.png",
+  description: "고급 던전 클리어 후 지식창고의 문이 다시 열린 장면을 표현한 금빛 판타지 도서관 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 엔딩 인트로 화면 배경",
+  modified: "파일명 변경 및 엔딩 화면 비율에 맞게 CSS로 밝기와 위치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "엔딩 인트로 분한 용 이미지",
+  category: "이미지",
+  fileName: "char-ending-dragon-angry.png",
+  description: "학생들이 지식창고의 지식을 되찾자 분해하는 용 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 엔딩 인트로 1장면 용 캐릭터",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "엔딩 인트로 물러나는 용 이미지",
+  category: "이미지",
+  fileName: "char-ending-dragon-retreat.png",
+  description: "책을 읽고 생각을 나누는 힘을 인정하고 물러나는 용 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 엔딩 인트로 2장면 용 캐릭터",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "엔딩 인트로 승리 루미 이미지",
+  category: "이미지",
+  fileName: "char-ending-lumi-cheer.png",
+  description: "지식창고의 문을 다시 연 학생들을 칭찬하는 루미 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 엔딩 인트로 3장면 루미 캐릭터",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "엔딩 인트로 안내 루미 이미지",
+  category: "이미지",
+  fileName: "char-ending-lumi-guide.png",
+  description: "모험이 끝난 뒤에도 계속 책을 읽도록 안내하는 루미 캐릭터 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 엔딩 인트로 4장면 루미 캐릭터",
+  modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 }
 ];

@@ -64,12 +64,12 @@ const storySlides = [
     character: storyImagePath + "char-lumi-04-mysterious.png"
   },
   {
-    speaker: "루미",
-    text: "문답책은 좋은 질문이 용을 약하게 만든다고 말했어.\n깊이 있는 질문을 받을수록 용은 힘을 잃게 되는 거야.",
-    // 5장 배경 이미지입니다.
-    bg: storyImagePath + "bg-story-05-question-power.png",
-    character: storyImagePath + "char-lumi-05-confident.png"
-  },
+  speaker: "루미",
+  text: "문답책은 지식창고를 되찾는 길을 알려 주었어.\n책을 읽고, 묻고 답하며 생각을 나눌수록\n용은 점점 힘을 잃게 된다고 했지.",
+  // 5장 배경 이미지입니다.
+  bg: storyImagePath + "bg-story-05-question-power.png",
+  character: storyImagePath + "char-lumi-05-confident.png"
+},
   {
     speaker: "루미",
     text: "그래서 용사들은 책을 읽고 질문을 만드는 훈련을 시작했어.\n이제 세상의 지식을 되찾는 모험이 시작되는 거야.",
@@ -136,9 +136,19 @@ function renderStorySlide() {
   // storySlides 배열에 저장된 bg 경로를 화면 배경으로 사용합니다.
   storyPage.style.backgroundImage = `url("${slide.bg}")`;
 
+// 루미 캐릭터가 말풍선과 너무 떨어지지 않도록 위치를 조정합니다.
+storyCharacter.style.position = "absolute";
+storyCharacter.style.left = "14%";
+storyCharacter.style.bottom = "4%";
+storyCharacter.style.zIndex = "5";
   // 루미 캐릭터 이미지를 보여줍니다.
   storyCharacter.innerHTML = `
-    <img src="${slide.character}" alt="${slide.speaker}" class="story-character-img">
+    <img
+      src="${slide.character}"
+      alt="${slide.speaker}"
+      class="story-character-img"
+      style="transform: translateX(140px);"
+    >
   `;
 
   // 제목과 장면 설명은 화면에 표시하지 않습니다.
