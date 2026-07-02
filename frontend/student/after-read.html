@@ -6,6 +6,159 @@
   <title>문답책 - 읽기 후</title>
 <link rel="stylesheet" href="../css/individual-power.css" />
   <style>
+    /* =========================================================
+   읽기 후 활동 전 인트로 화면
+   ========================================================= */
+
+.after-intro-page {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(10, 5, 2, 0.82), rgba(10, 5, 2, 0.32), rgba(10, 5, 2, 0.72)),
+    url("../assets/story/bg-after-reading-intro.png");
+  background-size: cover;
+  background-position: center;
+  color: #fff4d6;
+}
+
+.after-intro-page.is-hidden {
+  display: none;
+}
+
+.after-intro-skip {
+  position: absolute;
+  top: 42px;
+  right: 54px;
+  z-index: 5;
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 222, 153, 0.72);
+  background: rgba(43, 24, 10, 0.78);
+  color: #fff3cf;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.after-intro-lumi {
+  position: absolute;
+  right: 11%;
+  bottom: 0;
+  width: min(420px, 32vw);
+  max-height: 82vh;
+  object-fit: contain;
+  object-position: bottom center;
+  filter:
+    drop-shadow(0 22px 28px rgba(0, 0, 0, 0.58))
+    drop-shadow(0 0 22px rgba(255, 211, 111, 0.18));
+}
+
+.after-intro-card {
+  position: absolute;
+  left: 4.8%;
+  top: 37%;
+  width: min(700px, 46vw);
+  min-height: 410px;
+  padding: 58px 52px 34px;
+  border-radius: 0 28px 28px 28px;
+  border: 1.5px solid rgba(255, 220, 145, 0.38);
+  background:
+    radial-gradient(circle at 96% 0%, rgba(255, 221, 145, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(24, 22, 18, 0.96), rgba(18, 16, 13, 0.94));
+  box-shadow:
+    0 24px 46px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 240, 190, 0.10);
+}
+
+.after-intro-speaker {
+  position: absolute;
+  top: -54px;
+  left: 42px;
+  width: 154px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px 14px 0 0;
+  border: 1.5px solid rgba(255, 220, 145, 0.38);
+  border-bottom: 0;
+  background: rgba(52, 39, 23, 0.86);
+  color: #ffe6a8;
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.after-intro-text {
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  color: #fff8e5;
+  font-family: "Noto Serif KR", serif;
+  font-size: clamp(31px, 2.55vw, 43px);
+  font-weight: 900;
+  line-height: 1.48;
+  letter-spacing: -1.2px;
+  word-break: keep-all;
+  text-shadow:
+    0 2px 0 rgba(20, 12, 5, 0.92),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.after-intro-bottom {
+  display: grid;
+  grid-template-columns: 160px 1fr 180px;
+  align-items: center;
+  gap: 24px;
+  margin-top: 54px;
+}
+
+.after-intro-button {
+  height: 56px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 223, 151, 0.50);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.after-intro-button.prev {
+  background: rgba(255, 245, 220, 0.94);
+  color: #5c3718;
+}
+
+.after-intro-button.next {
+  background: transparent;
+  color: #ffe6a8;
+  border-color: rgba(255, 218, 135, 0.38);
+  box-shadow: none;
+}
+
+.after-intro-button.next:hover {
+  background: rgba(255, 218, 135, 0.10);
+}
+
+.after-intro-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+}
+
+.after-intro-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(255, 238, 196, 0.26);
+}
+
+.after-intro-dot.is-active {
+  width: 58px;
+  background: #ffd36f;
+  box-shadow: 0 0 16px rgba(255, 211, 111, 0.28);
+}
     .teacher-return-button {
   position: fixed;
   left: 24px;
@@ -1293,6 +1446,7 @@
 </head>
 
 <body>
+  
   <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
   ← 교사용 수업차례로
 </button>
@@ -2663,5 +2817,6 @@ if (isTeacherMode()) {
 
 <!-- 연습읽기 완료 보상 / 나의 힘 기능을 연결합니다. -->
 <script src="../js/individual-power.js"></script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

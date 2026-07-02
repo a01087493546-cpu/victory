@@ -3,10 +3,9 @@
   역할: 문답책 프로젝트의 연습하기 단계 화면입니다.
 
   이 화면에서 하는 일:
-  1. 책 고르기부터 읽기 후 활동까지 단계별 흐름을 보여줍니다.
+  1. 읽기 전부터 읽기 후 활동까지 단계별 흐름을 보여줍니다.
   2. 한 단계를 완료하면 다음 단계가 활성화됩니다.
   3. 현재는 화면 흐름 확인용 임시 단계 완료 방식입니다.
-  4. 책 고르기 단계에서는 질문 꾸러미 활동으로 먼저 이동합니다.
 
   저작권/출처:
   - 현재 이 화면은 기존 홈 배경 이미지와 로고 이미지를 사용합니다.
@@ -176,10 +175,11 @@
     pointer-events: none;
   }
 
-  .title-area {
+    .title-area {
     position: relative;
     z-index: 1;
-    margin-bottom: 34px;
+    margin-bottom: 44px;
+    text-align: center;
   }
 
   .title-badge {
@@ -198,8 +198,8 @@
       0 0 14px rgba(233, 178, 91, 0.22);
   }
 
-  .title-area h1 {
-    margin-bottom: 18px;
+   .title-area h1 {
+    margin-bottom: 0;
     font-family: "Noto Serif KR", serif;
     font-size: 48px;
     font-weight: 900;
@@ -222,19 +222,19 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
   }
 
-  .step-list {
+    .step-list {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    margin-top: 28px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 10px;
   }
 
-  .step-card {
+    .step-card {
     position: relative;
-    min-height: 390px;
-    padding: 22px 20px;
+    min-height: 330px;
+    padding: 28px 24px 24px;
     border: 1.5px solid rgba(224, 169, 94, 0.62);
     border-radius: 28px;
     background:
@@ -299,10 +299,10 @@
     margin-bottom: 12px;
   }
 
-  .step-icon-box {
-    width: 150px;
-    height: 118px;
-    margin-bottom: 20px;
+    .step-icon-box {
+    width: 170px;
+    height: 130px;
+    margin: 0 auto 28px;
     border-radius: 24px;
     background:
       radial-gradient(circle at 35% 28%, rgba(249, 204, 122, 0.32), rgba(102, 66, 36, 0.82));
@@ -326,7 +326,9 @@
       drop-shadow(0 0 8px rgba(246, 194, 111, 0.3));
   }
 
-  .step-main-title {
+    .step-main-title {
+    margin-bottom: 12px;
+    text-align: center;
     margin-bottom: 6px;
     font-family: "Noto Serif KR", serif;
     font-size: 22px;
@@ -338,25 +340,17 @@
       0 0 10px rgba(230, 171, 82, 0.14);
   }
 
-  .step-sub-title {
-    margin-bottom: 14px;
-    font-size: 17px;
-    font-weight: 900;
-    color: #f2c174;
-    letter-spacing: -0.2px;
+    .step-sub-title {
+    display: none;
   }
 
-  .step-card p {
-    color: #ffe4c0;
-    font-size: 15px;
-    line-height: 1.68;
-    font-weight: 800;
-    letter-spacing: -0.1px;
+    .step-card p {
+    display: none;
   }
 
-  .step-button {
+    .step-button {
     width: 100%;
-    margin-top: 18px;
+    margin-top: 24px;
     border-radius: 16px;
     padding: 13px 10px;
     color: #fff8eb;
@@ -440,50 +434,6 @@
     color: #f5bd79;
   }
 
-  /* 4단계: 토피 브라운 */
-  .step-card:nth-child(4) {
-    border-color: rgba(205, 137, 78, 0.84);
-    background:
-      radial-gradient(circle at 76% 0%, rgba(205, 137, 78, 0.25), transparent 42%),
-      linear-gradient(180deg, rgba(119, 73, 43, 0.94) 0%, rgba(75, 45, 29, 0.95) 100%);
-  }
-
-  .step-card:nth-child(4) .step-button {
-    border: 1px solid rgba(205, 137, 78, 0.72);
-    background: linear-gradient(180deg, #af733d 0%, #754520 100%);
-  }
-
-  .step-card:nth-child(4) .step-button:hover {
-    background: linear-gradient(180deg, #bf8249 0%, #87522a 100%);
-  }
-
-  .step-card:nth-child(4) .step-sub-title,
-  .step-card:nth-child(4) .step-number {
-    color: #e9a967;
-  }
-
-  /* 5단계: 밝은 딥 브라운 */
-  .step-card:nth-child(5) {
-    border-color: rgba(181, 111, 64, 0.82);
-    background:
-      radial-gradient(circle at 76% 0%, rgba(181, 111, 64, 0.24), transparent 42%),
-      linear-gradient(180deg, rgba(98, 58, 36, 0.95) 0%, rgba(62, 36, 24, 0.96) 100%);
-  }
-
-  .step-card:nth-child(5) .step-button {
-    border: 1px solid rgba(181, 111, 64, 0.72);
-    background: linear-gradient(180deg, #965c32 0%, #623719 100%);
-  }
-
-  .step-card:nth-child(5) .step-button:hover {
-    background: linear-gradient(180deg, #a86b3c 0%, #744522 100%);
-  }
-
-  .step-card:nth-child(5) .step-sub-title,
-  .step-card:nth-child(5) .step-number {
-    color: #d89059;
-  }
-
   /* 잠긴 단계 안에 있는 버튼만 회색 잠김 상태로 보이게 합니다. */
   .step-card.locked .step-button {
     border: 1px solid rgba(164, 134, 101, 0.5);
@@ -494,27 +444,9 @@
     transform: none;
   }
 
-  .guide-box {
-    position: relative;
-    z-index: 1;
-    margin-top: 30px;
-    padding: 20px 22px;
-    border-radius: 24px;
-    background:
-      radial-gradient(circle at 50% 0%, rgba(239, 180, 91, 0.24), transparent 62%),
-      linear-gradient(180deg, rgba(111, 75, 46, 0.95) 0%, rgba(72, 49, 33, 0.96) 100%);
-    border: 1px solid rgba(214, 157, 83, 0.68);
-    color: #ffe1b9;
-    font-size: 17px;
-    line-height: 1.7;
-    text-align: center;
-    font-weight: 900;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 242, 210, 0.15),
-      0 8px 18px rgba(0, 0, 0, 0.18),
-      0 0 18px rgba(190, 126, 59, 0.12);
+    .guide-box {
+    display: none;
   }
-
   .guide-box strong {
     font-weight: 900;
     color: #ffdb96;
@@ -597,46 +529,16 @@
 
         <h1>책 속 이야기를 함께 따라가 볼까요?</h1>
 
-        <p>
-          함께 읽을 책을 고르고, 읽기 전·중·후 활동을 차근차근 해 보며<br>
-          이야기 속 중요한 생각을 찾아가요.
-        </p>
+
       </section>
 
-      <!-- 단계 카드 영역 -->
+            <!-- 단계 카드 영역 -->
       <section class="step-list">
 
         <!-- 1단계 -->
-        <article class="step-card active" id="stepBook">
+        <article class="step-card active" id="stepBefore">
           <div>
             <div class="step-number">01</div>
-
-            <div class="step-icon-box">
-              <img
-                src="../assets/images/practice/practice-book-select.png"
-                alt="책 고르기 아이콘"
-                onerror="this.onerror=null; this.src='../assets/images/home/home-practice-icon.png';"
-              >
-            </div>
-
-            <h2 class="step-main-title">책 고르기</h2>
-            <div class="step-sub-title">함께 읽을 책 고르기</div>
-
-            <p>
-              질문하며 읽기의 중요성을 알아보고,<br>
-              우리 반이 함께 읽을 책을 골라요.
-            </p>
-          </div>
-
-          <button class="step-button" type="button" onclick="goQuestionBundlePage()">
-            시작하기
-          </button>
-        </article>
-
-        <!-- 2단계 -->
-        <article class="step-card locked" id="stepBefore">
-          <div>
-            <div class="step-number">02</div>
 
             <div class="step-icon-box">
               <img
@@ -654,15 +556,15 @@
             </p>
           </div>
 
-<button class="step-button" id="beforeButton" disabled onclick="goBeforeIntroPage()">
-  잠김
-</button>
+          <button class="step-button" id="beforeButton" type="button" onclick="goBeforeIntroPage()">
+            시작하기
+          </button>
         </article>
 
-        <!-- 3단계 -->
+        <!-- 2단계 -->
         <article class="step-card locked" id="stepDuring">
           <div>
-            <div class="step-number">03</div>
+            <div class="step-number">02</div>
 
             <div class="step-icon-box">
               <img
@@ -680,41 +582,15 @@
             </p>
           </div>
 
-     <button class="step-button" id="duringButton" disabled onclick="goDuringReadingIntro()">
-  잠김
-</button>
-        </article>
-
-        <!-- 4단계 -->
-        <article class="step-card locked" id="stepClass">
-          <div>
-            <div class="step-number">04</div>
-
-            <div class="step-icon-box">
-              <img
-                src="../assets/images/practice/practice-class-reading.png"
-                alt="우리반 책읽기 아이콘"
-                onerror="this.onerror=null; this.src='../assets/images/home/home-individual-icon.png';"
-              >
-            </div>
-
-            <h2 class="step-main-title">읽기 중</h2>
-            <div class="step-sub-title">우리반 책읽기</div>
-
-            <p>
-              친구들과 같은 책을 읽으며 서로의 질문과 생각을 함께 살펴봐요.
-            </p>
-          </div>
-
-          <button class="step-button" id="classButton" disabled onclick="goClassReadingPage()">
+          <button class="step-button" id="duringButton" type="button" disabled onclick="goClassReadingPage()">
             잠김
           </button>
         </article>
 
-        <!-- 5단계 -->
+        <!-- 3단계 -->
         <article class="step-card locked" id="stepAfter">
           <div>
-            <div class="step-number">05</div>
+            <div class="step-number">03</div>
 
             <div class="step-icon-box">
               <img
@@ -732,10 +608,8 @@
             </p>
           </div>
 
-         <button class="step-button" id="afterButton" disabled onclick="goAfterReadingPage()">
-  잠김
-</button>
-      
+          <button class="step-button" id="afterButton" type="button" disabled onclick="goAfterReadingPage()">
+            잠김
           </button>
         </article>
 
@@ -743,7 +617,7 @@
 
       <!-- 현재 진행 안내 -->
       <div class="guide-box" id="guideText">
-        먼저 <strong>책 고르기</strong>부터 시작해요. 책을 고르면 다음 독서 활동이 열려요.
+        <strong>읽기 전</strong>부터 시작해요.
       </div>
 
     </main>
@@ -766,30 +640,18 @@
 
     // 저장된 진행 상태가 있으면 불러오고, 없으면 처음 상태로 시작합니다.
     let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
-      book: false,
       before: false,
-      during: false,
       classRead: false,
       after: false
     };
 // 읽기 전 공유 활동을 완료했다면 읽기 중 단계를 열어 줍니다.
 if (sessionStorage.getItem("beforeReadingShareCompleted_" + studentId) === "true") {
-  progress.book = true;
   progress.before = true;
-  sessionStorage.setItem(progressKey, JSON.stringify(progress));
-}
-// 읽기 중 질문 총 복습을 완료했다면 우리반 책읽기 단계를 열어 줍니다.
-if (sessionStorage.getItem("duringReadingReviewDone_" + studentId) === "true") {
-  progress.book = true;
-  progress.before = true;
-  progress.during = true;
   sessionStorage.setItem(progressKey, JSON.stringify(progress));
 }
 // 우리반 책읽기를 완료했다면 읽기 후 단계를 열어 줍니다.
 if (sessionStorage.getItem("classReadingCompleted_" + studentId) === "true") {
-  progress.book = true;
   progress.before = true;
-  progress.during = true;
   progress.classRead = true;
   sessionStorage.setItem(progressKey, JSON.stringify(progress));
 }
@@ -801,14 +663,6 @@ if (sessionStorage.getItem("classReadingCompleted_" + studentId) === "true") {
       location.href = "./home.html";
     }
 
-    // 질문 꾸러미 화면으로 이동합니다.
-    function goQuestionBundlePage() {
-      window.location.href = "./question-bundle.html";
-    }
-    // 읽기 중 인트로 화면으로 이동합니다.
-function goDuringReadingIntro() {
-  window.location.href = "./during-reading-intro.html";
-}
 // 우리반 책읽기 화면으로 이동합니다.
 function goClassReadingPage() {
   window.location.href = "./class-reading.html";
@@ -832,38 +686,26 @@ function goAfterReadingPage() {
     function updatePracticeScreen() {
       const stepBefore = document.getElementById("stepBefore");
       const stepDuring = document.getElementById("stepDuring");
-      const stepClass = document.getElementById("stepClass");
       const stepAfter = document.getElementById("stepAfter");
 
       const beforeButton = document.getElementById("beforeButton");
       const duringButton = document.getElementById("duringButton");
-      const classButton = document.getElementById("classButton");
       const afterButton = document.getElementById("afterButton");
 
       const guideText = document.getElementById("guideText");
 
-      if (progress.book === true) {
-        stepBefore.classList.remove("locked");
-        stepBefore.classList.add("active");
-        beforeButton.disabled = false;
-        beforeButton.textContent = "시작하기";
-        guideText.innerHTML = "<strong>읽기 전 - 생각 열기</strong>에서 책의 첫인상을 떠올려 봐요.";
-      }
+      stepBefore.classList.remove("locked");
+      stepBefore.classList.add("active");
+      beforeButton.disabled = false;
+      beforeButton.textContent = "시작하기";
+      guideText.innerHTML = "<strong>읽기 전</strong>부터 시작해요.";
 
       if (progress.before === true) {
         stepDuring.classList.remove("locked");
         stepDuring.classList.add("active");
         duringButton.disabled = false;
         duringButton.textContent = "시작하기";
-        guideText.innerHTML = "<strong>읽기 중 - 질문하며 깊이 읽기</strong>에서 떠오르는 생각을 따라가요.";
-      }
-
-      if (progress.during === true) {
-        stepClass.classList.remove("locked");
-        stepClass.classList.add("active");
-        classButton.disabled = false;
-        classButton.textContent = "시작하기";
-        guideText.innerHTML = "<strong>우리반 책읽기 - 함께 읽기</strong>에서 친구들과 같은 책을 함께 만나 봐요.";
+        guideText.innerHTML = "<strong>읽기 중</strong>으로 이어가요.";
       }
 
       if (progress.classRead === true) {
@@ -871,7 +713,7 @@ function goAfterReadingPage() {
         stepAfter.classList.add("active");
         afterButton.disabled = false;
         afterButton.textContent = "시작하기";
-        guideText.innerHTML = "<strong>읽기 후 - 내용 간추리기</strong>에서 중요한 장면과 생각을 정리해 봐요.";
+        guideText.innerHTML = "<strong>읽기 후</strong>로 마무리해요.";
       }
 
       if (progress.after === true) {
@@ -879,5 +721,6 @@ function goAfterReadingPage() {
       }
     }
   </script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

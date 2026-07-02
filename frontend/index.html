@@ -24,6 +24,185 @@
   <!-- 공통 디자인 CSS -->
   <link rel="stylesheet" href="./css/common.css">
 
+    <style>
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #1b1008;
+  }
+
+  .mq-stage-viewport {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1b1008;
+  }
+
+  .mq-stage-frame {
+    width: calc(1920px * var(--stage-scale, 1));
+    height: calc(1080px * var(--stage-scale, 1));
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto;
+  }
+
+  .mq-login-page {
+    position: relative;
+    width: 1920px !important;
+    height: 1080px !important;
+    min-width: 1920px !important;
+    min-height: 1080px !important;
+    overflow: hidden;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: top left;
+  }
+
+  /* 왼쪽 모험 장면 */
+  .mq-visual-area {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    width: 1220px;
+    height: 1080px;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  /* 오른쪽 로그인 영역 */
+  .mq-login-area {
+    position: absolute !important;
+    left: 1180px;
+    top: 0;
+    width: 740px;
+    height: 1080px;
+    z-index: 20;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 24px !important;
+    margin: 0 !important;
+    background: transparent !important;
+    overflow: visible;
+    transform: none !important;
+  }
+
+  /* 로그인 카드 크기 키우기 */
+  .mq-login-card {
+    position: relative !important;
+    width: 640px;
+    max-width: 640px;
+    margin: 0 !important;
+    padding: 54px 42px 34px !important;
+    transform: none !important;
+  }
+
+  /* 하단 멘트 카드 위치 이동 */
+       .mq-login-page .mq-visual-area .mq-visual-content .mq-bottom-message {
+    position: absolute !important;
+    left: 120px !important;
+    top: 775px !important;
+    width: 720px !important;
+    min-height: 120px !important;
+    margin: 0 !important;
+    padding: 0 34px !important;
+    z-index: 999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 24px !important;
+    line-height: 1.45 !important;
+    font-weight: 900 !important;
+    transform: none !important;
+  }
+
+  /* 왼쪽 타이틀 쪽 크기 키우기 */
+  .mq-book-emblem,
+  .mq-logo-image {
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  .mq-kicker {
+    font-size: 24px !important;
+  }
+
+  .mq-title {
+    font-size: 92px !important;
+    line-height: 1 !important;
+  }
+
+  .mq-main-copy {
+    font-size: 24px !important;
+    line-height: 1.5 !important;
+    max-width: 520px;
+  }
+
+  /* 로그인 카드 안쪽 크기 키우기 */
+  .mq-login-title {
+    font-size: 58px !important;
+    line-height: 1.1 !important;
+    margin-bottom: 16px !important;
+  }
+
+  .mq-login-subtitle {
+    font-size: 22px !important;
+    margin-bottom: 28px !important;
+  }
+
+  .mq-role-grid {
+    gap: 18px !important;
+    margin-bottom: 28px !important;
+  }
+
+  .mq-role-card {
+    min-height: 210px !important;
+    padding: 18px 16px !important;
+  }
+
+  .mq-role-image {
+    width: 90px !important;
+    height: 90px !important;
+    object-fit: contain;
+  }
+
+  .mq-role-card strong {
+    font-size: 28px !important;
+  }
+
+  .mq-role-card span {
+    font-size: 18px !important;
+  }
+
+  .mq-login-form label {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .mq-login-form input {
+    height: 64px !important;
+    font-size: 22px !important;
+    padding: 0 18px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .login-start-btn,
+  .mq-source-button {
+    height: 68px !important;
+    font-size: 22px !important;
+  }
+
+  .mq-source-button {
+    margin-top: 16px !important;
+  }
+</style>
+
   <!-- 사용 자료 출처 데이터 -->
   <script defer src="./js/source-data.js"></script>
 
@@ -32,11 +211,13 @@
 </head>
 
 <body>
-  <!-- 전체 로그인 화면 -->
-  <main class="mq-login-page">
+  <div class="mq-stage-viewport">
+    <div class="mq-stage-frame" id="loginStageFrame">
+      <!-- 전체 로그인 화면 -->
+      <main class="mq-login-page" id="loginFixedStage">
 
-    <!-- 왼쪽 모험 소개 영역 -->
-    <section class="mq-visual-area">
+        <!-- 왼쪽 모험 소개 영역 -->
+        <section class="mq-visual-area">
 
       <!-- 어두운 배경 위에 살짝 덮는 효과 -->
       <div class="mq-visual-overlay"></div>
@@ -94,10 +275,10 @@
           용사의 힘을 성장시킵니다.
         </div>
       </div>
-    </section>
+        </section>
 
-    <!-- 오른쪽 로그인 영역 -->
-    <section class="mq-login-area">
+        <!-- 오른쪽 로그인 영역 -->
+        <section class="mq-login-area">
 
       <!-- 로그인 카드 -->
       <div class="mq-login-card">
@@ -181,8 +362,10 @@
           사용 자료 출처
         </button>
       </div>
-    </section>
-  </main>
+        </section>
+      </main>
+    </div>
+  </div>
 
   <!-- 출처 모달 -->
   <div class="modal-backdrop hidden" id="sourceModal">
@@ -200,7 +383,7 @@
       </div>
 
       <p class="modal-desc">
-        프로그램 제작에 사용된 이미지, 폰트, 아이콘, 화면 구성 자료의 출처를 확인할 수 있습니다.
+        이미지 자료의 출처는 최초 사용 화면을 기준으로 기록하였으며, 같은 이미지의 반복 표기는 생략하였습니다.
       </p>
 
       <div class="source-list" id="sourceList">
@@ -211,5 +394,22 @@
 
     </section>
   </div>
+
+  <script>
+    function updateLoginStageScale() {
+      const stage = document.getElementById("loginFixedStage");
+      const frame = document.getElementById("loginStageFrame");
+
+      const scaleX = window.innerWidth / 1920;
+      const scaleY = window.innerHeight / 1080;
+      const scale = Math.min(scaleX, scaleY, 1);
+
+      stage.style.setProperty("--stage-scale", scale);
+      frame.style.setProperty("--stage-scale", scale);
+    }
+
+    updateLoginStageScale();
+    window.addEventListener("resize", updateLoginStageScale);
+  </script>  
 </body>
 </html>

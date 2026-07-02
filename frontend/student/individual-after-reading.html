@@ -2343,9 +2343,20 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
 // 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
 function openBookFinishModal() {
   selectedBookRating = 0;
-selectedRepresentQuestion = "";
-selectedRepresentQuestionIndex = -1;
-    function activateTeacherSummaryShareMode() {
+  selectedRepresentQuestion = "";
+  selectedRepresentQuestionIndex = -1;
+
+  renderRatingStars();
+  renderRepresentQuestionList();
+
+  const modal = document.getElementById("bookFinishModal");
+
+  if (modal) {
+    modal.classList.add("show");
+  }
+}
+
+function activateTeacherSummaryShareMode() {
   document.body.classList.add("iar-teacher-share-mode");
 
   switchScreen("shareScreen");
@@ -2369,15 +2380,6 @@ selectedRepresentQuestionIndex = -1;
       학생들이 쓴 <b>간추리기 내용</b>, <b>책 종류</b>, <b>책 제목</b>을 확인할 수 있어요.
       책 종류별 필터를 눌러 필요한 기록만 골라 볼 수 있어요.
     `;
-  }
-}
-
-  renderRatingStars();
-  renderRepresentQuestionList();
-
-  const modal = document.getElementById("bookFinishModal");
-  if (modal) {
-    modal.classList.add("show");
   }
 }
 
@@ -2990,5 +2992,6 @@ function goAdventure() {
     </button>
   </div>
 </div>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

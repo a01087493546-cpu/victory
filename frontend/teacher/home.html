@@ -14,6 +14,12 @@
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -22,20 +28,42 @@
       background:
         linear-gradient(rgba(31, 16, 7, 0.68), rgba(31, 16, 7, 0.78)),
         url("../assets/images/after-read/after-reading-main-bg.png") center / cover no-repeat;
+      overflow: hidden;
+    }
+
+    .tr-stage-viewport {
+      width: 100vw;
+      height: 100vh;
       overflow-x: hidden;
+      overflow-y: auto;
+      display: grid;
+      justify-items: center;
+      align-items: start;
+      background:
+        linear-gradient(rgba(31, 16, 7, 0.68), rgba(31, 16, 7, 0.78)),
+        url("../assets/images/after-read/after-reading-main-bg.png") center / cover no-repeat;
+    }
+
+    .tr-stage-frame {
+      position: relative;
+      width: calc(1920px * var(--stage-scale, 1));
+      height: calc(1080px * var(--stage-scale, 1));
     }
 
     .tr-page {
-      width: 100%;
-      min-height: 100vh;
-      padding: 28px 42px 42px;
+      width: 1920px;
+      height: 1080px;
+      min-height: 1080px;
+      padding: 48px 72px 56px;
+      transform: scale(var(--stage-scale, 1));
+      transform-origin: top left;
     }
 
     .tr-topbar {
       width: 100%;
-      max-width: 1180px;
-      margin: 0 auto 28px;
-      padding: 16px 24px;
+      max-width: 1680px;
+      margin: 0 auto 34px;
+      padding: 20px 30px;
       border: 2px solid rgba(255, 224, 151, 0.75);
       border-radius: 24px;
       background: rgba(69, 35, 13, 0.82);
@@ -53,15 +81,15 @@
       align-items: center;
       gap: 12px;
       font-family: "Noto Serif KR", serif;
-      font-size: 26px;
+      font-size: 34px;
       font-weight: 800;
       color: #ffe9a8;
       text-shadow: 0 3px 0 rgba(58, 24, 5, 0.9);
     }
 
     .tr-brand img {
-      width: 44px;
-      height: 44px;
+      width: 58px;
+      height: 58px;
       object-fit: contain;
       filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
     }
@@ -76,8 +104,8 @@
     .tr-small-button {
       border: 1.5px solid rgba(255, 230, 166, 0.75);
       border-radius: 999px;
-      padding: 10px 17px;
-      font-size: 14px;
+      padding: 14px 23px;
+      font-size: 18px;
       font-weight: 700;
       color: #fff6d9;
       background: linear-gradient(180deg, #965d25, #562b0c);
@@ -93,10 +121,10 @@
 
     .tr-board {
       width: 100%;
-      max-width: 1180px;
-      min-height: 650px;
+      max-width: 1680px;
+      min-height: 780px;
       margin: 0 auto;
-      padding: 42px;
+      padding: 54px;
       border: 2.5px solid rgba(255, 224, 151, 0.82);
       border-radius: 34px;
       background:
@@ -115,7 +143,7 @@
     .tr-panel-title {
       margin: 0;
       font-family: "Noto Serif KR", serif;
-      font-size: 44px;
+      font-size: 56px;
       font-weight: 800;
       color: #ffe9a8;
       letter-spacing: -1px;
@@ -126,7 +154,7 @@
 
     .tr-panel-subtitle {
       margin: 14px 0 0;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 600;
       color: #f7ddb1;
       line-height: 1.55;
@@ -135,14 +163,14 @@
     .tr-menu-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
-      margin-top: 28px;
+      gap: 34px;
+      margin-top: 34px;
     }
 
     .tr-menu-card {
       position: relative;
-      min-height: 340px;
-      padding: 28px 24px 24px;
+      min-height: 390px;
+      padding: 34px 30px 30px;
       border: 2px solid rgba(151, 91, 36, 0.36);
       border-radius: 28px;
       background:
@@ -175,15 +203,15 @@
       border-radius: 999px;
       background: rgba(91, 55, 20, 0.12);
       border: 1px solid rgba(91, 55, 20, 0.18);
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       color: #6b3b14;
     }
 
     .tr-card-icon {
-  width: 116px;
-  height: 116px;
-  margin-top: 34px;
+  width: 142px;
+  height: 142px;
+  margin-top: 40px;
   border-radius: 30px;
   border: 2px solid rgba(255, 224, 151, 0.85);
   background:
@@ -196,13 +224,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 54px;
+  font-size: 66px;
 }
 
     .tr-menu-title {
       margin: 24px 0 8px;
       font-family: "Noto Serif KR", serif;
-      font-size: 29px;
+      font-size: 35px;
       font-weight: 800;
       color: #3b210e;
     }
@@ -210,7 +238,7 @@
     .tr-menu-desc {
       min-height: 56px;
       margin: 0 0 24px;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 600;
       line-height: 1.55;
       color: #6d4a2d;
@@ -218,12 +246,12 @@
 
     .tr-action-button {
       width: 100%;
-      max-width: 230px;
+      max-width: 280px;
       margin-top: auto;
       border: 2px solid rgba(255, 233, 168, 0.78);
       border-radius: 18px;
       padding: 15px 18px;
-      font-size: 18px;
+      font-size: 21px;
       font-weight: 800;
       color: #fff8df;
       background: linear-gradient(180deg, #3f842e, #245716);
@@ -269,7 +297,7 @@
       border-radius: 22px;
       background: rgba(255, 248, 221, 0.11);
       color: #f8e4bc;
-      font-size: 15px;
+      font-size: 18px;
       line-height: 1.7;
       text-align: center;
     }
@@ -319,11 +347,31 @@
         font-size: 16px;
       }
     }
+
+    .tr-stage-frame .tr-topbar {
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+    }
+
+    .tr-stage-frame .tr-brand {
+      justify-content: flex-start;
+    }
+
+    .tr-stage-frame .tr-top-actions {
+      justify-content: flex-end;
+    }
+
+    .tr-stage-frame .tr-menu-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
   </style>
 </head>
 
 <body>
-  <main class="tr-page">
+  <div class="tr-stage-viewport">
+    <div class="tr-stage-frame" id="teacherHomeStageFrame">
+  <main class="tr-page" id="teacherHomeFixedStage">
     <header class="tr-topbar">
       <div class="tr-brand">
         <img src="../assets/images/logo-book.png" alt="문답책 로고">
@@ -391,8 +439,24 @@
       </div>
     </section>
   </main>
+    </div>
+  </div>
 
   <script>
+    function updateTeacherHomeStageScale() {
+      const stage = document.getElementById("teacherHomeFixedStage");
+      const frame = document.getElementById("teacherHomeStageFrame");
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080, 1);
+
+      stage.style.setProperty("--stage-scale", scale);
+      frame.style.setProperty("--stage-scale", scale);
+      frame.style.width = `${1920 * scale}px`;
+      frame.style.height = `${1080 * scale}px`;
+    }
+
+    updateTeacherHomeStageScale();
+    window.addEventListener("resize", updateTeacherHomeStageScale);
+
     function goLogin() {
       location.href = "../index.html";
     }
@@ -412,5 +476,6 @@ function readyMenu(menuName) {
   alert(menuName + " 화면은 아직 준비 중이에요.");
 }
   </script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

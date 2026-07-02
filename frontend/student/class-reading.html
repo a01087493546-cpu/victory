@@ -18,6 +18,7 @@
       사용 이미지:
       - ../assets/images/class-reading/class-reading-bg.png
       - ../assets/images/class-reading/class-reading-lumi.png
+      - ../assets/images/practice/practice-during-reading.png
       - ../assets/images/class-reading/class-reading-icon-create.png
       - ../assets/images/class-reading/class-reading-icon-share.png
       - ../assets/images/class-reading/class-reading-icon-collection.png
@@ -35,12 +36,12 @@
 
     html,
     body {
-      min-height: 100%;
+      width: 100%;
+      height: 100%;
     }
 
     body {
-      min-height: 100vh;
-      overflow: auto;
+      overflow: hidden;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #fff1cf;
       background:
@@ -55,10 +56,34 @@
       cursor: pointer;
     }
 
+    .stage-viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: grid;
+      justify-items: center;
+      align-items: start;
+      background:
+        linear-gradient(180deg, rgba(28, 16, 8, 0.18), rgba(20, 10, 4, 0.52)),
+        url("../assets/images/class-reading/class-reading-bg.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .stage-frame {
+      width: calc(1920px * var(--stage-scale, 1));
+      height: calc(1080px * var(--stage-scale, 1));
+      position: relative;
+      overflow: visible;
+    }
+
     .class-reading-page {
-      min-width: 1180px;
-      min-height: 100vh;
-      padding: 22px 34px 24px;
+      width: 1920px;
+      height: 1080px;
+      padding: 22px 60px 24px;
+      transform: scale(var(--stage-scale, 1));
+      transform-origin: top left;
       background:
         radial-gradient(circle at 50% 12%, rgba(255, 225, 150, 0.18), transparent 32%),
         radial-gradient(circle at 12% 90%, rgba(111, 63, 24, 0.22), transparent 34%),
@@ -66,9 +91,9 @@
     }
 
     .page-shell {
-      width: min(1460px, 100%);
-      min-width: 1120px;
-      min-height: calc(100vh - 46px);
+      width: 1680px;
+      min-width: 1680px;
+      min-height: 1034px;
       margin: 0 auto;
       display: grid;
       grid-template-rows: auto minmax(276px, auto) minmax(226px, auto) auto;
@@ -78,7 +103,7 @@
     /* 상단 */
     .top-header {
       display: grid;
-      grid-template-columns: 260px 1fr 260px;
+      grid-template-columns: 320px 1fr 320px;
       align-items: center;
       gap: 16px;
     }
@@ -86,18 +111,18 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       color: #fff3cf;
       font-family: "Noto Serif KR", serif;
-      font-size: 28px;
+      font-size: 34px;
       font-weight: 900;
       text-shadow: 0 5px 16px rgba(0, 0, 0, 0.44);
     }
 
     .brand-mark {
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
+      width: 60px;
+      height: 60px;
+      flex: 0 0 60px;
       display: grid;
       place-items: center;
       overflow: hidden;
@@ -112,8 +137,8 @@
     }
 
     .brand-logo-img {
-      width: 34px;
-      height: 34px;
+      width: 42px;
+      height: 42px;
       object-fit: contain;
       display: block;
     }
@@ -134,17 +159,17 @@
     .top-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 9px;
+      gap: 12px;
     }
 
     .top-pill {
-      height: 44px;
-      padding: 0 16px;
+      height: 54px;
+      padding: 0 22px;
       border-radius: 999px;
       border: 1px solid rgba(255, 222, 145, 0.62);
       background: rgba(37, 22, 10, 0.72);
       color: #ffe9b3;
-      font-size: 14px;
+      font-size: 17px;
       font-weight: 900;
       box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
       transition: 0.18s ease;
@@ -153,6 +178,30 @@
     .top-pill:hover {
       transform: translateY(-1px);
       background: rgba(73, 43, 16, 0.84);
+    }
+
+    .memory-button {
+      display: inline-grid;
+      place-items: center;
+      height: 50px;
+      min-width: 260px;
+      padding: 0 34px;
+      border-radius: 999px;
+      border: 2px solid rgba(218, 162, 70, 0.92);
+      background: linear-gradient(180deg, #7a4a20 0%, #3f2410 100%);
+      color: #fff3d4;
+      font-size: 16px;
+      font-weight: 900;
+      box-shadow:
+        0 10px 18px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 233, 176, 0.34),
+        0 0 14px rgba(218, 162, 70, 0.34);
+      transition: 0.18s ease;
+    }
+
+    .memory-button:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, #8b5827 0%, #4c2d14 100%);
     }
 
     /* 상단 메인 패널 */
@@ -177,11 +226,11 @@
 
     .lumi-panel {
       position: relative;
-      min-height: 276px;
+      min-height: 300px;
       overflow: hidden;
       border-radius: 30px;
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 330px 1fr;
       align-items: center;
       padding: 20px 28px 0;
     }
@@ -200,8 +249,8 @@
       position: relative;
       z-index: 1;
       align-self: end;
-      width: 305px;
-      max-height: 284px;
+      width: 335px;
+      max-height: 310px;
       object-fit: contain;
       object-position: bottom center;
       filter:
@@ -213,8 +262,8 @@
       position: relative;
       z-index: 1;
       max-width: 470px;
-      padding: 24px 30px;
-      border-radius: 24px;
+      padding: 22px 28px;
+      border-radius: 22px;
       border: 1px solid rgba(255, 226, 155, 0.58);
       background:
         linear-gradient(180deg, rgba(255, 247, 225, 0.94), rgba(242, 218, 170, 0.92));
@@ -222,7 +271,7 @@
       font-family: "Noto Serif KR", serif;
       font-size: 23px;
       font-weight: 900;
-      line-height: 1.55;
+      line-height: 1.48;
       letter-spacing: -0.8px;
       word-break: keep-all;
       box-shadow:
@@ -239,6 +288,13 @@
       border-top: 13px solid transparent;
       border-bottom: 13px solid transparent;
       border-right: 15px solid rgba(255, 247, 225, 0.94);
+    }
+
+    .speech-actions {
+      position: relative;
+      z-index: 1;
+      margin-top: 52px;
+      text-align: center;
     }
 
     .status-panel {
@@ -351,21 +407,21 @@
     /* 하단 활동 카드 */
     .action-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
     }
 
     .action-card {
       position: relative;
-      min-height: 226px;
+      min-height: 260px;
       overflow: hidden;
       border-radius: 28px;
-      padding: 24px 26px 22px;
+      padding: 26px 28px 24px;
       display: grid;
-      grid-template-columns: 86px 1fr;
-      grid-template-rows: auto auto;
+      grid-template-rows: auto auto auto;
+      justify-items: center;
       align-content: center;
-      gap: 18px 18px;
+      gap: 16px;
     }
 
     .action-card::after {
@@ -380,8 +436,8 @@
     }
 
     .action-icon-box {
-      width: 82px;
-      height: 82px;
+      width: 148px;
+      height: 148px;
       display: grid;
       place-items: center;
       border-radius: 24px;
@@ -393,39 +449,37 @@
     }
 
     .action-icon-box img {
-      width: 68px;
-      height: 68px;
+      width: 122px;
+      height: 122px;
       object-fit: contain;
       filter: drop-shadow(0 7px 10px rgba(0, 0, 0, 0.3));
     }
 
+    .action-icon-box img.practice-icon {
+      width: 136px;
+      height: 136px;
+    }
+
     .action-copy {
       min-width: 0;
-      align-self: center;
+      align-self: start;
+      text-align: center;
     }
 
     .action-title {
-      margin-bottom: 10px;
+      margin-bottom: 0;
       color: #fff0c8;
       font-family: "Noto Serif KR", serif;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 900;
       letter-spacing: -1px;
     }
 
-    .action-desc {
-      color: rgba(255, 229, 184, 0.86);
-      font-size: 16px;
-      font-weight: 850;
-      line-height: 1.52;
-      word-break: keep-all;
-    }
-
     .action-button {
-      grid-column: 1 / -1;
       width: 100%;
       height: 52px;
-      margin-top: 4px;
+      align-self: start;
+      margin-top: 6px;
       border: 1px solid rgba(255, 229, 158, 0.48);
       border-radius: 999px;
       background: linear-gradient(180deg, #bd8a3e, #70400f);
@@ -477,49 +531,8 @@
       background: linear-gradient(180deg, #e6bb67, #965f25);
     }
 
-    .complete-help-text {
-      color: rgba(255, 231, 184, 0.76);
-      font-size: 13px;
-      font-weight: 800;
-      text-align: center;
-    }
-
     /* 아주 작은 화면에서만 세로형으로 바뀌게 합니다. */
     @media (max-width: 760px) {
-      .class-reading-page {
-        min-width: 0;
-        padding: 18px;
-      }
-
-      .page-shell {
-        min-width: 0;
-        min-height: auto;
-      }
-
-      .top-header,
-      .hero-grid,
-      .action-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .page-title {
-        font-size: 36px;
-      }
-
-      .top-actions {
-        justify-content: flex-start;
-      }
-
-      .lumi-panel {
-        grid-template-columns: 1fr;
-        padding: 24px;
-      }
-
-      .lumi-img {
-        width: 220px;
-        justify-self: center;
-      }
-
       .speech-box::before {
         display: none;
       }
@@ -528,8 +541,10 @@
 </head>
 
 <body>
-  <div class="class-reading-page">
-    <div class="page-shell">
+  <div class="stage-viewport">
+    <div class="stage-frame" id="stageFrame">
+      <div class="class-reading-page" id="fixedStage">
+        <div class="page-shell">
 
       <header class="top-header">
         <div class="brand">
@@ -555,10 +570,15 @@
             alt="루미"
           >
 
-          <div class="speech-box">
-            친구들은 어떤 질문을 만들었을까?<br>
-            친구들의 생각을 살펴보며<br>
-            더 깊이 읽어보자!
+          <div>
+            <div class="speech-box">
+              책을 읽으며 남긴<br>
+              생각을 확인해 볼까요?
+            </div>
+
+            <div class="speech-actions">
+              <button class="memory-button" type="button" onclick="goQuestionCollection()">✨ 생각 모음 보기</button>
+            </div>
           </div>
         </article>
 
@@ -594,18 +614,26 @@
       <section class="action-grid">
         <article class="action-card">
           <div class="action-icon-box">
+            <img class="practice-icon" src="../assets/images/practice/practice-during-reading.png" alt="연습하기 아이콘">
+          </div>
+
+          <div class="action-copy">
+            <h2 class="action-title">연습하기</h2>
+          </div>
+
+          <button class="action-button" type="button" onclick="goDuringPractice()">시작하기 →</button>
+        </article>
+
+        <article class="action-card">
+          <div class="action-icon-box">
             <img src="../assets/images/class-reading/class-reading-icon-create.png" alt="질문 만들기 아이콘">
           </div>
 
           <div class="action-copy">
             <h2 class="action-title">책 속 생각쓰기</h2>
-            <p class="action-desc">
-              책을 읽으며 떠오른 생각을 적고,<br>
-              친구와 나누고 싶은 생각을 골라요.
-            </p>
           </div>
 
-          <button class="action-button" type="button" onclick="goQuestionCreate()">책 속 생각쓰기 →</button>
+          <button class="action-button" type="button" onclick="goQuestionCreate()">시작하기 →</button>
         </article>
 
         <article class="action-card">
@@ -615,40 +643,19 @@
 
           <div class="action-copy">
             <h2 class="action-title">책수다방</h2>
-            <p class="action-desc">
-              친구들이 올린 질문을 보고<br>
-              내 생각을 담은 답을 적어봐요.
-            </p>
           </div>
 
-          <button class="action-button" type="button" onclick="goFriendQuestion()">책수다방 →</button>
+          <button class="action-button" type="button" onclick="goFriendQuestion()">시작하기 →</button>
         </article>
 
-        <article class="action-card">
-          <div class="action-icon-box">
-            <img src="../assets/images/class-reading/class-reading-icon-collection.png" alt="질문 모음 보기 아이콘">
-          </div>
-
-          <div class="action-copy">
-            <h2 class="action-title">생각 모음 보기</h2>
-            <p class="action-desc">
-              내가 만든 생각과 오늘의 생각을<br>
-              메모장처럼 모아 볼 수 있어요.
-            </p>
-          </div>
-
-          <button class="action-button" type="button" onclick="goQuestionCollection()">생각 모음 보기 →</button>
-        </article>
       </section>
 
       <div class="complete-area">
         <button class="complete-reading-button" type="button" onclick="completeClassReading()">
           다음 읽기 단계로 넘어가기 →
         </button>
-
-        <p class="complete-help-text">
-          우리 반이 책을 다 읽었다면 읽기 후 활동으로 이어져요.
-        </p>
+      </div>
+        </div>
       </div>
     </div>
   </div>
@@ -661,6 +668,19 @@
     */
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+    function updateFixedStageScale() {
+      const stage = document.getElementById("fixedStage");
+      const frame = document.getElementById("stageFrame");
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080, 1);
+      stage.style.setProperty("--stage-scale", scale);
+      frame.style.setProperty("--stage-scale", scale);
+      frame.style.width = `${1920 * scale}px`;
+      frame.style.height = `${1080 * scale}px`;
+    }
+
+    updateFixedStageScale();
+    window.addEventListener("resize", updateFixedStageScale);
 
     // 우리반 책읽기 책 속 생각쓰기 화면으로 이동합니다.
     function goQuestionCreate() {
@@ -675,6 +695,11 @@
     // 나의 생각 모음 화면으로 이동합니다.
     function goQuestionCollection() {
       location.href = "./my-questions.html";
+    }
+
+    // 읽기 중 연습 화면으로 이동합니다.
+    function goDuringPractice() {
+      location.href = "./during-reading-intro.html";
     }
 
     // 우리반 책읽기를 완료 처리하고, 읽기 후 단계를 열어 줍니다.
@@ -717,5 +742,6 @@
       location.href = "./home.html";
     }
   </script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>
