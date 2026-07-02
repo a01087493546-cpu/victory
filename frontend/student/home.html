@@ -280,11 +280,56 @@
         0 6px 0 #17270d,
         0 14px 24px rgba(0, 0, 0, 0.28);
     }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+    }
+
+    .student-stage-viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: grid;
+      justify-items: center;
+      align-items: start;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(255, 219, 146, 0.26), transparent 31%),
+        linear-gradient(rgba(35, 22, 13, 0.28), rgba(35, 22, 13, 0.62)),
+        url("../assets/images/home/home-library-bg.png") center / cover no-repeat;
+    }
+
+    .student-stage-frame {
+      position: relative;
+      width: calc(1920px * var(--stage-scale, 1));
+      height: calc(1080px * var(--stage-scale, 1));
+    }
+
+    .student-stage-frame .student-home-page {
+      width: 1920px !important;
+      height: 1080px !important;
+      min-height: 1080px !important;
+      transform: scale(var(--stage-scale, 1));
+      transform-origin: top left;
+    }
+
+    .student-stage-frame .home-main-board {
+      grid-template-columns: minmax(0, 1fr) 650px !important;
+    }
+
+    .student-stage-frame .home-choice-area {
+      grid-template-columns: 1fr !important;
+    }
   </style>
 </head>
 
 <body>
-  <main class="student-home-page home-bookstore-page">
+  <div class="student-stage-viewport">
+    <div class="student-stage-frame" id="studentHomeStageFrame">
+  <main class="student-home-page home-bookstore-page" id="studentHomeFixedStage">
 
     <!-- 상단바 영역입니다. -->
     <header class="student-header home-top-bar">
@@ -421,10 +466,26 @@
     </div>
 
   </main>
+    </div>
+  </div>
 
   <script src="../js/auth.js"></script>
 
   <script>
+    function updateStudentHomeStageScale() {
+      const stage = document.getElementById("studentHomeFixedStage");
+      const frame = document.getElementById("studentHomeStageFrame");
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080, 1);
+
+      stage.style.setProperty("--stage-scale", scale);
+      frame.style.setProperty("--stage-scale", scale);
+      frame.style.width = `${1920 * scale}px`;
+      frame.style.height = `${1080 * scale}px`;
+    }
+
+    updateStudentHomeStageScale();
+    window.addEventListener("resize", updateStudentHomeStageScale);
+
     /*
       학생 홈은 로그인이 필요한 화면이므로
       페이지가 열리면 로그인 여부를 확인합니다.
@@ -459,5 +520,6 @@
       window.location.href = "../index.html";
     }
   </script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

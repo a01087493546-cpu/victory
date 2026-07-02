@@ -28,6 +28,12 @@
     padding: 0;
   }
 
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+  }
+
   body {
     min-height: 100vh;
     font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
@@ -40,13 +46,39 @@
     background-size: cover;
     background-position: center;
     color: #fff1da;
+    overflow: hidden;
+  }
+
+  .teacher-stage-viewport {
+    width: 100vw;
+    height: 100vh;
     overflow-x: hidden;
+    overflow-y: auto;
+    display: grid;
+    justify-items: center;
+    align-items: start;
+    background:
+      radial-gradient(circle at 50% 16%, rgba(255, 219, 146, 0.28), transparent 31%),
+      radial-gradient(circle at 84% 62%, rgba(214, 151, 78, 0.24), transparent 34%),
+      radial-gradient(circle at 18% 80%, rgba(158, 98, 57, 0.2), transparent 36%),
+      linear-gradient(rgba(35, 22, 13, 0.26), rgba(35, 22, 13, 0.58)),
+      url("../assets/images/home/home-library-bg.png") center / cover no-repeat;
+  }
+
+  .teacher-stage-frame {
+    position: relative;
+    width: calc(1920px * var(--stage-scale, 1));
+    height: calc(1080px * var(--stage-scale, 1));
   }
 
   .practice-page {
     position: relative;
-    min-height: 100vh;
-    padding: 30px 34px 40px;
+    width: 1920px;
+    height: 1080px;
+    min-height: 1080px;
+    padding: 50px 68px 58px;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: top left;
   }
 
   .practice-page::before {
@@ -77,8 +109,8 @@
   .practice-header {
     position: relative;
     z-index: 2;
-    max-width: 1280px;
-    margin: 0 auto 28px;
+    max-width: 1680px;
+    margin: 0 auto 34px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -132,9 +164,9 @@
   .practice-card {
     position: relative;
     z-index: 1;
-    max-width: 1230px;
+    max-width: 1680px;
     margin: 0 auto;
-    padding: 42px 34px 34px;
+    padding: 54px 48px 44px;
     border-radius: 36px;
     background:
       radial-gradient(circle at 80% 7%, rgba(255, 213, 137, 0.28), transparent 35%),
@@ -221,14 +253,14 @@
     z-index: 1;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-top: 26px;
+    gap: 28px;
+    margin-top: 32px;
   }
 
   .step-card {
     position: relative;
-    min-height: 370px;
-    padding: 23px 21px;
+    min-height: 450px;
+    padding: 30px 28px;
     border: 1.5px solid rgba(224, 169, 94, 0.62);
     border-radius: 28px;
     background:
@@ -290,8 +322,8 @@
 
   .step-icon-box {
     width: 100%;
-    max-width: 178px;
-    height: 122px;
+    max-width: 220px;
+    height: 148px;
     margin-bottom: 20px;
     border-radius: 24px;
     background:
@@ -308,8 +340,8 @@
   }
 
   .step-icon-box img {
-    width: 148px;
-    height: 108px;
+    width: 184px;
+    height: 132px;
     object-fit: contain;
     filter:
       drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
@@ -319,7 +351,7 @@
   .step-main-title {
     margin-bottom: 6px;
     font-family: "Noto Serif KR", serif;
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 900;
     color: #fff7e5;
     letter-spacing: -0.7px;
@@ -330,7 +362,7 @@
 
   .step-sub-title {
     margin-bottom: 14px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 900;
     color: #f2c174;
     letter-spacing: -0.2px;
@@ -338,7 +370,7 @@
 
   .step-card p {
     color: #ffe4c0;
-    font-size: 15.5px;
+    font-size: 18px;
     line-height: 1.68;
     font-weight: 800;
     letter-spacing: -0.1px;
@@ -350,7 +382,7 @@
     border-radius: 16px;
     padding: 14px 10px;
     color: #fff8eb;
-    font-size: 16px;
+    font-size: 19px;
     font-weight: 900;
     cursor: pointer;
     box-shadow:
@@ -537,11 +569,34 @@
       min-height: 330px;
     }
   }
+
+  .teacher-stage-frame .practice-header {
+    gap: 18px;
+  }
+
+  .teacher-stage-frame .step-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .teacher-stage-frame .title-area h1 {
+    font-size: 46px;
+    letter-spacing: -1.6px;
+  }
+
+  .teacher-stage-frame .title-area p {
+    font-size: 18px;
+  }
+
+  .teacher-stage-frame .step-card {
+    min-height: 450px;
+  }
 </style>
 </head>
 
 <body>
-  <div class="practice-page">
+  <div class="teacher-stage-viewport">
+    <div class="teacher-stage-frame" id="teacherPracticeStageFrame">
+  <div class="practice-page" id="teacherPracticeFixedStage">
 
     <!-- 상단 로고와 교사 화면 버튼 -->
     <header class="practice-header">
@@ -689,8 +744,24 @@
 
     </main>
   </div>
+    </div>
+  </div>
 
   <script>
+    function updateTeacherPracticeStageScale() {
+      const stage = document.getElementById("teacherPracticeFixedStage");
+      const frame = document.getElementById("teacherPracticeStageFrame");
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080, 1);
+
+      stage.style.setProperty("--stage-scale", scale);
+      frame.style.setProperty("--stage-scale", scale);
+      frame.style.width = `${1920 * scale}px`;
+      frame.style.height = `${1080 * scale}px`;
+    }
+
+    updateTeacherPracticeStageScale();
+    window.addEventListener("resize", updateTeacherPracticeStageScale);
+
     /*
       교사용 수업차례 화면입니다.
 
@@ -727,5 +798,6 @@
       location.href = "../student/after-read.html?open=share&mode=teacher";
     }
   </script>
+  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>
