@@ -1,20 +1,6 @@
 <!--
   파일명: book-recommend.html
   역할: 문답책 개별읽기 - 책 추천 받기 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 루미가 학생에게 책 취향 질문을 하나씩 보여줍니다.
-  2. 학생이 답을 모두 선택하면 선택값을 바탕으로 책 3권을 추천합니다.
-  3. 마음에 들지 않으면 같은 답변 기준으로 다른 책을 다시 추천받을 수 있습니다.
-  4. 우리 반 추천 책장으로 이동하는 버튼을 제공합니다.
-
-  사용 이미지:
-  - 배경 이미지: ../assets/images/book-recommend/book-recommend-bg.png
-  - 루미 이미지: ../assets/images/book-recommend/book-recommend-lumi.png
-
-  참고:
-  - 현재 추천 책 데이터는 임시 데이터입니다.
-  - 실제 도서 DB/API 또는 GPT 추천 기능을 붙이면 getMatchedBooks() 부분을 교체하면 됩니다.
 -->
 
 <!DOCTYPE html>
@@ -26,8 +12,8 @@
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
   <link rel="stylesheet" href="../css/common.css?v=book-recommend-fixed-1">
-<!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
-<link rel="stylesheet" href="../css/individual-power.css">
+  <link rel="stylesheet" href="../css/individual-power.css">
+
   <style>
     html,
     body {
@@ -141,24 +127,61 @@
       backdrop-filter: blur(7px);
     }
 
-    /* 말풍선은 꼬리 없이 둥근 카드형으로 정리합니다. */
-    .br-lumi-bubble {
+    .br-classmate-card {
       position: absolute;
-      top: 34px;
-      left: 28px;
-      right: 28px;
-      padding: 18px 16px;
-      border: 1px solid rgba(179, 117, 36, 0.24);
-      border-radius: 28px;
-      background: rgba(255, 252, 242, 0.96);
-      color: #5b3515;
-      font-size: 17px;
-      font-weight: 900;
-      line-height: 1.5;
+      left: 20px;
+      right: 20px;
+      top: 46px;
+      bottom: auto;
+      z-index: 4;
+      min-height: 170px;
+      padding: 22px 16px 18px;
+      border: 2px solid rgba(190, 128, 36, 0.44);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 228, 151, 0.62), transparent 56%),
+        linear-gradient(180deg, rgba(255, 253, 245, 0.99), rgba(255, 242, 214, 0.97));
+      box-shadow:
+        0 18px 30px rgba(93, 56, 15, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
       text-align: center;
-      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
-      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .br-classmate-card p {
+      margin: 0 0 8px;
+      color: #9a5f18;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .br-classmate-card strong {
+      display: block;
+      margin-bottom: 16px;
+      color: #42250f;
+      font-size: 18px;
+      font-weight: 950;
+      line-height: 1.4;
+      letter-spacing: -0.045em;
       word-break: keep-all;
+    }
+
+    .br-classmate-button {
+      width: 100%;
+      height: 46px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #f2c85d 0%, #b87318 100%);
+      color: #fff8df;
+      font-size: 16px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow:
+        0 6px 0 rgba(126, 75, 18, 0.85),
+        0 13px 18px rgba(116, 69, 18, 0.18);
     }
 
     .br-lumi {
@@ -277,7 +300,7 @@
     }
 
     .br-question-title {
-      margin: 0 0 10px;
+      margin: 0 0 34px;
       font-family: "Noto Serif KR", "Noto Sans KR", serif;
       color: #4d2b10;
       font-size: clamp(30px, 3.1vw, 44px);
@@ -288,10 +311,7 @@
     }
 
     .br-question-desc {
-      margin: 0 0 28px;
-      color: #795024;
-      font-size: 18px;
-      font-weight: 800;
+      display: none;
     }
 
     .br-options {
@@ -301,18 +321,18 @@
     }
 
     .br-option {
-      min-height: 190px;
-      padding: 22px 16px 20px;
-      border: 2px solid rgba(192, 132, 48, 0.2);
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at 50% 10%, rgba(255, 223, 148, 0.28), transparent 40%),
-        rgba(255, 252, 244, 0.86);
-      color: #523112;
-      cursor: pointer;
-      box-shadow: 0 12px 22px rgba(101, 63, 18, 0.09);
-      transition: 0.18s ease;
-    }
+  min-height: 210px;
+  padding: 30px 18px 26px;
+  border: 2px solid rgba(192, 132, 48, 0.2);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 223, 148, 0.28), transparent 40%),
+    rgba(255, 252, 244, 0.86);
+  color: #523112;
+  cursor: pointer;
+  box-shadow: 0 12px 22px rgba(101, 63, 18, 0.09);
+  transition: 0.18s ease;
+}
 
     .br-option:hover {
       transform: translateY(-3px);
@@ -330,61 +350,97 @@
     }
 
     .br-option-icon {
-      display: grid;
-      place-items: center;
-      height: 74px;
-      margin-bottom: 14px;
-      font-size: 52px;
-      filter: drop-shadow(0 8px 10px rgba(99, 61, 17, 0.14));
-    }
+  display: grid;
+  place-items: center;
+  height: 84px;
+  margin-bottom: 16px;
+  font-size: 60px;
+  filter: drop-shadow(0 8px 10px rgba(99, 61, 17, 0.14));
+}
 
     .br-option strong {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 23px;
-      font-weight: 900;
-      line-height: 1.25;
-      letter-spacing: -0.04em;
-    }
+  display: block;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.04em;
+}
 
     .br-option span {
-      display: block;
-      color: #785025;
-      font-size: 14px;
-      font-weight: 750;
-      line-height: 1.45;
-      word-break: keep-all;
+      display: none;
     }
 
-
-    /* 선택지가 5개 이상이어도 한 화면에 들어오도록 카드 크기를 안정화합니다. */
     .br-options.many-options {
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 12px;
     }
 
     .br-options.many-options .br-option {
-      min-height: 146px;
-      padding: 16px 10px 14px;
-      border-radius: 22px;
-    }
+  min-height: 175px;
+  padding: 26px 12px 22px;
+  border-radius: 24px;
+}
 
     .br-options.many-options .br-option-icon {
-      height: 46px;
-      margin-bottom: 9px;
-      font-size: 34px;
+  height: 60px;
+  margin-bottom: 13px;
+  font-size: 44px;
+}
+
+.br-options.many-options .br-option strong {
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+    .br-options.six-options {
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 18px !important;
     }
 
-    .br-options.many-options .br-option strong {
-      margin-bottom: 6px;
-      font-size: 18px;
-      line-height: 1.22;
+    .br-options.six-options .br-option {
+  min-height: 180px !important;
+  padding: 26px 16px 24px !important;
+  border-radius: 26px !important;
+}
+
+    .br-options.six-options .br-option-icon {
+  height: 58px !important;
+  margin-bottom: 14px !important;
+  font-size: 44px !important;
+}
+
+.br-options.six-options .br-option strong {
+  font-size: 23px !important;
+  line-height: 1.25 !important;
+}
+
+    .br-options.four-options {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 18px !important;
     }
 
-    .br-options.many-options .br-option span {
-      font-size: 12px;
-      line-height: 1.35;
-    }
+    .br-options.four-options .br-option {
+  min-height: 190px !important;
+  padding: 30px 20px 26px !important;
+  border-radius: 28px !important;
+}
+
+    .br-options.four-options .br-option-icon {
+  height: 66px !important;
+  margin-bottom: 15px !important;
+  font-size: 48px !important;
+}
+
+.br-options.four-options .br-option strong {
+  font-size: 25px !important;
+  line-height: 1.25 !important;
+}
 
     .br-actions {
       display: grid;
@@ -495,30 +551,6 @@
       box-shadow: 0 8px 14px rgba(129, 76, 18, 0.16);
     }
 
-    .br-cover {
-      width: 84px;
-      height: 112px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      border: 1px solid rgba(136, 84, 24, 0.2);
-      background:
-        linear-gradient(160deg, rgba(255,255,255,0.42), transparent 50%),
-        linear-gradient(180deg, #d8b06a, #8f5720);
-      color: #fff9e8;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.25;
-      box-shadow: 0 10px 18px rgba(101, 63, 18, 0.16);
-      word-break: keep-all;
-    }
-
-    .br-cover.green { background: linear-gradient(180deg, #91b179, #4f7c42); }
-    .br-cover.blue { background: linear-gradient(180deg, #8ab5d7, #3f6f9a); }
-    .br-cover.gold { background: linear-gradient(180deg, #e8c76a, #a4681f); }
-    .br-cover.brown { background: linear-gradient(180deg, #b98748, #623b16); }
-
     .br-book-info {
       min-width: 0;
     }
@@ -561,7 +593,6 @@
       cursor: pointer;
     }
 
-
     .br-result-actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -589,53 +620,6 @@
       color: #fff9e8;
     }
 
-    .br-friend-shelf {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items: stretch;
-      padding-top: 14px;
-      border-top: 1px solid rgba(181, 117, 37, 0.16);
-    }
-
-    .br-friend-card {
-      display: grid;
-      grid-template-columns: 46px 1fr;
-      gap: 10px;
-      align-items: center;
-      padding: 10px 12px;
-      border-radius: 18px;
-      background: rgba(255, 247, 224, 0.82);
-      border: 1px solid rgba(180, 116, 34, 0.16);
-    }
-
-    .br-friend-avatar {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #f3c869, #c17b25);
-      color: #fff9e8;
-      font-size: 20px;
-    }
-
-    .br-friend-card strong {
-      display: block;
-      margin-bottom: 2px;
-      font-size: 14px;
-      color: #5f3714;
-      font-weight: 900;
-    }
-
-    .br-friend-card span {
-      display: block;
-      color: #7a5123;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
     .br-page.result-mode .br-question-card {
       display: none;
     }
@@ -648,52 +632,401 @@
       .br-page { padding: 12px 24px; }
       .br-shell { grid-template-rows: 58px minmax(0, 1fr); gap: 10px; }
       .br-main { grid-template-columns: 270px minmax(0, 1fr); gap: 14px; }
-      .br-lumi-bubble { top: 24px; left: 20px; right: 20px; font-size: 16px; }
-      .br-lumi { width: 260px; }
-      .br-question-card { grid-template-rows: 62px minmax(0, 1fr) 72px; padding: 20px 28px 22px; }
-      .br-question-title { font-size: 34px; }
-      .br-question-desc { margin-bottom: 20px; }
-      .br-option { min-height: 158px; padding: 16px 12px; }
-      .br-option-icon { height: 56px; font-size: 42px; }
-      .br-option strong { font-size: 19px; }
-      .br-button { height: 52px; font-size: 18px; }
-      .br-result-card { grid-template-rows: 106px minmax(0, 1fr) 82px; padding: 20px 26px; }
-      .br-book-card { grid-template-columns: 52px minmax(0, 1fr) 44px; padding: 10px 14px; }
-      .br-book-info h2 { font-size: 18px; }
-      .br-book-info p { font-size: 12px; }
-    }
-        /*
-      선택지가 6개일 때는 3개씩 2줄로 정렬합니다.
-      Q2, Q6처럼 선택지가 6개인 질문 화면에서 사용됩니다.
-    */
 
-    .br-options.six-options {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      gap: 14px !important;
-    }
+      .br-classmate-card {
+        left: 18px;
+        right: 18px;
+        top: 36px;
+        bottom: auto;
+        min-height: 150px;
+        padding: 18px 13px 15px;
+      }
 
-    .br-options.six-options .br-option {
-      min-height: 142px !important;
-      padding: 14px 12px 12px !important;
-      border-radius: 22px !important;
-    }
+      .br-classmate-card p {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
 
-    .br-options.six-options .br-option-icon {
-      height: 40px !important;
-      margin-bottom: 7px !important;
-      font-size: 30px !important;
-    }
+      .br-classmate-card strong {
+        margin-bottom: 12px;
+        font-size: 16px;
+        line-height: 1.35;
+      }
 
-    .br-options.six-options .br-option strong {
-      margin-bottom: 5px !important;
-      font-size: 18px !important;
-      line-height: 1.2 !important;
-    }
+      .br-classmate-button {
+        height: 40px;
+        font-size: 14px;
+      }
 
-    .br-options.six-options .br-option span {
-      font-size: 12px !important;
-      line-height: 1.32 !important;
+      .br-lumi {
+        width: 260px;
+      }
+
+      .br-question-card {
+        grid-template-rows: 62px minmax(0, 1fr) 72px;
+        padding: 20px 28px 22px;
+      }
+
+      .br-question-title {
+        margin-bottom: 24px;
+        font-size: 34px;
+      }
+
+      .br-option {
+        min-height: 145px;
+        padding: 16px 12px;
+      }
+
+      .br-option-icon {
+        height: 50px;
+        font-size: 38px;
+      }
+
+      .br-option strong {
+        font-size: 19px;
+      }
+
+      .br-button {
+        height: 52px;
+        font-size: 18px;
+      }
+
+      .br-result-card {
+        grid-template-rows: 106px minmax(0, 1fr) 82px;
+        padding: 20px 26px;
+      }
+
+      .br-book-card {
+        grid-template-columns: 52px minmax(0, 1fr) 44px;
+        padding: 10px 14px;
+      }
+
+      .br-book-info h2 {
+        font-size: 18px;
+      }
+
+      .br-book-info p {
+        font-size: 12px;
+      }
     }
+    /* 선택지 카드 최종 확대 + 가로폭 꽉 채우기 */
+.br-question-body {
+  justify-content: center !important;
+}
+
+.br-question-title {
+  margin-bottom: 38px !important;
+}
+
+/* 기본 3개 선택지: 화면 가로폭 넓게 사용 */
+.br-options {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+
+/* 선택지 카드 전체 확대 */
+.br-option {
+  min-height: 230px !important;
+  padding: 34px 20px 30px !important;
+  border-radius: 30px !important;
+}
+
+/* 선택지 아이콘 확대 */
+.br-option-icon {
+  height: 88px !important;
+  margin-bottom: 18px !important;
+  font-size: 64px !important;
+}
+
+/* 선택지 글자 확대 */
+.br-option strong {
+  font-size: 30px !important;
+  line-height: 1.25 !important;
+}
+
+/* 6개 선택지: 3개씩 2줄, 가로 꽉 차게 */
+.br-options.six-options {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+
+.br-options.six-options .br-option {
+  min-height: 185px !important;
+  padding: 26px 16px 24px !important;
+  border-radius: 28px !important;
+}
+
+.br-options.six-options .br-option-icon {
+  height: 62px !important;
+  margin-bottom: 14px !important;
+  font-size: 48px !important;
+}
+
+.br-options.six-options .br-option strong {
+  font-size: 25px !important;
+  line-height: 1.25 !important;
+}
+
+/* 5개 선택지: 가로 폭 넓게 */
+.br-options.many-options {
+  width: 100% !important;
+  max-width: none !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+.br-options.many-options .br-option {
+  min-height: 190px !important;
+  padding: 28px 12px 24px !important;
+  border-radius: 26px !important;
+}
+
+.br-options.many-options .br-option-icon {
+  height: 64px !important;
+  margin-bottom: 14px !important;
+  font-size: 48px !important;
+}
+
+.br-options.many-options .br-option strong {
+  font-size: 24px !important;
+  line-height: 1.25 !important;
+}
+
+/* 4개 선택지: 2개씩 2줄, 크게 */
+.br-options.four-options {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+}
+
+.br-options.four-options .br-option {
+  min-height: 205px !important;
+  padding: 32px 20px 28px !important;
+  border-radius: 30px !important;
+}
+
+.br-options.four-options .br-option-icon {
+  height: 72px !important;
+  margin-bottom: 16px !important;
+  font-size: 54px !important;
+}
+
+.br-options.four-options .br-option strong {
+  font-size: 28px !important;
+  line-height: 1.25 !important;
+}
+
+/* 낮은 화면에서도 최대한 크게 유지 */
+@media (max-height: 760px) {
+  .br-question-title {
+    margin-bottom: 28px !important;
+  }
+
+  .br-options {
+    gap: 18px !important;
+  }
+
+  .br-option {
+    min-height: 205px !important;
+    padding: 28px 16px 24px !important;
+  }
+
+  .br-option-icon {
+    height: 72px !important;
+    margin-bottom: 14px !important;
+    font-size: 54px !important;
+  }
+
+  .br-option strong {
+    font-size: 26px !important;
+  }
+
+  .br-options.six-options .br-option {
+    min-height: 165px !important;
+    padding: 22px 12px 20px !important;
+  }
+
+  .br-options.six-options .br-option-icon {
+    height: 52px !important;
+    font-size: 42px !important;
+  }
+
+  .br-options.six-options .br-option strong {
+    font-size: 22px !important;
+  }
+
+  .br-options.many-options .br-option {
+    min-height: 165px !important;
+    padding: 22px 10px 18px !important;
+  }
+
+  .br-options.many-options .br-option-icon {
+    height: 52px !important;
+    font-size: 42px !important;
+  }
+
+  .br-options.many-options .br-option strong {
+    font-size: 21px !important;
+  }
+
+  .br-options.four-options .br-option {
+    min-height: 180px !important;
+    padding: 26px 16px 22px !important;
+  }
+
+  .br-options.four-options .br-option-icon {
+    height: 60px !important;
+    font-size: 46px !important;
+  }
+
+  .br-options.four-options .br-option strong {
+    font-size: 24px !important;
+  }
+}
+/* 추천 결과 화면 글자 크기/책 내용 박스 정리 */
+.br-result-header {
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+}
+
+.br-result-header h1 {
+  margin: 0 !important;
+  font-size: 42px !important;
+}
+
+.br-result-header p {
+  display: none !important;
+}
+
+.br-book-card {
+  grid-template-columns: 62px minmax(0, 1fr) 54px !important;
+  padding: 20px 22px !important;
+}
+
+.br-book-info h2 {
+  margin: 0 0 7px !important;
+  color: #3f2410 !important;
+  font-size: 28px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.04em !important;
+}
+
+.br-book-author {
+  margin: 0 0 9px !important;
+  color: #6b421b !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+}
+
+.br-book-summary {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 7px 12px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 236, 181, 0.92) !important;
+  color: #7a4a18 !important;
+  font-size: 16px !important;
+  font-weight: 850 !important;
+  line-height: 1.35 !important;
+  word-break: keep-all !important;
+}
+
+.br-book-reason {
+  display: none !important;
+}
+
+@media (max-height: 760px) {
+  .br-result-header h1 {
+    font-size: 36px !important;
+  }
+
+  .br-book-card {
+    padding: 15px 18px !important;
+  }
+
+  .br-book-info h2 {
+    font-size: 23px !important;
+  }
+
+  .br-book-author {
+    font-size: 15px !important;
+  }
+
+  .br-book-summary {
+    font-size: 14px !important;
+    padding: 6px 10px !important;
+  }
+}
+/* 추천 결과 카드 글자 최종 확대 */
+.br-book-info h2 {
+  margin: 0 0 10px !important;
+  color: #3f2410 !important;
+  font-size: 34px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.045em !important;
+  line-height: 1.15 !important;
+}
+
+.br-book-author {
+  margin: 0 0 12px !important;
+  color: #6b421b !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+.br-book-summary {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 236, 181, 0.92) !important;
+  color: #7a4a18 !important;
+  font-size: 21px !important;
+  font-weight: 850 !important;
+  line-height: 1.38 !important;
+  word-break: keep-all !important;
+}
+
+/* 카드도 글자 커진 만큼 여유 있게 */
+.br-book-card {
+  grid-template-columns: 68px minmax(0, 1fr) 58px !important;
+  padding: 24px 26px !important;
+  gap: 20px !important;
+}
+
+.br-rank {
+  width: 54px !important;
+  height: 64px !important;
+  font-size: 28px !important;
+}
+
+@media (max-height: 760px) {
+  .br-book-info h2 {
+    font-size: 29px !important;
+  }
+
+  .br-book-author {
+    font-size: 18px !important;
+  }
+
+  .br-book-summary {
+    font-size: 17px !important;
+    padding: 8px 13px !important;
+  }
+
+  .br-book-card {
+    padding: 18px 20px !important;
+  }
+}
   </style>
 </head>
 
@@ -707,19 +1040,28 @@
         </div>
 
         <div class="br-top-actions">
-  <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
-  <button type="button" class="br-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-  <button type="button" class="br-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
-</div>
-</header>
+          <button type="button" class="br-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="br-top-button" onclick="goIndividualReading()">책읽기 홈</button>
+        </div>
+      </header>
 
-<section class="br-main">
-  <aside class="br-lumi-panel">
-          <div class="br-lumi-bubble" id="lumiBubble">
-            너에게 잘 어울리는<br>책을 찾아볼게!<br>몇 가지 질문에 답해줘.
+      <section class="br-main">
+        <aside class="br-lumi-panel">
+          <div class="br-classmate-card">
+            <p>친구들의 추천도 궁금하다면?</p>
+            <strong>우리 반 추천 책장으로 가 볼까요?</strong>
+            <button type="button" class="br-classmate-button" onclick="goFriendBookShelf()">
+              우리반 추천받기
+            </button>
           </div>
+
           <div class="br-lumi-glow"></div>
-          <img src="../assets/images/book-recommend/book-recommend-lumi.png" alt="용사 루미" class="br-lumi">
+
+          <img
+            src="../assets/images/book-recommend/book-recommend-lumi.png"
+            alt="용사 루미"
+            class="br-lumi"
+          >
         </aside>
 
         <article class="br-card br-question-card">
@@ -731,7 +1073,7 @@
           <div class="br-question-body">
             <p class="br-question-kicker" id="questionKicker">Q1</p>
             <h1 class="br-question-title" id="questionTitle">읽을 책의 두께는 어느 정도가 좋아?</h1>
-            <p class="br-question-desc" id="questionDesc">마음에 드는 답을 하나 골라줘.</p>
+            <p class="br-question-desc" id="questionDesc"></p>
             <div class="br-options" id="optionList"></div>
           </div>
 
@@ -745,10 +1087,7 @@
           <div class="br-result-header">
             <div>
               <h1>이 책은 어때?</h1>
-              <p>
-                루미가 네 답을 살펴보고 어울리는 책을 골라봤어.<br>
-                마음에 드는 책이 있으면 읽기 시작해봐!
-              </p>
+              
             </div>
 
             <button type="button" class="br-refresh-button" onclick="recommendAnotherBooks()">
@@ -763,7 +1102,7 @@
               다시 질문하기
             </button>
             <button type="button" class="br-result-action-button primary" onclick="goFriendBookShelf()">
-              우리 반 추천 책장
+              우리반 추천받기
             </button>
           </div>
         </article>
@@ -782,82 +1121,79 @@
         key: "thickness",
         title: "읽을 책의 두께는 어느 정도가 좋아?",
         options: [
-          { label: "가볍게 읽는\n얇은 책", desc: "짧은 시간에 부담 없이 읽고 싶어요.", icon: "🪶", value: "thin" },
-          { label: "적당히 읽는\n보통 책", desc: "적당한 분량으로 재미있게 읽고 싶어요.", icon: "📖", value: "normal" },
-          { label: "오래 읽는\n두꺼운 책", desc: "깊이 있는 이야기를 오래 읽고 싶어요.", icon: "📚", value: "thick" }
+          { label: "가볍게 읽는\n얇은 책", icon: "🪶", value: "thin" },
+          { label: "적당히 읽는\n보통 책", icon: "📖", value: "normal" },
+          { label: "오래 읽는\n두꺼운 책", icon: "📚", value: "thick" }
         ]
       },
       {
         key: "mood",
         title: "어떤 분위기의 책이 끌려?",
         options: [
-          { label: "재미있고\n웃긴 이야기", desc: "읽으면서 웃음이 나는 책이 좋아요.", icon: "😄", value: "funny" },
-          { label: "따뜻하고\n감동적인 이야기", desc: "마음이 포근해지는 책이 좋아요.", icon: "🌷", value: "warm" },
-          { label: "긴장감 있는\n모험 이야기", desc: "다음 장면이 궁금한 책이 좋아요.", icon: "🧭", value: "adventure" },
-          { label: "마음이 뭉클한\n성장 이야기", desc: "주인공이 자라는 이야기가 좋아요.", icon: "🌱", value: "growth" },
-          { label: "생각할 거리가\n있는 이야기", desc: "읽고 나서 오래 생각하고 싶어요.", icon: "💭", value: "thinking" },
-          { label: "무섭거나\n신비로운 이야기", desc: "조금 오싹하고 특별한 분위기가 좋아요.", icon: "🌙", value: "mystic" }
+          { label: "재미있고\n웃긴 이야기", icon: "😄", value: "funny" },
+          { label: "따뜻하고\n감동적인 이야기", icon: "🌷", value: "warm" },
+          { label: "긴장감 있는\n모험 이야기", icon: "🧭", value: "adventure" },
+          { label: "마음이 뭉클한\n성장 이야기", icon: "🌱", value: "growth" },
+          { label: "생각할 거리가\n있는 이야기", icon: "💭", value: "thinking" },
+          { label: "무섭거나\n신비로운 이야기", icon: "🌙", value: "mystic" }
         ]
       },
       {
         key: "genre",
         title: "어떤 종류의 책을 읽고 싶어?",
         options: [
-          { label: "친구와\n학교 이야기", desc: "내 생활과 비슷한 이야기를 읽고 싶어요.", icon: "🏫", value: "school" },
-          { label: "판타지·\n모험 이야기", desc: "상상 속 세계로 떠나는 이야기가 좋아요.", icon: "✨", value: "fantasy" },
-          { label: "동물·자연\n이야기", desc: "동물과 자연이 나오는 책이 좋아요.", icon: "🦁", value: "nature" },
-          { label: "역사·위인\n이야기", desc: "옛날 이야기나 인물 이야기가 궁금해요.", icon: "🏛️", value: "history" },
-          { label: "과학·정보\n책", desc: "새로운 사실을 알게 되는 책이 좋아요.", icon: "🔎", value: "info" },
-          { label: "추리·미스터리\n이야기", desc: "단서를 찾으며 읽는 책이 좋아요.", icon: "🕵️", value: "mystery" },
-          { label: "가족\n이야기", desc: "가족과 마음을 나누는 이야기가 좋아요.", icon: "🏡", value: "family" }
+          { label: "친구와\n학교 이야기", icon: "🏫", value: "school" },
+          { label: "판타지·\n모험 이야기", icon: "✨", value: "fantasy" },
+          { label: "동물·자연\n이야기", icon: "🦁", value: "nature" },
+          { label: "역사·위인\n이야기", icon: "🏛️", value: "history" },
+          { label: "과학·정보\n책", icon: "🔎", value: "info" },
+          { label: "추리·미스터리\n이야기", icon: "🕵️", value: "mystery" }
         ]
       },
       {
         key: "picture",
         title: "책에 그림이 어느 정도 있으면 좋아?",
         options: [
-          { label: "그림이\n많은 책", desc: "그림을 보며 내용을 이해하고 싶어요.", icon: "🖼️", value: "many" },
-          { label: "글과 그림이\n반반 있는 책", desc: "글도 그림도 비슷하게 있으면 좋아요.", icon: "📘", value: "half" },
-          { label: "중간중간\n그림이 있는 책", desc: "가끔 그림이 나오면 읽기 편해요.", icon: "📖", value: "some" },
-          { label: "그림이 적어도\n괜찮아", desc: "내용이 재미있으면 그림은 적어도 괜찮아요.", icon: "📝", value: "few" },
-          { label: "글이 많은\n책도 좋아", desc: "글을 따라가며 상상하는 것도 좋아요.", icon: "📚", value: "text" }
+          { label: "그림이\n많은 책", icon: "🖼️", value: "many" },
+          { label: "글과 그림이\n반반 있는 책", icon: "📘", value: "half" },
+          { label: "중간중간\n그림이 있는 책", icon: "📖", value: "some" },
+          { label: "글만 있는\n책도 좋아", icon: "📚", value: "text" }
         ]
       },
       {
         key: "difficulty",
         title: "읽기 어려운 정도는 어느 정도가 좋아?",
         options: [
-          { label: "쉽고 술술\n읽히는 책", desc: "막히지 않고 편하게 읽고 싶어요.", icon: "🍃", value: "easy" },
-          { label: "조금 긴 문장도\n괜찮아", desc: "천천히 읽으면 긴 문장도 괜찮아요.", icon: "📄", value: "normalSentence" },
-          { label: "생각하면서\n읽는 책", desc: "읽으면서 질문을 떠올리고 싶어요.", icon: "💭", value: "medium" },
-          { label: "새로운 낱말이\n나와도 괜찮아", desc: "모르는 말이 있어도 배워보고 싶어요.", icon: "🔤", value: "vocab" },
-          { label: "어려워도\n도전할 책", desc: "새로운 책에 도전해보고 싶어요.", icon: "🏔️", value: "hard" }
+          { label: "쉽고 술술\n읽히는 책", icon: "🍃", value: "easy" },
+          { label: "생각하면서\n읽는 책", icon: "💭", value: "medium" },
+          { label: "새로운 낱말이\n나와도 괜찮아", icon: "🔤", value: "vocab" },
+          { label: "어려워도\n도전할 책", icon: "🏔️", value: "hard" }
         ]
       },
       {
         key: "purpose",
         title: "이번 책을 읽고 어떤 느낌을 얻고 싶어?",
         options: [
-          { label: "재미있게\n웃고 싶어", desc: "즐거운 마음으로 읽고 싶어요.", icon: "🌟", value: "joy" },
-          { label: "마음이\n따뜻해지고 싶어", desc: "감동과 위로가 있는 책이 좋아요.", icon: "🌷", value: "comfort" },
-          { label: "용기와 힘을\n얻고 싶어", desc: "주인공처럼 씩씩해지고 싶어요.", icon: "🛡️", value: "courage" },
-          { label: "새로운 지식을\n알고 싶어", desc: "몰랐던 것을 배우고 싶어요.", icon: "🧠", value: "learn" },
-          { label: "깊이 생각해\n보고 싶어", desc: "읽고 나서 이야기 나누고 싶어요.", icon: "🕯️", value: "think" },
-          { label: "친구에게\n소개하고 싶어", desc: "다 읽고 친구에게 추천하고 싶어요.", icon: "🤝", value: "share" }
+          { label: "재미있게\n웃고 싶어", icon: "🌟", value: "joy" },
+          { label: "마음이\n따뜻해지고 싶어", icon: "🌷", value: "comfort" },
+          { label: "용기와 힘을\n얻고 싶어", icon: "🛡️", value: "courage" },
+          { label: "새로운 지식을\n알고 싶어", icon: "🧠", value: "learn" },
+          { label: "깊이 생각해\n보고 싶어", icon: "🕯️", value: "think" },
+          { label: "친구에게\n소개하고 싶어", icon: "🤝", value: "share" }
         ]
       }
     ];
 
     const bookPool = [
-      { title: "만복이네 떡집", author: "김리리", summary: "소원을 들어주는 신기한 떡집을 만나며 벌어지는 따뜻하고 재미있는 이야기예요.", reason: "재미있고 따뜻한 이야기를 좋아하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "funny", "warm", "fantasy", "many", "easy", "joy", "comfort"], color: "gold" },
-      { title: "긴긴밤", author: "루리", summary: "서로 다른 존재들이 함께 길을 걸으며 용기와 사랑을 배워가는 이야기예요.", reason: "마음이 따뜻해지는 성장 이야기를 원할 때 좋아요.", tags: ["normal", "warm", "growth", "adventure", "some", "half", "medium", "comfort", "courage"], color: "green" },
-      { title: "아몬드", author: "손원평", summary: "감정을 느끼기 어려운 소년이 사람들과 만나며 성장하는 이야기예요.", reason: "생각할 거리가 있는 성장 이야기를 좋아한다면 추천해요.", tags: ["normal", "thinking", "growth", "school", "few", "text", "medium", "think", "comfort"], color: "brown" },
-      { title: "시간 가게", author: "이나영", summary: "시간을 사고파는 가게를 통해 선택과 후회를 생각하게 하는 이야기예요.", reason: "판타지와 생각할 거리가 함께 있는 책을 찾는 친구에게 어울려요.", tags: ["normal", "adventure", "mystic", "fantasy", "some", "half", "medium", "learn", "think"], color: "blue" },
-      { title: "이상한 과자 가게 전천당", author: "히로시마 레이코", summary: "신비한 과자 가게에서 벌어지는 기묘하고 흥미로운 이야기예요.", reason: "상상력 가득한 판타지 이야기를 좋아한다면 잘 맞아요.", tags: ["thin", "normal", "funny", "mystic", "fantasy", "many", "easy", "joy"], color: "gold" },
-      { title: "푸른 사자 와니니", author: "이현", summary: "초원의 사자 와니니가 자신의 길을 찾아가는 모험 이야기예요.", reason: "모험과 성장, 용기를 함께 느끼고 싶을 때 추천해요.", tags: ["normal", "adventure", "growth", "nature", "some", "half", "medium", "comfort", "courage"], color: "green" },
-      { title: "수상한 과학실", author: "임시 추천", summary: "생활 속 과학 궁금증을 이야기처럼 재미있게 풀어가는 정보 책이에요.", reason: "새로운 사실을 알고 싶은 친구에게 어울려요.", tags: ["thin", "normal", "info", "some", "half", "easy", "normalSentence", "learn"], color: "blue" },
-      { title: "마법의 시간여행", author: "메리 폽 어즈번", summary: "책 속 세계를 넘나들며 역사와 모험을 만나는 흥미진진한 이야기예요.", reason: "모험과 배움을 함께 원하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "adventure", "fantasy", "history", "many", "easy", "learn", "share"], color: "brown" },
-      { title: "불량한 자전거 여행", author: "김남중", summary: "자전거 여행을 떠난 아이가 여러 사람을 만나며 성장하는 이야기예요.", reason: "현실적인 모험과 성장을 함께 느끼고 싶을 때 좋아요.", tags: ["normal", "adventure", "growth", "school", "few", "text", "medium", "comfort", "courage"], color: "green" }
+      { title: "만복이네 떡집", author: "김리리", summary: "소원을 들어주는 신기한 떡집을 만나며 벌어지는 따뜻하고 재미있는 이야기예요.", reason: "재미있고 따뜻한 이야기를 좋아하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "funny", "warm", "fantasy", "many", "easy", "joy", "comfort"] },
+      { title: "긴긴밤", author: "루리", summary: "서로 다른 존재들이 함께 길을 걸으며 용기와 사랑을 배워가는 이야기예요.", reason: "마음이 따뜻해지는 성장 이야기를 원할 때 좋아요.", tags: ["normal", "warm", "growth", "adventure", "some", "half", "medium", "comfort", "courage"] },
+      { title: "아몬드", author: "손원평", summary: "감정을 느끼기 어려운 소년이 사람들과 만나며 성장하는 이야기예요.", reason: "생각할 거리가 있는 성장 이야기를 좋아한다면 추천해요.", tags: ["normal", "thinking", "growth", "school", "few", "text", "medium", "think", "comfort"] },
+      { title: "시간 가게", author: "이나영", summary: "시간을 사고파는 가게를 통해 선택과 후회를 생각하게 하는 이야기예요.", reason: "판타지와 생각할 거리가 함께 있는 책을 찾는 친구에게 어울려요.", tags: ["normal", "adventure", "mystic", "fantasy", "some", "half", "medium", "learn", "think"] },
+      { title: "이상한 과자 가게 전천당", author: "히로시마 레이코", summary: "신비한 과자 가게에서 벌어지는 기묘하고 흥미로운 이야기예요.", reason: "상상력 가득한 판타지 이야기를 좋아한다면 잘 맞아요.", tags: ["thin", "normal", "funny", "mystic", "fantasy", "many", "easy", "joy"] },
+      { title: "푸른 사자 와니니", author: "이현", summary: "초원의 사자 와니니가 자신의 길을 찾아가는 모험 이야기예요.", reason: "모험과 성장, 용기를 함께 느끼고 싶을 때 추천해요.", tags: ["normal", "adventure", "growth", "nature", "some", "half", "medium", "comfort", "courage"] },
+      { title: "수상한 과학실", author: "임시 추천", summary: "생활 속 과학 궁금증을 이야기처럼 재미있게 풀어가는 정보 책이에요.", reason: "새로운 사실을 알고 싶은 친구에게 어울려요.", tags: ["thin", "normal", "info", "some", "half", "easy", "learn"] },
+      { title: "마법의 시간여행", author: "메리 폽 어즈번", summary: "책 속 세계를 넘나들며 역사와 모험을 만나는 흥미진진한 이야기예요.", reason: "모험과 배움을 함께 원하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "adventure", "fantasy", "history", "many", "easy", "learn", "share"] },
+      { title: "불량한 자전거 여행", author: "김남중", summary: "자전거 여행을 떠난 아이가 여러 사람을 만나며 성장하는 이야기예요.", reason: "현실적인 모험과 성장을 함께 느끼고 싶을 때 좋아요.", tags: ["normal", "adventure", "growth", "school", "few", "text", "medium", "comfort", "courage"] }
     ];
 
     let currentQuestionIndex = 0;
@@ -880,8 +1216,6 @@
       document.getElementById("progressCount").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
       document.getElementById("questionKicker").textContent = `Q${currentQuestionIndex + 1}`;
       document.getElementById("questionTitle").textContent = question.title;
-      document.getElementById("questionDesc").textContent = "마음에 드는 답을 하나 골라줘.";
-      document.getElementById("lumiBubble").innerHTML = "너에게 잘 어울리는<br>책을 찾아볼게!<br>몇 가지 질문에 답해줘.";
 
       renderProgress();
       renderOptions(question);
@@ -904,9 +1238,11 @@
     function renderOptions(question) {
       const optionList = document.getElementById("optionList");
       optionList.innerHTML = "";
-      // 선택지 개수에 따라 카드 배열을 다르게 적용합니다.
-optionList.classList.toggle("many-options", question.options.length >= 5);
-optionList.classList.toggle("six-options", question.options.length === 6);
+
+      optionList.classList.toggle("many-options", question.options.length === 5);
+      optionList.classList.toggle("six-options", question.options.length === 6);
+      optionList.classList.toggle("four-options", question.options.length === 4);
+
       question.options.forEach((option) => {
         const button = document.createElement("button");
         button.type = "button";
@@ -920,7 +1256,6 @@ optionList.classList.toggle("six-options", question.options.length === 6);
         button.innerHTML = `
           <div class="br-option-icon">${option.icon}</div>
           <strong>${option.label.replace(/\n/g, "<br>")}</strong>
-          <span>${option.desc}</span>
         `;
 
         button.onclick = function () {
@@ -970,54 +1305,58 @@ optionList.classList.toggle("six-options", question.options.length === 6);
 
     function getMatchedBooks() {
       const answerValues = Object.values(answers);
+
       return [...bookPool]
         .map((book) => {
-          const score = answerValues.reduce((total, value) => total + (book.tags.includes(value) ? 1 : 0), 0);
+          const score = answerValues.reduce((total, value) => {
+            return total + (book.tags.includes(value) ? 1 : 0);
+          }, 0);
+
           return { ...book, score };
         })
         .sort((a, b) => b.score - a.score);
     }
 
     function showResult() {
-      document.getElementById("bookRecommendPage").classList.add("result-mode");
-      document.getElementById("lumiBubble").innerHTML = "네 답을 살펴봤어!<br>이런 책들이 잘 어울릴 것 같아.";
-      recommendOffset = 0;
-      renderRecommendedBooks();
-    }
+  document.getElementById("bookRecommendPage").classList.add("result-mode");
+  recommendOffset = 0;
+  renderRecommendedBooks();
+}
 
-    function renderRecommendedBooks() {
-      const matchedBooks = getMatchedBooks();
-      const start = recommendOffset % matchedBooks.length;
-      const selectedBooks = [];
+function renderRecommendedBooks() {
+  const matchedBooks = getMatchedBooks();
+  const start = recommendOffset % matchedBooks.length;
+  const selectedBooks = [];
 
-      for (let i = 0; i < 3; i += 1) {
-        selectedBooks.push(matchedBooks[(start + i) % matchedBooks.length]);
-      }
+  for (let i = 0; i < 3; i += 1) {
+    selectedBooks.push(matchedBooks[(start + i) % matchedBooks.length]);
+  }
 
-      const bookList = document.getElementById("bookList");
-      bookList.innerHTML = "";
+  const bookList = document.getElementById("bookList");
+  bookList.innerHTML = "";
 
-      selectedBooks.forEach((book, index) => {
-        const card = document.createElement("div");
-        card.className = "br-book-card";
-        card.innerHTML = `
-          <div class="br-rank">${index + 1}</div>
-          <div class="br-book-info">
-            <h2>${book.title}</h2>
-            <p><strong>${book.author}</strong> 지음</p>
-            <p>${book.summary}</p>
-            <span class="br-book-reason">${book.reason}</span>
-          </div>
-          <button type="button" class="br-book-pick" title="이 책으로 읽기 시작하기">🔖</button>
-        `;
-        bookList.appendChild(card);
-      });
-    }
+  selectedBooks.forEach((book, index) => {
+    const card = document.createElement("div");
+    card.className = "br-book-card";
 
-    function recommendAnotherBooks() {
-      recommendOffset += 3;
-      renderRecommendedBooks();
-    }
+    card.innerHTML = `
+      <div class="br-rank">${index + 1}</div>
+      <div class="br-book-info">
+        <h2>${book.title}</h2>
+        <p class="br-book-author">${book.author} 지음</p>
+        <p class="br-book-summary">${book.summary}</p>
+      </div>
+      <button type="button" class="br-book-pick" title="이 책으로 읽기 시작하기">🔖</button>
+    `;
+
+    bookList.appendChild(card);
+  });
+}
+
+function recommendAnotherBooks() {
+  recommendOffset += 3;
+  renderRecommendedBooks();
+}
 
     function restartQuestions() {
       answers = {};
@@ -1030,10 +1369,9 @@ optionList.classList.toggle("six-options", question.options.length === 6);
     function goFriendBookShelf() {
       window.location.href = "./friend-book-shelf.html";
     }
-
   </script>
-  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js?v=power-common-2"></script>
+
+  <script src="../js/individual-power.js?v=power-common-2"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

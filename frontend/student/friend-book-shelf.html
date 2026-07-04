@@ -1,17 +1,6 @@
 <!--
   파일명: friend-book-shelf.html
-  역할: 문답책 개별읽기 - 우리 반 추천 책장 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 친구들이 추천한 책을 카드 형태로 보여줍니다.
-  2. 좋아요 수가 높은 책은 BEST 추천책으로 자동 정렬되어 맨 위에 배치됩니다.
-  3. 내가 추천한 책만 따로 볼 수 있습니다.
-  4. 새 추천 책을 직접 등록할 수 있습니다.
-
-  참고:
-  - 현재 데이터는 화면 확인용 임시 데이터입니다.
-  - 실제 서버/DB를 붙이면 classBooks 배열과 addMyBook() 부분을 API로 교체하면 됩니다.
-  - 책 표지는 저작권 문제가 있을 수 있어 사용하지 않고, 제목/지은이/추천 이유 중심으로 구성합니다.
+  역할: 문답책 개별읽기 - 우리 반 추천 책장 화면
 -->
 
 <!DOCTYPE html>
@@ -22,436 +11,512 @@
   <title>우리 반 추천 책장 - 문답책</title>
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
-  <link rel="stylesheet" href="../css/common.css?v=friend-book-shelf-1">
-  <!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
-<link rel="stylesheet" href="../css/individual-power.css">
+  <link rel="stylesheet" href="../css/common.css?v=friend-book-shelf-clean-final">
+  <link rel="stylesheet" href="../css/individual-power.css">
 
   <style>
-    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
-    .fs-page, .fs-page * { box-sizing: border-box; font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .fs-page,
+    .fs-page * {
+      box-sizing: border-box;
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    }
+
     .fs-page {
-      width: 100vw; height: 100vh; padding: 16px 28px 20px; color: #4a2a10; overflow: hidden;
-      background: linear-gradient(90deg, rgba(255,248,229,.92), rgba(255,248,229,.72) 48%, rgba(255,248,229,.5)), radial-gradient(circle at 12% 18%, rgba(255,221,135,.38), transparent 34%), radial-gradient(circle at 88% 82%, rgba(166,103,31,.22), transparent 32%), linear-gradient(135deg, #f8ecd2, #d8b16d 48%, #84521f);
-    }
-    .fs-shell { width: 100%; max-width: 1480px; height: 100%; margin: 0 auto; display: grid; grid-template-rows: 64px minmax(0,1fr); gap: 14px; }
-    .fs-top-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 22px; border:1px solid rgba(182,119,38,.28); border-radius:24px; background:rgba(255,250,236,.92); box-shadow:0 12px 24px rgba(92,58,18,.12); backdrop-filter:blur(8px); }
-    .fs-logo { display:flex; align-items:center; gap:12px; }
-    .fs-logo img { width:42px; height:42px; object-fit:contain; }
-    .fs-logo span { font-family:"Noto Serif KR","Noto Sans KR",serif; font-size:29px; font-weight:900; letter-spacing:-.045em; color:#5a3415; }
-    .fs-top-actions { display:flex; align-items:center; gap:10px; }
-    .fs-top-button { height:42px; padding:0 18px; border:1px solid rgba(168,106,31,.28); border-radius:999px; background:rgba(255,252,242,.94); color:#633915; font-size:15px; font-weight:900; cursor:pointer; box-shadow:0 8px 16px rgba(98,59,15,.1); }
-    .fs-main { min-height:0; display:grid; grid-template-columns:320px minmax(0,1fr); gap:18px; align-items:stretch; }
-    .fs-side-card, .fs-content-card { min-height:0; border:1px solid rgba(180,116,34,.24); border-radius:34px; background:rgba(255,251,242,.92); box-shadow:0 18px 34px rgba(92,58,18,.13), inset 0 0 0 1px rgba(255,255,255,.5); backdrop-filter:blur(8px); overflow:hidden; }
-    .fs-side-card { display:grid; grid-template-rows:auto auto minmax(0,1fr); padding:26px 22px; }
-    .fs-side-kicker { margin:0 0 10px; color:#b5761f; font-size:15px; font-weight:900; }
-    .fs-side-title { margin:0 0 14px; font-family:"Noto Serif KR","Noto Sans KR",serif; color:#4d2b10; font-size:32px; font-weight:900; line-height:1.16; letter-spacing:-.055em; word-break:keep-all; }
-    .fs-side-desc { margin:0 0 22px; color:#765026; font-size:15px; font-weight:800; line-height:1.5; word-break:keep-all; }
-    .fs-guide-box { display:grid; gap:10px; margin-bottom:18px; }
-    .fs-guide-item { display:grid; grid-template-columns:42px 1fr; gap:10px; align-items:center; padding:11px 12px; border-radius:18px; background:rgba(255,246,220,.82); border:1px solid rgba(181,117,37,.16); }
-    .fs-guide-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:14px; background:linear-gradient(180deg,#edc261,#a9651e); color:#fff9e8; font-size:20px; box-shadow:0 8px 14px rgba(129,76,18,.16); }
-    .fs-guide-item strong { display:block; margin-bottom:2px; color:#5c3615; font-size:14px; font-weight:900; }
-    .fs-guide-item span { display:block; color:#7a5123; font-size:12px; font-weight:800; line-height:1.35; }
-    .fs-form { min-height:0; display:grid; grid-template-rows:auto repeat(4,auto) 48px; gap:9px; padding:16px; border-radius:24px; background:rgba(255,252,244,.8); border:1px solid rgba(181,117,37,.16); box-shadow:inset 0 0 0 1px rgba(255,255,255,.4); }
-    .fs-form-title { margin:0 0 2px; color:#573315; font-size:18px; font-weight:900; }
-    .fs-input, .fs-textarea { width:100%; border:1px solid rgba(171,108,31,.22); border-radius:16px; background:rgba(255,250,237,.9); color:#4d2b10; font-size:14px; font-weight:800; outline:none; }
-    .fs-input { height:42px; padding:0 13px; }
-    .fs-textarea { height:58px; padding:11px 13px; resize:none; line-height:1.35; }
-    .fs-input::placeholder, .fs-textarea::placeholder { color:rgba(111,72,29,.52); }
-    .fs-submit-button { border:none; border-radius:999px; background:linear-gradient(180deg,#e6b656,#a8641e); color:#fff9e8; font-size:16px; font-weight:900; cursor:pointer; box-shadow:0 12px 22px rgba(128,76,18,.2); }
-    .fs-content-card { display:grid; grid-template-rows:126px minmax(0,1fr); padding:26px 30px 28px; }
-    .fs-content-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:start; border-bottom:1px solid rgba(181,117,37,.16); padding-bottom:18px; }
-    .fs-content-header h1 { margin:0 0 8px; font-family:"Noto Serif KR","Noto Sans KR",serif; color:#4d2b10; font-size:42px; font-weight:900; line-height:1.12; letter-spacing:-.055em; }
-    .fs-content-header p { margin:0; color:#795024; font-size:16px; font-weight:800; line-height:1.45; word-break:keep-all; }
-    .fs-tab-list { display:flex; gap:8px; padding:6px; border-radius:999px; background:rgba(255,245,219,.8); border:1px solid rgba(178,113,31,.16); }
-    .fs-tab-button { height:42px; padding:0 16px; border:none; border-radius:999px; background:transparent; color:#744919; font-size:14px; font-weight:900; cursor:pointer; white-space:nowrap; }
-    .fs-tab-button.active { background:linear-gradient(180deg,#e7ba5b,#a8641e); color:#fff9e8; box-shadow:0 8px 16px rgba(128,76,18,.18); }
-    .fs-scroll-area { min-height:0; overflow-y:auto; padding:18px 4px 2px 0; }
-    .fs-section { margin-bottom:22px; }
-    .fs-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .fs-section-title { margin:0; color:#5b3515; font-size:21px; font-weight:900; letter-spacing:-.035em; }
-    .fs-section-note { color:#9a681f; font-size:13px; font-weight:900; }
-    .fs-best-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-    .fs-best-card { position:relative; min-height:174px; padding:18px 18px 16px; border-radius:24px; border:1px solid rgba(185,116,30,.24); background:radial-gradient(circle at 12% 10%, rgba(255,236,169,.72), transparent 42%), linear-gradient(180deg, rgba(255,252,241,.95), rgba(255,240,199,.9)); box-shadow:0 14px 24px rgba(101,63,18,.12); overflow:hidden; }
-    .fs-best-badge { display:inline-flex; align-items:center; gap:5px; height:28px; padding:0 10px; border-radius:999px; background:linear-gradient(180deg,#e7ba5b,#a8641e); color:#fff9e8; font-size:12px; font-weight:900; box-shadow:0 8px 14px rgba(128,76,18,.18); }
-    .fs-card-title { margin:12px 0 4px; color:#4e2d10; font-size:21px; font-weight:900; line-height:1.25; letter-spacing:-.035em; word-break:keep-all; }
-    .fs-card-author { margin:0 0 9px; color:#8a5b22; font-size:13px; font-weight:900; }
-    .fs-card-reason { margin:0; color:#6f481d; font-size:13px; font-weight:800; line-height:1.42; word-break:keep-all; }
-    .fs-like-row { display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:8px; }
-    .fs-rec-by { color:#9a681f; font-size:12px; font-weight:900; }
-    .fs-like-button { height:34px; padding:0 11px; border:1px solid rgba(174,109,27,.22); border-radius:999px; background:rgba(255,250,237,.9); color:#8a5519; font-size:13px; font-weight:900; cursor:pointer; }
-    .fs-book-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .fs-book-card { min-height:146px; display:grid; grid-template-columns:54px minmax(0,1fr); gap:13px; padding:15px; border-radius:22px; border:1px solid rgba(181,117,37,.16); background:rgba(255,252,244,.84); box-shadow:0 10px 18px rgba(101,63,18,.08); }
-    .fs-book-mark { width:54px; height:64px; display:grid; place-items:center; border-radius:15px 15px 22px 22px; background:linear-gradient(180deg,#e6b656,#9f5d1d); color:#fff9e8; font-size:24px; box-shadow:0 8px 14px rgba(129,76,18,.16); }
-
-    .fs-teaser-box {
-      margin-top: 10px;
-      padding: 10px 11px;
-      border-radius: 16px;
-      background: rgba(255, 248, 229, 0.74);
-      border: 1px solid rgba(181, 117, 37, 0.14);
+      width: 100vw;
+      height: 100vh;
+      padding: 16px 28px 20px;
+      color: #4a2a10;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(255, 248, 229, 0.92), rgba(255, 248, 229, 0.72) 48%, rgba(255, 248, 229, 0.5)),
+        radial-gradient(circle at 12% 18%, rgba(255, 221, 135, 0.38), transparent 34%),
+        radial-gradient(circle at 88% 82%, rgba(166, 103, 31, 0.22), transparent 32%),
+        linear-gradient(135deg, #f8ecd2, #d8b16d 48%, #84521f);
     }
 
-    .fs-teaser-title {
+    .fs-shell {
+      width: 100%;
+      max-width: 1480px;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: 64px minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .fs-top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 22px;
+      border: 1px solid rgba(182, 119, 38, 0.28);
+      border-radius: 24px;
+      background: rgba(255, 250, 236, 0.92);
+      box-shadow: 0 12px 24px rgba(92, 58, 18, 0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .fs-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fs-logo img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .fs-logo span {
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 29px;
+      font-weight: 900;
+      color: #5a3415;
+      letter-spacing: -0.045em;
+    }
+
+    .fs-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fs-top-button {
+      height: 42px;
+      padding: 0 18px;
+      border: 1px solid rgba(168, 106, 31, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.94);
+      color: #633915;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1);
+      white-space: nowrap;
+    }
+
+    .fs-main {
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
       display: block;
-      margin-bottom: 6px;
-      color: #6a3d16;
-      font-size: 12px;
+    }
+
+    .fs-content-card {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: 100px minmax(0, 1fr);
+      padding: 26px 30px 28px;
+      border: 1px solid rgba(180, 116, 34, 0.24);
+      border-radius: 34px;
+      background: rgba(255, 251, 242, 0.92);
+      box-shadow:
+        0 18px 34px rgba(92, 58, 18, 0.13),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .fs-content-header {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      border-bottom: 1px solid rgba(181, 117, 37, 0.16);
+      padding-bottom: 18px;
+    }
+
+    .fs-title-row {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .fs-content-header h1 {
+      margin: 0;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      color: #4d2b10;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.055em;
+      white-space: nowrap;
+    }
+
+    .fs-write-button {
+      height: 48px;
+      padding: 0 24px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e8bd5e, #a8641e);
+      color: #fff9e8;
+      font-size: 16px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(128, 76, 18, 0.22);
+      white-space: nowrap;
+    }
+
+    .fs-tab-list {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255, 245, 219, 0.8);
+      border: 1px solid rgba(178, 113, 31, 0.16);
+    }
+
+    .fs-tab-button {
+      height: 42px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: #744919;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .fs-tab-button.active {
+      background: linear-gradient(180deg, #e7ba5b, #a8641e);
+      color: #fff9e8;
+      box-shadow: 0 8px 16px rgba(128, 76, 18, 0.18);
+    }
+
+    .fs-scroll-area {
+      min-width: 0;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 18px 6px 2px 0;
+    }
+
+    .fs-section {
+      margin-bottom: 24px;
+    }
+
+    .fs-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .fs-section-title {
+      margin: 0;
+      color: #5b3515;
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+    }
+
+    .fs-best-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .fs-book-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .fs-best-card,
+    .fs-book-card {
+      min-width: 0;
+      min-height: 190px;
+      border-radius: 26px;
+      border: 1px solid rgba(181, 117, 37, 0.18);
+      background: rgba(255, 252, 244, 0.88);
+      box-shadow: 0 12px 22px rgba(101, 63, 18, 0.1);
+      overflow: hidden;
+    }
+
+    .fs-best-card {
+      padding: 20px;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(255, 236, 169, 0.72), transparent 42%),
+        linear-gradient(180deg, rgba(255, 252, 241, 0.96), rgba(255, 240, 199, 0.9));
+    }
+
+    .fs-book-card {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .fs-book-mark {
+      width: 58px;
+      height: 68px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px 16px 24px 24px;
+      background: linear-gradient(180deg, #e6b656, #9f5d1d);
+      color: #fff9e8;
+      font-size: 26px;
+      box-shadow: 0 8px 14px rgba(129, 76, 18, 0.16);
+    }
+
+    .fs-best-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e7ba5b, #a8641e);
+      color: #fff9e8;
+      font-size: 13px;
+      font-weight: 950;
+      box-shadow: 0 8px 14px rgba(128, 76, 18, 0.18);
+    }
+
+    .fs-card-title {
+      margin: 12px 0 6px;
+      color: #4e2d10;
+      font-size: 26px;
+      font-weight: 950;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      word-break: keep-all;
+    }
+
+    .fs-book-card .fs-card-title {
+      margin-top: 0;
+    }
+
+    .fs-card-author {
+      margin: 0 0 10px;
+      color: #8a5b22;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .fs-card-reason {
+      margin: 0;
+      color: #6f481d;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    .fs-like-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      gap: 8px;
+    }
+
+    .fs-rec-by {
+      color: #9a681f;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .fs-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fs-like-button,
+    .fs-detail-button {
+      height: 36px;
+      padding: 0 13px;
+      border: 1px solid rgba(174, 109, 27, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 250, 237, 0.94);
+      color: #8a5519;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .fs-detail-button {
+      background: rgba(255, 240, 201, 0.96);
+    }
+
+    .fs-empty {
+      display: grid;
+      place-items: center;
+      min-height: 280px;
+      border-radius: 28px;
+      border: 1px dashed rgba(166, 103, 31, 0.3);
+      background: rgba(255, 248, 229, 0.65);
+      color: #7a5123;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.5;
+      grid-column: 1 / -1;
+    }
+
+    .fs-detail-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(52, 31, 12, 0.38);
+      z-index: 100;
+    }
+
+    .fs-detail-modal.show {
+      display: flex;
+    }
+
+    .fs-detail-box {
+      width: min(720px, 92vw);
+      max-height: 82vh;
+      overflow-y: auto;
+      padding: 30px;
+      border-radius: 30px;
+      background: rgba(255, 251, 242, 0.98);
+      box-shadow: 0 24px 50px rgba(51, 29, 9, 0.25);
+      border: 1px solid rgba(181, 117, 37, 0.24);
+    }
+
+    .fs-detail-header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(181, 117, 37, 0.16);
+      padding-bottom: 16px;
+    }
+
+    .fs-detail-header h2 {
+      margin: 0 0 8px;
+      color: #4d2b10;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 34px;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .fs-detail-header p {
+      margin: 0;
+      color: #7a5123;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .fs-close-button {
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: #f1dfb8;
+      color: #633915;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .fs-detail-section {
+      margin-top: 18px;
+    }
+
+    .fs-detail-section strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #5b3515;
+      font-size: 19px;
       font-weight: 950;
     }
 
-    .fs-teaser-list {
+    .fs-detail-section p {
       margin: 0;
-      padding-left: 18px;
-      color: #7a5123;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.45;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 244, 213, 0.9);
+      color: #6f481d;
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.55;
       word-break: keep-all;
     }
 
-    .fs-teaser-list li + li {
-      margin-top: 3px;
-    }
-
-    .fs-empty { display:grid; place-items:center; min-height:280px; border-radius:28px; border:1px dashed rgba(166,103,31,.3); background:rgba(255,248,229,.65); color:#7a5123; font-size:17px; font-weight:900; text-align:center; line-height:1.5; grid-column:1 / -1; }
-    @media (max-height:760px) {
-      .fs-page{padding:12px 24px}.fs-shell{grid-template-rows:58px minmax(0,1fr);gap:10px}.fs-main{grid-template-columns:300px minmax(0,1fr);gap:14px}.fs-side-card{padding:20px 18px}.fs-side-title{font-size:28px}.fs-side-desc{margin-bottom:14px}.fs-guide-box{gap:8px;margin-bottom:12px}.fs-guide-item{padding:9px 10px}.fs-form{gap:7px;padding:13px}.fs-input{height:38px}.fs-textarea{height:50px}.fs-content-card{grid-template-rows:112px minmax(0,1fr);padding:20px 24px}.fs-content-header h1{font-size:36px}.fs-best-card{min-height:154px;padding:15px}.fs-card-title{font-size:18px}.fs-book-card{min-height:130px;padding:13px}
-    }
-        /*
-      왼쪽 영역 수정:
-      설명글과 작은 입력칸을 제거하고,
-      루미 + 큰 추천하기 버튼 중심으로 구성합니다.
-    */
-
-    .fs-side-card {
-      position: relative !important;
-      display: grid !important;
-      grid-template-rows: auto minmax(0, 1fr) auto !important;
-      padding: 26px 22px 24px !important;
-      overflow: hidden !important;
-    }
-
-    .fs-lumi-bubble {
-      position: relative;
-      z-index: 3;
-      padding: 18px 16px;
-      border: 1px solid rgba(179, 117, 36, 0.24);
-      border-radius: 26px;
-      background: rgba(255, 252, 242, 0.96);
-      color: #5b3515;
+    .fs-detail-list {
+      margin: 0;
+      padding: 14px 18px 14px 34px;
+      border-radius: 18px;
+      background: rgba(255, 244, 213, 0.9);
+      color: #6f481d;
       font-size: 17px;
-      font-weight: 900;
-      line-height: 1.5;
-      text-align: center;
-      word-break: keep-all;
-      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
-    }
-
-    .fs-lumi-wrap {
-      position: relative;
-      min-height: 0;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .fs-lumi {
-      position: relative;
-      z-index: 2;
-      width: 280px;
-      max-height: 470px;
-      object-fit: contain;
-      object-position: bottom center;
-      filter: drop-shadow(0 18px 22px rgba(91, 54, 15, 0.22));
-    }
-
-    .fs-lumi-glow {
-      position: absolute;
-      left: 50%;
-      bottom: 52px;
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      transform: translateX(-50%);
-      background: radial-gradient(circle, rgba(255, 218, 121, 0.36), transparent 68%);
-      z-index: 1;
-    }
-
-    .fs-side-bottom {
-      position: relative;
-      z-index: 4;
-    }
-
-    .fs-write-big-button {
-      width: 100%;
-      min-height: 104px;
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      grid-template-rows: auto auto;
-      column-gap: 12px;
-      align-items: center;
-      padding: 18px 18px;
-      border: none;
-      border-radius: 26px;
-      background: linear-gradient(180deg, #e8bd5e, #a8641e);
-      color: #fff9e8;
-      cursor: pointer;
-      box-shadow: 0 16px 28px rgba(128, 76, 18, 0.24);
-      text-align: left;
-    }
-
-    .fs-write-big-button span {
-      grid-row: 1 / 3;
-      width: 52px;
-      height: 52px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: rgba(255, 250, 236, 0.22);
-      font-size: 28px;
-    }
-
-    .fs-write-big-button strong {
-      display: block;
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-    }
-
-    .fs-write-big-button em {
-      display: block;
-      margin-top: 4px;
-      color: rgba(255, 249, 232, 0.9);
-      font-size: 13px;
-      font-style: normal;
-      font-weight: 800;
-      line-height: 1.35;
+      font-weight: 850;
+      line-height: 1.55;
       word-break: keep-all;
     }
 
-    .fs-write-big-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 32px rgba(128, 76, 18, 0.28);
+    .fs-detail-list li + li {
+      margin-top: 7px;
     }
 
     @media (max-height: 760px) {
-      .fs-lumi-bubble {
-        padding: 14px 13px;
-        font-size: 15px;
+      .fs-page {
+        padding: 12px 24px;
       }
 
-      .fs-lumi {
-        width: 240px;
-        max-height: 380px;
+      .fs-shell {
+        grid-template-rows: 58px minmax(0, 1fr);
+        gap: 10px;
       }
 
-      .fs-write-big-button {
-        min-height: 88px;
-        padding: 14px 16px;
+      .fs-content-card {
+        grid-template-rows: 86px minmax(0, 1fr);
+        padding: 20px 24px;
       }
 
-      .fs-write-big-button strong {
-        font-size: 19px;
-      }
-    }
-        /*
-      왼쪽 영역 최종 수정:
-      루미는 작게 위쪽에 배치하고,
-      기존 안내 카드 3개를 다시 보여줍니다.
-    */
-
-    .fs-side-card {
-      display: grid !important;
-      grid-template-rows: 170px auto auto !important;
-      gap: 16px !important;
-      padding: 22px 22px 24px !important;
-      overflow: hidden !important;
-    }
-
-    .fs-mini-lumi-area {
-      position: relative;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 104px;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .fs-mini-bubble {
-      align-self: start;
-      margin-top: 4px;
-      padding: 15px 14px;
-      border: 1px solid rgba(179, 117, 36, 0.24);
-      border-radius: 24px;
-      background: rgba(255, 252, 242, 0.96);
-      color: #5b3515;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.45;
-      text-align: center;
-      word-break: keep-all;
-      box-shadow: 0 10px 18px rgba(98, 59, 15, 0.1);
-    }
-
-    .fs-mini-lumi {
-      width: 104px;
-      height: 154px;
-      object-fit: contain;
-      object-position: bottom center;
-      filter: drop-shadow(0 12px 14px rgba(91, 54, 15, 0.18));
-    }
-
-    .fs-guide-box {
-      display: grid !important;
-      gap: 10px !important;
-      margin-bottom: 0 !important;
-    }
-
-    .fs-guide-item {
-      display: grid !important;
-      grid-template-columns: 52px 1fr !important;
-      gap: 12px !important;
-      align-items: center !important;
-      padding: 14px 14px !important;
-      border-radius: 20px !important;
-      background: rgba(255, 246, 220, 0.82) !important;
-      border: 1px solid rgba(181, 117, 37, 0.16) !important;
-    }
-
-    .fs-guide-icon {
-      width: 52px !important;
-      height: 52px !important;
-      display: grid !important;
-      place-items: center !important;
-      border-radius: 17px !important;
-      background: linear-gradient(180deg, #edc261, #a9651e) !important;
-      color: #fff9e8 !important;
-      font-size: 24px !important;
-      box-shadow: 0 8px 14px rgba(129, 76, 18, 0.16) !important;
-    }
-
-    .fs-guide-item strong {
-      display: block !important;
-      margin-bottom: 3px !important;
-      color: #5c3615 !important;
-      font-size: 17px !important;
-      font-weight: 900 !important;
-    }
-
-    .fs-guide-item span {
-      display: block !important;
-      color: #7a5123 !important;
-      font-size: 13px !important;
-      font-weight: 800 !important;
-      line-height: 1.35 !important;
-      word-break: keep-all !important;
-    }
-
-    .fs-write-big-button {
-      width: 100%;
-      min-height: 96px;
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      grid-template-rows: auto auto;
-      column-gap: 12px;
-      align-items: center;
-      padding: 17px 18px;
-      border: none;
-      border-radius: 26px;
-      background: linear-gradient(180deg, #e8bd5e, #a8641e);
-      color: #fff9e8;
-      cursor: pointer;
-      box-shadow: 0 16px 28px rgba(128, 76, 18, 0.24);
-      text-align: left;
-    }
-
-    .fs-write-big-button span {
-      grid-row: 1 / 3;
-      width: 52px;
-      height: 52px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: rgba(255, 250, 236, 0.22);
-      font-size: 28px;
-    }
-
-    .fs-write-big-button strong {
-      display: block;
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-    }
-
-    .fs-write-big-button em {
-      display: block;
-      margin-top: 4px;
-      color: rgba(255, 249, 232, 0.9);
-      font-size: 13px;
-      font-style: normal;
-      font-weight: 800;
-      line-height: 1.35;
-      word-break: keep-all;
-    }
-
-    /*
-      이전에 크게 넣었던 루미 관련 스타일은 화면에 남아 있어도
-      새 HTML에서는 사용하지 않으므로 보이지 않습니다.
-    */
-    .fs-lumi,
-    .fs-lumi-wrap,
-    .fs-lumi-glow,
-    .fs-lumi-bubble,
-    .fs-side-bottom {
-      display: none !important;
-    }
-
-    @media (max-height: 760px) {
-      .fs-side-card {
-        grid-template-rows: 145px auto auto !important;
-        gap: 12px !important;
-        padding: 18px 18px 20px !important;
+      .fs-content-header h1 {
+        font-size: 36px;
       }
 
-      .fs-mini-lumi-area {
-        grid-template-columns: minmax(0, 1fr) 90px;
+      .fs-write-button {
+        height: 40px;
+        font-size: 14px;
       }
 
-      .fs-mini-bubble {
-        padding: 12px 11px;
-        font-size: 13px;
+      .fs-best-card,
+      .fs-book-card {
+        min-height: 162px;
+        padding: 16px;
       }
 
-      .fs-mini-lumi {
-        width: 90px;
-        height: 132px;
+      .fs-card-title {
+        font-size: 22px;
       }
 
-      .fs-guide-item {
-        padding: 11px 12px !important;
-      }
-
-      .fs-guide-icon {
-        width: 46px !important;
-        height: 46px !important;
-        font-size: 21px !important;
-      }
-
-      .fs-guide-item strong {
-        font-size: 15px !important;
-      }
-
-      .fs-guide-item span {
-        font-size: 12px !important;
-      }
-
-      .fs-write-big-button {
-        min-height: 82px;
-        padding: 13px 15px;
-      }
-
-      .fs-write-big-button strong {
-        font-size: 19px;
+      .fs-card-author,
+      .fs-card-reason {
+        font-size: 14px;
       }
     }
   </style>
@@ -460,118 +525,108 @@
 <body>
   <main class="fs-page">
     <div class="fs-shell">
+
       <header class="fs-top-bar">
         <div class="fs-logo">
           <img src="../assets/images/logo-book.png" alt="문답책 로고">
           <span>문답책</span>
         </div>
-        <div class="fs-top-actions">
-          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
-<button type="button" class="fs-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-<button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
-<button type="button" class="fs-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
 
+        <div class="fs-top-actions">
+          <button type="button" class="fs-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
+          <button type="button" class="fs-top-button" onclick="goIndividualReading()">책읽기 홈</button>
         </div>
       </header>
 
       <section class="fs-main">
-      <aside class="fs-side-card">
-  <!-- 왼쪽 안내 영역입니다. 루미는 작게 넣고, 기존 안내 카드 3개는 유지합니다. -->
-  <div class="fs-mini-lumi-area">
-    <div class="fs-mini-bubble">
-      친구들이 추천한 책을 살펴보고,<br>
-      마음에 드는 책에는 좋아요를 눌러줘!
-    </div>
-
-    <img
-      src="../assets/images/book-recommend/book-recommend-lumi.png"
-      alt="용사 루미"
-      class="fs-mini-lumi"
-    >
-  </div>
-
-  <div class="fs-guide-box">
-    <div class="fs-guide-item">
-      <div class="fs-guide-icon">🏆</div>
-      <div>
-        <strong>BEST 추천책</strong>
-        <span>좋아요가 많은 책이 위로 올라와요.</span>
-      </div>
-    </div>
-
-    <div class="fs-guide-item">
-      <div class="fs-guide-icon">💬</div>
-      <div>
-        <strong>친구 추천 이유</strong>
-        <span>왜 추천했는지 함께 살펴봐요.</span>
-      </div>
-    </div>
-
-    <div class="fs-guide-item">
-      <div class="fs-guide-icon">✍️</div>
-      <div>
-        <strong>나도 추천하기</strong>
-        <span>책 제목과 추천 이유를 적어 등록해요.</span>
-      </div>
-    </div>
-  </div>
-
-  <button type="button" class="fs-write-big-button" onclick="goFriendBookWrite()">
-    <span>✍️</span>
-    <strong>나도 책 추천하기</strong>
-    <em>내가 재미있게 읽은 책을 친구들에게 소개하기</em>
-  </button>
-</aside>
-
         <article class="fs-content-card">
+
           <div class="fs-content-header">
-            <div>
+            <div class="fs-title-row">
               <h1>우리 반 추천 책장</h1>
-              <p>친구들이 직접 추천한 책을 살펴보고 좋아요를 눌러봐.<br>내가 등록한 책은 ‘내가 추천한 책’에서 따로 확인할 수 있어.</p>
+              <button type="button" class="fs-write-button" onclick="goFriendBookWrite()">
+                나도 책 추천하기
+              </button>
             </div>
+
             <div class="fs-tab-list" aria-label="추천 책 보기 방식">
-              <button type="button" class="fs-tab-button active" data-tab="all" onclick="changeTab('all')">전체 추천</button>
-              <button type="button" class="fs-tab-button" data-tab="mine" onclick="changeTab('mine')">내가 추천한 책</button>
+              <button type="button" class="fs-tab-button active" data-tab="all" onclick="changeTab('all')">전체 보기</button>
+              <button type="button" class="fs-tab-button" data-tab="mine" onclick="changeTab('mine')">내가 쓴 추천</button>
             </div>
           </div>
 
           <div class="fs-scroll-area" id="scrollArea">
             <section class="fs-section" id="bestSection">
-              <div class="fs-section-header"><h2 class="fs-section-title">🏆 BEST 추천책</h2><span class="fs-section-note">좋아요 많은 순서로 자동 배치</span></div>
+              <div class="fs-section-header">
+                <h2 class="fs-section-title">🏆 많이 좋아한 책</h2>
+              </div>
               <div class="fs-best-grid" id="bestBookList"></div>
             </section>
 
             <section class="fs-section" id="allSection">
-              <div class="fs-section-header"><h2 class="fs-section-title">📚 친구들이 추천한 책</h2><span class="fs-section-note">좋아요를 눌러 BEST에 올려봐</span></div>
+              <div class="fs-section-header">
+                <h2 class="fs-section-title">📚 친구들이 추천한 책</h2>
+              </div>
               <div class="fs-book-grid" id="friendBookList"></div>
             </section>
 
             <section class="fs-section" id="mineSection" style="display:none;">
-              <div class="fs-section-header"><h2 class="fs-section-title">✍️ 내가 추천한 책</h2><span class="fs-section-note">내가 등록한 추천만 모아보기</span></div>
+              <div class="fs-section-header">
+                <h2 class="fs-section-title">✍️ 내가 쓴 추천</h2>
+              </div>
               <div class="fs-book-grid" id="myBookList"></div>
             </section>
           </div>
+
         </article>
       </section>
+
     </div>
   </main>
-  
+
+  <div class="fs-detail-modal" id="detailModal" onclick="closeDetailModalOnBg(event)">
+    <div class="fs-detail-box">
+      <div class="fs-detail-header">
+        <div>
+          <h2 id="detailTitle">책 제목</h2>
+          <p id="detailAuthor">지은이</p>
+        </div>
+        <button type="button" class="fs-close-button" onclick="closeDetailModal()">×</button>
+      </div>
+
+      <div class="fs-detail-section">
+        <strong>추천한 친구</strong>
+        <p id="detailRecommender">친구 이름</p>
+      </div>
+
+      <div class="fs-detail-section">
+        <strong>추천 이유</strong>
+        <p id="detailReason">추천 이유</p>
+      </div>
+
+      <div class="fs-detail-section">
+        <strong>이 책이 궁금해지는 질문</strong>
+        <ol class="fs-detail-list" id="detailQuestions"></ol>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/auth.js"></script>
+
   <script>
-    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
     // checkLogin();
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
-// 내가 좋아요를 누른 추천책 ID 목록을 저장하는 키입니다.
-// 같은 책에 좋아요를 여러 번 누르지 않도록 막기 위해 사용합니다.
-const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
+    const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
+
     let classBooks = [
       {
         id: 1,
         title: "긴긴밤",
         author: "루리",
-        reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 감동적이었어.",
+        reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 좋았어.",
         recommender: "민서",
         likes: 18,
         mine: false,
@@ -613,7 +668,7 @@ const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
         id: 4,
         title: "시간 가게",
         author: "이나영",
-        reason: "시간을 사고판다는 상상이 재미있고, 선택에 대해 생각하게 됐어.",
+        reason: "시간을 사고판다는 상상이 재미있었어.",
         recommender: "도윤",
         likes: 9,
         mine: false,
@@ -667,15 +722,10 @@ const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
       window.location.href = "./book-recommend.html";
     }
 
-    /*
-      나도 책 추천하기 작성 화면으로 이동합니다.
-      추천 작성 화면에서 저장한 글은 sessionStorage에 임시 저장됩니다.
-    */
     function goFriendBookWrite() {
       window.location.href = "./friend-book-write.html";
     }
 
-    // 저장된 내 추천글을 불러옵니다.
     function getSavedFriendBooks() {
       try {
         return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_KEY) || "[]");
@@ -683,30 +733,23 @@ const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
         return [];
       }
     }
-// 내가 좋아요를 누른 책 ID 목록을 불러옵니다.
-function getLikedBookIds() {
-  try {
-    return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_LIKED_KEY) || "[]");
-  } catch (error) {
-    return [];
-  }
-}
 
-// 내가 좋아요를 누른 책 ID 목록을 저장합니다.
-function saveLikedBookIds(likedBookIds) {
-  sessionStorage.setItem(FRIEND_BOOK_LIKED_KEY, JSON.stringify(likedBookIds));
-}
-    // 저장된 내 추천글을 다시 저장합니다.
-    function saveSavedFriendBooks(books) {
-      sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify(books));
+    function getLikedBookIds() {
+      try {
+        return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_LIKED_KEY) || "[]");
+      } catch (error) {
+        return [];
+      }
     }
 
-    // 기본 추천책과 내가 작성한 추천책을 합쳐서 보여줍니다.
+    function saveLikedBookIds(likedBookIds) {
+      sessionStorage.setItem(FRIEND_BOOK_LIKED_KEY, JSON.stringify(likedBookIds));
+    }
+
     function getAllBooks() {
       return [...getSavedFriendBooks(), ...classBooks];
     }
 
-    // 화면에 안전하게 글자를 넣기 위한 함수입니다.
     function escapeHtml(text) {
       return String(text || "")
         .replaceAll("&", "&amp;")
@@ -759,23 +802,27 @@ function saveLikedBookIds(likedBookIds) {
       bestBookList.innerHTML = "";
 
       bestBooks.forEach(function (book, index) {
-                const likedBookIds = getLikedBookIds();
+        const likedBookIds = getLikedBookIds();
         const isLiked = likedBookIds.includes(book.id);
+
         const card = document.createElement("div");
         card.className = "fs-best-card";
         card.innerHTML = `
           <span class="fs-best-badge">BEST ${index + 1}</span>
           <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
           <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
-          <p class="fs-card-reason">${escapeHtml(book.reason)}</p>
-          ${renderTeaserQuestions(book)}
+          <p class="fs-card-reason">“${escapeHtml(book.reason)}”</p>
           <div class="fs-like-row">
-            <span class="fs-rec-by">👍 ${book.likes}명이 좋아해요</span>
-            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
-  ${isLiked ? "좋아요 완료" : "좋아요"}
-</button>
+            <span class="fs-rec-by">👍 ${book.likes}</span>
+            <div class="fs-card-actions">
+              <button type="button" class="fs-detail-button" onclick="openDetailModal(${book.id})">자세히</button>
+              <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
+                ${isLiked ? "취소" : "좋아요"}
+              </button>
+            </div>
           </div>
         `;
+
         bestBookList.appendChild(card);
       });
     }
@@ -803,7 +850,7 @@ function saveLikedBookIds(likedBookIds) {
         myBookList.innerHTML = `
           <div class="fs-empty">
             아직 내가 추천한 책이 없어.<br>
-            왼쪽에서 친구들에게 추천하고 싶은 책을 등록해봐!
+            나도 책 추천하기 버튼을 눌러 책을 소개해봐!
           </div>
         `;
         return;
@@ -814,31 +861,10 @@ function saveLikedBookIds(likedBookIds) {
       });
     }
 
-    // 추천 카드에 선택한 질문을 보여줍니다.
-    // 답은 보여주지 않고, 친구들이 궁금해할 질문만 보여줍니다.
-    function renderTeaserQuestions(book) {
-      if (!book.teaserQuestions || book.teaserQuestions.length === 0) {
-        return "";
-      }
-
-      return `
-        <div class="fs-teaser-box">
-          <strong class="fs-teaser-title">이 책이 궁금해지는 질문</strong>
-          <ol class="fs-teaser-list">
-            ${book.teaserQuestions
-              .slice(0, 3)
-              .map(function (question) {
-                return `<li>${escapeHtml(question)}</li>`;
-              })
-              .join("")}
-          </ol>
-        </div>
-      `;
-    }
-
     function createBookCard(book) {
-            const likedBookIds = getLikedBookIds();
+      const likedBookIds = getLikedBookIds();
       const isLiked = likedBookIds.includes(book.id);
+
       const card = document.createElement("div");
       card.className = "fs-book-card";
       card.innerHTML = `
@@ -846,13 +872,15 @@ function saveLikedBookIds(likedBookIds) {
         <div>
           <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
           <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
-          <p class="fs-card-reason">${escapeHtml(book.reason)}</p>
-          ${renderTeaserQuestions(book)}
+          <p class="fs-card-reason">“${escapeHtml(book.reason)}”</p>
           <div class="fs-like-row">
             <span class="fs-rec-by">👍 ${book.likes}</span>
-            <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
-  ${isLiked ? "좋아요 완료" : "좋아요"}
-</button>
+            <div class="fs-card-actions">
+              <button type="button" class="fs-detail-button" onclick="openDetailModal(${book.id})">자세히</button>
+              <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
+                ${isLiked ? "취소" : "좋아요"}
+              </button>
+            </div>
           </div>
         </div>
       `;
@@ -860,35 +888,82 @@ function saveLikedBookIds(likedBookIds) {
       return card;
     }
 
-    function likeBook(bookId) {
-  const likedBookIds = getLikedBookIds();
+    function findBookById(bookId) {
+      return getAllBooks().find(function (book) {
+        return book.id === bookId;
+      });
+    }
 
-  // 이미 좋아요를 누른 책이면 다시 올라가지 않게 막습니다.
-  if (likedBookIds.includes(bookId)) {
-    alert("이미 좋아요를 누른 책이야!");
-    return;
+    function openDetailModal(bookId) {
+      const book = findBookById(bookId);
+      if (!book) return;
+
+      document.getElementById("detailTitle").textContent = book.title;
+      document.getElementById("detailAuthor").textContent = book.author + " 지음";
+      document.getElementById("detailRecommender").textContent = book.recommender + " 추천";
+      document.getElementById("detailReason").textContent = book.reason;
+
+      const detailQuestions = document.getElementById("detailQuestions");
+      detailQuestions.innerHTML = "";
+
+      const questions = book.teaserQuestions || [];
+
+      if (questions.length === 0) {
+        detailQuestions.innerHTML = "<li>아직 등록된 질문이 없어.</li>";
+      } else {
+        questions.forEach(function (question) {
+          const li = document.createElement("li");
+          li.textContent = question;
+          detailQuestions.appendChild(li);
+        });
+      }
+
+      document.getElementById("detailModal").classList.add("show");
+    }
+
+    function closeDetailModal() {
+      document.getElementById("detailModal").classList.remove("show");
+    }
+
+    function closeDetailModalOnBg(event) {
+      if (event.target.id === "detailModal") {
+        closeDetailModal();
+      }
+    }
+
+    function likeBook(bookId) {
+  let likedBookIds = getLikedBookIds();
+
+  const alreadyLiked = likedBookIds.includes(bookId);
+
+  if (alreadyLiked) {
+    likedBookIds = likedBookIds.filter(function (id) {
+      return id !== bookId;
+    });
+  } else {
+    likedBookIds.push(bookId);
   }
 
-  likedBookIds.push(bookId);
   saveLikedBookIds(likedBookIds);
+
+  const changeAmount = alreadyLiked ? -1 : 1;
 
   classBooks = classBooks.map(function (book) {
     if (book.id === bookId) {
       return {
         ...book,
-        likes: book.likes + 1
+        likes: Math.max(0, book.likes + changeAmount)
       };
     }
 
     return book;
   });
 
-  // 내가 작성해서 sessionStorage에 저장된 추천글도 좋아요 수를 함께 갱신합니다.
   const savedBooks = getSavedFriendBooks().map(function (book) {
     if (book.id === bookId) {
       return {
         ...book,
-        likes: book.likes + 1
+        likes: Math.max(0, book.likes + changeAmount)
       };
     }
 
@@ -900,8 +975,8 @@ function saveLikedBookIds(likedBookIds) {
   renderShelf();
 }
   </script>
-  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js?v=power-common-2"></script>
+
+  <script src="../js/individual-power.js?v=power-common-2"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

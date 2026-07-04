@@ -4609,6 +4609,339 @@
   font-size: 16px !important;
   font-weight: 950 !important;
 }
+
+/* 읽기 중 질문 만들기 화면: 작성 화면만 크게 보이고, 질문 선택은 보조창에서 처리합니다. */
+.idr-question-screen,
+.idr-question-screen.active {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.idr-question-screen.active {
+  grid-template-rows: minmax(0, 1fr) !important;
+  gap: 0 !important;
+}
+
+.idr-question-top,
+.idr-question-main {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.idr-question-title p,
+.idr-question-top,
+.idr-today-panel,
+.idr-question-bottom,
+#topShareButton,
+.idr-top-actions .idr-top-button[onclick="goTodayAdventure()"] {
+  display: none !important;
+}
+
+.idr-question-main {
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  justify-items: stretch !important;
+  align-items: stretch !important;
+}
+
+.idr-question-panel {
+  width: 100% !important;
+  max-width: none !important;
+  justify-self: stretch !important;
+  align-self: stretch !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto auto auto auto !important;
+  gap: 18px !important;
+  padding: 28px 30px 26px !important;
+}
+
+.idr-question-panel .idr-question-type-row {
+  width: auto !important;
+  justify-self: start !important;
+  grid-template-columns: repeat(4, 154px) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  margin-top: 0 !important;
+}
+
+.idr-question-panel .idr-type-button {
+  min-height: 54px !important;
+  height: 54px !important;
+  padding: 0 16px !important;
+  border-radius: 16px !important;
+  font-size: 16px !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+}
+
+.idr-question-panel .idr-field {
+  min-width: 0 !important;
+  gap: 12px !important;
+}
+
+.idr-question-panel .idr-count-row {
+  min-height: 22px !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  padding-right: 4px !important;
+  font-size: 14px !important;
+}
+
+.idr-question-panel .idr-field label,
+.idr-question-panel .idr-label {
+  justify-self: start !important;
+  margin: 0 !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  line-height: 1.25 !important;
+}
+
+.idr-question-panel .idr-field:first-of-type {
+  margin-bottom: 18px !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 7px !important;
+  justify-items: start !important;
+}
+
+.idr-question-panel .idr-field:nth-of-type(2),
+.idr-question-panel .idr-field:nth-of-type(3) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  column-gap: 16px !important;
+  row-gap: 10px !important;
+}
+
+.idr-question-panel .idr-field:nth-of-type(2) label,
+.idr-question-panel .idr-field:nth-of-type(3) label {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+
+.idr-question-panel .idr-field:nth-of-type(2) .idr-count-row,
+.idr-question-panel .idr-field:nth-of-type(3) .idr-count-row {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+
+.idr-question-panel .idr-field:nth-of-type(2) .idr-textarea,
+.idr-question-panel .idr-field:nth-of-type(3) .idr-textarea {
+  grid-column: 1 / -1 !important;
+}
+
+.idr-question-panel .idr-textarea {
+  min-height: 0 !important;
+  height: 150px !important;
+  font-size: 18px !important;
+  line-height: 1.55 !important;
+  padding: 18px 20px !important;
+}
+
+.idr-question-panel .idr-field:nth-of-type(3) .idr-textarea {
+  height: 112px !important;
+}
+
+.idr-question-panel .idr-question-actions {
+  grid-template-columns: minmax(260px, 1fr) minmax(200px, 0.72fr) !important;
+  gap: 16px !important;
+}
+
+.idr-question-panel .idr-question-actions .idr-main-button {
+  height: 54px !important;
+  font-size: 16px !important;
+}
+
+.idr-select-modal-list .idr-question-card {
+  cursor: default !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 104px !important;
+  gap: 14px !important;
+  align-items: center !important;
+  padding: 18px 18px 18px 20px !important;
+}
+
+.idr-select-modal-list .idr-question-card .idr-question-card-top,
+.idr-select-modal-list .idr-question-card strong,
+.idr-select-modal-list .idr-question-card p {
+  grid-column: 1 !important;
+}
+
+.idr-select-modal-list .idr-question-card > .idr-pill-button {
+  position: static !important;
+  grid-column: 2 !important;
+  grid-row: 1 / span 3 !important;
+  transform: none !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 46px !important;
+  font-size: 15px !important;
+}
+
+.idr-question-title-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+}
+
+.idr-made-count-badge {
+  flex: 0 0 auto !important;
+  min-width: 132px !important;
+  height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #fff4d7 0%, #efd39a 100%) !important;
+  border: 1px solid rgba(176, 107, 26, 0.28) !important;
+  color: #8a4f13 !important;
+  font-size: 17px !important;
+  font-weight: 950 !important;
+  box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1) !important;
+}
+
+.idr-inline-feedback {
+  display: grid !important;
+  gap: 9px !important;
+  padding: 16px 18px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(171, 108, 31, 0.2) !important;
+  background: rgba(255, 250, 237, 0.92) !important;
+}
+
+.idr-inline-feedback-title {
+  margin: 0 !important;
+  color: #4e2d10 !important;
+  font-size: 21px !important;
+  font-weight: 950 !important;
+  line-height: 1.2 !important;
+}
+
+.idr-inline-feedback .idr-feedback-box {
+  min-height: 54px !important;
+  font-size: 16px !important;
+}
+
+.idr-select-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+  background: rgba(31, 21, 12, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.idr-select-overlay.is-open {
+  display: flex;
+}
+
+.idr-select-modal {
+  width: min(880px, 92vw);
+  max-height: min(780px, 88vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 30px;
+  border-radius: 28px;
+  border: 1.5px solid rgba(192, 127, 43, 0.32);
+  background: linear-gradient(180deg, #fffaf0 0%, #f8edd9 100%);
+  box-shadow: 0 24px 60px rgba(56, 33, 13, 0.3);
+}
+
+.idr-select-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.idr-select-modal-title {
+  margin: 0 0 8px;
+  color: #472912;
+  font-size: 30px;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.idr-select-modal-desc {
+  margin: 0;
+  color: #71481f;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.idr-select-modal-count {
+  flex: 0 0 auto;
+  min-width: 120px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #fff6df;
+  border: 1px solid rgba(192, 127, 43, 0.28);
+  color: #b46b16;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.idr-select-modal-list {
+  min-height: 330px;
+  overflow-y: auto;
+  display: grid;
+  gap: 12px;
+  padding: 4px 6px 4px 0;
+}
+
+.idr-select-modal-list .idr-question-card {
+  min-height: 116px;
+  padding: 18px 20px;
+  border-radius: 18px;
+}
+
+.idr-select-modal-list .idr-question-card strong {
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.idr-select-modal-list .idr-question-card p {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.idr-select-modal-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 14px;
+}
+
+.idr-select-modal-actions .idr-main-button {
+  height: 56px;
+  font-size: 18px;
+}
+
+@media (max-width: 900px) {
+  .idr-select-modal {
+    width: 94vw;
+    max-height: 90vh;
+    padding: 22px;
+  }
+
+  .idr-select-modal-actions {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 
@@ -4628,8 +4961,7 @@
   <!-- 개별읽기 활동 중에도 현재 능력치를 확인할 수 있는 버튼입니다. -->
   <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
 
-  <button type="button" class="idr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
-  <button type="button" class="idr-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+  <button type="button" class="idr-top-button" onclick="goIndividualReading()">책읽기 홈</button>
 </div>
       </header>
 
@@ -4761,13 +5093,15 @@
           <div class="idr-question-top-actions">
             <button type="button" class="idr-pill-button" onclick="showScreen('home')">읽기 중 홈</button>
             <span class="idr-date-pill" id="todayDatePill">오늘 날짜</span>
-            <button type="button" class="idr-pill-button primary" id="topShareButton" onclick="completeDuringQuestionsAndShare()" disabled>질문 나누기</button>
           </div>
         </article>
 
         <section class="idr-question-main">
           <article class="idr-question-panel">
-            <h2 class="idr-panel-title">✎ 질문 만들기</h2>
+            <div class="idr-question-title-row">
+              <h2 class="idr-panel-title">✎ 질문 만들기</h2>
+              <span class="idr-made-count-badge" id="madeQuestionCountBadge">만든 질문 0개</span>
+            </div>
             <div class="idr-divider"></div>
 
             <!-- 날짜와 쪽수는 화면을 단순하게 하기 위해 숨겨둡니다.
@@ -4807,9 +5141,18 @@
               ></textarea>
             </div>
 
+            <div class="idr-inline-feedback">
+              <h3 class="idr-inline-feedback-title">✦ 루미의 피드백</h3>
+              <div class="idr-feedback-box" id="questionFeedbackBox">
+                <span id="questionFeedbackText">
+                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐. 루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.
+                </span>
+              </div>
+            </div>
+
             <div class="idr-question-actions">
-              <button type="button" class="idr-main-button" onclick="resetQuestionForm()">다시 쓰기</button>
               <button type="button" class="idr-main-button primary" onclick="checkAndSaveQuestion()">✨ 루미에게 확인 받기</button>
+              <button type="button" class="idr-main-button" onclick="openQuestionSelectionStep()">다음 단계</button>
             </div>
           </article>
 
@@ -4836,8 +5179,8 @@
 
             <div class="idr-feedback-content">
               <h2 class="idr-feedback-title">✦ 루미의 피드백</h2>
-              <div class="idr-feedback-box" id="questionFeedbackBox">
-                <span id="questionFeedbackText">
+              <div class="idr-feedback-box" id="questionFeedbackBoxHidden">
+                <span id="questionFeedbackTextHidden">
                   질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐. 루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.
                 </span>
               </div>
@@ -5132,6 +5475,29 @@
     </button>
   </div>
 </div>
+
+<div class="idr-select-overlay" id="questionSelectOverlay" aria-hidden="true">
+  <div class="idr-select-modal" role="dialog" aria-modal="true" aria-labelledby="questionSelectTitle">
+    <div class="idr-select-modal-head">
+      <div>
+        <h2 class="idr-select-modal-title" id="questionSelectTitle">오늘 만든 질문을 골라요</h2>
+        <p class="idr-select-modal-desc">
+          친구들과 생각을 나누고 싶은 질문을 3개 선택하세요.
+        </p>
+      </div>
+      <div class="idr-select-modal-count" id="questionSelectModalCount">0 / 3개 선택</div>
+    </div>
+
+    <div class="idr-select-modal-list" id="questionSelectModalList"></div>
+
+    <div class="idr-select-modal-actions">
+      <button class="idr-main-button" type="button" onclick="closeQuestionSelectModal()">이전</button>
+      <button class="idr-main-button primary" type="button" id="questionSelectShareButton" onclick="completeDuringQuestionsAndShare()" disabled>
+        질문 나누기
+      </button>
+    </div>
+  </div>
+</div>
   <script src="../js/auth.js"></script>
 
   <script>
@@ -5140,6 +5506,13 @@
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 function completeDuringQuestionsAndShare() {
+  const selectedIds = getShareSelectedIds();
+
+  if (selectedIds.length !== 3) {
+    openQuestionSelectModal();
+    return;
+  }
+
   const rewardResult =
     typeof givePowerRewardOnce === "function"
       ? givePowerRewardOnce("individual_during_questions_complete_" + studentId, {
@@ -5313,6 +5686,7 @@ const bookTypes = [
       renderCollection();
       updateTextCounts();
       updateShareButtons();
+      updateMadeQuestionCountBadge();
     }
 
     function showScreen(screenName) {
@@ -5330,6 +5704,7 @@ const bookTypes = [
     document.getElementById("questionScreen").classList.add("active");
     renderTodayQuestionList();
     updateShareButtons();
+    updateMadeQuestionCountBadge();
   }
   
 /*
@@ -6626,17 +7001,18 @@ function confirmDuringRewardModal() {
 
       if (!result.ok) return;
 
-            const savedQuestion = saveTodayQuestion();
+      saveTodayQuestion();
       resetQuestionForm(false);
 
       
       feedbackBox.classList.add("good");
-      feedbackText.textContent = "좋아! 오늘 읽은 부분에서 나온 질문이 저장됐어. 나의 질문 모음과 질문 나누기에 반영됐어.";
+      feedbackText.textContent = "좋아! 질문이 저장됐어. 더 만들 질문이 있으면 계속 쓰고, 끝나면 다음 단계를 눌러줘.";
 
       renderTodayQuestionList();
       renderCollection();
       renderShareQuestionList();
       updateShareButtons();
+      updateMadeQuestionCountBadge();
     }
 
     function validateQuestionForm() {
@@ -6839,6 +7215,14 @@ function getBookTypeCounts() {
 
     function renderTodayQuestionList() {
       const list = document.getElementById("todayQuestionList");
+
+      if (!list) {
+        updateMadeQuestionCountBadge();
+        renderQuestionSelectModal();
+        updateShareButtons();
+        return;
+      }
+
       const today = document.getElementById("readDateInput").value;
       const questions = getMyQuestions().filter((item) => item.date === today);
       const selectedIds = getShareSelectedIds();
@@ -6856,7 +7240,18 @@ function getBookTypeCounts() {
       }
 
       list.innerHTML = questions.map((item) => renderQuestionCard(item, true, selectedIds.includes(item.id))).join("");
+      updateMadeQuestionCountBadge();
       updateShareButtons();
+    }
+
+    function updateMadeQuestionCountBadge() {
+      const badge = document.getElementById("madeQuestionCountBadge");
+
+      if (!badge) return;
+
+      const today = document.getElementById("readDateInput").value;
+      const count = getMyQuestions().filter((item) => item.date === today).length;
+      badge.textContent = "만든 질문 " + count + "개";
     }
 
     function renderQuestionCard(item, canSelect = false, selected = false) {
@@ -6892,17 +7287,28 @@ function getBookTypeCounts() {
 
       saveShareSelectedIds(selectedIds);
       renderTodayQuestionList();
+      renderQuestionSelectModal();
       updateShareButtons();
     }
 
     function updateShareButtons() {
       const selectedIds = getShareSelectedIds();
       const countText = selectedIds.length + " / 3개 선택됨";
+      const modalCount = document.getElementById("questionSelectModalCount");
+      const modalButton = document.getElementById("questionSelectShareButton");
 
       const badge = document.getElementById("todaySelectBadge");
 
       if (badge) {
         badge.textContent = countText;
+      }
+
+      if (modalCount) {
+        modalCount.textContent = selectedIds.length + " / 3개 선택";
+      }
+
+      if (modalButton) {
+        modalButton.disabled = selectedIds.length !== 3;
       }
 
       ["topShareButton", "bottomShareButton"].forEach((id) => {
@@ -6912,6 +7318,65 @@ function getBookTypeCounts() {
           button.disabled = selectedIds.length !== 3;
         }
       });
+    }
+
+    function openQuestionSelectModal() {
+      renderQuestionSelectModal();
+
+      const overlay = document.getElementById("questionSelectOverlay");
+
+      if (!overlay) return;
+
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+
+    function openQuestionSelectionStep() {
+      const today = document.getElementById("readDateInput").value;
+      const questions = getMyQuestions().filter((item) => item.date === today);
+
+      if (questions.length < 3) {
+        alert("질문을 3개 이상 만들고 루미에게 확인 받아야 다음 단계로 갈 수 있어!");
+        return;
+      }
+
+      openQuestionSelectModal();
+    }
+
+    function closeQuestionSelectModal() {
+      const overlay = document.getElementById("questionSelectOverlay");
+
+      if (!overlay) return;
+
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+    }
+
+    function renderQuestionSelectModal() {
+      const list = document.getElementById("questionSelectModalList");
+
+      if (!list) return;
+
+      const today = document.getElementById("readDateInput").value;
+      const questions = getMyQuestions().filter((item) => item.date === today);
+      const selectedIds = getShareSelectedIds();
+
+      if (questions.length === 0) {
+        list.innerHTML = `
+          <div class="idr-empty-box">
+            아직 만든 질문이 없어요.<br>
+            질문을 쓰고 루미에게 확인 받아 보세요.
+          </div>
+        `;
+        updateShareButtons();
+        return;
+      }
+
+      list.innerHTML = questions
+        .map((item) => renderQuestionCard(item, true, selectedIds.includes(item.id)))
+        .join("");
+
+      updateShareButtons();
     }
 
     function renderShareQuestionList() {

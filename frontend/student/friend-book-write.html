@@ -1,16 +1,6 @@
 <!--
   파일명: friend-book-write.html
   역할: 문답책 개별읽기 - 나도 책 추천하기 작성 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 학생이 자신이 읽고 좋았던 책을 추천글로 작성합니다.
-  2. 책 제목, 지은이, 추천 이유를 입력합니다.
-  3. 친구들이 책을 궁금해하도록 질문을 최대 3개 선택합니다.
-  4. 현재는 서버 저장 없이 sessionStorage에 임시 저장합니다.
-
-  참고:
-  - 실제 서버/DB를 붙이면 submitFriendBook() 함수 안의 임시 저장 부분을 API 호출로 교체하면 됩니다.
-  - 책 표지는 저작권 문제가 있을 수 있어 사용하지 않습니다.
 -->
 
 <!DOCTYPE html>
@@ -21,8 +11,7 @@
   <title>나도 책 추천하기 - 문답책</title>
 
   <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
-  <link rel="stylesheet" href="../css/common.css?v=friend-book-write-1">
-  <!-- 개별읽기 공통: 나의 힘 팝업 디자인 -->
+  <link rel="stylesheet" href="../css/common.css?v=friend-book-write-final-1">
   <link rel="stylesheet" href="../css/individual-power.css">
 
   <style>
@@ -117,12 +106,13 @@
       font-weight: 900;
       cursor: pointer;
       box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1);
+      white-space: nowrap;
     }
 
     .fw-main {
       min-height: 0;
       display: grid;
-      grid-template-columns: 340px minmax(0, 1fr);
+      grid-template-columns: 300px minmax(0, 1fr);
       gap: 18px;
       align-items: stretch;
     }
@@ -143,8 +133,8 @@
     .fw-lumi-card {
       position: relative;
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
-      padding: 26px 24px 24px;
+      grid-template-rows: auto minmax(0, 1fr);
+      padding: 26px 22px 24px;
     }
 
     .fw-bubble {
@@ -164,30 +154,7 @@
     }
 
     .fw-help-box {
-      position: relative;
-      z-index: 4;
-      padding: 16px 16px;
-      border-radius: 22px;
-      border: 1px solid rgba(181, 117, 37, 0.16);
-      background: rgba(255, 246, 220, 0.82);
-      margin-top: 12px;
-    }
-
-    .fw-help-box strong {
-      display: block;
-      margin-bottom: 6px;
-      color: #5c3615;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .fw-help-box span {
-      display: block;
-      color: #7a5123;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.45;
-      word-break: keep-all;
+      display: none;
     }
 
     .fw-lumi-wrap {
@@ -201,8 +168,8 @@
     .fw-lumi {
       position: relative;
       z-index: 2;
-      width: 265px;
-      max-height: 430px;
+      width: 270px;
+      max-height: 500px;
       object-fit: contain;
       object-position: bottom center;
       filter: drop-shadow(0 18px 22px rgba(91, 54, 15, 0.22));
@@ -222,7 +189,7 @@
 
     .fw-form-card {
       display: grid;
-      grid-template-rows: 88px minmax(0, 1fr) 70px;
+      grid-template-rows: 78px minmax(0, 1fr) 72px;
       padding: 24px 34px 24px;
     }
 
@@ -235,7 +202,7 @@
       margin: 0;
       font-family: "Noto Serif KR", "Noto Sans KR", serif;
       color: #4d2b10;
-      font-size: 36px;
+      font-size: 38px;
       font-weight: 900;
       line-height: 1.12;
       letter-spacing: -0.055em;
@@ -245,9 +212,9 @@
       min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 12px;
-      padding: 14px 0;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 16px;
+      padding: 18px 0 16px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -267,7 +234,7 @@
       min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .fw-field.full {
@@ -276,34 +243,34 @@
 
     .fw-field label {
       color: #5c3615;
-      font-size: 16px;
-      font-weight: 900;
+      font-size: 17px;
+      font-weight: 950;
     }
 
     .fw-input,
     .fw-textarea {
       width: 100%;
       border: 1px solid rgba(171, 108, 31, 0.22);
-      border-radius: 20px;
+      border-radius: 22px;
       background: rgba(255, 250, 237, 0.9);
       color: #4d2b10;
-      font-size: 17px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 850;
       outline: none;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
     }
 
     .fw-input {
-      height: 54px;
-      padding: 0 18px;
+      height: 66px;
+      padding: 0 20px;
     }
 
     .fw-textarea {
-      min-height: 88px;
-      height: 88px;
-      padding: 14px 18px;
+      min-height: 132px;
+      height: 132px;
+      padding: 18px 20px;
       resize: none;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     .fw-input::placeholder,
@@ -311,16 +278,16 @@
       color: rgba(111, 72, 29, 0.52);
     }
 
-    /* =========================================================
-       이 책이 궁금해지는 질문 선택 영역
-       - 읽기 중/읽기 후에 만든 질문 중 최대 3개를 골라 추천글에 함께 보여줍니다.
-       ========================================================= */
     .fw-question-box {
       grid-column: 1 / 3;
-      padding: 14px 16px;
+      min-height: 230px;
+      padding: 20px 20px 18px;
       border: 1px solid rgba(181, 117, 37, 0.18);
-      border-radius: 22px;
+      border-radius: 26px;
       background: rgba(255, 248, 229, 0.72);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
     }
 
     .fw-question-head {
@@ -328,44 +295,37 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 8px;
     }
 
     .fw-question-head strong {
       color: #5c3615;
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 950;
     }
 
     .fw-question-count {
-      padding: 7px 11px;
+      padding: 8px 13px;
       border-radius: 999px;
       background: rgba(255, 250, 237, 0.95);
       color: #9a5d1d;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 950;
       border: 1px solid rgba(174, 109, 27, 0.18);
       white-space: nowrap;
     }
 
     .fw-question-guide {
-      margin: 0 0 10px;
-      color: #7a5123;
-      font-size: 14px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
+      display: none;
     }
 
     .fw-question-open-button {
       width: 100%;
-      height: 46px;
-      margin-bottom: 10px;
+      height: 54px;
       border: none;
       border-radius: 999px;
       background: linear-gradient(180deg, #e8bd5e, #a8641e);
       color: #fff9e8;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 950;
       cursor: pointer;
       box-shadow: 0 10px 18px rgba(128, 76, 18, 0.18);
@@ -373,30 +333,31 @@
 
     .fw-selected-question-list {
       display: grid;
-      gap: 7px;
+      gap: 9px;
+      align-content: start;
     }
 
     .fw-selected-question-item {
       display: flex;
-      gap: 8px;
-      padding: 9px 12px;
+      gap: 10px;
+      padding: 12px 14px;
       border: 1px solid rgba(171, 108, 31, 0.18);
-      border-radius: 16px;
+      border-radius: 18px;
       background: rgba(255, 252, 242, 0.94);
       color: #5b3515;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 850;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     .fw-question-empty {
-      padding: 13px;
-      border-radius: 18px;
+      padding: 18px;
+      border-radius: 20px;
       background: rgba(255, 252, 242, 0.78);
       color: #7a5123;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 850;
-      line-height: 1.45;
+      line-height: 1.5;
       text-align: center;
     }
 
@@ -406,11 +367,11 @@
       gap: 16px;
       align-items: center;
       border-top: 1px solid rgba(181, 117, 37, 0.16);
-      padding-top: 12px;
+      padding-top: 14px;
     }
 
     .fw-button {
-      height: 52px;
+      height: 54px;
       border-radius: 999px;
       border: 1px solid rgba(174, 109, 27, 0.26);
       background: rgba(255, 250, 237, 0.88);
@@ -428,10 +389,6 @@
       box-shadow: 0 12px 22px rgba(128, 76, 18, 0.22);
     }
 
-    /* =========================================================
-       질문 선택 팝업
-       - 추천글에 넣을 질문을 최대 3개 선택합니다.
-       ========================================================= */
     .fw-question-modal {
       position: fixed;
       inset: 0;
@@ -446,13 +403,14 @@
     }
 
     .fw-question-modal-box {
-      width: min(680px, calc(100vw - 44px));
-      max-height: min(620px, calc(100vh - 44px));
+      width: min(860px, calc(100vw - 48px));
+      max-height: min(760px, calc(100vh - 48px));
+      min-height: 560px;
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
-      gap: 16px;
-      padding: 26px;
-      border-radius: 30px;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      gap: 20px;
+      padding: 32px;
+      border-radius: 34px;
       border: 1px solid rgba(184, 116, 30, 0.28);
       background: rgba(255, 250, 236, 0.98);
       box-shadow: 0 24px 60px rgba(47, 28, 8, 0.26);
@@ -467,58 +425,122 @@
 
     .fw-question-modal-head strong {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       color: #4d2b10;
-      font-size: 24px;
+      font-size: 30px;
       font-weight: 950;
     }
 
     .fw-question-modal-head p {
       margin: 0;
       color: #765026;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 850;
       line-height: 1.45;
     }
 
     .fw-question-close-button {
-      width: 40px;
-      height: 40px;
+      width: 46px;
+      height: 46px;
       border: 1px solid rgba(174, 109, 27, 0.2);
       border-radius: 50%;
       background: rgba(255, 250, 237, 0.9);
       color: #7a4618;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 900;
       cursor: pointer;
     }
 
     .fw-question-list {
       display: grid;
-      gap: 8px;
+      gap: 12px;
       overflow-y: auto;
       padding-right: 4px;
     }
 
     .fw-question-list.modal {
-      max-height: none;
-      min-height: 240px;
+      min-height: 360px;
       padding: 4px;
+      align-content: start;
+    }
+
+    .fw-question-category {
+      border: 1px solid rgba(171, 108, 31, 0.16);
+      border-radius: 22px;
+      background: rgba(255, 247, 224, 0.78);
+      overflow: hidden;
+    }
+
+    .fw-question-category summary {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      color: #5c3615;
+      font-size: 18px;
+      font-weight: 950;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .fw-question-category summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .fw-question-category summary::after {
+      content: "펼치기";
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 252, 242, 0.94);
+      color: #9a5d1d;
+      font-size: 13px;
+      font-weight: 950;
+      border: 1px solid rgba(174, 109, 27, 0.18);
+    }
+
+    .fw-question-category[open] summary::after {
+      content: "접기";
+    }
+
+    .fw-question-category-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0 14px 14px;
+    }
+
+    .fw-category-button {
+      height: 48px;
+      border: 1px solid rgba(171, 108, 31, 0.18);
+      border-radius: 16px;
+      background: rgba(255, 252, 242, 0.92);
+      color: #6a421c;
+      font-size: 16px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .fw-category-button.active {
+      border-color: rgba(168, 100, 30, 0.48);
+      background: linear-gradient(180deg, #e8bd5e, #bd741f);
+      color: #fff9e8;
+      box-shadow: 0 8px 16px rgba(128, 76, 18, 0.16);
     }
 
     .fw-question-item {
       width: 100%;
-      min-height: 42px;
-      padding: 10px 12px;
+      min-height: 58px;
+      padding: 16px 18px;
       border: 1px solid rgba(171, 108, 31, 0.18);
-      border-radius: 16px;
+      border-radius: 18px;
       background: rgba(255, 252, 242, 0.94);
       color: #5b3515;
-      font-size: 14px;
-      font-weight: 850;
+      font-size: 17px;
+      font-weight: 900;
       text-align: left;
       cursor: pointer;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     .fw-question-item.selected {
@@ -530,7 +552,7 @@
     .fw-question-modal-actions {
       display: grid;
       grid-template-columns: 1fr 1.2fr;
-      gap: 12px;
+      gap: 14px;
     }
 
     .fw-complete-modal {
@@ -585,6 +607,190 @@
       line-height: 1.5;
     }
 
+    .fw-reward-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(42, 25, 10, 0.48);
+      backdrop-filter: blur(6px);
+    }
+
+    .fw-reward-overlay.is-open {
+      display: flex;
+    }
+
+    .fw-reward-modal {
+      position: relative;
+      width: min(460px, 92vw);
+      padding: 38px 30px 28px;
+      overflow: hidden;
+      border-radius: 28px;
+      border: 2px solid rgba(214, 160, 67, 0.42);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
+        radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
+        radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
+        linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%);
+      box-shadow:
+        0 28px 70px rgba(49, 28, 8, 0.38),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.72),
+        inset 0 0 34px rgba(255, 222, 139, 0.24);
+      text-align: center;
+      color: #5a3518;
+    }
+
+    .fw-reward-modal::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 24px;
+      border: 1px solid rgba(196, 132, 39, 0.18);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .fw-reward-close {
+      position: absolute !important;
+      top: 18px !important;
+      right: 18px !important;
+      z-index: 20 !important;
+      width: 38px !important;
+      height: 38px !important;
+      border: 1px solid rgba(126, 78, 32, 0.12) !important;
+      border-radius: 50% !important;
+      background: rgba(116, 69, 28, 0.12) !important;
+      color: #6d421f !important;
+      font-size: 25px !important;
+      font-weight: 900 !important;
+      cursor: pointer !important;
+    }
+
+    .fw-reward-lumi {
+      position: absolute;
+      right: -12px;
+      bottom: 68px;
+      width: 122px;
+      z-index: 0;
+      opacity: 0.98;
+      pointer-events: none;
+      filter: drop-shadow(0 12px 16px rgba(76, 43, 12, 0.22));
+    }
+
+    .fw-reward-badge,
+    .fw-reward-title,
+    .fw-reward-desc,
+    .fw-reward-list,
+    .fw-reward-lumi-message,
+    .fw-reward-confirm {
+      position: relative;
+      z-index: 1;
+    }
+
+    .fw-reward-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(201, 137, 43, 0.16);
+      color: #a86618;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .fw-reward-title {
+      width: 100%;
+      margin: 0 auto;
+      text-align: center;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif;
+      font-size: 1.62rem;
+      line-height: 1.35;
+      letter-spacing: -0.055em;
+      color: #4f2f17;
+    }
+
+    .fw-reward-desc {
+      margin: 14px auto 22px;
+      text-align: center;
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: #7a5635;
+      font-weight: 700;
+    }
+
+    .fw-reward-list {
+      display: grid;
+      gap: 11px;
+      margin: 0 0 18px;
+      padding-right: 76px;
+    }
+
+    .fw-reward-item {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 18px;
+      border: 1.5px solid rgba(184, 116, 30, 0.24);
+      background: linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78));
+      box-shadow: 0 7px 14px rgba(102, 60, 17, 0.07);
+    }
+
+    .fw-reward-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fw-reward-icon {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .fw-reward-name {
+      color: #5c371a;
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .fw-reward-point {
+      color: #b86e17;
+      font-size: 1.22rem;
+      font-weight: 950;
+    }
+
+    .fw-reward-lumi-message {
+      margin: -4px 0 16px;
+      padding: 11px 14px;
+      border-radius: 18px;
+      background: rgba(255, 249, 232, 0.82);
+      border: 1px solid rgba(184, 116, 30, 0.2);
+      color: #6f441f;
+      font-size: 0.88rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .fw-reward-confirm {
+      width: 100%;
+      height: 50px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%);
+      color: #fffdf5;
+      font-size: 1rem;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(139, 78, 17, 0.26);
+    }
+
     @media (max-height: 760px) {
       .fw-page {
         padding: 12px 24px;
@@ -596,12 +802,12 @@
       }
 
       .fw-main {
-        grid-template-columns: 310px minmax(0, 1fr);
+        grid-template-columns: 280px minmax(0, 1fr);
         gap: 14px;
       }
 
       .fw-lumi-card {
-        padding: 20px 20px;
+        padding: 20px 18px;
       }
 
       .fw-bubble {
@@ -610,12 +816,12 @@
       }
 
       .fw-lumi {
-        width: 230px;
-        max-height: 350px;
+        width: 240px;
+        max-height: 410px;
       }
 
       .fw-form-card {
-        grid-template-rows: 74px minmax(0, 1fr) 64px;
+        grid-template-rows: 70px minmax(0, 1fr) 64px;
         padding: 20px 28px 22px;
       }
 
@@ -624,261 +830,212 @@
       }
 
       .fw-form {
-        gap: 10px;
-        padding: 12px 0;
+        gap: 12px;
+        padding: 14px 0;
       }
 
       .fw-input {
-        height: 48px;
-        font-size: 15px;
+        height: 58px;
+        font-size: 16px;
       }
 
       .fw-textarea {
-        min-height: 76px;
-        height: 76px;
-        font-size: 15px;
+        min-height: 110px;
+        height: 110px;
+        font-size: 16px;
       }
 
       .fw-question-box {
-        padding: 12px 14px;
-      }
-
-      .fw-question-guide {
-        margin-bottom: 8px;
-        font-size: 13px;
+        min-height: 200px;
+        padding: 16px;
       }
 
       .fw-question-open-button {
-        height: 42px;
-        margin-bottom: 8px;
+        height: 48px;
       }
 
       .fw-button {
         height: 48px;
         font-size: 16px;
       }
+
+      .fw-question-modal-box {
+        width: min(780px, calc(100vw - 44px));
+        min-height: 500px;
+        padding: 26px;
+      }
+
+      .fw-question-modal-head strong {
+        font-size: 26px;
+      }
+
+      .fw-question-item {
+        min-height: 52px;
+        font-size: 15px;
+      }
     }
-    /* =========================================================
-   책 추천 완료 보상 미니 모달
-   - 추천글 등록 후 용기 +1 안내를 보여줍니다.
-   - 실제 점수 저장은 백엔드 연동 때 처리합니다.
-   ========================================================= */
 
-.fw-reward-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(42, 25, 10, 0.48);
-  backdrop-filter: blur(6px);
-}
+    .fw-form {
+      height: 100% !important;
+      grid-template-rows: auto minmax(190px, 0.95fr) minmax(280px, 1.15fr) !important;
+      align-content: start !important;
+      gap: 14px !important;
+      overflow: hidden !important;
+    }
 
-.fw-reward-overlay.is-open {
-  display: flex;
-}
+    .fw-field.full {
+      min-height: 0 !important;
+    }
 
-.fw-reward-modal {
-  position: relative;
-  width: min(460px, 92vw);
-  padding: 38px 30px 28px;
-  overflow: hidden;
-  border-radius: 28px;
-  border: 2px solid rgba(214, 160, 67, 0.42);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
-    radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
-    radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
-    linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%);
-  box-shadow:
-    0 28px 70px rgba(49, 28, 8, 0.38),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.72),
-    inset 0 0 34px rgba(255, 222, 139, 0.24);
-  text-align: center;
-  color: #5a3518;
-}
+    .fw-textarea {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      padding: 18px 22px !important;
+      font-size: 19px !important;
+      line-height: 1.58 !important;
+    }
 
-.fw-reward-modal::before {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(196, 132, 39, 0.18);
-  pointer-events: none;
-  z-index: 0;
-}
+    .fw-question-box {
+      height: auto !important;
+      min-height: 0 !important;
+      padding: 18px 18px 16px !important;
+      gap: 11px !important;
+      grid-template-rows: auto 54px minmax(0, 1fr) !important;
+    }
 
-.fw-reward-modal::after {
-  content: "✦";
-  position: absolute;
-  top: 54px;
-  left: 38px;
-  color: rgba(214, 153, 44, 0.52);
-  font-size: 30px;
-  text-shadow:
-    92px -14px 0 rgba(255, 217, 129, 0.38),
-    286px 96px 0 rgba(255, 217, 129, 0.34),
-    38px 272px 0 rgba(255, 217, 129, 0.34);
-  z-index: 0;
-  pointer-events: none;
-}
+    .fw-question-head strong {
+      font-size: 18px !important;
+    }
 
-.fw-reward-close {
-  position: absolute !important;
-  top: 18px !important;
-  right: 18px !important;
-  left: auto !important;
-  bottom: auto !important;
-  z-index: 20 !important;
-  width: 38px !important;
-  height: 38px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border: 1px solid rgba(126, 78, 32, 0.12) !important;
-  border-radius: 50% !important;
-  background: rgba(116, 69, 28, 0.12) !important;
-  color: #6d421f !important;
-  font-size: 25px !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-}
+    .fw-question-count {
+      padding: 6px 11px !important;
+      font-size: 13px !important;
+    }
 
-.fw-reward-lumi {
-  position: absolute;
-  right: -12px;
-  bottom: 68px;
-  width: 122px;
-  height: auto;
-  z-index: 0;
-  opacity: 0.98;
-  pointer-events: none;
-  filter: drop-shadow(0 12px 16px rgba(76, 43, 12, 0.22));
-}
+    .fw-question-open-button {
+      height: 54px !important;
+      font-size: 17px !important;
+    }
 
-.fw-reward-badge,
-.fw-reward-title,
-.fw-reward-desc,
-.fw-reward-list,
-.fw-reward-lumi-message,
-.fw-reward-confirm,
-.fw-reward-close {
-  position: relative;
-  z-index: 1;
-}
+    .fw-selected-question-list {
+      gap: 8px !important;
+      overflow: hidden !important;
+    }
 
-.fw-reward-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(201, 137, 43, 0.16);
-  color: #a86618;
-  font-weight: 900;
-  font-size: 0.9rem;
-}
+    .fw-selected-question-item {
+      min-height: 42px !important;
+      padding: 8px 13px !important;
+      font-size: 14px !important;
+      line-height: 1.3 !important;
+      align-items: center !important;
+    }
 
-.fw-reward-title {
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  font-family: "Noto Serif KR", "Noto Sans KR", serif;
-  font-size: 1.62rem;
-  line-height: 1.35;
-  letter-spacing: -0.055em;
-  color: #4f2f17;
-}
+    .fw-question-empty {
+      min-height: 64px !important;
+      display: grid !important;
+      place-items: center !important;
+      padding: 12px !important;
+      font-size: 14px !important;
+      line-height: 1.35 !important;
+    }
 
-.fw-reward-desc {
-  margin: 14px auto 22px;
-  text-align: center;
-  font-size: 0.98rem;
-  line-height: 1.65;
-  color: #7a5635;
-  font-weight: 700;
-}
+    .fw-question-modal-box {
+      width: min(1280px, calc(100vw - 28px)) !important;
+      height: min(940px, calc(100vh - 12px)) !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      padding: 24px 36px 22px !important;
+      gap: 10px !important;
+      grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+    }
 
-.fw-reward-list {
-  display: grid;
-  gap: 11px;
-  margin: 0 0 18px;
-  padding-right: 76px;
-}
+    .fw-question-modal-head strong {
+      margin-bottom: 4px !important;
+      font-size: 34px !important;
+    }
 
-.fw-reward-item {
-  min-height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-radius: 18px;
-  border: 1.5px solid rgba(184, 116, 30, 0.24);
-  background:
-    linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78));
-  box-shadow:
-    0 7px 14px rgba(102, 60, 17, 0.07),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
-}
+    .fw-question-modal-head p {
+      font-size: 18px !important;
+      line-height: 1.3 !important;
+    }
 
-.fw-reward-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+    .fw-question-close-button {
+      width: 52px !important;
+      height: 52px !important;
+      font-size: 32px !important;
+    }
 
-.fw-reward-icon {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  flex: 0 0 auto;
-  filter: drop-shadow(0 5px 7px rgba(112, 67, 16, 0.16));
-}
+    .fw-question-list.modal {
+      min-height: 0 !important;
+      max-height: none !important;
+      gap: 10px !important;
+      padding: 6px !important;
+      overflow-y: auto !important;
+    }
 
-.fw-reward-name {
-  color: #5c371a;
-  font-size: 1rem;
-  font-weight: 900;
-}
+    .fw-question-item {
+      min-height: 58px !important;
+      padding: 14px 20px !important;
+      border-radius: 18px !important;
+      font-size: 20px !important;
+      line-height: 1.3 !important;
+    }
 
-.fw-reward-point {
-  color: #b86e17;
-  font-size: 1.22rem;
-  font-weight: 950;
-}
+    .fw-question-modal-actions {
+      gap: 18px !important;
+      align-items: end !important;
+    }
 
-.fw-reward-lumi-message {
-  margin: -4px 0 16px;
-  padding: 11px 14px;
-  border-radius: 18px;
-  background: rgba(255, 249, 232, 0.82);
-  border: 1px solid rgba(184, 116, 30, 0.2);
-  color: #6f441f;
-  font-size: 0.88rem;
-  font-weight: 900;
-  line-height: 1.35;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
-}
+    .fw-question-modal-actions .fw-button {
+      height: 56px !important;
+      font-size: 20px !important;
+    }
 
-.fw-reward-confirm {
-  width: 100%;
-  height: 50px;
-  border: 0;
-  border-radius: 999px;
-  background:
-    linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%);
-  color: #fffdf5;
-  font-size: 1rem;
-  font-weight: 950;
-  cursor: pointer;
-  box-shadow:
-    0 12px 22px rgba(139, 78, 17, 0.26),
-    inset 0 1px 0 rgba(255, 243, 200, 0.46);
-}
+    @media (max-height: 760px) {
+      .fw-form {
+        grid-template-rows: auto minmax(150px, 0.9fr) minmax(230px, 1.1fr) !important;
+        align-content: start !important;
+        gap: 10px !important;
+      }
+
+      .fw-textarea {
+        min-height: 0 !important;
+        height: 100% !important;
+      }
+
+      .fw-question-box {
+        height: auto !important;
+        min-height: 0 !important;
+        grid-template-rows: auto 48px minmax(0, 1fr) !important;
+      }
+
+      .fw-question-open-button {
+        height: 48px !important;
+      }
+
+      .fw-question-modal-box {
+        width: min(1180px, calc(100vw - 24px)) !important;
+        height: min(760px, calc(100vh - 10px)) !important;
+        min-height: 0 !important;
+        padding: 18px 28px 16px !important;
+        gap: 8px !important;
+      }
+
+      .fw-question-list.modal {
+        min-height: 0 !important;
+      }
+
+      .fw-question-item {
+        min-height: 52px !important;
+        padding: 12px 18px !important;
+        font-size: 18px !important;
+      }
+
+      .fw-question-modal-actions .fw-button {
+        height: 52px !important;
+      }
+    }
   </style>
 </head>
 
@@ -893,9 +1050,8 @@
 
         <div class="fw-top-actions">
           <button type="button" class="fw-top-button" onclick="goFriendBookShelf()">우리 반 추천 책장</button>
-          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
           <button type="button" class="fw-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          <button type="button" class="fw-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+          <button type="button" class="fw-top-button" onclick="goIndividualReading()">책읽기 홈</button>
         </div>
       </header>
 
@@ -904,13 +1060,6 @@
           <div class="fw-bubble">
             읽기 후 활동을 마친 책을<br>
             친구들에게 추천해 보자!
-          </div>
-
-          <div class="fw-help-box">
-            <strong>추천 이유는 이렇게 써봐</strong>
-            <span>
-              “기억에 남는 장면”, “재미있었던 점”, “친구에게 추천하고 싶은 까닭”을 쓰면 좋아.
-            </span>
           </div>
 
           <div class="fw-lumi-wrap">
@@ -956,7 +1105,7 @@
               <textarea
                 id="bookReasonInput"
                 class="fw-textarea"
-                placeholder="이 책에서 기억에 남는 장면이나 좋았던 점을 적어줘."
+                placeholder="이 책을 친구에게 추천하고 싶은 까닭을 적어줘."
               ></textarea>
             </div>
 
@@ -965,10 +1114,6 @@
                 <strong>이 책이 궁금해지는 질문</strong>
                 <span class="fw-question-count" id="selectedQuestionCount">선택한 질문 0/3</span>
               </div>
-
-              <p class="fw-question-guide">
-                친구들이 이 책을 읽고 싶어지도록, 궁금증을 주는 질문을 최대 3개 골라줘.
-              </p>
 
               <button type="button" class="fw-question-open-button" onclick="openQuestionPicker()">
                 질문 선택하기
@@ -985,7 +1130,7 @@
 
           <div class="fw-actions">
             <button type="button" class="fw-button" onclick="goFriendBookShelf()">취소하고 돌아가기</button>
-           <button type="button" class="fw-button primary" onclick="submitFriendBook(event)">추천 등록하기</button>
+            <button type="button" class="fw-button primary" onclick="submitFriendBook(event)">추천 등록하기</button>
           </div>
         </article>
       </section>
@@ -1001,6 +1146,16 @@
         </div>
         <button type="button" class="fw-question-close-button" onclick="closeQuestionPicker()">×</button>
       </div>
+
+      <details class="fw-question-category" id="questionCategoryPanel">
+        <summary>읽기 단계 고르기</summary>
+        <div class="fw-question-category-buttons" id="questionCategoryButtons">
+          <button type="button" class="fw-category-button active" data-category="all" onclick="setQuestionCategory('all')">전체</button>
+          <button type="button" class="fw-category-button" data-category="before" onclick="setQuestionCategory('before')">읽기 전</button>
+          <button type="button" class="fw-category-button" data-category="during" onclick="setQuestionCategory('during')">읽기 중</button>
+          <button type="button" class="fw-category-button" data-category="after" onclick="setQuestionCategory('after')">읽기 후</button>
+        </div>
+      </details>
 
       <div class="fw-question-list modal" id="questionSelectList">
         <div class="fw-question-empty">
@@ -1026,64 +1181,61 @@
       <button type="button" class="fw-button primary" onclick="goFriendBookShelf()">책장으로 돌아가기</button>
     </div>
   </div>
-<!-- 능력치 성장 안내 미니 모달
-     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
-<div class="fw-reward-overlay" id="fwRewardOverlay" aria-hidden="true">
-  <div class="fw-reward-modal">
-    <button class="fw-reward-close" type="button" onclick="closeFriendRewardModal()" aria-label="닫기">×</button>
 
-    <img
-      class="fw-reward-lumi"
-      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
-      alt="응원하는 루미"
-    >
+  <div class="fw-reward-overlay" id="fwRewardOverlay" aria-hidden="true">
+    <div class="fw-reward-modal">
+      <button class="fw-reward-close" type="button" onclick="closeFriendRewardModal()" aria-label="닫기">×</button>
 
-    <div class="fw-reward-badge">✨ 나의 힘 성장!</div>
+      <img
+        class="fw-reward-lumi"
+        src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+        alt="응원하는 루미"
+      >
 
-    <h2 class="fw-reward-title">친구에게 책을 추천했어요!</h2>
+      <div class="fw-reward-badge">✨ 나의 힘 성장!</div>
 
-    <p class="fw-reward-desc">
-      내가 읽은 책의 좋은 점을 나누며<br>
-      친구들과 함께 읽는 용기가 자랐어요.
-    </p>
+      <h2 class="fw-reward-title">친구에게 책을 추천했어요!</h2>
 
-    <div class="fw-reward-list">
-      <div class="fw-reward-item">
-        <div class="fw-reward-left">
-          <img
-            class="fw-reward-icon"
-            src="../assets/images/individual-reading/reward/reward-courage-shield.png"
-            alt="용기"
-          >
-          <span class="fw-reward-name">용기</span>
+      <p class="fw-reward-desc">
+        내가 읽은 책의 좋은 점을 나누며<br>
+        친구들과 함께 읽는 용기가 자랐어요.
+      </p>
+
+      <div class="fw-reward-list">
+        <div class="fw-reward-item">
+          <div class="fw-reward-left">
+            <img
+              class="fw-reward-icon"
+              src="../assets/images/individual-reading/reward/reward-courage-shield.png"
+              alt="용기"
+            >
+            <span class="fw-reward-name">용기</span>
+          </div>
+          <strong class="fw-reward-point">+1</strong>
         </div>
-        <strong class="fw-reward-point">+1</strong>
       </div>
-    </div>
 
-    <div class="fw-reward-lumi-message">
-      루미: 네 생각을 나눈 용기가 멋져!
-    </div>
+      <div class="fw-reward-lumi-message">
+        루미: 네 생각을 나눈 용기가 멋져!
+      </div>
 
-    <button class="fw-reward-confirm" type="button" onclick="confirmFriendRewardModal()">
-      확인했어
-    </button>
+      <button class="fw-reward-confirm" type="button" onclick="confirmFriendRewardModal()">
+        확인했어
+      </button>
+    </div>
   </div>
-</div>
+
   <script src="../js/auth.js"></script>
 
   <script>
-    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
     // checkLogin();
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
-// 로그인한 학생 이름입니다.
-// 실제 로그인 정보가 없을 때는 화면 확인용으로 "나"를 사용합니다.
-const studentName = sessionStorage.getItem("name") || "나";
-    // 친구에게 책을 추천할 때 함께 보여줄 질문 목록입니다.
-    // 최대 3개까지 선택할 수 있습니다.
+    const studentName = sessionStorage.getItem("name") || "나";
+
     let selectedTeaserQuestions = [];
+    let activeQuestionCategory = "all";
 
     function getSavedFriendBooks() {
       try {
@@ -1093,8 +1245,6 @@ const studentName = sessionStorage.getItem("name") || "나";
       }
     }
 
-    // HTML 태그가 글자로 표시되도록 바꿔주는 함수입니다.
-    // 질문 내용에 특수문자가 있어도 화면이 깨지지 않게 하기 위해 사용합니다.
     function escapeHtml(text) {
       return String(text || "")
         .replaceAll("&", "&amp;")
@@ -1104,80 +1254,107 @@ const studentName = sessionStorage.getItem("name") || "나";
         .replaceAll("'", "&#039;");
     }
 
-    // 읽기 중/읽기 후에 만든 질문을 불러옵니다.
-    // 지금은 프론트 UI 테스트용이라 저장된 질문이 없으면 예시 질문을 보여줍니다.
+    function addStoredQuestions(target, storageKey, category) {
+      try {
+        const savedQuestions = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+
+        savedQuestions.forEach(function (item) {
+          let questionText = "";
+          if (typeof item === "string") {
+            questionText = item;
+          } else if (item && item.question) {
+            questionText = item.question;
+          } else if (item && item.questionText) {
+            questionText = item.questionText;
+          } else if (item && item.text) {
+            questionText = item.text;
+          } else if (item && item.titleQuestion) {
+            questionText = item.titleQuestion;
+          }
+
+          if (questionText) {
+            target.push({
+              text: questionText,
+              category
+            });
+          }
+        });
+      } catch (error) {
+        console.warn("질문을 불러오지 못했습니다.", error);
+      }
+    }
+
+    function getExampleQuestions() {
+      return [
+        { text: "제목을 보고 가장 궁금해진 점은 무엇일까?", category: "before" },
+        { text: "표지를 보고 어떤 이야기가 떠오를까?", category: "before" },
+        { text: "주인공은 왜 그런 선택을 했을까?", category: "during" },
+        { text: "내가 주인공이라면 같은 상황에서 어떻게 했을까?", category: "during" },
+        { text: "이 책에서 가장 궁금했던 장면은 무엇일까?", category: "during" },
+        { text: "이야기의 결말이 달라진다면 어떻게 바뀔 수 있을까?", category: "after" },
+        { text: "이 책이 우리에게 알려주는 생각거리는 무엇일까?", category: "after" }
+      ];
+    }
+
     function getQuestionCandidates() {
       const questionList = [];
 
-      try {
-        const duringQuestions = JSON.parse(
-          sessionStorage.getItem("individualDuringQuestions_" + studentId) || "[]"
-        );
+      addStoredQuestions(questionList, "individualBeforeQuestions_" + studentId, "before");
+      addStoredQuestions(questionList, "beforeReadingQuestions_" + studentId, "before");
+      addStoredQuestions(questionList, "individualDuringQuestions_" + studentId, "during");
+      addStoredQuestions(questionList, "individualAfterQuestionAnswers_" + studentId, "after");
 
-        duringQuestions.forEach(function (item) {
-          if (typeof item === "string") {
-            questionList.push(item);
-          } else if (item && item.question) {
-            questionList.push(item.question);
-          } else if (item && item.questionText) {
-            questionList.push(item.questionText);
-          } else if (item && item.text) {
-            questionList.push(item.text);
-          }
-        });
-      } catch (error) {
-        console.warn("읽기 중 질문을 불러오지 못했습니다.", error);
-      }
+      const sourceQuestions = questionList.length > 0 ? questionList : getExampleQuestions();
+      const seenQuestions = new Set();
 
-      try {
-        const afterQuestions = JSON.parse(
-          sessionStorage.getItem("individualAfterQuestionAnswers_" + studentId) || "[]"
-        );
+      return sourceQuestions.filter(function (item) {
+        if (!item.text || seenQuestions.has(item.text)) return false;
 
-        afterQuestions.forEach(function (item) {
-          if (typeof item === "string") {
-            questionList.push(item);
-          } else if (item && item.question) {
-            questionList.push(item.question);
-          } else if (item && item.questionText) {
-            questionList.push(item.questionText);
-          } else if (item && item.text) {
-            questionList.push(item.text);
-          }
-        });
-      } catch (error) {
-        console.warn("읽기 후 질문을 불러오지 못했습니다.", error);
-      }
-
-      const uniqueQuestions = [...new Set(questionList.filter(Boolean))];
-
-      // 아직 저장된 질문이 없을 때 화면 테스트용으로 보여줄 임시 질문입니다.
-      // 나중에 백엔드 질문 목록 API가 붙으면 이 예시 부분은 제거하면 됩니다.
-      if (uniqueQuestions.length === 0) {
-        return [
-          "주인공은 왜 그런 선택을 했을까?",
-          "내가 주인공이라면 같은 상황에서 어떻게 했을까?",
-          "이 책에서 가장 궁금했던 장면은 무엇일까?",
-          "이야기의 결말이 달라진다면 어떻게 바뀔 수 있을까?",
-          "이 책이 우리에게 알려주는 생각거리는 무엇일까?"
-        ];
-      }
-
-      return uniqueQuestions;
+        seenQuestions.add(item.text);
+        return true;
+      });
     }
 
-    // 질문 선택 팝업 안의 질문 목록을 그리는 함수입니다.
+    function getCategoryName(category) {
+      if (category === "before") return "읽기 전";
+      if (category === "during") return "읽기 중";
+      if (category === "after") return "읽기 후";
+      return "전체";
+    }
+
+    function setQuestionCategory(category) {
+      activeQuestionCategory = category;
+
+      document.querySelectorAll(".fw-category-button").forEach(function (button) {
+        button.classList.toggle("active", button.dataset.category === category);
+      });
+
+      renderQuestionSelectList();
+    }
+
+    function getFilteredQuestionCandidates() {
+      const questions = getQuestionCandidates();
+
+      if (activeQuestionCategory === "all") {
+        return questions;
+      }
+
+      return questions.filter(function (item) {
+        return item.category === activeQuestionCategory;
+      });
+    }
+
     function renderQuestionSelectList() {
       const questionSelectList = document.getElementById("questionSelectList");
 
       if (!questionSelectList) return;
 
-      const questions = getQuestionCandidates();
+      const questions = getFilteredQuestionCandidates();
 
       if (questions.length === 0) {
         questionSelectList.innerHTML = `
           <div class="fw-question-empty">
-            아직 고를 수 있는 질문이 없어.
+            ${getCategoryName(activeQuestionCategory)} 질문이 아직 없어.
           </div>
         `;
         return;
@@ -1185,22 +1362,22 @@ const studentName = sessionStorage.getItem("name") || "나";
 
       questionSelectList.innerHTML = questions
         .map(function (question) {
-          const isSelected = selectedTeaserQuestions.includes(question);
+          const isSelected = selectedTeaserQuestions.includes(question.text);
 
           return `
             <button
               type="button"
               class="fw-question-item ${isSelected ? "selected" : ""}"
-              onclick="toggleTeaserQuestion('${encodeURIComponent(question)}')"
+              onclick="toggleTeaserQuestion('${encodeURIComponent(question.text)}')"
             >
-              ${escapeHtml(question)}
+              <span class="fw-question-stage">${getCategoryName(question.category)}</span>
+              <span>${escapeHtml(question.text)}</span>
             </button>
           `;
         })
         .join("");
     }
 
-    // 질문을 선택하거나 선택 해제하는 함수입니다.
     function toggleTeaserQuestion(encodedQuestionText) {
       const questionText = decodeURIComponent(encodedQuestionText);
       const selectedIndex = selectedTeaserQuestions.indexOf(questionText);
@@ -1219,7 +1396,6 @@ const studentName = sessionStorage.getItem("name") || "나";
       renderQuestionSelectList();
     }
 
-    // 질문 선택 팝업을 여는 함수입니다.
     function openQuestionPicker() {
       const modal = document.getElementById("questionPickerModal");
 
@@ -1229,7 +1405,6 @@ const studentName = sessionStorage.getItem("name") || "나";
       modal.classList.add("show");
     }
 
-    // 질문 선택 팝업을 닫는 함수입니다.
     function closeQuestionPicker() {
       const modal = document.getElementById("questionPickerModal");
 
@@ -1238,13 +1413,11 @@ const studentName = sessionStorage.getItem("name") || "나";
       modal.classList.remove("show");
     }
 
-    // 선택 완료 버튼을 눌렀을 때 실행되는 함수입니다.
     function confirmQuestionPicker() {
       renderSelectedQuestionList();
       closeQuestionPicker();
     }
 
-    // 작성 화면에 선택한 질문 목록을 보여주는 함수입니다.
     function renderSelectedQuestionList() {
       const selectedQuestionList = document.getElementById("selectedQuestionList");
       const selectedQuestionCount = document.getElementById("selectedQuestionCount");
@@ -1284,47 +1457,39 @@ const studentName = sessionStorage.getItem("name") || "나";
     function goFriendBookShelf() {
       window.location.href = "./friend-book-shelf.html";
     }
-// 책 추천 완료 보상 미니 모달을 엽니다.
-// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
-// 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
-function openFriendRewardModal() {
-  const rewardOverlay = document.getElementById("fwRewardOverlay");
 
-  if (!rewardOverlay) {
-    return;
-  }
+    function openFriendRewardModal() {
+      const rewardOverlay = document.getElementById("fwRewardOverlay");
 
-  rewardOverlay.classList.add("is-open");
-  rewardOverlay.setAttribute("aria-hidden", "false");
-}
+      if (!rewardOverlay) {
+        return;
+      }
 
-// 책 추천 완료 보상 미니 모달을 닫습니다.
-function closeFriendRewardModal() {
-  const rewardOverlay = document.getElementById("fwRewardOverlay");
+      rewardOverlay.classList.add("is-open");
+      rewardOverlay.setAttribute("aria-hidden", "false");
+    }
 
-  if (!rewardOverlay) {
-    return;
-  }
+    function closeFriendRewardModal() {
+      const rewardOverlay = document.getElementById("fwRewardOverlay");
 
-  rewardOverlay.classList.remove("is-open");
-  rewardOverlay.setAttribute("aria-hidden", "true");
-}
+      if (!rewardOverlay) {
+        return;
+      }
 
-// 보상 안내를 확인한 뒤 기존 추천 등록 완료 팝업으로 이어갑니다.
-function confirmFriendRewardModal() {
-  closeFriendRewardModal();
+      rewardOverlay.classList.remove("is-open");
+      rewardOverlay.setAttribute("aria-hidden", "true");
+    }
 
-  const completeModal = document.getElementById("completeModal");
+    function confirmFriendRewardModal() {
+      closeFriendRewardModal();
 
-  if (completeModal) {
-    completeModal.classList.add("show");
-  }
-}
-    /*
-      추천글 작성 완료 처리입니다.
-      현재는 sessionStorage에 임시 저장합니다.
-      나중에 서버/DB 연결 시 이 함수 안에서 저장 API를 호출하면 됩니다.
-    */
+      const completeModal = document.getElementById("completeModal");
+
+      if (completeModal) {
+        completeModal.classList.add("show");
+      }
+    }
+
     function submitFriendBook(event) {
       event.preventDefault();
 
@@ -1345,38 +1510,36 @@ function confirmFriendRewardModal() {
       const savedBooks = getSavedFriendBooks();
 
       const newBook = {
-  id: Date.now(),
-  title,
-  author,
-  reason,
-  teaserQuestions: selectedTeaserQuestions,
-  recommender: studentName,
-  likes: 0,
-  mine: true,
-  createdAt: new Date().toISOString()
-};
+        id: Date.now(),
+        title,
+        author,
+        reason,
+        teaserQuestions: selectedTeaserQuestions,
+        recommender: studentName,
+        likes: 0,
+        mine: true,
+        createdAt: new Date().toISOString()
+      };
 
       sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify([newBook, ...savedBooks]));
 
-     // 추천글 저장 성공 후, 용기 점수를 공통 능력치 저장소에 반영합니다.
-const rewardResult =
-  typeof givePowerRewardOnce === "function"
-    ? givePowerRewardOnce("friend_book_recommend_" + newBook.id, {
-        presetKey: "individual_friend_book_recommend",
-        showModal: false
-      })
-    : false;
+      const rewardResult =
+        typeof givePowerRewardOnce === "function"
+          ? givePowerRewardOnce("friend_book_recommend_" + newBook.id, {
+              presetKey: "individual_friend_book_recommend",
+              showModal: false
+            })
+          : false;
 
-// 점수가 실제로 올랐을 때만 책 추천 전용 보상 모달을 보여줍니다.
-if (rewardResult && typeof openFriendRewardModal === "function") {
-  openFriendRewardModal();
-} else {
-  const completeModal = document.getElementById("completeModal");
+      if (rewardResult && typeof openFriendRewardModal === "function") {
+        openFriendRewardModal();
+      } else {
+        const completeModal = document.getElementById("completeModal");
 
-  if (completeModal) {
-    completeModal.classList.add("show");
-  }
-}
+        if (completeModal) {
+          completeModal.classList.add("show");
+        }
+      }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -1384,7 +1547,6 @@ if (rewardResult && typeof openFriendRewardModal === "function") {
     });
   </script>
 
-  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
   <script src="../js/individual-power.js?v=power-common-2"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>

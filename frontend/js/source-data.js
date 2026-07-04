@@ -169,25 +169,6 @@ var sourceData = [
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 {
-  title: "연습하기 카드 아이콘",
-  category: "이미지",
-  file: "home-practice-icon.png",
-  description: "연습하기 활동을 나타내는 빛나는 책 아이콘 이미지",
-  source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 홈 화면 연습하기 카드",
-  modified: "카드 아이콘 영역에 맞게 CSS로 크기 조정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},
-{
-  title: "개별읽기 카드 아이콘",
-  category: "이미지",
-  file: "home-individual-icon.png",
-  description: "개별읽기 활동을 나타내는 책 더미와 별빛 아이콘 이미지",
-  source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 홈 화면 개별읽기 카드",
-  modified: "카드 아이콘 영역에 맞게 CSS로 크기 조정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},  {
     title: "연습하기 - 책 고르기 단계 이미지",
     category: "이미지",
     fileName: "practice-book-select.png",
@@ -218,16 +199,6 @@ var sourceData = [
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
   {
-    title: "연습하기 - 우리반 책읽기 단계 이미지",
-    category: "이미지",
-    fileName: "practice-class-reading.png",
-    description: "우리반이 함께 책을 읽는 활동을 나타내는 학생들과 빛나는 책 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 연습하기 화면 우리반 책읽기 카드",
-    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
     title: "연습하기 - 읽기 후 단계 이미지",
     category: "이미지",
     fileName: "practice-after-reading.png",
@@ -236,26 +207,8 @@ var sourceData = [
     usage: "학생 연습하기 화면 읽기 후 카드",
     modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },  {
-    title: "책 투표 안내 루미 캐릭터 이미지",
-    category: "이미지",
-    fileName: "book-vote-lumi.png",
-    description: "책 투표 화면에서 학생에게 우리 반이 읽을 책 투표를 안내하는 루미 상반신 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 책 투표 화면 루미 안내 영역",
-    modified: "파일명 변경 및 책 투표 화면에 맞게 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-{
-  title: "책 투표 대기 화면 신비로운 모래시계 이미지",
-  category: "이미지",
-  fileName: "mystic-hourglass.png",
-  description: "책 투표 후 다른 학생들의 투표 결과를 기다리는 상태를 나타내는 신비로운 금빛 모래시계 이미지",
-  source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 책 투표 화면 투표 대기 상태 영역",
-  modified: "파일명 변경 및 책 투표 대기 화면에 맞게 크기 조정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},  {
+  },    
+  {
     title: "질문 꾸러미 인트로 도서관 배경 이미지",
     category: "이미지",
     fileName: "question-intro-library-bg.png",
@@ -1055,5 +1008,55 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   usage: "학생 엔딩 인트로 4장면 루미 캐릭터",
   modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-}
+},
+  {
+    title: "우리반이 읽을 책 소개 배경 이미지",
+    category: "이미지",
+    fileName: "read-before-intro-bg.png",
+    description: "읽기 전 활동을 시작하기 전에 우리 반이 함께 읽을 책을 소개하는 밝은 도서관 배경 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    location: "학생 읽기 전 인트로 책 소개 화면 배경",
+    modified: "파일명 변경, CSS로 화면 배경 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "개별읽기 메인 루미 이미지",
+    category: "이미지",
+    fileName: "home-lumi.png",
+    description: "개별읽기 메인 화면에서 학생에게 활동을 안내하는 루미 캐릭터 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    location: "학생 개별읽기 메인 화면 안내 캐릭터",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 화면 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "책 추천받기 버튼 이미지",
+    category: "이미지",
+    fileName: "마법의_고대_책.png",
+    description: "개별읽기 메인 화면에서 책 추천받기 버튼에 사용한 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    location: "학생 개별읽기 메인 화면 책 추천받기 버튼",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 버튼 안에 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "오늘의 독서모험 버튼 이미지",
+    category: "이미지",
+    fileName: "금장색_식이_있는_그림.png",
+    description: "개별읽기 메인 화면에서 오늘의 독서모험 버튼에 사용한 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    location: "학생 개별읽기 메인 화면 오늘의 독서모험 버튼",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 버튼 안에 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
+  {
+    title: "던전입장 버튼 이미지",
+    category: "이미지",
+    fileName: "고대_던전의_석문.png",
+    description: "개별읽기 메인 화면에서 던전입장 버튼에 사용한 이미지",
+    source: "OpenAI ChatGPT 이미지 생성",
+    location: "학생 개별읽기 메인 화면 던전입장 버튼",
+    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 버튼 안에 배치 조정",
+    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+  },
 ];
