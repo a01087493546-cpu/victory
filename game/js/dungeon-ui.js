@@ -136,9 +136,10 @@ const DungeonUI = (() => {
     if (!bg || !targetEl) return { x: 300, y: 260 };
     const bgRect = bg.getBoundingClientRect();
     const rect   = targetEl.getBoundingClientRect();
+    const scale  = (typeof window.getStageScale === 'function' ? window.getStageScale() : 1) || 1;
     return {
-      x: rect.left - bgRect.left + rect.width  * 0.5,
-      y: rect.top  - bgRect.top  + rect.height * 0.42
+      x: (rect.left - bgRect.left) / scale + rect.width  * 0.5 / scale,
+      y: (rect.top  - bgRect.top)  / scale + rect.height * 0.42 / scale
     };
   }
 
