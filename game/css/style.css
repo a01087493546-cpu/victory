@@ -15,7 +15,7 @@ body {
   overflow: hidden;
 }
 
-.screen { display: none; width: 100vw; height: 100vh; }
+.screen { display: none; width: 1920px; height: 1080px; }
 .screen.active { display: flex; flex-direction: column; }
 
 /* =============================================
@@ -179,9 +179,9 @@ body {
     오른쪽 300px = 빈 균형 공간
     이렇게 하면 왼쪽 목록이 있어도 상세 카드 중심이 제목 중심과 맞습니다.
   */
-  width: min(1640px, calc(100vw - 80px));
+  width: 1640px;
   flex: 1;
-  max-height: calc(100vh - 166px);
+  max-height: 914px;
   min-height: 0;
   display: grid;
   grid-template-columns: 290px 1fr 290px;
