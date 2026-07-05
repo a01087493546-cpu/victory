@@ -790,6 +790,61 @@
     .iar-qa-card.passed {
       opacity: 1 !important;
     }
+
+    #questionScreen .iar-qa-list {
+      grid-template-columns: minmax(0, 100%) !important;
+      justify-content: center !important;
+      gap: 0 !important;
+    }
+
+    #questionScreen .iar-qa-card {
+      display: grid !important;
+      width: 100% !important;
+      min-height: 360px !important;
+      padding: 28px 32px !important;
+    }
+
+    #questionScreen .iar-qa-card .iar-textarea {
+      min-height: 168px !important;
+    }
+
+    #questionScreen .iar-qa-card label {
+      font-size: 17px !important;
+      gap: 10px !important;
+    }
+
+    #questionScreen .iar-qa-card.is-hidden {
+      display: none !important;
+    }
+
+    #questionScreen .iar-one-feedback {
+      display: none !important;
+    }
+
+    #questionScreen .iar-lumi-feedback {
+      grid-template-columns: 72px minmax(0, 1fr) auto !important;
+      gap: 16px !important;
+      align-items: center !important;
+    }
+
+    #questionScreen .iar-feedback-text {
+      font-size: 17px !important;
+      line-height: 1.55 !important;
+    }
+
+    .iar-lumi-feedback-action {
+      height: 44px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #6baa3c, #28701f);
+      color: #fffdf3;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+      box-shadow: 0 10px 18px rgba(58, 105, 38, 0.13);
+      white-space: nowrap;
+    }
     /* =========================================================
    읽기 후 순서 바 4단계를 한 줄로 정리
    - 1. 책 종류 고르기 / 2. 질문과 답 쓰기 / 3. 스스로 간추리기 / 4. 간추리기 공유
@@ -1517,7 +1572,618 @@ body.iar-teacher-share-mode .iar-panel {
 body.iar-teacher-share-mode .iar-share-guide {
   text-align: left;
 }
-  </style>
+
+/* =========================================================
+   읽기 후 화면 폭 최종 정리
+   - 읽기 전 화면처럼 문답책 헤더 / 읽기 후 순서 / 본문 카드 폭을 모두 통일
+   - 이전에 덧붙였던 1040px, 1160px 제한을 제거하고 1480px 기준으로 맞춤
+   ========================================================= */
+
+.iar-page {
+  min-height: 100vh !important;
+  padding: 16px 28px 20px !important;
+  overflow-x: hidden !important;
+}
+
+.iar-shell {
+  position: relative !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  max-width: 1480px !important;
+  min-height: calc(100vh - 36px) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-rows: 64px auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+/* 상단 문답책 헤더 */
+.iar-top-bar {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* 읽기 후 순서 카드 */
+.iar-step-card {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 20px 28px !important;
+  border-radius: 28px !important;
+}
+
+.iar-step-title {
+  margin: 0 0 14px !important;
+  text-align: center !important;
+  font-size: 30px !important;
+  line-height: 1.15 !important;
+}
+
+.iar-step-row {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.iar-step-pill {
+  width: 100% !important;
+  height: 40px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
+  font-size: 14px !important;
+  border-radius: 999px !important;
+}
+
+/* 본문 화면과 흰색 카드 */
+.iar-screen,
+.iar-screen.active {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+}
+
+.iar-panel {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 430px !important;
+  margin: 0 !important;
+  padding: 34px 42px 36px !important;
+  border-radius: 32px !important;
+}
+
+/* 1단계 책 종류 화면 */
+#typeScreen .iar-panel {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  align-content: start !important;
+}
+
+.iar-panel-head {
+  margin-bottom: 28px !important;
+  text-align: center !important;
+}
+
+.iar-panel-head h2 {
+  font-size: 36px !important;
+  line-height: 1.18 !important;
+}
+
+.iar-panel-head p {
+  margin-top: 10px !important;
+  font-size: 17px !important;
+  line-height: 1.45 !important;
+}
+
+/* 책 종류 카드 3개를 넓어진 본문 카드에 맞게 확장 */
+.iar-book-type-grid {
+  width: 100% !important;
+  max-width: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+  margin: 0 !important;
+}
+
+.iar-book-type-button {
+  width: 100% !important;
+  min-height: 180px !important;
+  padding: 26px 20px !important;
+  border-radius: 28px !important;
+  display: grid !important;
+  grid-template-rows: 64px auto auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+  justify-items: center !important;
+}
+
+.iar-book-type-icon {
+  width: 64px !important;
+  height: 64px !important;
+  font-size: 30px !important;
+}
+
+.iar-book-type-button strong {
+  font-size: 24px !important;
+  line-height: 1.2 !important;
+}
+
+.iar-book-type-button span {
+  max-width: 280px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* 하단 버튼 */
+.iar-bottom-actions {
+  margin-top: 24px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+
+.iar-main-button {
+  min-width: 144px !important;
+  height: 52px !important;
+  padding: 0 26px !important;
+  border-radius: 999px !important;
+  font-size: 16px !important;
+}
+
+/* 2~4단계도 같은 폭 안에서 자연스럽게 */
+.iar-qa-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 18px !important;
+}
+
+.iar-summary-layout {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) !important;
+  gap: 20px !important;
+}
+
+.iar-share-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+
+/* 낮은 화면 대응 */
+@media (max-height: 760px) {
+  .iar-page {
+    padding: 12px 24px !important;
+  }
+
+  .iar-shell {
+    min-height: calc(100vh - 24px) !important;
+    grid-template-rows: 58px auto minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .iar-top-bar {
+    height: 58px !important;
+  }
+
+  .iar-step-card {
+    padding: 16px 24px !important;
+  }
+
+  .iar-step-title {
+    font-size: 26px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .iar-step-pill {
+    height: 36px !important;
+    font-size: 12px !important;
+  }
+
+  .iar-panel {
+    min-height: 360px !important;
+    padding: 26px 32px 28px !important;
+  }
+
+  .iar-panel-head {
+    margin-bottom: 20px !important;
+  }
+
+  .iar-panel-head h2 {
+    font-size: 30px !important;
+  }
+
+  .iar-panel-head p {
+    font-size: 14px !important;
+  }
+
+  .iar-book-type-grid {
+    gap: 18px !important;
+  }
+
+  .iar-book-type-button {
+    min-height: 142px !important;
+    padding: 20px 16px !important;
+    grid-template-rows: 54px auto auto !important;
+  }
+
+  .iar-book-type-icon {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 26px !important;
+  }
+
+  .iar-book-type-button strong {
+    font-size: 21px !important;
+  }
+
+  .iar-book-type-button span {
+    font-size: 12px !important;
+  }
+
+  .iar-main-button {
+    height: 48px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* 좁은 화면 대응 */
+@media (max-width: 980px) {
+  .iar-step-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .iar-book-type-grid,
+  .iar-qa-list,
+  .iar-summary-layout,
+  .iar-share-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+
+/* =========================================================
+   읽기 후 1단계 책 종류 화면 최종 수정
+   - 메인 카드 세로 길이 확대
+   - 책 종류 카드도 함께 확대
+   - 상단 설명/카드별 보조 설명 제거
+   ========================================================= */
+#typeScreen .iar-panel {
+  min-height: 520px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  align-content: stretch !important;
+  padding: 40px 42px 36px !important;
+}
+
+#typeScreen .iar-panel-head {
+  margin-bottom: 28px !important;
+}
+
+#typeScreen .iar-panel-head h2 {
+  font-size: 38px !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+}
+
+/* "책 종류에 따라 간추리는 방법이 달라져요..." 문구 제거 */
+#typeScreen .iar-panel-head p {
+  display: none !important;
+}
+
+#typeScreen .iar-book-type-grid {
+  width: 100% !important;
+  height: 250px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+  align-items: stretch !important;
+  margin: 0 !important;
+}
+
+#typeScreen .iar-book-type-button {
+  width: 100% !important;
+  min-height: 250px !important;
+  height: 250px !important;
+  display: grid !important;
+  grid-template-rows: 86px auto !important;
+  align-content: center !important;
+  justify-items: center !important;
+  gap: 18px !important;
+  padding: 34px 24px !important;
+  border-radius: 28px !important;
+}
+
+#typeScreen .iar-book-type-icon {
+  width: 86px !important;
+  height: 86px !important;
+  font-size: 40px !important;
+}
+
+#typeScreen .iar-book-type-button strong {
+  font-size: 30px !important;
+  line-height: 1.16 !important;
+  margin: 0 !important;
+}
+
+/* 이야기책/정보책/생각책 아래 보조 설명 제거 */
+#typeScreen .iar-book-type-button span {
+  display: none !important;
+}
+
+#typeScreen .iar-bottom-actions {
+  margin-top: 28px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+#typeScreen .iar-main-button {
+  min-width: 150px !important;
+  height: 56px !important;
+  font-size: 17px !important;
+}
+
+@media (max-height: 760px) {
+  #typeScreen .iar-panel {
+    min-height: 450px !important;
+    padding: 30px 34px 30px !important;
+  }
+
+  #typeScreen .iar-panel-head {
+    margin-bottom: 22px !important;
+  }
+
+  #typeScreen .iar-panel-head h2 {
+    font-size: 32px !important;
+  }
+
+  #typeScreen .iar-book-type-grid {
+    height: 205px !important;
+    gap: 18px !important;
+  }
+
+  #typeScreen .iar-book-type-button {
+    height: 205px !important;
+    min-height: 205px !important;
+    grid-template-rows: 72px auto !important;
+    gap: 14px !important;
+    padding: 26px 18px !important;
+  }
+
+  #typeScreen .iar-book-type-icon {
+    width: 72px !important;
+    height: 72px !important;
+    font-size: 34px !important;
+  }
+
+  #typeScreen .iar-book-type-button strong {
+    font-size: 25px !important;
+  }
+}
+/* 읽기 후 1단계 카드 높이/내부 카드/이모지 확대 */
+#typeScreen .iar-panel {
+  min-height: 520px !important;
+  padding: 44px 42px 42px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  align-content: stretch !important;
+}
+
+/* 제목 영역 */
+#typeScreen .iar-panel-head {
+  margin-bottom: 34px !important;
+}
+
+#typeScreen .iar-panel-head h2 {
+  font-size: 38px !important;
+  line-height: 1.2 !important;
+}
+
+/* 보조 설명은 계속 제거 */
+#typeScreen .iar-panel-head p {
+  display: none !important;
+}
+
+/* 이야기 책 / 정보를 담은 책 / 생각을 담은 책 카드 영역 */
+#typeScreen .iar-book-type-grid {
+  height: 250px !important;
+  min-height: 250px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 26px !important;
+  align-items: stretch !important;
+}
+
+/* 안쪽 책 종류 카드 크게 */
+#typeScreen .iar-book-type-button {
+  width: 100% !important;
+  height: 250px !important;
+  min-height: 250px !important;
+  padding: 34px 22px !important;
+  border-radius: 30px !important;
+  display: grid !important;
+  grid-template-rows: 104px auto !important;
+  gap: 18px !important;
+  align-items: center !important;
+  justify-items: center !important;
+}
+
+/* 이모지 원형 아이콘 크게 */
+#typeScreen .iar-book-type-icon {
+  width: 104px !important;
+  height: 104px !important;
+  font-size: 48px !important;
+  border-radius: 50% !important;
+}
+
+/* 카드 제목 크게 */
+#typeScreen .iar-book-type-button strong {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+}
+
+/* 카드 보조 설명 제거 */
+#typeScreen .iar-book-type-button span {
+  display: none !important;
+}
+
+/* 다음으로 버튼 위치 */
+#typeScreen .iar-bottom-actions {
+  margin-top: 28px !important;
+  justify-content: flex-end !important;
+}
+
+#typeScreen .iar-main-button {
+  width: 150px !important;
+  height: 56px !important;
+  font-size: 17px !important;
+}
+/* 3단계 스스로 간추리기 보조설명 완전 제거 */
+#summaryScreen .iar-panel-head p {
+  display: none !important;
+}
+/* =========================================================
+   읽기 후 4단계 화면 잘림 방지
+   - 화면 아래가 잘리지 않도록 전체 페이지 스크롤 허용
+   - 간추리기 공유 카드가 자연스럽게 아래로 이어지게 정리
+   ========================================================= */
+
+html,
+body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: auto !important;
+}
+
+.iar-page {
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  padding-bottom: 80px !important;
+}
+
+.iar-shell {
+  height: auto !important;
+  min-height: calc(100vh - 36px) !important;
+  grid-template-rows: auto auto auto !important;
+}
+
+#shareScreen {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+#shareScreen .iar-panel {
+  height: auto !important;
+  min-height: 620px !important;
+  overflow: visible !important;
+}
+
+#shareScreen .iar-panel-head {
+  margin-bottom: 18px !important;
+}
+
+#shareScreen .iar-share-guide {
+  display: none !important;
+}
+
+#shareScreen .iar-share-grid {
+  padding-bottom: 40px !important;
+}
+/* =========================================================
+   4단계 간추리기 공유 화면 스크롤 강제 활성화
+   - 아래 카드가 잘리지 않게 문서 전체를 세로 스크롤로 변경
+   ========================================================= */
+
+html,
+body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body {
+  position: static !important;
+}
+
+.iar-page {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+  padding-bottom: 120px !important;
+}
+
+.iar-shell {
+  height: auto !important;
+  min-height: 0 !important;
+  display: block !important;
+}
+
+.iar-top-bar,
+.iar-step-card,
+.iar-screen,
+.iar-panel {
+  flex: none !important;
+}
+
+.iar-step-card {
+  margin-top: 14px !important;
+}
+
+.iar-screen {
+  margin-top: 14px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.iar-panel {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+#shareScreen {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+#shareScreen .iar-panel {
+  height: auto !important;
+  min-height: 720px !important;
+  padding-bottom: 90px !important;
+  overflow: visible !important;
+}
+
+#shareScreen .iar-share-grid {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  padding-bottom: 80px !important;
+}
+
+#shareScreen .iar-share-guide,
+#shareScreen .iar-panel-head p {
+  display: none !important;
+}
+
+/* 읽기 후 순서 카드와 각 단계 본문 카드 사이의 여백을 복구합니다. */
+.iar-screen,
+.iar-screen.active {
+  margin: 24px 0 0 !important;
+}
+
+.iar-step-card + .iar-screen,
+.iar-step-card + .iar-screen.active {
+  margin-top: 24px !important;
+}
+
+</style>
 </head>
 
 <body>
@@ -1584,7 +2250,6 @@ body.iar-teacher-share-mode .iar-share-guide {
         <article class="iar-panel">
           <div class="iar-panel-head">
             <h2>간추리기 질문과 답을 써요</h2>
-            <p>질문은 물음표로 끝나야 해요. 루미 피드백을 통과해야 간추리기 화면으로 넘어갈 수 있어요.</p>
           </div>
 
           <div class="iar-qa-list" id="qaList">
@@ -1628,14 +2293,14 @@ body.iar-teacher-share-mode .iar-share-guide {
           <div class="iar-lumi-feedback">
             <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
             <div class="iar-feedback-text" id="questionFeedback">
-              질문과 답을 하나씩 쓴 뒤 각 카드의 <b>이 질문 피드백</b>을 눌러봐. 모든 질문을 통과해야 다음으로 갈 수 있어.
+              질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
+            <button type="button" class="iar-lumi-feedback-action" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
           </div>
 
           <div class="iar-bottom-actions">
             <button type="button" class="iar-main-button" onclick="showTypeScreen()">이전으로</button>
-            <button type="button" class="iar-main-button" onclick="addQuestionAnswerCard()">질문 추가</button>
-            <button type="button" class="iar-main-button primary" id="goSummaryButton" onclick="saveQuestionAnswers()" disabled>간추리기 화면으로</button>
+            <button type="button" class="iar-main-button primary" id="goSummaryButton" onclick="saveQuestionAnswers()" disabled>간추리기</button>
           </div>
         </article>
       </section>
@@ -1644,7 +2309,7 @@ body.iar-teacher-share-mode .iar-share-guide {
         <article class="iar-panel">
           <div class="iar-panel-head">
             <h2>내가 쓴 질문과 답을 보며 간추려요</h2>
-            <p>앞에서 쓴 질문과 답을 살펴보고, 책의 중요한 내용을 내 말로 간추려 봐요.</p>
+            
           </div>
 
           <div class="iar-summary-layout">
@@ -1669,8 +2334,8 @@ body.iar-teacher-share-mode .iar-share-guide {
           <div class="iar-lumi-feedback">
             <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
             <div class="iar-feedback-text" id="summaryFeedback">
-              간추린 내용을 쓴 뒤 <b>루미 피드백 받기</b>를 눌러봐. 질문과 답의 핵심이 잘 이어졌는지 살펴봐 줄게.
-            </div>
+  간추린 내용을 쓴 뒤 루미 피드백 받기를 눌러봐.
+</div>
           </div>
 
           <div class="iar-bottom-actions">
@@ -1685,12 +2350,10 @@ body.iar-teacher-share-mode .iar-share-guide {
         <article class="iar-panel">
           <div class="iar-panel-head">
             <h2>우리 반 간추리기 모음</h2>
-            <p>친구들이 간추린 내용을 읽고, 내 책과 비슷한 점이나 궁금한 점을 댓글로 남겨 봐요.</p>
+      
           </div>
 
-         <div class="iar-share-guide">
-  댓글에는 <b>내 책과 비슷한 점</b>, <b>새롭게 알게 된 점</b>, <b>친구에게 궁금한 점</b>을 적으면 좋아요.
-</div>
+         
 
 <!-- 책 종류별로 간추리기를 골라 보는 필터입니다. -->
 <div class="iar-share-filter-row">
@@ -1852,20 +2515,6 @@ let currentShareFilter = "all";
           if (card) {
             card.dataset.feedbackPassed = "false";
             card.classList.remove("passed");
-
-            const button = card.querySelector(".iar-one-feedback-button");
-            const feedback = card.querySelector(".iar-one-feedback-text");
-
-            if (button) {
-              button.classList.remove("pass");
-              button.textContent = "이 질문 피드백";
-            }
-
-            if (feedback) {
-              feedback.classList.remove("good");
-              feedback.classList.add("need");
-              feedback.textContent = "내용이 바뀌었어. 이 질문만 다시 피드백 받아줘.";
-            }
           }
 
           updateQuestionProgress();
@@ -1977,20 +2626,8 @@ let currentShareFilter = "all";
           card.dataset.feedbackPassed = "false";
         }
 
-        if (card.querySelector(".iar-one-feedback")) return;
-
-        const feedbackWrap = document.createElement("div");
-        feedbackWrap.className = "iar-one-feedback";
-        feedbackWrap.innerHTML = `
-          <button type="button" class="iar-one-feedback-button" onclick="checkOneQuestionFeedback(this)">
-            이 질문 피드백
-          </button>
-          <div class="iar-one-feedback-text">
-            질문과 답을 쓴 뒤 이 버튼을 눌러 피드백을 받아요.
-          </div>
-        `;
-
-        card.appendChild(feedbackWrap);
+        const oldFeedback = card.querySelector(".iar-one-feedback");
+        if (oldFeedback) oldFeedback.remove();
       });
     }
 
@@ -2006,6 +2643,7 @@ let currentShareFilter = "all";
 
         card.classList.toggle("locked-next", !previousPassed);
         card.classList.remove("current-card");
+        card.classList.add("is-hidden");
 
         inputs.forEach(function (input) {
           input.disabled = !previousPassed;
@@ -2020,8 +2658,11 @@ let currentShareFilter = "all";
         return card.dataset.feedbackPassed !== "true" && !card.classList.contains("locked-next");
       });
 
-      if (currentCard) {
-        currentCard.classList.add("current-card");
+      const activeCard = currentCard || cards[cards.length - 1];
+
+      if (activeCard) {
+        activeCard.classList.add("current-card");
+        activeCard.classList.remove("is-hidden");
       }
     }
 
@@ -2052,34 +2693,37 @@ let currentShareFilter = "all";
       };
     }
 
+    function checkCurrentQuestionFeedback() {
+      const card =
+        document.querySelector(".iar-qa-card.current-card:not(.is-hidden)") ||
+        document.querySelector(".iar-qa-card:not(.is-hidden)");
+
+      if (!card) return;
+
+      checkQuestionCardFeedback(card);
+    }
+
     function checkOneQuestionFeedback(button) {
-      const card = button.closest(".iar-qa-card");
+      const card = button ? button.closest(".iar-qa-card") : null;
+      if (card) checkQuestionCardFeedback(card);
+    }
+
+    function checkQuestionCardFeedback(card) {
       const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
       const number = cards.indexOf(card) + 1;
-      const feedback = card.querySelector(".iar-one-feedback-text");
       const item = getQuestionAnswerFromCard(card);
       const problems = validateQuestionAnswer(item, number);
 
       if (problems.length > 0) {
         card.dataset.feedbackPassed = "false";
         card.classList.remove("passed");
-        button.classList.remove("pass");
-        button.textContent = "다시 피드백";
-        feedback.classList.remove("good");
-        feedback.classList.add("need");
-        feedback.innerHTML = `<b>고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`;
+        setFeedback("questionFeedback", "need", `<b>고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
+        updateSequentialQuestionLock();
       } else {
         card.dataset.feedbackPassed = "true";
         card.classList.add("passed");
-        button.classList.add("pass");
-        button.textContent = "통과 완료";
-        feedback.classList.remove("need");
-        feedback.classList.add("good");
-        feedback.textContent = `좋아! 질문 ${number}은 질문 형식, 답의 길이, 책 종류에 맞는지 모두 괜찮아.`;
+        updateQuestionProgress();
       }
-
-      updateQuestionProgress();
-      updateSequentialQuestionLock();
     }
 
     function validateQuestionAnswer(item, number) {
@@ -2150,7 +2794,7 @@ let currentShareFilter = "all";
       });
     }
 
-    setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 마법력과 지혜가 +1씩 자랐어. 이제 간추리기 화면으로 넘어가도 돼.");
+    setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 마법력과 지혜가 +1씩 자랐어. 이제 간추리기를 쓸 수 있어.");
   } else {
     const nextNumber = Math.min(passedCount + 1, cards.length);
     setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
@@ -2992,6 +3636,6 @@ function goAdventure() {
     </button>
   </div>
 </div>
-  <script src="../js/fixed-stage.js"></script>
+  <script src="../js/fixed-stage.js?v=after-reading-scroll-1"></script>
 </body>
 </html>

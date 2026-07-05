@@ -1579,13 +1579,13 @@
 .ibr-page.book-step .ibr-form-card {
   width: 100% !important;
   max-width: none !important;
-  height: 100% !important;
+  height: auto !important;
   min-height: 0 !important;
   display: grid !important;
-  grid-template-rows: 92px 92px 1fr !important;
-  gap: 24px !important;
+  grid-template-rows: 92px 92px auto !important;
+  gap: 18px !important;
   padding: 0 !important;
-  align-content: stretch !important;
+  align-content: start !important;
 }
 
 .ibr-page.book-step #bookTitleField,
@@ -1618,28 +1618,28 @@
   display: none !important;
 }
 
-/* 책 종류 버튼 크게 */
+/* 책 종류 버튼은 입력 흐름에 맞게 낮게 */
 .ibr-page.book-step .ibr-book-type-grid {
   width: 100% !important;
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 18px !important;
+  gap: 12px !important;
 }
 
 .ibr-page.book-step .ibr-book-type-button {
   width: 100% !important;
-  min-height: 112px !important;
-  height: 112px !important;
-  padding: 18px 12px !important;
-  border-radius: 26px !important;
-  font-size: 22px !important;
+  min-height: 74px !important;
+  height: 74px !important;
+  padding: 10px 10px !important;
+  border-radius: 20px !important;
+  font-size: 16px !important;
   font-weight: 950 !important;
-  line-height: 1.25 !important;
+  line-height: 1.18 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;
+  gap: 4px !important;
 }
 
 /* 아래 버튼과 겹치지 않게 */
@@ -3157,6 +3157,47 @@ function goTodayAdventure() {
   .ibr-page.book-step .ibr-book-type-button {
     min-height: 112px !important;
     font-size: 18px !important;
+  }
+}
+
+/* 읽기 전 책 종류 버튼 최종 높이 조정 */
+.ibr-page.book-step .ibr-form-card {
+  height: auto !important;
+  grid-template-rows: 112px 112px auto !important;
+  align-content: start !important;
+  gap: 18px !important;
+}
+
+.ibr-page.book-step .ibr-book-type-field {
+  padding-top: 0 !important;
+}
+
+.ibr-page.book-step .ibr-book-type-grid {
+  height: auto !important;
+  min-height: 0 !important;
+  gap: 12px !important;
+  align-items: start !important;
+}
+
+.ibr-page.book-step .ibr-book-type-button {
+  height: 104px !important;
+  min-height: 104px !important;
+  padding: 16px 10px !important;
+  border-radius: 22px !important;
+  font-size: 17px !important;
+  line-height: 1.18 !important;
+  gap: 7px !important;
+}
+
+@media (max-height: 760px) {
+  .ibr-page.book-step .ibr-form-card {
+    grid-template-rows: 92px 92px auto !important;
+  }
+
+  .ibr-page.book-step .ibr-book-type-button {
+    height: 88px !important;
+    min-height: 88px !important;
+    font-size: 15px !important;
   }
 }
   </style>
