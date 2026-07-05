@@ -4,181 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>문답책 - 읽기 후</title>
-<link rel="stylesheet" href="../css/individual-power.css" />
+
+  <link rel="stylesheet" href="../css/individual-power.css" />
+
   <style>
-    /* =========================================================
-   읽기 후 활동 전 인트로 화면
-   ========================================================= */
-
-.after-intro-page {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(10, 5, 2, 0.82), rgba(10, 5, 2, 0.32), rgba(10, 5, 2, 0.72)),
-    url("../assets/story/bg-after-reading-intro.png");
-  background-size: cover;
-  background-position: center;
-  color: #fff4d6;
-}
-
-.after-intro-page.is-hidden {
-  display: none;
-}
-
-.after-intro-skip {
-  position: absolute;
-  top: 42px;
-  right: 54px;
-  z-index: 5;
-  height: 42px;
-  padding: 0 24px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 222, 153, 0.72);
-  background: rgba(43, 24, 10, 0.78);
-  color: #fff3cf;
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.after-intro-lumi {
-  position: absolute;
-  right: 11%;
-  bottom: 0;
-  width: min(420px, 32vw);
-  max-height: 82vh;
-  object-fit: contain;
-  object-position: bottom center;
-  filter:
-    drop-shadow(0 22px 28px rgba(0, 0, 0, 0.58))
-    drop-shadow(0 0 22px rgba(255, 211, 111, 0.18));
-}
-
-.after-intro-card {
-  position: absolute;
-  left: 4.8%;
-  top: 37%;
-  width: min(700px, 46vw);
-  min-height: 410px;
-  padding: 58px 52px 34px;
-  border-radius: 0 28px 28px 28px;
-  border: 1.5px solid rgba(255, 220, 145, 0.38);
-  background:
-    radial-gradient(circle at 96% 0%, rgba(255, 221, 145, 0.12), transparent 34%),
-    linear-gradient(180deg, rgba(24, 22, 18, 0.96), rgba(18, 16, 13, 0.94));
-  box-shadow:
-    0 24px 46px rgba(0, 0, 0, 0.44),
-    inset 0 1px 0 rgba(255, 240, 190, 0.10);
-}
-
-.after-intro-speaker {
-  position: absolute;
-  top: -54px;
-  left: 42px;
-  width: 154px;
-  height: 54px;
-  display: grid;
-  place-items: center;
-  border-radius: 14px 14px 0 0;
-  border: 1.5px solid rgba(255, 220, 145, 0.38);
-  border-bottom: 0;
-  background: rgba(52, 39, 23, 0.86);
-  color: #ffe6a8;
-  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.after-intro-text {
-  min-height: 170px;
-  display: flex;
-  align-items: center;
-  color: #fff8e5;
-  font-family: "Noto Serif KR", serif;
-  font-size: clamp(31px, 2.55vw, 43px);
-  font-weight: 900;
-  line-height: 1.48;
-  letter-spacing: -1.2px;
-  word-break: keep-all;
-  text-shadow:
-    0 2px 0 rgba(20, 12, 5, 0.92),
-    0 6px 18px rgba(0, 0, 0, 0.45);
-}
-
-.after-intro-bottom {
-  display: grid;
-  grid-template-columns: 160px 1fr 180px;
-  align-items: center;
-  gap: 24px;
-  margin-top: 54px;
-}
-
-.after-intro-button {
-  height: 56px;
-  border-radius: 999px;
-  border: 1.5px solid rgba(255, 223, 151, 0.50);
-  font-size: 17px;
-  font-weight: 900;
-}
-
-.after-intro-button.prev {
-  background: rgba(255, 245, 220, 0.94);
-  color: #5c3718;
-}
-
-.after-intro-button.next {
-  background: transparent;
-  color: #ffe6a8;
-  border-color: rgba(255, 218, 135, 0.38);
-  box-shadow: none;
-}
-
-.after-intro-button.next:hover {
-  background: rgba(255, 218, 135, 0.10);
-}
-
-.after-intro-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 13px;
-}
-
-.after-intro-dot {
-  width: 15px;
-  height: 15px;
-  border-radius: 999px;
-  background: rgba(255, 238, 196, 0.26);
-}
-
-.after-intro-dot.is-active {
-  width: 58px;
-  background: #ffd36f;
-  box-shadow: 0 0 16px rgba(255, 211, 111, 0.28);
-}
-    .teacher-return-button {
-  position: fixed;
-  left: 24px;
-  bottom: 24px;
-  z-index: 9999;
-  border: 1px solid rgba(255, 215, 132, 0.72);
-  border-radius: 999px;
-  padding: 13px 20px;
-  background: linear-gradient(180deg, #965d25, #562b0c);
-  color: #fff5df;
-  font-size: 15px;
-  font-weight: 900;
-  box-shadow:
-    0 7px 0 rgba(45, 22, 7, 0.78),
-    0 12px 22px rgba(0, 0, 0, 0.28);
-}
-
-.teacher-return-button:hover {
-  transform: translateY(-2px);
-}
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700;900&display=swap");
 
@@ -188,10 +17,14 @@
       padding: 0;
     }
 
+    html,
     body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
+    }
+
+    body {
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #fff1cc;
       background:
@@ -211,10 +44,27 @@
       cursor: pointer;
     }
 
+    .teacher-return-button {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      border: 1px solid rgba(255, 215, 132, 0.72);
+      border-radius: 999px;
+      padding: 13px 20px;
+      background: linear-gradient(180deg, #965d25, #562b0c);
+      color: #fff5df;
+      font-size: 15px;
+      font-weight: 900;
+      box-shadow:
+        0 7px 0 rgba(45, 22, 7, 0.78),
+        0 12px 22px rgba(0, 0, 0, 0.28);
+    }
+
     .ar-page {
       width: 100vw;
       height: 100vh;
-      padding: 14px 22px 18px;
+      padding: 10px 18px 14px;
       overflow: hidden;
       background:
         radial-gradient(circle at 50% 16%, rgba(255, 213, 111, 0.14), transparent 30%),
@@ -222,13 +72,13 @@
     }
 
     .ar-shell {
-      width: min(1480px, 100%);
-      height: calc(100vh - 32px);
-      margin: 0 auto;
+      width: 100%;
+      height: 100%;
       display: grid;
       grid-template-rows: 66px minmax(0, 1fr);
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
+      min-height: 0;
     }
 
     .ar-topbar {
@@ -238,7 +88,7 @@
       align-items: center;
       gap: 14px;
       padding: 0 16px;
-      border-radius: 26px;
+      border-radius: 24px;
       border: 1.5px solid rgba(255, 203, 112, 0.68);
       background:
         linear-gradient(90deg, rgba(12, 7, 3, 0.94), rgba(50, 27, 10, 0.78), rgba(12, 7, 3, 0.94));
@@ -329,159 +179,25 @@
       display: grid;
     }
 
+    /* 첫 화면: 상단바 아래 전체를 책 유형 선택 화면으로 채움 */
     .ar-menu-screen.is-active {
+      width: 100%;
       height: 100%;
-      grid-template-rows: 245px minmax(0, 1fr);
-      gap: 18px;
-      overflow: hidden;
-    }
-
-    .ar-guide-area {
       min-width: 0;
       min-height: 0;
-      display: grid;
-      grid-template-columns: 210px minmax(0, 1fr) 320px;
-      grid-template-areas: "lumi speech status";
-      gap: 18px;
-      align-items: end;
-      padding: 4px 2px 0;
-    }
-
-    .ar-lumi-area {
-      grid-area: lumi;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      overflow: visible;
-    }
-
-    .ar-lumi-img {
-      width: 195px;
-      max-height: 240px;
-      object-fit: contain;
-      object-position: bottom center;
-      transform: translateY(8px);
-      filter:
-        drop-shadow(0 18px 22px rgba(0, 0, 0, 0.50))
-        drop-shadow(0 0 18px rgba(255, 205, 105, 0.16));
-    }
-
-    .ar-speech-card {
-      grid-area: speech;
-      position: relative;
-      align-self: center;
-      min-height: 108px;
-      display: flex;
-      align-items: center;
-      padding: 22px 30px;
-      border-radius: 26px;
-      border: 1.5px solid rgba(255, 221, 149, 0.66);
-      background:
-        radial-gradient(circle at 96% 0%, rgba(255, 232, 172, 0.23), transparent 34%),
-        linear-gradient(180deg, rgba(255, 250, 235, 0.94), rgba(245, 221, 181, 0.90));
-      color: #452710;
-      font-family: "Noto Serif KR", serif;
-      font-size: clamp(20px, 1.75vw, 27px);
-      font-weight: 900;
-      line-height: 1.42;
-      letter-spacing: -0.8px;
-      word-break: keep-all;
-      box-shadow:
-        0 18px 32px rgba(0, 0, 0, 0.30),
-        0 5px 0 rgba(83, 43, 12, 0.30),
-        inset 0 1px 0 rgba(255, 255, 255, 0.58);
-    }
-
-    .ar-speech-card::before {
-      content: "";
-      position: absolute;
-      left: -15px;
-      top: 50%;
-      transform: translateY(-50%);
-      border-top: 14px solid transparent;
-      border-bottom: 14px solid transparent;
-      border-right: 16px solid rgba(255, 250, 235, 0.94);
-    }
-
-    .ar-menu-status {
-      grid-area: status;
-      align-self: center;
-      height: 210px;
-      padding: 14px 16px;
-      border-radius: 26px;
-      border: 1.5px solid rgba(255, 205, 112, 0.52);
-      background:
-        radial-gradient(circle at 70% 0%, rgba(255, 212, 109, 0.14), transparent 38%),
-        linear-gradient(180deg, rgba(23, 13, 6, 0.88), rgba(12, 7, 3, 0.92));
-      box-shadow:
-        0 18px 32px rgba(0, 0, 0, 0.34),
-        inset 0 1px 0 rgba(255, 235, 184, 0.10);
+      grid-template-rows: minmax(0, 1fr);
       overflow: hidden;
-    }
-
-    .ar-menu-status h2 {
-      margin-bottom: 10px;
-      text-align: center;
-      color: #ffe9a8;
-      font-family: "Noto Serif KR", serif;
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      line-height: 1.15;
-      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
-    }
-
-    .ar-status-list {
-      display: grid;
-      gap: 7px;
-    }
-
-    .ar-status-chip {
-      height: 30px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 239, 211, 0.18);
-      background: rgba(255, 246, 227, 0.90);
-      color: #4b2a12;
-      font-size: 12px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .ar-status-chip span {
-      width: 22px;
-      height: 22px;
-      flex: 0 0 22px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: rgba(88, 58, 27, 0.16);
-      color: #5c3414;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .ar-status-chip.is-active {
-      border-color: rgba(146, 218, 93, 0.32);
-      background: linear-gradient(180deg, #3f842e, #245716);
-      color: #fff8e3;
-    }
-
-    .ar-status-chip.is-active span {
-      background: #fff4cf;
-      color: #2f651d;
     }
 
     .ar-type-board {
+      width: 100%;
       height: 100%;
+      min-width: 0;
+      min-height: 0;
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      gap: 18px;
-      padding: 28px 30px 30px;
+      grid-template-rows: 96px minmax(0, 1fr);
+      gap: 24px;
+      padding: 34px 36px 38px;
       border-radius: 32px;
       border: 1.5px solid rgba(255, 205, 112, 0.66);
       background:
@@ -495,15 +211,19 @@
     }
 
     .ar-board-title {
+      height: 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       text-align: center;
     }
 
     .ar-board-title h2 {
       color: #ffe9a8;
       font-family: "Noto Serif KR", serif;
-      font-size: 31px;
+      font-size: 40px;
       font-weight: 900;
-      line-height: 1.1;
+      line-height: 1.08;
       letter-spacing: -1px;
       text-shadow:
         0 2px 0 rgba(45, 22, 5, 0.88),
@@ -511,29 +231,35 @@
     }
 
     .ar-board-title p {
-      margin-top: 5px;
+      margin-top: 8px;
       color: rgba(255, 235, 188, 0.88);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 850;
     }
 
     .ar-type-grid {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
       min-height: 0;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 22px;
+      gap: 28px;
       align-items: stretch;
       overflow: hidden;
     }
 
     .ar-type-card {
+      width: 100%;
       height: 100%;
-      padding: 22px 18px;
+      min-width: 0;
+      min-height: 0;
+      padding: 34px 28px;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      border-radius: 24px;
+      border-radius: 28px;
       border: 1.5px solid rgba(255, 215, 132, 0.54);
       background:
         radial-gradient(circle at 50% 18%, rgba(255, 210, 104, 0.14), transparent 28%),
@@ -564,15 +290,15 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 18px;
       text-align: center;
     }
 
     .ar-type-icon {
-      width: 90px;
-      height: 90px;
-      flex: 0 0 90px;
-      margin: 0 0 4px;
+      width: 124px;
+      height: 124px;
+      flex: 0 0 124px;
+      margin-bottom: 4px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -589,8 +315,8 @@
     }
 
     .ar-type-icon img {
-      width: 58px;
-      height: 58px;
+      width: 78px;
+      height: 78px;
       object-fit: contain;
       display: block;
       filter:
@@ -602,22 +328,22 @@
       margin: 4px 0 0;
       color: #fff2c8;
       font-family: "Noto Serif KR", serif;
-      font-size: 25px;
+      font-size: 34px;
       font-weight: 900;
       line-height: 1.15;
-      letter-spacing: -0.7px;
+      letter-spacing: -0.8px;
       text-shadow:
         0 2px 0 rgba(42, 22, 7, 0.86),
         0 0 12px rgba(255, 205, 105, 0.18);
     }
 
     .ar-type-card p {
-      max-width: 230px;
+      max-width: 340px;
       margin: 0 auto;
       color: rgba(255, 236, 190, 0.90);
-      font-size: 14px;
+      font-size: 17px;
       font-weight: 850;
-      line-height: 1.42;
+      line-height: 1.5;
       letter-spacing: -0.2px;
       word-break: keep-all;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
@@ -729,10 +455,10 @@
     }
 
     .ar-study-panel.is-active {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 12px;
-}
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 12px;
+    }
 
     .ar-panel-title {
       text-align: center;
@@ -985,13 +711,13 @@
 
     .ar-practice-question-button {
       width: 100%;
-      min-height: 44px;
+      min-height: 72px;
       padding: 10px 12px;
       border-radius: 14px;
       border: 1.5px solid rgba(131, 82, 36, 0.26);
       background: rgba(255, 250, 238, 0.94);
       color: #4b2a12;
-      font-size: 14px;
+      font-size: 23px;
       font-weight: 900;
       line-height: 1.35;
       text-align: left;
@@ -1035,46 +761,6 @@
       border-color: rgba(188, 86, 55, 0.38);
       background: rgba(255, 236, 229, 0.92);
       color: #7d321c;
-    }
-
-    .ar-practice-answer-area {
-      margin-top: 6px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(211, 157, 68, 0.30);
-      flex: 0 0 auto;
-    }
-
-    .ar-practice-answer-area h3 {
-      margin-bottom: 8px;
-    }
-
-    .ar-practice-answer-list {
-      min-height: 72px;
-      max-height: 190px;
-      display: grid;
-      gap: 8px;
-      align-content: start;
-      overflow-y: auto;
-      color: #6b431c;
-      font-size: 13px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .ar-practice-answer-item,
-    .ar-practice-write-item {
-      padding: 10px 11px;
-      border-radius: 14px;
-      border: 1px solid rgba(131, 82, 36, 0.22);
-      background: rgba(255, 253, 246, 0.82);
-    }
-
-    .ar-practice-answer-item strong {
-      display: block;
-      margin-bottom: 6px;
-      color: #315e22;
-      font-weight: 900;
     }
 
     .ar-check-feedback {
@@ -1137,7 +823,6 @@
 
     .ar-question-input,
     .ar-answer-input,
-    .ar-practice-answer-input,
     .ar-summary-textarea {
       width: 100%;
       border: 2px solid rgba(135, 82, 34, 0.24);
@@ -1161,15 +846,8 @@
       line-height: 1.45;
     }
 
-    .ar-practice-answer-input {
-      height: 42px;
-      padding: 0 10px;
-      font-weight: 800;
-    }
-
     .ar-question-input:focus,
     .ar-answer-input:focus,
-    .ar-practice-answer-input:focus,
     .ar-summary-textarea:focus {
       border-color: rgba(63, 132, 46, 0.78);
       box-shadow: 0 0 0 3px rgba(63, 132, 46, 0.14);
@@ -1249,7 +927,8 @@
       white-space: pre-line;
       word-break: keep-all;
     }
-        .ar-share-footer {
+
+    .ar-share-footer {
       margin-top: 11px;
       display: flex;
       justify-content: flex-end;
@@ -1373,6 +1052,81 @@
       color: #7d4a16;
     }
 
+    @media (max-height: 760px) and (min-width: 1181px) {
+      .ar-page {
+        padding: 8px 14px 10px;
+      }
+
+      .ar-shell {
+        grid-template-rows: 58px minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .ar-topbar {
+        height: 58px;
+      }
+
+      .ar-title {
+        font-size: 35px;
+      }
+
+      .ar-brand {
+        font-size: 24px;
+      }
+
+      .ar-brand-mark {
+        width: 40px;
+        height: 40px;
+        flex-basis: 40px;
+      }
+
+      .ar-brand-mark img {
+        width: 32px;
+        height: 32px;
+      }
+
+      .ar-type-board {
+        grid-template-rows: 76px minmax(0, 1fr);
+        gap: 18px;
+        padding: 24px 28px 28px;
+      }
+
+      .ar-board-title {
+        height: 76px;
+      }
+
+      .ar-board-title h2 {
+        font-size: 34px;
+      }
+
+      .ar-type-grid {
+        gap: 22px;
+      }
+
+      .ar-type-card {
+        padding: 26px 22px;
+      }
+
+      .ar-type-icon {
+        width: 104px;
+        height: 104px;
+        flex-basis: 104px;
+      }
+
+      .ar-type-icon img {
+        width: 66px;
+        height: 66px;
+      }
+
+      .ar-type-card h3 {
+        font-size: 30px;
+      }
+
+      .ar-type-card p {
+        font-size: 15.5px;
+      }
+    }
+
     @media (max-width: 1180px) {
       body {
         overflow: auto;
@@ -1400,18 +1154,6 @@
         justify-content: center;
       }
 
-      .ar-guide-area {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "lumi"
-          "speech"
-          "status";
-      }
-
-      .ar-lumi-area {
-        height: 190px;
-      }
-
       .ar-menu-screen.is-active,
       .ar-study-screen.is-active {
         height: auto;
@@ -1425,8 +1167,8 @@
         overflow: visible;
       }
 
-      .ar-study-panel.is-active {
-        grid-template-rows: auto auto auto auto;
+      .ar-type-board {
+        grid-template-rows: auto auto;
       }
 
       .ar-type-grid,
@@ -1442,14 +1184,1348 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+    /* =========================================================
+   읽기 후 > 간추리기 비법 화면 확대 조정
+   - 제목 크게
+   - 1,2,3,4 단계 크게
+   - 빈칸 문장 크게
+   - 카드가 화면을 더 꽉 차게
+   - 스크롤 없이 유지
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .ar-study-screen.is-active {
+    height: 100%;
+    grid-template-rows: 104px minmax(0, 1fr);
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .ar-study-header {
+    height: 104px;
+    padding: 10px 18px 12px;
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .ar-study-header-main {
+    margin-bottom: 8px;
+  }
+
+  .ar-study-title {
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: -1px;
+  }
+
+  .ar-study-stepbar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .ar-study-step {
+    height: 38px;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 900;
+    border-radius: 999px;
+  }
+
+  .ar-study-step span {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    font-size: 13px;
+    font-weight: 900;
+  }
+
+  .ar-study-board {
+    padding: 14px 18px 14px;
+    border-radius: 28px;
+    overflow: hidden;
+  }
+
+  .ar-study-panel.is-active {
+    height: 100%;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .ar-panel-title {
+    margin-bottom: 0;
+  }
+
+  .ar-panel-title h2 {
+    font-size: 34px;
+    line-height: 1.06;
+    letter-spacing: -1px;
+  }
+
+  .ar-panel-title p {
+    margin-top: 4px;
+    font-size: 17px;
+    font-weight: 850;
+  }
+
+  .ar-method-layout {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .ar-method-layout .ar-study-card {
+    max-width: 1220px;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 24px 30px 22px;
+    border-radius: 28px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 18px;
+  }
+
+  .ar-method-layout .ar-study-card h3 {
+    font-size: 30px;
+    margin-bottom: 0;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  .ar-method-sentence {
+    min-height: 0;
+    height: 100%;
+    padding: 26px 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.72;
+    letter-spacing: -0.8px;
+    border-radius: 26px;
+  }
+
+  .ar-tip-box {
+    margin-top: 0;
+    padding: 16px 22px;
+    font-size: 18px;
+    line-height: 1.55;
+    border-radius: 18px;
+  }
+
+  .method-reveal-word {
+    margin: 0 8px;
+  }
+
+  .method-blank-button {
+    min-width: 108px;
+    height: 42px;
+    padding: 0 18px;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .method-keyword {
+    min-width: 116px;
+    height: 42px;
+    padding: 0 18px;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ar-panel-actions {
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .ar-action-button {
+    min-width: 112px;
+    height: 42px;
+    font-size: 14px;
+  }
+}
+
+/* 세로가 조금 낮은 화면에서도 스크롤 안 생기게 보정 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-study-screen.is-active {
+    grid-template-rows: 94px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .ar-study-header {
+    height: 94px;
+    padding: 8px 16px 10px;
+  }
+
+  .ar-study-title {
+    font-size: 32px;
+  }
+
+  .ar-study-step {
+    height: 34px;
+    font-size: 13px;
+  }
+
+  .ar-study-step span {
+    width: 22px;
+    height: 22px;
+    flex-basis: 22px;
+    font-size: 12px;
+  }
+
+  .ar-panel-title h2 {
+    font-size: 30px;
+  }
+
+  .ar-panel-title p {
+    font-size: 15px;
+  }
+
+  .ar-study-board {
+    padding: 12px 16px;
+  }
+
+  .ar-method-layout .ar-study-card {
+    padding: 20px 24px 18px;
+    gap: 14px;
+  }
+
+  .ar-method-layout .ar-study-card h3 {
+    font-size: 27px;
+  }
+
+  .ar-method-sentence {
+    padding: 22px 28px;
+    font-size: 27px;
+    line-height: 1.65;
+  }
+
+  .ar-tip-box {
+    padding: 14px 18px;
+    font-size: 16px;
+  }
+
+  .method-blank-button {
+    min-width: 98px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .method-keyword {
+    min-width: 106px;
+    height: 38px;
+    font-size: 16px;
+  }
+}
+/* =========================================================
+   간추리기 비법 화면 추가 확대
+   - 하단 버튼 크게
+   - 1,2,3,4 단계 더 크게
+   - 비법 문장 글씨 더 크게
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .ar-study-step {
+    height: 44px;
+    gap: 11px;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .ar-study-step span {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    font-size: 15px;
+  }
+
+  .ar-study-stepbar {
+    gap: 14px;
+  }
+
+  .ar-method-sentence {
+    font-size: 34px;
+    line-height: 1.72;
+  }
+
+  .method-blank-button {
+    min-width: 120px;
+    height: 48px;
+    padding: 0 22px;
+    font-size: 17px;
+  }
+
+  .method-keyword {
+    min-width: 128px;
+    height: 48px;
+    padding: 0 22px;
+    font-size: 18px;
+  }
+
+  .ar-panel-actions {
+    justify-content: flex-end;
+    gap: 14px;
+  }
+
+  .ar-action-button {
+    min-width: 150px;
+    height: 52px;
+    padding: 0 24px;
+    font-size: 17px;
+    border-radius: 999px;
+  }
+}
+
+/* 세로가 낮은 화면에서는 살짝만 줄여서 스크롤 방지 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-study-step {
+    height: 39px;
+    font-size: 14.5px;
+  }
+
+  .ar-study-step span {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+    font-size: 13px;
+  }
+
+  .ar-method-sentence {
+    font-size: 30px;
+    line-height: 1.65;
+  }
+
+  .method-blank-button {
+    min-width: 108px;
+    height: 42px;
+    font-size: 15.5px;
+  }
+
+  .method-keyword {
+    min-width: 116px;
+    height: 42px;
+    font-size: 16px;
+  }
+
+  .ar-action-button {
+    min-width: 135px;
+    height: 46px;
+    font-size: 15px;
+  }
+}
+/* =========================================================
+   짧은 글 읽기 / 간추리기 질문 고르기 화면 확대
+   - 글씨 크게
+   - 질문 버튼 크게
+   - 버튼이 꽉 차게
+   - 문장이 길면 자동 줄바꿈
+   - 스크롤은 내부 카드에서만 생기고 화면 전체는 안 내려감
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  /* 화면 제목 조금 더 크게 */
+  .ar-builder-panel .ar-panel-title h2 {
+    font-size: 34px;
+    line-height: 1.08;
+  }
+
+  .ar-builder-panel .ar-panel-title p {
+    font-size: 17px;
+    margin-top: 5px;
+  }
+
+  /* 좌우 카드가 화면을 더 꽉 채우게 */
+  .ar-builder-layout {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .ar-builder-layout .ar-study-card {
+    height: 100%;
+    min-height: 0;
+    padding: 18px 18px 16px;
+    border-radius: 24px;
+  }
+
+  /* 카드 제목 크게 */
+  .ar-builder-layout .ar-study-card h3 {
+    font-size: 25px;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+
+  /* 위 안내 문구 크게 */
+  .ar-material-guide,
+  .ar-practice-guide {
+    font-size: 17px;
+    line-height: 1.5;
+    padding: 14px 16px;
+    border-radius: 18px;
+    word-break: keep-all;
+  }
+
+  /* 짧은 글 본문 크게 */
+  .ar-practice-text {
+    min-height: 0;
+    height: 100%;
+    padding: 24px 26px;
+    font-size: 30px;
+    line-height: 1.8;
+    border-radius: 22px;
+    word-break: keep-all;
+    white-space: pre-line;
+  }
+
+  /* 오른쪽 질문 카드 내부 */
+  .ar-practice-question-card {
+    gap: 14px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .ar-practice-question-list {
+    gap: 12px;
+  }
+
+  /* 질문 선택 버튼 크게 + 줄바꿈 허용 */
+  .ar-practice-question-button {
+    min-height: 64px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    font-size: 21px;
+    font-weight: 900;
+    line-height: 1.45;
+    white-space: normal;
+    word-break: keep-all;
+    text-align: left;
+    display: flex;
+    align-items: center;
+  }
+
+  /* 선택 피드백도 크게 */
+  .ar-practice-choice-feedback {
+    min-height: 64px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    font-size: 18px;
+    line-height: 1.5;
+    white-space: normal;
+    word-break: keep-all;
+  }
+
+  /* 아래 버튼도 보기 좋게 조금 크게 */
+  .ar-builder-panel .ar-panel-actions {
+    gap: 12px;
+  }
+
+  .ar-builder-panel .ar-action-button {
+    min-width: 150px;
+    height: 50px;
+    padding: 0 22px;
+    font-size: 17px;
+  }
+}
+
+/* 세로가 낮은 화면에서는 약간만 줄여서 전체 스크롤 방지 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-builder-panel .ar-panel-title h2 {
+    font-size: 30px;
+  }
+
+  .ar-builder-panel .ar-panel-title p {
+    font-size: 15px;
+  }
+
+  .ar-builder-layout {
+    gap: 14px;
+  }
+
+  .ar-builder-layout .ar-study-card {
+    padding: 15px 15px 14px;
+  }
+
+  .ar-builder-layout .ar-study-card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .ar-material-guide,
+  .ar-practice-guide {
+    font-size: 15px;
+    padding: 12px 14px;
+  }
+
+  .ar-practice-text {
+    padding: 20px 20px;
+    font-size: 20px;
+    line-height: 1.65;
+  }
+
+  .ar-practice-question-button {
+    min-height: 54px;
+    padding: 13px 15px;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+
+  .ar-practice-choice-feedback {
+    min-height: 54px;
+    padding: 13px 15px;
+    font-size: 16px;
+  }
+
+  .ar-builder-panel .ar-action-button {
+    min-width: 132px;
+    height: 44px;
+    font-size: 15px;
+  }
+}
+/* =========================================================
+   다른 짧은 글로 직접 질문 만들기 화면 확대
+   - 위쪽 공백 줄이기
+   - 짧은 글 크게
+   - 질문/답 직접 쓰기 크게
+   - AI 루미 피드백 크게
+   - 화면 전체 스크롤 없이 꽉 차게
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  /* 이 화면 전체 구조: 위 제목 줄이고, 본문과 AI 피드백을 크게 */
+  .ar-practice-write-panel.is-active {
+    grid-template-rows: 58px minmax(0, 1fr) 110px auto;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  /* 위 제목 영역 공백 줄이기 */
+  .ar-practice-write-panel .ar-panel-title {
+    height: 58px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ar-practice-write-panel .ar-panel-title h2 {
+    font-size: 32px;
+    line-height: 1.05;
+    letter-spacing: -1px;
+  }
+
+  .ar-practice-write-panel .ar-panel-title p {
+    margin-top: 4px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  /* 좌우 카드 화면 꽉 차게 */
+  .ar-practice-write-panel .ar-practice-write-layout {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 18px;
+    overflow: hidden;
+  }
+
+  .ar-practice-write-panel .ar-practice-write-layout > .ar-study-card {
+    height: 100%;
+    min-height: 0;
+    padding: 18px 20px;
+    border-radius: 24px;
+  }
+
+  .ar-practice-write-panel .ar-practice-write-layout > .ar-study-card:first-child {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  /* 카드 제목 크게 */
+  .ar-practice-write-panel .ar-study-card h3 {
+    font-size: 27px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+
+  /* 초록 안내문 크게 */
+  .ar-practice-write-panel .ar-material-guide {
+    padding: 15px 18px;
+    font-size: 19px;
+    line-height: 1.45;
+    border-radius: 18px;
+  }
+
+  /* 왼쪽 짧은 글 본문 크게 */
+  .ar-practice-write-panel .ar-extra-practice-text {
+    height: 100%;
+    min-height: 0;
+    padding: 28px 30px;
+    font-size: 30px;
+    line-height: 1.75;
+    border-radius: 22px;
+    word-break: keep-all;
+    white-space: pre-line;
+  }
+
+  /* 오른쪽 질문/답 카드 */
+  .ar-practice-write-card {
+    gap: 14px;
+    padding-right: 6px;
+    overflow-y: auto;
+  }
+
+  .ar-practice-write-list {
+    gap: 18px;
+  }
+
+  .ar-practice-write-item {
+    padding: 18px 18px;
+    border-radius: 18px;
+  }
+
+  .ar-input-label {
+    margin: 10px 0 8px;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ar-question-input {
+    height: 64px;
+    padding: 0 18px;
+    font-size: 20px;
+    border-radius: 16px;
+  }
+
+  .ar-answer-input {
+    height: 98px;
+    padding: 16px 16px;
+    font-size: 18px;
+    line-height: 1.5;
+    border-radius: 16px;
+  }
+
+  .ar-question-input::placeholder,
+  .ar-answer-input::placeholder {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  /* AI 루미 피드백 크게 */
+  .ar-practice-write-panel .ar-after-feedback-card {
+    height: 110px;
+    min-height: 110px;
+    padding: 12px 20px;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 16px;
+    border-radius: 22px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-lumi {
+    width: 82px;
+    max-height: 88px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-message {
+    min-height: 50px;
+    max-height: 58px;
+    padding: 12px 16px;
+    font-size: 17px;
+    line-height: 1.45;
+    border-radius: 16px;
+  }
+
+  /* 아래 이동 버튼도 키우기 */
+  .ar-practice-write-panel .ar-panel-actions {
+    gap: 14px;
+  }
+
+  .ar-practice-write-panel .ar-action-button {
+    min-width: 150px;
+    height: 52px;
+    padding: 0 24px;
+    font-size: 17px;
+  }
+}
+
+/* 세로가 낮은 화면에서는 스크롤 안 생기게 조금 압축 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-practice-write-panel.is-active {
+    grid-template-rows: 48px minmax(0, 1fr) 92px auto;
+    gap: 8px;
+  }
+
+  .ar-practice-write-panel .ar-panel-title {
+    height: 48px;
+  }
+
+  .ar-practice-write-panel .ar-panel-title h2 {
+    font-size: 28px;
+  }
+
+  .ar-practice-write-panel .ar-panel-title p {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .ar-practice-write-panel .ar-practice-write-layout {
+    gap: 14px;
+  }
+
+  .ar-practice-write-panel .ar-practice-write-layout > .ar-study-card {
+    padding: 14px 16px;
+  }
+
+  .ar-practice-write-panel .ar-study-card h3 {
+    font-size: 23px;
+    margin-bottom: 6px;
+  }
+
+  .ar-practice-write-panel .ar-material-guide {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .ar-practice-write-panel .ar-extra-practice-text {
+    padding: 22px 24px;
+    font-size: 25px;
+    line-height: 1.65;
+  }
+
+  .ar-practice-write-list {
+    gap: 12px;
+  }
+
+  .ar-practice-write-item {
+    padding: 13px 14px;
+  }
+
+  .ar-input-label {
+    margin: 7px 0 5px;
+    font-size: 14px;
+  }
+
+  .ar-question-input {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .ar-answer-input {
+    height: 78px;
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .ar-question-input::placeholder,
+  .ar-answer-input::placeholder {
+    font-size: 14px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-card {
+    height: 92px;
+    min-height: 92px;
+    padding: 10px 16px;
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-lumi {
+    width: 68px;
+    max-height: 74px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-title {
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+
+  .ar-practice-write-panel .ar-after-feedback-message {
+    min-height: 42px;
+    max-height: 48px;
+    padding: 9px 13px;
+    font-size: 15px;
+  }
+
+  .ar-practice-write-panel .ar-action-button {
+    min-width: 132px;
+    height: 44px;
+    font-size: 15px;
+  }
+}
+/* =========================================================
+   내 책 질문 쓰기 화면 최종 조정
+   - 카드 안 빈 공백 줄이기
+   - 질문/답 입력칸 크게
+   - "간추리기 질문", "질문에 대한 답" 글씨 크게
+   - AI 루미 피드백 더 크게
+   - 스크롤 없이 보이도록 조정
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  /* 이 화면 전체 간격 조정 */
+  .ar-write-panel.is-active {
+    grid-template-rows: 58px auto 122px auto;
+    gap: 10px;
+    align-content: start;
+    overflow: hidden;
+  }
+
+  /* 위 제목 공백 줄이기 */
+  .ar-write-panel .ar-panel-title {
+    height: 58px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ar-write-panel .ar-panel-title h2 {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .ar-write-panel .ar-panel-title p {
+    margin-top: 4px;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  /* 질문 1,2,3 카드 영역 */
+  .ar-write-panel .ar-write-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+    overflow: visible;
+  }
+
+  .ar-write-panel .ar-qa-card {
+    height: auto;
+    min-height: 0;
+    padding: 18px 16px 18px;
+    border-radius: 22px;
+  }
+
+  /* 질문 1 / 질문 2 / 질문 3 */
+  .ar-write-panel .ar-qa-card h3 {
+    margin-bottom: 10px;
+    font-size: 28px;
+    line-height: 1.1;
+  }
+
+  /* 간추리기 질문 / 질문에 대한 답 */
+  .ar-write-panel .ar-input-label {
+    margin: 8px 0 6px;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+  /* 질문 쓰는 칸 */
+  .ar-write-panel .ar-question-input {
+    height: 64px;
+    padding: 0 18px;
+    font-size: 20px;
+    font-weight: 850;
+    border-radius: 16px;
+  }
+
+  /* 답 쓰는 칸 */
+  .ar-write-panel .ar-answer-input {
+    height: 120px;
+    padding: 16px 18px;
+    font-size: 20px;
+    font-weight: 850;
+    line-height: 1.5;
+    border-radius: 16px;
+    resize: none;
+  }
+
+  .ar-write-panel .ar-question-input::placeholder,
+  .ar-write-panel .ar-answer-input::placeholder {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  /* AI 루미 피드백 크게 */
+  .ar-write-panel .ar-after-feedback-card {
+    height: 122px;
+    min-height: 122px;
+    padding: 12px 20px;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 16px;
+    border-radius: 22px;
+  }
+
+  .ar-write-panel .ar-after-feedback-lumi {
+    width: 84px;
+    max-height: 90px;
+  }
+
+  .ar-write-panel .ar-after-feedback-title {
+    font-size: 26px;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  .ar-write-panel .ar-after-feedback-message {
+    min-height: 56px;
+    max-height: 62px;
+    padding: 12px 16px;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.42;
+    border-radius: 16px;
+  }
+
+  /* 아래 버튼도 살짝 키우기 */
+  .ar-write-panel .ar-panel-actions {
+    gap: 12px;
+  }
+
+  .ar-write-panel .ar-action-button {
+    min-width: 148px;
+    height: 50px;
+    padding: 0 22px;
+    font-size: 17px;
+  }
+}
+
+/* 세로가 낮은 화면에서도 스크롤 안 생기게 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-write-panel.is-active {
+    grid-template-rows: 46px auto 96px auto;
+    gap: 8px;
+  }
+
+  .ar-write-panel .ar-panel-title {
+    height: 46px;
+  }
+
+  .ar-write-panel .ar-panel-title h2 {
+    font-size: 29px;
+  }
+
+  .ar-write-panel .ar-panel-title p {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .ar-write-panel .ar-write-grid {
+    gap: 12px;
+  }
+
+  .ar-write-panel .ar-qa-card {
+    padding: 14px 13px 14px;
+  }
+
+  .ar-write-panel .ar-qa-card h3 {
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .ar-write-panel .ar-input-label {
+    margin: 6px 0 4px;
+    font-size: 17px;
+  }
+
+  .ar-write-panel .ar-question-input {
+    height: 52px;
+    padding: 0 14px;
+    font-size: 17px;
+  }
+
+  .ar-write-panel .ar-answer-input {
+    height: 92px;
+    padding: 12px 14px;
+    font-size: 17px;
+    line-height: 1.4;
+  }
+
+  .ar-write-panel .ar-question-input::placeholder,
+  .ar-write-panel .ar-answer-input::placeholder {
+    font-size: 14px;
+  }
+
+  .ar-write-panel .ar-after-feedback-card {
+    height: 96px;
+    min-height: 96px;
+    padding: 10px 16px;
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .ar-write-panel .ar-after-feedback-lumi {
+    width: 68px;
+    max-height: 74px;
+  }
+
+  .ar-write-panel .ar-after-feedback-title {
+    font-size: 21px;
+    margin-bottom: 5px;
+  }
+
+  .ar-write-panel .ar-after-feedback-message {
+    min-height: 44px;
+    max-height: 48px;
+    padding: 9px 13px;
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .ar-write-panel .ar-action-button {
+    min-width: 130px;
+    height: 42px;
+    font-size: 14px;
+  }
+}
+/* 질문 입력칸을 여러 줄로 쓰이게 만들기 */
+@media (min-width: 1181px) {
+  .ar-write-panel .ar-question-textarea {
+    height: 78px;
+    min-height: 78px;
+    max-height: 110px;
+    padding: 14px 18px;
+    resize: none;
+    overflow-y: auto;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: keep-all;
+  }
+}
+/* =========================================================
+   간추리기 완성하기 화면 확대
+   - 글씨 크게
+   - 입력칸 크게
+   - 연결 문장 카드 크게
+   - 화면을 꽉 채우게
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .ar-summary-panel.is-active {
+    grid-template-rows: 58px minmax(0, 1fr) auto;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .ar-summary-panel .ar-panel-title {
+    height: 58px;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ar-summary-panel .ar-panel-title h2 {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .ar-summary-panel .ar-panel-title p {
+    margin-top: 4px;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .ar-summary-layout {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    overflow: hidden;
+  }
+
+  .ar-summary-layout .ar-study-card {
+    height: 100%;
+    min-height: 0;
+    padding: 20px 22px;
+    border-radius: 24px;
+  }
+
+  .ar-summary-layout .ar-study-card h3 {
+    font-size: 28px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  /* 왼쪽 연결 문장 카드 크게 */
+  .ar-connect-list {
+    gap: 14px;
+  }
+
+  .ar-connect-item {
+    padding: 18px 20px;
+    border-radius: 18px;
+    font-size: 21px;
+    font-weight: 850;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  .ar-connect-item strong {
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  /* 오른쪽 간추리기 완성 입력칸 크게 */
+  .ar-summary-textarea {
+    height: calc(100% - 52px);
+    min-height: 360px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    font-size: 24px;
+    font-weight: 850;
+    line-height: 1.65;
+    resize: none;
+    word-break: keep-all;
+    white-space: pre-wrap;
+  }
+
+  .ar-summary-textarea::placeholder {
+    font-size: 21px;
+    line-height: 1.55;
+  }
+
+  .ar-summary-panel .ar-panel-actions {
+    gap: 14px;
+  }
+
+  .ar-summary-panel .ar-action-button {
+    min-width: 150px;
+    height: 52px;
+    padding: 0 24px;
+    font-size: 17px;
+  }
+}
+
+/* 세로가 낮은 화면에서는 스크롤 안 생기게 살짝 압축 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-summary-panel.is-active {
+    grid-template-rows: 46px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .ar-summary-panel .ar-panel-title {
+    height: 46px;
+  }
+
+  .ar-summary-panel .ar-panel-title h2 {
+    font-size: 29px;
+  }
+
+  .ar-summary-panel .ar-panel-title p {
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .ar-summary-layout {
+    gap: 14px;
+  }
+
+  .ar-summary-layout .ar-study-card {
+    padding: 16px 18px;
+  }
+
+  .ar-summary-layout .ar-study-card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .ar-connect-list {
+    gap: 10px;
+  }
+
+  .ar-connect-item {
+    padding: 14px 16px;
+    font-size: 18px;
+    line-height: 1.42;
+  }
+
+  .ar-connect-item strong {
+    font-size: 19px;
+  }
+
+  .ar-summary-textarea {
+    min-height: 290px;
+    padding: 18px 20px;
+    font-size: 20px;
+    line-height: 1.55;
+  }
+
+  .ar-summary-textarea::placeholder {
+    font-size: 17px;
+  }
+
+  .ar-summary-panel .ar-action-button {
+    min-width: 132px;
+    height: 44px;
+    font-size: 15px;
+  }
+}
+/* =========================================================
+   AI 루미 피드백 전체 크기 더 키우기
+   - 피드백 박스 크게
+   - 루미 이미지 크게
+   - 제목/내용 글씨 크게
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .ar-after-feedback-card {
+    height: 140px;
+    min-height: 140px;
+    padding: 16px 24px;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 20px;
+    border-radius: 26px;
+  }
+
+  .ar-after-feedback-lumi {
+    width: 100px;
+    max-height: 112px;
+  }
+
+  .ar-after-feedback-title {
+    font-size: 30px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+
+  .ar-after-feedback-message {
+    min-height: 66px;
+    max-height: 76px;
+    padding: 14px 18px;
+    font-size: 21px;
+    font-weight: 900;
+    line-height: 1.45;
+    border-radius: 18px;
+  }
+}
+
+/* 세로 낮은 화면에서는 살짝 줄이기 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-after-feedback-card {
+    height: 112px;
+    min-height: 112px;
+    padding: 12px 18px;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .ar-after-feedback-lumi {
+    width: 80px;
+    max-height: 88px;
+  }
+
+  .ar-after-feedback-title {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  .ar-after-feedback-message {
+    min-height: 50px;
+    max-height: 56px;
+    padding: 10px 14px;
+    font-size: 17px;
+    line-height: 1.38;
+  }
+}
+/* =========================================================
+   간추리기 모음 화면 글씨 크기 확대
+   - 초3~4 학생 가독성 기준
+   - 카드 제목/태그/내용 글씨 키우기
+   - 카드 내부 여백 넓히기
+   ========================================================= */
+
+@media (min-width: 1181px) {
+  .ar-share-list {
+    gap: 16px;
+  }
+
+  .ar-share-item {
+    padding: 20px 18px;
+    border-radius: 22px;
+  }
+
+  /* 학생 이름 또는 카드 제목 */
+  .ar-share-item strong {
+    margin-bottom: 10px;
+    font-size: 23px;
+    line-height: 1.2;
+  }
+
+  /* 이야기글 / 설명글 / 주장글 같은 태그 */
+  .ar-share-tag {
+    margin-bottom: 12px;
+    padding: 7px 13px;
+    font-size: 16px;
+    border-radius: 999px;
+  }
+
+  /* 간추리기 내용 */
+  .ar-share-item p {
+    font-size: 19px;
+    font-weight: 850;
+    line-height: 1.55;
+    word-break: keep-all;
+    white-space: pre-line;
+  }
+
+  .ar-share-footer {
+    margin-top: 14px;
+  }
+
+  .ar-share-like-button {
+    min-width: 88px;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 16px;
+  }
+}
+
+/* 세로 낮은 화면에서는 살짝 줄이기 */
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-share-list {
+    gap: 12px;
+  }
+
+  .ar-share-item {
+    padding: 16px 15px;
+  }
+
+  .ar-share-item strong {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .ar-share-tag {
+    font-size: 14px;
+    padding: 6px 11px;
+    margin-bottom: 9px;
+  }
+
+  .ar-share-item p {
+    font-size: 17px;
+    line-height: 1.45;
+  }
+
+  .ar-share-like-button {
+    min-width: 78px;
+    height: 36px;
+    font-size: 14px;
+  }
+}
   </style>
 </head>
 
 <body>
-  
   <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
-  ← 교사용 수업차례로
-</button>
+    ← 교사용 수업차례로
+  </button>
+
   <div class="ar-page">
     <div class="ar-shell">
       <header class="ar-topbar">
@@ -1468,35 +2544,9 @@
       </header>
 
       <main class="ar-screen ar-menu-screen is-active" id="menuScreen">
-        <section class="ar-guide-area">
-          <div class="ar-lumi-area">
-            <img
-              class="ar-lumi-img"
-              src="../assets/images/after-read/after-read-lumi-guide.png"
-              alt="루미"
-            >
-          </div>
-
-          <div class="ar-speech-card">
-            책마다 간추리는 방법이 달라!<br>
-            먼저 내가 읽은 책의 종류를 골라 보자.
-          </div>
-
-          <aside class="ar-menu-status">
-            <h2>읽기 후 순서</h2>
-            <div class="ar-status-list">
-              <div class="ar-status-chip is-active"><span>1</span> 책 유형 고르기</div>
-              <div class="ar-status-chip"><span>2</span> 간추리기 비법</div>
-              <div class="ar-status-chip"><span>3</span> 질문으로 간추리기</div>
-              <div class="ar-status-chip"><span>4</span> 간추리기 공유</div>
-            </div>
-          </aside>
-        </section>
-
         <section class="ar-type-board">
           <div class="ar-board-title">
             <h2>✦ 책의 종류를 골라요 ✦</h2>
-            <p>내가 읽은 책에 어울리는 간추리기 방법을 선택해요.</p>
           </div>
 
           <div class="ar-type-grid">
@@ -1553,7 +2603,6 @@
           <section class="ar-study-panel ar-method-panel" id="methodPanel">
             <div class="ar-panel-title">
               <h2 id="methodTitle">간추리기 비법</h2>
-              <p>먼저 이 책을 어떻게 간추리면 좋은지 알아봐요.</p>
             </div>
 
             <div class="ar-method-layout">
@@ -1564,18 +2613,15 @@
               </article>
             </div>
 
-            <div></div>
-
-           <div class="ar-panel-actions">
-  <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
-  <button class="ar-action-button" type="button" onclick="showStudyPanel('builder')">짧은 글로 질문 연습</button>
-</div>
+            <div class="ar-panel-actions">
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
+              <button class="ar-action-button" type="button" onclick="showStudyPanel('builder')">짧은 글로 질문 연습</button>
+            </div>
           </section>
 
           <section class="ar-study-panel ar-builder-panel" id="builderPanel">
             <div class="ar-panel-title">
               <h2>짧은 글로 질문 연습하기</h2>
-              <p>짧은 글을 읽고, 간추리기에 도움이 되는 질문을 골라 답해 봐요.</p>
             </div>
 
             <div class="ar-builder-layout">
@@ -1598,20 +2644,11 @@
 
                 <div class="ar-practice-question-list" id="practiceQuestionList"></div>
 
-              
-
-                <div class="ar-practice-answer-area">
-                  <h3>고른 좋은 질문에 답해 보기</h3>
-                  <div class="ar-practice-answer-list" id="practiceAnswerList">
-                    간추리기에 도움이 되는 질문을 고르면 답을 쓰는 칸이 나타나요.
-                  </div>
+                <div class="ar-practice-choice-feedback" id="practiceChoiceFeedback">
+                  좋은 질문을 고르면 다음 단계로 넘어갈 수 있어요.
                 </div>
-
-                
               </article>
             </div>
-
-            <div></div>
 
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
@@ -1623,7 +2660,6 @@
           <section class="ar-study-panel ar-practice-write-panel" id="practiceWritePanel">
             <div class="ar-panel-title">
               <h2>다른 짧은 글로 직접 질문 만들기</h2>
-              <p>이번에는 질문을 직접 만들고, 그 질문에 대한 답을 써 봐요.</p>
             </div>
 
             <div class="ar-practice-write-layout">
@@ -1717,7 +2753,11 @@
               <article class="ar-qa-card">
                 <h3>질문 1</h3>
                 <label class="ar-input-label" for="question1">간추리기 질문</label>
-                <input class="ar-question-input" id="question1" type="text" oninput="checkBookQuestionFeedback()">
+                <textarea
+  class="ar-question-input ar-question-textarea"
+  id="question1"
+  oninput="checkBookQuestionFeedback()"
+></textarea>
                 <label class="ar-input-label" for="answer1">질문에 대한 답</label>
                 <textarea class="ar-answer-input" id="answer1" oninput="checkBookQuestionFeedback()"></textarea>
               </article>
@@ -1725,7 +2765,11 @@
               <article class="ar-qa-card">
                 <h3>질문 2</h3>
                 <label class="ar-input-label" for="question2">간추리기 질문</label>
-                <input class="ar-question-input" id="question2" type="text" oninput="checkBookQuestionFeedback()">
+                <textarea
+  class="ar-question-input ar-question-textarea"
+  id="question2"
+  oninput="checkBookQuestionFeedback()"
+></textarea>
                 <label class="ar-input-label" for="answer2">질문에 대한 답</label>
                 <textarea class="ar-answer-input" id="answer2" oninput="checkBookQuestionFeedback()"></textarea>
               </article>
@@ -1733,7 +2777,11 @@
               <article class="ar-qa-card">
                 <h3>질문 3</h3>
                 <label class="ar-input-label" for="question3">간추리기 질문</label>
-                <input class="ar-question-input" id="question3" type="text" oninput="checkBookQuestionFeedback()">
+                <textarea
+  class="ar-question-input ar-question-textarea"
+  id="question3"
+  oninput="checkBookQuestionFeedback()"
+></textarea>
                 <label class="ar-input-label" for="answer3">질문에 대한 답</label>
                 <textarea class="ar-answer-input" id="answer3" oninput="checkBookQuestionFeedback()"></textarea>
               </article>
@@ -1763,7 +2811,6 @@
           <section class="ar-study-panel ar-summary-panel" id="summaryPanel">
             <div class="ar-panel-title">
               <h2>내 간추리기 완성</h2>
-              <p>질문에 답한 내용을 모아 책의 핵심을 정리해요.</p>
             </div>
 
             <div class="ar-summary-layout">
@@ -1802,14 +2849,11 @@
           <section class="ar-study-panel ar-share-panel" id="sharePanel">
             <div class="ar-panel-title">
               <h2>우리 반 간추리기 모음</h2>
-              <p>내가 간추린 내용을 친구들과 함께 볼 수 있어요.</p>
             </div>
 
             <div class="ar-share-list" id="shareList"></div>
 
-            <div></div>
-
-                        <div class="ar-panel-actions">
+            <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('summary')">이전 화면</button>
               <button class="ar-action-button is-brown" type="button" onclick="goClassReading()">우리반 책읽기</button>
@@ -1822,8 +2866,11 @@
   </div>
 
   <script>
-        const STORAGE_KEY = "afterReadSummaries";
+    const STORAGE_KEY = "afterReadSummaries";
     const LIKE_STORAGE_KEY = "afterReadSummaryLikes";
+
+    let selectedBookType = "";
+    let selectedPracticeQuestionIndexes = [];
 
     const bookTypeData = {
       story: {
@@ -1837,171 +2884,150 @@
           "어느 날, 민수는 학교에 가는 길에 작은 강아지를 보았습니다.\n" +
           "강아지는 길을 잃은 것처럼 떨고 있었습니다.\n" +
           "민수는 선생님께 말씀드렸고, 강아지는 주인을 다시 만났습니다.",
-        extraPracticeGuide: "시간의 흐름이나 장소의 변화에 따라 인물에게 일어난 일을 떠올리며 질문을 만들어 봐요.",
-        extraPracticeText:
-          "수아는 전학 온 첫날 교실 문 앞에서 한참 서 있었습니다.\n" +
-          "쉬는 시간에 지민이가 먼저 다가와 함께 운동장에 가자고 말했습니다.\n" +
-          "수아는 지민이와 이야기를 나누며 조금씩 마음이 편해졌습니다.",
         practiceQuestions: [
           {
-            text: "처음에 민수는 무엇을 보았나요?",
+            text: "민수는 처음에 무엇을 보았나요?",
             good: true,
-            reason: "처음에 일어난 일을 묻는 질문이라 이야기의 흐름을 간추리는 데 도움이 돼요.",
-            answerGuide: "민수가 처음 본 것을 써요."
+            feedback: "좋아요! 처음에 일어난 일을 찾는 질문이에요."
           },
           {
             text: "강아지에게 어떤 문제가 있었나요?",
             good: true,
-            reason: "등장인물에게 일어난 중요한 문제를 묻는 질문이라 간추리기에 알맞아요.",
-            answerGuide: "강아지에게 생긴 문제를 써요."
+            feedback: "좋아요! 가운데에 생긴 문제를 찾는 질문이에요."
           },
           {
             text: "마지막에 강아지는 어떻게 되었나요?",
             good: true,
-            reason: "마지막에 일이 어떻게 끝났는지 묻는 질문이라 이야기의 끝을 간추릴 수 있어요.",
-            answerGuide: "마지막에 강아지가 어떻게 되었는지 써요."
+            feedback: "좋아요! 마지막 일을 찾는 질문이에요."
           },
           {
-            text: "민수는 무슨 색 옷을 입었나요?",
+            text: "민수의 가방 색깔은 무엇인가요?",
             good: false,
-            reason: "옷 색깔은 세부 내용이에요. 이야기의 시간 흐름이나 중요한 사건을 간추리는 질문으로는 덜 알맞아요.",
-            answerGuide: ""
+            feedback: "이 질문은 세부 내용이라 간추리기에는 덜 중요해요."
           }
         ],
+        extraPracticeGuide: "시간의 흐름이나 장소의 변화에 따라 인물에게 일어난 일을 떠올리며 읽어 봐요.",
+        extraPracticeText:
+          "수지는 비 오는 날 우산을 잃어버렸습니다.\n" +
+          "친구 지우가 수지에게 함께 쓰자고 말했습니다.\n" +
+          "두 친구는 우산을 함께 쓰고 집까지 안전하게 돌아갔습니다.",
         examples: [
-          "처음에 인물에게 무슨 일이 있었나요?",
-          "가운데에 어떤 문제가 생겼나요?",
-          "마지막에는 어떻게 되었나요?"
+          "처음에 수지에게 어떤 일이 일어났나요?",
+          "마지막에 두 친구는 어떻게 되었나요?"
         ],
         summaryTemplate:
-          "처음에는 __________________________.\n가운데에는 ________________________.\n마지막에는 ________________________.\n그래서 이 책은 ____________________ 이야기입니다."
+          "처음에는 ____________________.\n" +
+          "가운데에는 ____________________.\n" +
+          "마지막에는 ____________________."
       },
 
       info: {
         label: "정보를 담은 책",
         icon: "🔍",
-        method: "정보를 담은 책은 문단이나 각 장의 중심 내용을 중심으로 간추려요.",
-        tip: "문단이나 장에서 가장 중요한 내용이 무엇인지 묻는 질문을 만들면 중심 내용을 찾기 쉬워요.",
-        blanks: ["문단", "각 장", "중심 내용"],
-        builderGuide: "정보를 담은 책은 문단이나 각 장의 중심 내용을 중심으로 간추려요.",
+        method: "정보를 담은 책은 문단이나 각 장의 중심 내용을 찾아 중요한 정보를 중심으로 간추려요.",
+        tip: "무엇에 대한 글인지, 새롭게 알게 된 중요한 정보가 무엇인지 찾으면 좋아요.",
+        blanks: ["중심 내용", "중요한 정보", "새롭게 알게 된 점"],
+        builderGuide: "정보를 담은 책은 중심 내용과 중요한 정보를 찾아 간추려요.",
         practiceText:
-          "펭귄은 날개가 있지만 하늘을 날지는 못합니다.\n" +
-          "대신 물속에서 헤엄을 아주 잘 칩니다.\n" +
-          "펭귄의 두꺼운 깃털은 추운 곳에서 몸을 따뜻하게 지켜 줍니다.",
-        extraPracticeGuide: "문단이나 글 전체의 중심 내용을 찾을 수 있는 질문을 만들어 봐요.",
-        extraPracticeText:
-          "꿀벌은 꽃에서 꿀과 꽃가루를 모읍니다.\n" +
-          "꿀벌이 꽃가루를 옮기면 식물이 열매를 맺는 데 도움이 됩니다.\n" +
-          "그래서 꿀벌은 자연에서 중요한 역할을 합니다.",
+          "펭귄은 추운 남극에 사는 새입니다.\n" +
+          "펭귄은 날지는 못하지만 물속에서 헤엄을 잘 칩니다.\n" +
+          "두꺼운 깃털과 기름이 몸을 따뜻하게 지켜 줍니다.",
         practiceQuestions: [
           {
-            text: "이 글은 어떤 동물에 대해 알려 주나요?",
+            text: "이 글은 어떤 동물에 대해 설명하나요?",
             good: true,
-            reason: "글에서 설명하는 대상을 찾는 질문이라 중심 내용을 파악하는 데 도움이 돼요.",
-            answerGuide: "글에서 설명하는 동물을 써요."
+            feedback: "좋아요! 글의 중심 대상을 찾는 질문이에요."
           },
           {
             text: "펭귄은 무엇을 잘하나요?",
             good: true,
-            reason: "펭귄의 중요한 특징을 묻는 질문이라 정보를 간추리는 데 알맞아요.",
-            answerGuide: "펭귄이 잘하는 것을 써요."
+            feedback: "좋아요! 중요한 특징을 찾는 질문이에요."
           },
           {
-            text: "펭귄의 깃털은 어떤 일을 하나요?",
+            text: "펭귄의 몸을 따뜻하게 지켜 주는 것은 무엇인가요?",
             good: true,
-            reason: "펭귄의 특징과 역할을 묻는 질문이라 중요한 정보를 정리할 수 있어요.",
-            answerGuide: "펭귄 깃털의 역할을 써요."
+            feedback: "좋아요! 중요한 정보를 찾는 질문이에요."
           },
           {
-            text: "펭귄은 왜 귀엽나요?",
+            text: "펭귄은 몇 시에 잠을 자나요?",
             good: false,
-            reason: "내 느낌을 묻는 질문이에요. 정보 글의 문단이나 중심 내용을 간추리는 질문으로는 덜 알맞아요.",
-            answerGuide: ""
+            feedback: "글에 나오지 않는 내용이라 간추리기 질문으로 알맞지 않아요."
           }
         ],
+        extraPracticeGuide: "중심 내용과 중요한 정보를 떠올리며 읽어 봐요.",
+        extraPracticeText:
+          "꿀벌은 꽃에서 꿀을 모으는 곤충입니다.\n" +
+          "꿀벌은 꽃가루를 옮겨 식물이 열매를 맺도록 도와줍니다.\n" +
+          "그래서 꿀벌은 자연에 꼭 필요한 곤충입니다.",
         examples: [
-          "이 부분은 무엇에 대해 알려 주나요?",
-          "가장 중요한 내용은 무엇인가요?",
-          "꼭 기억할 정보는 무엇인가요?"
+          "이 글은 무엇에 대해 설명하나요?",
+          "꿀벌이 자연에 필요한 까닭은 무엇인가요?"
         ],
         summaryTemplate:
-          "이 책은 __________________에 대해 알려 줍니다.\n첫 번째 중심 내용은 __________________입니다.\n또 다른 중심 내용은 __________________입니다.\n그래서 이 책은 __________________에 대한 책입니다."
+          "이 글은 ____________________에 대해 알려 줍니다.\n" +
+          "중요한 내용은 ____________________입니다.\n" +
+          "또 알게 된 점은 ____________________입니다."
       },
 
       opinion: {
         label: "주장을 담은 책",
         icon: "📣",
-        method: "주장을 담은 책은 글쓴이의 주장과 이유를 중심으로 간추려요.",
-        tip: "글쓴이가 무엇을 주장하는지, 왜 그렇게 생각하는지 묻는 질문을 만들면 주장 글을 간추리기 쉬워요.",
-        blanks: ["글쓴이의 주장", "이유"],
-        builderGuide: "주장을 담은 책은 글쓴이의 주장과 이유를 중심으로 간추려요.",
+        method: "주장을 담은 책은 글쓴이의 주장과 그 주장을 뒷받침하는 이유를 찾아 간추려요.",
+        tip: "글쓴이가 말하고 싶은 생각이 무엇인지, 왜 그렇게 생각하는지 찾으면 좋아요.",
+        blanks: ["글쓴이의 주장", "이유", "생각"],
+        builderGuide: "주장을 담은 책은 글쓴이의 주장과 이유를 찾아 간추려요.",
         practiceText:
           "우리는 물을 아껴 써야 합니다.\n" +
-          "물을 함부로 쓰면 필요한 물이 부족해질 수 있기 때문입니다.\n" +
-          "양치할 때 컵을 사용하면 물을 아낄 수 있습니다.",
-        extraPracticeGuide: "글쓴이의 주장과 이유를 찾을 수 있는 질문을 만들어 봐요.",
-        extraPracticeText:
-          "우리는 교실 불을 아껴 써야 합니다.\n" +
-          "불을 켜 둔 채 나가면 전기를 낭비하게 됩니다.\n" +
-          "교실을 나갈 때 불을 끄면 에너지를 아낄 수 있습니다.",
+          "물을 낭비하면 필요한 곳에서 물이 부족해질 수 있기 때문입니다.\n" +
+          "이를 닦을 때 컵을 사용하면 물을 아낄 수 있습니다.",
         practiceQuestions: [
           {
-            text: "글쓴이는 무엇을 주장하나요?",
+            text: "글쓴이는 무엇을 해야 한다고 말하나요?",
             good: true,
-            reason: "글쓴이의 주장을 직접 묻는 질문이라 주장 글을 간추리는 데 꼭 필요해요.",
-            answerGuide: "글쓴이가 말하고 싶은 생각을 써요."
+            feedback: "좋아요! 글쓴이의 주장을 찾는 질문이에요."
           },
           {
-            text: "왜 물을 아껴 써야 한다고 했나요?",
+            text: "물을 아껴 써야 하는 이유는 무엇인가요?",
             good: true,
-            reason: "주장을 뒷받침하는 이유를 묻는 질문이라 간추리기에 알맞아요.",
-            answerGuide: "글쓴이가 든 이유를 써요."
+            feedback: "좋아요! 주장을 뒷받침하는 이유를 찾는 질문이에요."
           },
           {
-            text: "물을 아끼는 방법에는 무엇이 있나요?",
+            text: "물을 아끼는 방법으로 무엇이 나왔나요?",
             good: true,
-            reason: "주장을 뒷받침하는 예나 방법을 찾는 질문이라 내용을 정리하는 데 도움이 돼요.",
-            answerGuide: "글에서 나온 물을 아끼는 방법을 써요."
+            feedback: "좋아요! 실천 방법을 찾는 질문이에요."
           },
           {
-            text: "나는 어떤 물을 좋아하나요?",
+            text: "컵은 어떤 색깔인가요?",
             good: false,
-            reason: "내 취향을 묻는 질문이에요. 글쓴이의 주장과 이유를 찾는 질문으로는 덜 알맞아요.",
-            answerGuide: ""
+            feedback: "이 질문은 글쓴이의 주장이나 이유와 관련이 적어요."
           }
         ],
+        extraPracticeGuide: "글쓴이의 주장과 이유를 떠올리며 읽어 봐요.",
+        extraPracticeText:
+          "우리는 학교 복도를 천천히 걸어야 합니다.\n" +
+          "복도에서 뛰면 친구와 부딪쳐 다칠 수 있기 때문입니다.\n" +
+          "모두가 안전하게 지내려면 복도에서 조심히 걸어야 합니다.",
         examples: [
-          "글쓴이는 무엇을 주장하나요?",
-          "글쓴이가 그렇게 생각한 이유는 무엇인가요?",
-          "주장을 뒷받침하는 예는 무엇인가요?"
+          "글쓴이는 무엇을 해야 한다고 말하나요?",
+          "그렇게 해야 하는 이유는 무엇인가요?"
         ],
         summaryTemplate:
-          "글쓴이는 __________________라고 주장합니다.\n그 이유는 __________________입니다.\n또 __________________라는 예가 있습니다.\n나는 __________________라고 생각합니다."
+          "글쓴이는 ____________________라고 주장합니다.\n" +
+          "그 이유는 ____________________이기 때문입니다.\n" +
+          "그래서 나는 ____________________라고 생각합니다."
       }
     };
-
-    let selectedBookType = null;
-    let selectedPracticeQuestionIndexes = [];
-    let lastPracticeFeedback = null;
 
     function selectBookType(type) {
       selectedBookType = type;
       selectedPracticeQuestionIndexes = [];
-      lastPracticeFeedback = null;
-
-      const data = bookTypeData[type];
-
-      document.getElementById("studyTitle").textContent = data.label + " 간추리기 비법";
-      document.getElementById("methodTitle").textContent = data.label + " 간추리기 비법";
-      document.getElementById("methodSentence").innerHTML = makeMethodRevealSentence(data);
-      document.getElementById("methodTip").textContent = data.tip;
-
-      clearQuestionInputs();
-      renderQuestionBuilder();
 
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
+
+      renderMethodPanel();
       showStudyPanel("method");
+      clearQuestionInputs();
     }
 
     function goTypeMenu() {
@@ -2010,186 +3036,204 @@
     }
 
     function showStudyPanel(panelName) {
-      document.querySelectorAll(".ar-study-panel").forEach(function(panel) {
-        panel.classList.remove("is-active");
+      const panels = [
+        "methodPanel",
+        "builderPanel",
+        "practiceWritePanel",
+        "writePanel",
+        "summaryPanel",
+        "sharePanel"
+      ];
+
+      panels.forEach(function(id) {
+        const panel = document.getElementById(id);
+        if (panel) {
+          panel.classList.remove("is-active");
+        }
       });
 
-      document.querySelectorAll(".ar-study-step").forEach(function(step) {
-        step.classList.remove("is-active");
-      });
+      const panelMap = {
+        method: "methodPanel",
+        builder: "builderPanel",
+        practiceWrite: "practiceWritePanel",
+        write: "writePanel",
+        summary: "summaryPanel",
+        share: "sharePanel"
+      };
 
-      if (panelName === "method") {
-        document.getElementById("methodPanel").classList.add("is-active");
-        document.getElementById("stepBar2").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = bookTypeData[selectedBookType].label + " 간추리기 비법";
+      const targetPanel = document.getElementById(panelMap[panelName]);
+
+      if (targetPanel) {
+        targetPanel.classList.add("is-active");
       }
 
+      updateStepBar(panelName);
+
       if (panelName === "builder") {
-        document.getElementById("builderPanel").classList.add("is-active");
-        document.getElementById("stepBar3").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = "질문으로 간추리기";
         renderQuestionBuilder();
       }
 
       if (panelName === "practiceWrite") {
-        document.getElementById("practiceWritePanel").classList.add("is-active");
-        document.getElementById("stepBar3").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = "다른 글로 직접 질문 만들기";
         renderExtraPracticeWrite();
       }
 
-      if (panelName === "write") {
-        document.getElementById("writePanel").classList.add("is-active");
-        document.getElementById("stepBar3").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = "내 책에 맞는 질문 쓰기";
-        checkBookQuestionFeedback();
-      }
-
-      if (panelName === "summary") {
-        document.getElementById("summaryPanel").classList.add("is-active");
-        document.getElementById("stepBar4").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = "내 간추리기 완성";
-        checkSummaryFeedback();
-      }
-
       if (panelName === "share") {
-        document.getElementById("sharePanel").classList.add("is-active");
-        document.getElementById("stepBar4").classList.add("is-active");
-        document.getElementById("studyTitle").textContent = "우리 반 간추리기 모음";
+        renderShareList();
       }
     }
 
-    function makeMethodRevealSentence(data) {
+    function updateStepBar(panelName) {
+      const stepMap = {
+        method: 2,
+        builder: 3,
+        practiceWrite: 3,
+        write: 3,
+        summary: 4,
+        share: 4
+      };
+
+      const activeStep = stepMap[panelName] || 1;
+
+      for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById("stepBar" + i);
+
+        if (step) {
+          step.classList.toggle("is-active", i === activeStep);
+        }
+      }
+    }
+
+    function renderMethodPanel() {
+      const data = bookTypeData[selectedBookType];
+
+      if (!data) {
+        return;
+      }
+
+      document.getElementById("studyTitle").textContent = data.label + " 간추리기";
+      document.getElementById("methodTitle").textContent = data.label + " 간추리기 비법";
+
       let sentence = data.method;
 
-      data.blanks.forEach(function(keyword) {
-        const safeKeyword = escapeHtml(keyword);
-
-        const revealHtml =
+      data.blanks.forEach(function(word) {
+        sentence = sentence.replace(
+          word,
           '<span class="method-reveal-word">' +
-            '<button class="method-blank-button" type="button" onclick="revealMethodKeyword(this)">빈칸</button>' +
-            '<span class="method-keyword">' + safeKeyword + '</span>' +
-          '</span>';
-
-        sentence = sentence.replace(keyword, revealHtml);
+            '<button class="method-blank-button" type="button" onclick="revealMethodWord(this)">눌러 보기</button>' +
+            '<span class="method-keyword">' + word + '</span>' +
+          '</span>'
+        );
       });
 
-      return sentence;
+      document.getElementById("methodSentence").innerHTML = sentence;
+      document.getElementById("methodTip").textContent = data.tip;
     }
 
-    function revealMethodKeyword(button) {
-      const wordBox = button.closest(".method-reveal-word");
+    function revealMethodWord(button) {
+      const wrapper = button.closest(".method-reveal-word");
 
-      if (wordBox) {
-        wordBox.classList.add("revealed");
+      if (wrapper) {
+        wrapper.classList.add("revealed");
       }
     }
 
     function renderQuestionBuilder() {
-  const data = bookTypeData[selectedBookType];
-  const builderGuide = document.getElementById("builderGuide");
-  const practiceText = document.getElementById("practiceText");
-  const practiceQuestionList = document.getElementById("practiceQuestionList");
+      const data = bookTypeData[selectedBookType];
 
-  if (!data || !builderGuide || !practiceText || !practiceQuestionList) {
-    return;
-  }
-
-  builderGuide.textContent = data.builderGuide;
-  practiceText.textContent = data.practiceText;
-
-  practiceQuestionList.innerHTML = data.practiceQuestions.map(function(question, index) {
-    const isSelected = selectedPracticeQuestionIndexes.includes(index);
-    const selectedClass = isSelected && question.good ? " is-selected" : "";
-    const wrongClass = isSelected && !question.good ? " is-wrong" : "";
-
-    return (
-      '<button ' +
-        'type="button" ' +
-        'class="ar-practice-question-button' + selectedClass + wrongClass + '" ' +
-        'onclick="togglePracticeQuestion(' + index + ')">' +
-        escapeHtml(question.text) +
-      '</button>'
-    );
-  }).join("");
-
-  renderPracticeAnswers();
-  checkPracticeAnswersDone();
-}
-
-    function togglePracticeQuestion(index) {
-  const data = bookTypeData[selectedBookType];
-  const question = data.practiceQuestions[index];
-
-  if (selectedPracticeQuestionIndexes.includes(index)) {
-    selectedPracticeQuestionIndexes = selectedPracticeQuestionIndexes.filter(function(item) {
-      return item !== index;
-    });
-
-    renderQuestionBuilder();
-    return;
-  }
-
-  selectedPracticeQuestionIndexes.push(index);
-
-  renderQuestionBuilder();
-}
-
-    function renderPracticeAnswers() {
-  const data = bookTypeData[selectedBookType];
-  const practiceAnswerList = document.getElementById("practiceAnswerList");
-
-  if (!data || !practiceAnswerList) {
-    return;
-  }
-
-  const goodSelectedIndexes = selectedPracticeQuestionIndexes.filter(function(index) {
-    return data.practiceQuestions[index].good;
-  });
-
-  if (goodSelectedIndexes.length === 0) {
-    practiceAnswerList.innerHTML = "간추리기에 도움이 되는 좋은 질문을 고르면 답을 쓰는 칸이 나타나요.";
-    return;
-  }
-
-  practiceAnswerList.innerHTML = goodSelectedIndexes.map(function(index) {
-    const question = data.practiceQuestions[index];
-
-    return (
-      '<div class="ar-practice-answer-item">' +
-        '<strong>Q. ' + escapeHtml(question.text) + '</strong>' +
-        '<input ' +
-          'class="ar-practice-answer-input" ' +
-          'type="text" ' +
-          'placeholder="' + escapeHtml(question.answerGuide) + '" ' +
-          'oninput="checkPracticeAnswersDone()" ' +
-        '>' +
-      '</div>'
-    );
-  }).join("");
-
-  checkPracticeAnswersDone();
-}
-
-    function checkPracticeAnswersDone() {
-  // 질문 고르기 화면에서는 AI 피드백을 보여주지 않음.
-  // 답 입력 여부는 '다른 글로 직접 연습' 버튼을 누를 때 goPracticeWritePanel()에서 확인함.
-}
-
-    function goPracticeWritePanel() {
-      const answerInputs = document.querySelectorAll(".ar-practice-answer-input");
-
-      if (answerInputs.length === 0) {
-        alert("먼저 간추리기에 도움이 되는 좋은 질문을 고르고 답을 써 주세요.");
+      if (!data) {
         return;
       }
 
-      const allFilled = Array.from(answerInputs).every(function(input) {
-        return input.value.trim().length > 0;
+      document.getElementById("builderGuide").textContent = data.builderGuide;
+      document.getElementById("practiceText").textContent = data.practiceText;
+
+      const list = document.getElementById("practiceQuestionList");
+      list.innerHTML = "";
+
+      data.practiceQuestions.forEach(function(question, index) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "ar-practice-question-button";
+        button.textContent = question.text;
+        button.onclick = function() {
+          togglePracticeQuestion(index);
+        };
+
+        if (selectedPracticeQuestionIndexes.includes(index)) {
+          button.classList.add(question.good ? "is-selected" : "is-wrong");
+        }
+
+        list.appendChild(button);
       });
 
-      if (!allFilled) {
-        alert("고른 좋은 질문에 대한 답을 모두 써 주세요.");
+      updatePracticeChoiceFeedback();
+    }
+
+    function togglePracticeQuestion(index) {
+      if (selectedPracticeQuestionIndexes.includes(index)) {
+        selectedPracticeQuestionIndexes = selectedPracticeQuestionIndexes.filter(function(item) {
+          return item !== index;
+        });
+      } else {
+        selectedPracticeQuestionIndexes.push(index);
+      }
+
+      renderQuestionBuilder();
+    }
+
+    function updatePracticeChoiceFeedback() {
+      const data = bookTypeData[selectedBookType];
+      const feedback = document.getElementById("practiceChoiceFeedback");
+
+      if (!data || !feedback) {
+        return;
+      }
+
+      if (selectedPracticeQuestionIndexes.length === 0) {
+        feedback.className = "ar-practice-choice-feedback";
+        feedback.textContent = "좋은 질문을 고르면 다음 단계로 넘어갈 수 있어요.";
+        return;
+      }
+
+      const selectedQuestions = selectedPracticeQuestionIndexes.map(function(index) {
+        return data.practiceQuestions[index];
+      });
+
+      const goodCount = selectedQuestions.filter(function(question) {
+        return question.good;
+      }).length;
+
+      const wrongCount = selectedQuestions.length - goodCount;
+
+      if (wrongCount > 0 && goodCount === 0) {
+        feedback.className = "ar-practice-choice-feedback is-need";
+        feedback.textContent = "이 질문은 간추리기에는 조금 덜 중요해요. 글의 중요한 내용을 묻는 질문을 골라 봐요.";
+        return;
+      }
+
+      if (wrongCount > 0) {
+        feedback.className = "ar-practice-choice-feedback is-need";
+        feedback.textContent = "좋은 질문도 골랐지만, 덜 중요한 질문도 함께 골랐어요. 중요한 질문만 남겨 보세요.";
+        return;
+      }
+
+      feedback.className = "ar-practice-choice-feedback is-good";
+      feedback.textContent = "좋아요! 간추리기에 도움이 되는 질문을 골랐어요.";
+    }
+
+    function goPracticeWritePanel() {
+      const data = bookTypeData[selectedBookType];
+
+      if (!data) {
+        return;
+      }
+
+      const hasGoodQuestion = selectedPracticeQuestionIndexes.some(function(index) {
+        return data.practiceQuestions[index].good;
+      });
+
+      if (!hasGoodQuestion) {
+        alert("먼저 간추리기에 도움이 되는 좋은 질문을 골라 주세요.");
         return;
       }
 
@@ -2211,113 +3255,48 @@
 
       document.getElementById("practiceAnswer1").placeholder = "질문 1에 대한 답을 짧은 글에서 찾아 써 보세요.";
       document.getElementById("practiceAnswer2").placeholder = "질문 2에 대한 답을 짧은 글에서 찾아 써 보세요.";
-
-      checkExtraPracticeDone();
     }
 
     function checkExtraPracticeDone() {
+      const question1 = document.getElementById("practiceQuestion1").value.trim();
+      const question2 = document.getElementById("practiceQuestion2").value.trim();
+      const answer1 = document.getElementById("practiceAnswer1").value.trim();
+      const answer2 = document.getElementById("practiceAnswer2").value.trim();
+
       const feedback = document.getElementById("extraPracticeFeedback");
-      const q1 = document.getElementById("practiceQuestion1").value.trim();
-      const a1 = document.getElementById("practiceAnswer1").value.trim();
-      const q2 = document.getElementById("practiceQuestion2").value.trim();
-      const a2 = document.getElementById("practiceAnswer2").value.trim();
 
-      if (!feedback) {
-        return;
-      }
-
-      const allFilled = q1 && a1 && q2 && a2;
-
-      if (allFilled) {
+      if (question1 && question2 && answer1 && answer2) {
         feedback.classList.add("is-show");
-
-        if (!isAfterQuestionForm(q1) || !isAfterQuestionForm(q2)) {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "need",
-            "질문 중에 물어보는 문장처럼 보이지 않는 것이 있어. 끝을 ‘나요?’, ‘까요?’, ‘무엇인가요?’처럼 바꿔 보면 좋아."
-          );
-          return;
-        }
-
-        if (q1.length < 6 || q2.length < 6) {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "need",
-            "질문이 조금 짧아. 누가, 무엇을, 왜, 어떻게 같은 말을 넣어 조금 더 자세히 써 보자."
-          );
-          return;
-        }
-
-        if (a1.length < 6 || a2.length < 6) {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "need",
-            "답이 조금 짧아. 짧은 글에서 찾은 내용을 한 문장으로 더 자세히 써 보자."
-          );
-          return;
-        }
 
         setAfterAiFeedback(
           "extraPracticeAiFeedback",
           "good",
-          "좋아! 질문 2개와 답 2개가 모두 채워졌어. 이제 이 질문들이 짧은 글의 중요한 내용을 묻고 있는지 한 번 더 살펴보자."
+          "좋아요! 질문과 답이 모두 준비되었어. 이제 내가 읽은 책에도 적용해 보자."
         );
-      } else {
-        feedback.classList.remove("is-show");
-
-        if (!q1 && !a1 && !q2 && !a2) {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "",
-            "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
-          );
-        } else {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "need",
-            "아직 비어 있는 칸이 있어. 질문과 답은 짝이 되어야 간추리기 재료로 쓸 수 있어."
-          );
-        }
-      }
-    }
-
-    function goWritePanelAfterPractice() {
-      const ids = [
-        "practiceQuestion1",
-        "practiceAnswer1",
-        "practiceQuestion2",
-        "practiceAnswer2"
-      ];
-
-      const allFilled = ids.every(function(id) {
-        const element = document.getElementById(id);
-        return element && element.value.trim().length > 0;
-      });
-
-      if (!allFilled) {
-        alert("다른 짧은 글을 읽고 질문 2개와 답 2개를 모두 써 주세요.");
         return;
       }
 
-      goWritePanel();
+      feedback.classList.remove("is-show");
+
+      setAfterAiFeedback(
+        "extraPracticeAiFeedback",
+        "",
+        "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
+      );
     }
 
-    function goWritePanel() {
-      setQuestionPlaceholders();
+    function goWritePanelAfterPractice() {
+      const question1 = document.getElementById("practiceQuestion1").value.trim();
+      const question2 = document.getElementById("practiceQuestion2").value.trim();
+      const answer1 = document.getElementById("practiceAnswer1").value.trim();
+      const answer2 = document.getElementById("practiceAnswer2").value.trim();
+
+      if (!question1 || !question2 || !answer1 || !answer2) {
+        alert("직접 만든 질문 2개와 답 2개를 모두 적어 주세요.");
+        return;
+      }
+
       showStudyPanel("write");
-    }
-
-    function setQuestionPlaceholders() {
-      const data = bookTypeData[selectedBookType];
-
-      document.getElementById("question1").placeholder = "예) " + data.examples[0];
-      document.getElementById("question2").placeholder = "예) " + data.examples[1];
-      document.getElementById("question3").placeholder = "예) " + data.examples[2];
-
-      document.getElementById("answer1").placeholder = "질문 1에 대한 답을 책에서 찾아 적어 봐요.";
-      document.getElementById("answer2").placeholder = "질문 2에 대한 답을 책에서 찾아 적어 봐요.";
-      document.getElementById("answer3").placeholder = "질문 3에 대한 답을 책에서 찾아 적어 봐요.";
     }
 
     function getQuestionAnswerData() {
@@ -2338,39 +3317,13 @@
     }
 
     function checkBookQuestionFeedback() {
-      const box = document.getElementById("bookQuestionAiFeedback");
-
-      if (!box) {
-        return;
-      }
-
       const qaData = getQuestionAnswerData();
 
       const filledCount = qaData.filter(function(item) {
-        return item.question && item.answer;
+        return item.question || item.answer;
       }).length;
 
-      const hasQuestionOnly = qaData.some(function(item) {
-        return item.question && !item.answer;
-      });
-
-      const hasAnswerOnly = qaData.some(function(item) {
-        return !item.question && item.answer;
-      });
-
-      const hasShortQuestion = qaData.some(function(item) {
-        return item.question && item.question.length < 6;
-      });
-
-      const hasShortAnswer = qaData.some(function(item) {
-        return item.answer && item.answer.length < 6;
-      });
-
-      const hasNotQuestionForm = qaData.some(function(item) {
-        return item.question && !isAfterQuestionForm(item.question);
-      });
-
-      if (filledCount === 0 && !hasQuestionOnly && !hasAnswerOnly) {
+      if (filledCount === 0) {
         setAfterAiFeedback(
           "bookQuestionAiFeedback",
           "",
@@ -2379,47 +3332,15 @@
         return;
       }
 
-      if (hasQuestionOnly || hasAnswerOnly) {
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          "질문과 답은 짝이 되어야 해. 질문을 썼다면 그 질문에 대한 답도 함께 써 보자."
-        );
-        return;
-      }
+      const completeCount = qaData.filter(function(item) {
+        return item.question && item.answer;
+      }).length;
 
-      if (hasNotQuestionForm) {
+      if (completeCount < 3) {
         setAfterAiFeedback(
           "bookQuestionAiFeedback",
           "need",
-          "질문 중에 물어보는 문장처럼 보이지 않는 것이 있어. 끝을 ‘나요?’, ‘까요?’, ‘무엇인가요?’처럼 바꿔 보면 좋아."
-        );
-        return;
-      }
-
-      if (hasShortQuestion) {
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          "질문이 조금 짧은 것이 있어. 누가, 무엇을, 왜, 어떻게 같은 말을 넣어 더 자세히 써 보자."
-        );
-        return;
-      }
-
-      if (hasShortAnswer) {
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          "답이 조금 짧은 것이 있어. 책에서 찾은 내용을 한 문장 더 붙이면 간추리기 재료가 더 좋아져."
-        );
-        return;
-      }
-
-      if (filledCount < 3) {
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          "잘 쓰고 있어! 아직 질문과 답이 모두 채워지지 않은 칸이 있어. 3개를 모두 채우면 간추리기 재료가 더 충분해져."
+          "좋아! 질문과 답을 이어서 더 채워 보자. 3개가 모이면 간추리기로 이어 갈 수 있어."
         );
         return;
       }
@@ -2427,7 +3348,7 @@
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "good",
-        "좋아! 질문 3개와 답 3개가 모두 간추리기 재료로 쓸 수 있게 준비되었어. 이제 답을 모아 간추리기로 이어 가 보자."
+        "좋아! 간추리기에 쓸 질문과 답이 준비되었어. 이제 답을 모아 간추리기로 이어 가 보자."
       );
     }
 
@@ -2457,8 +3378,7 @@
         connectBox.appendChild(div);
       });
 
-            const data = bookTypeData[selectedBookType];
-
+      const data = bookTypeData[selectedBookType];
       document.getElementById("summaryText").value = data.summaryTemplate;
 
       showStudyPanel("summary");
@@ -2509,51 +3429,48 @@
     }
 
     function saveSummary() {
-  const summaryText = document.getElementById("summaryText").value.trim();
+      const summaryText = document.getElementById("summaryText").value.trim();
 
-  if (!summaryText) {
-    alert("간추리기 내용을 적어 주세요.");
-    return;
-  }
+      if (!summaryText) {
+        alert("간추리기 내용을 적어 주세요.");
+        return;
+      }
 
-  if (summaryText.includes("________________")) {
-    alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
-    return;
-  }
+      if (summaryText.includes("________________")) {
+        alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
+        return;
+      }
 
-  const savedList = loadSummaries();
-  const data = bookTypeData[selectedBookType];
+      const savedList = loadSummaries();
+      const data = bookTypeData[selectedBookType];
 
-const newSummary = {
-  id: "my-summary-" + Date.now(),
-  name: "나",
-  type: selectedBookType,
-  typeLabel: data.label,
-  icon: data.icon,
-  summary: summaryText,
-  questions: getQuestionAnswerData(),
-  createdAt: getTodayText()
-};
+      const newSummary = {
+        id: "my-summary-" + Date.now(),
+        name: "나",
+        type: selectedBookType,
+        typeLabel: data.label,
+        icon: data.icon,
+        summary: summaryText,
+        questions: getQuestionAnswerData(),
+        createdAt: getTodayText()
+      };
 
-  savedList.unshift(newSummary);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
+      savedList.unshift(newSummary);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
 
-  renderShareList();
-  showStudyPanel("share");
+      renderShareList();
+      showStudyPanel("share");
 
-  // 연습읽기 최종 완료 보상입니다.
-  // 읽기 후 간추리기 공유까지 마무리했을 때,
-  // 개별읽기를 시작할 기본 능력치를 4개 모두 지급합니다.
-  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+      const studentId = sessionStorage.getItem("studentId") || "student-demo";
 
-  if (typeof givePowerRewardOnce === "function") {
-   givePowerRewardOnce("practice_all_complete_" + studentId, {
-  presetKey: "practice_all_complete"
-});
-  } else {
-    alert("간추리기가 저장되었어요!");
-  }
-}
+      if (typeof givePowerRewardOnce === "function") {
+        givePowerRewardOnce("practice_all_complete_" + studentId, {
+          presetKey: "practice_all_complete"
+        });
+      } else {
+        alert("간추리기가 저장되었어요!");
+      }
+    }
 
     function loadSummaries() {
       const savedData = localStorage.getItem(STORAGE_KEY);
@@ -2570,7 +3487,7 @@ const newSummary = {
       }
     }
 
-        function renderShareList() {
+    function renderShareList() {
       const shareList = document.getElementById("shareList");
       const savedList = loadSummaries();
 
@@ -2667,12 +3584,6 @@ const newSummary = {
       renderShareList();
     }
 
-    function escapeJsString(text) {
-      return String(text || "")
-        .replaceAll("\\", "\\\\")
-        .replaceAll("'", "\\'");
-    }
-
     function clearQuestionInputs() {
       [
         "question1", "question2", "question3",
@@ -2691,6 +3602,12 @@ const newSummary = {
 
       if (summaryText) {
         summaryText.value = "";
+      }
+
+      const extraFeedback = document.getElementById("extraPracticeFeedback");
+
+      if (extraFeedback) {
+        extraFeedback.classList.remove("is-show");
       }
 
       setAfterAiFeedback(
@@ -2723,36 +3640,19 @@ const newSummary = {
       box.innerHTML = message;
     }
 
-    function isAfterQuestionForm(text) {
-      const trimmed = text.trim();
-
-      if (trimmed.includes("?") || trimmed.includes("？")) {
-        return true;
-      }
-
-      const normalized = normalizeAfterText(trimmed);
-      const endings = [
-        "나요",
-        "까요",
-        "했나요",
-        "했을까요",
-        "있나요",
-        "없나요",
-        "무엇인가요",
-        "어떤가요",
-        "어떨까요"
-      ];
-
-      return endings.some(function(ending) {
-        return normalized.endsWith(normalizeAfterText(ending));
-      });
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function normalizeAfterText(text) {
+    function escapeJsString(text) {
       return String(text || "")
-        .replace(/\s/g, "")
-        .replace(/[?？!！.,，。'‘’"“”]/g, "")
-        .toLowerCase();
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'");
     }
 
     function getTodayText() {
@@ -2767,56 +3667,51 @@ const newSummary = {
       );
     }
 
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function goClassReading() {
+      location.href = "./class-reading.html";
     }
 
-        function goIndividualReading() {
+    function goIndividualReading() {
       location.href = "./individual-reading.html";
     }
 
+    function openAfterReadTargetFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const target = params.get("open");
+
+      if (target !== "share") {
+        return;
+      }
+
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+
+      showStudyPanel("share");
+      renderShareList();
+    }
+
+    function isTeacherMode() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("mode") === "teacher";
+    }
+
+    function goTeacherPractice() {
+      location.href = "../teacher/practice-teacher.html";
+    }
+
     renderShareList();
-openAfterReadTargetFromUrl();
+    openAfterReadTargetFromUrl();
 
-function openAfterReadTargetFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const target = params.get("open");
+    if (isTeacherMode()) {
+      const teacherReturnButton = document.getElementById("teacherReturnButton");
 
-  if (target !== "share") {
-    return;
-  }
-
-  document.getElementById("menuScreen").classList.remove("is-active");
-  document.getElementById("studyScreen").classList.add("is-active");
-
-  showStudyPanel("share");
-  renderShareList();
-}
-function isTeacherMode() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("mode") === "teacher";
-}
-
-function goTeacherPractice() {
-  location.href = "../teacher/practice-teacher.html";
-}
-
-if (isTeacherMode()) {
-  const teacherReturnButton = document.getElementById("teacherReturnButton");
-
-  if (teacherReturnButton) {
-    teacherReturnButton.style.display = "block";
-  }
-}
+      if (teacherReturnButton) {
+        teacherReturnButton.style.display = "block";
+      }
+    }
   </script>
 
-<!-- 연습읽기 완료 보상 / 나의 힘 기능을 연결합니다. -->
-<script src="../js/individual-power.js"></script>
+  <script src="../js/individual-power.js"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>
