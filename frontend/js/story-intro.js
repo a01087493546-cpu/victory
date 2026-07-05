@@ -36,7 +36,7 @@ const storyImagePath = window.location.hostname === "hwani-dot.github.io"
 const storySlides = [
   {
     speaker: "루미",
-    text: "아무리 배워도 만족하지 못하는 용이 있었어.\n그 용은 세상의 지식을 모두 혼자 갖고 싶어 했지.",
+    text: "아무리 배워도 만족하지 못하는 용이 있었어. 그 용은 세상의 지식을 모두 혼자 갖고 싶어 했지.",
     // 첫 번째 스토리 배경 이미지입니다.
 // 실제 파일명이 bg-story-01로 시작하므로 01을 사용합니다.
     bg: storyImagePath + "bg-story-01-dragon-study.png",
@@ -44,35 +44,35 @@ const storySlides = [
   },
   {
     speaker: "루미",
-    text: "결국 용은 세계 지식창고를 습격했어.\n그리고 수많은 지식을 훔쳐 어디론가 숨겨 버렸지.",
+    text: "결국 용은 세계 지식창고를 습격했어. 그리고 수많은 지식을 훔쳐 어디론가 숨겨 버렸지.",
     // 2장 배경 이미지입니다.
     bg: storyImagePath + "bg-story-02-dragon-raid.png",
     character: storyImagePath + "char-lumi-02-surprised.png"
   },
   {
     speaker: "루미",
-    text: "다음 날, 사람들은 텅 빈 지식창고를 발견했어.\n왕국은 잃어버린 지식을 되찾을 방법을 찾아야 했어.",
+    text: "다음 날, 사람들은 텅 빈 지식창고를 발견했어. 왕국은 잃어버린 지식을 되찾을 방법을 찾아야 했어.",
     // 3장 배경 이미지입니다.
     bg: storyImagePath + "bg-story-03-empty-library.png",
     character: storyImagePath + "char-lumi-03-serious.png"
   },
   {
     speaker: "루미",
-    text: "왕국은 국가의 보물인 문답책을 찾아갔어.\n문답책은 깊고 정확한 질문에만 답해주는 신비한 책이었지.",
+    text: "왕국은 국가의 보물인 문답책을 찾아갔어. 문답책은 깊고 정확한 질문에만 답해주는 신비한 책이었지.",
     // 4장 배경 이미지입니다.
     bg: storyImagePath + "bg-story-04-mundapbook.png",
     character: storyImagePath + "char-lumi-04-mysterious.png"
   },
   {
   speaker: "루미",
-  text: "문답책은 지식창고를 되찾는 길을 알려 주었어.\n책을 읽고, 묻고 답하며 생각을 나눌수록\n용은 점점 힘을 잃게 된다고 했지.",
+  text: "문답책은 지식창고를 되찾는 길을 알려 주었어. 책을 읽고, 묻고 답하며 생각을 나눌수록 용은 점점 힘을 잃게 된다고 했지.",
   // 5장 배경 이미지입니다.
   bg: storyImagePath + "bg-story-05-question-power.png",
   character: storyImagePath + "char-lumi-05-confident.png"
 },
   {
     speaker: "루미",
-    text: "그래서 용사들은 책을 읽고 질문을 만드는 훈련을 시작했어.\n이제 세상의 지식을 되찾는 모험이 시작되는 거야.",
+    text: "그래서 용사들은 책을 읽고 질문을 만드는 훈련을 시작했어. 이제 세상의 지식을 되찾는 모험이 시작되는 거야.",
     // 6장 배경 이미지입니다.
     bg: storyImagePath + "bg-story-06-training-start.png",
     character: storyImagePath + "char-lumi-06-smile.png"

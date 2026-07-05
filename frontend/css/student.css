@@ -806,7 +806,18 @@
   display: block !important;
 }/* ===== 능력치 안내 화면 - 마법 도서관 브라운톤 최종 디자인 ===== */
 /* 기존 밝은 카드 느낌을 줄이고, 신비로운 마법 도서관 분위기로 바꿉니다. */
+html:has(.ability-intro-page),
+body:has(.ability-intro-page) {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  overflow-x: hidden !important;
+}
+
 .ability-intro-page {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
   min-height: 100vh !important;
 
   display: flex !important;
@@ -814,6 +825,7 @@
   justify-content: center !important;
 
   padding: 42px 24px !important;
+  box-sizing: border-box !important;
 
   background:
     radial-gradient(circle at 50% 8%, rgba(255, 211, 111, 0.26), transparent 34%),
@@ -823,7 +835,10 @@
   font-family: "Pretendard", "Noto Sans KR", sans-serif !important;
 
   position: relative !important;
-  overflow: hidden !important;
+  overflow-x: clip !important;
+  overflow-y: auto !important;
+  background-position: center center !important;
+  background-size: cover !important;
 }
 
 /* 화면 뒤쪽에 은은한 빛 입자 느낌을 추가합니다. */
@@ -846,9 +861,11 @@
 
 /* 전체 능력치 설명 박스입니다. */
 .ability-intro-card {
-  width: min(1060px, 100%) !important;
+  width: min(1120px, 100%) !important;
+  max-width: 100% !important;
 
   padding: 38px 44px 34px !important;
+  box-sizing: border-box !important;
 
   border: 2px solid rgba(226, 174, 81, 0.72) !important;
   border-radius: 34px !important;
@@ -1137,6 +1154,108 @@
     inset 0 0 20px rgba(255, 225, 141, 0.1) !important;
 }
 
+.ability-slider {
+  display: block !important;
+  width: 100% !important;
+  max-width: 760px !important;
+  margin: 24px auto 0 !important;
+  box-sizing: border-box !important;
+  overflow-x: clip !important;
+}
+
+.ability-slider .ability-card {
+  display: none !important;
+  min-height: 540px !important;
+  padding: 42px 52px 38px !important;
+  box-sizing: border-box !important;
+}
+
+.ability-slider .ability-icon {
+  width: 138px !important;
+  height: 138px !important;
+  margin-bottom: 18px !important;
+}
+
+.ability-slider .ability-icon img {
+  width: 122px !important;
+  height: 122px !important;
+}
+
+.ability-slider .ability-card h2 {
+  margin-bottom: 24px !important;
+  font-size: 40px !important;
+}
+
+.ability-slider .ability-card.is-active {
+  display: block !important;
+}
+
+.ability-slider .ability-card:hover {
+  transform: none !important;
+}
+
+.ability-progress {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin-top: 24px !important;
+}
+
+.ability-progress-dot {
+  width: 12px !important;
+  height: 12px !important;
+  border-radius: 999px !important;
+  background: rgba(244, 206, 129, 0.34) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 236, 184, 0.22) !important;
+}
+
+.ability-progress-dot.is-active {
+  width: 34px !important;
+  background: linear-gradient(180deg, #ffe59b 0%, #d9952f 100%) !important;
+}
+
+.ability-step-label {
+  min-height: auto !important;
+  margin: 10px 0 0 !important;
+  color: #f5d891 !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+}
+
+.ability-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  margin-top: 30px !important;
+}
+
+.ability-actions .ability-start-button,
+.ability-actions .ability-nav-button {
+  margin-top: 0 !important;
+  min-width: 150px !important;
+}
+
+.ability-nav-button {
+  padding: 15px 34px !important;
+  border: 1px solid rgba(244, 207, 129, 0.52) !important;
+  border-radius: 999px !important;
+  background: rgba(40, 22, 9, 0.82) !important;
+  color: #f5dfad !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow:
+    0 7px 0 rgba(20, 10, 4, 0.85),
+    0 12px 24px rgba(0, 0, 0, 0.28) !important;
+}
+
+.ability-nav-button:disabled {
+  opacity: 0.38 !important;
+  cursor: not-allowed !important;
+}
+
 /* 아이콘 주변에 마법 원형 빛을 더합니다. */
 .ability-icon {
   position: relative !important;
@@ -1169,8 +1288,9 @@
 }/* ===== 능력치 설명 박스 디자인 ===== */
 /* 능력이 오르는 방법과 던전 효과를 구분해서 보여주는 작은 설명 박스입니다. */
 .ability-info-box {
-  margin-top: 10px !important;
-  padding: 10px 12px !important;
+  margin-top: 20px !important;
+  padding: 22px 26px !important;
+  box-sizing: border-box !important;
 
   border: 1px solid rgba(245, 207, 129, 0.38) !important;
   border-radius: 14px !important;
@@ -1184,11 +1304,11 @@
 .ability-info-box strong {
   display: block !important;
 
-  margin-bottom: 5px !important;
+  margin-bottom: 8px !important;
 
   color: #ffd978 !important;
 
-  font-size: 13px !important;
+  font-size: 22px !important;
   font-weight: 900 !important;
 }
 
@@ -1200,7 +1320,7 @@
 
   color: #f7e5bd !important;
 
-  font-size: 13px !important;
+  font-size: 22px !important;
   font-weight: 700 !important;
   line-height: 1.45 !important;
 
@@ -1209,17 +1329,72 @@
 
 /* 능력의 의미를 설명하는 첫 문장입니다. */
 .ability-meaning {
-  min-height: 42px !important;
+  min-height: 58px !important;
 
-  margin: 0 0 12px !important;
+  margin: 0 0 16px !important;
 
   color: #ffe9ad !important;
 
-  font-size: 14px !important;
+  font-size: 18px !important;
   font-weight: 800 !important;
   line-height: 1.45 !important;
 
   word-break: keep-all !important;
+}
+
+.ability-slider .ability-meaning {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .ability-intro-page {
+    align-items: flex-start !important;
+    padding: 28px 16px !important;
+  }
+
+  .ability-intro-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 34px 22px 28px !important;
+  }
+
+  .ability-slider {
+    width: 100% !important;
+    max-width: 680px !important;
+  }
+
+  .ability-slider .ability-card {
+    min-height: 500px !important;
+    padding: 34px 28px 30px !important;
+  }
+
+  .ability-info-box strong,
+  .ability-info-box p {
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .ability-title {
+    font-size: 32px !important;
+  }
+
+  .ability-slider .ability-card h2 {
+    font-size: 34px !important;
+  }
+
+  .ability-info-box {
+    padding: 18px 18px !important;
+  }
+
+  .ability-info-box strong,
+  .ability-info-box p {
+    font-size: 18px !important;
+  }
+
+  .ability-actions {
+    flex-wrap: wrap !important;
+  }
 }
 
 /* 카드 아래쪽 수치 표시입니다. */
@@ -1228,4 +1403,102 @@
 
   font-size: 12px !important;
   line-height: 1.35 !important;
+}
+
+/* ===== 이야기 시작 화면 최종 배치 ===== */
+.story-intro-page {
+  width: 1920px !important;
+  height: 1080px !important;
+  min-height: 1080px !important;
+}
+
+.story-scene-area {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 30 !important;
+  pointer-events: none !important;
+}
+
+.story-character {
+  left: 210px !important;
+  bottom: 42px !important;
+  width: 360px !important;
+  max-width: none !important;
+  z-index: 31 !important;
+}
+
+.story-character-img {
+  width: 100% !important;
+  height: auto !important;
+  filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.58)) !important;
+}
+
+.story-dialog-box {
+  left: 50% !important;
+  bottom: 46px !important;
+  width: 1320px !important;
+  max-width: none !important;
+  min-height: 250px !important;
+  padding: 32px 70px 28px 410px !important;
+  border-radius: 26px !important;
+  transform: translateX(-50%) !important;
+  background:
+    linear-gradient(180deg, rgba(70, 42, 17, 0.9), rgba(28, 15, 7, 0.94)) !important;
+  box-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.54),
+    inset 0 0 24px rgba(255, 214, 128, 0.16) !important;
+  z-index: 20 !important;
+}
+
+.story-dialog-header {
+  margin-bottom: 12px !important;
+}
+
+.story-speaker {
+  margin-left: 0 !important;
+  padding: 8px 20px !important;
+  font-size: 20px !important;
+}
+
+.story-count {
+  font-size: 20px !important;
+}
+
+.story-main-text {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 78px !important;
+  margin: 0 0 22px !important;
+  padding: 0 !important;
+  font-size: 31px !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+  word-break: keep-all !important;
+  white-space: normal !important;
+}
+
+.story-bottom-area {
+  margin-top: 4px !important;
+}
+
+.story-nav-button {
+  min-width: 154px !important;
+  padding: 17px 26px !important;
+  font-size: 21px !important;
+}
+
+.story-dot {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.story-dot.active {
+  width: 34px !important;
+}
+
+.story-skip-button {
+  top: 34px !important;
+  right: 42px !important;
+  padding: 13px 24px !important;
+  font-size: 18px !important;
 }
