@@ -38,8 +38,32 @@
         display: grid;
         justify-items: center;
         align-items: start;
+        background-color: #1f140d !important;
         background-position: center !important;
         background-size: cover !important;
+      }
+
+      body:has(.mq-page-read-before-intro) .mq-fixed-stage-viewport {
+        background:
+          linear-gradient(rgba(22, 14, 8, 0.18), rgba(22, 14, 8, 0.34)),
+          url("../assets/images/read-before/intro/pre-reading-bg-magic-greenhouse.png") center / cover no-repeat !important;
+      }
+
+      body:has(.mq-page-individual-reading) .mq-fixed-stage-viewport {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(24, 17, 9, 0.38) 0%,
+            rgba(255, 245, 219, 0.56) 42%,
+            rgba(31, 21, 10, 0.34) 100%
+          ),
+          url("../assets/images/individual-reading/individual-reading.png") center / cover no-repeat !important;
+      }
+
+      body:has(.mq-page-read-before-book-intro) .mq-fixed-stage-viewport {
+        background:
+          linear-gradient(rgba(255, 248, 235, 0.5), rgba(255, 241, 215, 0.68)),
+          url("../assets/images/read-before/intro/read-before-intro-bg.png") center / cover no-repeat !important;
       }
 
       .mq-fixed-stage-frame {
@@ -55,6 +79,12 @@
         transform: scale(var(--stage-scale, 1));
         transform-origin: top left;
         overflow: hidden !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-after-reading {
+        height: auto !important;
+        min-height: 1080px !important;
+        overflow: visible !important;
       }
 
       .mq-fixed-stage-page > main,
@@ -101,13 +131,222 @@
         min-height: 1080px !important;
       }
 
+      .mq-fixed-stage-page.mq-page-read-before-intro .intro-page {
+        width: 1920px !important;
+        height: 1080px !important;
+        min-height: 1080px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-intro .story-box {
+        left: 145px !important;
+        bottom: 132px !important;
+        width: 640px !important;
+        min-height: 332px !important;
+        padding: 30px 30px 26px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-intro .story-text {
+        min-height: 156px !important;
+        font-size: 31px !important;
+        line-height: 1.48 !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-intro .intro-lumi {
+        right: 140px !important;
+        bottom: 0 !important;
+        width: 520px !important;
+        max-height: 910px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-intro .next-button,
+      .mq-fixed-stage-page.mq-page-read-before-intro .prev-button {
+        min-width: 154px !important;
+        padding: 16px 28px !important;
+        font-size: 18px !important;
+      }
+
       .mq-fixed-stage-page .ar-page {
         width: 1920px !important;
         min-height: 1080px !important;
       }
 
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-page {
+        width: 1920px !important;
+        height: 1080px !important;
+        min-height: 1080px !important;
+        padding: 24px 72px 34px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-topbar,
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-shell {
+        width: 1500px !important;
+        max-width: 1500px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-shell {
+        height: 940px !important;
+        padding: 28px 34px 28px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-title {
+        height: 88px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-title h1 {
+        font-size: 58px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-main-row {
+        height: 270px !important;
+        grid-template-columns: 560px 1fr !important;
+        gap: 28px !important;
+        margin-bottom: 22px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-power-body {
+        grid-template-columns: 190px minmax(0, 1fr) !important;
+        gap: 20px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-practice-card {
+        grid-template-columns: 240px minmax(0, 1fr) !important;
+        gap: 28px !important;
+        padding: 22px 42px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-practice-lumi {
+        width: 220px !important;
+        height: 224px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-chart-card {
+        height: 285px !important;
+        margin-bottom: 22px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-flow {
+        height: 146px !important;
+        grid-template-columns: 1fr 30px 1fr 30px 1fr !important;
+        gap: 12px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-flow-card {
+        height: 146px !important;
+        grid-template-columns: 104px minmax(0, 1fr) 38px !important;
+        padding: 18px 22px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-flow-card img {
+        width: 92px !important;
+        height: 92px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .page {
+        width: 1920px !important;
+        height: 1080px !important;
+        min-height: 1080px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .page-inner {
+        width: 1680px !important;
+        max-width: 1680px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .activity-layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .side-steps {
+        display: none !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .activity-card {
+        width: 1460px !important;
+        min-height: 640px !important;
+        padding: 58px 72px !important;
+        background: #f4ead8 !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .activity-card.is-example .content-grid,
+      .mq-fixed-stage-page.mq-page-before-reading .activity-card.is-write .content-grid {
+        min-height: 560px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .example-panel {
+        min-height: 540px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .example-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-before-reading .write-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .page {
+        width: 1920px !important;
+        height: 1080px !important;
+        min-height: 1080px !important;
+        padding: 32px 64px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .page-inner {
+        width: 1660px !important;
+        max-width: 1660px !important;
+        height: 100% !important;
+        grid-template-rows: 60px 126px minmax(0, 1fr) !important;
+        gap: 22px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .book-strip {
+        grid-template-columns: 92px minmax(0, 1fr) 520px !important;
+        min-height: 126px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .step-progress {
+        grid-template-columns: 1fr 48px 1fr 48px 1fr 48px 1fr !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .intro-card {
+        height: 816px !important;
+        min-height: 0 !important;
+        grid-template-columns: 430px minmax(0, 1fr) !important;
+        gap: 70px !important;
+        padding: 56px 84px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .cover-slot {
+        width: 430px !important;
+        height: 620px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .intro-content {
+        min-width: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .intro-title {
+        font-size: 72px !important;
+        line-height: 1.02 !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .intro-subtitle {
+        font-size: 28px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-read-before-book-intro .intro-book-box {
+        width: 650px !important;
+      }
+
       .mq-fixed-stage-page .step-list {
         grid-template-columns: repeat(4, 1fr) !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-practice .step-list {
+        width: 100% !important;
+        max-width: 100% !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
       }
 
       .mq-fixed-stage-page .tr-menu-grid {
@@ -260,11 +499,21 @@
     }
 
     const scale = Math.min(window.innerWidth / STAGE_WIDTH, window.innerHeight / STAGE_HEIGHT, 1);
+    const allowPageScroll = page.classList.contains("mq-page-individual-after-reading");
+    const pageHeight = allowPageScroll
+      ? Math.max(STAGE_HEIGHT, 1500, page.scrollHeight)
+      : STAGE_HEIGHT;
 
     frame.style.setProperty("--stage-scale", scale);
     page.style.setProperty("--stage-scale", scale);
     frame.style.width = `${STAGE_WIDTH * scale}px`;
-    frame.style.height = `${STAGE_HEIGHT * scale}px`;
+    frame.style.height = `${pageHeight * scale}px`;
+
+    if (allowPageScroll) {
+      page.style.height = "auto";
+      page.style.minHeight = `${STAGE_HEIGHT}px`;
+      page.style.overflow = "visible";
+    }
   }
 
   function wrapPage() {
@@ -306,6 +555,20 @@
     window.addEventListener("load", updateScale);
     setTimeout(updateScale, 80);
     setTimeout(updateScale, 300);
+
+    if (pageName === "individual-after-reading") {
+      const observer = new MutationObserver(() => {
+        requestAnimationFrame(updateScale);
+      });
+
+      observer.observe(page, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+
+      setInterval(updateScale, 700);
+    }
   }
 
   if (document.readyState === "loading") {

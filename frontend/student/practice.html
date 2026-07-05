@@ -49,9 +49,12 @@
   }
 
   .practice-page {
+    width: 100% !important;
+    max-width: 100% !important;
     position: relative;
     min-height: 100vh;
     padding: 30px 34px 40px;
+    overflow-x: hidden !important;
   }
 
   .practice-page::before {
@@ -134,12 +137,13 @@
     background: linear-gradient(180deg, rgba(184, 126, 65, 0.98), rgba(113, 71, 39, 0.98));
   }
 
-  .practice-card {
+    .practice-card {
     position: relative;
     z-index: 1;
-    max-width: 1230px;
-    margin: 0 auto;
-    padding: 44px 34px 34px;
+    width: min(88vw, 1460px);
+    min-height: 680px;
+            margin: 56px auto 0;
+    padding: 56px 54px 48px;
     border-radius: 36px;
     background:
       radial-gradient(circle at 80% 7%, rgba(255, 213, 137, 0.28), transparent 35%),
@@ -222,13 +226,15 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
   }
 
-    .step-list {
+        .step-list {
     position: relative;
     z-index: 1;
+    width: min(100%, 1120px);
+    margin: 20px auto 0;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-    margin-top: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 30px;
+    align-items: stretch;
   }
 
     .step-card {
@@ -299,10 +305,10 @@
     margin-bottom: 12px;
   }
 
-    .step-icon-box {
-    width: 170px;
-    height: 130px;
-    margin: 0 auto 28px;
+        .step-icon-box {
+    width: 210px;
+    height: 160px;
+    margin: 0 auto 36px;
     border-radius: 24px;
     background:
       radial-gradient(circle at 35% 28%, rgba(249, 204, 122, 0.32), rgba(102, 66, 36, 0.82));
@@ -317,20 +323,20 @@
     overflow: hidden;
   }
 
-  .step-icon-box img {
-    width: 138px;
-    height: 104px;
+    .step-icon-box img {
+    width: 178px;
+    height: 132px;
     object-fit: contain;
     filter:
       drop-shadow(0 3px 5px rgba(0, 0, 0, 0.26))
       drop-shadow(0 0 8px rgba(246, 194, 111, 0.3));
   }
 
-    .step-main-title {
-    margin-bottom: 12px;
+        .step-main-title {
+    margin-bottom: 20px;
     text-align: center;
-    margin-bottom: 6px;
     font-family: "Noto Serif KR", serif;
+    font-size: 32px;
     font-size: 22px;
     font-weight: 900;
     color: #fff7e5;
@@ -348,13 +354,13 @@
     display: none;
   }
 
-    .step-button {
+        .step-button {
     width: 100%;
-    margin-top: 24px;
-    border-radius: 16px;
-    padding: 13px 10px;
+    margin-top: 32px;
+    border-radius: 18px;
+    padding: 18px 10px;
     color: #fff8eb;
-    font-size: 16px;
+    font-size: 21px;
     font-weight: 900;
     cursor: pointer;
     box-shadow:
@@ -502,6 +508,85 @@
     .title-area p {
       font-size: 16px;
     }
+  }
+    /* =========================================================
+     연습하기 3단계 화면 최종 고정 배치
+     - 창 크기가 줄어도 카드 배치가 깨지지 않게 고정합니다.
+     ========================================================= */
+
+  .practice-page {
+    width: 1920px !important;
+    min-width: 1920px !important;
+    height: 1080px !important;
+    min-height: 1080px !important;
+    padding: 40px 0 0 !important;
+    overflow: hidden !important;
+  }
+
+  .practice-header {
+    width: min(1500px, 100%) !important;
+    max-width: 100% !important;
+    margin: 0 auto 44px !important;
+  }
+
+  .practice-card {
+    width: min(1420px, 100%) !important;
+    max-width: 100% !important;
+    min-height: 700px !important;
+    margin: 0 auto !important;
+    padding: 58px 48px 54px !important;
+  }
+
+  .title-area {
+    margin-bottom: 52px !important;
+    text-align: center !important;
+  }
+
+  .title-area h1 {
+    font-size: 58px !important;
+    line-height: 1.18 !important;
+  }
+
+    .step-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 28px !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+  }
+
+  .step-card {
+    width: 100% !important;
+    min-height: 420px !important;
+    padding: 38px 40px 34px !important;
+  }
+
+  .step-icon-box {
+    width: 230px !important;
+    height: 170px !important;
+    margin: 0 auto 38px !important;
+  }
+
+  .step-icon-box img {
+    width: 190px !important;
+    height: 140px !important;
+  }
+
+  .step-main-title {
+    font-size: 36px !important;
+    margin-bottom: 30px !important;
+    text-align: center !important;
+  }
+
+  .step-button {
+    height: 64px !important;
+    margin-top: 34px !important;
+    padding: 0 10px !important;
+    font-size: 22px !important;
+    border-radius: 18px !important;
   }
 </style>
 </head>

@@ -1,36 +1,18 @@
-<!--
-  파일명: individual-reading.html
-  역할: 문답책 개별읽기 메인 화면입니다.
-
-  이 화면에서 하는 일:
-  1. 학생이 개별읽기 활동으로 들어옵니다.
-  2. 나의 힘, 월별 완독 기록, 독서 캘린더, 독서 현황을 확인합니다.
-  3. 책 추천 받기, 책읽기, 오늘의 독서 모험, 던전 입장, 나의 독서 보관함으로 이동할 수 있습니다.
-
-  사용 이미지:
-  - 배경 이미지: ../assets/images/individual-reading/individual-reading.png
-  - 루미 이미지: ../assets/images/individual-reading/home-lumi.png
-  - 문답책 로고: ../assets/images/logo-book.png
-
-  임시 능력치 세팅:
-  - 연습읽기에서 읽기 후 간추리기 활동까지 모두 끝내면 기본 보상으로 각 능력치 +8
-  - 개별읽기 활동 보상은 게임 밸런스 확정 후 다시 조정합니다.
--->
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>나만의 독서 모험 - 문답책</title>
 
-  <!-- Pretendard 폰트를 불러옵니다. -->
-  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css">
-
-  <!-- 공통 CSS입니다. -->
-  <link rel="stylesheet" href="../css/common.css?v=individual-reading-fixed">
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css" />
+  <link rel="stylesheet" href="../css/common.css?v=individual-reading-home-final" />
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     html,
     body {
       width: 100%;
@@ -39,50 +21,45 @@
       overflow: hidden;
     }
 
-    .ir-page,
-    .ir-page * {
-      box-sizing: border-box;
+    body {
       font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      color: #3f260f;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(24, 17, 9, 0.38) 0%,
+          rgba(255, 245, 219, 0.56) 42%,
+          rgba(31, 21, 10, 0.34) 100%
+        ),
+        url("../assets/images/individual-reading/individual-reading.png") center / cover no-repeat;
+    }
+
+    button {
+      font-family: inherit;
     }
 
     .ir-page {
       width: 100vw;
       height: 100vh;
-      padding: 12px 28px;
-      color: #4b2b10;
-      overflow: hidden;
+      padding: 14px 44px 18px;
       background:
         linear-gradient(
           90deg,
-          rgba(255, 247, 225, 0.86) 0%,
-          rgba(255, 247, 225, 0.62) 42%,
-          rgba(255, 247, 225, 0.3) 100%
+          rgba(24, 17, 9, 0.38) 0%,
+          rgba(255, 245, 219, 0.56) 42%,
+          rgba(31, 21, 10, 0.34) 100%
         ),
         url("../assets/images/individual-reading/individual-reading.png") center / cover no-repeat;
+      overflow: hidden;
     }
 
-    .ir-shell {
-      width: 100%;
-      max-width: 1480px;
-      height: 100%;
-      margin: 0 auto;
-      display: grid;
-      grid-template-rows: 58px 150px minmax(0, 1fr);
-      gap: 8px;
-    }
-
-    /* 상단바입니다. */
-    .ir-top-bar {
+    .ir-topbar {
+      height: 54px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 0;
-      padding: 8px 20px;
-      border: 1px solid rgba(179, 120, 39, 0.28);
-      border-radius: 22px;
-      background: rgba(255, 249, 231, 0.88);
-      box-shadow: 0 12px 24px rgba(96, 61, 20, 0.12);
-      backdrop-filter: blur(8px);
+      margin: 0 auto 10px;
+      max-width: 1420px;
     }
 
     .ir-logo {
@@ -92,1261 +69,818 @@
     }
 
     .ir-logo img {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       object-fit: contain;
     }
 
     .ir-logo span {
-      font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      font-size: 27px;
+      font-family: "Noto Serif KR", "Pretendard Variable", serif;
+      font-size: 31px;
       font-weight: 900;
-      letter-spacing: -0.04em;
-      color: #5a3415;
+      letter-spacing: -0.06em;
+      color: #fff2c7;
+      text-shadow: 0 3px 8px rgba(0, 0, 0, 0.42);
     }
 
     .ir-top-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .ir-top-button {
-      height: 40px;
-      padding: 0 18px;
-      border: 1px solid rgba(168, 106, 31, 0.3);
+    .ir-top-archive,
+    .ir-top-power {
+      height: 46px;
       border-radius: 999px;
-      background: rgba(255, 251, 239, 0.92);
-      color: #633915;
-      font-size: 15px;
-      font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 8px 16px rgba(98, 59, 15, 0.1);
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(26, 15, 5, 0.2);
     }
 
-    /* 메인 소개 영역입니다. */
-    .ir-hero {
-      position: relative;
-      min-height: 0;
-      padding: 18px 350px 16px 34px;
-      border: 1px solid rgba(180, 120, 39, 0.22);
-      border-radius: 24px;
-      background: rgba(255, 249, 231, 0.66);
-      box-shadow: 0 12px 24px rgba(91, 57, 17, 0.1);
-      backdrop-filter: blur(4px);
+    .ir-top-archive {
+      padding: 0 24px;
+      border: 2px solid rgba(255, 219, 124, 0.86);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(255, 247, 199, 0.95), transparent 42%),
+        linear-gradient(180deg, #f9de8a 0%, #d29a35 100%);
+      color: #3d260d;
+      font-size: 17px;
+    }
+
+    .ir-top-power {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      border: 1px solid rgba(255, 221, 143, 0.68);
+      background: rgba(35, 23, 11, 0.74);
+      color: #fff5d2;
+      font-size: 16px;
+    }
+
+    .ir-top-power img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .ir-shell {
+      max-width: 1420px;
+      height: calc(100vh - 96px);
+      margin: 0 auto;
+      padding: 20px 24px 20px;
+      border: 2px solid rgba(202, 141, 49, 0.48);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 78% 8%, rgba(255, 236, 174, 0.58), transparent 26%),
+        rgba(255, 247, 225, 0.92);
+      box-shadow:
+        0 18px 42px rgba(30, 19, 7, 0.24),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+      backdrop-filter: blur(6px);
       overflow: hidden;
     }
 
-    .ir-hero h1 {
-      margin: 0 0 6px;
-      font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      font-size: clamp(40px, 3.2vw, 50px);
-      font-weight: 900;
-      line-height: 1.04;
-      letter-spacing: -0.055em;
-      color: #573212;
-      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.64);
+    .ir-title {
+      height: 76px;
+      padding: 0 8px 2px;
     }
 
-    .ir-hero p {
+    .ir-title h1 {
       margin: 0;
-      color: #673a14;
-      font-size: 18px;
-      font-weight: 850;
-      line-height: 1.35;
-    }
-
-    .ir-lumi {
-      position: absolute;
-      right: 54px;
-      bottom: 0;
-      width: 156px;
-      height: 148px;
-      object-fit: contain;
-      object-position: bottom center;
-      filter: drop-shadow(0 14px 18px rgba(93, 55, 14, 0.22));
-      z-index: 3;
-    }
-
-    .ir-lumi-bubble {
-      position: absolute;
-      right: 210px;
-      top: 44px;
-      width: 220px;
-      max-width: 220px;
-      padding: 12px 18px;
-      border: 1px solid rgba(176, 113, 31, 0.24);
-      border-radius: 20px;
-      background: rgba(255, 251, 239, 0.94);
-      color: #623a16;
-      font-size: 15px;
+      font-family: "Noto Serif KR", "Pretendard Variable", serif;
+      font-size: 62px;
       font-weight: 900;
-      line-height: 1.25;
-      text-align: center;
-      white-space: nowrap;
-      box-shadow: 0 10px 18px rgba(98, 59, 15, 0.1);
-      z-index: 4;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      color: #47280d;
+      text-shadow: 0 3px 0 rgba(255, 255, 255, 0.58);
     }
 
-    /* 전체 대시보드입니다. */
-    .ir-dashboard {
-      min-height: 0;
+    .ir-main-row {
+      height: 228px;
       display: grid;
-      grid-template-columns: 0.92fr 1.08fr;
-      grid-template-rows: minmax(0, 1fr) minmax(0, 1.04fr);
-      gap: 8px;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 20px;
+      margin-bottom: 16px;
     }
 
     .ir-card {
-      min-height: 0;
-      border: 1px solid rgba(176, 115, 33, 0.24);
+      border: 1px solid rgba(172, 111, 31, 0.28);
       border-radius: 22px;
-      background: rgba(255, 251, 241, 0.91);
+      background: rgba(255, 250, 238, 0.92);
       box-shadow:
-        0 14px 28px rgba(91, 57, 17, 0.11),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.46);
-      backdrop-filter: blur(7px);
+        0 10px 20px rgba(99, 61, 17, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.42);
       overflow: hidden;
     }
 
-    .ir-card-header {
-      height: 48px;
+    .ir-card-head {
+      height: 44px;
+      padding: 12px 16px 4px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 12px 18px 4px;
     }
 
-    .ir-card-title {
+    .ir-card-head h2 {
       margin: 0;
-      font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      font-size: 25px;
+      font-family: "Noto Serif KR", "Pretendard Variable", serif;
+      font-size: 22px;
       font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.045em;
-      color: #573212;
+      letter-spacing: -0.05em;
+      color: #4f2e12;
     }
 
-    .ir-help-button {
-      flex: 0 0 auto;
-      width: 28px;
-      height: 28px;
-      border: 1px solid rgba(174, 112, 31, 0.28);
+    .ir-card-head button {
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(165, 103, 25, 0.35);
       border-radius: 50%;
-      background: #fff5dc;
-      color: #9b650f;
+      background: #fff1cf;
+      color: #8b5818;
       font-size: 16px;
       font-weight: 900;
       cursor: pointer;
     }
 
-    /* 나의 힘 카드입니다. */
     .ir-power-body {
-      height: calc(100% - 48px);
-      min-height: 0;
+      height: calc(100% - 44px);
       display: grid;
-      grid-template-columns: 180px minmax(0, 1fr);
+      grid-template-columns: 170px minmax(0, 1fr);
       gap: 16px;
-      padding: 0 18px 14px;
+      padding: 0 18px 16px;
       align-items: center;
-    }
-
-    .ir-radar-box {
-      height: 100%;
-      min-height: 150px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      background: radial-gradient(circle, rgba(218, 160, 58, 0.2), rgba(255, 250, 236, 0.16));
     }
 
     .ir-radar {
       position: relative;
-      width: 128px;
-      height: 128px;
+      width: 132px;
+      height: 132px;
+      margin: 0 auto;
     }
 
     .ir-radar::before,
     .ir-radar::after {
       content: "";
       position: absolute;
-      inset: 18px;
-      border: 1px solid rgba(135, 83, 24, 0.22);
+      inset: 20px;
+      border: 1px solid rgba(126, 77, 20, 0.22);
       transform: rotate(45deg);
     }
 
     .ir-radar::after {
       inset: 36px;
-      border-color: rgba(135, 83, 24, 0.15);
+      border-color: rgba(126, 77, 20, 0.14);
     }
-.ir-radar-shape {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(180deg, rgba(203, 142, 48, 0.9), rgba(166, 94, 24, 0.68));
-  clip-path: polygon(50% 30%, 70% 50%, 50% 70%, 30% 50%);
-  transition: clip-path 0.35s ease;
-  filter: drop-shadow(0 8px 12px rgba(120, 70, 16, 0.22));
-}
 
-    .ir-radar-label {
+    .ir-radar-core {
       position: absolute;
-      color: #5f3714;
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1.16;
-      text-align: center;
-      z-index: 3;
-    }
-
-    .ir-radar-label.magic {
-      left: 50%;
-      top: -4px;
-      transform: translateX(-50%);
-    }
-
-    .ir-radar-label.health {
-      right: -12px;
-      top: 55px;
-    }
-
-    .ir-radar-label.wisdom {
-      left: 50%;
-      bottom: -5px;
-      transform: translateX(-50%);
-    }
-
-    .ir-radar-label.courage {
-      left: -13px;
-      top: 55px;
-    }
-
-    .ir-stat-list {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .ir-stat-row {
-      display: grid;
-      grid-template-columns: 58px minmax(0, 1fr) 66px;
-      align-items: center;
-      gap: 8px;
-      color: #5f3916;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .ir-stat-bar {
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(129, 84, 31, 0.15);
-      overflow: hidden;
-    }
-
-    .ir-stat-fill {
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #87501b, #b97624, #dca746);
-    }
-
-    .ir-method-button {
-      align-self: center;
-      margin-top: 14px;
-      padding: 8px 18px;
-      border: 1px solid rgba(162, 102, 26, 0.28);
-      border-radius: 999px;
-      background: rgba(255, 245, 221, 0.94);
-      color: #704417;
-      font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 6px 12px rgba(121, 72, 20, 0.08);
-    }
-
-    /* 월별 완독 기록 그래프입니다. */
-    .ir-month-chart-wrap {
-      height: calc(100% - 48px);
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 30px minmax(0, 1fr);
-      gap: 8px;
-      padding: 0 18px 15px 14px;
-    }
-
-    .ir-month-y-axis {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0 22px;
-      color: #8a5a22;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .ir-month-plot {
-      position: relative;
-      min-height: 0;
-    }
-
-    .ir-month-grid {
-      position: absolute;
-      inset: 8px 0 22px 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      pointer-events: none;
-    }
-
-    .ir-month-grid span {
-      display: block;
-      width: 100%;
-      border-top: 1px solid rgba(181, 126, 48, 0.18);
-    }
-
-    .ir-month-bars {
-      position: absolute;
-      inset: 0;
+      inset: 46px;
       z-index: 2;
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: end;
-      gap: 10px;
-      padding-top: 6px;
+      background: linear-gradient(180deg, #d99b32, #b06a1d);
+      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
     }
 
-    .ir-month-bar-group {
-      min-width: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .ir-month-value {
-      color: #7a4b1a;
+    .ir-radar span {
+      position: absolute;
+      z-index: 3;
+      color: #4f2f13;
       font-size: 12px;
       font-weight: 900;
-      line-height: 1;
-    }
-
-    .ir-month-bar {
-      width: 28px;
-      min-height: 8px;
-      border-radius: 14px 14px 6px 6px;
-      background: linear-gradient(180deg, #dba44c 0%, #b26d23 55%, #7a4315 100%);
-      box-shadow: 0 8px 16px rgba(135, 81, 25, 0.16);
-    }
-
-    .ir-month-label {
-      color: #74471a;
-      font-size: 12px;
-      font-weight: 900;
-      line-height: 1;
+      line-height: 1.2;
+      text-align: center;
       white-space: nowrap;
     }
 
-    /* 아래 카드 3개입니다. */
-    .ir-bottom-grid {
-      grid-column: 1 / -1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 0.95fr 0.78fr 1.27fr;
-      gap: 8px;
+    .radar-top {
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    .ir-calendar {
-      height: calc(100% - 48px);
-      min-height: 0;
-      padding: 0 18px 13px;
+    .radar-right {
+      right: -8px;
+      top: 54px;
     }
 
-    .ir-calendar-month {
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #6b4119;
-      font-size: 15px;
-      font-weight: 900;
+    .radar-bottom {
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    .ir-calendar-grid {
-      height: calc(100% - 24px);
-      min-height: 0;
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: 22px repeat(5, 1fr);
-      gap: 4px;
-      text-align: center;
+    .radar-left {
+      left: -8px;
+      top: 54px;
     }
 
-    .ir-day-name,
-    .ir-day {
-      min-height: 0;
-      display: grid;
-      place-items: center;
-      color: #6d451c;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .ir-day.read {
-      justify-self: center;
-      width: 40px;
-      max-width: 100%;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #dfa83f, #a9671f);
-      color: #fff9e8;
-      box-shadow: 0 7px 13px rgba(137, 83, 20, 0.18);
-    }
-
-    .ir-book-status {
-      height: calc(100% - 48px);
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 96px minmax(0, 1fr);
-      gap: 18px;
-      padding: 10px 22px 18px;
-      align-items: center;
-    }
-
-    .ir-book-cover {
-      width: 96px;
-      height: 132px;
-      border: 1px solid rgba(160, 100, 26, 0.25);
-      border-radius: 14px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(179, 117, 36, 0.18)),
-        #f5e1bd;
-      display: grid;
-      place-items: center;
-      color: #704417;
-      font-size: 18px;
-      font-weight: 900;
-      line-height: 1.2;
-      text-align: center;
-      box-shadow: 0 10px 18px rgba(113, 71, 22, 0.14);
-    }
-
-    .ir-book-info {
-      min-width: 0;
-      height: 132px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 8px;
-    }
-
-    .ir-book-info p {
-      margin: 0;
-      color: #7a5123;
-      font-size: 13px;
-      font-weight: 900;
-      line-height: 1.2;
-    }
-
-    .ir-book-info h3 {
-      margin: 0;
-      font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      color: #4f2f13;
-      font-size: 30px;
-      font-weight: 900;
-      line-height: 1.05;
-    }
-
-    .ir-book-info span {
-      display: block;
-      max-width: 220px;
-      margin: 0;
-      color: #6f431b;
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .ir-menu-grid {
-      height: 100%;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr 0.92fr;
-      gap: 9px;
-      padding: 14px;
-    }
-
-    .ir-menu-button {
-      min-height: 0;
-      padding: 10px 14px;
-      border: 1px solid rgba(168, 105, 26, 0.24);
-      border-radius: 16px;
-      background: rgba(255, 248, 229, 0.84);
-      color: #5d3615;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      box-shadow: 0 8px 14px rgba(112, 72, 23, 0.08);
-    }
-
-    .ir-menu-button strong {
-      margin: 0 0 3px;
-      font-size: 16px;
-      font-weight: 900;
-      line-height: 1.15;
-    }
-
-    .ir-menu-button span {
-      color: #7a5123;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.3;
-    }
-
-    .ir-menu-button.featured {
-      background: linear-gradient(180deg, rgba(255, 229, 149, 0.96), rgba(236, 183, 78, 0.84));
-      border-color: rgba(178, 109, 23, 0.34);
-    }
-
-    .ir-menu-button.wide {
-      grid-column: 1 / -1;
-    }
-
-    .ir-footer-note {
-      display: none;
-    }
-
-    /* 모달입니다. */
-    .ir-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(54, 35, 15, 0.45);
-      backdrop-filter: blur(5px);
-    }
-
-    .ir-modal-backdrop.hidden {
-      display: none;
-    }
-
-    .ir-modal-box {
-      position: relative;
-      width: min(520px, 100%);
-      padding: 32px 32px 28px;
-      border: 1px solid rgba(186, 120, 32, 0.34);
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 225, 151, 0.42), transparent 34%),
-        rgba(255, 250, 238, 0.96);
-      color: #573313;
-      box-shadow: 0 24px 60px rgba(79, 50, 18, 0.24);
-      text-align: center;
-    }
-
-    .ir-modal-close {
-      position: absolute;
-      top: 14px;
-      right: 16px;
-      width: 34px;
-      height: 34px;
-      border: none;
-      border-radius: 50%;
-      background: rgba(126, 77, 20, 0.1);
-      color: #6a3d15;
-      font-size: 24px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .ir-modal-kicker {
-      margin: 0 0 10px;
-      color: #b2731d;
-      font-size: 15px;
-      font-weight: 900;
-    }
-
-    .ir-modal-box h2 {
-      margin: 0 0 22px;
-      font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      color: #4f2f13;
-      font-size: 30px;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .ir-ability-guide-list {
+    .ir-power-bars {
       display: grid;
       gap: 10px;
-      margin-bottom: 24px;
+    }
+
+    .ir-power-row {
+      display: grid;
+      grid-template-columns: 58px 1fr 68px;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #543315;
+    }
+
+    .ir-power-row div {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(113, 75, 31, 0.15);
+      overflow: hidden;
+    }
+
+    .ir-power-row i {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #8a5019, #c1842e, #e1b456);
+    }
+
+    .ir-practice-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+      padding: 18px 24px;
+      border: 2px solid rgba(232, 190, 91, 0.68);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(255, 230, 143, 0.2), transparent 32%),
+        linear-gradient(135deg, rgba(33, 74, 28, 0.98), rgba(16, 56, 24, 0.98));
+      color: #fff3c7;
+      box-shadow:
+        0 10px 22px rgba(32, 75, 24, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .ir-practice-card::before {
+      content: "";
+      display: none;
+    }
+
+    .ir-practice-lumi {
+      width: 160px;
+      height: 180px;
+      object-fit: contain;
+      object-position: bottom center;
+      justify-self: center;
+      filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.25));
+    }
+
+    .ir-practice-text {
+      text-align: center;
+    }
+
+    .ir-practice-text h2 {
+      margin: 0;
+      font-family: "Noto Serif KR", "Pretendard Variable", serif;
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.18;
+      letter-spacing: -0.05em;
+      color: #fff8dc;
+    }
+
+    .ir-practice-text p {
+      margin: 10px 0 14px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: #f4e7b9;
+    }
+
+    .ir-practice-text button {
+      display: block;
+      width: 176px;
+      height: 44px;
+      margin: 0 auto;
+      border: 1px solid rgba(255, 225, 136, 0.78);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #c8943c, #7f4b17);
+      color: #fff8dc;
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: 0 8px 16px rgba(14, 42, 17, 0.26);
+      cursor: pointer;
+    }
+
+    .ir-chart-card {
+      height: 230px;
+      margin-bottom: 16px;
+    }
+
+    .ir-chart-body {
+      height: calc(100% - 44px);
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      padding: 0 16px 14px 12px;
+    }
+
+    .ir-chart-y {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 0 20px;
+      color: #7a4a19;
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .ir-chart-plot {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      align-items: end;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(173, 118, 44, 0.16);
+      background:
+        linear-gradient(to bottom, rgba(173, 118, 44, 0.15) 1px, transparent 1px) 0 25% / 100% 25% repeat-y;
+    }
+
+    .ir-bar {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      padding-bottom: 18px;
+    }
+
+    .ir-bar b {
+      width: 24px;
+      min-height: 6px;
+      border-radius: 14px 14px 6px 6px;
+      background: linear-gradient(180deg, #dda64d, #a45e19);
+      box-shadow: 0 8px 14px rgba(123, 73, 20, 0.14);
+    }
+
+    .ir-bar em {
+      position: absolute;
+      bottom: calc(var(--h) + 24px);
+      font-style: normal;
+      color: #4d2d10;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .ir-bar span {
+      position: absolute;
+      bottom: 0;
+      color: #5d3715;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .ir-flow {
+      height: 116px;
+      display: grid;
+      grid-template-columns: 1fr 24px 1fr 24px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ir-flow-card {
+      height: 116px;
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) 28px;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 14px 14px;
+      border: 1px solid rgba(178, 113, 29, 0.34);
+      border-radius: 20px;
+      background: rgba(255, 248, 230, 0.94);
+      color: #4d2d11;
+      box-shadow:
+        0 10px 20px rgba(83, 51, 17, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.38);
+      cursor: pointer;
       text-align: left;
     }
 
-    /* 기존 설명형 능력치 목록 기본 스타일입니다.
-   이제 그래프형으로 바꾸었기 때문에 내부 모든 div에 스타일을 주지 않습니다. */
-.ir-ability-guide-list {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 24px;
-  text-align: left;
-}
+    .ir-flow-card img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 12px rgba(74, 44, 13, 0.14));
+    }
 
-    .ir-modal-button {
-      width: 100%;
-      height: 48px;
-      border: none;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #dca94f, #a8641e);
-      color: #fff9e8;
-      font-size: 16px;
+    .ir-flow-text strong {
+      display: block;
+      font-family: "Noto Serif KR", "Pretendard Variable", serif;
+      font-size: 18px;
       font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 8px 16px rgba(119, 72, 19, 0.18);
+      line-height: 1.15;
+      letter-spacing: -0.05em;
     }
 
-    @media (max-height: 760px) {
-      .ir-page {
-        padding: 10px 24px;
-      }
-
-      .ir-shell {
-        grid-template-rows: 54px 138px minmax(0, 1fr);
-        gap: 7px;
-      }
-
-      .ir-logo img {
-        width: 36px;
-        height: 36px;
-      }
-
-      .ir-logo span {
-        font-size: 25px;
-      }
-
-      .ir-top-button {
-        height: 38px;
-        font-size: 14px;
-      }
-
-      .ir-hero {
-        padding: 16px 320px 14px 32px;
-      }
-
-      .ir-hero h1 {
-        font-size: 42px;
-      }
-
-      .ir-hero p {
-        font-size: 16px;
-      }
-
-      .ir-lumi {
-        width: 142px;
-        height: 136px;
-        right: 48px;
-      }
-
-      .ir-lumi-bubble {
-        top: 32px;
-        right: 195px;
-      }
-
-      .ir-card-header {
-        height: 44px;
-        padding-top: 10px;
-      }
-
-      .ir-card-title {
-        font-size: 23px;
-      }
-
-      .ir-power-body,
-      .ir-month-chart-wrap,
-      .ir-calendar,
-      .ir-book-status {
-        height: calc(100% - 44px);
-      }
-
-      .ir-power-body {
-        grid-template-columns: 168px minmax(0, 1fr);
-      }
-
-      .ir-radar {
-        width: 118px;
-        height: 118px;
-      }
-
-      .ir-month-bars {
-        gap: 8px;
-      }
-
-      .ir-month-bar {
-        width: 25px;
-      }
-
-      .ir-menu-grid {
-        padding: 12px;
-        gap: 8px;
-      }
-
-      .ir-menu-button strong {
-        font-size: 15px;
-      }
-
-      .ir-menu-button span {
-        font-size: 11px;
-      }
+    .ir-card-arrow {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 243, 215, 0.9);
+      color: #8a571c;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 900;
+      justify-self: end;
     }
-    /* 나의 힘 팝업: 보조설명 제거 + 가로 그래프 표시 */
-.ir-power-bar-list {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 24px;
+
+    .ir-flow-arrow {
+      color: #f3c762;
+      font-size: 28px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .ir-dungeon {
+      border: 3px solid rgba(245, 190, 78, 0.92);
+      box-shadow:
+        0 0 0 2px rgba(130, 77, 18, 0.1),
+        0 0 16px rgba(224, 157, 49, 0.22),
+        0 10px 20px rgba(83, 51, 17, 0.1);
+    }
+
+    .ir-dungeon .ir-card-arrow {
+      background: #fff0c9;
+    }
+        /* 개별읽기 메인 화면 미세조정 */
+    .ir-title {
+      height: 62px !important;
+      padding: 0 8px !important;
+    }
+
+    .ir-title h1 {
+      font-size: 50px !important;
+      line-height: 1 !important;
+      letter-spacing: -0.075em !important;
+    }
+
+    /* 나의 힘 카드 물음표 제거 */
+    .ir-main-row .ir-card:first-child .ir-card-head button {
+      display: none !important;
+    }
+
+    /* 연습읽기 카드 고급화 */
+    .ir-practice-card {
+      position: relative !important;
+      grid-template-columns: 210px minmax(0, 1fr) !important;
+      padding: 20px 34px !important;
+      border: 2px solid rgba(247, 205, 106, 0.9) !important;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(255, 226, 130, 0.2), transparent 28%),
+        radial-gradient(circle at 86% 18%, rgba(255, 238, 164, 0.24), transparent 28%),
+        linear-gradient(135deg, #123e1e 0%, #1f5a27 48%, #0f3218 100%) !important;
+      box-shadow:
+        0 12px 24px rgba(22, 70, 28, 0.24),
+        inset 0 0 0 1px rgba(255, 244, 184, 0.18),
+        inset 0 0 34px rgba(255, 212, 100, 0.08) !important;
+    }
+
+    .ir-practice-card::after {
+      content: "맨 처음 해요";
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      height: 34px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 226, 143, 0.88);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff0b9 0%, #d4a13c 100%);
+      color: #3d260d;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: 0 8px 16px rgba(25, 54, 18, 0.22);
+    }
+
+    .ir-practice-lumi {
+      width: 190px !important;
+      height: 200px !important;
+      object-fit: contain !important;
+      object-position: bottom center !important;
+    }
+
+    .ir-practice-text h2 {
+      font-size: 34px !important;
+      line-height: 1.15 !important;
+      margin-bottom: 18px !important;
+    }
+
+    /* 연습읽기 보조설명 제거 */
+    .ir-practice-text p {
+      display: none !important;
+    }
+
+    .ir-practice-text button {
+      width: 200px !important;
+      height: 48px !important;
+      font-size: 19px !important;
+      background: linear-gradient(180deg, #d8a247 0%, #8a541b 100%) !important;
+      border: 1px solid rgba(255, 229, 151, 0.9) !important;
+      box-shadow:
+        0 8px 18px rgba(14, 42, 17, 0.28),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.16) !important;
+    }
+
+    /* 하단 3개 버튼 키우기 */
+    .ir-flow {
+      height: 128px !important;
+      grid-template-columns: 1fr 26px 1fr 26px 1fr !important;
+      gap: 10px !important;
+    }
+
+    .ir-flow-card {
+      height: 128px !important;
+      grid-template-columns: 92px minmax(0, 1fr) 34px !important;
+      gap: 14px !important;
+      padding: 16px 18px !important;
+    }
+
+    .ir-flow-card img {
+      width: 84px !important;
+      height: 84px !important;
+    }
+
+    .ir-flow-text strong {
+      font-size: 23px !important;
+      line-height: 1.15 !important;
+    }
+
+    .ir-card-arrow {
+      width: 34px !important;
+      height: 34px !important;
+      font-size: 23px !important;
+    }
+
+    .ir-flow-arrow {
+      font-size: 32px !important;
+    }
+
+    .ir-dungeon {
+  border: 3px solid rgba(193, 153, 92, 0.92) !important;
+  background: linear-gradient(135deg, #f3eadb 0%, #e2d1b4 52%, #c6ab84 100%) !important;
+  box-shadow:
+    0 0 0 2px rgba(130, 77, 18, 0.08),
+    0 0 14px rgba(177, 134, 74, 0.18),
+    0 10px 20px rgba(83, 51, 17, 0.08) !important;
 }
 
-.ir-power-modal-row {
-  padding: 15px 17px;
-  border: 1px solid rgba(177, 112, 29, 0.18);
-  border-radius: 18px;
-  background: rgba(255, 243, 214, 0.8);
-  text-align: left;
+.ir-dungeon .ir-flow-text strong {
+  color: #5a3a1a !important;
 }
 
-.ir-power-modal-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 10px;
+.ir-dungeon .ir-card-arrow {
+  background: #f4e7d2 !important;
+  color: #8a5c24 !important;
 }
-
-.ir-power-modal-head strong {
-  display: block;
-  margin: 0;
-  color: #5d3615;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.ir-power-modal-head span {
-  display: block;
-  color: #6f431b;
+/* 상단 홈 버튼 + 연습읽기 버튼 + 던전입장 색감 보정 */
+.ir-top-home {
+  height: 46px;
+  padding: 0 22px;
+  border: 1px solid rgba(122, 79, 30, 0.48);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(91, 58, 26, 0.94), rgba(45, 29, 14, 0.92));
+  color: #fff1c7;
   font-size: 16px;
   font-weight: 900;
-  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 8px 18px rgba(26, 15, 5, 0.22),
+    inset 0 0 0 1px rgba(255, 224, 151, 0.12);
 }
 
-.ir-power-modal-bar {
-  width: 100%;
-  height: 13px;
-  border-radius: 999px;
-  background: rgba(129, 84, 31, 0.15);
-  overflow: hidden;
+.ir-practice-card {
+  border-color: rgba(218, 178, 93, 0.92) !important;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255, 226, 138, 0.16), transparent 30%),
+    radial-gradient(circle at 84% 20%, rgba(255, 240, 176, 0.18), transparent 28%),
+    linear-gradient(135deg, #123819 0%, #1e5525 48%, #102f17 100%) !important;
+  box-shadow:
+    0 12px 24px rgba(23, 63, 25, 0.2),
+    inset 0 0 0 1px rgba(255, 236, 167, 0.18),
+    inset 0 0 28px rgba(255, 214, 118, 0.08) !important;
 }
 
-.ir-power-modal-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #87501b, #b97624, #dca746);
+.ir-practice-card::after {
+  top: 14px !important;
+  right: 18px !important;
+  height: 32px !important;
+  padding: 0 17px !important;
+  background: linear-gradient(180deg, #f4df9f 0%, #bd8430 100%) !important;
+  color: #3e260c !important;
+  font-size: 13px !important;
+}
+
+.ir-practice-text button {
+  width: 210px !important;
+  height: 50px !important;
+  margin-top: 2px !important;
+  border: 1px solid rgba(255, 225, 139, 0.95) !important;
+  background:
+    linear-gradient(180deg, #d6a14a 0%, #9a641f 54%, #6e4315 100%) !important;
+  color: #fff5d2 !important;
+  font-size: 19px !important;
+  letter-spacing: -0.03em !important;
+  box-shadow:
+    0 8px 16px rgba(14, 42, 17, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -2px 0 rgba(64, 35, 10, 0.22) !important;
+}
+
+.ir-practice-text button:hover {
+  transform: translateY(-1px);
+}
+
+.ir-dungeon {
+  border: 3px solid rgba(159, 117, 65, 0.95) !important;
+  background:
+    linear-gradient(135deg, #d8c3a3 0%, #b99669 48%, #7d5531 100%) !important;
+  box-shadow:
+    0 0 0 2px rgba(88, 53, 19, 0.1),
+    0 0 16px rgba(126, 85, 42, 0.22),
+    0 10px 20px rgba(67, 40, 15, 0.12),
+    inset 0 0 0 1px rgba(255, 235, 186, 0.18) !important;
+}
+
+.ir-dungeon .ir-flow-text strong {
+  color: #3f2812 !important;
+}
+
+.ir-dungeon .ir-card-arrow {
+  background: #ead7b9 !important;
+  color: #6f431b !important;
 }
   </style>
 </head>
 
 <body>
-  <main class="ir-page">
-    <div class="ir-shell">
+  <div class="ir-page">
+    <header class="ir-topbar">
+      <div class="ir-logo">
+        <img src="../assets/images/logo-book.png" alt="문답책 로고" />
+        <span>문답책</span>
+      </div>
 
-      <!-- 상단바입니다. -->
-      <header class="ir-top-bar">
-        <div class="ir-logo">
-          <img src="../assets/images/logo-book.png" alt="문답책 로고">
-          <span>문답책</span>
-        </div>
+      <div class="ir-top-actions">
+  <button class="ir-top-home" type="button" onclick="location.href='../index.html'">
+    🏠 홈으로
+  </button>
 
-        <div class="ir-top-actions">
-          <button type="button" class="ir-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-         
-        </div>
-      </header>
+  <button class="ir-top-archive" type="button" onclick="location.href='reading-archive.html'">
+    📚 나의 독서 보관함
+  </button>
 
-      <!-- 메인 소개 영역입니다. -->
-      <section class="ir-hero">
-        <h1>나만의 독서 모험</h1>
-        <p>
-          책을 읽고 질문을 만들며,<br>
-          용을 물리칠 힘을 모아봐!
-        </p>
+  <button class="ir-top-power" type="button" onclick="location.href='my-power.html'">
+    <img src="../assets/story/char-lumi-01-basic.png" alt="" />
+    나의 힘
+  </button>
+</div>
+    </header>
 
-        <div class="ir-lumi-bubble">
-          오늘도 멋진 모험을 기대할게!
-        </div>
-
-        <img
-          src="../assets/images/individual-reading/home-lumi.png"
-          alt="용사 루미"
-          class="ir-lumi"
-        >
+    <main class="ir-shell">
+      <section class="ir-title">
+        <h1>나만의 독서 모험 ✨</h1>
       </section>
 
-      <!-- 대시보드 영역입니다. -->
-      <section class="ir-dashboard">
-
-        <!-- 나의 힘 카드입니다. -->
+      <section class="ir-main-row">
         <article class="ir-card">
-          <div class="ir-card-header">
-            <h2 class="ir-card-title">나의 힘</h2>
-            <button type="button" class="ir-help-button" onclick="openIndividualPowerModal()">?</button>
+          <div class="ir-card-head">
+            <h2>나의 힘</h2>
+            <button type="button">?</button>
           </div>
 
           <div class="ir-power-body">
-  <div class="ir-radar-box">
-    <div class="ir-radar">
-      <div class="ir-radar-shape"></div>
-
-      <div class="ir-radar-label magic" id="homeRadarMagic">마법력<br>8</div>
-      <div class="ir-radar-label health" id="homeRadarStamina">체력<br>8</div>
-      <div class="ir-radar-label wisdom" id="homeRadarWisdom">지혜<br>8</div>
-      <div class="ir-radar-label courage" id="homeRadarCourage">용기<br>8</div>
-    </div>
-  </div>
-
-  <div class="ir-stat-list">
-    <div class="ir-stat-row">
-      <span>마법력</span>
-      <div class="ir-stat-bar">
-        <div class="ir-stat-fill" id="homeMagicFill" style="width: 8%;"></div>
-      </div>
-      <span id="homeMagicText">8 / 100</span>
-    </div>
-
-    <div class="ir-stat-row">
-      <span>체력</span>
-      <div class="ir-stat-bar">
-        <div class="ir-stat-fill" id="homeStaminaFill" style="width: 8%;"></div>
-      </div>
-      <span id="homeStaminaText">8 / 100</span>
-    </div>
-
-    <div class="ir-stat-row">
-      <span>지혜</span>
-      <div class="ir-stat-bar">
-        <div class="ir-stat-fill" id="homeWisdomFill" style="width: 8%;"></div>
-      </div>
-      <span id="homeWisdomText">8 / 100</span>
-    </div>
-
-    <div class="ir-stat-row">
-      <span>용기</span>
-      <div class="ir-stat-bar">
-        <div class="ir-stat-fill" id="homeCourageFill" style="width: 8%;"></div>
-      </div>
-      <span id="homeCourageText">8 / 100</span>
-    </div>
-
-    <button type="button" class="ir-method-button" onclick="goAbilityIntro()">
-      📖 능력치 모으는 방법
-    </button>
-  </div>
-</div>
-        </article>
-
-        <!-- 월별 완독 기록 카드입니다. -->
-        <article class="ir-card">
-          <div class="ir-card-header">
-            <h2 class="ir-card-title">월별 완독 기록</h2>
-            <button type="button" class="ir-help-button">?</button>
-          </div>
-
-          <div class="ir-month-chart-wrap">
-            <div class="ir-month-y-axis">
-              <span>4</span>
-              <span>3</span>
-              <span>2</span>
-              <span>1</span>
-              <span>0</span>
+            <div class="ir-radar">
+              <span class="radar-top">마법력<br />11</span>
+              <span class="radar-right">체력<br />11</span>
+              <span class="radar-bottom">지혜<br />11</span>
+              <span class="radar-left">용기<br />10</span>
+              <div class="ir-radar-core"></div>
             </div>
 
-            <div class="ir-month-plot">
-              <div class="ir-month-grid">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="ir-power-bars">
+              <div class="ir-power-row">
+                <span>마법력</span>
+                <div><i style="width: 11%"></i></div>
+                <b>11 / 100</b>
               </div>
-
-              <div class="ir-month-bars">
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">0</strong>
-                  <div class="ir-month-bar" style="height: 8px;"></div>
-                  <span class="ir-month-label">1월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">1</strong>
-                  <div class="ir-month-bar" style="height: 52px;"></div>
-                  <span class="ir-month-label">2월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">2</strong>
-                  <div class="ir-month-bar" style="height: 86px;"></div>
-                  <span class="ir-month-label">3월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">1</strong>
-                  <div class="ir-month-bar" style="height: 48px;"></div>
-                  <span class="ir-month-label">4월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">2</strong>
-                  <div class="ir-month-bar" style="height: 78px;"></div>
-                  <span class="ir-month-label">5월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">3</strong>
-                  <div class="ir-month-bar" style="height: 118px;"></div>
-                  <span class="ir-month-label">6월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">2</strong>
-                  <div class="ir-month-bar" style="height: 80px;"></div>
-                  <span class="ir-month-label">7월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">1</strong>
-                  <div class="ir-month-bar" style="height: 46px;"></div>
-                  <span class="ir-month-label">8월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">2</strong>
-                  <div class="ir-month-bar" style="height: 72px;"></div>
-                  <span class="ir-month-label">9월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">1</strong>
-                  <div class="ir-month-bar" style="height: 42px;"></div>
-                  <span class="ir-month-label">10월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">0</strong>
-                  <div class="ir-month-bar" style="height: 8px;"></div>
-                  <span class="ir-month-label">11월</span>
-                </div>
-
-                <div class="ir-month-bar-group">
-                  <strong class="ir-month-value">0</strong>
-                  <div class="ir-month-bar" style="height: 8px;"></div>
-                  <span class="ir-month-label">12월</span>
-                </div>
+              <div class="ir-power-row">
+                <span>체력</span>
+                <div><i style="width: 11%"></i></div>
+                <b>11 / 100</b>
+              </div>
+              <div class="ir-power-row">
+                <span>지혜</span>
+                <div><i style="width: 11%"></i></div>
+                <b>11 / 100</b>
+              </div>
+              <div class="ir-power-row">
+                <span>용기</span>
+                <div><i style="width: 10%"></i></div>
+                <b>10 / 100</b>
               </div>
             </div>
           </div>
         </article>
 
-        <div class="ir-bottom-grid">
+        <article class="ir-practice-card" onclick="location.href='practice.html'">
+          <img class="ir-practice-lumi" src="../assets/story/char-lumi-01-basic.png" alt="루미" />
 
-          <!-- 독서 캘린더 카드입니다. -->
-          <article class="ir-card">
-            <div class="ir-card-header">
-              <h2 class="ir-card-title">독서 캘린더</h2>
-              <button type="button" class="ir-help-button">?</button>
-            </div>
+          <div class="ir-practice-text">
+            <h2>연습읽기(온책읽기)</h2>
+            <p>생각을 나누고 답하며<br />책 읽는 것을 함께 처음 연습해요!</p>
+            <button type="button">연습 시작 ›</button>
+          </div>
+        </article>
+      </section>
 
-            <div class="ir-calendar">
-              <div class="ir-calendar-month">2025년 6월</div>
+      <section class="ir-card ir-chart-card">
+        <div class="ir-card-head">
+          <h2>월별 완독 기록</h2>
+          <button type="button">?</button>
+        </div>
 
-              <div class="ir-calendar-grid">
-                <div class="ir-day-name">일</div>
-                <div class="ir-day-name">월</div>
-                <div class="ir-day-name">화</div>
-                <div class="ir-day-name">수</div>
-                <div class="ir-day-name">목</div>
-                <div class="ir-day-name">금</div>
-                <div class="ir-day-name">토</div>
+        <div class="ir-chart-body">
+          <div class="ir-chart-y">
+            <span>4</span>
+            <span>3</span>
+            <span>2</span>
+            <span>1</span>
+            <span>0</span>
+          </div>
 
-                <div class="ir-day">1</div>
-                <div class="ir-day read">2</div>
-                <div class="ir-day">3</div>
-                <div class="ir-day">4</div>
-                <div class="ir-day read">5</div>
-                <div class="ir-day read">6</div>
-                <div class="ir-day">7</div>
-
-                <div class="ir-day">8</div>
-                <div class="ir-day read">9</div>
-                <div class="ir-day">10</div>
-                <div class="ir-day">11</div>
-                <div class="ir-day">12</div>
-                <div class="ir-day read">13</div>
-                <div class="ir-day">14</div>
-
-                <div class="ir-day">15</div>
-                <div class="ir-day">16</div>
-                <div class="ir-day">17</div>
-                <div class="ir-day read">18</div>
-                <div class="ir-day">19</div>
-                <div class="ir-day">20</div>
-                <div class="ir-day read">21</div>
-
-                <div class="ir-day">22</div>
-                <div class="ir-day">23</div>
-                <div class="ir-day">24</div>
-                <div class="ir-day">25</div>
-                <div class="ir-day read">26</div>
-                <div class="ir-day">27</div>
-                <div class="ir-day">28</div>
-
-                <div class="ir-day">29</div>
-                <div class="ir-day">30</div>
-                <div class="ir-day"></div>
-                <div class="ir-day"></div>
-                <div class="ir-day"></div>
-                <div class="ir-day"></div>
-                <div class="ir-day"></div>
-              </div>
-            </div>
-          </article>
-
-          <!-- 독서 현황 카드입니다. -->
-          <article class="ir-card">
-            <div class="ir-card-header">
-              <h2 class="ir-card-title">독서 현황</h2>
-              <button type="button" class="ir-help-button">?</button>
-            </div>
-
-            <div class="ir-book-status">
-              <div class="ir-book-cover">아몬드</div>
-
-              <div class="ir-book-info">
-                <p>지금 읽고 있는 책</p>
-                <h3>아몬드</h3>
-                <span>감정을 느끼지 못하는 소년의 특별한 성장 이야기</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- 기능 버튼 카드입니다. -->
-          <article class="ir-card">
-            <div class="ir-menu-grid">
-  <!-- 루미가 질문을 던지고, 답변을 바탕으로 책을 추천해주는 화면입니다. -->
-  <button type="button" class="ir-menu-button" onclick="goBookRecommend()">
-    <strong>책 추천 받기</strong>
-    <span>나에게 맞는 책 찾기</span>
-  </button>
-
-  <!-- 친구들이 추천한 책을 보고, 나도 책을 추천할 수 있는 책장입니다. -->
-  <button type="button" class="ir-menu-button" onclick="goFriendBookShelf()">
-    <strong>우리 반 추천 책장</strong>
-    <span>친구 추천 책 보고 나도 추천하기</span>
-  </button>
-
-  <!-- 개별읽기에서 읽기 전, 읽기 중, 읽기 후 활동을 이어가는 핵심 버튼입니다. -->
-  <button type="button" class="ir-menu-button featured" onclick="goTodayReadingAdventure()">
-    <strong>오늘의 독서 모험</strong>
-    <span>읽기 전·중·후 활동하기</span>
-  </button>
-
-  <!-- 능력치를 모아 용과 대결하는 게임 화면으로 이동합니다. -->
- <button type="button" class="ir-menu-button" onclick="goDungeon()">
-  <strong>던전 입장</strong>
-  <span>용과의 대결 준비하기</span>
-</button>
-
- <!-- 내가 읽은 책과 독서 기록을 모아보는 공간입니다. -->
-<button type="button" class="ir-menu-button wide" onclick="goReadingArchive()">
-  <strong>나의 독서 보관함</strong>
-  <span>내가 읽은 책과 기록 보기</span>
-</button>
-</div>
-          </article>
+          <div class="ir-chart-plot">
+            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>1월</span></div>
+            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>2월</span></div>
+            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>3월</span></div>
+            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>4월</span></div>
+            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>5월</span></div>
+            <div class="ir-bar" style="--h: 112px"><em>3</em><b style="height: 112px"></b><span>6월</span></div>
+            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>7월</span></div>
+            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>8월</span></div>
+            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>9월</span></div>
+            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>10월</span></div>
+            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>11월</span></div>
+            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>12월</span></div>
+          </div>
         </div>
       </section>
 
-      <p class="ir-footer-note">
-        ✦ 책을 읽고 질문을 만들수록, 나의 힘이 자라서 멋진 모험을 할 수 있어! ✦
-      </p>
-    </div>
+      <section class="ir-flow">
+        <button class="ir-flow-card" type="button" onclick="location.href='book-recommend.html'">
+          <img src="../assets/images/individual-reading/home/고풍스러운_필기_도구와_책.png" alt="" />
+          <span class="ir-flow-text">
+            <strong>책 추천 받기</strong>
+          </span>
+          <i class="ir-card-arrow">›</i>
+        </button>
 
-       
-  </main>
+        <div class="ir-flow-arrow">›</div>
 
- <script src="../js/auth.js"></script>
-<script src="../js/individual-power.js?v=power-common-1"></script>
+        <button class="ir-flow-card" type="button" onclick="location.href='today-reading-adventure.html'">
+          <img src="../assets/images/individual-reading/home/마법의_나침반_장식.png" alt="" />
+          <span class="ir-flow-text">
+            <strong>오늘의 독서 모험</strong>
+          </span>
+          <i class="ir-card-arrow">›</i>
+        </button>
 
-<script>
-    /*
-      개별읽기 화면은 로그인이 필요한 화면입니다.
-      지금은 화면 디자인 확인 중이라 로그인 체크를 잠시 꺼둡니다.
-      실제 연결 단계에서는 checkLogin();으로 다시 켭니다.
-    */
-    // checkLogin();
+        <div class="ir-flow-arrow">›</div>
 
-    /*
-      임시 능력치 보상 기준입니다.
-      게임 밸런스가 확정되면 나중에 다시 조정합니다.
+        <button class="ir-flow-card ir-dungeon" type="button" onclick="location.href='../../game/index.html'">
+          <img src="../assets/images/individual-reading/home/고대_던전의_석문.png" alt="" />
+          <span class="ir-flow-text">
+            <strong>던전 입장</strong>
+          </span>
+          <i class="ir-card-arrow">›</i>
+        </button>
+      </section>
+    </main>
+  </div>
 
-      1. 연습읽기 완료 보상
-         - 읽기 후 간추리기 활동까지 모두 끝내면 네 능력치 +8
-
-      2. 개별읽기 보상 후보
-         - 오늘 독서 참여: 체력 +2, 용기 +1
-         - 책 속 생각쓰기 완료: 마법력 +3, 지혜 +2
-         - 오늘의 독서 모험 완료: 마법력 +3, 체력 +2, 지혜 +3, 용기 +2
-         - 한 권 완독 후 기록 완료: 마법력 +5, 체력 +5, 지혜 +5, 용기 +5
-    */
-
-    /* 홈 화면으로 돌아갑니다. */
-    function goHome() {
-      window.location.href = "./home.html";
-    }
-
-    /* 능력치 모으는 방법 화면으로 이동합니다. */
-    function goAbilityIntro() {
-      window.location.href = "./individual-ability-guide.html";
-    }
-
-    /* 현재까지 모은 나의 힘 확인창을 엽니다. */
-    
-    /*
-  책 추천 받기 화면으로 이동합니다.
-*/
-function goBookRecommend() {
-  window.location.href = "./book-recommend.html";
-}
-
-/*
-  우리 반 추천 책장 화면으로 이동합니다.
-  친구들이 추천한 책을 보고, 나도 책을 추천할 수 있는 화면입니다.
-*/
-function goFriendBookShelf() {
-  window.location.href = "./friend-book-shelf.html";
-}
-
-/*
-  오늘의 독서 모험 화면으로 이동합니다.
-  개별읽기에서 읽기 전, 읽기 중, 읽기 후 활동을 진행할 화면입니다.
-*/
-function goTodayReadingAdventure() {
-  window.location.href = "./today-reading-adventure.html";
-}
-/*
-  나의 독서 보관함 화면으로 이동합니다.
-  읽은 책과 읽기 전·중·후 질문, 간추린 내용을 책별로 확인하는 화면입니다.
-*/
-function goReadingArchive() {
-  window.location.href = "./individual-reading-archive.html";
-}
-/*
-  메인화면 나의 힘 카드도 공통 능력치 저장소와 연동합니다.
-  팝업에서 보이는 값과 메인 카드의 값이 같아지도록 합니다.
-*/
-/*
-  메인화면 나의 힘 카드도 공통 능력치 저장소와 연동합니다.
-  팝업에서 보이는 값과 메인 카드의 값이 같아지도록 합니다.
-*/
-/*
-  던전 화면으로 이동합니다.
-  개별읽기에서 모은 능력치를 바탕으로 용과 대결하는 게임 화면입니다.
-*/
-function goDungeon() {
-  window.location.href = "../../game/index.html";
-}
-function renderHomePowerState() {
-  const power =
-    typeof getIndividualPowerState === "function"
-      ? getIndividualPowerState()
-      : {
-          magic: 8,
-          stamina: 8,
-          wisdom: 8,
-          courage: 8
-        };
-
-  const safePower = {
-    magic: Math.max(0, Math.min(100, Number(power.magic || 8))),
-    stamina: Math.max(0, Math.min(100, Number(power.stamina || 8))),
-    wisdom: Math.max(0, Math.min(100, Number(power.wisdom || 8))),
-    courage: Math.max(0, Math.min(100, Number(power.courage || 8)))
-  };
-
-  updateHomePowerItem("Magic", "마법력", safePower.magic);
-  updateHomePowerItem("Stamina", "체력", safePower.stamina);
-  updateHomePowerItem("Wisdom", "지혜", safePower.wisdom);
-  updateHomePowerItem("Courage", "용기", safePower.courage);
-  updateHomeRadarShape(safePower);
-}
-
-function updateHomePowerItem(idName, label, value) {
-  const radar = document.getElementById("homeRadar" + idName);
-  const fill = document.getElementById("home" + idName + "Fill");
-  const text = document.getElementById("home" + idName + "Text");
-
-  if (radar) {
-    radar.innerHTML = label + "<br>" + value;
-  }
-
-  if (fill) {
-    fill.style.width = value + "%";
-  }
-
-  if (text) {
-    text.textContent = value + " / 100";
-  }
-}
-
-function updateHomeRadarShape(power) {
-  const shape = document.querySelector(".ir-radar-shape");
-
-  if (!shape) return;
-
-  /*
-    기본 8이어도 도형이 너무 작지 않게 baseMove를 줍니다.
-    능력치가 오를수록 각 방향으로 더 커집니다.
-  */
-  const baseMove = 16;
-  const maxMove = 42;
-
-  const magicPoint = 50 - baseMove - (power.magic / 100) * maxMove;
-  const staminaPoint = 50 + baseMove + (power.stamina / 100) * maxMove;
-  const wisdomPoint = 50 + baseMove + (power.wisdom / 100) * maxMove;
-  const couragePoint = 50 - baseMove - (power.courage / 100) * maxMove;
-
-  shape.style.clipPath = `
-    polygon(
-      50% ${magicPoint}%,
-      ${staminaPoint}% 50%,
-      50% ${wisdomPoint}%,
-      ${couragePoint}% 50%
-    )
-  `;
-}
-
-renderHomePowerState();
-
-window.addEventListener("individualPowerUpdated", function () {
-  renderHomePowerState();
-});
-  </script>
+  <script src="../js/auth.js"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

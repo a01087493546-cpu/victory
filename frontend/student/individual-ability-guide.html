@@ -4,7 +4,7 @@
 
   화면 구성:
   1. 제목: 질문으로 기르는 네 가지 힘
-  2. 마법력, 체력, 지혜, 용기 능력치 설명 카드
+  2. 마법력, 체력, 지혜, 용기 능력치 설명 카드를 한 장씩 안내
   3. 학생 홈으로 이동하는 시작 버튼
 
   저작권/출처:
@@ -44,16 +44,22 @@
         질문으로 네 가지 힘을 길러요
       </h1>
 
-      <p class="ability-desc">
-        문답책에서는 책을 읽고 질문을 만들 때마다 용사의 능력이 자라납니다.<br>
-        각 능력은 던전에서 용을 상대할 때 다른 힘으로 사용됩니다.
+      <div class="ability-progress" aria-label="능력치 안내 진행 상태">
+        <span class="ability-progress-dot is-active"></span>
+        <span class="ability-progress-dot"></span>
+        <span class="ability-progress-dot"></span>
+        <span class="ability-progress-dot"></span>
+      </div>
+
+      <p class="ability-step-label" id="abilityStepLabel">
+        1 / 4
       </p>
 
-            <!-- 능력치 목록입니다. -->
-      <div class="ability-grid">
+      <!-- 능력치 목록입니다. -->
+      <div class="ability-grid ability-slider">
 
         <!-- 마법력 설명입니다. -->
-        <article class="ability-card">
+        <article class="ability-card is-active">
 
           <!-- 마법력 아이콘 이미지입니다. -->
           <div class="ability-icon">
@@ -64,11 +70,6 @@
             마법력
           </h2>
 
-          <!-- 학생이 이해하기 쉽도록 능력의 의미를 짧게 설명합니다. -->
-          <p class="ability-meaning">
-            좋은 질문을 만드는 힘이에요.
-        </p>
-
           <!-- 능력이 어떻게 올라가는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>어떻게 올라가요?</strong>
@@ -78,7 +79,7 @@
           <!-- 던전에서 어떤 효과가 있는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>던전에서는?</strong>
-            <p>기본 공격보다 더 센 공격을 할 수 있어요.</p>
+            <p>기본 베기와 연속 공격이 더 힘있어져요.</p>
           </div>
 
           <!-- 게임 수치 변화입니다. -->
@@ -97,11 +98,6 @@
             체력
           </h2>
 
-          <!-- 학생이 이해하기 쉽도록 능력의 의미를 짧게 설명합니다. -->
-          <p class="ability-meaning">
-            책을 끝까지 읽고, 내용을 간추리며 쌓는 힘이에요.
-          </p>
-
           <!-- 능력이 어떻게 올라가는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>어떻게 올라가요?</strong>
@@ -111,7 +107,7 @@
           <!-- 던전에서 어떤 효과가 있는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>던전에서는?</strong>
-            <p>체력이 길어져서 용의 공격을 좀 더 오래 버틸 수 있어요.</p>
+            <p>생명력이 늘어나서 용의 공격을 더 오래 버틸 수 있어요.</p>
           </div>
 
           <!-- 게임 수치 변화입니다. -->
@@ -130,11 +126,6 @@
             지혜
           </h2>
 
-          <!-- 학생이 이해하기 쉽도록 능력의 의미를 짧게 설명합니다. -->
-          <p class="ability-meaning">
-            질문을 더 깊고 정확하게 다듬는 힘이에요.
-          </p>
-
           <!-- 능력이 어떻게 올라가는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>어떻게 올라가요?</strong>
@@ -144,7 +135,7 @@
           <!-- 던전에서 어떤 효과가 있는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>던전에서는?</strong>
-            <p>센 공격을 다시 쓸 때까지 기다리는 시간이 줄어들어요.</p>
+            <p>강한 공격과 초강력 필살기를 더 잘 쓸 수 있어요.</p>
           </div>
 
           <!-- 게임 수치 변화입니다. -->
@@ -163,11 +154,6 @@
             용기
           </h2>
 
-          <!-- 학생이 이해하기 쉽도록 능력의 의미를 짧게 설명합니다. -->
-          <p class="ability-meaning">
-            내 질문과 생각을 친구들과 나누며 쌓는 힘이에요.
-          </p>
-
           <!-- 능력이 어떻게 올라가는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>어떻게 올라가요?</strong>
@@ -177,7 +163,7 @@
           <!-- 던전에서 어떤 효과가 있는지 설명합니다. -->
           <div class="ability-info-box">
             <strong>던전에서는?</strong>
-            <p>용의 공격을 막아주는 방어 기능이 열려요.</p>
+            <p>방어와 철벽으로 용의 공격을 막을 수 있어요.</p>
           </div>
 
           <!-- 게임 수치 변화입니다. -->
@@ -185,10 +171,16 @@
         </article>
 
       </div>
-     <!-- 개별읽기 메인 화면으로 돌아가는 버튼입니다. -->
-<button type="button" class="ability-start-button" onclick="goIndividualReading()">
-  모험 준비 완료
-</button>
+      <div class="ability-actions">
+        <button type="button" class="ability-nav-button" id="abilityPrevButton">
+          이전
+        </button>
+
+        <!-- 개별읽기 메인 화면으로 돌아가는 버튼입니다. -->
+        <button type="button" class="ability-start-button" id="abilityNextButton">
+          다음
+        </button>
+      </div>
 
     </section>
   </main>
@@ -212,6 +204,47 @@
 function goIndividualReading() {
   window.location.href = "./individual-reading.html";
 }
+
+const abilityCards = Array.from(document.querySelectorAll(".ability-card"));
+const abilityDots = Array.from(document.querySelectorAll(".ability-progress-dot"));
+const abilityStepLabel = document.getElementById("abilityStepLabel");
+const abilityPrevButton = document.getElementById("abilityPrevButton");
+const abilityNextButton = document.getElementById("abilityNextButton");
+let abilityIndex = 0;
+
+function renderAbilityStep() {
+  abilityCards.forEach((card, index) => {
+    card.classList.toggle("is-active", index === abilityIndex);
+  });
+
+  abilityDots.forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === abilityIndex);
+  });
+
+  abilityStepLabel.textContent = `${abilityIndex + 1} / ${abilityCards.length}`;
+  abilityPrevButton.disabled = abilityIndex === 0;
+  abilityNextButton.textContent =
+    abilityIndex === abilityCards.length - 1 ? "모험 준비 완료" : "다음";
+}
+
+abilityPrevButton.addEventListener("click", () => {
+  if (abilityIndex > 0) {
+    abilityIndex -= 1;
+    renderAbilityStep();
+  }
+});
+
+abilityNextButton.addEventListener("click", () => {
+  if (abilityIndex < abilityCards.length - 1) {
+    abilityIndex += 1;
+    renderAbilityStep();
+    return;
+  }
+
+  goIndividualReading();
+});
+
+renderAbilityStep();
   </script>
   <script src="../js/fixed-stage.js"></script>
 </body>

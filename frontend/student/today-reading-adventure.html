@@ -702,6 +702,127 @@
       padding: 12px 18px !important;
       font-size: 17px !important;
     }
+
+    /* 화면 최종 정리: 상단 설명을 제거하고 3단계 카드를 크게 배치합니다. */
+    .tra-content-card {
+      grid-template-rows: auto auto !important;
+      padding: 40px 42px !important;
+      align-content: center !important;
+      row-gap: 28px !important;
+    }
+
+    .tra-header,
+    .tra-bottom-note {
+      display: none !important;
+    }
+
+    .tra-adventure-title {
+      align-self: auto !important;
+      margin: 0 !important;
+      font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+      color: #4d2b10 !important;
+      font-size: 54px !important;
+      font-weight: 900 !important;
+      line-height: 1.08 !important;
+      letter-spacing: -0.06em !important;
+      text-align: left !important;
+    }
+
+    .tra-stage-grid {
+      height: auto !important;
+      padding: 0 !important;
+      gap: 28px !important;
+      align-items: center !important;
+    }
+
+    .tra-stage-button {
+      width: 100% !important;
+      height: 430px !important;
+      min-height: 0 !important;
+      padding: 28px 30px 30px !important;
+      border-radius: 34px !important;
+      display: grid !important;
+      grid-template-rows: 50px 150px auto 60px !important;
+      align-items: center !important;
+      justify-items: center !important;
+      gap: 18px !important;
+      text-align: center !important;
+    }
+
+    .tra-stage-number {
+      width: 50px !important;
+      height: 50px !important;
+      margin: 0 !important;
+      font-size: 19px !important;
+    }
+
+    .tra-stage-icon {
+      width: 150px !important;
+      height: 150px !important;
+      margin: 0 !important;
+      border-radius: 30px !important;
+    }
+
+    .tra-stage-icon img {
+      width: 126px !important;
+      height: 126px !important;
+    }
+
+    .tra-stage-text {
+      width: 100% !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+      flex: none !important;
+      display: grid !important;
+      place-items: center !important;
+    }
+
+    .tra-stage-button h2 {
+      margin: 0 !important;
+      font-size: 40px !important;
+      line-height: 1.12 !important;
+    }
+
+    .tra-stage-button p {
+      display: none !important;
+    }
+
+    .tra-stage-state {
+      width: 100% !important;
+      height: 60px !important;
+      margin: 0 !important;
+      align-self: end !important;
+      font-size: 21px !important;
+    }
+
+    .tra-lumi-card {
+      padding: 34px 26px 24px !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      justify-items: center !important;
+      align-items: stretch !important;
+    }
+
+    .tra-lumi-bubble {
+      width: 100% !important;
+      max-width: 300px !important;
+      margin: 0 auto !important;
+      min-height: 104px !important;
+      padding: 22px 18px !important;
+      font-size: 19px !important;
+    }
+
+    .tra-lumi-wrap {
+      width: 100% !important;
+      justify-content: center !important;
+      align-items: flex-end !important;
+    }
+
+    .tra-lumi {
+      width: 300px !important;
+      max-height: 560px !important;
+      margin: 0 auto !important;
+    }
   </style>
 </head>
 
@@ -717,28 +838,14 @@
         <div class="tra-top-actions">
           <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="tra-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          <button type="button" class="tra-top-button" onclick="goIndividualReading()">개별읽기 홈</button>
+          <button type="button" class="tra-top-button" onclick="goIndividualReading()">책읽기 홈</button>
          
         </div>
       </header>
 
       <section class="tra-main">
         <article class="tra-content-card">
-          <div class="tra-header">
-            <div>
-              <p class="tra-kicker">오늘의 독서 모험</p>
-              <h1>오늘의 독서 모험을<br>떠나볼까요?</h1>
-              <p>
-                루미와 함께 이번 책 속으로 들어가 봐요.<br>
-                먼저 읽기 전 질문을 만들고, 책을 읽으며 떠오른 생각을 모아 봐요.
-              </p>
-            </div>
-
-            <div class="tra-book-status">
-              <span>지금 읽고 있는 책</span>
-              <strong id="currentBookTitle">아직 정하지 않았어요</strong>
-            </div>
-          </div>
+          <h1 class="tra-adventure-title">오늘의 독서 모험을 떠나볼까요?</h1>
 
           <div class="tra-stage-grid" id="stageGrid"></div>
 
@@ -788,7 +895,7 @@
         number: "01",
         title: "읽기 전",
         iconImage: "../assets/images/individual-reading/today-reading-before-icon.png",
-        desc: "읽을 책을 정하고, 책을 읽기 전에 궁금한 질문을 만들어요.",
+        desc: "",
         activeLabel: "시작하기",
         doneLabel: "완료",
         lockedLabel: "먼저 시작하세요",
@@ -799,7 +906,7 @@
         number: "02",
         title: "읽기 중",
         iconImage: "../assets/images/individual-reading/today-reading-during-icon.png",
-        desc: "책을 읽으면서 떠오른 질문과 생각을 기록해요.",
+        desc: "",
         activeLabel: "이어서 하기",
         doneLabel: "완료",
         lockedLabel: "읽기 전 완료 필요",
@@ -810,7 +917,7 @@
         number: "03",
         title: "읽기 후",
         iconImage: "../assets/images/individual-reading/today-reading-after-icon.png",
-        desc: "책을 다 읽고 중요한 내용과 내 생각을 정리해요.",
+        desc: "",
         activeLabel: "정리하기",
         doneLabel: "완료",
         lockedLabel: "읽기 중 완료 필요",
@@ -855,14 +962,16 @@
     }
 
     function renderAdventure() {
-      renderBookStatus();
       renderStageCards();
       renderLumiGuide();
     }
 
     function renderBookStatus() {
       const bookTitle = getCurrentBookTitle();
-      document.getElementById("currentBookTitle").textContent = bookTitle || "아직 정하지 않았어요";
+      const currentBookTitle = document.getElementById("currentBookTitle");
+      if (currentBookTitle) {
+        currentBookTitle.textContent = bookTitle || "";
+      }
     }
 
     function renderStageCards() {
@@ -892,7 +1001,7 @@
           </div>
           <div class="tra-stage-text">
             <h2>${stage.title}</h2>
-            <p>${stage.desc}</p>
+            ${stage.desc ? `<p>${stage.desc}</p>` : ""}
           </div>
           <div class="tra-stage-state">${stateLabel}</div>
         `;
