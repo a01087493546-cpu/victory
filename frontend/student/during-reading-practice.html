@@ -1,49 +1,72 @@
 <!--
   파일명: during-reading-practice.html
-  역할: 문답책 프로젝트 - 읽기 중 질문 종류별 연습 화면입니다.
-
-  구현 범위:
-  1. 질문 종류 선택 화면
-  2. 방법 알기 화면
-  3. 기본 연습 화면
-  4. 심화 연습 화면
-
-  공식 표기:
-  - 화면에는 반드시 '문답책' 또는 '문답책 프로젝트'를 사용합니다.
-  - 공식명은 '문답책'만 사용합니다.
+  역할: 문답책 프로젝트 - 읽기 중 질문 종류별 연습 화면
+  반영 내용:
+  1. undefined 삭제
+  2. 문답책 질문 지도 버튼 삭제
+  3. 총복습 안내 문장 삭제
+  4. 각 유형별 기본 연습 2문제
+  5. 각 유형별 심화 연습 2문제
+  6. 방법 알기 화면: 왼쪽 8 / 오른쪽 2 비율
+  7. 오른쪽 예시 보기 버튼 + 보조창
+  8. 예시 문장 → 관련 질문 구조
+  9. 다음 예시 버튼
+  10. 전체 글씨 크기, 문제 글씨, 버튼 글씨 크게 조정
 -->
 
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>문답책 - 읽기 중 질문 연습</title>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
 
     body {
       min-height: 100vh;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #fff1d0;
       background:
-        linear-gradient(rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.72)),
+        linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.76)),
         url("../assets/images/during-reading/intro/during-reading-practice-bg.png");
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    button, textarea { font-family: inherit; }
-    button { cursor: pointer; }
+    button,
+    textarea {
+      font-family: inherit;
+    }
 
-    .page { min-height: 100vh; padding: 24px 38px 30px; }
-    .page-inner { max-width: 1480px; margin: 0 auto; }
+    button {
+      cursor: pointer;
+    }
+
+    .page {
+  height: 100vh;
+  padding: 18px 38px 18px;
+  overflow: hidden;
+}
+
+    .page-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
 
     .top-bar {
       display: flex;
@@ -58,42 +81,48 @@
       gap: 12px;
       font-family: "Noto Serif KR", serif;
       color: #fff4d8;
-      font-size: 29px;
+      font-size: 31px;
       font-weight: 900;
       text-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
     }
 
     .logo-area img {
-      width: 62px;
-      height: 62px;
+      width: 64px;
+      height: 64px;
       object-fit: contain;
       filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
     }
 
     .nav-button {
-      border: 1px solid rgba(218, 160, 65, 0.45);
+      border: 1px solid rgba(218, 160, 65, 0.5);
       border-radius: 999px;
-      padding: 13px 24px;
+      padding: 15px 28px;
       background: rgba(25, 17, 10, 0.72);
       color: #fff0cf;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 900;
       box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
     }
 
-    .nav-button:hover { transform: translateY(-2px); background: rgba(69, 44, 22, 0.82); }
+    .nav-button:hover {
+      transform: translateY(-2px);
+      background: rgba(69, 44, 22, 0.82);
+    }
 
     .hero-card {
-      position: relative;
-      min-height: 720px;
-      overflow: hidden;
-      border-radius: 34px;
-      border: 1px solid rgba(218, 160, 65, 0.48);
-      background:
-        radial-gradient(circle at 50% 8%, rgba(221, 158, 55, 0.13), transparent 34%),
-        linear-gradient(180deg, rgba(15, 12, 9, 0.78), rgba(4, 4, 3, 0.86));
-      box-shadow: 0 36px 80px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 230, 166, 0.08);
-    }
+  position: relative;
+  height: calc(100vh - 112px);
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 34px;
+  border: 1px solid rgba(218, 160, 65, 0.48);
+  background:
+    radial-gradient(circle at 50% 8%, rgba(221, 158, 55, 0.13), transparent 34%),
+    linear-gradient(180deg, rgba(15, 12, 9, 0.78), rgba(4, 4, 3, 0.86));
+  box-shadow:
+    0 36px 80px rgba(0, 0, 0, 0.58),
+    inset 0 1px 0 rgba(255, 230, 166, 0.08);
+}
 
     .hero-card::before {
       content: "";
@@ -106,7 +135,13 @@
       z-index: 0;
     }
 
-    .screen { position: relative; z-index: 1; padding: 38px 58px 48px; }
+    .screen {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 28px 52px 30px;
+  overflow: hidden;
+}
 
     .screen-title-row {
       display: flex;
@@ -119,12 +154,12 @@
     .title-badge {
       display: inline-block;
       margin-bottom: 14px;
-      padding: 9px 20px;
+      padding: 10px 22px;
       border-radius: 999px;
       background: linear-gradient(180deg, #d8a84c, #8d551a);
       border: 1px solid rgba(255, 220, 142, 0.6);
       color: #fff3d0;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 900;
       box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
     }
@@ -132,35 +167,37 @@
     .main-title {
       font-family: "Noto Serif KR", serif;
       color: #fff3d4;
-      font-size: 43px;
+      font-size: 48px;
       font-weight: 900;
       line-height: 1.24;
       letter-spacing: -1.4px;
       word-break: keep-all;
-      text-shadow: 0 3px 0 rgba(51, 29, 9, 0.9), 0 10px 24px rgba(0, 0, 0, 0.7);
+      text-shadow:
+        0 3px 0 rgba(51, 29, 9, 0.9),
+        0 10px 24px rgba(0, 0, 0, 0.7);
     }
 
     .main-desc {
       margin-top: 15px;
-      color: rgba(255, 228, 186, 0.9);
-      font-size: 18px;
+      color: rgba(255, 228, 186, 0.95);
+      font-size: 22px;
       font-weight: 850;
-      line-height: 1.65;
+      line-height: 1.6;
       word-break: keep-all;
     }
 
     .progress-pill {
       flex-shrink: 0;
-      padding: 14px 22px;
+      padding: 16px 25px;
       border-radius: 999px;
       background: rgba(9, 7, 5, 0.68);
       border: 1px solid rgba(214, 154, 60, 0.5);
       color: #f2cf82;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 900;
     }
 
-    /* 질문 종류 선택 화면 */
+    /* 질문 종류 선택 */
     .question-map {
       position: relative;
       display: grid;
@@ -169,40 +206,82 @@
       min-height: 500px;
       padding: 20px;
       border-radius: 28px;
-      background: radial-gradient(circle at 50% 50%, rgba(222, 159, 49, 0.16), transparent 26%), linear-gradient(180deg, rgba(12, 10, 8, 0.74), rgba(4, 4, 3, 0.8));
+      background:
+        radial-gradient(circle at 50% 50%, rgba(222, 159, 49, 0.16), transparent 26%),
+        linear-gradient(180deg, rgba(12, 10, 8, 0.74), rgba(4, 4, 3, 0.8));
       border: 1px solid rgba(198, 138, 50, 0.36);
-      box-shadow: 0 28px 58px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 223, 158, 0.08);
+      box-shadow:
+        0 28px 58px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 223, 158, 0.08);
     }
 
     .question-cell {
       position: relative;
       min-height: 230px;
-      padding: 30px 34px 80px;
+      padding: 30px 34px 86px;
       overflow: hidden;
       border: 1px solid rgba(185, 125, 43, 0.34);
-      background: radial-gradient(circle at 82% 26%, rgba(222, 158, 44, 0.14), transparent 26%), linear-gradient(180deg, rgba(19, 16, 13, 0.78), rgba(5, 5, 4, 0.84));
-      box-shadow: inset 0 1px 0 rgba(255, 231, 168, 0.06), 0 14px 28px rgba(0, 0, 0, 0.35);
+      background:
+        radial-gradient(circle at 82% 26%, rgba(222, 158, 44, 0.14), transparent 26%),
+        linear-gradient(180deg, rgba(19, 16, 13, 0.78), rgba(5, 5, 4, 0.84));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 231, 168, 0.06),
+        0 14px 28px rgba(0, 0, 0, 0.35);
       color: #fff1ce;
       text-align: left;
       transition: 0.2s ease;
     }
 
-    .question-cell:nth-child(1) { border-radius: 24px 8px 8px 8px; }
-    .question-cell:nth-child(2) { border-radius: 8px 24px 8px 8px; }
-    .question-cell:nth-child(3) { border-radius: 8px 8px 8px 24px; }
-    .question-cell:nth-child(4) { border-radius: 8px 8px 24px 8px; }
+    .question-cell:nth-child(1) {
+      border-radius: 24px 8px 8px 8px;
+    }
+
+    .question-cell:nth-child(2) {
+      border-radius: 8px 24px 8px 8px;
+    }
+
+    .question-cell:nth-child(3) {
+      border-radius: 8px 8px 8px 24px;
+    }
+
+    .question-cell:nth-child(4) {
+      border-radius: 8px 8px 24px 8px;
+    }
 
     .question-cell.open {
       border-color: rgba(255, 211, 112, 0.95);
-      background: radial-gradient(circle at 82% 25%, rgba(255, 189, 55, 0.28), transparent 28%), radial-gradient(circle at 12% 82%, rgba(189, 116, 24, 0.24), transparent 32%), linear-gradient(180deg, rgba(74, 48, 18, 0.82), rgba(18, 12, 7, 0.9));
-      box-shadow: inset 0 0 0 2px rgba(236, 181, 72, 0.24), 0 0 34px rgba(230, 164, 42, 0.34), 0 20px 40px rgba(0, 0, 0, 0.48);
+      background:
+        radial-gradient(circle at 82% 25%, rgba(255, 189, 55, 0.28), transparent 28%),
+        radial-gradient(circle at 12% 82%, rgba(189, 116, 24, 0.24), transparent 32%),
+        linear-gradient(180deg, rgba(74, 48, 18, 0.82), rgba(18, 12, 7, 0.9));
+      box-shadow:
+        inset 0 0 0 2px rgba(236, 181, 72, 0.24),
+        0 0 34px rgba(230, 164, 42, 0.34),
+        0 20px 40px rgba(0, 0, 0, 0.48);
     }
 
-    .question-cell.open:hover { transform: translateY(-4px); }
-    .question-cell.locked { opacity: 0.46; filter: grayscale(0.55) brightness(0.7); cursor: not-allowed; }
-    .question-cell.done { border-color: rgba(156, 216, 118, 0.7); }
+    .question-cell.open:hover {
+      transform: translateY(-4px);
+    }
 
-    .cell-number { position: relative; z-index: 3; margin-bottom: 12px; color: #d8a851; font-size: 16px; font-weight: 900; }
+    .question-cell.locked {
+      opacity: 0.46;
+      filter: grayscale(0.55) brightness(0.7);
+      cursor: not-allowed;
+    }
+
+    .question-cell.done {
+      border-color: rgba(156, 216, 118, 0.7);
+    }
+
+    .cell-number {
+      position: relative;
+      z-index: 3;
+      margin-bottom: 12px;
+      color: #d8a851;
+      font-size: 18px;
+      font-weight: 900;
+    }
 
     .cell-icon-img {
       position: absolute;
@@ -212,52 +291,47 @@
       height: 126px;
       object-fit: contain;
       opacity: 0.92;
-      filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(224, 158, 45, 0.24));
+      filter:
+        drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55))
+        drop-shadow(0 0 18px rgba(224, 158, 45, 0.24));
     }
 
     .cell-title {
       position: relative;
       z-index: 3;
-      max-width: 60%;
+      max-width: 64%;
       margin-top: 18px;
       color: #fff1ca;
       font-family: "Noto Serif KR", serif;
-      font-size: 27px;
+      font-size: 30px;
       font-weight: 900;
       line-height: 1.42;
       letter-spacing: -0.9px;
       word-break: keep-all;
-      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.72), 0 0 14px rgba(224, 158, 45, 0.18);
-    }
-
-    .cell-desc {
-      position: relative;
-      z-index: 3;
-      max-width: 58%;
-      margin-top: 12px;
-      color: rgba(255, 228, 184, 0.86);
-      font-size: 15px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
+      text-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.72),
+        0 0 14px rgba(224, 158, 45, 0.18);
     }
 
     .cell-state {
       position: absolute;
       left: 34px;
       bottom: 26px;
-      width: 210px;
-      padding: 12px 10px;
+      width: 250px;
+      padding: 16px 13px;
       border-radius: 999px;
       background: rgba(8, 6, 4, 0.76);
       border: 1px solid rgba(201, 139, 52, 0.44);
       color: #cdb37a;
-      font-size: 15px;
+      font-size: 19px;
       font-weight: 900;
       text-align: center;
     }
 
-    .question-cell.open .cell-state { background: linear-gradient(180deg, #dca64a, #8b551a); color: #fff4d4; }
+    .question-cell.open .cell-state {
+      background: linear-gradient(180deg, #dca64a, #8b551a);
+      color: #fff4d4;
+    }
 
     .question-core {
       position: absolute;
@@ -273,309 +347,131 @@
       text-align: center;
       background: radial-gradient(circle at 42% 26%, #f5d38a 0%, #9a641f 55%, #251306 100%);
       border: 1px solid rgba(255, 211, 114, 0.9);
-      box-shadow: 0 0 42px rgba(226, 163, 42, 0.52), 0 18px 38px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 246, 210, 0.26);
+      box-shadow:
+        0 0 42px rgba(226, 163, 42, 0.52),
+        0 18px 38px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 246, 210, 0.26);
       color: #fff1c8;
       font-family: "Noto Serif KR", serif;
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 900;
       line-height: 1.35;
     }
 
-    .question-core span { display: block; margin-top: 5px; color: #ffd56f; font-size: 34px; text-shadow: 0 0 18px rgba(255, 204, 76, 0.85); }
-/* =========================================================
-   총 복습으로 가는 버튼
-   - 4가지 질문 종류를 모두 연습한 뒤 열리는 마지막 관문입니다.
-========================================================= */
+    .question-core span {
+      display: block;
+      margin-top: 5px;
+      color: #ffd56f;
+      font-size: 38px;
+      text-shadow: 0 0 18px rgba(255, 204, 76, 0.85);
+    }
 
-.review-gate {
-  margin-top: 24px;
-  padding: 22px 26px;
-  border-radius: 26px;
-  border: 1px solid rgba(255, 211, 112, 0.58);
-  background:
-    radial-gradient(circle at 8% 50%, rgba(255, 211, 104, 0.18), transparent 38%),
-    radial-gradient(circle at 92% 20%, rgba(117, 230, 186, 0.14), transparent 34%),
-    linear-gradient(135deg, rgba(61, 42, 19, 0.78), rgba(11, 8, 5, 0.92));
-  box-shadow:
-    0 20px 46px rgba(0, 0, 0, 0.36),
-    inset 0 0 0 1px rgba(255, 239, 190, 0.08);
-}
+    /* 총 복습 */
+    .review-gate {
+      margin-top: 24px;
+      padding: 24px 28px;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 211, 112, 0.58);
+      background:
+        radial-gradient(circle at 8% 50%, rgba(255, 211, 104, 0.18), transparent 38%),
+        radial-gradient(circle at 92% 20%, rgba(117, 230, 186, 0.14), transparent 34%),
+        linear-gradient(135deg, rgba(61, 42, 19, 0.78), rgba(11, 8, 5, 0.92));
+      box-shadow:
+        0 20px 46px rgba(0, 0, 0, 0.36),
+        inset 0 0 0 1px rgba(255, 239, 190, 0.08);
+    }
 
-.review-gate.locked {
-  opacity: 0.55;
-  filter: grayscale(0.35);
-}
+    .review-gate.locked {
+      opacity: 0.55;
+      filter: grayscale(0.35);
+    }
 
-.review-gate-title {
-  color: #ffe7a8;
-  font-family: "Noto Serif KR", serif;
-  font-size: 25px;
-  font-weight: 900;
-  margin-bottom: 8px;
-}
+    .review-gate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
 
-.review-gate-desc {
-  color: rgba(255, 237, 196, 0.86);
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.55;
-  word-break: keep-all;
-}
+    .review-gate-title {
+      color: #ffe7a8;
+      font-family: "Noto Serif KR", serif;
+      font-size: 31px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
 
-.review-gate-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-}
+    .review-gems {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
 
-.review-gems {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-}
+    .review-gem {
+      width: 35px;
+      height: 35px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 218, 127, 0.44);
+      background: rgba(255, 230, 166, 0.09);
+      color: rgba(255, 230, 166, 0.65);
+      font-size: 16px;
+      font-weight: 900;
+    }
 
-.review-gem {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 218, 127, 0.44);
-  background: rgba(255, 230, 166, 0.09);
-  color: rgba(255, 230, 166, 0.65);
-  font-size: 14px;
-  font-weight: 900;
-}
+    .review-gem.done {
+      border-color: rgba(174, 255, 111, 0.72);
+      background:
+        radial-gradient(circle, rgba(174, 255, 111, 0.32), rgba(67, 104, 36, 0.28));
+      color: #eaffcf;
+      box-shadow: 0 0 16px rgba(174, 255, 111, 0.22);
+    }
 
-.review-gem.done {
-  border-color: rgba(174, 255, 111, 0.72);
-  background:
-    radial-gradient(circle, rgba(174, 255, 111, 0.32), rgba(67, 104, 36, 0.28));
-  color: #eaffcf;
-  box-shadow: 0 0 16px rgba(174, 255, 111, 0.22);
-}
-/* =========================================================
-   총 복습 활동 화면
-   - 신비로운 책 페이지 느낌으로 긴 글을 읽고,
-   - 질문 만들 부분을 선택할 수 있게 합니다.
-========================================================= */
-
-.review-layout {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 26px;
-  align-items: stretch;
-}
-
-.review-book {
-  min-height: 620px;
-  padding: 28px;
-  border-radius: 30px;
-  border: 1px solid rgba(220, 166, 74, 0.46);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 213, 106, 0.12), transparent 36%),
-    linear-gradient(180deg, rgba(24, 18, 12, 0.88), rgba(6, 5, 4, 0.92));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 188, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.40);
-}
-
-.review-story-title {
-  margin-bottom: 18px;
-  color: #ffe3a2;
-  font-family: "Noto Serif KR", serif;
-  font-size: 28px;
-  font-weight: 900;
-  text-align: center;
-}
-
-.review-story-text {
-  display: grid;
-  gap: 10px;
-}
-
-.review-story-part {
-  width: 100%;
-  padding: 12px 15px;
-  border-radius: 16px;
-  border: 1px solid rgba(218, 166, 76, 0.16);
-  background: rgba(255, 239, 202, 0.045);
-  color: #fff0c9;
-  font-family: "Noto Serif KR", serif;
-  font-size: 19px;
-  font-weight: 800;
-  line-height: 1.62;
-  text-align: left;
-  word-break: keep-all;
-  transition: 0.16s ease;
-}
-
-.review-story-part:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 213, 106, 0.48);
-  background: rgba(255, 230, 166, 0.09);
-}
-
-.review-story-part.selected {
-  border-color: rgba(255, 218, 127, 0.76);
-  background:
-    linear-gradient(90deg, rgba(255, 218, 127, 0.22), rgba(255, 230, 166, 0.06));
-  box-shadow:
-    inset 0 -4px 0 rgba(255, 213, 106, 0.55),
-    0 0 18px rgba(255, 213, 106, 0.14);
-}
-
-.review-workshop {
-  min-height: 620px;
-  padding: 24px;
-  border-radius: 30px;
-  border: 1px solid rgba(220, 166, 74, 0.46);
-  background:
-    radial-gradient(circle at 10% 0%, rgba(255, 213, 106, 0.11), transparent 34%),
-    linear-gradient(180deg, rgba(18, 14, 10, 0.90), rgba(5, 4, 3, 0.94));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 188, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.40);
-}
-
-.review-selected-box {
-  margin-bottom: 16px;
-  padding: 15px 17px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 218, 127, 0.34);
-  background: rgba(255, 230, 166, 0.07);
-  color: #ffeac0;
-  font-size: 15.5px;
-  font-weight: 850;
-  line-height: 1.55;
-  word-break: keep-all;
-}
-
-.review-selected-box strong {
-  display: block;
-  margin-bottom: 6px;
-  color: #ffd477;
-}
-
-.review-type-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 14px 0 16px;
-}
-
-.review-type-button {
-  min-height: 58px;
-  padding: 12px 13px;
-  border-radius: 16px;
-  border: 1px solid rgba(218, 166, 76, 0.32);
-  background:
-    linear-gradient(180deg, rgba(34, 26, 18, 0.94), rgba(15, 12, 8, 0.96));
-  color: #fff0ca;
-  font-size: 14.5px;
-  font-weight: 900;
-  line-height: 1.35;
-  word-break: keep-all;
-  text-align: left;
-}
-
-.review-type-button.selected {
-  border-color: rgba(174, 255, 111, 0.74);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.17), transparent 42%),
-    linear-gradient(180deg, rgba(45, 56, 26, 0.92), rgba(18, 25, 12, 0.96));
-  box-shadow: 0 0 18px rgba(174, 255, 111, 0.14);
-}
-
-.review-input-label {
-  display: block;
-  margin: 12px 0 8px;
-  color: #ffd477;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.review-input {
-  width: 100%;
-  min-height: 78px;
-  resize: vertical;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 215, 121, 0.50);
-  background: rgba(255, 244, 213, 0.96);
-  color: #3b2915;
-  padding: 13px 15px;
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.5;
-  outline: none;
-}
-
-.review-status {
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(112, 202, 176, 0.42);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(112, 202, 176, 0.13), transparent 42%),
-    rgba(255, 230, 166, 0.045);
-}
-
-.review-status-title {
-  margin-bottom: 9px;
-  color: #d7ffe7;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.review-status-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.review-status-item {
-  padding: 9px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 218, 127, 0.24);
-  color: rgba(255, 237, 196, 0.78);
-  font-size: 13px;
-  font-weight: 900;
-}
-
-.review-status-item.done {
-  border-color: rgba(174, 255, 111, 0.66);
-  color: #eaffcf;
-  background: rgba(174, 255, 111, 0.12);
-}
     /* 공통 카드 */
-    .two-column-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 26px; align-items: stretch; }
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
 
     .dark-card {
       min-height: 500px;
-      padding: 24px;
+      padding: 26px;
       border-radius: 28px;
       border: 1px solid rgba(210, 154, 64, 0.44);
-      background: radial-gradient(circle at 50% 0%, rgba(221, 160, 58, 0.12), transparent 38%), linear-gradient(180deg, rgba(22, 17, 12, 0.84), rgba(7, 6, 5, 0.88));
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 226, 164, 0.08);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(221, 160, 58, 0.12), transparent 38%),
+        linear-gradient(180deg, rgba(22, 17, 12, 0.84), rgba(7, 6, 5, 0.88));
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.44),
+        inset 0 1px 0 rgba(255, 226, 164, 0.08);
     }
 
-    .section-label { color: #e3b35d; font-size: 18px; font-weight: 900; margin-bottom: 12px; }
+    .section-label {
+      color: #e3b35d;
+      font-size: 23px;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
 
     .story-box {
-      min-height: 220px;
-      padding: 26px 28px;
+      min-height: 260px;
+      padding: 30px 32px;
       display: flex;
       align-items: center;
       border-radius: 24px;
       border: 1px solid rgba(218, 166, 76, 0.46);
-      background: radial-gradient(circle at 50% 15%, rgba(255, 216, 126, 0.08), transparent 34%), linear-gradient(180deg, rgba(9, 8, 6, 0.9), rgba(3, 3, 2, 0.92));
+      background:
+        radial-gradient(circle at 50% 15%, rgba(255, 216, 126, 0.08), transparent 34%),
+        linear-gradient(180deg, rgba(9, 8, 6, 0.9), rgba(3, 3, 2, 0.92));
     }
 
     .story-box p {
       color: #fff0c9;
       font-family: "Noto Serif KR", serif;
-      font-size: 27px;
+      font-size: 34px;
       font-weight: 900;
       line-height: 1.7;
       word-break: keep-all;
@@ -586,452 +482,275 @@
       padding: 3px 8px;
       border-radius: 8px;
       background: rgba(255, 213, 106, 0.32);
-      box-shadow: 0 0 0 1px rgba(255, 224, 135, 0.24), 0 0 18px rgba(255, 203, 87, 0.16);
+      box-shadow:
+        0 0 0 1px rgba(255, 224, 135, 0.24),
+        0 0 18px rgba(255, 203, 87, 0.16);
       color: #fff8d5;
     }
 
-   /* =========================================================
-   왼쪽 도움 카드 / 생각 흐름 / 오른쪽 질문 선택 디자인
-   - 전체 분위기는 문답책 판타지 톤을 유지합니다.
-   - 왼쪽 단서 영역과 오른쪽 질문 선택 영역이 헷갈리지 않도록
-     색감과 형태를 조금 다르게 나눕니다.
-========================================================= */
+    .support-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(210, 154, 64, 0.38);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255, 211, 104, 0.12), transparent 34%),
+        linear-gradient(145deg, rgba(61, 41, 20, 0.48), rgba(13, 10, 7, 0.82));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 238, 188, 0.05),
+        0 16px 34px rgba(0, 0, 0, 0.22);
+    }
 
-/* 왼쪽 단서/답/생각 흐름 기본 묶음 */
-.support-grid {
-  display: grid;
-  gap: 10px;
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 24px;
-  border: 1px solid rgba(210, 154, 64, 0.38);
-  background:
-    radial-gradient(circle at 8% 0%, rgba(255, 211, 104, 0.12), transparent 34%),
-    linear-gradient(145deg, rgba(61, 41, 20, 0.48), rgba(13, 10, 7, 0.82));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 188, 0.05),
-    0 16px 34px rgba(0, 0, 0, 0.22);
-}
+    .support-card {
+      position: relative;
+      padding: 15px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(218, 166, 76, 0.28);
+      background:
+        linear-gradient(90deg, rgba(255, 222, 145, 0.12), rgba(255, 230, 166, 0.045));
+      color: #ffe9b7;
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
 
-/* 왼쪽 단서 카드 */
-.support-card {
-  position: relative;
-  padding: 13px 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(218, 166, 76, 0.28);
-  background:
-    linear-gradient(90deg, rgba(255, 222, 145, 0.12), rgba(255, 230, 166, 0.045));
-  color: #ffe9b7;
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.45;
-  word-break: keep-all;
-}
+    .support-card strong {
+      color: #ffd477;
+    }
 
-/* 왼쪽 영역 제목 */
-.support-card strong {
-  color: #ffd477;
-}
+    .choice-guide-title,
+    .workshop-guide {
+      margin-bottom: 16px;
+      padding: 16px 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(218, 166, 76, 0.42);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 211, 104, 0.12), transparent 40%),
+        rgba(255, 230, 166, 0.065);
+      color: #ffe6ad;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
 
-/* 첫 번째 카드: 단서 제목 느낌 */
-.support-grid > .support-card:first-child {
-  width: fit-content;
-  padding: 8px 15px;
-  border-radius: 999px;
-  border-color: rgba(255, 218, 127, 0.48);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(255, 235, 173, 0.18), transparent 40%),
-    rgba(214, 156, 48, 0.18);
-  color: #ffd978;
-  box-shadow: 0 0 18px rgba(228, 171, 54, 0.14);
-}
+    .choice-list {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(120, 88, 48, 0.38);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 211, 104, 0.08), transparent 34%),
+        linear-gradient(180deg, rgba(9, 8, 6, 0.52), rgba(5, 4, 3, 0.72));
+    }
 
-/* 3번 질문 전용: 생각 흐름 박스
-   - 선택지 버튼과 다르게 '흐름 안내판'처럼 보이게 합니다. */
-.support-grid.thought-flow {
-  gap: 0;
-  margin-top: 18px;
-  padding: 18px 20px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 206, 105, 0.52);
-  background:
-    radial-gradient(circle at 10% 0%, rgba(255, 214, 111, 0.20), transparent 36%),
-    radial-gradient(circle at 90% 100%, rgba(96, 148, 88, 0.13), transparent 36%),
-    linear-gradient(145deg, rgba(82, 52, 18, 0.56), rgba(12, 9, 6, 0.92));
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 188, 0.08),
-    0 20px 44px rgba(0, 0, 0, 0.30);
-}
+    .choice-button {
+      width: 100%;
+      min-height: 76px;
+      padding: 18px 22px;
+      border-radius: 18px;
+      border: 1px solid rgba(218, 166, 76, 0.28);
+      background:
+        linear-gradient(180deg, rgba(34, 26, 18, 0.94), rgba(15, 12, 8, 0.96));
+      color: #fff0ca;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+      transition: 0.16s ease;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 232, 170, 0.05),
+        0 8px 16px rgba(0, 0, 0, 0.18);
+    }
 
-/* 생각 흐름 제목 */
-.support-grid.thought-flow .support-card:first-child {
-  width: fit-content;
-  margin-bottom: 14px;
-  padding: 8px 15px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 218, 127, 0.55);
-  background:
-    linear-gradient(180deg, rgba(234, 181, 68, 0.32), rgba(119, 78, 23, 0.22));
-  color: #ffe09a;
-  font-size: 15px;
-  font-weight: 950;
-  box-shadow: 0 0 20px rgba(228, 171, 54, 0.20);
-}
+    .choice-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 207, 116, 0.68);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(255, 210, 110, 0.12), transparent 42%),
+        linear-gradient(180deg, rgba(47, 34, 20, 0.96), rgba(18, 13, 8, 0.98));
+    }
 
-/* 생각 흐름 항목 */
-.support-grid.thought-flow .support-card:not(:first-child) {
-  position: relative;
-  min-height: 56px;
-  padding: 3px 0 18px 52px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  color: #fff0c2;
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.55;
-}
+    .choice-button.selected {
+      border-color: rgba(174, 255, 111, 0.76);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.18), transparent 42%),
+        linear-gradient(180deg, rgba(45, 56, 26, 0.92), rgba(18, 25, 12, 0.96));
+      box-shadow:
+        0 0 20px rgba(174, 255, 111, 0.14),
+        inset 0 0 0 1px rgba(220, 255, 186, 0.08);
+    }
 
-/* 마지막 흐름 항목 */
-.support-grid.thought-flow .support-card:last-child {
-  padding-bottom: 2px;
-}
+    .lumi-feedback {
+      position: relative;
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      align-items: center;
+      gap: 18px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      min-height: 94px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(218, 166, 76, 0.46);
+      background:
+        radial-gradient(circle at 8% 50%, rgba(109, 167, 91, 0.28), transparent 38%),
+        radial-gradient(circle at 90% 10%, rgba(255, 211, 104, 0.12), transparent 34%),
+        linear-gradient(135deg, rgba(45, 54, 27, 0.62), rgba(13, 10, 7, 0.92));
+      color: #ffe6ad;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 238, 188, 0.07),
+        0 16px 34px rgba(0, 0, 0, 0.26);
+    }
 
-/* 생각 흐름 번호 */
-.support-grid.thought-flow .support-card:not(:first-child)::before {
-  content: attr(data-step);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 31px;
-  height: 31px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(180deg, #f7cc70, #b97815);
-  color: #211306;
-  font-size: 13px;
-  font-weight: 950;
-  box-shadow:
-    0 0 18px rgba(239, 184, 65, 0.42),
-    inset 0 1px 0 rgba(255, 248, 215, 0.28);
-}
+    .lumi-feedback::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(169, 255, 135, 0.10),
+          transparent 34%,
+          rgba(255, 211, 104, 0.07)
+        );
+    }
 
-/* 생각 흐름 연결선 */
-.support-grid.thought-flow .support-card:not(:first-child):not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 15px;
-  top: 35px;
-  width: 2px;
-  height: calc(100% - 30px);
-  background: linear-gradient(
-    180deg,
-    rgba(239, 184, 65, 0.65),
-    rgba(239, 184, 65, 0.08)
-  );
-}
-/* =========================================================
-   4번 질문 전용: 연결 다리 디자인
-   - 3번의 생각 흐름과 전체 톤은 맞추되,
-   - '책 속 장면 → 내 삶'으로 건너가는 느낌이 나도록
-     살짝 청록/금빛 포인트를 섞습니다.
-========================================================= */
+    .lumi-feedback img {
+      position: relative;
+      z-index: 1;
+      width: 76px;
+      height: auto;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45))
+        drop-shadow(0 0 12px rgba(172, 255, 125, 0.18));
+    }
 
-.support-grid.bridge-flow {
-  gap: 0;
-  margin-top: 18px;
-  padding: 18px 20px;
-  border-radius: 24px;
-  border: 1px solid rgba(112, 202, 176, 0.46);
-  background:
-    radial-gradient(circle at 10% 0%, rgba(255, 214, 111, 0.16), transparent 36%),
-    radial-gradient(circle at 95% 100%, rgba(95, 207, 178, 0.18), transparent 38%),
-    linear-gradient(145deg, rgba(50, 63, 42, 0.58), rgba(12, 9, 6, 0.92));
-  box-shadow:
-    inset 0 0 0 1px rgba(222, 255, 232, 0.07),
-    0 20px 44px rgba(0, 0, 0, 0.30);
-}
+    .lumi-feedback p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding: 0;
+      color: #fff0c7;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
 
-/* 연결 다리 제목 */
-.support-grid.bridge-flow .support-card:first-child {
-  width: fit-content;
-  margin-bottom: 14px;
-  padding: 8px 15px;
-  border-radius: 999px;
-  border: 1px solid rgba(130, 226, 191, 0.58);
-  background:
-    linear-gradient(180deg, rgba(89, 190, 154, 0.28), rgba(64, 87, 53, 0.24));
-  color: #d7ffe7;
-  font-size: 15px;
-  font-weight: 950;
-  box-shadow: 0 0 20px rgba(105, 221, 177, 0.16);
-}
+    .lumi-feedback.good {
+      border-color: rgba(174, 255, 111, 0.66);
+      background:
+        radial-gradient(circle at 8% 50%, rgba(125, 207, 88, 0.34), transparent 40%),
+        radial-gradient(circle at 90% 12%, rgba(255, 224, 130, 0.14), transparent 34%),
+        linear-gradient(135deg, rgba(43, 70, 27, 0.70), rgba(13, 12, 7, 0.94));
+      box-shadow:
+        0 0 24px rgba(174, 255, 111, 0.13),
+        inset 0 0 0 1px rgba(220, 255, 186, 0.08),
+        0 16px 34px rgba(0, 0, 0, 0.26);
+    }
 
-/* 연결 다리 항목 */
-.support-grid.bridge-flow .support-card:not(:first-child) {
-  position: relative;
-  min-height: 56px;
-  padding: 3px 0 18px 52px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  color: #fff0c2;
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.55;
-}
+    .lumi-feedback.need {
+      border-color: rgba(255, 190, 93, 0.58);
+      background:
+        radial-gradient(circle at 8% 50%, rgba(255, 171, 72, 0.22), transparent 40%),
+        radial-gradient(circle at 90% 12%, rgba(255, 224, 130, 0.12), transparent 34%),
+        linear-gradient(135deg, rgba(70, 45, 22, 0.66), rgba(13, 10, 7, 0.94));
+      box-shadow:
+        0 0 22px rgba(255, 171, 72, 0.10),
+        inset 0 0 0 1px rgba(255, 231, 180, 0.06),
+        0 16px 34px rgba(0, 0, 0, 0.26);
+    }
 
-.support-grid.bridge-flow .support-card:last-child {
-  padding-bottom: 2px;
-}
+    .method-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
 
-/* 연결 다리 번호 */
-.support-grid.bridge-flow .support-card:not(:first-child)::before {
-  content: attr(data-step);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 31px;
-  height: 31px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(180deg, #8de6c2, #35775e);
-  color: #07170f;
-  font-size: 13px;
-  font-weight: 950;
-  box-shadow:
-    0 0 18px rgba(119, 231, 188, 0.34),
-    inset 0 1px 0 rgba(235, 255, 246, 0.28);
-}
-
-/* 연결 다리 선 */
-.support-grid.bridge-flow .support-card:not(:first-child):not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 15px;
-  top: 35px;
-  width: 2px;
-  height: calc(100% - 30px);
-  background: linear-gradient(
-    180deg,
-    rgba(119, 231, 188, 0.58),
-    rgba(239, 184, 65, 0.10)
-  );
-}
-/* 오른쪽 안내 문구 */
-.choice-guide-title,
-.workshop-guide {
-  margin-bottom: 14px;
-  padding: 14px 18px;
-  border-radius: 18px;
-  border: 1px solid rgba(218, 166, 76, 0.42);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(255, 211, 104, 0.12), transparent 40%),
-    rgba(255, 230, 166, 0.065);
-  color: #ffe6ad;
-  font-size: 16px;
-  font-weight: 900;
-  line-height: 1.5;
-  word-break: keep-all;
-}
-
-/* 오른쪽 질문 선택 영역 전체 */
-.choice-list {
-  display: grid;
-  gap: 11px;
-  padding: 14px;
-  border-radius: 22px;
-  border: 1px solid rgba(120, 88, 48, 0.38);
-  background:
-    radial-gradient(circle at 100% 0%, rgba(255, 211, 104, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(9, 8, 6, 0.52), rgba(5, 4, 3, 0.72));
-}
-
-/* 오른쪽 선택 버튼
-   - 왼쪽 단서 카드보다 더 어둡고 눌리는 버튼처럼 보이게 합니다. */
-.choice-button {
-  width: 100%;
-  min-height: 58px;
-  padding: 13px 18px;
-  border-radius: 16px;
-  border: 1px solid rgba(218, 166, 76, 0.28);
-  background:
-    linear-gradient(180deg, rgba(34, 26, 18, 0.94), rgba(15, 12, 8, 0.96));
-  color: #fff0ca;
-  text-align: left;
-  font-size: 17px;
-  font-weight: 900;
-  line-height: 1.4;
-  word-break: keep-all;
-  transition: 0.16s ease;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 232, 170, 0.05),
-    0 8px 16px rgba(0, 0, 0, 0.18);
-}
-
-.choice-button:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 207, 116, 0.68);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(255, 210, 110, 0.12), transparent 42%),
-    linear-gradient(180deg, rgba(47, 34, 20, 0.96), rgba(18, 13, 8, 0.98));
-}
-
-/* 선택된 질문 */
-.choice-button.selected {
-  border-color: rgba(174, 255, 111, 0.76);
-  background:
-    radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.18), transparent 42%),
-    linear-gradient(180deg, rgba(45, 56, 26, 0.92), rgba(18, 25, 12, 0.96));
-  box-shadow:
-    0 0 20px rgba(174, 255, 111, 0.14),
-    inset 0 0 0 1px rgba(220, 255, 186, 0.08);
-}
-
-   /* =========================================================
-   루미 피드백 박스
-   - 루미 이미지와 피드백 문장이 한 줄 안에서 자연스럽게 보이도록 정리합니다.
-   - 선택지/단서 카드와 구분되도록 은은한 초록빛 마법 효과를 줍니다.
-========================================================= */
-
-.lumi-feedback {
-  position: relative;
-  display: grid;
-  grid-template-columns: 74px 1fr;
-  align-items: center;
-  gap: 16px;
-
-  margin-top: 16px;
-  padding: 15px 20px 15px 18px;
-  min-height: 94px;
-
-  overflow: hidden;
-  border-radius: 22px;
-  border: 1px solid rgba(218, 166, 76, 0.46);
-
-  background:
-    radial-gradient(circle at 8% 50%, rgba(109, 167, 91, 0.28), transparent 38%),
-    radial-gradient(circle at 90% 10%, rgba(255, 211, 104, 0.12), transparent 34%),
-    linear-gradient(135deg, rgba(45, 54, 27, 0.62), rgba(13, 10, 7, 0.92));
-
-  color: #ffe6ad;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 238, 188, 0.07),
-    0 16px 34px rgba(0, 0, 0, 0.26);
-}
-
-/* 피드백 박스 안쪽 은은한 빛 */
-.lumi-feedback::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(169, 255, 135, 0.10),
-      transparent 34%,
-      rgba(255, 211, 104, 0.07)
-    );
-}
-
-/* 루미 이미지 */
-.lumi-feedback img {
-  position: relative;
-  z-index: 1;
-
-  width: 66px;
-  height: auto;
-  object-fit: contain;
-
-  filter:
-    drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45))
-    drop-shadow(0 0 12px rgba(172, 255, 125, 0.18));
-}
-
-/* 피드백 문장 */
-.lumi-feedback p {
-  position: relative;
-  z-index: 1;
-
-  margin: 0;
-  padding: 0;
-
-  color: #fff0c7;
-  font-size: 16px;
-  font-weight: 900;
-  line-height: 1.55;
-  word-break: keep-all;
-}
-
-/* 정답 피드백 */
-.lumi-feedback.good {
-  border-color: rgba(174, 255, 111, 0.66);
-  background:
-    radial-gradient(circle at 8% 50%, rgba(125, 207, 88, 0.34), transparent 40%),
-    radial-gradient(circle at 90% 12%, rgba(255, 224, 130, 0.14), transparent 34%),
-    linear-gradient(135deg, rgba(43, 70, 27, 0.70), rgba(13, 12, 7, 0.94));
-
-  box-shadow:
-    0 0 24px rgba(174, 255, 111, 0.13),
-    inset 0 0 0 1px rgba(220, 255, 186, 0.08),
-    0 16px 34px rgba(0, 0, 0, 0.26);
-}
-
-/* 다시 생각해 보기 피드백 */
-.lumi-feedback.need {
-  border-color: rgba(255, 190, 93, 0.58);
-  background:
-    radial-gradient(circle at 8% 50%, rgba(255, 171, 72, 0.22), transparent 40%),
-    radial-gradient(circle at 90% 12%, rgba(255, 224, 130, 0.12), transparent 34%),
-    linear-gradient(135deg, rgba(70, 45, 22, 0.66), rgba(13, 10, 7, 0.94));
-
-  box-shadow:
-    0 0 22px rgba(255, 171, 72, 0.10),
-    inset 0 0 0 1px rgba(255, 231, 180, 0.06),
-    0 16px 34px rgba(0, 0, 0, 0.26);
-}
-    .method-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 14px; }
-
-    .plain-button, .main-button {
+    .plain-button,
+    .main-button {
       border: none;
       border-radius: 999px;
-      padding: 14px 22px;
-      font-size: 16px;
+      padding: 18px 30px;
+      font-size: 23px;
       font-weight: 900;
       transition: 0.18s ease;
     }
 
-    .plain-button { background: #d8cab5; color: #6c5a48; }
-    .main-button { background: linear-gradient(180deg, #dca328, #bd7908); color: #fff7e4; box-shadow: 0 10px 18px rgba(143, 91, 8, 0.24); }
-    .main-button:disabled { background: #b9a58c; color: #efe2d0; cursor: not-allowed; box-shadow: none; }
+    .plain-button {
+      background: #d8cab5;
+      color: #6c5a48;
+    }
+
+    .main-button {
+      background: linear-gradient(180deg, #dca328, #bd7908);
+      color: #fff7e4;
+      box-shadow: 0 10px 18px rgba(143, 91, 8, 0.24);
+    }
+
+    .main-button:disabled {
+      background: #b9a58c;
+      color: #efe2d0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .plain-button:hover,
+    .main-button:hover {
+      transform: translateY(-2px);
+    }
 
     /* 방법 알기 화면 */
+    .two-column-layout.method-layout {
+  grid-template-columns: 8fr 2fr;
+  gap: 24px;
+  align-items: stretch;
+  height: calc(100% - 130px);
+}
+
+    .method-main-card {
+  height: 100%;
+  min-height: 0;
+  padding: 24px 28px;
+}
+
+    .method-main-card .section-label {
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
     .method-rune-frame {
       position: relative;
-      min-height: 360px;
+      min-height: 300px;
       display: grid;
       place-items: center;
-      padding: 38px 34px;
+      padding: 48px 42px;
       border-radius: 24px;
       border: 1px solid rgba(218, 166, 76, 0.54);
-      background: radial-gradient(circle at 50% 78%, rgba(255, 196, 74, 0.22), transparent 30%), linear-gradient(180deg, rgba(16, 13, 10, 0.94), rgba(6, 5, 4, 0.94));
+      background:
+        radial-gradient(circle at 50% 78%, rgba(255, 196, 74, 0.22), transparent 30%),
+        linear-gradient(180deg, rgba(16, 13, 10, 0.94), rgba(6, 5, 4, 0.94));
       overflow: hidden;
     }
 
     .method-rune-text {
       color: #fff2d0;
       font-family: "Noto Serif KR", serif;
-      font-size: 29px;
+     font-size: clamp(34px, 2.4vw, 43px);
       font-weight: 900;
-      line-height: 1.65;
-      letter-spacing: -1px;
+      line-height: 1.72;
+      letter-spacing: -1.2px;
       text-align: center;
       word-break: keep-all;
       text-shadow: 0 6px 18px rgba(0, 0, 0, 0.68);
@@ -1040,289 +759,625 @@
     .hidden-keyword {
       display: inline-grid;
       place-items: center;
-      min-width: 108px;
-      margin: 0 5px;
-      padding: 6px 20px 8px;
+      min-width: 136px;
+      margin: 0 6px;
+      padding: 11px 28px 13px;
       border-radius: 999px;
       border: 1px solid rgba(255, 218, 132, 0.82);
       background: radial-gradient(circle, #fff0b7, #c88624 72%);
       color: #3a2109;
-      font-size: 29px;
+      font-size: 38px;
       font-weight: 900;
-      box-shadow: 0 0 24px rgba(240, 177, 53, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+      box-shadow:
+        0 0 24px rgba(240, 177, 53, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.38);
       cursor: pointer;
       vertical-align: middle;
     }
 
-    .example-list { display: grid; gap: 14px; }
-    .example-row {
-      display: grid;
-      grid-template-columns: 58px 1fr;
-      align-items: center;
+    .method-side-area {
+      display: flex;
+      flex-direction: column;
       gap: 16px;
-      min-height: 76px;
-      padding: 14px 18px;
-      border-radius: 18px;
-      background: rgba(255, 239, 202, 0.08);
-      border: 1px solid rgba(218, 166, 76, 0.3);
     }
 
-    .example-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: rgba(255, 207, 116, 0.12); border: 1px solid rgba(230, 178, 83, 0.34); font-size: 24px; }
-    .example-row p { font-size: 17px; font-weight: 850; line-height: 1.5; word-break: keep-all; }
+    .example-toggle-button {
+      width: 100%;
+      min-height: 78px;
+      padding: 18px 20px;
+      border: none;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #dca328, #bd7908);
+      color: #fff7e4;
+      font-size: 26px;
+      font-weight: 900;
+      box-shadow: 0 12px 22px rgba(143, 91, 8, 0.26);
+      cursor: pointer;
+    }
 
-    /* 대화/질문 제작대 */
-    .dialogue-box {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 12px;
-      padding: 16px;
-      border-radius: 20px;
+    .example-toggle-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .method-side-tip {
+      padding: 24px 20px;
+      border-radius: 24px;
       border: 1px solid rgba(218, 166, 76, 0.34);
-      background: rgba(255, 230, 166, 0.065);
-    }
-
-    .bubble-row { display: flex; align-items: flex-start; gap: 10px; }
-    .bubble-name { flex-shrink: 0; width: 70px; padding-top: 9px; color: #ffd477; font-weight: 900; }
-    .bubble {
-      flex: 1;
-      padding: 12px 15px;
-      border-radius: 18px;
-      background: rgba(9, 8, 6, 0.72);
-      border: 1px solid rgba(218, 166, 76, 0.32);
-      color: #ffedbf;
-      font-size: 16px;
+      background: rgba(255, 239, 202, 0.06);
+      color: #ffe9b7;
+      font-size: 21px;
       font-weight: 850;
-      line-height: 1.45;
+      line-height: 1.6;
       word-break: keep-all;
     }
 
-    .question-maker {
-      display: grid;
-      gap: 12px;
-      padding: 18px;
-      border-radius: 22px;
-      border: 1px solid rgba(218, 166, 76, 0.42);
-      background: radial-gradient(circle at 50% 0%, rgba(255, 216, 126, 0.08), transparent 36%), linear-gradient(180deg, rgba(12, 10, 8, 0.86), rgba(5, 5, 4, 0.88));
+    .method-example-panel {
+      min-height: 0;
+      padding: 22px 20px 24px;
     }
 
-    .maker-title { color: #ffd477; font-size: 17px; font-weight: 900; }
-    .maker-frame { color: #fff0c9; font-family: "Noto Serif KR", serif; font-size: 25px; font-weight: 900; line-height: 1.6; word-break: keep-all; }
+    .method-example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .method-example-title {
+      color: #ffe3a2;
+      font-family: "Noto Serif KR", serif;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .method-example-count {
+      color: #ffd477;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .method-example-box,
+    .method-example-question-box {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 17px;
+      border-radius: 20px;
+      background: rgba(255, 239, 202, 0.08);
+      border: 1px solid rgba(218, 166, 76, 0.30);
+    }
+
+    .method-example-question-box {
+      background: rgba(255, 230, 166, 0.10);
+    }
+
+    .method-example-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 207, 116, 0.12);
+      border: 1px solid rgba(230, 178, 83, 0.34);
+      font-size: 24px;
+    }
+
+    .method-example-text,
+    .method-example-question {
+      color: #fff0ca;
+      font-size: 22px;
+      font-weight: 850;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
+
+    .method-example-arrow {
+      margin: 15px 0;
+      padding-left: 6px;
+      color: #ffd477;
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .method-example-actions {
+      margin-top: 18px;
+    }
+
+    .example-next-button {
+      width: 100%;
+    }
+
+    .method-big-button {
+  min-height: 64px;
+  padding: 14px 26px;
+  font-size: 23px !important;
+  font-weight: 900;
+}
+
+    /* 심화 질문 쓰기 */
+    .question-maker {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid rgba(218, 166, 76, 0.42);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 216, 126, 0.08), transparent 36%),
+        linear-gradient(180deg, rgba(12, 10, 8, 0.86), rgba(5, 5, 4, 0.88));
+    }
+
+    .maker-title {
+      color: #ffd477;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .maker-frame {
+      color: #fff0c9;
+      font-family: "Noto Serif KR", serif;
+      font-size: 31px;
+      font-weight: 900;
+      line-height: 1.6;
+      word-break: keep-all;
+    }
 
     .deep-input {
       width: 100%;
-      min-height: 118px;
+      min-height: 140px;
       resize: vertical;
       border-radius: 18px;
       border: 1px solid rgba(255, 215, 121, 0.55);
       background: rgba(255, 244, 213, 0.96);
       color: #3b2915;
-      padding: 16px 18px;
-      font-size: 18px;
+      padding: 18px 20px;
+      font-size: 22px;
       font-weight: 850;
       line-height: 1.5;
       outline: none;
     }
 
-    .deep-input:focus { box-shadow: 0 0 0 3px rgba(255, 207, 116, 0.25); }
+    .deep-input:focus {
+      box-shadow: 0 0 0 3px rgba(255, 207, 116, 0.25);
+    }
+
+    .deep-hint-box {
+      margin-top: 16px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 218, 127, 0.38);
+      background: rgba(255, 230, 166, 0.075);
+      color: #ffeac0;
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    /* 총 복습 화면 */
+    .review-layout {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .review-book,
+    .review-workshop {
+      min-height: 620px;
+      padding: 28px;
+      border-radius: 30px;
+      border: 1px solid rgba(220, 166, 74, 0.46);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 213, 106, 0.12), transparent 36%),
+        linear-gradient(180deg, rgba(24, 18, 12, 0.88), rgba(6, 5, 4, 0.92));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 238, 188, 0.06),
+        0 24px 48px rgba(0, 0, 0, 0.40);
+    }
+
+    .review-story-title {
+      margin-bottom: 18px;
+      color: #ffe3a2;
+      font-family: "Noto Serif KR", serif;
+      font-size: 34px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .review-story-part {
+      width: 100%;
+      padding: 15px 17px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(218, 166, 76, 0.16);
+      background: rgba(255, 239, 202, 0.045);
+      color: #fff0c9;
+      font-size: 21px;
+      font-weight: 850;
+      line-height: 1.62;
+      text-align: left;
+      word-break: keep-all;
+      transition: 0.16s ease;
+    }
+
+    .review-story-part:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 213, 106, 0.48);
+      background: rgba(255, 230, 166, 0.09);
+    }
+
+    .review-story-part.selected {
+      border-color: rgba(255, 218, 127, 0.76);
+      background:
+        linear-gradient(90deg, rgba(255, 218, 127, 0.22), rgba(255, 230, 166, 0.06));
+      box-shadow:
+        inset 0 -4px 0 rgba(255, 213, 106, 0.55),
+        0 0 18px rgba(255, 213, 106, 0.14);
+    }
+
+    .review-selected-box {
+      margin-bottom: 16px;
+      padding: 17px 19px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 218, 127, 0.34);
+      background: rgba(255, 230, 166, 0.07);
+      color: #ffeac0;
+      font-size: 20px;
+      font-weight: 850;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .review-selected-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffd477;
+    }
+
+    .review-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 14px 0 16px;
+    }
+
+    .review-type-button {
+      min-height: 72px;
+      padding: 14px 15px;
+      border-radius: 16px;
+      border: 1px solid rgba(218, 166, 76, 0.32);
+      background:
+        linear-gradient(180deg, rgba(34, 26, 18, 0.94), rgba(15, 12, 8, 0.96));
+      color: #fff0ca;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.35;
+      word-break: keep-all;
+      text-align: left;
+    }
+
+    .review-type-button.selected {
+      border-color: rgba(174, 255, 111, 0.74);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.17), transparent 42%),
+        linear-gradient(180deg, rgba(45, 56, 26, 0.92), rgba(18, 25, 12, 0.96));
+      box-shadow: 0 0 18px rgba(174, 255, 111, 0.14);
+    }
+
+    .review-input-label {
+      display: block;
+      margin: 14px 0 8px;
+      color: #ffd477;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .review-input {
+      width: 100%;
+      min-height: 92px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 215, 121, 0.50);
+      background: rgba(255, 244, 213, 0.96);
+      color: #3b2915;
+      padding: 14px 16px;
+      font-size: 20px;
+      font-weight: 850;
+      line-height: 1.5;
+      outline: none;
+    }
+
+    .review-status {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(112, 202, 176, 0.42);
+      background:
+        radial-gradient(circle at 0% 50%, rgba(112, 202, 176, 0.13), transparent 42%),
+        rgba(255, 230, 166, 0.045);
+    }
+
+    .review-status-title {
+      margin-bottom: 9px;
+      color: #d7ffe7;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .review-status-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .review-status-item {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 218, 127, 0.24);
+      color: rgba(255, 237, 196, 0.78);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .review-status-item.done {
+      border-color: rgba(174, 255, 111, 0.66);
+      color: #eaffcf;
+      background: rgba(174, 255, 111, 0.12);
+    }
+
+    @media (max-width: 1280px) {
+      .two-column-layout.method-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .method-rune-text {
+        font-size: 38px;
+      }
+
+      .method-example-text,
+      .method-example-question,
+      .method-side-tip {
+        font-size: 19px;
+      }
+
+      .method-big-button,
+      .example-toggle-button {
+        font-size: 22px !important;
+      }
+    }
 
     @media (max-width: 980px) {
-      .page { padding: 18px; }
-      .screen { padding: 28px 22px 36px; }
-      .question-map, .two-column-layout { grid-template-columns: 1fr; }
-      .question-core { display: none; }
-      .cell-title, .cell-desc { max-width: 72%; }
-      .main-title { font-size: 32px; }
+      .page {
+        padding: 18px;
+      }
+
+      .screen {
+        padding: 28px 22px 36px;
+      }
+
+      .question-map,
+      .two-column-layout,
+      .review-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .question-core {
+        display: none;
+      }
+
+      .cell-title {
+        max-width: 72%;
+      }
+
+      .main-title {
+        font-size: 34px;
+      }
+
+      .story-box p {
+        font-size: 26px;
+      }
     }
     /* =========================================================
-   총 복습 화면 정리
-   - 글 영역이 너무 몰려 보이지 않도록 여백과 줄 간격을 조정합니다.
-   - 화면 스크롤을 줄이기 위해 카드 높이와 내부 간격을 압축합니다.
+   방법 알기 화면 잘림 방지 최종 수정
+   - 화면 전체 스크롤은 만들지 않고,
+   - 카드 안 내용이 화면 안에 들어오도록 높이와 여백만 조정
 ========================================================= */
 
-.review-screen-compact {
-  padding-top: 30px;
-  padding-bottom: 34px;
+body {
+  overflow: hidden;
 }
 
-.review-title-row {
+.page {
+  height: 100vh;
+  padding: 16px 38px 16px;
+  overflow: hidden;
+}
+
+.top-bar {
+  height: 70px;
+  margin-bottom: 10px;
+}
+
+.logo-area img {
+  width: 56px;
+  height: 56px;
+}
+
+.logo-area {
+  font-size: 29px;
+}
+
+.hero-card {
+  height: calc(100vh - 96px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.screen {
+  height: 100%;
+  padding: 24px 52px 26px;
+  overflow: hidden;
+}
+
+.screen-title-row {
   margin-bottom: 18px;
 }
 
-.review-screen-compact .main-title {
-  font-size: 38px;
+.title-badge {
+  margin-bottom: 10px;
+  padding: 9px 20px;
+  font-size: 17px;
+}
+
+.main-title {
+  font-size: clamp(34px, 2.8vw, 48px);
   line-height: 1.18;
 }
 
-.review-screen-compact .main-desc {
+.main-desc {
   margin-top: 10px;
-  font-size: 16px;
-  line-height: 1.45;
+  font-size: 21px;
+  line-height: 1.35;
 }
 
-.review-layout.compact {
-  grid-template-columns: 1fr 0.95fr;
-  gap: 24px;
-  align-items: start;
+.progress-pill {
+  padding: 14px 24px;
+  font-size: 20px;
 }
 
-/* 왼쪽 읽을 글 카드 */
-.review-book.compact {
-  min-height: auto;
-  padding: 28px 30px 24px;
+/* 방법 알기 화면 높이 맞춤 */
+.two-column-layout.method-layout {
+  height: calc(100% - 145px);
+  min-height: 0;
+  align-items: stretch;
 }
 
-/* 읽을 글 제목 영역 */
-.review-book-header {
-  margin-bottom: 16px;
-}
-
-.review-book-header .section-label {
-  margin-bottom: 8px;
-}
-
-.review-book-header .review-story-title {
-  margin-bottom: 0;
-  font-size: 30px;
-  line-height: 1.25;
-}
-
-/* 실제 글 본문 */
-.review-story-full {
-  max-height: 430px;
+/* 왼쪽 큰 카드 잘림 방지 */
+.method-main-card {
+  height: 100%;
+  min-height: 0;
   padding: 24px 28px;
-  overflow-y: auto;
-
-  border-radius: 24px;
-  border: 1px solid rgba(255, 218, 127, 0.28);
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 222, 145, 0.10), transparent 34%),
-    linear-gradient(180deg, rgba(255, 245, 220, 0.08), rgba(255, 230, 166, 0.035));
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 245, 210, 0.045),
-    inset 0 18px 34px rgba(255, 226, 150, 0.025);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
 }
 
-/* 글 문단 */
-.review-story-full p {
-  margin: 0 0 10px;
-  color: #fff1cd;
-  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.52;
-  letter-spacing: -0.35px;
-  word-break: keep-all;
-}
-
-.review-story-full p:last-child {
-  margin-bottom: 0;
-}
-
-/* 오른쪽 질문 제작대도 살짝 압축 */
-.review-workshop.compact {
-  min-height: auto;
-  padding: 22px 24px 24px;
-}
-
-.review-workshop-top {
+.method-main-card .section-label {
+  font-size: 25px;
   margin-bottom: 12px;
 }
 
-/* 질문 현황 박스 축소 */
-.review-status {
-  margin-bottom: 14px;
-  padding: 13px 15px;
+.method-rune-frame {
+  min-height: 0;
+  height: 100%;
+  padding: 28px 34px;
 }
 
-.review-status-title {
-  margin-bottom: 8px;
-  font-size: 15px;
+.method-rune-text {
+  font-size: clamp(34px, 2.45vw, 43px);
+  line-height: 1.55;
 }
 
-.review-status-list {
-  gap: 7px;
+.hidden-keyword {
+  min-width: 120px;
+  padding: 8px 24px 10px;
+  font-size: 35px;
 }
 
-.review-status-item {
-  padding: 8px 10px;
-  font-size: 13px;
+/* 루미 피드백이 아래에서 잘리지 않도록 압축 */
+.method-main-card .lumi-feedback,
+.lumi-feedback {
+  min-height: 88px;
+  margin-top: 14px;
+  padding: 12px 18px;
+  grid-template-columns: 72px 1fr;
 }
 
-/* 질문 종류 버튼 압축 */
-.review-type-grid {
-  gap: 9px;
-  margin: 10px 0 13px;
+.method-main-card .lumi-feedback img,
+.lumi-feedback img {
+  width: 66px;
 }
 
-.review-type-button {
-  min-height: 54px;
-  padding: 11px 12px;
-  font-size: 14px;
+.method-main-card .lumi-feedback p,
+.lumi-feedback p {
+  font-size: 19px;
+  line-height: 1.45;
 }
 
-/* 입력칸 압축 */
-.review-input-label {
-  margin: 10px 0 7px;
-  font-size: 15px;
+/* 버튼 영역 압축 */
+.method-actions {
+  margin-top: 14px;
 }
 
-.review-input {
-  min-height: 70px;
-  padding: 12px 14px;
-  font-size: 15.5px;
+.method-big-button {
+  min-height: 58px;
+  padding: 13px 24px;
+  font-size: 22px !important;
 }
 
-/* 총 복습 화면 버튼 영역 압축 */
-.compact-actions {
+/* 오른쪽 예시 보조창 잘림 방지 */
+.method-side-area {
+  height: 100%;
+  min-height: 0;
+}
+
+.example-toggle-button {
+  min-height: 64px;
+  padding: 14px 18px;
+  font-size: 24px;
+}
+
+.method-example-panel {
+  height: calc(100% - 80px);
+  min-height: 0;
+  padding: 18px 18px;
+  overflow: hidden;
+}
+
+.method-example-top {
+  margin-bottom: 10px;
+}
+
+.method-example-title {
+  font-size: 26px;
+}
+
+.method-example-count {
+  font-size: 18px;
+}
+
+.method-example-box,
+.method-example-question-box {
+  grid-template-columns: 50px 1fr;
+  gap: 12px;
+  padding: 14px;
+}
+
+.method-example-icon {
+  width: 44px;
+  height: 44px;
+  font-size: 23px;
+}
+
+.method-example-text,
+.method-example-question {
+  font-size: 20px;
+  line-height: 1.48;
+}
+
+.method-example-arrow {
+  margin: 10px 0;
+  font-size: 21px;
+}
+
+.method-example-actions {
   margin-top: 12px;
 }
-/* =========================================================
-   총 복습 화면 최종 정리
-   - 남는 여백을 글 영역에 더 사용합니다.
-   - 글자 크기와 문단 간격을 키워 읽기 쉽게 만듭니다.
-========================================================= */
 
-.review-layout.compact {
-  grid-template-columns: 1.02fr 0.98fr;
-  gap: 24px;
-}
-
-.review-book.compact {
-  padding: 30px 34px 26px;
-}
-
-.review-story-full {
-  max-height: none;
-  min-height: 360px;
-  padding: 30px 34px;
-  overflow-y: visible;
-}
-
-.review-story-full p {
-  margin-bottom: 15px;
-  font-size: 20px;
-  font-weight: 850;
-  line-height: 1.72;
-  letter-spacing: -0.45px;
-}
-
-.review-book-header .review-story-title {
-  font-size: 34px;
-  margin-bottom: 16px;
-}
-
-.review-workshop.compact {
-  padding: 24px 26px 24px;
-}
-
-.review-input {
-  min-height: 82px;
-  font-size: 16.5px;
-}
-
-.lumi-feedback {
-  min-height: 104px;
+.example-next-button {
+  min-height: 56px;
+  font-size: 21px !important;
 }
   </style>
 </head>
@@ -1332,7 +1387,7 @@
     <div class="page-inner">
       <header class="top-bar">
         <div class="logo-area">
-          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고" />
           <span>문답책</span>
         </div>
 
@@ -1356,42 +1411,32 @@
     let currentScreen = "select";
     let selectedQuestionType = null;
     let keywordRevealed = false;
+
+    let methodExampleOpen = false;
+    let methodExampleIndex = 0;
+
     let selectedBasicChoice = null;
     let currentBasicIndex = 0;
+
     let currentDeepIndex = 0;
-    let selectedDeepChoice = null;
     let deepInputValue = "";
     let deepChecked = false;
     let deepResult = null;
-// =========================================================
-// 총 복습 활동 상태
-// =========================================================
 
-// 총 복습에서 학생이 선택한 글 부분입니다.
-let reviewSelectedPartIndex = null;
+    let reviewSelectedPartIndex = null;
+    let reviewSelectedType = null;
+    let reviewQuestionInput = "";
+    let reviewAnswerInput = "";
+    let reviewChecked = false;
+    let reviewResult = null;
 
-// 총 복습에서 학생이 선택한 질문 종류입니다.
-// direct / infer / opinion / connect 중 하나가 들어갑니다.
-let reviewSelectedType = null;
+    let reviewCompletedQuestions = {
+      direct: null,
+      infer: null,
+      opinion: null,
+      connect: null
+    };
 
-// 학생이 쓴 질문입니다.
-let reviewQuestionInput = "";
-
-// 학생이 쓴 답 또는 생각/경험입니다.
-let reviewAnswerInput = "";
-
-// 루미가 검사한 결과입니다.
-let reviewChecked = false;
-let reviewResult = null;
-
-// 질문 종류별로 통과한 질문을 저장합니다.
-// 값이 null이면 아직 통과하지 않은 상태입니다.
-let reviewCompletedQuestions = {
-  direct: null,
-  infer: null,
-  opinion: null,
-  connect: null
-};
     let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
       direct: false,
       infer: false,
@@ -1404,92 +1449,13 @@ let reviewCompletedQuestions = {
       2. 질문 종류 데이터
       =========================================================
     */
-/*
-  =========================================================
-  총 복습 활동 데이터
-  - 4가지 질문 종류를 한 글에서 모두 만들어 보는 마지막 활동입니다.
-  - 글은 초등학교 4학년이 읽기 쉬운 수준으로 구성했습니다.
-  =========================================================
-*/
 
-const reviewStory = {
-  title: "비밀 책갈피",
-
-  // 전체 이야기글입니다.
-  fullText:
-    "도서관 청소 시간이 되었어요. " +
-    "서윤이는 책장 아래에 떨어진 작은 책갈피를 발견했어요. " +
-    "책갈피에는 반짝이는 별 그림과 함께 ‘민준’이라는 이름이 적혀 있었어요. " +
-    "서윤이는 잠시 책갈피를 바라보다가 주머니에 넣지 않고, 책상 위에 놓인 분실물 상자에 조심스럽게 넣었어요. " +
-    "그리고 작은 종이에 ‘책장 아래에서 찾았어요.’라고 적어 붙였어요. " +
-    "잠시 뒤 민준이가 도서관으로 뛰어 들어왔어요. " +
-    "민준이는 책갈피를 잃어버려서 걱정하고 있었어요. " +
-    "분실물 상자에서 책갈피를 발견한 민준이는 환하게 웃으며 말했어요. " +
-    "‘이거 할머니가 만들어 주신 거라 정말 소중했어. 고마워!’ " +
-    "서윤이는 조금 쑥스러워했지만 기분이 좋아졌어요. " +
-    "그날 서윤이는 작은 물건도 누군가에게는 아주 소중할 수 있다는 것을 알게 되었어요.",
-
-  // 학생이 밑줄처럼 선택할 수 있는 글 조각입니다.
-  // 실제 드래그 밑줄보다 초보 구현이 안정적이고, 질문 만들 부분을 더 명확히 고를 수 있습니다.
-  parts: [
-    {
-      text: "서윤이는 책장 아래에 떨어진 작은 책갈피를 발견했어요.",
-      hintTypes: ["direct"]
-    },
-    {
-      text: "책갈피에는 반짝이는 별 그림과 함께 ‘민준’이라는 이름이 적혀 있었어요.",
-      hintTypes: ["direct"]
-    },
-    {
-      text: "서윤이는 책갈피를 주머니에 넣지 않고 분실물 상자에 조심스럽게 넣었어요.",
-      hintTypes: ["infer", "opinion"]
-    },
-    {
-      text: "작은 종이에 ‘책장 아래에서 찾았어요.’라고 적어 붙였어요.",
-      hintTypes: ["direct", "infer"]
-    },
-    {
-      text: "민준이는 책갈피를 잃어버려서 걱정하고 있었어요.",
-      hintTypes: ["infer"]
-    },
-    {
-      text: "민준이는 ‘할머니가 만들어 주신 거라 정말 소중했어. 고마워!’라고 말했어요.",
-      hintTypes: ["infer", "opinion", "connect"]
-    },
-    {
-      text: "서윤이는 작은 물건도 누군가에게는 아주 소중할 수 있다는 것을 알게 되었어요.",
-      hintTypes: ["opinion", "connect"]
-    }
-  ],
-
-  // 도움 얻기 버튼을 눌렀을 때 루미가 추천할 내용입니다.
-  // 완성 질문을 주지 않고, 어느 부분으로 어떤 방향의 질문을 만들면 좋은지만 알려줍니다.
-  helpHints: {
-    direct: {
-      partIndex: 0,
-      message: "책장 아래에서 책갈피를 발견한 부분에 밑줄을 그어 보면 좋아. ‘어디에서’, ‘무엇을’ 같은 말로 글에서 바로 답을 찾는 질문을 만들 수 있어."
-    },
-    infer: {
-      partIndex: 2,
-      message: "서윤이가 책갈피를 분실물 상자에 넣은 행동을 살펴봐. 그 행동의 이유나 마음을 짐작하는 질문을 만들 수 있어."
-    },
-    opinion: {
-      partIndex: 6,
-      message: "작은 물건도 누군가에게는 소중할 수 있다는 부분을 읽고, 네 생각이나 느낌을 묻는 질문을 만들어 보면 좋아."
-    },
-    connect: {
-      partIndex: 5,
-      message: "민준이가 소중한 물건을 되찾은 장면을 보고, 너도 잃어버린 물건을 찾거나 찾아 준 경험이 있는지 연결해 볼 수 있어."
-    }
-  }
-};
     const questionTypes = [
       {
         id: "direct",
         number: "01",
         iconImage: "../assets/images/during-reading/intro/icon-direct-answer.png",
         title: "책 내용에서 바로 답을 찾을 수 있는 질문",
-        shortDesc: "책 속 문장에 답이 직접 나와 있는 질문을 연습해요.",
         methodTitle: "책 내용에서 바로 답을 찾을 수 있는 질문 만드는 방법",
         beforeText: "책에서<br>",
         hiddenWord: "직접적으로",
@@ -1497,13 +1463,11 @@ const reviewStory = {
         lumiText: "책 속 문장에 답이 바로 나와 있어야 해. 상상하거나 추측하지 않아도 글에서 바로 확인할 수 있는 질문이야.",
         exampleTexts: [
           { icon: "🌿", text: "민지는 아침마다 화분에 물을 주었어요. 며칠 뒤 작은 새싹이 올라왔어요." },
-          { icon: "🎒", text: "준호는 도서관에서 동화책 세 권을 빌렸어요. 집에 가서 가장 먼저 표지를 살펴보았어요." },
-          { icon: "🐶", text: "강아지 뭉치는 공원에서 공을 물고 달렸어요. 지우는 뭉치를 보며 웃었어요." }
+          { icon: "🎒", text: "준호는 도서관에서 동화책 세 권을 빌렸어요. 집에 가서 가장 먼저 표지를 살펴보았어요." }
         ],
         exampleQuestions: [
           "민지는 아침마다 무엇을 했나요?",
-          "준호는 도서관에서 무엇을 빌렸나요?",
-          "뭉치는 어디에서 공을 물고 달렸나요?"
+          "준호는 도서관에서 무엇을 빌렸나요?"
         ]
       },
       {
@@ -1511,7 +1475,6 @@ const reviewStory = {
         number: "02",
         iconImage: "../assets/images/during-reading/intro/icon-infer-answer.png",
         title: "책 내용에서 답을 짐작할 수 있는 질문",
-        shortDesc: "글 속 단서를 모아 이유, 마음, 생각을 짐작하는 질문을 연습해요.",
         methodTitle: "책 내용에서 답을 짐작할 수 있는 질문 만드는 방법",
         beforeText: "책 내용을 바탕으로<br>여러 ",
         hiddenWord: "단서",
@@ -1519,13 +1482,11 @@ const reviewStory = {
         lumiText: "답이 책에 그대로 적혀 있지는 않아. 대신 앞뒤 내용과 인물의 말, 행동을 보고 답을 짐작할 수 있어.",
         exampleTexts: [
           { icon: "🔍", text: "토끼는 자신이 빠르다고 믿고 나무 아래에서 잠이 들었어요." },
-          { icon: "🧸", text: "하린이는 친구가 울고 있는 것을 보고 조용히 휴지를 건넸어요." },
-          { icon: "🎨", text: "준서는 색연필을 주운 뒤 선생님 책상 위에 올려 두었어요." }
+          { icon: "🧸", text: "하린이는 친구가 울고 있는 것을 보고 조용히 휴지를 건넸어요." }
         ],
         exampleQuestions: [
           "토끼는 왜 시합 중에 잠을 잤을까요?",
-          "하린이는 어떤 마음으로 휴지를 건넸을까요?",
-          "준서는 색연필을 보며 무슨 생각을 했을까요?"
+          "하린이는 어떤 마음으로 휴지를 건넸을까요?"
         ]
       },
       {
@@ -1533,531 +1494,320 @@ const reviewStory = {
         number: "03",
         iconImage: "../assets/images/during-reading/intro/icon-thought-feeling.png",
         title: "책을 읽고 떠오른 생각이나 느낌에 대한 질문",
-        shortDesc: "글 속 장면을 보고 내 생각, 느낌, 의견을 말하는 질문을 연습해요.",
         methodTitle: "책을 읽고 떠오른 생각이나 느낌에 대한 질문 만드는 방법",
         beforeText: "책의 내용에 대한 느낌이나<br>글쓴이의 생각에 대한<br>내 ",
         hiddenWord: "생각",
         afterText: "을 말하는<br>질문을 만드는 방법",
         lumiText: "인물의 마음을 맞히는 질문이 아니라, 책을 읽은 내가 어떤 생각이나 느낌이 들었는지 말하는 질문이야. 친구마다 답이 달라도 괜찮아.",
         exampleTexts: [
-  { icon: "🐢", text: "거북이는 느리지만 포기하지 않고 끝까지 걸었어요." },
-  { icon: "🌙", text: "민서는 무서웠지만 동생의 손을 꼭 잡고 어두운 복도를 지나갔어요." },
-  { icon: "🎁", text: "서아는 아끼던 책갈피를 잃어버린 친구에게 건네주었어요." }
-],
-exampleQuestions: [
-  "거북이를 보며 어떤 생각이 들었나요?",
-  "나라면 민서처럼 행동할 수 있을까요?",
-  "서아의 행동에 대해 어떻게 생각하나요?"
-]
+          { icon: "🐢", text: "거북이는 느리지만 포기하지 않고 끝까지 걸었어요." },
+          { icon: "🌙", text: "민서는 무서웠지만 동생의 손을 꼭 잡고 어두운 복도를 지나갔어요." }
+        ],
+        exampleQuestions: [
+          "거북이를 보며 어떤 생각이 들었나요?",
+          "나라면 민서처럼 행동할 수 있을까요?"
+        ]
       },
       {
-  id: "connect",
-  number: "04",
-  iconImage: "../assets/images/during-reading/intro/icon-life-connection.png",
-  title: "자신의 삶과 관련짓는 질문",
-  shortDesc: "책 속 이야기와 나의 경험, 생활을 연결하는 질문을 연습해요.",
-  methodTitle: "자신의 삶과 관련짓는 질문 만드는 방법",
-
-  // 핵심 주문 문구
-  // 화면에는 아래처럼 보입니다.
-  // 책 속 장면에서
-  // 나의 [경험]을 떠올려
-  // 내 생활과 연결하는
-  // 질문을 만드는 방법
-  beforeText: "책 속 장면에서<br>나의 ",
-  hiddenWord: "경험",
-  afterText: "을 떠올려<br>내 생활과 연결하는<br>질문을 만드는 방법",
-
-  lumiText: "이 질문은 책 속 장면에서 끝나는 게 아니야. 책을 읽고 ‘나도 비슷한 일이 있었나?’ 하고 내 경험이나 생활을 떠올리게 하는 질문이야.",
-
-  exampleTexts: [
-    { icon: "🤝", text: "지호는 무거운 책을 들고 가는 친구를 보고 함께 들어 주었어요." },
-    { icon: "🧑‍🤝‍🧑", text: "민아는 새로운 모둠에서 어색했지만 친구들의 이야기를 들었어요." },
-    { icon: "🧹", text: "서준이는 교실 바닥에 떨어진 종이를 보고 조용히 주워 버렸어요." }
-  ],
-
-  exampleQuestions: [
-    "나도 누군가를 도와주거나 도움받은 경험이 있나요?",
-    "나도 새 친구나 새 모둠에서 어색했던 경험이 있나요?",
-    "나도 누가 시키지 않아도 주변을 정리한 경험이 있나요?"
-  ]
-}
+        id: "connect",
+        number: "04",
+        iconImage: "../assets/images/during-reading/intro/icon-life-connection.png",
+        title: "자신의 삶과 관련짓는 질문",
+        methodTitle: "자신의 삶과 관련짓는 질문 만드는 방법",
+        beforeText: "책 속 장면에서<br>나의 ",
+        hiddenWord: "경험",
+        afterText: "을 떠올려<br>내 생활과 연결하는<br>질문을 만드는 방법",
+        lumiText: "이 질문은 책 속 장면에서 끝나는 게 아니야. 책을 읽고 ‘나도 비슷한 일이 있었나?’ 하고 내 경험이나 생활을 떠올리게 하는 질문이야.",
+        exampleTexts: [
+          { icon: "🤝", text: "지호는 무거운 책을 들고 가는 친구를 보고 함께 들어 주었어요." },
+          { icon: "🧹", text: "서준이는 교실 바닥에 떨어진 종이를 보고 조용히 주워 버렸어요." }
+        ],
+        exampleQuestions: [
+          "나도 누군가를 도와주거나 도움받은 경험이 있나요?",
+          "나도 누가 시키지 않아도 주변을 정리한 경험이 있나요?"
+        ]
+      }
     ];
 
     /*
       =========================================================
       3. 기본 연습 문제 데이터
+      - 각 유형 2문제
       =========================================================
     */
 
-    const directBasicQuestions = [
-      {
-        story: "하린이는 파란 종이로 작은 배를 접었어요. 완성한 배를 책상 위에 올려 두었어요.",
-        highlight: "파란 종이로 작은 배",
-        supportTitle: "답",
-        supportCards: ["하린이는 파란 종이로 작은 배를 접었어요."],
-        guideText: "왼쪽의 답을 보고, 그 답을 바로 찾을 수 있는 질문을 골라 봐요.",
-        choices: [
-          { id: "direct", text: "하린이는 무엇을 접었나요?", feedback: "맞아! 글에 ‘파란 종이로 작은 배를 접었어요’라고 바로 나와 있어." },
-          { id: "weak", text: "하린이는 언제 배를 만들었나요?", feedback: "시간은 글에 나오지 않아. 답과 직접 연결되는 질문을 골라야 해." },
-          { id: "infer", text: "하린이는 왜 배를 만들었을까요?", feedback: "이건 이유를 짐작하는 질문이라 1번 질문과 달라." },
-          { id: "wrong", text: "하린이는 누구와 배를 띄웠나요?", feedback: "글에는 누구와 배를 띄웠는지 나오지 않아." }
-        ]
-      },
-            {
-        story: "도윤이는 점심시간에 도서관에서 곤충 책을 읽었어요. 책 속에는 사슴벌레 사진이 크게 실려 있었어요.",
-        highlight: "도서관에서 곤충 책",
-        supportTitle: "답",
-        supportCards: ["도윤이는 도서관에서 곤충 책을 읽었어요."],
-        guideText: "글에서 바로 확인할 수 있는 질문을 골라 봐요.",
-        choices: [
-          { id: "direct", text: "도윤이는 어디에서 곤충 책을 읽었나요?", feedback: "좋아! ‘도서관에서’라는 답이 글에 바로 보여." },
-          { id: "infer", text: "도윤이는 왜 곤충 책을 골랐을까요?", feedback: "이유는 글에 바로 나오지 않아. 2번 질문에 가까워." },
-          { id: "opinion", text: "이 장면을 읽고 어떤 생각이 들었나요?", feedback: "이건 책을 읽고 떠오른 생각이나 느낌에 대한 질문이야." },
-          { id: "wrong", text: "도윤이는 사슴벌레를 잡았나요?", feedback: "글에는 사슴벌레 사진이 나온다고 했지, 잡았다고 하지 않았어." }
-        ]
-      },
-      {
-        story: "서준이는 쉬는 시간에 운동장 옆 벤치에서 노란 연필을 발견했어요. 연필에는 ‘1학년 2반’이라고 적혀 있었어요.",
-        highlight: "운동장 옆 벤치에서 노란 연필",
-        supportTitle: "답",
-        supportCards: ["서준이는 운동장 옆 벤치에서 노란 연필을 발견했어요."],
-        guideText: "왼쪽의 답을 보고, 글에서 바로 찾을 수 있는 질문을 골라 봐요.",
-        choices: [
-          { id: "direct", text: "서준이는 어디에서 노란 연필을 발견했나요?", feedback: "맞아! 글에 ‘운동장 옆 벤치에서’라고 바로 나와 있어." },
-          { id: "infer", text: "서준이는 왜 연필을 주웠을까요?", feedback: "이유는 글에 바로 나오지 않아. 이건 짐작하는 질문에 가까워." },
-          { id: "opinion", text: "서준이의 행동을 보고 어떤 생각이 들었나요?", feedback: "이건 읽은 사람의 생각이나 느낌을 묻는 질문이야." },
-          { id: "wrong", text: "서준이는 연필을 누구에게 돌려주었나요?", feedback: "글에는 누구에게 돌려주었는지 나오지 않아. 글에 바로 나온 내용만 물어야 해." }
-        ]
-      }
-    ];
+    const basicQuestions = {
+      direct: [
+        {
+          story: "하린이는 파란 종이로 작은 배를 접었어요. 완성한 배를 책상 위에 올려 두었어요.",
+          highlight: "파란 종이로 작은 배",
+          supportTitle: "답",
+          supportCards: ["하린이는 파란 종이로 작은 배를 접었어요."],
+          guideText: "왼쪽의 답을 보고, 그 답을 바로 찾을 수 있는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "하린이는 무엇을 접었나요?", feedback: "맞아! 글에 ‘파란 종이로 작은 배를 접었어요’라고 바로 나와 있어." },
+            { id: "wrong", text: "하린이는 왜 배를 만들었나요?", feedback: "이건 이유를 짐작해야 해서 바로 답 찾기 질문이 아니야." },
+            { id: "wrong", text: "하린이는 배를 타고 어디로 갔나요?", feedback: "글에는 배를 타고 간 내용이 나오지 않아." }
+          ]
+        },
+        {
+          story: "도윤이는 점심시간에 도서관에서 곤충 책을 읽었어요. 책 속에는 사슴벌레 사진이 크게 실려 있었어요.",
+          highlight: "도서관에서 곤충 책",
+          supportTitle: "답",
+          supportCards: ["도윤이는 도서관에서 곤충 책을 읽었어요."],
+          guideText: "글에서 바로 확인할 수 있는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "도윤이는 어디에서 곤충 책을 읽었나요?", feedback: "좋아! ‘도서관에서’라는 답이 글에 바로 보여." },
+            { id: "wrong", text: "도윤이는 왜 곤충 책을 골랐을까요?", feedback: "이유는 글에 바로 나오지 않아. 짐작 질문에 가까워." },
+            { id: "wrong", text: "도윤이는 사슴벌레를 잡았나요?", feedback: "글에는 사슴벌레 사진이 나온다고 했지 잡았다고 하지 않았어." }
+          ]
+        }
+      ],
 
-    const inferBasicQuestions = [
-      {
-        story: "유나는 발표 차례가 되자 손에 쥔 종이를 꼭 잡았어요. 목소리는 작았지만 끝까지 발표를 마쳤어요.",
-        highlight: "종이를 꼭 잡았어요",
-        supportTitle: "짐작 단서",
-        supportCards: ["행동 단서 → 종이를 꼭 잡음", "짐작할 수 있는 마음 → 긴장했지만 해내려는 마음"],
-        guideText: "인물의 대답을 보고, 루미가 어떤 질문을 했을지 골라 봐요.",
-        dialogue: { answer: "나는 긴장했지만 끝까지 해내고 싶었어." },
-        choices: [
-          { id: "infer", text: "유나는 어떤 마음으로 발표를 끝까지 했을까요?", feedback: "맞아! 종이를 꼭 잡은 행동과 끝까지 발표한 단서를 보고 마음을 짐작할 수 있어." },
-          { id: "direct", text: "유나는 무엇을 손에 쥐었나요?", feedback: "이건 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-          { id: "wrong", text: "유나는 왜 운동장으로 나갔을까요?", feedback: "운동장은 글에 나오지 않아. 글 속 단서와 연결되어야 해." },
-          { id: "opinion", text: "이 장면을 읽고 너는 어떤 생각이 들었나요?", feedback: "이건 책을 읽고 떠오른 생각이나 느낌에 대한 질문이야." }
-        ]
-      },
-      {
-        story: "민재는 비에 젖은 강아지를 보고 우산을 낮게 기울였어요. 자기 어깨는 젖었지만 강아지 쪽으로 더 가까이 다가갔어요.",
-        highlight: "우산을 낮게 기울였어요",
-        supportTitle: "짐작 단서",
-        supportCards: ["행동 단서 → 강아지 쪽으로 우산을 기울임", "짐작할 수 있는 생각 → 강아지를 보호해 주고 싶음"],
-        guideText: "단서를 활용한 질문을 골라 봐요.",
-        dialogue: { answer: "강아지가 더 젖지 않았으면 좋겠다고 생각했어." },
-        choices: [
-          { id: "infer", text: "민재는 강아지를 보며 무슨 생각을 했을까요?", feedback: "정답! 우산을 강아지 쪽으로 기울인 행동에서 생각을 짐작할 수 있어." },
-          { id: "direct", text: "민재는 무엇을 낮게 기울였나요?", feedback: "이건 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-          { id: "wrong", text: "민재는 왜 강아지를 집으로 데려갔을까요?", feedback: "집으로 데려갔다는 내용은 글에 없어." },
-          { id: "weak", text: "민재는 평소 어떤 사람일까요?", feedback: "너무 넓은 질문이야. 지금 글 속 장면의 단서와 더 가깝게 물어보자." }
-        ]
-      },
-      {
-        story: "수아는 친구의 찢어진 그림을 보고 말없이 테이프를 가져왔어요. 친구가 고개를 들자 수아는 조용히 웃어 주었어요.",
-        highlight: "말없이 테이프를 가져왔어요",
-        supportTitle: "짐작 단서",
-        supportCards: ["행동 단서 → 말없이 테이프를 가져옴", "짐작할 수 있는 마음 → 친구를 도와주고 싶은 마음"],
-        guideText: "글 속 행동 단서와 연결되는 질문을 골라 봐요.",
-        dialogue: { answer: "친구가 속상해하지 않았으면 좋겠다는 마음이었어." },
-        choices: [
-          { id: "infer", text: "수아는 어떤 마음으로 테이프를 가져왔을까요?", feedback: "좋아! 친구의 찢어진 그림을 보고 도와준 행동에서 마음을 짐작할 수 있어." },
-          { id: "direct", text: "수아는 무엇을 가져왔나요?", feedback: "이건 글에 바로 나오는 답을 묻는 질문이야." },
-          { id: "wrong", text: "수아는 왜 친구의 그림을 찢었을까요?", feedback: "수아가 그림을 찢었다는 내용은 없어. 반대되는 행동을 넣으면 안 돼." },
-          { id: "opinion", text: "너라면 친구에게 어떻게 말해 주고 싶나요?", feedback: "이건 책을 읽고 떠오른 생각이나 느낌에 대한 질문이야." }
-        ]
-      }
-    ];
+      infer: [
+        {
+          story: "민우는 발표 시간이 되자 손에 땀이 났어요. 목소리는 작아졌지만 끝까지 발표를 마쳤어요.",
+          highlight: "손에 땀이 났어요",
+          supportTitle: "단서",
+          supportCards: ["손에 땀이 났어요.", "목소리가 작아졌어요.", "그래도 끝까지 발표했어요."],
+          guideText: "단서를 보고 인물의 마음을 짐작하는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "민우는 발표할 때 어떤 마음이었을까요?", feedback: "맞아! 손에 땀이 나고 목소리가 작아진 단서로 긴장한 마음을 짐작할 수 있어." },
+            { id: "wrong", text: "민우는 몇 시에 발표했나요?", feedback: "시간은 글에 나오지 않아." },
+            { id: "wrong", text: "민우는 발표 후 무엇을 먹었나요?", feedback: "글에는 발표 후 먹은 것이 나오지 않아." }
+          ]
+        },
+        {
+          story: "서아는 비를 맞고 들어온 친구에게 말없이 수건을 건넸어요. 친구는 고맙다며 웃었어요.",
+          highlight: "말없이 수건을 건넸어요",
+          supportTitle: "단서",
+          supportCards: ["친구가 비를 맞았어요.", "서아가 수건을 건넸어요.", "친구가 고맙다고 했어요."],
+          guideText: "인물의 행동을 보고 마음이나 이유를 짐작하는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "서아는 어떤 마음으로 수건을 건넸을까요?", feedback: "좋아! 친구를 걱정하고 도와주려는 마음을 단서로 짐작할 수 있어." },
+            { id: "wrong", text: "서아는 수건을 어디에서 샀나요?", feedback: "수건을 산 곳은 글에 나오지 않아." },
+            { id: "wrong", text: "친구는 어떤 색 우산을 썼나요?", feedback: "우산 색은 글에 나오지 않아." }
+          ]
+        }
+      ],
 
-    const opinionBasicQuestions = [
-  {
-    story: "지우는 친구가 혼자 앉아 있는 것을 보고 잠시 망설였어요. 그러다 조용히 다가가 ‘같이 앉을래?’ 하고 물었어요.",
-    highlight: "같이 앉을래?",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 친구가 혼자 앉아 있음",
-      "내 생각 → 먼저 다가가면 친구가 덜 외로울 것 같음",
-      "질문 힌트 → 내가 그 장면 속에 있었다면 어떻게 행동했을지 떠올리기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 골라 봐요.",
-    choices: [
-      { id: "direct", text: "지우는 친구에게 뭐라고 말했나요?", feedback: "이건 글에 바로 나온 말을 묻는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "wrong", text: "친구는 어떤 색 옷을 입고 있었나요?", feedback: "글에는 친구의 옷 색깔이 나오지 않아. 글 속 장면과 연결된 질문을 골라야 해." },
-      { id: "opinion", text: "이 장면을 읽고 나라면 어떻게 했을 것 같나요?", feedback: "맞아! 친구가 혼자 앉아 있는 장면을 읽고, 읽은 사람의 생각을 말하게 하는 질문이야." },
-      { id: "infer", text: "지우는 왜 잠시 망설였을까요?", feedback: "이건 지우의 마음이나 이유를 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." },
-      { id: "weak", text: "이 이야기는 좋은가요?", feedback: "너무 넓고 대답이 짧게 끝나. 어떤 장면에 대한 생각인지 드러나야 해." }
-    ]
-  },
-  {
-    story: "민서는 발표를 망칠까 봐 걱정했지만, 친구들이 응원해 주자 천천히 앞으로 나갔어요.",
-    highlight: "천천히 앞으로 나갔어요",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 걱정했지만 앞으로 나감",
-      "내 생각 → 응원을 받으면 용기를 낼 수 있을 것 같음",
-      "질문 힌트 → 인물의 행동을 보고 내가 어떻게 생각하는지 말하기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 골라 봐요.",
-    choices: [
-      { id: "direct", text: "민서는 어디로 나갔나요?", feedback: "이건 글에 나온 내용을 바로 확인하는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "infer", text: "민서는 어떤 마음으로 앞으로 나갔을까요?", feedback: "이건 민서의 마음을 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." },
-      { id: "wrong", text: "민서는 몇 시에 발표했나요?", feedback: "시간은 글에 나오지 않아. 글 속 장면과 연결되지 않는 질문이야." },
-      { id: "weak", text: "발표는 재미있나요?", feedback: "글 속 장면과 연결이 약해. 민서의 행동에서 떠오른 생각이나 느낌을 물어야 해." },
-      { id: "opinion", text: "민서의 행동에 대해 어떻게 생각하나요?", feedback: "좋아! 민서가 걱정했지만 앞으로 나간 장면을 읽고, 읽은 사람의 생각을 말하게 하는 질문이야." }
-    ]
-  },
-  {
-    story: "서아는 자신이 아끼던 책갈피를 잃어버린 친구에게 건네주었어요. 친구가 고맙다고 말하자 서아는 조금 아쉬웠지만 웃으며 고개를 끄덕였어요.",
-    highlight: "아끼던 책갈피를",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 아끼던 물건을 친구에게 줌",
-      "내 생각 → 아쉬워도 친구를 배려한 모습이 따뜻함",
-      "질문 힌트 → 이 장면에서 내 마음에 남은 부분을 떠올리기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 골라 봐요.",
-    choices: [
-      { id: "wrong", text: "책갈피는 무슨 색이었나요?", feedback: "책갈피 색은 글에 나오지 않아. 글에 없는 내용을 묻는 질문이야." },
-      { id: "infer", text: "서아는 왜 웃으며 고개를 끄덕였을까요?", feedback: "이건 서아의 마음이나 이유를 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." },
-      { id: "direct", text: "서아는 친구에게 무엇을 건네주었나요?", feedback: "이건 글에 바로 나온 내용을 묻는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "opinion", text: "이 장면에서 가장 마음에 남는 부분은 무엇인가요?", feedback: "정답! 아끼던 물건을 친구에게 준 장면을 읽고, 읽은 사람의 생각이나 느낌을 말하게 하는 질문이야." },
-      { id: "weak", text: "서아는 앞으로 어떻게 살까요?", feedback: "너무 넓은 질문이야. 지금 장면에서 떠오른 생각이나 느낌으로 물어보자." }
-    ]
-  }
-];
-const connectBasicQuestions = [
-  {
-    story: "지호는 무거운 책을 들고 가는 친구를 보고 말없이 다가가 책을 함께 들어 주었어요. 친구는 지호에게 고맙다고 말했어요.",
-    highlight: "책을 함께 들어 주었어요",
-    supportTitle: "연결 다리",
-    supportCards: [
-      "책 속 장면 → 친구의 무거운 책을 함께 들어 줌",
-      "내 삶으로 건너가기 → 내가 도와주었거나 도움받았던 일을 떠올림",
-      "연결 질문 힌트 → 책 속 도움 장면과 내 경험을 이어 묻기"
-    ],
-    guideText: "책 속 장면과 내 경험을 이어 주는 질문을 골라 봐요.",
-    choices: [
-      { id: "direct", text: "지호는 친구에게 무엇을 해 주었나요?", feedback: "이건 글에 바로 나온 내용을 묻는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "infer", text: "지호는 왜 말없이 다가갔을까요?", feedback: "이건 지호의 행동 이유를 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." },
-      { id: "opinion", text: "지호의 행동을 보고 어떤 생각이 들었나요?", feedback: "이건 읽은 사람의 생각이나 느낌을 묻는 질문이야. 하지만 내 경험과 연결되지는 않았어." },
-      { id: "connect", text: "나도 누군가를 도와주거나 도움받은 경험이 있나요?", feedback: "좋아! 책 속 도움 장면을 내 경험과 연결하는 질문이야." },
-      { id: "wrong", text: "친구는 어떤 색 책가방을 메고 있었나요?", feedback: "책가방 색은 글에 나오지 않아. 글 속 장면과 내 경험을 이어 주는 질문을 골라야 해." }
-    ]
-  },
-  {
-    story: "민아는 새로운 모둠에 들어가 처음에는 어색했지만, 친구들의 이야기를 조용히 듣고 자기 생각도 조금씩 말했어요.",
-    highlight: "새로운 모둠",
-    supportTitle: "연결 다리",
-    supportCards: [
-      "책 속 장면 → 낯선 모둠에서 조금씩 참여함",
-      "내 삶으로 건너가기 → 나도 새 친구나 새 모둠이 어색했던 일을 떠올림",
-      "연결 질문 힌트 → 책 속 어색한 상황과 내 학교생활을 이어 묻기"
-    ],
-    guideText: "책 속 장면과 내 경험을 이어 주는 질문을 골라 봐요.",
-    choices: [
-      { id: "wrong", text: "민아는 어디에 살았나요?", feedback: "사는 곳은 글에 나오지 않아. 글에 없는 내용을 묻고 있어." },
-      { id: "connect", text: "나도 새 친구나 새 모둠에서 어색했던 경험이 있나요?", feedback: "맞아! 책 속 모둠 장면과 내 학교생활 경험을 연결하고 있어." },
-      { id: "direct", text: "민아는 무엇을 조금씩 말했나요?", feedback: "이건 글에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "opinion", text: "민아의 모습을 보고 어떤 생각이 들었나요?", feedback: "생각이나 느낌을 묻고 있지만, 내 경험과 연결되지는 않았어." },
-      { id: "infer", text: "민아는 왜 처음에 어색했을까요?", feedback: "이건 인물의 이유를 짐작하는 질문에 가까워." }
-    ]
-  },
-  {
-    story: "서준이는 자기 차례가 아니었지만 교실 바닥에 떨어진 종이를 보고 조용히 주워 쓰레기통에 넣었어요.",
-    highlight: "조용히 주워",
-    supportTitle: "연결 다리",
-    supportCards: [
-      "책 속 장면 → 아무도 시키지 않았지만 교실을 정리함",
-      "내 삶으로 건너가기 → 내가 스스로 교실이나 주변을 정리했던 일을 떠올림",
-      "연결 질문 힌트 → 책 속 행동과 내 생활 속 실천을 이어 묻기"
-    ],
-    guideText: "책 속 장면과 내 경험을 이어 주는 질문을 골라 봐요.",
-    choices: [
-      { id: "opinion", text: "서준이의 행동을 보고 어떤 생각이 들었나요?", feedback: "이건 생각이나 느낌을 묻는 질문이야. 내 생활 속 경험과 연결되지는 않았어." },
-      { id: "direct", text: "서준이는 무엇을 주웠나요?", feedback: "이건 글에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "wrong", text: "서준이는 몇 학년인가요?", feedback: "학년은 글에 나오지 않아." },
-      { id: "infer", text: "서준이는 왜 종이를 주웠을까요?", feedback: "이건 서준이의 이유를 짐작하는 질문에 가까워." },
-      { id: "connect", text: "나도 누가 시키지 않아도 주변을 정리한 경험이 있나요?", feedback: "정답! 책 속 행동을 내 생활 속 경험과 연결하고 있어." }
-    ]
-  }
-];
+      opinion: [
+        {
+          story: "거북이는 느리지만 포기하지 않고 끝까지 걸었어요. 결국 많은 친구들이 거북이를 응원했어요.",
+          highlight: "포기하지 않고 끝까지",
+          supportTitle: "생각할 부분",
+          supportCards: ["거북이는 느렸어요.", "하지만 포기하지 않았어요.", "친구들이 응원했어요."],
+          guideText: "책을 읽은 나의 생각이나 느낌을 말할 수 있는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "거북이를 보며 어떤 생각이 들었나요?", feedback: "맞아! 읽은 사람이 자기 생각이나 느낌을 말할 수 있는 질문이야." },
+            { id: "wrong", text: "거북이는 어디까지 걸었나요?", feedback: "이건 글에서 답을 찾는 질문에 가까워." },
+            { id: "wrong", text: "거북이는 왜 느렸을까요?", feedback: "이건 이유를 짐작하는 질문에 가까워." }
+          ]
+        },
+        {
+          story: "민서는 무서웠지만 동생의 손을 꼭 잡고 어두운 복도를 지나갔어요.",
+          highlight: "무서웠지만 동생의 손을 꼭 잡고",
+          supportTitle: "생각할 부분",
+          supportCards: ["민서는 무서웠어요.", "동생의 손을 잡았어요.", "어두운 복도를 지나갔어요."],
+          guideText: "나의 생각이나 느낌이 드러나는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "나라면 민서처럼 행동할 수 있을까요?", feedback: "좋아! 책 속 행동을 보고 내 생각을 말할 수 있는 질문이야." },
+            { id: "wrong", text: "민서는 누구의 손을 잡았나요?", feedback: "이건 글에서 바로 답을 찾는 질문이야." },
+            { id: "wrong", text: "민서는 왜 복도를 지나갔을까요?", feedback: "이건 이유를 짐작하는 질문에 가까워." }
+          ]
+        }
+      ],
+
+      connect: [
+        {
+          story: "지호는 무거운 책을 들고 가는 친구를 보고 함께 들어 주었어요.",
+          highlight: "친구를 보고 함께 들어 주었어요",
+          supportTitle: "연결할 부분",
+          supportCards: ["친구가 무거운 책을 들고 있었어요.", "지호가 함께 들어 주었어요."],
+          guideText: "책 속 장면과 나의 경험을 연결하는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "나도 누군가를 도와준 경험이 있나요?", feedback: "맞아! 책 속 장면을 내 경험과 연결하는 질문이야." },
+            { id: "wrong", text: "지호는 무엇을 들어 주었나요?", feedback: "이건 글에서 바로 답을 찾는 질문이야." },
+            { id: "wrong", text: "지호는 왜 친구를 도왔을까요?", feedback: "이건 마음이나 이유를 짐작하는 질문이야." }
+          ]
+        },
+        {
+          story: "서준이는 교실 바닥에 떨어진 종이를 보고 조용히 주워 버렸어요.",
+          highlight: "조용히 주워 버렸어요",
+          supportTitle: "연결할 부분",
+          supportCards: ["교실 바닥에 종이가 떨어져 있었어요.", "서준이가 조용히 주워 버렸어요."],
+          guideText: "내 생활과 연결되는 질문을 골라 봐요.",
+          choices: [
+            { id: "correct", text: "나도 누가 시키지 않아도 주변을 정리한 경험이 있나요?", feedback: "좋아! 책 속 행동을 내 생활과 연결하는 질문이야." },
+            { id: "wrong", text: "서준이는 무엇을 주웠나요?", feedback: "이건 글에서 바로 답을 찾는 질문이야." },
+            { id: "wrong", text: "서준이는 왜 조용히 주웠을까요?", feedback: "이건 짐작 질문에 가까워." }
+          ]
+        }
+      ]
+    };
 
     /*
       =========================================================
       4. 심화 연습 문제 데이터
+      - 각 유형 2문제
       =========================================================
     */
 
-    const directDeepQuestions = [
-      {
-        mode: "choice",
-        story: "유찬이는 운동장 가장자리에서 빨간 줄넘기를 주웠어요. 줄넘기에는 ‘2학년 3반’이라고 적혀 있었어요.",
-        highlight: "빨간 줄넘기",
-        supportTitle: "답",
-        supportCards: ["빨간 줄넘기"],
-        guideText: "답과 직접 연결되는 질문 낱말을 골라 질문을 완성해 봐요.",
-        frameBefore: "유찬이는 운동장에서 ",
-        frameAfter: "을/를 주웠나요?",
-        choices: [
-          { id: "direct", word: "무엇", feedback: "맞아! 답이 ‘빨간 줄넘기’이므로 ‘무엇’이 자연스러워." },
-          { id: "wrong", word: "왜", feedback: "이유는 글에 바로 나오지 않아." },
-          { id: "wrong", word: "언제", feedback: "시간은 글에 나오지 않아." }
-        ]
-      },
-      {
-        mode: "write",
-        story: "소민이는 창가에 놓인 노란 화분에 물을 주었어요. 화분 옆에는 작은 이름표가 꽂혀 있었어요.",
-        highlight: "노란 화분에 물을 주었어요",
-        supportTitle: "답",
-        supportCards: ["소민이는 노란 화분에 물을 주었어요."],
-        guideText: "글에서 바로 답을 찾을 수 있는 질문을 직접 써 봐요.",
-        placeholder: "예: 소민이는 무엇에 물을 주었나요?",
-        checker: "direct"
-      }
-    ];
+    const deepQuestions = {
+      direct: [
+        {
+          story: "수아는 방과 후 미술실에서 빨간색 물감으로 꽃 그림을 그렸어요.",
+          guide: "글에서 바로 답을 찾을 수 있는 질문을 직접 써 봐요.",
+          answerHint: "예: 수아는 어디에서 꽃 그림을 그렸나요? / 수아는 무슨 색 물감으로 꽃 그림을 그렸나요?"
+        },
+        {
+          story: "태오는 운동장에서 친구들과 줄넘기를 했어요. 줄넘기는 노란색이었어요.",
+          guide: "글에 바로 나와 있는 내용으로 답할 수 있는 질문을 써 봐요.",
+          answerHint: "예: 태오는 어디에서 줄넘기를 했나요? / 줄넘기는 무슨 색이었나요?"
+        }
+      ],
 
-    const inferDeepQuestions = [
-      {
-        mode: "choice",
-        story: "도윤이는 새 공책을 받은 뒤 이름을 또박또박 적었어요. 그리고 첫 장을 조심스럽게 넘겼어요.",
-        highlight: "조심스럽게 넘겼어요",
-        supportTitle: "짐작 단서",
-        supportCards: ["행동 단서 → 이름을 또박또박 적음", "생각 단서 → 새 공책을 소중히 여기고 싶음"],
-        guideText: "인물의 대답을 보고 질문 낱말을 골라 봐요.",
-        dialogue: { answer: "새 공책을 깨끗하게 잘 쓰고 싶었어." },
-        frameBefore: "도윤이는 새 공책을 보며 ",
-        frameAfter: " 생각을 했을까요?",
-        choices: [
-          { id: "infer", word: "무슨", feedback: "좋아! 인물의 생각을 단서로 짐작하는 질문이야." },
-          { id: "wrong", word: "어디", feedback: "장소를 묻는 질문이 아니야." },
-          { id: "wrong", word: "무엇", feedback: "물건을 바로 찾는 질문이 아니야." }
-        ]
-      },
-      {
-        mode: "write",
-        story: "준서는 길에 떨어진 색연필을 주웠어요. 잠시 바라보다가 선생님 책상 위에 올려 두었어요.",
-        highlight: "선생님 책상 위에 올려 두었어요",
-        supportTitle: "짐작 단서",
-        supportCards: ["인물 → 준서", "물건 → 색연필", "행동 → 선생님 책상 위에 올려 둠", "짐작 → 주인을 찾아 주려는 마음"],
-        guideText: "글 속 단서와 연결되는 짐작 질문을 직접 써 봐요.",
-        placeholder: "예: 준서는 색연필을 왜 선생님 책상 위에 올려 두었을까요?",
-        checker: "infer"
-      }
-    ];
+      infer: [
+        {
+          story: "유나는 친구가 혼자 앉아 있는 것을 보고 옆자리에 조용히 앉았어요. 친구는 조금 뒤 미소를 지었어요.",
+          guide: "인물의 말이나 행동을 보고 마음을 짐작하는 질문을 써 봐요.",
+          answerHint: "예: 유나는 어떤 마음으로 친구 옆에 앉았을까요?"
+        },
+        {
+          story: "동현이는 시험지를 받은 뒤 한숨을 쉬었어요. 하지만 다시 연필을 잡고 천천히 문제를 풀기 시작했어요.",
+          guide: "앞뒤 단서를 보고 짐작할 수 있는 질문을 써 봐요.",
+          answerHint: "예: 동현이는 시험지를 보고 어떤 마음이었을까요?"
+        }
+      ],
 
-   const opinionDeepQuestions = [
-  {
-    mode: "choice",
-    story: "가은이는 달리기에서 꼴찌를 했지만 결승선까지 멈추지 않고 뛰었어요. 친구들은 박수를 쳐 주었어요.",
-    highlight: "멈추지 않고 뛰었어요",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 꼴찌였지만 결승선까지 멈추지 않음",
-      "내 생각 → 포기하지 않는 모습이 멋지다고 느낌",
-      "질문 힌트 → 인물의 행동을 보고 내가 떠올린 생각을 말하게 하기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 골라 봐요.",
-    frameBefore: "가은이가 끝까지 달린 모습을 보고, ",
-    frameAfter: "",
-    choices: [
-      { id: "infer", word: "가은이는 왜 끝까지 달렸을까요?", feedback: "이건 가은이의 이유를 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." },
-      { id: "direct", word: "가은이는 어디까지 뛰었나요?", feedback: "이건 글에 나온 내용을 바로 확인하는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "opinion", word: "나는 어떤 생각이 들었나요?", feedback: "좋아! 가은이의 행동을 읽고, 읽은 사람이 자기 생각을 말하게 하는 질문이야." }
-    ]
-  },
-  {
-    mode: "choice",
-    story: "민준이는 친구가 실수로 물을 쏟자 먼저 휴지를 가져왔어요. 친구가 미안하다고 하자 ‘괜찮아’ 하고 말했어요.",
-    highlight: "괜찮아",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 실수한 친구를 먼저 도와줌",
-      "내 생각 → 친구를 탓하지 않고 도와주는 모습이 따뜻함",
-      "질문 힌트 → 내가 그 자리에 있었다면 어떻게 말했을지 떠올리기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 골라 봐요.",
-    frameBefore: "민준이가 친구를 도와준 장면을 읽고, ",
-    frameAfter: "",
-    choices: [
-      { id: "direct", word: "민준이는 무엇을 가져왔나요?", feedback: "이건 글에 바로 나온 내용을 묻는 질문이야. 책 내용에서 바로 답을 찾을 수 있는 질문이야." },
-      { id: "opinion", word: "나라면 어떻게 말했을까요?", feedback: "좋아! 읽은 사람이 자기 생각과 느낌을 말하게 하는 질문이야." },
-      { id: "infer", word: "민준이는 왜 휴지를 가져왔을까요?", feedback: "이건 민준이의 행동 이유를 짐작하는 질문이야. 책 내용에서 답을 짐작할 수 있는 질문에 가까워." }
-    ]
-  },
-  {
-    mode: "write",
-    story: "하윤이는 모둠 발표를 하던 친구가 말을 잊어버리자 조용히 손짓으로 다음 순서를 알려 주었어요. 발표가 끝나자 친구는 하윤이를 보고 활짝 웃었어요.",
-    highlight: "손짓으로 다음 순서를",
-    supportTitle: "생각 흐름",
-    supportCards: [
-      "읽은 장면 → 발표 중 어려워하는 친구를 조용히 도와줌",
-      "내 생각 → 친구가 창피하지 않게 도와준 점이 배려 깊음",
-      "질문 힌트 → 이 장면을 읽은 내 생각이나 느낌이 드러나게 묻기"
-    ],
-    guideText: "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 직접 써 봐요.",
-    placeholder: "예: 나라면 하윤이처럼 친구를 조용히 도와줄 수 있을까요?",
-    checker: "opinion"
-  }
-];
-const connectDeepQuestions = [
-  {
-  mode: "choice",
-  story: "하린이는 친구가 실수로 물을 쏟자 웃지 않고 휴지를 가져와 함께 닦아 주었어요.",
-  highlight: "함께 닦아 주었어요",
-  supportTitle: "연결 다리",
-  supportCards: [
-    "책 속 장면 → 친구의 실수를 웃지 않고 도와줌",
-    "내 삶으로 건너가기 → 나도 친구의 실수를 이해해 준 일이 있는지 떠올림",
-    "연결 질문 힌트 → 책 속 배려 장면을 내 경험과 연결하기"
-  ],
-  guideText: "이야기글과 관련된 경험 질문 키워드를 골라 봐요.",
-  frameBefore: "나도 ",
-  frameAfter: " 경험이 있나요?",
-  choices: [
-    {
-      id: "wrong",
-      word: "내가 좋아하는 음식을 먹은",
-      feedback: "좋아하는 음식은 친구의 실수를 도와준 장면과 연결이 약해."
-    },
-    {
-      id: "connect",
-      word: "친구의 실수를 이해해 준",
-      feedback: "좋아! 친구가 실수했을 때 웃지 않고 도와준 장면과 내 경험이 자연스럽게 이어져."
-    },
-    {
-      id: "direct",
-      word: "글에서 휴지를 찾은",
-      feedback: "이건 글에서 바로 답을 찾는 쪽이야. 내 경험과 연결되는 말은 아니야."
-    },
-    {
-      id: "infer",
-      word: "하린이가 왜 웃지 않았는지 짐작한",
-      feedback: "이건 인물의 이유를 짐작하는 쪽이야. 내 경험과 연결하는 말은 아니야."
-    }
-  ]
-},
-  {
-  mode: "choice",
-  story: "도윤이는 발표가 어려운 친구 옆에서 작은 목소리로 ‘천천히 해도 괜찮아’라고 말해 주었어요.",
-  highlight: "천천히 해도 괜찮아",
-  supportTitle: "연결 다리",
-  supportCards: [
-    "책 속 장면 → 발표를 어려워하는 친구를 응원함",
-    "내 삶으로 건너가기 → 나도 긴장한 친구를 응원하거나 응원받은 일을 떠올림",
-    "연결 질문 힌트 → 책 속 응원 장면을 내 학교생활과 연결하기"
-  ],
-  guideText: "이야기글과 관련된 경험 질문 키워드를 골라 봐요.",
-  frameBefore: "나도 ",
-  frameAfter: " 경험이 있나요?",
-  choices: [
-    {
-      id: "infer",
-      word: "도윤이가 왜 말했는지 짐작한",
-      feedback: "이건 인물의 이유를 짐작하는 말이야. 내 경험과 연결되지는 않았어."
-    },
-    {
-      id: "direct",
-      word: "발표 시간이 언제였는지 찾은",
-      feedback: "이건 글에서 바로 답을 찾는 말이야. 경험 질문 키워드로는 맞지 않아."
-    },
-    {
-      id: "connect",
-      word: "긴장한 친구를 응원하거나 응원받은",
-      feedback: "맞아! 발표를 어려워하는 친구를 응원한 장면과 내 학교생활 경험이 이어져."
-    },
-    {
-      id: "opinion",
-      word: "이 장면이 좋았는지 생각한",
-      feedback: "생각이나 느낌은 들어가지만, 내 경험과 직접 연결되지는 않았어."
-    }
-  ]
-},
-  {
-    mode: "write",
-    story: "유진이는 쉬는 시간에 혼자 앉아 있는 친구를 보고 자신이 하던 놀이를 멈추고 다가가 함께 놀자고 말했어요.",
-    highlight: "함께 놀자고",
-    supportTitle: "연결 다리",
-    supportCards: [
-      "책 속 장면 → 혼자 있는 친구에게 먼저 다가감",
-      "내 삶으로 건너가기 → 내가 먼저 다가갔거나 누군가 다가와 준 경험을 떠올림",
-      "연결 질문 힌트 → 책 속 장면과 내 경험이 함께 드러나게 묻기"
-    ],
-    guideText: "책 속 장면과 내 경험이 함께 드러나는 질문을 직접 써 봐요.",
-    placeholder: "예: 나도 혼자 있는 친구에게 먼저 다가간 경험이 있나요?",
-    checker: "connect"
-  }
-];
+      opinion: [
+        {
+          story: "주인공은 실수했지만 솔직하게 말하고 다시 고치려고 노력했어요.",
+          guide: "책을 읽은 나의 생각이나 느낌을 말할 수 있는 질문을 써 봐요.",
+          answerHint: "예: 주인공의 행동에 대해 어떻게 생각하나요?"
+        },
+        {
+          story: "작은 새는 여러 번 떨어졌지만 다시 날개를 펴고 날아오르려고 했어요.",
+          guide: "읽고 난 뒤 내 생각이나 느낌을 묻는 질문을 써 봐요.",
+          answerHint: "예: 작은 새를 보며 어떤 생각이 들었나요?"
+        }
+      ],
+
+      connect: [
+        {
+          story: "민재는 새로 전학 온 친구에게 먼저 말을 걸어 주었어요.",
+          guide: "책 속 장면과 나의 경험을 연결하는 질문을 써 봐요.",
+          answerHint: "예: 나도 낯선 친구에게 먼저 말을 걸어 본 경험이 있나요?"
+        },
+        {
+          story: "지우는 친구에게 미안하다고 말하고 다시 사이좋게 놀았어요.",
+          guide: "내 생활이나 경험과 연결되는 질문을 써 봐요.",
+          answerHint: "예: 나도 친구에게 미안하다고 말한 경험이 있나요?"
+        }
+      ]
+    };
+
     /*
       =========================================================
-      5. 화면 이동 함수
+      5. 총 복습 데이터
       =========================================================
     */
 
-    function goPractice() {
-      window.location.href = "./practice.html";
-    }
+    const reviewStory = {
+      title: "비밀 책갈피",
+      parts: [
+        {
+          text: "서윤이는 책장 아래에 떨어진 작은 책갈피를 발견했어요.",
+          hintTypes: ["direct"]
+        },
+        {
+          text: "책갈피에는 반짝이는 별 그림과 함께 ‘민준’이라는 이름이 적혀 있었어요.",
+          hintTypes: ["direct"]
+        },
+        {
+          text: "서윤이는 책갈피를 주머니에 넣지 않고 분실물 상자에 조심스럽게 넣었어요.",
+          hintTypes: ["infer", "opinion"]
+        },
+        {
+          text: "민준이는 책갈피를 잃어버려서 걱정하고 있었어요.",
+          hintTypes: ["infer"]
+        },
+        {
+          text: "민준이는 ‘할머니가 만들어 주신 거라 정말 소중했어. 고마워!’라고 말했어요.",
+          hintTypes: ["infer", "opinion", "connect"]
+        },
+        {
+          text: "서윤이는 작은 물건도 누군가에게는 아주 소중할 수 있다는 것을 알게 되었어요.",
+          hintTypes: ["opinion", "connect"]
+        }
+      ]
+    };
+
+    /*
+      =========================================================
+      6. 공통 함수
+      =========================================================
+    */
 
     function saveProgress() {
       sessionStorage.setItem(progressKey, JSON.stringify(progress));
     }
 
     function getSelectedQuestionType() {
-      return questionTypes.find(function(item) { return item.id === selectedQuestionType; });
+      return questionTypes.find(function(item) {
+        return item.id === selectedQuestionType;
+      });
     }
 
-function isTypeOpen(typeId) {
-  // 1번 질문은 처음부터 열려 있습니다.
-  if (typeId === "direct") return true;
+    function isTypeOpen(typeId) {
+      if (typeId === "direct") return true;
+      if (typeId === "infer") return progress.direct;
+      if (typeId === "opinion") return progress.infer;
+      if (typeId === "connect") return progress.opinion;
+      return false;
+    }
 
-  // 2번 질문은 1번을 완료하면 열립니다.
-  if (typeId === "infer") return progress.direct === true;
+    function canStartReview() {
+      return progress.direct && progress.infer && progress.opinion && progress.connect;
+    }
 
-  // 3번 질문은 2번을 완료하면 열립니다.
-  if (typeId === "opinion") return progress.infer === true;
+    function goPractice() {
+      window.location.href = "during-read.html";
+    }
 
-  // 4번 질문은 3번을 완료하면 열립니다.
-  if (typeId === "connect") return progress.opinion === true;
+    function goSelectScreen() {
+      currentScreen = "select";
+      selectedQuestionType = null;
+      renderSelectScreen();
+    }
 
-  return false;
-}
-function canStartReview() {
-  // 4번 질문은 앞의 질문들을 끝내야 열리므로,
-  // 4번 질문 완료 여부만 보고 총 복습을 열어 줍니다.
-  return progress.connect === true;
-}
     function selectQuestionType(typeId) {
       if (!isTypeOpen(typeId)) return;
+
       selectedQuestionType = typeId;
+      currentScreen = "method";
       keywordRevealed = false;
+
+      methodExampleOpen = false;
+      methodExampleIndex = 0;
+
       currentBasicIndex = 0;
-      currentDeepIndex = 0;
       selectedBasicChoice = null;
-      selectedDeepChoice = null;
+
+      currentDeepIndex = 0;
       deepInputValue = "";
       deepChecked = false;
       deepResult = null;
+
       renderMethodScreen();
     }
-
-   function goSelectScreen() {
-  currentScreen = "select";
-  selectedQuestionType = null;
-  renderSelectScreen();
-}
 
     function goMethodScreen() {
       currentScreen = "method";
       keywordRevealed = false;
+      methodExampleOpen = false;
+      methodExampleIndex = 0;
       selectedBasicChoice = null;
-      selectedDeepChoice = null;
       deepInputValue = "";
       deepChecked = false;
       deepResult = null;
@@ -2074,1008 +1824,354 @@ function canStartReview() {
     function goDeepPracticeScreen() {
       currentScreen = "deep";
       currentDeepIndex = 0;
-      selectedDeepChoice = null;
       deepInputValue = "";
       deepChecked = false;
       deepResult = null;
       renderDeepPracticeScreen();
     }
-function goReviewScreen() {
-  currentScreen = "review";
 
-  // 총 복습 화면 상태 초기화
-  reviewSelectedPartIndex = null;
-  reviewSelectedType = null;
-  reviewQuestionInput = "";
-  reviewAnswerInput = "";
-  reviewChecked = false;
-  reviewResult = null;
+    function goReviewScreen() {
+      if (!canStartReview()) return;
 
-  renderReviewScreen();
-}
+      currentScreen = "review";
+      reviewSelectedPartIndex = null;
+      reviewSelectedType = null;
+      reviewQuestionInput = "";
+      reviewAnswerInput = "";
+      reviewChecked = false;
+      reviewResult = null;
 
-function renderReviewScreen() {
-  const app = document.getElementById("app");
-
-  const completedCount = Object.keys(reviewCompletedQuestions).filter(function(key) {
-    return reviewCompletedQuestions[key] !== null;
-  }).length;
-
-  app.innerHTML =
-    '<section class="screen review-screen-compact">' +
-      '<div class="screen-title-row review-title-row">' +
-        '<div>' +
-          '<span class="title-badge">총 복습</span>' +
-          '<h1 class="main-title">질문의 힘을 모아 글을 깊이 읽어요</h1>' +
-          '<p class="main-desc">한 편의 글을 읽고, 질문 종류를 골라 알맞은 질문과 답을 직접 만들어 봐요.</p>' +
-        '</div>' +
-        '<div class="progress-pill">질문 보석 ' + completedCount + ' / 4</div>' +
-      '</div>' +
-
-      '<div class="review-layout compact">' +
-
-        '<article class="review-book compact">' +
-          '<div class="review-book-header">' +
-            '<p class="section-label">읽을 글</p>' +
-            '<h2 class="review-story-title">' + reviewStory.title + '</h2>' +
-          '</div>' +
-
-          '<div class="review-story-full">' +
-            reviewStory.parts.map(function(part) {
-              return '<p>' + part.text + '</p>';
-            }).join("") +
-          '</div>' +
-
-          '<div class="method-actions compact-actions">' +
-            '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-          '</div>' +
-        '</article>' +
-
-        '<article class="review-workshop compact">' +
-          '<div class="review-workshop-top">' +
-            '<p class="section-label">질문 제작대</p>' +
-            renderReviewStatus() +
-          '</div>' +
-
-          renderReviewTypeButtons() +
-          renderReviewInputArea() +
-
-          '<div class="lumi-feedback ' + getReviewFeedbackClass() + '">' +
-            '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-            '<p>' + getReviewFeedbackText() + '</p>' +
-          '</div>' +
-
-          '<div class="method-actions compact-actions">' +
-            '<button class="plain-button" type="button" onclick="resetReviewForm()">다시 하기</button>' +
-            renderReviewMainButton(completedCount) +
-          '</div>' +
-        '</article>' +
-
-      '</div>' +
-    '</section>';
-}
-
-
-/* 여기부터 3단계 코드 붙이기 */
-function renderReviewMainButton(completedCount) {
-  // 4개 질문을 모두 통과하면 같은 버튼이 다음 활동 버튼으로 바뀝니다.
-  if (completedCount === 4) {
-    return '<button class="main-button" type="button" onclick="finishReviewPractice()">다음 활동으로 가기 →</button>';
-  }
-
-  // 현재 쓴 질문이 통과되면, 다음 질문을 만들 수 있게 버튼을 바꿉니다.
-  if (reviewChecked && reviewResult && reviewResult.ok) {
-    return '<button class="main-button" type="button" onclick="prepareNextReviewQuestion()">다른 질문 만들기 →</button>';
-  }
-
-  // 평소에는 루미에게 확인 받기 버튼입니다.
-  return '<button class="main-button" type="button" onclick="checkReviewQuestion()">루미에게 확인 받기</button>';
-}
-
-function prepareNextReviewQuestion() {
-  // 통과한 질문은 질문현황에 남기고,
-  // 입력창만 비워서 다음 질문을 만들 수 있게 합니다.
-  reviewSelectedType = null;
-  reviewQuestionInput = "";
-  reviewAnswerInput = "";
-  reviewChecked = false;
-  reviewResult = null;
-
-  renderReviewScreen();
-}
-function finishReviewPractice() {
-  // 총 복습 완료 기록을 저장합니다.
-  // practice.html에서 이 값을 보고 '우리반 책읽기'를 열어 줄 예정입니다.
-  sessionStorage.setItem("duringReadingReviewDone_" + studentId, "true");
-
-  // 읽기 중 질문 연습 전체 완료 기록도 함께 저장합니다.
-  sessionStorage.setItem("duringReadingPracticeDone_" + studentId, "true");
-
-  // 연습하기 화면으로 돌아갑니다.
-  window.location.href = "./practice.html";
-}
-function renderReviewStatus() {
-  return '' +
-    '<div class="review-status">' +
-      '<div class="review-status-title">질문현황</div>' +
-      '<div class="review-status-list">' +
-        renderReviewStatusItem("direct", "바로 찾기") +
-        renderReviewStatusItem("infer", "짐작하기") +
-        renderReviewStatusItem("opinion", "생각/느낌") +
-        renderReviewStatusItem("connect", "삶과 연결") +
-      '</div>' +
-    '</div>';
-}
-
-function renderReviewStatusItem(type, label) {
-  const done = reviewCompletedQuestions[type] !== null;
-
-  return '' +
-    '<div class="review-status-item ' + (done ? 'done' : '') + '">' +
-      (done ? '◆ ' : '◇ ') + label +
-    '</div>';
-}
-
-function renderReviewSelectedBox() {
-  if (reviewSelectedPartIndex === null) {
-    return '' +
-      '<div class="review-selected-box">' +
-        '<strong>선택한 부분</strong>' +
-        '왼쪽 글에서 질문을 만들 부분을 먼저 골라 봐요.' +
-      '</div>';
-  }
-
-  return '' +
-    '<div class="review-selected-box">' +
-      '<strong>선택한 부분</strong>' +
-      '“' + reviewStory.parts[reviewSelectedPartIndex].text + '”' +
-    '</div>';
-}
-
-function renderReviewTypeButtons() {
-  return '' +
-    '<p class="section-label" style="margin-top: 6px;">질문 종류 선택</p>' +
-    '<div class="review-type-grid">' +
-      renderReviewTypeButton("direct", "책 내용에서 바로 답을 찾을 수 있는 질문") +
-      renderReviewTypeButton("infer", "책 내용에서 답을 짐작할 수 있는 질문") +
-      renderReviewTypeButton("opinion", "책을 읽고 떠오른 생각이나 느낌에 대한 질문") +
-      renderReviewTypeButton("connect", "자신의 삶과 관련짓는 질문") +
-    '</div>';
-}
-
-function renderReviewTypeButton(type, label) {
-  const selectedClass = reviewSelectedType === type ? ' selected' : '';
-
-  return '' +
-    '<button class="review-type-button' + selectedClass + '" type="button" onclick="selectReviewType(\'' + type + '\')">' +
-      label +
-    '</button>';
-}
-
-function renderReviewInputArea() {
-  return '' +
-    '<label class="review-input-label">질문 쓰기</label>' +
-    '<textarea class="review-input" placeholder="질문을 써 봐요." oninput="updateReviewQuestion(this.value)">' + reviewQuestionInput + '</textarea>' +
-
-    '<label class="review-input-label">' + getReviewAnswerLabel() + '</label>' +
-    '<textarea class="review-input" placeholder="' + getReviewAnswerPlaceholder() + '" oninput="updateReviewAnswer(this.value)">' + reviewAnswerInput + '</textarea>';
-}
-
-function getReviewAnswerLabel() {
-  if (reviewSelectedType === "infer") return "내가 생각한 답";
-  if (reviewSelectedType === "opinion") return "내 생각/느낌";
-  if (reviewSelectedType === "connect") return "내 경험";
-  return "답";
-}
-
-function getReviewAnswerPlaceholder() {
-  if (reviewSelectedType === "infer") {
-    return "글 속 단서를 보고 짐작한 답을 써 봐요.";
-  }
-
-  if (reviewSelectedType === "opinion") {
-    return "이 장면을 읽고 든 내 생각이나 느낌을 써 봐요.";
-  }
-
-  if (reviewSelectedType === "connect") {
-    return "내 경험이나 생활과 연결해서 써 봐요.";
-  }
-
-  return "글에서 바로 찾을 수 있는 답을 써 봐요.";
-}
-function selectReviewPart(index) {
-  // 왼쪽 글에서 질문 만들 부분을 선택합니다.
-  reviewSelectedPartIndex = index;
-
-  // 새 부분을 고르면 이전 검사 결과는 지웁니다.
-  reviewChecked = false;
-  reviewResult = null;
-
-  renderReviewScreen();
-}
-
-function selectReviewType(type) {
-  // 만들 질문 종류를 선택합니다.
-  reviewSelectedType = type;
-
-  // 질문 종류를 바꾸면 이전 검사 결과는 지웁니다.
-  reviewChecked = false;
-  reviewResult = null;
-
-  renderReviewScreen();
-}
-
-function updateReviewQuestion(value) {
-  // 학생이 쓴 질문을 저장합니다.
-  reviewQuestionInput = value;
-
-  // 다시 쓰면 이전 검사 결과는 지웁니다.
-  reviewChecked = false;
-  reviewResult = null;
-}
-
-function updateReviewAnswer(value) {
-  // 학생이 쓴 답, 생각, 경험을 저장합니다.
-  reviewAnswerInput = value;
-
-  // 다시 쓰면 이전 검사 결과는 지웁니다.
-  reviewChecked = false;
-  reviewResult = null;
-}
-
-function resetReviewForm() {
-  // 현재 작성 중인 질문만 초기화합니다.
-  reviewSelectedPartIndex = null;
-  reviewSelectedType = null;
-  reviewQuestionInput = "";
-  reviewAnswerInput = "";
-  reviewChecked = false;
-  reviewResult = null;
-
-  renderReviewScreen();
-}
-function getReviewFeedbackClass() {
-  // 아직 검사 전이면 기본 피드백 박스입니다.
-  if (!reviewChecked) return "";
-
-  // 검사 후 정답이면 초록빛, 보완 필요하면 주황빛으로 표시합니다.
-  return reviewResult && reviewResult.ok ? "good" : "need";
-}
-
-function getReviewFeedbackText() {
-  // 아직 루미에게 검사받기 전 안내 문구입니다.
-  if (!reviewChecked) {
-    if (!reviewSelectedType) {
-      return "먼저 만들고 싶은 질문 종류를 골라 봐. 글을 다시 살펴보면서 어떤 질문을 만들지 떠올려 보자.";
-    }
-
-    if (!reviewQuestionInput.trim()) {
-      return "좋아. 이제 글 내용을 바탕으로 네가 고른 종류의 질문을 직접 써 보자.";
-    }
-
-    if (!reviewAnswerInput.trim()) {
-      return "질문을 썼다면 답도 함께 써 보자. 글에서 찾은 답인지, 짐작한 답인지, 내 생각이나 경험인지 잘 맞춰야 해.";
-    }
-
-    return "좋아. 루미가 질문이 글과 관련 있는지, 질문 종류에 맞는지, 질문 문장으로 잘 썼는지 확인해 볼게.";
-  }
-
-  // 검사 결과가 있으면 루미의 구체적인 피드백을 보여 줍니다.
-  if (reviewResult) {
-    return reviewResult.message;
-  }
-
-  return "질문을 다시 확인해 보자.";
-}
-function normalizeKoreanText(text) {
-  // 비교할 때 띄어쓰기, 줄바꿈, 물음표 차이 때문에 틀리지 않도록 정리합니다.
-  return String(text || "")
-    .replace(/\s/g, "")
-    .replace(/[?？!！.,，。'‘’"“”]/g, "")
-    .toLowerCase();
-}
-
-function isQuestionForm(question) {
-  const text = String(question || "").trim();
-
-  // 물음표가 있으면 질문으로 인정합니다.
-  if (text.includes("?") || text.includes("？")) {
-    return true;
-  }
-
-  // 초등학생 질문 문장에서 자주 쓰는 끝말입니다.
-  const questionEndings = [
-    "나요",
-    "나요?",
-    "까요",
-    "까요?",
-    "했나요",
-    "했나요?",
-    "일까요",
-    "일까요?",
-    "있나요",
-    "있나요?",
-    "없나요",
-    "없나요?",
-    "무엇인가요",
-    "누구인가요",
-    "어디인가요",
-    "왜그랬을까요",
-    "어떤마음이었을까요"
-  ];
-
-  const normalized = normalizeKoreanText(text);
-
-  return questionEndings.some(function(ending) {
-    return normalized.endsWith(normalizeKoreanText(ending));
-  });
-}
-function checkReviewQuestion() {
-  try {
-    const question = reviewQuestionInput.trim();
-    const answer = reviewAnswerInput.trim();
-
-    // 1. 질문 종류 선택 확인
-    if (!reviewSelectedType) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "먼저 질문 종류를 골라야 해. 바로 찾기, 짐작하기, 생각/느낌, 삶과 연결 중 하나를 선택해 줘."
-      };
       renderReviewScreen();
-      return;
     }
 
-    // 2. 질문 입력 확인
-    if (!question) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "질문 칸이 비어 있어. 글을 읽고 네가 만들고 싶은 질문을 먼저 써 줘."
-      };
-      renderReviewScreen();
-      return;
-    }
-
-    // 3. 답 입력 확인
-    if (!answer) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "답 칸이 비어 있어. 질문에 대한 답, 생각, 느낌, 경험을 함께 써야 해."
-      };
-      renderReviewScreen();
-      return;
-    }
-
-    // 4. 질문 길이 확인
-    if (question.length < 8) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "질문이 너무 짧아. 글의 내용이 드러나도록 조금 더 자세히 써 보자."
-      };
-      renderReviewScreen();
-      return;
-    }
-
-    // 5. 질문 문장 형식 확인
-    if (!isQuestionForm(question)) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "이 문장은 질문처럼 보이지 않아. 끝을 ‘나요?’, ‘까요?’, ‘했나요?’처럼 물어보는 문장으로 바꿔 보자."
-      };
-      renderReviewScreen();
-      return;
-    }
-
-    // 6. 글 전체와 관련 있는지 확인
-    if (!isReviewQuestionRelatedToStory(question, answer)) {
-      reviewChecked = true;
-      reviewResult = {
-        ok: false,
-        message: "글과 관련이 약해 보여. 질문이나 답에 ‘서윤이, 민준이, 책갈피, 분실물 상자, 소중한 물건’처럼 글에 나온 중요한 내용을 넣어 다시 써 보자."
-      };
-      renderReviewScreen();
-      return;
-    }
-
-    // 7. 질문 종류별 검사
-    const typeResult = checkReviewQuestionType(reviewSelectedType, question, answer);
-
-    reviewChecked = true;
-    reviewResult = typeResult;
-
-    // 8. 통과하면 질문현황에 저장
-    if (typeResult.ok) {
-      reviewCompletedQuestions[reviewSelectedType] = {
-        question: question,
-        answer: answer
-      };
-    }
-
-    renderReviewScreen();
-  } catch (error) {
-    // 검사 중 코드 오류가 나도 화면이 멈추지 않게 하고,
-    // 루미 말풍선에 실제 오류 내용을 보여 줍니다.
-    reviewChecked = true;
-    reviewResult = {
-      ok: false,
-      message: "검사 중 코드 오류가 났어: " + error.message
-    };
-
-    renderReviewScreen();
-  }
-}
-
-function isReviewQuestionRelated(question, answer, selectedText) {
-  const normalizedQuestion = normalizeKoreanText(question);
-  const normalizedAnswer = normalizeKoreanText(answer);
-  const normalizedSelected = normalizeKoreanText(selectedText);
-
-  const keywords = [
-    "서윤", "민준", "책갈피", "도서관", "책장", "분실물", "상자",
-    "할머니", "소중", "걱정", "고마워", "작은물건"
-  ];
-
-  return keywords.some(function(word) {
-    const normalizedWord = normalizeKoreanText(word);
-    return normalizedSelected.includes(normalizedWord) &&
-      (normalizedQuestion.includes(normalizedWord) || normalizedAnswer.includes(normalizedWord));
-  });
-}
-
-/* 여기 아래에 4단계 코드 붙이기 */
-function isReviewQuestionRelatedToStory(question, answer) {
-  const q = normalizeKoreanText(question);
-  const a = normalizeKoreanText(answer);
-  const combined = q + " " + a;
-
-  // 이 글의 핵심 낱말입니다.
-  // 질문이나 답에 최소 1개 이상은 들어가야 글과 관련 있다고 봅니다.
-  const storyKeywords = [
-    "서윤",
-    "민준",
-    "책갈피",
-    "도서관",
-    "책장",
-    "분실물",
-    "상자",
-    "할머니",
-    "소중",
-    "걱정",
-    "고마워",
-    "작은물건",
-    "잃어버",
-    "찾았",
-    "발견",
-    "이름"
-  ];
-
-  return storyKeywords.some(function(word) {
-    return combined.includes(normalizeKoreanText(word));
-  });
-}
-
-function checkReviewQuestionType(type, question, answer) {
-  const q = normalizeKoreanText(question);
-  const a = normalizeKoreanText(answer);
-
-  if (type === "direct") {
-    return checkReviewDirect(q, a);
-  }
-
-  if (type === "infer") {
-    return checkReviewInfer(q, a);
-  }
-
-  if (type === "opinion") {
-    return checkReviewOpinion(q, a);
-  }
-
-  if (type === "connect") {
-    return checkReviewConnect(q, a);
-  }
-
-  return {
-    ok: false,
-    message: "질문 종류를 다시 골라 보자."
-  };
-}
-function checkReviewDirect(q, a) {
-  const directWords = ["무엇", "누구", "어디", "언제", "어떤이름", "이름", "무슨"];
-  const inferWords = ["왜", "어떤마음", "무슨생각", "짐작", "이유"];
-  const opinionWords = ["내생각", "어떻게생각", "느낌", "좋았", "싫었", "나라면"];
-  const connectWords = ["나도", "내가", "경험", "비슷한일", "겪은적"];
-
-  if (inferWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 글에서 바로 찾는 질문이 아니라 이유나 마음을 짐작하는 질문에 가까워. 바로 찾기 질문은 ‘어디에서 발견했나요?’, ‘누구의 이름이 적혀 있었나요?’처럼 글에 답이 그대로 나와야 해."
-    };
-  }
-
-  if (opinionWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 네 생각이나 느낌을 묻고 있어. 바로 찾기 질문은 사람마다 답이 달라지면 안 되고, 글 속 문장에서 바로 확인할 수 있어야 해."
-    };
-  }
-
-  if (connectWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 네 경험과 연결하는 질문에 가까워. 바로 찾기 질문은 글 밖의 경험이 아니라 글 안에 있는 사실을 물어야 해."
-    };
-  }
-
-  if (!directWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "바로 찾기 질문이라면 ‘무엇, 누구, 어디, 언제, 이름’처럼 글에서 바로 확인할 수 있는 말을 넣어 보자."
-    };
-  }
-
-  const answerKeywords = ["책갈피", "책장", "도서관", "민준", "분실물", "상자", "할머니", "서윤"];
-  if (!answerKeywords.some(function(word) { return a.includes(normalizeKoreanText(word)); })) {
-    return {
-      ok: false,
-      message: "답이 글에서 바로 찾은 내용인지 잘 안 보여. 답에는 ‘책갈피’, ‘책장 아래’, ‘민준’, ‘분실물 상자’처럼 글에 나온 말을 넣어 줘."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 글 속 문장에서 바로 답을 찾을 수 있는 질문이야. 답도 글에 나온 내용과 잘 연결되어 있어."
-  };
-}
-
-function checkReviewInfer(q, a) {
-  const inferWords = ["왜", "어떤마음", "무슨생각", "이유", "어째서", "마음"];
-  const directWords = ["무엇", "누구", "어디", "언제", "몇"];
-  const opinionWords = ["내생각", "어떻게생각", "느낌", "나라면"];
-  const connectWords = ["나도", "내가", "경험", "비슷한일"];
-
-  if (directWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 글에서 바로 찾는 질문에 가까워. 짐작하기 질문은 ‘왜 그랬을까?’, ‘어떤 마음이었을까?’처럼 글 속 단서를 보고 생각해야 해."
-    };
-  }
-
-  if (opinionWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 읽은 사람의 생각이나 느낌을 묻고 있어. 짐작하기 질문은 서윤이나 민준이의 행동, 말, 상황을 보고 이유나 마음을 짐작해야 해."
-    };
-  }
-
-  if (connectWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 네 경험과 연결하는 질문에 가까워. 짐작하기 질문은 먼저 글 속 인물의 마음이나 이유를 추리해야 해."
-    };
-  }
-
-  if (!inferWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "짐작하기 질문이라면 ‘왜’, ‘어떤 마음’, ‘무슨 생각’, ‘이유’ 같은 말이 들어가면 좋아. 글에 바로 적힌 사실만 묻지 말고 인물의 마음이나 행동의 까닭을 물어 봐."
-    };
-  }
-
-  const clueWords = ["주머니", "분실물", "상자", "조심", "걱정", "소중", "할머니", "고마워"];
-  if (!clueWords.some(function(word) { return q.includes(normalizeKoreanText(word)) || a.includes(normalizeKoreanText(word)); })) {
-    return {
-      ok: false,
-      message: "짐작의 단서가 부족해 보여. ‘분실물 상자에 넣은 행동’, ‘민준이가 걱정한 모습’, ‘할머니가 만들어 준 소중한 책갈피’ 같은 글 속 단서를 넣어 다시 써 보자."
-    };
-  }
-
-  if (a.length < 8) {
-    return {
-      ok: false,
-      message: "짐작한 답이 너무 짧아. 왜 그렇게 생각했는지 글 속 단서와 함께 조금 더 써 보자."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 글에 그대로 답이 적힌 질문이 아니라, 행동과 말을 단서로 이유나 마음을 짐작하는 질문이야."
-  };
-}
-
-function checkReviewOpinion(q, a) {
-  const opinionWords = ["내생각", "어떻게생각", "느낌", "생각이들", "마음에남", "좋았", "싫었", "나라면"];
-  const directWords = ["무엇", "누구", "어디", "언제", "몇"];
-  const inferOnlyWords = ["왜", "어떤마음", "무슨생각"];
-  const connectWords = ["나도", "내가", "경험", "비슷한일", "겪은적"];
-
-  if (directWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 글에서 바로 답을 찾는 질문에 가까워. 생각/느낌 질문은 글을 읽은 사람이 자신의 생각이나 느낌을 말할 수 있어야 해."
-    };
-  }
-
-  if (inferOnlyWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 인물의 마음이나 이유를 짐작하는 질문에 가까워. 생각/느낌 질문은 ‘내가 이 장면을 어떻게 생각하는지’를 묻는 질문이어야 해."
-    };
-  }
-
-  if (connectWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 자신의 경험과 연결하는 질문에 가까워. 생각/느낌 질문은 경험을 묻기보다, 글 속 행동이나 장면에 대한 내 생각과 느낌을 묻는 쪽이 좋아."
-    };
-  }
-
-  if (!opinionWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "생각/느낌 질문이라면 ‘어떻게 생각하나요?’, ‘어떤 느낌이 들었나요?’, ‘나라면 어떻게 했을까요?’처럼 읽은 사람의 생각이 드러나는 말이 필요해."
-    };
-  }
-
-  if (a.length < 8) {
-    return {
-      ok: false,
-      message: "내 생각이나 느낌이 너무 짧아. 왜 그렇게 생각했는지 한 문장 더 덧붙여 보자."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 글 속 장면을 읽고 네 생각이나 느낌을 말하게 하는 질문이야. 답도 네 생각이 드러나서 좋아."
-  };
-}
-
-function checkReviewConnect(q, a) {
-  const connectWords = ["나도", "내가", "경험", "비슷한일", "겪은적", "해본적", "내생활", "우리반", "친구와", "가족과"];
-  const directWords = ["무엇", "누구", "어디", "언제", "몇"];
-  const inferWords = ["왜", "어떤마음", "무슨생각"];
-  const opinionOnlyWords = ["어떻게생각", "느낌", "생각이들"];
-
-  if (directWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 글에서 바로 찾는 질문에 가까워. 삶과 연결하는 질문은 글 속 장면에서 출발해 내 경험이나 생활로 이어져야 해."
-    };
-  }
-
-  if (inferWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 인물의 마음이나 이유를 짐작하는 질문에 가까워. 삶과 연결하는 질문은 ‘나도 비슷한 경험이 있는지’를 묻는 쪽이어야 해."
-    };
-  }
-
-  if (opinionOnlyWords.some(function(word) { return q.includes(word); }) &&
-      !connectWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "이 질문은 생각이나 느낌만 묻고 있어. 삶과 연결하려면 ‘나도’, ‘내가’, ‘경험’, ‘비슷한 일’처럼 내 생활로 이어지는 말이 들어가야 해."
-    };
-  }
-
-  if (!connectWords.some(function(word) { return q.includes(word); })) {
-    return {
-      ok: false,
-      message: "삶과 연결하는 질문이라면 ‘나도’, ‘내가’, ‘경험’, ‘비슷한 일’ 같은 말이 필요해. 글 속 책갈피 장면과 네 생활을 이어서 물어 봐."
-    };
-  }
-
-  const storyBridgeWords = ["책갈피", "소중", "잃어버", "찾아", "도움", "분실물", "고마워"];
-  if (!storyBridgeWords.some(function(word) { return q.includes(normalizeKoreanText(word)) || a.includes(normalizeKoreanText(word)); })) {
-    return {
-      ok: false,
-      message: "내 경험을 묻고 있지만 글 속 장면과의 연결이 약해 보여. ‘소중한 물건’, ‘잃어버린 물건’, ‘찾아 준 경험’처럼 글의 장면과 이어지는 말을 넣어 봐."
-    };
-  }
-
-  if (a.length < 8) {
-    return {
-      ok: false,
-      message: "내 경험 답이 너무 짧아. 언제, 누구와, 어떤 일이 있었는지 조금 더 구체적으로 써 보자."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 글 속 장면에서 출발해서 네 경험이나 생활로 자연스럽게 이어지는 질문이야."
-  };
-}
     /*
       =========================================================
-      6. 질문 종류 선택 화면
+      7. 질문 종류 선택 화면
       =========================================================
     */
 
     function renderSelectScreen() {
       const app = document.getElementById("app");
+
       app.innerHTML =
         '<section class="screen">' +
           '<div class="screen-title-row">' +
             '<div>' +
               '<span class="title-badge">읽기 중 질문 연습</span>' +
               '<h1 class="main-title">질문의 힘을 골라 연습해요</h1>' +
-              '<p class="main-desc">책을 읽으며 만들 수 있는 질문을 종류별로 연습해요.</p>' +
             '</div>' +
-            '<div class="progress-pill">문답책 질문 지도</div>' +
           '</div>' +
-         '<div class="question-map">' +
-  questionTypes.map(renderQuestionCell).join("") +
-  '<div class="question-core">질문<br>꾸러미<span>?</span></div>' +
-'</div>' +
-renderReviewGate() +
+
+          '<div class="question-map">' +
+            questionTypes.map(renderQuestionCell).join("") +
+            '<div class="question-core">질문<br>꾸러미<span>?</span></div>' +
+          '</div>' +
+
+          renderReviewGate() +
         '</section>';
     }
 
     function renderQuestionCell(item) {
       const open = isTypeOpen(item.id);
       const done = progress[item.id];
-      const className = 'question-cell ' + (open ? 'open ' : 'locked ') + (done ? 'done' : '');
-      const stateText = done ? '연습 완료' : (open ? '연습 시작' : '이전 질문 완료 후 열림');
-      return '' +
+
+      const className =
+        "question-cell " +
+        (open ? "open " : "locked ") +
+        (done ? "done" : "");
+
+      const stateText = done
+        ? "연습 완료"
+        : open
+          ? "연습 시작"
+          : "이전 질문 완료 후 열림";
+
+      return (
         '<button class="' + className + '" type="button" onclick="selectQuestionType(\'' + item.id + '\')">' +
           '<div class="cell-number">' + item.number + '</div>' +
           '<img class="cell-icon-img" src="' + item.iconImage + '" alt="">' +
           '<h2 class="cell-title">' + item.title + '</h2>' +
-          '<p class="cell-desc">' + item.shortDesc + '</p>' +
           '<div class="cell-state">' + stateText + '</div>' +
-        '</button>';
+        '</button>'
+      );
     }
 
+    function renderReviewGate() {
+      const ready = canStartReview();
 
-/* 여기에 4단계 코드 붙여넣기 */
-function renderReviewGate() {
-  const ready = canStartReview();
-
-  return '' +
-    '<div class="review-gate ' + (ready ? '' : 'locked') + '">' +
-      '<div class="review-gate-row">' +
-        '<div>' +
-          '<h2 class="review-gate-title">4가지 질문 총 복습</h2>' +
-          '<p class="review-gate-desc">' +
-            (ready
-              ? '이제 한 편의 글에서 4가지 질문을 직접 만들어 볼 수 있어요.'
-              : '4가지 질문 종류를 모두 연습하면 마지막 총 복습이 열려요.') +
-          '</p>' +
-          '<div class="review-gems">' +
-            '<span class="review-gem ' + (progress.direct ? 'done' : '') + '">1</span>' +
-            '<span class="review-gem ' + (progress.infer ? 'done' : '') + '">2</span>' +
-            '<span class="review-gem ' + (progress.opinion ? 'done' : '') + '">3</span>' +
-            '<span class="review-gem ' + (progress.connect ? 'done' : '') + '">4</span>' +
+      return (
+        '<div class="review-gate ' + (ready ? "" : "locked") + '">' +
+          '<div class="review-gate-row">' +
+            '<div>' +
+              '<h2 class="review-gate-title">4가지 질문 총 복습</h2>' +
+              '<div class="review-gems">' +
+                '<span class="review-gem ' + (progress.direct ? "done" : "") + '">1</span>' +
+                '<span class="review-gem ' + (progress.infer ? "done" : "") + '">2</span>' +
+                '<span class="review-gem ' + (progress.opinion ? "done" : "") + '">3</span>' +
+                '<span class="review-gem ' + (progress.connect ? "done" : "") + '">4</span>' +
+              '</div>' +
+            '</div>' +
+            '<button class="main-button" type="button" ' + (ready ? "" : "disabled") + ' onclick="goReviewScreen()">총 복습 시작 →</button>' +
           '</div>' +
-        '</div>' +
-        '<button class="main-button" type="button" ' + (ready ? '' : 'disabled') + ' onclick="goReviewScreen()">총 복습 시작 →</button>' +
-      '</div>' +
-    '</div>';
-}
+        '</div>'
+      );
+    }
+
     /*
       =========================================================
-      7. 방법 알기 화면
+      8. 방법 알기 화면
       =========================================================
     */
-
-    function renderMethodScreen() {
-      const app = document.getElementById("app");
-      const item = getSelectedQuestionType();
-      app.innerHTML =
-        '<section class="screen">' +
-          '<div class="screen-title-row">' +
-            '<div>' +
-              '<span class="title-badge">방법 알기</span>' +
-              '<h1 class="main-title">' + item.methodTitle + '</h1>' +
-              '<p class="main-desc">핵심 낱말을 확인하고, 어떤 질문인지 예시로 먼저 살펴봐요.</p>' +
-            '</div>' +
-            '<div class="progress-pill">' + item.number + ' 질문</div>' +
-          '</div>' +
-
-          '<div class="two-column-layout">' +
-            '<article class="dark-card">' +
-              '<p class="section-label">핵심 주문</p>' +
-              '<div class="method-rune-frame">' +
-                '<div class="method-rune-text">' +
-                  item.beforeText +
-                  '<button class="hidden-keyword" type="button" onclick="revealKeyword()">' + (keywordRevealed ? item.hiddenWord : '?') + '</button>' +
-                  item.afterText +
-                '</div>' +
-              '</div>' +
-              '<div class="lumi-feedback">' +
-                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                '<p>' + (keywordRevealed ? item.lumiText : '가운데 물음표를 눌러 이 질문의 핵심 낱말을 확인해 보자!') + '</p>' +
-              '</div>' +
-              '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-                '<button class="main-button" type="button" onclick="goBasicPracticeScreen()">기본 연습으로 →</button>' +
-              '</div>' +
-            '</article>' +
-
-            '<article class="dark-card">' +
-              '<p class="section-label">예시 글</p>' +
-              '<div class="example-list">' + item.exampleTexts.map(function(row) {
-                return '<div class="example-row"><span class="example-icon">' + row.icon + '</span><p>' + row.text + '</p></div>';
-              }).join("") + '</div>' +
-              '<p class="section-label" style="margin-top: 22px;">예시 질문</p>' +
-              '<div class="example-list">' + item.exampleQuestions.map(function(text) {
-                return '<div class="example-row"><span class="example-icon">?</span><p>' + text + '</p></div>';
-              }).join("") + '</div>' +
-            '</article>' +
-          '</div>' +
-        '</section>';
-    }
 
     function revealKeyword() {
       keywordRevealed = true;
       renderMethodScreen();
     }
 
+    function toggleMethodExamplePanel() {
+      methodExampleOpen = !methodExampleOpen;
+      renderMethodScreen();
+    }
+
+    function nextMethodExample() {
+      const item = getSelectedQuestionType();
+      methodExampleIndex = (methodExampleIndex + 1) % item.exampleTexts.length;
+      methodExampleOpen = true;
+      renderMethodScreen();
+    }
+
+    function renderMethodScreen() {
+      const app = document.getElementById("app");
+      const item = getSelectedQuestionType();
+      const currentExampleText = item.exampleTexts[methodExampleIndex];
+      const currentExampleQuestion = item.exampleQuestions[methodExampleIndex];
+
+      app.innerHTML =
+        '<section class="screen">' +
+          '<div class="screen-title-row">' +
+            '<div>' +
+              '<span class="title-badge">방법 알기</span>' +
+              '<h1 class="main-title">' + item.methodTitle + '</h1>' +
+            '</div>' +
+            '<div class="progress-pill">' + item.number + ' 질문</div>' +
+          '</div>' +
+
+          '<div class="two-column-layout method-layout">' +
+            '<article class="dark-card method-main-card">' +
+              '<p class="section-label">핵심 주문</p>' +
+
+              '<div class="method-rune-frame">' +
+                '<div class="method-rune-text">' +
+                  item.beforeText +
+                  '<button class="hidden-keyword" type="button" onclick="revealKeyword()">' +
+                    (keywordRevealed ? item.hiddenWord : "?") +
+                  '</button>' +
+                  item.afterText +
+                '</div>' +
+              '</div>' +
+
+              '<div class="lumi-feedback">' +
+                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                '<p>' +
+                  (keywordRevealed
+                    ? item.lumiText
+                    : "가운데 물음표를 눌러 이 질문의 핵심 낱말을 먼저 확인해 보자!") +
+                '</p>' +
+              '</div>' +
+
+              '<div class="method-actions">' +
+                '<button class="plain-button method-big-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
+                '<button class="main-button method-big-button" type="button" onclick="goBasicPracticeScreen()">기본 연습으로 →</button>' +
+              '</div>' +
+            '</article>' +
+
+            '<aside class="method-side-area">' +
+              '<button class="example-toggle-button" type="button" onclick="toggleMethodExamplePanel()">' +
+                (methodExampleOpen ? "예시 닫기" : "예시 보기") +
+              '</button>' +
+
+              (
+                methodExampleOpen
+                  ? '<article class="dark-card method-example-panel">' +
+                      '<div class="method-example-top">' +
+                        '<p class="method-example-title">예시 ' + (methodExampleIndex + 1) + '</p>' +
+                        '<p class="method-example-count">' + (methodExampleIndex + 1) + ' / ' + item.exampleTexts.length + '</p>' +
+                      '</div>' +
+
+                      '<div class="method-example-box">' +
+                        '<div class="method-example-icon">' + currentExampleText.icon + '</div>' +
+                        '<p class="method-example-text">' + currentExampleText.text + '</p>' +
+                      '</div>' +
+
+                      '<div class="method-example-arrow">↳ 관련된 질문</div>' +
+
+                      '<div class="method-example-question-box">' +
+                        '<div class="method-example-icon">?</div>' +
+                        '<p class="method-example-question">' + currentExampleQuestion + '</p>' +
+                      '</div>' +
+
+                      '<div class="method-example-actions">' +
+                        '<button class="main-button method-big-button example-next-button" type="button" onclick="nextMethodExample()">다음 예시 →</button>' +
+                      '</div>' +
+                    '</article>'
+                  : '<div class="method-side-tip">예시 보기 버튼을 누르면 예시 문장과 그에 맞는 질문이 이곳에 보여요.</div>'
+              ) +
+            '</aside>' +
+          '</div>' +
+        '</section>';
+    }
+
     /*
       =========================================================
-      8. 기본 연습 화면
+      9. 기본 연습 화면
       =========================================================
     */
 
     function getCurrentBasicQuestions() {
-  if (selectedQuestionType === "infer") return inferBasicQuestions;
-  if (selectedQuestionType === "opinion") return opinionBasicQuestions;
-  if (selectedQuestionType === "connect") return connectBasicQuestions;
-  return directBasicQuestions;
-}
+      return basicQuestions[selectedQuestionType] || basicQuestions.direct;
+    }
+
+    function selectBasicChoice(choiceIndex) {
+      selectedBasicChoice = choiceIndex;
+      renderBasicPracticeScreen();
+    }
+
+    function nextBasicQuestion() {
+      const questions = getCurrentBasicQuestions();
+
+      if (currentBasicIndex < questions.length - 1) {
+        currentBasicIndex++;
+        selectedBasicChoice = null;
+        renderBasicPracticeScreen();
+        return;
+      }
+
+      goDeepPracticeScreen();
+    }
 
     function renderBasicPracticeScreen() {
       const app = document.getElementById("app");
       const item = getSelectedQuestionType();
       const questions = getCurrentBasicQuestions();
       const question = questions[currentBasicIndex];
+      const selectedChoice = selectedBasicChoice !== null ? question.choices[selectedBasicChoice] : null;
+      const isCorrect = selectedChoice && selectedChoice.id === "correct";
 
       app.innerHTML =
         '<section class="screen">' +
           '<div class="screen-title-row">' +
             '<div>' +
-              '<span class="title-badge">기본 연습</span>' +
+              '<span class="title-badge">기본 연습 ' + (currentBasicIndex + 1) + ' / ' + questions.length + '</span>' +
               '<h1 class="main-title">' + item.title + '</h1>' +
             '</div>' +
-            '<div class="progress-pill">' + (currentBasicIndex + 1) + ' / ' + questions.length + ' 문제</div>' +
+            '<div class="progress-pill">' + item.number + ' 질문</div>' +
           '</div>' +
 
           '<div class="two-column-layout">' +
             '<article class="dark-card">' +
               '<p class="section-label">읽을 글</p>' +
-              '<div class="story-box"><p>' + makeHighlightedStory(question.story, question.highlight) + '</p></div>' +
-              renderSupportBox(question) +
-              '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="goMethodScreen()">← 방법 다시 보기</button>' +
+              '<div class="story-box">' +
+                '<p>' + highlightText(question.story, question.highlight) + '</p>' +
+              '</div>' +
+
+              '<div class="support-grid">' +
+                '<div class="support-card"><strong>' + question.supportTitle + '</strong></div>' +
+                question.supportCards.map(function(card) {
+                  return '<div class="support-card">' + card + '</div>';
+                }).join("") +
               '</div>' +
             '</article>' +
 
             '<article class="dark-card">' +
-              '<p class="section-label">알맞은 질문 고르기</p>' +
               '<div class="choice-guide-title">' + question.guideText + '</div>' +
-              renderDialogueBox(question) +
               '<div class="choice-list">' +
                 question.choices.map(function(choice, index) {
-                  return renderBasicChoiceButton(choice, index);
+                  return (
+                    '<button class="choice-button ' + (selectedBasicChoice === index ? "selected" : "") + '" type="button" onclick="selectBasicChoice(' + index + ')">' +
+                      choice.text +
+                    '</button>'
+                  );
                 }).join("") +
               '</div>' +
-              '<div class="lumi-feedback ' + getBasicFeedbackClass() + '">' +
-                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                '<p>' + getBasicFeedbackText(question) + '</p>' +
-              '</div>' +
+
+              (
+                selectedChoice
+                  ? '<div class="lumi-feedback ' + (isCorrect ? "good" : "need") + '">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>' + selectedChoice.feedback + '</p>' +
+                    '</div>'
+                  : '<div class="lumi-feedback">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>질문을 하나 골라 봐. 글과 잘 이어지는지 함께 확인해 줄게!</p>' +
+                    '</div>'
+              ) +
+
               '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="resetBasicPractice()">다시 고르기</button>' +
-                '<button class="main-button" type="button" ' + (isSelectedBasicChoiceCorrect(question) ? '' : 'disabled') + ' onclick="goNextBasicQuestion()">다음 문제로 가기 →</button>' +
+                '<button class="plain-button" type="button" onclick="goMethodScreen()">← 방법 알기</button>' +
+                '<button class="main-button" type="button" ' + (isCorrect ? "" : "disabled") + ' onclick="nextBasicQuestion()">' +
+                  (currentBasicIndex < questions.length - 1 ? "다음 문제 →" : "심화 연습으로 →") +
+                '</button>' +
               '</div>' +
             '</article>' +
           '</div>' +
         '</section>';
     }
 
-   function renderSupportBox(question) {
-  // 3번 질문: 생각 흐름
-  // 4번 질문: 연결 다리
-  // 두 영역은 일반 단서 카드와 다르게 보이도록 전용 클래스를 붙입니다.
-  const isThoughtFlow = question.supportTitle === "생각 흐름";
-  const isBridgeFlow = question.supportTitle === "연결 다리";
-
-  let gridClass = "support-grid";
-
-  if (isThoughtFlow) {
-    gridClass = "support-grid thought-flow";
-  }
-
-  if (isBridgeFlow) {
-    gridClass = "support-grid bridge-flow";
-  }
-
-  return '' +
-    '<div class="' + gridClass + '">' +
-      '<div class="support-card"><strong>' + question.supportTitle + '</strong></div>' +
-      question.supportCards.map(function(text, index) {
-        const stepNumber = (isThoughtFlow || isBridgeFlow) ? ' data-step="' + (index + 1) + '"' : '';
-        return '<div class="support-card"' + stepNumber + '>' + text + '</div>';
-      }).join("") +
-    '</div>';
-}
-
-    function renderDialogueBox(question) {
-      if (!question.dialogue) return '';
-      return '' +
-        '<div class="dialogue-box">' +
-          '<div class="bubble-row"><div class="bubble-name">루미</div><div class="bubble">?</div></div>' +
-          '<div class="bubble-row"><div class="bubble-name">인물</div><div class="bubble">' + question.dialogue.answer + '</div></div>' +
-        '</div>';
+    function highlightText(text, highlight) {
+      if (!highlight) return text;
+      return text.replace(highlight, '<span class="story-highlight">' + highlight + '</span>');
     }
-
-    function renderBasicChoiceButton(choice, index) {
-      const selectedClass = selectedBasicChoice === index ? ' selected' : '';
-      return '<button class="choice-button' + selectedClass + '" type="button" onclick="selectBasicChoice(' + index + ')">' + choice.text + '</button>';
-    }
-
-    function selectBasicChoice(index) {
-      selectedBasicChoice = index;
-      renderBasicPracticeScreen();
-    }
-
-    function resetBasicPractice() {
-      selectedBasicChoice = null;
-      renderBasicPracticeScreen();
-    }
-
-    function isSelectedBasicChoiceCorrect(question) {
-      if (selectedBasicChoice === null) return false;
-      return question.choices[selectedBasicChoice].id === selectedQuestionType;
-    }
-
-    function getBasicFeedbackClass() {
-      if (selectedBasicChoice === null) return '';
-      const question = getCurrentBasicQuestions()[currentBasicIndex];
-      return isSelectedBasicChoiceCorrect(question) ? 'good' : 'need';
-    }
-
-    function getBasicFeedbackText(question) {
-      if (selectedBasicChoice === null) {
-        if (selectedQuestionType === "opinion") return "이 질문은 인물의 마음을 맞히는 게 아니라, 읽은 사람이 자기 생각이나 느낌을 말하게 해야 해.";
-        if (selectedQuestionType === "infer") return "글 속 단서와 인물의 대답을 함께 보고 루미가 물었을 질문을 골라 보자.";
-        return "답과 가장 직접적으로 연결되는 질문을 골라 보자.";
-      }
-      return question.choices[selectedBasicChoice].feedback;
-    }
-
-    function goNextBasicQuestion() {
-  const questions = getCurrentBasicQuestions();
-
-  if (currentBasicIndex < questions.length - 1) {
-    currentBasicIndex += 1;
-    selectedBasicChoice = null;
-    renderBasicPracticeScreen();
-    return;
-  }
-
-  // 기본 연습을 끝내면 바로 해당 질문 종류 완료 처리
-  progress[selectedQuestionType] = true;
-  sessionStorage.setItem(progressKey, JSON.stringify(progress));
-
-  // 심화 연습 없이 질문 종류 선택 화면으로 돌아가기
-  goSelectScreen();
-}
 
     /*
       =========================================================
-      9. 심화 연습 화면
+      10. 심화 연습 화면
       =========================================================
     */
 
-  function getCurrentDeepQuestions() {
-  if (selectedQuestionType === "infer") return inferDeepQuestions;
-  if (selectedQuestionType === "opinion") return opinionDeepQuestions;
-  if (selectedQuestionType === "connect") return connectDeepQuestions;
-  return directDeepQuestions;
-}
+    function getCurrentDeepQuestions() {
+      return deepQuestions[selectedQuestionType] || deepQuestions.direct;
+    }
+
+    function updateDeepInput(value) {
+      deepInputValue = value;
+    }
+
+    function checkDeepAnswer() {
+      const value = deepInputValue.trim();
+
+      deepChecked = true;
+
+      if (value.length < 6 || value.indexOf("?") === -1) {
+        deepResult = {
+          ok: false,
+          message: "질문은 조금 더 길게 쓰고, 끝에 물음표를 붙여 보자."
+        };
+      } else {
+        deepResult = {
+          ok: true,
+          message: "좋아! 질문의 모양이 잘 되었어. 다음 문제로 넘어가 보자."
+        };
+      }
+
+      renderDeepPracticeScreen();
+    }
+
+    function nextDeepQuestion() {
+      const questions = getCurrentDeepQuestions();
+
+      if (currentDeepIndex < questions.length - 1) {
+        currentDeepIndex++;
+        deepInputValue = "";
+        deepChecked = false;
+        deepResult = null;
+        renderDeepPracticeScreen();
+        return;
+      }
+
+      progress[selectedQuestionType] = true;
+      saveProgress();
+      renderCompleteScreen();
+    }
 
     function renderDeepPracticeScreen() {
       const app = document.getElementById("app");
@@ -3087,400 +2183,68 @@ function renderReviewGate() {
         '<section class="screen">' +
           '<div class="screen-title-row">' +
             '<div>' +
-              '<span class="title-badge">심화 연습</span>' +
-              '<h1 class="main-title">' + item.title + '</h1>' +
+              '<span class="title-badge">심화 연습 ' + (currentDeepIndex + 1) + ' / ' + questions.length + '</span>' +
+              '<h1 class="main-title">직접 질문을 만들어 봐요</h1>' +
+              '<p class="main-desc">' + item.title + '을 스스로 써 보는 연습이에요.</p>' +
             '</div>' +
-            '<div class="progress-pill">' + (currentDeepIndex + 1) + ' / ' + questions.length + ' 문제</div>' +
+            '<div class="progress-pill">' + item.number + ' 질문</div>' +
           '</div>' +
 
           '<div class="two-column-layout">' +
             '<article class="dark-card">' +
               '<p class="section-label">읽을 글</p>' +
-              '<div class="story-box"><p>' + makeHighlightedStory(question.story, question.highlight) + '</p></div>' +
-              renderSupportBox(question) +
-              '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="goBasicPracticeScreen()">← 기본 연습으로</button>' +
+              '<div class="story-box">' +
+                '<p>' + question.story + '</p>' +
+              '</div>' +
+
+              '<div class="deep-hint-box">' +
+                '<strong>루미 도움말</strong><br>' + question.guide +
+              '</div>' +
+
+              '<div class="deep-hint-box">' +
+                '<strong>예시</strong><br>' + question.answerHint +
               '</div>' +
             '</article>' +
 
             '<article class="dark-card">' +
-              '<p class="section-label">질문 제작대</p>' +
-              '<div class="workshop-guide">' + question.guideText + '</div>' +
-              renderDialogueBox(question) +
-              renderDeepWorkArea(question) +
-              '<div class="lumi-feedback ' + getDeepFeedbackClass() + '">' +
-                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                '<p>' + getDeepFeedbackText(question) + '</p>' +
+              '<p class="section-label">내가 만든 질문</p>' +
+              '<div class="question-maker">' +
+                '<p class="maker-title">질문 쓰기</p>' +
+                '<p class="maker-frame">글을 읽고 알맞은 질문을 직접 써 봐요.</p>' +
+                '<textarea class="deep-input" placeholder="여기에 질문을 써요. 예: 주인공은 무엇을 했나요?" oninput="updateDeepInput(this.value)">' + escapeHtml(deepInputValue) + '</textarea>' +
               '</div>' +
+
+              (
+                deepChecked
+                  ? '<div class="lumi-feedback ' + (deepResult.ok ? "good" : "need") + '">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>' + deepResult.message + '</p>' +
+                    '</div>'
+                  : '<div class="lumi-feedback">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>질문을 쓴 뒤 검사하기를 눌러 봐. 물음표가 있는 질문인지 확인해 줄게!</p>' +
+                    '</div>'
+              ) +
+
               '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="resetDeepPractice()">다시 하기</button>' +
-                renderDeepActionButton(question) +
+                '<button class="plain-button" type="button" onclick="goBasicPracticeScreen()">← 기본 연습</button>' +
+                '<button class="main-button" type="button" onclick="checkDeepAnswer()">검사하기</button>' +
+                '<button class="main-button" type="button" ' + (deepChecked && deepResult && deepResult.ok ? "" : "disabled") + ' onclick="nextDeepQuestion()">' +
+                  (currentDeepIndex < questions.length - 1 ? "다음 문제 →" : "연습 완료 →") +
+                '</button>' +
               '</div>' +
             '</article>' +
           '</div>' +
         '</section>';
     }
 
-    function renderDeepWorkArea(question) {
-      if (question.mode === "choice") {
-        return '' +
-          '<div class="question-maker">' +
-            '<p class="maker-title">' + (selectedQuestionType === "opinion" ? '질문 문장 고르기' : '질문 낱말 고르기') + '</p>' +
-            '<div class="maker-frame">' + question.frameBefore + (selectedDeepChoice === null ? '____' : question.choices[selectedDeepChoice].word) + question.frameAfter + '</div>' +
-            '<div class="choice-list">' + question.choices.map(function(choice, index) {
-              const selectedClass = selectedDeepChoice === index ? ' selected' : '';
-              return '<button class="choice-button' + selectedClass + '" type="button" onclick="selectDeepChoice(' + index + ')">' + choice.word + '</button>';
-            }).join("") + '</div>' +
-          '</div>';
-      }
-
-      return '' +
-        '<div class="question-maker">' +
-          '<p class="maker-title">내 질문 쓰기</p>' +
-          '<textarea class="deep-input" placeholder="' + question.placeholder + '" oninput="updateDeepInput(this.value)">' + escapeHtml(deepInputValue) + '</textarea>' +
-        '</div>';
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
-
-    function renderDeepActionButton(question) {
-  // 선택형 심화 문제
-  if (question.mode === "choice") {
-    if (!deepChecked) {
-      return '<button class="main-button" type="button" ' + 
-        (selectedDeepChoice === null ? 'disabled' : '') + 
-        ' onclick="checkDeepChoice()">루미에게 확인 받기</button>';
-    }
-
-    if (isDeepChoiceCorrect(question)) {
-      return '<button class="main-button" type="button" onclick="goNextDeepQuestion()">다음 문제로 가기 →</button>';
-    }
-
-    return '<button class="main-button" type="button" ' + 
-      (selectedDeepChoice === null ? 'disabled' : '') + 
-      ' onclick="checkDeepChoice()">루미에게 다시 확인 받기</button>';
-  }
-
-  // 직접 쓰기 심화 문제
-  if (!deepChecked) {
-    return '<button class="main-button" type="button" onclick="checkDeepInput()">루미에게 확인 받기</button>';
-  }
-
-  // 정답일 때만 다음 문제 버튼
-  if (deepResult && deepResult.ok) {
-    return '<button class="main-button" type="button" onclick="goNextDeepQuestion()">다음 문제로 가기 →</button>';
-  }
-
-  // 오답이면 화면 이동 없이 다시 검사 가능
-  return '<button class="main-button" type="button" onclick="checkDeepInput()">루미에게 다시 확인 받기</button>';
-}
-
-    function selectDeepChoice(index) {
-      selectedDeepChoice = index;
-      deepChecked = false;
-      renderDeepPracticeScreen();
-    }
-
-    function checkDeepChoice() {
-      if (selectedDeepChoice === null) return;
-      deepChecked = true;
-      renderDeepPracticeScreen();
-    }
-
-    function resetDeepPractice() {
-      selectedDeepChoice = null;
-      deepInputValue = "";
-      deepChecked = false;
-      deepResult = null;
-      renderDeepPracticeScreen();
-    }
-
-    function isDeepChoiceCorrect(question) {
-      if (selectedDeepChoice === null) return false;
-      return question.choices[selectedDeepChoice].id === selectedQuestionType;
-    }
-
-    function updateDeepInput(value) {
-  deepInputValue = value;
-
-  // 학생이 다시 쓰면 이전 검사 결과를 지웁니다.
-  deepChecked = false;
-  deepResult = null;
-}
-
-   function checkDeepInput() {
-  const question = getCurrentDeepQuestions()[currentDeepIndex];
-
-  // 직접 쓴 질문을 검사만 합니다.
-  // 여기서는 다음 문제나 질문 종류 선택 화면으로 이동하지 않습니다.
-  if (question.checker === "opinion") {
-    deepResult = checkOpinionQuestion(deepInputValue);
-  } else if (question.checker === "infer") {
-    deepResult = checkInferQuestion(deepInputValue);
-  } else if (question.checker === "connect") {
-    deepResult = checkConnectQuestion(deepInputValue);
-  } else {
-    deepResult = checkDirectQuestion(deepInputValue);
-  }
-
-  deepChecked = true;
-  renderDeepPracticeScreen();
-}
-
-    function getDeepFeedbackClass() {
-      const question = getCurrentDeepQuestions()[currentDeepIndex];
-      if (question.mode === "choice") {
-        if (selectedDeepChoice === null || !deepChecked) return '';
-        return isDeepChoiceCorrect(question) ? 'good' : 'need';
-      }
-      if (!deepChecked) return '';
-      return deepResult && deepResult.ok ? 'good' : 'need';
-    }
-
-    function getDeepFeedbackText(question) {
-      if (question.mode === "choice") {
-        if (selectedDeepChoice === null) {
-          if (selectedQuestionType === "opinion") return "읽은 뒤 내 생각과 느낌으로 이어지는 질문을 고른 다음, 루미에게 확인 받아 보자.";
-          return "질문 제작대의 빈칸에 들어갈 낱말을 고른 다음, 루미에게 확인 받아 보자.";
-        }
-        if (!deepChecked) return "고른 질문이 맞는지 루미에게 확인 받아 보자.";
-        return question.choices[selectedDeepChoice].feedback;
-      }
-
-      if (!deepChecked) {
-        if (selectedQuestionType === "opinion") return "‘나는’, ‘나라면’, ‘어떻게 생각’, ‘어떤 느낌’, ‘마음에 남는’ 같은 말로 내 생각과 느낌이 드러나게 써 보자.";
-        if (selectedQuestionType === "infer") return "글 속 단서와 반대되는 행동을 넣으면 안 돼. 인물, 물건, 행동 단서를 정확히 활용해 보자.";
-        return "답이 글에 바로 나오는 질문인지 확인해 보자.";
-      }
-
-      return deepResult.message;
-    }
-
-   function goNextDeepQuestion() {
-  const questions = getCurrentDeepQuestions();
-
-  if (currentDeepIndex < questions.length - 1) {
-    currentDeepIndex += 1;
-    selectedDeepChoice = null;
-    deepInputValue = "";
-    deepChecked = false;
-    deepResult = null;
-    renderDeepPracticeScreen();
-    return;
-  }
-
-  // 현재 질문 종류 연습 완료 처리
-  progress[selectedQuestionType] = true;
-  sessionStorage.setItem(progressKey, JSON.stringify(progress));
-
-  // 4번 질문까지 끝났으면 바로 질문 종류 선택 화면으로 돌아갑니다.
-  // 그러면 총 복습 버튼이 활성화됩니다.
-  goSelectScreen();
-}
-
-    /*
-      =========================================================
-      10. 직접 쓰기 채점 함수
-      =========================================================
-    */
-
-    function normalizeText(text) {
-      return (text || "").replace(/\s+/g, "").toLowerCase();
-    }
-
-    function hasAny(text, words) {
-      return words.some(function(word) { return text.indexOf(word) !== -1; });
-    }
-
-    function checkDirectQuestion(input) {
-      const text = normalizeText(input);
-      if (text.length < 7) return { ok: false, message: "질문이 너무 짧아. 글에서 바로 답을 찾을 수 있게 조금 더 구체적으로 써 보자." };
-      if (!text.includes("?") && !text.includes("나요") && !text.includes("까")) return { ok: false, message: "질문 형태로 써야 해. 끝에 ‘~나요?’, ‘~했나요?’처럼 물어보는 말이 필요해." };
-      if (hasAny(text, ["왜", "무슨생각", "어떤마음", "나라면", "내생각", "느낌"])) return { ok: false, message: "이건 책 내용에서 바로 답을 찾을 수 있는 질문이 아니야. 이유, 마음, 내 생각을 묻지 말고 글에 나온 답을 바로 물어보자." };
-      if (hasAny(text, ["소민", "노란화분", "화분", "물"]) && hasAny(text, ["무엇", "무슨", "어디"])) {
-        return { ok: true, message: "좋아! 글에 바로 나오는 답과 연결된 질문이야." };
-      }
-      return { ok: false, message: "답과 연결이 약해. ‘소민이’, ‘노란 화분’, ‘물’처럼 글에 나온 단어를 활용해 질문을 만들어 보자." };
-    }
-
-    function checkInferQuestion(input) {
-      const text = normalizeText(input);
-      if (text.length < 8) return { ok: false, message: "질문이 너무 짧아. 글 속 단서와 연결되게 더 구체적으로 써 보자." };
-      if (!text.includes("?") && !text.includes("나요") && !text.includes("까")) return { ok: false, message: "질문 형태로 써야 해. ‘~했을까요?’처럼 물어보는 말로 써 보자." };
-      if (hasAny(text, ["살았", "인생", "평소", "미래", "어른", "나중"])) return { ok: false, message: "질문이 글 속 장면보다 너무 넓어. 준서가 색연필을 어떻게 했는지에 집중해 보자." };
-      if (hasAny(text, ["내려놓", "버렸", "가져갔", "숨겼", "훔쳤"])) return { ok: false, message: "글에서는 내려놓거나 가져간 것이 아니라 선생님 책상 위에 올려 두었어. 글과 반대되는 행동은 오답이야." };
-      if (hasAny(text, ["집", "운동장", "가방", "친구에게줬", "엄마"])) return { ok: false, message: "글에 없는 장소나 인물이 들어갔어. 준서, 색연필, 선생님 책상 위, 올려 두다 같은 단서를 활용해 보자." };
-      const hasScene = hasAny(text, ["준서", "색연필", "선생님책상", "책상위", "올려두", "주인", "찾아주"]);
-      const hasInfer = hasAny(text, ["왜", "무슨생각", "어떤마음", "마음으로", "생각했"]);
-      if (hasScene && hasInfer) return { ok: true, message: "좋아! 글 속 단서와 연결해서 이유, 마음, 생각을 짐작하게 하는 질문이야." };
-      return { ok: false, message: "질문이 글 속 단서와 충분히 연결되지 않아. 준서, 색연필, 선생님 책상 위, 올려 두다, 주인 같은 단서를 활용해 보자." };
-    }
-
-   function checkOpinionQuestion(input) {
-  const text = normalizeText(input);
-
-  if (!text) {
-    return {
-      ok: false,
-      message: "질문을 먼저 써 봐. 읽은 뒤 네 생각이나 느낌으로 이어지는 질문이어야 해."
-    };
-  }
-
-  // 1. 너무 짧은 질문은 통과시키지 않습니다.
-  if (text.length < 10) {
-    return {
-      ok: false,
-      message: "질문이 너무 짧아. 어떤 장면을 읽고 어떤 생각이나 느낌을 말하려는지 더 자세히 써 보자."
-    };
-  }
-
-  // 2. 질문 형태인지 확인합니다.
-  if (!text.includes("?") && !text.includes("나요") && !text.includes("까요")) {
-    return {
-      ok: false,
-      message: "질문 형태로 써야 해. 끝에 ‘~나요?’, ‘~까요?’처럼 물어보는 말이 필요해."
-    };
-  }
-
-  // 3. 예전 이야기 단어가 들어가면 오답 처리합니다.
-  // 현재 심화 3번은 하윤이 발표 장면이므로 책갈피/색연필/강아지 같은 이전 이야기 단어는 맞지 않습니다.
-  const oldStoryWords = ["책갈피", "색연필", "강아지", "서아", "준서", "민재"];
-  if (oldStoryWords.some(function(word) { return text.includes(word); })) {
-    return {
-      ok: false,
-      message: "지금 글은 하윤이가 발표 중 어려워하는 친구를 도와준 장면이야. 현재 글 속 인물과 장면에 맞게 질문을 다시 써 보자."
-    };
-  }
-
-  // 4. 책 내용에서 바로 답을 찾는 질문은 오답입니다.
-  const directPatterns = ["무엇을", "누구에게", "어디에서", "언제", "몇시", "몇", "무슨물건"];
-  if (directPatterns.some(function(word) { return text.includes(word); })) {
-    return {
-      ok: false,
-      message: "이건 글에서 바로 답을 찾는 질문에 가까워. 책을 읽고 떠오른 네 생각이나 느낌을 말하게 하는 질문으로 바꿔 보자."
-    };
-  }
-
-  // 5. 인물의 이유나 마음을 맞히는 질문은 2번 질문에 가깝습니다.
-  const inferPatterns = ["왜", "어떤마음으로", "무슨생각으로", "왜그랬", "하윤이는왜", "친구는왜"];
-  if (inferPatterns.some(function(word) { return text.includes(word); })) {
-    return {
-      ok: false,
-      message: "이건 인물의 이유나 마음을 짐작하는 질문에 가까워. 이번에는 하윤이의 행동을 읽고 내가 어떤 생각이나 느낌이 드는지 묻는 질문이 좋아."
-    };
-  }
-
-  // 6. 현재 글 속 장면과 연결되어야 합니다.
-  const sceneWords = ["하윤", "발표", "친구", "손짓", "도와", "도움", "순서", "웃"];
-  const hasSceneWord = sceneWords.some(function(word) { return text.includes(word); });
-
-  if (!hasSceneWord) {
-    return {
-      ok: false,
-      message: "질문이 글 속 장면과 연결되어야 해. 하윤이, 발표, 친구, 손짓, 도와줌 같은 단서를 활용해 보자."
-    };
-  }
-
-  // 7. 읽은 사람의 생각이나 느낌을 말하게 해야 합니다.
-  const opinionWords = ["나는", "나라면", "내가", "어떻게생각", "어떤느낌", "느낌", "생각", "마음에남", "비슷한경험"];
-  const hasOpinionWord = opinionWords.some(function(word) { return text.includes(word); });
-
-  if (!hasOpinionWord) {
-    return {
-      ok: false,
-      message: "글 속 장면은 들어갔지만, 읽은 사람의 생각이나 느낌을 말하게 하는 말이 부족해. ‘나는’, ‘나라면’, ‘어떻게 생각’, ‘어떤 느낌’ 같은 말을 넣어 보자."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 하윤이가 친구를 도와준 장면에서 출발해서, 읽은 사람이 자기 생각이나 느낌을 말하게 하는 질문이야."
-  };
-}
-function checkConnectQuestion(input) {
-  const text = normalizeText(input);
-
-  if (!text) {
-    return {
-      ok: false,
-      message: "질문을 먼저 써 봐. 책 속 장면과 내 경험이 함께 드러나야 해."
-    };
-  }
-
-  if (text.length < 10) {
-    return {
-      ok: false,
-      message: "질문이 너무 짧아. 책 속 어떤 장면과 내 경험을 연결하는지 더 자세히 써 보자."
-    };
-  }
-
-  if (!text.includes("?") && !text.includes("나요") && !text.includes("까요")) {
-    return {
-      ok: false,
-      message: "질문 형태로 써야 해. 끝에 ‘~나요?’, ‘~까요?’처럼 물어보는 말이 필요해."
-    };
-  }
-
-  // 책 속 장면 단서가 있어야 합니다.
-  const sceneWords = ["유진", "혼자", "친구", "다가", "함께", "놀자", "놀이", "먼저"];
-  const hasSceneWord = sceneWords.some(function(word) {
-    return text.includes(word);
-  });
-
-  if (!hasSceneWord) {
-    return {
-      ok: false,
-      message: "책 속 장면과 연결되어야 해. 유진이, 혼자 있는 친구, 먼저 다가감, 함께 놀자 같은 단서를 활용해 보자."
-    };
-  }
-
-  // 내 삶/경험 연결 표현이 있어야 합니다.
-  const lifeWords = ["나도", "내가", "내경험", "경험", "겪은적", "해본적", "비슷한일", "내생활", "우리반", "친구와", "가족과"];
-  const hasLifeWord = lifeWords.some(function(word) {
-    return text.includes(word);
-  });
-
-  if (!hasLifeWord) {
-    return {
-      ok: false,
-      message: "책 속 장면은 들어갔지만 내 경험과 연결하는 말이 부족해. ‘나도’, ‘내가’, ‘경험’, ‘비슷한 일’ 같은 말을 넣어 보자."
-    };
-  }
-
-  // 바로 답 찾기 질문은 제외합니다.
-  const directPatterns = ["무엇을", "누구에게", "어디에서", "언제", "몇시", "몇"];
-  if (directPatterns.some(function(word) { return text.includes(word); })) {
-    return {
-      ok: false,
-      message: "이건 글에서 바로 답을 찾는 질문에 가까워. 책 속 장면을 내 경험과 연결하는 질문으로 바꿔 보자."
-    };
-  }
-
-  // 짐작 질문은 제외합니다.
-  const inferPatterns = ["왜", "어떤마음", "무슨생각", "왜그랬"];
-  if (inferPatterns.some(function(word) { return text.includes(word); })) {
-    return {
-      ok: false,
-      message: "이건 인물의 이유나 마음을 짐작하는 질문에 가까워. 이번에는 책 속 장면과 내 경험을 이어 보자."
-    };
-  }
-
-  // 생각/느낌만 있고 경험 연결이 약한 질문을 걸러냅니다.
-  const onlyOpinionPatterns = ["어떤생각", "어떤느낌", "느낌이들", "생각이들"];
-  const hasOnlyOpinion = onlyOpinionPatterns.some(function(word) {
-    return text.includes(word);
-  });
-
-  if (hasOnlyOpinion && !text.includes("경험") && !text.includes("나도") && !text.includes("내가")) {
-    return {
-      ok: false,
-      message: "생각이나 느낌을 묻는 것에서 멈추지 말고, 내 경험이나 생활과 연결되게 질문해 보자."
-    };
-  }
-
-  return {
-    ok: true,
-    message: "좋아! 책 속 장면에서 출발해서 내 경험이나 생활로 이어지는 질문이야."
-  };
-}
 
     /*
       =========================================================
@@ -3489,64 +2253,226 @@ function checkConnectQuestion(input) {
     */
 
     function renderCompleteScreen() {
-      const item = getSelectedQuestionType();
       const app = document.getElementById("app");
+      const item = getSelectedQuestionType();
+
       app.innerHTML =
         '<section class="screen">' +
           '<div class="screen-title-row">' +
             '<div>' +
               '<span class="title-badge">연습 완료</span>' +
-              '<h1 class="main-title">' + item.title + '<br>연습을 마쳤어요</h1>' +
-              '<p class="main-desc">좋아! 이제 이 질문의 특징을 더 잘 구분할 수 있어요.<br>다른 질문 종류도 이어서 연습해 봐요.</p>' +
+              '<h1 class="main-title">' + item.number + ' 질문 연습을 마쳤어요!</h1>' +
+              '<p class="main-desc">질문의 힘을 하나 더 익혔어요. 다음 질문 종류도 이어서 연습해 봐요.</p>' +
             '</div>' +
-            '<div class="progress-pill">완료</div>' +
           '</div>' +
-          '<div class="two-column-layout">' +
-            '<article class="dark-card">' +
-              '<p class="section-label">루미의 한마디</p>' +
-              '<div class="lumi-feedback good" style="min-height: 240px;">' +
-                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                '<p>질문을 구분하는 힘이 더 강해졌어! 책을 읽을 때 바로 찾기, 짐작하기, 내 생각 말하기를 나누어 떠올려 보자.</p>' +
-              '</div>' +
+
+          '<article class="dark-card">' +
+            '<div class="lumi-feedback good">' +
+              '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+              '<p>잘했어! 이제 질문을 만들 때 어떤 힘을 써야 하는지 조금 더 잘 알게 되었어.</p>' +
+            '</div>' +
+
+            '<div class="method-actions">' +
+              '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
+              '<button class="main-button" type="button" onclick="goSelectScreen()">다음 질문 고르기 →</button>' +
+            '</div>' +
+          '</article>' +
+        '</section>';
+    }
+
+    /*
+      =========================================================
+      12. 총 복습 화면
+      =========================================================
+    */
+
+    function selectReviewPart(index) {
+      reviewSelectedPartIndex = index;
+      reviewChecked = false;
+      reviewResult = null;
+      renderReviewScreen();
+    }
+
+    function selectReviewType(type) {
+      reviewSelectedType = type;
+      reviewChecked = false;
+      reviewResult = null;
+      renderReviewScreen();
+    }
+
+    function updateReviewQuestion(value) {
+      reviewQuestionInput = value;
+    }
+
+    function updateReviewAnswer(value) {
+      reviewAnswerInput = value;
+    }
+
+    function checkReviewQuestion() {
+      const questionValue = reviewQuestionInput.trim();
+      const answerValue = reviewAnswerInput.trim();
+
+      reviewChecked = true;
+
+      if (reviewSelectedPartIndex === null) {
+        reviewResult = {
+          ok: false,
+          message: "먼저 질문을 만들 글 부분을 골라야 해."
+        };
+      } else if (!reviewSelectedType) {
+        reviewResult = {
+          ok: false,
+          message: "질문 종류도 하나 골라야 해."
+        };
+      } else if (questionValue.length < 6 || questionValue.indexOf("?") === -1) {
+        reviewResult = {
+          ok: false,
+          message: "질문은 조금 더 길게 쓰고, 끝에 물음표를 붙여 보자."
+        };
+      } else if (answerValue.length < 2) {
+        reviewResult = {
+          ok: false,
+          message: "내 답이나 생각도 함께 써 봐야 해."
+        };
+      } else {
+        reviewCompletedQuestions[reviewSelectedType] = {
+          partIndex: reviewSelectedPartIndex,
+          question: questionValue,
+          answer: answerValue
+        };
+
+        reviewResult = {
+          ok: true,
+          message: "좋아! 이 질문 종류를 잘 만들었어. 남은 질문 종류도 채워 보자."
+        };
+
+        reviewQuestionInput = "";
+        reviewAnswerInput = "";
+        reviewSelectedType = null;
+      }
+
+      renderReviewScreen();
+    }
+
+    function finishReview() {
+      const complete =
+        reviewCompletedQuestions.direct &&
+        reviewCompletedQuestions.infer &&
+        reviewCompletedQuestions.opinion &&
+        reviewCompletedQuestions.connect;
+
+      if (!complete) return;
+
+      alert("총 복습까지 완료했어요!");
+      goSelectScreen();
+    }
+
+    function renderReviewScreen() {
+      const app = document.getElementById("app");
+
+      const selectedPart =
+        reviewSelectedPartIndex !== null
+          ? reviewStory.parts[reviewSelectedPartIndex]
+          : null;
+
+      const allReviewDone =
+        reviewCompletedQuestions.direct &&
+        reviewCompletedQuestions.infer &&
+        reviewCompletedQuestions.opinion &&
+        reviewCompletedQuestions.connect;
+
+      app.innerHTML =
+        '<section class="screen">' +
+          '<div class="screen-title-row">' +
+            '<div>' +
+              '<span class="title-badge">총 복습</span>' +
+              '<h1 class="main-title">한 편의 글에서 4가지 질문을 만들어 봐요</h1>' +
+              '<p class="main-desc">글 부분을 고르고, 질문 종류에 맞는 질문을 직접 써 봐요.</p>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="review-layout">' +
+            '<article class="review-book">' +
+              '<p class="section-label">읽을 글</p>' +
+              '<h2 class="review-story-title">' + reviewStory.title + '</h2>' +
+              reviewStory.parts.map(function(part, index) {
+                return (
+                  '<button class="review-story-part ' + (reviewSelectedPartIndex === index ? "selected" : "") + '" type="button" onclick="selectReviewPart(' + index + ')">' +
+                    part.text +
+                  '</button>'
+                );
+              }).join("") +
             '</article>' +
-            '<article class="dark-card">' +
-              '<p class="section-label">다음 이동</p>' +
-              '<div class="support-grid">' +
-                '<div class="support-card"><strong>질문 종류 선택</strong><br>다른 질문을 이어서 연습해요.</div>' +
-                '<div class="support-card"><strong>방법 다시 보기</strong><br>헷갈리면 핵심 주문부터 다시 확인해요.</div>' +
+
+            '<article class="review-workshop">' +
+              '<p class="section-label">질문 제작대</p>' +
+
+              '<div class="review-status">' +
+                '<p class="review-status-title">완성한 질문</p>' +
+                '<div class="review-status-list">' +
+                  '<div class="review-status-item ' + (reviewCompletedQuestions.direct ? "done" : "") + '">바로 답 찾기</div>' +
+                  '<div class="review-status-item ' + (reviewCompletedQuestions.infer ? "done" : "") + '">답 짐작하기</div>' +
+                  '<div class="review-status-item ' + (reviewCompletedQuestions.opinion ? "done" : "") + '">생각·느낌</div>' +
+                  '<div class="review-status-item ' + (reviewCompletedQuestions.connect ? "done" : "") + '">내 삶 연결</div>' +
+                '</div>' +
               '</div>' +
+
+              '<div class="review-selected-box">' +
+                '<strong>선택한 글 부분</strong>' +
+                (selectedPart ? selectedPart.text : "왼쪽에서 질문을 만들 글 부분을 골라요.") +
+              '</div>' +
+
+              '<p class="section-label">질문 종류 선택</p>' +
+              '<div class="review-type-grid">' +
+                renderReviewTypeButton("direct", "책 내용에서 바로 답을 찾는 질문") +
+                renderReviewTypeButton("infer", "책 내용에서 답을 짐작하는 질문") +
+                renderReviewTypeButton("opinion", "생각이나 느낌에 대한 질문") +
+                renderReviewTypeButton("connect", "자신의 삶과 관련짓는 질문") +
+              '</div>' +
+
+              '<label class="review-input-label">내 질문</label>' +
+              '<textarea class="review-input" placeholder="질문을 써요. 예: 서윤이는 무엇을 발견했나요?" oninput="updateReviewQuestion(this.value)">' + escapeHtml(reviewQuestionInput) + '</textarea>' +
+
+              '<label class="review-input-label">내 답 또는 생각</label>' +
+              '<textarea class="review-input" placeholder="내 답이나 생각을 써요." oninput="updateReviewAnswer(this.value)">' + escapeHtml(reviewAnswerInput) + '</textarea>' +
+
+              (
+                reviewChecked && reviewResult
+                  ? '<div class="lumi-feedback ' + (reviewResult.ok ? "good" : "need") + '">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>' + reviewResult.message + '</p>' +
+                    '</div>'
+                  : '<div class="lumi-feedback">' +
+                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                      '<p>글 부분과 질문 종류를 고른 뒤 질문을 만들어 봐!</p>' +
+                    '</div>'
+              ) +
+
               '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="goMethodScreen()">방법 다시 보기</button>' +
-                '<button class="main-button" type="button" onclick="goSelectScreen()">질문 종류로 가기 →</button>' +
+                '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
+                '<button class="main-button" type="button" onclick="checkReviewQuestion()">질문 저장</button>' +
+                '<button class="main-button" type="button" ' + (allReviewDone ? "" : "disabled") + ' onclick="finishReview()">총 복습 완료 →</button>' +
               '</div>' +
             '</article>' +
           '</div>' +
         '</section>';
     }
 
+    function renderReviewTypeButton(type, label) {
+      return (
+        '<button class="review-type-button ' + (reviewSelectedType === type ? "selected" : "") + '" type="button" onclick="selectReviewType(\'' + type + '\')">' +
+          label +
+        '</button>'
+      );
+    }
+
     /*
       =========================================================
-      12. 보조 함수
+      13. 시작
       =========================================================
     */
 
-    function makeHighlightedStory(story, highlight) {
-      if (!highlight) return story;
-      return story.replace(highlight, '<span class="story-highlight">' + highlight + '</span>');
-    }
-
-    function escapeHtml(text) {
-      return (text || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-  // 원래 시작 화면
-renderSelectScreen();
+    renderSelectScreen();
   </script>
-  <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

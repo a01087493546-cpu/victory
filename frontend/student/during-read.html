@@ -76,11 +76,11 @@
 }
 
     /* 상단 */
-    .top {
+ .top {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 420px;
+  grid-template-columns: 240px minmax(0, 1fr) 260px;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
     .brand {
@@ -213,16 +213,16 @@
 }
 
     .section-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #4b2a13;
-      font-family: "Noto Serif KR", serif;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: -0.6px;
-      line-height: 1;
-    }
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b2a13;
+  font-family: "Noto Serif KR", serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
 
     .title-line {
       height: 1px;
@@ -231,30 +231,30 @@
     }
 
     .small-label {
-      color: #4f2d15;
-      font-size: 14px;
-      font-weight: 900;
-      margin-bottom: 6px;
-    }
+  color: #4f2d15;
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 7px;
+}
 
     .type-buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 9px;
-    }
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
 
     .type-button {
-      height: 36px;
-      border-radius: 12px;
-      border: 1px solid rgba(192, 130, 55, 0.34);
-      background: rgba(255, 252, 245, 0.82);
-      color: #5a3820;
-      font-size: 13px;
-      font-weight: 900;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
-    }
-
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(192, 130, 55, 0.34);
+  background: rgba(255, 252, 245, 0.82);
+  color: #5a3820;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
     .type-button.active {
       border-color: rgba(190, 125, 32, 0.82);
       background: linear-gradient(180deg, #f3c978, #c9902d);
@@ -341,12 +341,12 @@
     }
 
     /* 루미 피드백 */
-   .feedback-card {
+ .feedback-card {
   min-height: 0;
-  padding: 14px 18px;
+  padding: 14px 20px;
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 14px;
+  grid-template-columns: 150px 1fr;
+  gap: 18px;
   align-items: center;
   overflow: hidden;
 }
@@ -366,7 +366,7 @@
     }
 
 .lumi-img {
-  width: 108px;
+  width: 138px;
   filter:
     drop-shadow(0 10px 13px rgba(112, 63, 15, 0.14))
     drop-shadow(0 0 12px rgba(255, 198, 94, 0.12));
@@ -384,18 +384,18 @@
       word-break: keep-all;
     }
 
-    .feedback-message {
-  min-height: 78px;
-  max-height: 108px;
-  padding: 14px 18px;
-  border-radius: 16px;
+ .feedback-message {
+  min-height: 96px;
+  max-height: 122px;
+  padding: 16px 20px;
+  border-radius: 18px;
   border: 1px solid rgba(186, 130, 58, 0.30);
   background:
     radial-gradient(circle at 100% 0%, rgba(255, 219, 129, 0.13), transparent 40%),
     rgba(255, 255, 250, 0.72);
   color: #4f3219;
-  font-size: 15px;
-  font-weight: 820;
+  font-size: 18px;
+  font-weight: 850;
   line-height: 1.5;
   word-break: keep-all;
   overflow-y: auto;
@@ -558,17 +558,14 @@
   overflow: hidden;
   word-break: keep-all;
 }
-    .q-answer {
-  margin-top: 8px;
+ .q-answer {
+  margin-top: 10px;
   color: #6f4e2f;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 800;
-  line-height: 1.45;
+  line-height: 1.55;
   word-break: keep-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  white-space: pre-line;
 }
 
     .edit-button {
@@ -640,13 +637,13 @@
         overflow: auto;
       }
 
-      .shell {
-  width: min(1120px, calc(100vw - 40px));
-  height: calc(100vh - 26px);
+ .shell {
+  width: min(1180px, calc(100vw - 32px));
+  height: calc(100vh - 20px);
   margin: 0 auto;
   display: grid;
-  grid-template-rows: 64px minmax(0, 1fr) 170px;
-  gap: 12px;
+  grid-template-rows: 48px minmax(0, 1fr) 178px;
+  gap: 8px;
   overflow: hidden;
 }
 .feedback-left {
@@ -684,6 +681,708 @@
         min-height: 108px;
       }
     }
+    /* =========================================================
+   질문 만들기 화면 최종 보정
+   - 상단 멘트 삭제 후 전체 위로 올림
+   - 루미 이미지/피드백 확대
+   - 4가지 질문 유형 버튼 잘림 방지
+   ========================================================= */
+
+.title-area {
+  min-height: 0;
+}
+
+.main-title,
+.main-desc {
+  display: none;
+}
+
+.top-actions {
+  gap: 10px;
+}
+
+.date-pill,
+.top-share {
+  height: 40px;
+  font-size: 14px;
+}
+
+.main-grid {
+  gap: 12px;
+}
+
+.write-card,
+.today-card {
+  padding: 18px 20px;
+}
+
+.title-line {
+  margin: 8px 0 10px;
+}
+
+#questionInput {
+  height: 96px;
+  font-size: 18px;
+}
+
+#answerInput {
+  height: 112px;
+  font-size: 18px;
+}
+
+.count {
+  font-size: 13px;
+}
+
+.today-title {
+  color: #4b2a13;
+  font-family: "Noto Serif KR", serif;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+}
+
+.today-guide {
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.q-meta {
+  font-size: 15px;
+}
+
+.q-text {
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.q-answer {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.share-title {
+  font-size: 25px;
+}
+
+.share-desc {
+  font-size: 16px;
+}
+
+.share-note {
+  font-size: 13px;
+}
+
+@media (max-height: 820px) {
+  .page {
+    padding: 8px 16px 10px;
+  }
+
+  .shell {
+    width: min(1180px, calc(100vw - 32px));
+    height: calc(100vh - 18px);
+    grid-template-rows: 44px minmax(0, 1fr) 166px;
+    gap: 7px;
+  }
+
+  .section-title,
+  .today-title {
+    font-size: 24px;
+  }
+
+  .type-button {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  #questionInput {
+    height: 86px;
+  }
+
+  #answerInput {
+    height: 100px;
+  }
+
+  .lumi-img {
+    width: 126px;
+  }
+
+  .feedback-card {
+    grid-template-columns: 138px 1fr;
+    padding: 12px 18px;
+  }
+
+  .feedback-message {
+    min-height: 86px;
+    max-height: 106px;
+    font-size: 17px;
+    padding: 14px 18px;
+  }
+}
+/* =========================================================
+   질문 만들기 화면 확대 최종 조정
+   - 홈 버튼 추가
+   - 전반적인 글씨 크기 확대
+   - 버튼 크기 확대
+   - AI 루미 피드백 크기 확대
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .shell {
+    width: min(1240px, calc(100vw - 36px));
+    height: calc(100vh - 22px);
+    grid-template-rows: 58px minmax(0, 1fr) 210px;
+    gap: 10px;
+  }
+
+  .top {
+    grid-template-columns: 270px minmax(0, 1fr) 430px;
+    gap: 10px;
+  }
+
+  .brand {
+    font-size: 28px;
+  }
+
+  .brand-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+  }
+
+  .brand-icon img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .top-actions {
+    gap: 10px;
+  }
+
+  .home-button,
+  .date-pill,
+  .top-share {
+    height: 44px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .home-button {
+    min-width: 74px;
+    padding: 0 16px;
+    border: 1px solid rgba(177, 122, 57, 0.34);
+    background: linear-gradient(180deg, #fff8e8, #f1dfbd);
+    color: #4f2e16;
+    box-shadow:
+      0 7px 14px rgba(116, 71, 20, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  }
+
+  .date-pill {
+    min-width: 172px;
+    padding: 0 12px;
+  }
+
+  .top-share {
+    min-width: 116px;
+    padding: 0 16px;
+  }
+
+  .main-grid {
+    grid-template-columns: 0.88fr 1.12fr;
+    gap: 14px;
+  }
+
+  .write-card,
+  .today-card {
+    padding: 22px 24px;
+    border-radius: 26px;
+  }
+
+  .section-title,
+  .today-title {
+    font-size: 31px;
+    line-height: 1.1;
+  }
+
+  .title-line {
+    margin: 11px 0 14px;
+  }
+
+  .small-label {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .type-buttons {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .type-button {
+    height: 50px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .input-block {
+    margin-top: 10px;
+  }
+
+  .count {
+    font-size: 15px;
+  }
+
+  textarea {
+    padding: 16px 18px;
+    font-size: 20px;
+    line-height: 1.5;
+    border-radius: 18px;
+  }
+
+  textarea::placeholder {
+    font-size: 19px;
+    font-weight: 850;
+  }
+
+  #questionInput {
+    height: 112px;
+  }
+
+  #answerInput {
+    height: 132px;
+  }
+
+  .write-actions {
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    padding-top: 14px;
+  }
+
+  .sub-button,
+  .main-button {
+    height: 54px;
+    border-radius: 17px;
+    font-size: 19px;
+  }
+
+  .today-head {
+    margin-bottom: 12px;
+  }
+
+  .today-guide {
+    font-size: 18px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+
+  .select-count {
+    min-width: 124px;
+    padding: 9px 14px;
+    font-size: 16px;
+  }
+
+  .empty {
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  .question-card {
+    min-height: 92px;
+    padding: 16px 42px 14px 46px;
+    border-radius: 17px;
+  }
+
+  .check {
+    left: 12px;
+    top: 14px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .question-card.selected .check::after {
+    left: 4px;
+    top: -4px;
+    font-size: 18px;
+  }
+
+  .q-meta {
+    font-size: 16px;
+  }
+
+  .type-badge {
+    font-size: 14px;
+    padding: 4px 10px;
+  }
+
+  .q-text {
+    font-size: 21px;
+    line-height: 1.45;
+  }
+
+  .q-answer {
+    font-size: 19px;
+    line-height: 1.5;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr 330px;
+    gap: 14px;
+  }
+
+  /* AI 루미 피드백 크게 */
+  .feedback-card {
+    padding: 18px 24px;
+    grid-template-columns: 178px minmax(0, 1fr);
+    gap: 22px;
+    border-radius: 26px;
+  }
+
+  .feedback-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .lumi-img {
+    width: 166px;
+    max-height: 180px;
+  }
+
+  .feedback-right {
+    min-width: 0;
+  }
+
+  .feedback-card .section-title {
+    margin-bottom: 12px;
+    font-size: 32px;
+  }
+
+  .feedback-message {
+    min-height: 120px;
+    max-height: 142px;
+    padding: 20px 24px;
+    border-radius: 20px;
+    font-size: 21px;
+    font-weight: 900;
+    line-height: 1.5;
+  }
+
+  .share-card {
+    padding: 20px 22px;
+    border-radius: 26px;
+    gap: 10px;
+  }
+
+  .share-title {
+    font-size: 30px;
+  }
+
+  .share-desc {
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  .share-button {
+    height: 58px;
+    border-radius: 18px;
+    font-size: 21px;
+  }
+
+  .share-note {
+    font-size: 15px;
+  }
+}
+
+/* 낮은 화면에서 잘림 방지 */
+@media (min-width: 1101px) and (max-height: 820px) {
+  .page {
+    padding: 8px 16px 10px;
+  }
+
+  .shell {
+    width: min(1220px, calc(100vw - 32px));
+    height: calc(100vh - 18px);
+    grid-template-rows: 50px minmax(0, 1fr) 182px;
+    gap: 8px;
+  }
+
+  .top {
+    grid-template-columns: 250px minmax(0, 1fr) 400px;
+  }
+
+  .brand {
+    font-size: 25px;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand-icon img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .home-button,
+  .date-pill,
+  .top-share {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .date-pill {
+    min-width: 158px;
+  }
+
+  .section-title,
+  .today-title {
+    font-size: 27px;
+  }
+
+  .write-card,
+  .today-card {
+    padding: 18px 20px;
+  }
+
+  .small-label {
+    font-size: 16px;
+  }
+
+  .type-button {
+    height: 42px;
+    font-size: 14px;
+  }
+
+  textarea {
+    font-size: 17px;
+    padding: 13px 15px;
+  }
+
+  textarea::placeholder {
+    font-size: 16px;
+  }
+
+  #questionInput {
+    height: 92px;
+  }
+
+  #answerInput {
+    height: 108px;
+  }
+
+  .sub-button,
+  .main-button {
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .today-guide {
+    font-size: 16px;
+  }
+
+  .q-text {
+    font-size: 18px;
+  }
+
+  .q-answer {
+    font-size: 17px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr 310px;
+  }
+
+  .feedback-card {
+    grid-template-columns: 150px minmax(0, 1fr);
+    padding: 14px 20px;
+  }
+
+  .lumi-img {
+    width: 138px;
+    max-height: 150px;
+  }
+
+  .feedback-card .section-title {
+    font-size: 27px;
+    margin-bottom: 8px;
+  }
+
+  .feedback-message {
+    min-height: 92px;
+    max-height: 110px;
+    padding: 14px 18px;
+    font-size: 17px;
+    line-height: 1.42;
+  }
+
+  .share-title {
+    font-size: 25px;
+  }
+
+  .share-desc {
+    font-size: 16px;
+  }
+
+  .share-button {
+    height: 50px;
+    font-size: 18px;
+  }
+}
+/* =========================================================
+   상단 우리반 책읽기 글자 정렬 + 라벨 글씨 확대
+   - '우리반 책읽기' 기 내려감 보정
+   - 질문 유형 선택 / 질문 쓰기 / 내 생각 답 글씨 키우기
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  /* 우리반 책읽기 글자 세로 정렬 보정 */
+  .brand {
+    align-items: center;
+    line-height: 1;
+  }
+
+  .brand span {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    transform: translateY(-2px);
+  }
+
+  .brand-icon {
+    flex: 0 0 auto;
+  }
+
+  /* 질문 유형 선택 / 질문 쓰기 / 내 생각 답 */
+  .small-label {
+    font-size: 21px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 9px;
+  }
+
+  .input-head {
+    margin-bottom: 8px;
+  }
+
+  /* 글자 수 표시도 같이 키우기 */
+  .count {
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  /* 질문 유형 버튼 글씨도 살짝 더 키우기 */
+  .type-button {
+    font-size: 17px;
+    height: 52px;
+  }
+}
+
+/* 낮은 화면에서는 살짝만 줄이기 */
+@media (min-width: 1101px) and (max-height: 820px) {
+  .brand span {
+    transform: translateY(-1px);
+  }
+
+  .small-label {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .count {
+    font-size: 14px;
+  }
+
+  .type-button {
+    font-size: 15px;
+    height: 42px;
+  }
+}
+/* =========================================================
+   질문 유형 버튼 글씨 크게
+   - 바로 찾기 / 짐작하기 / 생각·느낌 / 삶과 연결
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .type-button {
+    height: 56px;
+    font-size: 19px;
+    font-weight: 900;
+    border-radius: 17px;
+    letter-spacing: -0.4px;
+  }
+}
+
+/* 화면 높이가 낮을 때는 살짝만 줄여서 안 잘리게 */
+@media (min-width: 1101px) and (max-height: 820px) {
+  .type-button {
+    height: 48px;
+    font-size: 16.5px;
+  }
+}
+/* =========================================================
+   상단 '우리반 책읽기' 한 줄 고정
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .top {
+    grid-template-columns: 330px minmax(0, 1fr) 430px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .brand span {
+    display: inline-block;
+    white-space: nowrap;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+}
+
+/* 낮은 화면에서도 한 줄 유지 */
+@media (min-width: 1101px) and (max-height: 820px) {
+  .top {
+    grid-template-columns: 310px minmax(0, 1fr) 400px;
+  }
+
+  .brand {
+    font-size: 24px;
+  }
+}
+/* =========================================================
+   선택 개수 표시 크기 키우기
+   - 0 / 3개 선택됨
+   ========================================================= */
+
+@media (min-width: 1101px) {
+  .select-count {
+    min-width: 150px;
+    height: 46px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 20px;
+    font-weight: 900;
+  }
+}
+
+@media (min-width: 1101px) and (max-height: 820px) {
+  .select-count {
+    min-width: 132px;
+    height: 40px;
+    font-size: 17px;
+  }
+}
   </style>
 </head>
 
@@ -699,13 +1398,13 @@
         </div>
 
         <div class="title-area">
-          <h1 class="main-title">책을 읽으며 떠오른 질문을 만들어 보자!</h1>
+          <h1 class="main-title"></h1>
           <p class="main-desc">질문 유형을 고르고, 질문과 내 생각을 써 봐.</p>
         </div>
 
         <div class="top-actions">
-  <button class="back-main-button" type="button" onclick="goReadingMain()">
-    우리반 책읽기
+  <button class="home-button" type="button" onclick="goHome()">
+    홈
   </button>
 
   <div class="date-pill" id="todayText">오늘 날짜</div>
@@ -824,22 +1523,18 @@
     const typeInfo = {
       direct: {
         label: "바로 찾기",
-        guide: "책 속에 답이 바로 보이는 질문이에요.",
         words: ["무엇", "누구", "어디", "언제", "몇", "이름"]
       },
       infer: {
         label: "짐작하기",
-        guide: "책 속 단서를 보고 이유나 마음을 짐작하는 질문이에요.",
         words: ["왜", "어떤마음", "무슨생각", "이유", "어째서"]
       },
       opinion: {
         label: "생각·느낌",
-        guide: "책을 읽고 든 내 생각이나 느낌을 말하는 질문이에요.",
         words: ["나는", "나라면", "내생각", "어떻게생각", "느낌", "마음이들"]
       },
       connect: {
         label: "삶과 연결",
-        guide: "책 내용과 내 경험이나 생활을 연결하는 질문이에요.",
         words: ["나도", "내가", "경험", "비슷한", "해본적", "겪은적", "우리반", "가족", "친구"]
       }
     };
@@ -1268,6 +1963,9 @@
 }
 function goReadingMain() {
   location.href = "./class-reading.html";
+}
+function goHome() {
+  location.href = "./individual-reading.html";
 }
 
     function escapeHtml(text) {
