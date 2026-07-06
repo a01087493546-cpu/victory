@@ -16,13 +16,6 @@
         <header class="map-title-area">
           <img src="../frontend/assets/images/logo-emblem.png" class="map-logo" alt="문답책 로고">
           <h1 class="map-title">문답책 던전</h1>
-          <div class="map-title-deco">
-            <span class="deco-line"></span>
-            <span class="deco-diamond">◆</span>
-            <span class="deco-text">질문의 힘으로 용의 던전을 돌파하세요</span>
-            <span class="deco-diamond">◆</span>
-            <span class="deco-line"></span>
-          </div>
         </header>
 
         <main class="map-content">
@@ -84,10 +77,6 @@
               <div class="detail-header-info">
                 <div class="detail-diff-badge" id="detail-diff">★ 초급</div>
                 <h2 class="detail-name" id="detail-name">초급 던전</h2>
-                <p class="detail-desc" id="detail-desc">
-                  어린 용이지만 절대 방심은 금물.<br>
-                  이곳에서 살아남아야 진짜 모험이 시작됩니다.
-                </p>
               </div>
             </div>
 
@@ -149,48 +138,8 @@
                 </span>
                 <span>던전 입장하기</span>
               </button>
-              <div class="enter-sub">
-                <span class="deco-line"></span>
-                <span>선택한 던전에 입장하면 모험이 시작됩니다</span>
-                <span class="deco-line"></span>
-              </div>
             </div>
           </section>
-
-          <aside class="dungeon-side-hud">
-            <section class="hud-section">
-              <h3 class="hud-title">나의 준비 상태</h3>
-              <div class="hud-stat-row">
-                <span class="hud-stat-label"><span class="stat-symbol book-symbol">▤</span> 읽은 책</span>
-                <strong id="hud-books">10권</strong>
-              </div>
-              <div class="hud-stat-row">
-                <span class="hud-stat-label"><span class="stat-symbol magic-symbol">✦</span> 마법력</span>
-                <strong id="hud-magic">50</strong>
-              </div>
-              <div class="hud-stat-row">
-                <span class="hud-stat-label"><span class="stat-symbol hp-symbol">♥</span> 최대 생명력</span>
-                <strong id="hud-hp">120</strong>
-              </div>
-              <div class="hud-stat-row">
-                <span class="hud-stat-label"><span class="stat-symbol courage-symbol">◆</span> 용기</span>
-                <strong id="hud-courage">20%</strong>
-              </div>
-              <div class="hud-stat-row" style="border-bottom: none;">
-                <span class="hud-stat-label"><span class="stat-symbol coin-symbol">◈</span> 코인</span>
-                <strong id="hud-coin">35</strong>
-              </div>
-            </section>
-
-            <section class="hud-section hud-tip">
-              <h3 class="hud-title">문답책의 조언</h3>
-              <p class="hud-tip-text">
-                좋은 질문을 만들수록<br>
-                용은 혼란에 빠지고<br>
-                점점 힘을 잃습니다.
-              </p>
-            </section>
-          </aside>
 
         </main>
       </div>
@@ -236,24 +185,11 @@
           <small>용기</small>
           <strong id="stat-courage">0%</strong>
         </div>
-        <div class="top-stat-chip coin-chip">
-          <span class="top-stat-icon coin-symbol">◈</span>
-          <small>코인</small>
-          <strong>35</strong>
+        <div class="top-stat-chip wisdom-chip">
+          <span class="top-stat-icon wisdom-symbol">📚</span>
+          <small>지혜</small>
+          <strong id="stat-wisdom">10</strong>
         </div>
-
-        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('notice')" title="알림">
-          <span class="top-ui-symbol notice-symbol">🔔</span>
-          <span class="notice-dot"></span>
-        </button>
-
-        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('guide')" title="전투 도움말">
-          <span class="top-ui-symbol guide-symbol">?</span>
-        </button>
-
-        <button class="top-icon-btn" type="button" onclick="openTopHudPopup('setting')" title="설정">
-          <span class="top-ui-symbol setting-symbol">⚙</span>
-        </button>
       </div>
     </div>
 
@@ -261,32 +197,6 @@
     <div class="battle-bg" id="battle-bg">
       <div class="battle-vignette"></div>
       <div class="heavy-warning" id="heavy-warning">⚠ 강한 공격이 온다!</div>
-
-      <!-- 왼쪽 패널 -->
-      <div class="battle-side-panel battle-left-panel">
-        <div class="battle-panel-title">던전 선택</div>
-        <div class="battle-dungeon-card active">
-          <img src="images/hatchling_idle.png" alt="초급 던전">
-          <div>
-            <strong>초급 던전</strong>
-            <span>★ 초급</span>
-          </div>
-        </div>
-        <div class="battle-dungeon-card locked">
-          <div class="battle-lock-thumb">🔒</div>
-          <div>
-            <strong>중급 던전</strong>
-            <span>★★ 중급</span>
-          </div>
-        </div>
-        <div class="battle-dungeon-card locked">
-          <div class="battle-lock-thumb">🔒</div>
-          <div>
-            <strong>고급 던전</strong>
-            <span>★★★ 고급</span>
-          </div>
-        </div>
-      </div>
 
       <!-- 중앙 전투 필드 -->
       <div class="battle-field">
@@ -312,36 +222,6 @@
           </div>
           <img class="sprite idle" id="enemy-spr" src="images/hatchling_idle.png" alt="적">
           <div class="fighter-floor enemy-floor"></div>
-        </div>
-      </div>
-
-      <!-- 오른쪽 패널 -->
-      <div class="battle-side-panel battle-right-panel">
-        <div class="battle-panel-title">나의 준비 상태</div>
-        <div class="battle-stat-row">
-          <span><span class="stat-symbol book-symbol">▤</span> 읽은 책</span>
-          <strong>10권</strong>
-        </div>
-        <div class="battle-stat-row">
-          <span><span class="stat-symbol magic-symbol">✦</span> 마법력</span>
-          <strong id="battle-hud-magic">10</strong>
-        </div>
-        <div class="battle-stat-row">
-          <span><span class="stat-symbol hp-symbol">♥</span> 최대 생명력</span>
-          <strong id="battle-hud-stamina">150</strong>
-        </div>
-        <div class="battle-stat-row">
-          <span><span class="stat-symbol courage-symbol">◆</span> 용기</span>
-          <strong id="battle-hud-courage">0%</strong>
-        </div>
-        <div class="battle-stat-row">
-          <span><span class="stat-symbol coin-symbol">◈</span> 코인</span>
-          <strong>35</strong>
-        </div>
-        <button class="battle-ability-btn">+ 능력치 확인</button>
-        <div class="battle-tip-box">
-          <div class="battle-panel-title small">문답책의 조언</div>
-          <p>좋은 질문을 만들수록<br>용은 혼란에 빠지고<br>점점 힘을 잃습니다.</p>
         </div>
       </div>
     </div>
@@ -371,8 +251,8 @@
                   <img src="images/icon_ilgyeok.png" width="96" height="96" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>일격</strong>
-                  <small>기본 베기</small>
+                  <strong>기본 베기</strong>
+                  <small></small>
                 </span>
               </button>
 
@@ -382,8 +262,8 @@
                   <img src="images/icon_yeonsoek.png" width="80" height="80" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>연속 베기</strong>
-                  <small>연속 공격</small>
+                  <strong>연속 공격</strong>
+                  <small></small>
                 </span>
               </button>
             </div>
@@ -401,8 +281,7 @@
                   <img src="images/icon_bangeo.png" width="96" height="96" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>방어</strong>
-                  <small>기본 막기</small>
+                  <strong>기본 막기</strong>
                 </span>
               </button>
 
@@ -412,8 +291,8 @@
                   <img src="images/icon_cheolbyeok.png" width="96" height="96" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>철벽</strong>
-                  <small>완전 방어</small>
+                  <strong>완전 방어</strong>
+                  <small></small>
                 </span>
               </button>
             </div>
@@ -431,8 +310,8 @@
                   <img src="images/icon_bulkkot.png" width="80" height="80" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>불꽃 베기</strong>
-                  <small>강한 공격</small>
+                  <strong>강한 공격</strong>
+                  <small></small>
                 </span>
               </button>
 
@@ -442,8 +321,8 @@
                   <img src="images/icon_hwayeom.png" width="80" height="80" style="object-fit:contain;">
                 </span>
                 <span class="skill-text">
-                  <strong>화염 폭발</strong>
-                  <small>초강력 필살기</small>
+                  <strong>초강력 필살기</strong>
+                  <small></small>
                 </span>
               </button>
             </div>
@@ -458,7 +337,7 @@
         </div>
         <div class="battle-guide-content">
           <div class="battle-guide-title">튜토리얼</div>
-          <p>좋은 질문을 만들수록 용을 혼란에 빠뜨리고, 강한 공격은 방어로 막을 수 있습니다.</p>
+          <p>좋은 질문을 만들수록 용은 혼란에 빠지고 점점 힘을 잃습니다</p>
         </div>
       </div>
     </div>
@@ -471,9 +350,7 @@
 
       <div class="result-title" id="r-title">승리!</div>
 
-      <div class="result-sub" id="r-sub">
-        용을 물리쳤습니다!
-      </div>
+      <div class="result-sub" id="r-sub"></div>
 
       <div class="reward-row" id="r-rewards"></div>
 
@@ -565,7 +442,6 @@
       document.getElementById('detail-boss-glow').style.background = info.glowColor;
       document.getElementById('detail-diff').textContent = info.diff;
       document.getElementById('detail-name').textContent = info.name;
-      document.getElementById('detail-desc').innerHTML = info.desc;
 
       // 입장 조건은 줄바꿈 태그가 들어가므로 innerHTML 사용
       document.getElementById('detail-req').innerHTML = info.req;
@@ -589,19 +465,6 @@
     selectDungeon(0);
   </script>
 
-  <!-- 오른쪽 상단 버튼 팝업 -->
-  <div class="top-hud-popup" id="top-hud-popup" aria-hidden="true">
-    <div class="top-hud-popup-card" id="top-hud-popup-card">
-      <button class="top-hud-popup-close" type="button" onclick="closeTopHudPopup()">×</button>
-
-      <div class="top-hud-popup-kicker" id="top-popup-kicker">알림</div>
-      <h3 class="top-hud-popup-title" id="top-popup-title">새 알림</h3>
-
-      <!-- 알림 / 도움말 / 설정 내용이 JS로 들어오는 영역 -->
-      <div class="top-hud-popup-body" id="top-popup-body">
-        아직 확인할 알림이 없습니다.
-      </div>
-    </div>
-  </div>
+  <script src="js/fixed-stage.js"></script>
 </body>
 </html>

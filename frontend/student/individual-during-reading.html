@@ -6248,6 +6248,10 @@ body.idr-book-chat-open #shareScreen .idr-list-scroll {
   min-height: 0 !important;
   overflow-y: auto !important;
   padding-right: 8px !important;
+  padding-bottom: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
 }
 
 /* 빈 화면도 넓게 */
@@ -6378,20 +6382,20 @@ body.idr-book-chat-open {
 }
 
 body.idr-book-chat-open .idr-page {
-  width: 100vw !important;
+  width: 100% !important;
   max-width: none !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
+  height: 100% !important;
+  min-height: 100% !important;
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden !important;
 }
 
 body.idr-book-chat-open .idr-shell {
-  width: 100vw !important;
+  width: 100% !important;
   max-width: none !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
+  height: 100% !important;
+  min-height: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   display: block !important;
@@ -6406,10 +6410,6 @@ body.idr-book-chat-open .idr-shell > .idr-top-bar {
 body.idr-book-chat-open #shareScreen.idr-work-screen.active {
   position: fixed !important;
   inset: 0 !important;
-  width: 100vw !important;
-  max-width: none !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
   display: block !important;
@@ -6428,12 +6428,15 @@ body.idr-book-chat-open #shareScreen::after {
 
 /* 책수다방 전체 화면 */
 body.idr-book-chat-open .idr-book-chat-fullscreen {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 100% !important;
   max-width: none !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
+  height: 100% !important;
+  min-height: 100% !important;
   margin: 0 !important;
   padding: 14px 28px 18px !important;
   box-sizing: border-box !important;
@@ -6537,6 +6540,7 @@ body.idr-book-chat-open .idr-share-card {
   width: 100% !important;
   padding: 22px 24px !important;
   border-radius: 22px !important;
+  flex-shrink: 0 !important;
 }
 
 body.idr-book-chat-open .idr-share-card strong {
