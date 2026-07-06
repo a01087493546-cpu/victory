@@ -713,7 +713,7 @@
 
     /* 방법 알기 화면 */
     .two-column-layout.method-layout {
-  grid-template-columns: 8fr 2fr;
+  grid-template-columns: 7fr 3fr;
   gap: 24px;
   align-items: stretch;
   height: calc(100% - 130px);
@@ -1379,6 +1379,1305 @@ body {
   min-height: 56px;
   font-size: 21px !important;
 }
+/* =========================================================
+   선택 화면 상단 진행률 + 총복습 버튼 배치
+   - 아래 총복습 박스를 없애고 제목 오른쪽에 배치
+========================================================= */
+
+.select-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.select-title-row {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.select-progress-area {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.select-progress-pill {
+  min-width: 132px;
+  height: 64px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 211, 112, 0.58);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 221, 138, 0.20), transparent 42%),
+    linear-gradient(180deg, rgba(35, 24, 12, 0.92), rgba(9, 7, 5, 0.92));
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px rgba(255, 239, 190, 0.06);
+}
+
+.select-progress-label {
+  color: rgba(255, 229, 180, 0.82);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.select-progress-pill strong {
+  color: #ffe6a3;
+  font-size: 25px;
+  font-weight: 950;
+  line-height: 1.1;
+}
+
+.select-review-button {
+  min-height: 64px;
+  padding: 14px 26px;
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.select-review-button:disabled {
+  opacity: 0.55;
+}
+
+/* 선택 화면에서는 질문 카드 영역이 남은 공간을 꽉 쓰도록 조정 */
+.select-screen .question-map {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
+/* 기존 아래 총복습 박스가 혹시 남아 있어도 선택 화면에서는 숨김 */
+.select-screen .review-gate {
+  display: none;
+}
+
+/* 낮은 화면에서도 제목 오른쪽 영역이 잘리지 않게 조정 */
+@media (max-height: 900px) {
+  .select-title-row {
+    margin-bottom: 14px;
+  }
+
+  .select-progress-pill {
+    height: 58px;
+    min-width: 120px;
+  }
+
+  .select-progress-pill strong {
+    font-size: 23px;
+  }
+
+  .select-review-button {
+    min-height: 58px;
+    padding: 12px 22px;
+    font-size: 20px;
+  }
+}
+/* =========================================================
+   방법 알기 화면 글씨/예시창 잘림 수정
+   - 핵심 주문 글씨를 조금 줄임
+   - 오른쪽 예시창은 화면 밖으로 넘치지 않고 내부에서만 스크롤
+========================================================= */
+
+/* 핵심 주문 글씨 크기 줄이기 */
+.method-rune-text {
+  font-size: clamp(28px, 2.1vw, 36px);
+  line-height: 1.5;
+}
+
+/* 가운데 물음표/핵심 낱말 버튼도 함께 축소 */
+.hidden-keyword {
+  min-width: 104px;
+  padding: 7px 22px 9px;
+  font-size: 31px;
+}
+
+/* 핵심 주문 박스 안쪽 여백도 살짝 줄이기 */
+.method-rune-frame {
+  padding: 22px 28px;
+}
+
+/* 오른쪽 예시 보조창: 전체 높이 안에서 잘리지 않게 */
+.method-side-area {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.method-example-panel {
+  height: calc(100% - 82px);
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 예시 내용이 길면 이 안에서만 스크롤 */
+.method-example-box,
+.method-example-question-box {
+  flex-shrink: 0;
+}
+
+/* 예시 문장/질문 글씨 약간 축소 */
+.method-example-text,
+.method-example-question {
+  font-size: 18px;
+  line-height: 1.42;
+}
+
+/* 예시 안쪽 카드 여백 줄이기 */
+.method-example-box,
+.method-example-question-box {
+  grid-template-columns: 46px 1fr;
+  gap: 10px;
+  padding: 12px;
+}
+
+.method-example-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 21px;
+}
+
+/* 관련된 질문 화살표 영역 압축 */
+.method-example-arrow {
+  margin: 8px 0;
+  font-size: 19px;
+}
+
+/* 다음 예시 버튼이 잘리지 않도록 아래쪽 고정 느낌 */
+.method-example-actions {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.example-next-button {
+  min-height: 50px;
+  padding: 10px 18px;
+  font-size: 19px !important;
+}
+
+/* 그래도 낮은 화면에서 오른쪽 내용이 넘치면 패널 내부 스크롤 */
+@media (max-height: 850px) {
+  .method-example-panel {
+    overflow-y: auto;
+  }
+
+  .method-example-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .method-example-panel::-webkit-scrollbar-thumb {
+    background: rgba(218, 166, 76, 0.55);
+    border-radius: 999px;
+  }
+
+  .method-example-title {
+    font-size: 23px;
+  }
+
+  .method-example-count {
+    font-size: 16px;
+  }
+
+  .method-example-text,
+  .method-example-question {
+    font-size: 16px;
+    line-height: 1.36;
+  }
+}
+/* =========================================================
+   기본 연습 화면 하단 버튼 아주 조금 위로 올리기
+   - 버튼이 화면 아래에서 살짝 잘리는 문제 해결
+========================================================= */
+
+.two-column-layout:not(.method-layout) {
+  height: calc(100% - 120px);
+  min-height: 0;
+}
+
+.two-column-layout:not(.method-layout) .dark-card {
+  min-height: 0;
+  height: 100%;
+}
+
+.two-column-layout:not(.method-layout) .method-actions {
+  margin-top: 10px;
+  padding-bottom: 10px;
+}
+
+.two-column-layout:not(.method-layout) .plain-button,
+.two-column-layout:not(.method-layout) .main-button {
+  min-height: 54px;
+  padding: 12px 24px;
+  font-size: 21px;
+}
+
+/* 글 박스가 버튼을 밀어내지 않도록 아주 살짝 압축 */
+.two-column-layout:not(.method-layout) .story-box {
+  min-height: 235px;
+  padding: 24px 30px;
+}
+
+.two-column-layout:not(.method-layout) .story-box p {
+  font-size: 32px;
+  line-height: 1.62;
+}
+
+.two-column-layout:not(.method-layout) .lumi-feedback {
+  min-height: 92px;
+  margin-top: 12px;
+}
+/* =========================================================
+   기본 연습 화면 루미 피드백 상자 살짝 축소
+   - 하단 버튼이 잘리지 않도록 루미 박스만 조금 줄임
+========================================================= */
+
+.two-column-layout:not(.method-layout) .lumi-feedback {
+  min-height: 78px;
+  margin-top: 10px;
+  padding: 10px 16px;
+  grid-template-columns: 64px 1fr;
+}
+
+.two-column-layout:not(.method-layout) .lumi-feedback img {
+  width: 58px;
+}
+
+.two-column-layout:not(.method-layout) .lumi-feedback p {
+  font-size: 19px;
+  line-height: 1.35;
+}
+/* =========================================================
+   방법 알기 화면 최종 구조 수정
+   - 오른쪽 고정 예시 칸 삭제
+   - 핵심 주문 카드를 화면 가로로 크게 사용
+   - 예시는 오른쪽에 뜨는 보조창처럼 표시
+========================================================= */
+
+.method-screen {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 방법 알기 화면에서는 제목 아래 설명 문구 없이 넓게 사용 */
+.method-screen .screen-title-row {
+  margin-bottom: 16px;
+}
+
+/* 핵심 주문 카드가 화면 전체 폭을 사용 */
+.method-full-card {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  padding: 28px 32px 26px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* 핵심 주문 제목 옆에 예시 보기 버튼 배치 */
+.method-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.method-card-top .section-label {
+  margin-bottom: 0;
+  font-size: 30px;
+}
+
+/* 예시 보기 버튼 */
+.method-top-example-button {
+  width: auto;
+  min-width: 190px;
+  min-height: 64px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  font-size: 25px;
+  white-space: nowrap;
+}
+
+/* 핵심 주문 박스가 넓게 보이도록 */
+.method-rune-wide {
+  height: 100%;
+  min-height: 0;
+  padding: 34px 46px;
+}
+
+/* 핵심 주문 글씨 크게 */
+.method-rune-text-wide {
+  font-size: clamp(40px, 3.1vw, 58px);
+  line-height: 1.58;
+  letter-spacing: -1.3px;
+}
+
+/* 가운데 물음표/핵심 낱말 버튼도 크게 */
+.method-keyword-wide {
+  min-width: 142px;
+  padding: 10px 32px 12px;
+  font-size: clamp(36px, 2.5vw, 46px);
+}
+
+/* 루미 피드백은 넓게, 하지만 너무 높지 않게 */
+.method-wide-feedback {
+  min-height: 92px;
+  margin-top: 16px;
+  padding: 12px 20px;
+  grid-template-columns: 74px 1fr;
+}
+
+.method-wide-feedback img {
+  width: 66px;
+}
+
+.method-wide-feedback p {
+  font-size: 22px;
+  line-height: 1.42;
+}
+
+/* 버튼 하단 잘림 방지 */
+.method-screen .method-actions {
+  margin-top: 14px;
+}
+
+/* 오른쪽에 뜨는 예시 보조창 */
+.floating-example-panel {
+  position: absolute;
+  right: 46px;
+  top: 136px;
+  z-index: 50;
+
+  width: min(430px, 30vw);
+  max-height: calc(100% - 170px);
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 28px;
+  border: 1px solid rgba(255, 211, 112, 0.68);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 211, 104, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(34, 25, 14, 0.97), rgba(8, 6, 4, 0.98));
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(255, 239, 190, 0.08) inset,
+    0 0 34px rgba(230, 164, 42, 0.18);
+
+  overflow-y: auto;
+}
+
+/* 보조창 스크롤바 */
+.floating-example-panel::-webkit-scrollbar {
+  width: 7px;
+}
+
+.floating-example-panel::-webkit-scrollbar-thumb {
+  background: rgba(218, 166, 76, 0.62);
+  border-radius: 999px;
+}
+
+/* 보조창 상단 */
+.floating-example-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.floating-example-title {
+  color: #ffe3a2;
+  font-family: "Noto Serif KR", serif;
+  font-size: 31px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.floating-example-count {
+  margin-top: 5px;
+  color: #ffd477;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.floating-close-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 218, 127, 0.45);
+  background: rgba(9, 7, 5, 0.78);
+  color: #ffe4a4;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* 예시 문장 박스 */
+.floating-example-box,
+.floating-example-question-box {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(218, 166, 76, 0.34);
+  background: rgba(255, 239, 202, 0.08);
+}
+
+.floating-example-question-box {
+  background: rgba(255, 230, 166, 0.11);
+}
+
+.floating-example-panel .method-example-icon {
+  width: 46px;
+  height: 46px;
+  font-size: 24px;
+}
+
+.floating-example-panel .method-example-text,
+.floating-example-panel .method-example-question {
+  color: #fff0ca;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.52;
+  word-break: keep-all;
+}
+
+.floating-example-panel .method-example-arrow {
+  margin: 13px 0;
+  padding-left: 4px;
+  color: #ffd477;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+/* 다음 예시 버튼 */
+.floating-next-button {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 16px;
+  padding: 12px 20px;
+  font-size: 22px;
+}
+
+/* 예시창이 떠 있을 때도 핵심 주문은 가려지지 않게 오른쪽 여백 살짝 확보 */
+.method-screen:has(.floating-example-panel) .method-rune-wide {
+  padding-right: min(500px, 34vw);
+}
+
+/* 낮은 화면 보정 */
+@media (max-height: 850px) {
+  .method-full-card {
+    padding: 22px 28px 20px;
+  }
+
+  .method-card-top {
+    margin-bottom: 10px;
+  }
+
+  .method-card-top .section-label {
+    font-size: 27px;
+  }
+
+  .method-top-example-button {
+    min-height: 56px;
+    padding: 12px 26px;
+    font-size: 22px;
+  }
+
+  .method-rune-wide {
+    padding: 24px 36px;
+  }
+
+  .method-rune-text-wide {
+    font-size: clamp(34px, 2.7vw, 48px);
+    line-height: 1.48;
+  }
+
+  .method-wide-feedback {
+    min-height: 78px;
+    margin-top: 12px;
+  }
+
+  .method-wide-feedback p {
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .floating-example-panel {
+    top: 116px;
+    right: 34px;
+    width: min(400px, 30vw);
+    max-height: calc(100% - 140px);
+    padding: 18px;
+  }
+
+  .floating-example-title {
+    font-size: 27px;
+  }
+
+  .floating-example-panel .method-example-text,
+  .floating-example-panel .method-example-question {
+    font-size: 19px;
+    line-height: 1.42;
+  }
+
+  .floating-next-button {
+    min-height: 52px;
+    font-size: 20px;
+  }
+}
+
+/* 화면 폭이 좁으면 보조창은 중앙 팝업처럼 */
+@media (max-width: 1200px) {
+  .floating-example-panel {
+    right: 28px;
+    width: 420px;
+  }
+
+  .method-screen:has(.floating-example-panel) .method-rune-wide {
+    padding-right: 36px;
+  }
+}
+/* =========================================================
+   방법 알기 화면 루미 피드백 삭제 후 핵심 주문 확대
+========================================================= */
+
+/* 루미 피드백 박스가 혹시 남아도 방법 알기 화면에서는 숨김 */
+.method-screen .method-wide-feedback,
+.method-screen .lumi-feedback {
+  display: none;
+}
+
+/* 루미가 사라진 만큼 핵심 주문 카드가 더 크게 공간을 사용 */
+.method-full-card {
+  grid-template-rows: auto 1fr auto;
+}
+
+/* 핵심 주문 박스 높이 확보 */
+.method-rune-wide {
+  height: 100%;
+  min-height: 0;
+  padding: 34px 46px;
+}
+
+/* 핵심 주문 글씨 다시 크게 */
+.method-rune-text-wide {
+  font-size: clamp(38px, 3vw, 54px);
+  line-height: 1.52;
+  letter-spacing: -1.2px;
+}
+
+/* 물음표 버튼도 크게 */
+.method-keyword-wide {
+  min-width: 136px;
+  padding: 10px 30px 12px;
+  font-size: clamp(35px, 2.4vw, 44px);
+}
+
+/* 버튼 영역은 아래에 안정적으로 붙게 */
+.method-screen .method-actions {
+  margin-top: 16px;
+}
+
+/* 낮은 화면에서는 살짝만 줄임 */
+@media (max-height: 850px) {
+  .method-rune-wide {
+    padding: 28px 40px;
+  }
+
+  .method-rune-text-wide {
+    font-size: clamp(34px, 2.6vw, 46px);
+    line-height: 1.45;
+  }
+
+  .method-keyword-wide {
+    min-width: 120px;
+    padding: 8px 26px 10px;
+    font-size: clamp(31px, 2.1vw, 38px);
+  }
+}
+/* =========================================================
+   심화 연습 화면 읽을 글 상자 높이 줄이기
+   - 모든 질문 유형의 심화 연습 화면에 공통 적용
+   - 왼쪽 읽을 글 박스 여백을 줄여 아래 예시가 보이게 함
+========================================================= */
+
+/* 심화 연습 화면의 전체 2단 레이아웃 높이 안정화 */
+.two-column-layout:not(.method-layout) {
+  height: calc(100% - 128px);
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* 양쪽 카드가 화면 안에서만 높이를 쓰도록 */
+.two-column-layout:not(.method-layout) .dark-card {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 왼쪽 읽을 글 상자 자체를 조금 줄임 */
+.two-column-layout:not(.method-layout) .story-box {
+  min-height: 190px;
+  padding: 20px 26px;
+}
+
+/* 읽을 글 글씨는 크게 유지하되 줄간격만 살짝 압축 */
+.two-column-layout:not(.method-layout) .story-box p {
+  font-size: 30px;
+  line-height: 1.5;
+}
+
+/* 심화 연습의 도움말/예시 박스 여백 축소 */
+.deep-hint-box {
+  margin-top: 12px;
+  padding: 14px 18px;
+  font-size: 19px;
+  line-height: 1.42;
+}
+
+/* 왼쪽 카드 제목 여백도 살짝 축소 */
+.two-column-layout:not(.method-layout) .section-label {
+  margin-bottom: 10px;
+}
+
+/* 낮은 화면에서는 조금 더 압축 */
+@media (max-height: 850px) {
+  .two-column-layout:not(.method-layout) {
+    height: calc(100% - 118px);
+  }
+
+  .two-column-layout:not(.method-layout) .story-box {
+    min-height: 165px;
+    padding: 18px 24px;
+  }
+
+  .two-column-layout:not(.method-layout) .story-box p {
+    font-size: 27px;
+    line-height: 1.42;
+  }
+
+  .deep-hint-box {
+    margin-top: 10px;
+    padding: 12px 16px;
+    font-size: 18px;
+    line-height: 1.35;
+  }
+}
+/* =========================================================
+   총 복습 화면 비율/글씨 잘림 최종 수정
+   - 총 복습 화면에서 글씨가 잘리지 않도록
+   - 왼쪽 읽을 글 / 오른쪽 질문 제작대 비율 재조정
+   - 카드 높이와 내부 여백 압축
+========================================================= */
+
+/* 총 복습 화면 전체 높이 고정 */
+.review-layout {
+  height: calc(100% - 132px);
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* 양쪽 카드가 화면 안에 들어오게 */
+.review-book,
+.review-workshop {
+  height: 100%;
+  min-height: 0;
+  padding: 20px 22px;
+  overflow: hidden;
+}
+
+/* 왼쪽 제목 줄이기 */
+.review-story-title {
+  margin-bottom: 12px;
+  font-size: 27px;
+  line-height: 1.2;
+}
+
+/* 읽을 글 버튼들 높이/글씨 조정 */
+.review-story-part {
+  padding: 10px 13px;
+  margin-bottom: 7px;
+  font-size: 17px;
+  line-height: 1.38;
+  border-radius: 14px;
+}
+
+/* 오른쪽 질문 제작대 압축 */
+.review-selected-box {
+  margin-bottom: 10px;
+  padding: 11px 13px;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.review-type-grid {
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+
+.review-type-button {
+  min-height: 54px;
+  padding: 9px 11px;
+  font-size: 15px;
+  line-height: 1.28;
+}
+
+/* 입력칸 라벨과 입력칸 축소 */
+.review-input-label {
+  margin: 8px 0 5px;
+  font-size: 16px;
+}
+
+.review-input {
+  min-height: 58px;
+  padding: 9px 11px;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+/* 완성한 질문 상태 박스 축소 */
+.review-status {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+}
+
+.review-status-title {
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.review-status-list {
+  gap: 6px;
+}
+
+.review-status-item {
+  padding: 7px 8px;
+  font-size: 13px;
+}
+
+/* 총 복습 화면 안의 루미 피드백 축소 */
+.review-workshop .lumi-feedback {
+  min-height: 70px;
+  margin-top: 9px;
+  padding: 9px 13px;
+  grid-template-columns: 54px 1fr;
+}
+
+.review-workshop .lumi-feedback img {
+  width: 48px;
+}
+
+.review-workshop .lumi-feedback p {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* 총 복습 화면 하단 버튼 축소 */
+.review-workshop .method-actions {
+  margin-top: 9px;
+  gap: 10px;
+}
+
+.review-workshop .plain-button,
+.review-workshop .main-button {
+  min-height: 48px;
+  padding: 9px 16px;
+  font-size: 17px;
+}
+
+/* 총 복습 화면 제목 영역도 살짝 압축 */
+.screen-title-row:has(.title-badge) {
+  margin-bottom: 14px;
+}
+
+/* 낮은 화면에서 한 번 더 압축 */
+@media (max-height: 850px) {
+  .review-layout {
+    height: calc(100% - 112px);
+    gap: 16px;
+  }
+
+  .review-book,
+  .review-workshop {
+    padding: 16px 18px;
+  }
+
+  .review-story-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .review-story-part {
+    padding: 8px 11px;
+    margin-bottom: 6px;
+    font-size: 15.5px;
+    line-height: 1.3;
+  }
+
+  .review-selected-box {
+    font-size: 14.5px;
+    padding: 9px 11px;
+  }
+
+  .review-type-button {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .review-input {
+    min-height: 50px;
+    font-size: 15px;
+  }
+
+  .review-workshop .lumi-feedback {
+    min-height: 62px;
+  }
+
+  .review-workshop .lumi-feedback p {
+    font-size: 14px;
+  }
+
+  .review-workshop .plain-button,
+  .review-workshop .main-button {
+    min-height: 44px;
+    font-size: 15.5px;
+    padding: 8px 14px;
+  }
+}
+/* =========================================================
+   총 복습 화면 위치/타이틀 크기 미세 조정
+   - 큰 타이틀 글씨를 아주 조금 줄임
+   - 질문 제작대가 위로 올라오도록 총 복습 화면 레이아웃 재조정
+   - 하단 입력칸/버튼 잘림 방지
+========================================================= */
+
+/* 총 복습 화면 큰 제목 아주 조금 축소 */
+.review-layout ~ *,
+.screen .title-badge + .main-title {
+  font-size: clamp(32px, 2.55vw, 43px);
+}
+
+/* 총 복습 화면 설명 문구도 높이를 덜 차지하게 */
+.screen .main-desc {
+  margin-top: 6px;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+/* 총 복습 화면 제목 줄 전체 높이 줄이기 */
+.screen-title-row {
+  margin-bottom: 10px;
+}
+
+/* 총 복습 전체 레이아웃을 더 위에서 시작하고 화면 안에 맞춤 */
+.review-layout {
+  height: calc(100% - 108px);
+  min-height: 0;
+  align-items: stretch;
+  gap: 20px;
+}
+
+/* 질문 제작대와 읽을 글 카드 모두 위에서 바로 시작 */
+.review-book,
+.review-workshop {
+  height: 100%;
+  min-height: 0;
+  padding: 18px 22px;
+  overflow: hidden;
+}
+
+/* 오른쪽 질문 제작대 내부를 위에서부터 촘촘하게 */
+.review-workshop {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 오른쪽 제목 '질문 제작대' 위쪽 여백 제거 */
+.review-workshop > .section-label:first-child {
+  margin-bottom: 10px;
+}
+
+/* 완성한 질문 박스 높이 축소 */
+.review-status {
+  margin-bottom: 8px;
+  padding: 9px 12px;
+}
+
+.review-status-title {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+.review-status-list {
+  gap: 5px;
+}
+
+.review-status-item {
+  padding: 6px 8px;
+  font-size: 12.5px;
+}
+
+/* 선택한 글 부분 박스도 살짝 축소 */
+.review-selected-box {
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* 질문 종류 선택 영역 압축 */
+.review-type-grid {
+  gap: 7px;
+  margin: 7px 0 8px;
+}
+
+.review-type-button {
+  min-height: 46px;
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+/* 내 질문 / 내 답 입력칸이 화면 안에 들어오게 */
+.review-input-label {
+  margin: 6px 0 4px;
+  font-size: 15px;
+}
+
+.review-input {
+  min-height: 50px;
+  padding: 8px 10px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* 루미 피드백이 있으면 너무 밀지 않게 */
+.review-workshop .lumi-feedback {
+  min-height: 58px;
+  margin-top: 7px;
+  padding: 7px 11px;
+  grid-template-columns: 46px 1fr;
+}
+
+.review-workshop .lumi-feedback img {
+  width: 40px;
+}
+
+.review-workshop .lumi-feedback p {
+  font-size: 13.5px;
+  line-height: 1.25;
+}
+
+/* 하단 버튼까지 들어오게 */
+.review-workshop .method-actions {
+  margin-top: auto;
+  padding-top: 8px;
+  gap: 8px;
+}
+
+.review-workshop .plain-button,
+.review-workshop .main-button {
+  min-height: 42px;
+  padding: 7px 13px;
+  font-size: 14.5px;
+}
+
+/* 낮은 화면에서는 한 번 더 압축 */
+@media (max-height: 850px) {
+  .screen .title-badge + .main-title {
+    font-size: clamp(30px, 2.35vw, 39px);
+  }
+
+  .screen .main-desc {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .review-layout {
+    height: calc(100% - 96px);
+  }
+
+  .review-book,
+  .review-workshop {
+    padding: 15px 18px;
+  }
+
+  .review-story-title {
+    font-size: 22px;
+    margin-bottom: 7px;
+  }
+
+  .review-story-part {
+    padding: 7px 10px;
+    margin-bottom: 5px;
+    font-size: 14.5px;
+    line-height: 1.25;
+  }
+
+  .review-input {
+    min-height: 44px;
+  }
+}
+.review-main-title {
+  font-size: clamp(32px, 2.55vw, 43px);
+}
+/* =========================================================
+   총 복습 화면 질문 제작대 위치 올리기
+   - 오른쪽 질문 제작대 카드를 큰 타이틀 위치까지 위로 올림
+   - 아래 입력칸이 잘리지 않도록 오른쪽 카드 높이도 같이 늘림
+========================================================= */
+
+.review-layout {
+  height: calc(100% - 108px);
+  align-items: stretch;
+}
+
+/* 오른쪽 질문 제작대만 위로 올림 */
+.review-workshop {
+  transform: translateY(-110px);
+height: calc(100% + 110px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 질문 제작대 안쪽도 위에서부터 촘촘하게 */
+.review-workshop > .section-label:first-child {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+/* 오른쪽 카드가 위로 올라가면서 아래까지 잘 보이도록 내부 간격 압축 */
+.review-workshop {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 내 질문 / 내 답 부분이 아래에서 잘리지 않도록 */
+.review-input {
+  min-height: 48px;
+  padding: 8px 10px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.review-input-label {
+  margin: 6px 0 4px;
+}
+
+/* 루미 피드백이 있으면 너무 밀지 않게 */
+.review-workshop .lumi-feedback {
+  min-height: 56px;
+  margin-top: 7px;
+  padding: 7px 11px;
+}
+
+/* 버튼 영역은 맨 아래에 붙이고 잘리지 않게 */
+.review-workshop .method-actions {
+  margin-top: auto;
+  padding-top: 8px;
+}
+/* 총 복습 질문 종류: 완료한 유형 비활성화 */
+.review-type-button.disabled,
+.review-type-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.45);
+  border-color: rgba(174, 255, 111, 0.45);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(174, 255, 111, 0.10), transparent 42%),
+    linear-gradient(180deg, rgba(32, 40, 22, 0.82), rgba(12, 14, 8, 0.92));
+  color: rgba(234, 255, 207, 0.72);
+}
+
+.review-type-button.disabled:hover,
+.review-type-button:disabled:hover {
+  transform: none;
+}
+
+/* =========================================================
+   총 복습 화면 정리
+   - 질문 제작대 제목/선택한 글 부분 박스 삭제 후
+   - 남은 공간을 크게 사용
+   - 질문 종류, 입력칸, AI 루미 피드백 글씨 확대
+========================================================= */
+
+/* 오른쪽 질문 제작대 카드가 위에서 꽉 차게 */
+.review-workshop {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 질문 종류 선택 제목 크게 */
+.review-workshop .section-label {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+/* 질문 종류 버튼 4개 크게 */
+.review-type-grid {
+  gap: 14px;
+  margin: 10px 0 16px;
+}
+
+.review-type-button {
+  min-height: 68px;
+  padding: 14px 18px;
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 900;
+}
+
+/* 완료된 질문 종류 비활성화 상태도 글씨는 보이게 */
+.review-type-button.disabled,
+.review-type-button:disabled {
+  opacity: 0.58;
+  font-size: 20px;
+}
+
+/* 내 질문 / 내 답 라벨 크게 */
+.review-input-label {
+  margin: 12px 0 7px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+/* 입력칸 크게 */
+.review-input {
+  min-height: 82px;
+  padding: 14px 16px;
+  font-size: 21px;
+  line-height: 1.45;
+  font-weight: 850;
+}
+
+/* AI 루미 피드백 크게 */
+.review-workshop .lumi-feedback {
+  min-height: 96px;
+  margin-top: 12px;
+  padding: 13px 18px;
+  grid-template-columns: 74px 1fr;
+}
+
+.review-workshop .lumi-feedback img {
+  width: 66px;
+}
+
+.review-workshop .lumi-feedback p {
+  font-size: 20px;
+  line-height: 1.45;
+  font-weight: 900;
+}
+
+/* 하단 버튼도 크게 */
+.review-workshop .method-actions {
+  margin-top: auto;
+  padding-top: 12px;
+  gap: 12px;
+}
+
+.review-workshop .plain-button,
+.review-workshop .main-button {
+  min-height: 58px;
+  padding: 12px 22px;
+  font-size: 20px;
+}
+
+/* 왼쪽 읽을 글도 화면 꽉 차게 조금 키우기 */
+.review-book {
+  padding: 24px 28px;
+}
+
+.review-story-title {
+  font-size: 32px;
+  margin-bottom: 14px;
+}
+
+.review-story-part {
+  padding: 12px 15px;
+  margin-bottom: 9px;
+  font-size: 19px;
+  line-height: 1.42;
+}
+
+/* 낮은 화면에서는 잘리지 않게 살짝만 줄임 */
+@media (max-height: 850px) {
+  .review-workshop {
+    padding: 20px 24px;
+    gap: 9px;
+  }
+
+  .review-workshop .section-label {
+    font-size: 27px;
+  }
+
+  .review-type-grid {
+    gap: 10px;
+    margin: 8px 0 12px;
+  }
+
+  .review-type-button {
+    min-height: 58px;
+    padding: 11px 14px;
+    font-size: 18px;
+  }
+
+  .review-input-label {
+    margin: 8px 0 5px;
+    font-size: 20px;
+  }
+
+  .review-input {
+    min-height: 68px;
+    font-size: 19px;
+  }
+
+  .review-workshop .lumi-feedback {
+    min-height: 82px;
+    padding: 10px 15px;
+    grid-template-columns: 64px 1fr;
+  }
+
+  .review-workshop .lumi-feedback img {
+    width: 56px;
+  }
+
+  .review-workshop .lumi-feedback p {
+    font-size: 18px;
+    line-height: 1.35;
+  }
+
+  .review-workshop .plain-button,
+  .review-workshop .main-button {
+    min-height: 50px;
+    font-size: 18px;
+  }
+
+  .review-story-part {
+    font-size: 17px;
+    line-height: 1.35;
+  }
+}
   </style>
 </head>
 
@@ -1456,7 +2755,6 @@ body {
         number: "01",
         iconImage: "../assets/images/during-reading/intro/icon-direct-answer.png",
         title: "책 내용에서 바로 답을 찾을 수 있는 질문",
-        methodTitle: "책 내용에서 바로 답을 찾을 수 있는 질문 만드는 방법",
         beforeText: "책에서<br>",
         hiddenWord: "직접적으로",
         afterText: "<br>나와 있는 내용으로<br>답을 하는 질문을 만드는 방법",
@@ -1475,7 +2773,6 @@ body {
         number: "02",
         iconImage: "../assets/images/during-reading/intro/icon-infer-answer.png",
         title: "책 내용에서 답을 짐작할 수 있는 질문",
-        methodTitle: "책 내용에서 답을 짐작할 수 있는 질문 만드는 방법",
         beforeText: "책 내용을 바탕으로<br>여러 ",
         hiddenWord: "단서",
         afterText: "를 모아<br>답을 생각하는 질문을 만드는 방법",
@@ -1494,7 +2791,6 @@ body {
         number: "03",
         iconImage: "../assets/images/during-reading/intro/icon-thought-feeling.png",
         title: "책을 읽고 떠오른 생각이나 느낌에 대한 질문",
-        methodTitle: "책을 읽고 떠오른 생각이나 느낌에 대한 질문 만드는 방법",
         beforeText: "책의 내용에 대한 느낌이나<br>글쓴이의 생각에 대한<br>내 ",
         hiddenWord: "생각",
         afterText: "을 말하는<br>질문을 만드는 방법",
@@ -1513,7 +2809,6 @@ body {
         number: "04",
         iconImage: "../assets/images/during-reading/intro/icon-life-connection.png",
         title: "자신의 삶과 관련짓는 질문",
-        methodTitle: "자신의 삶과 관련짓는 질문 만드는 방법",
         beforeText: "책 속 장면에서<br>나의 ",
         hiddenWord: "경험",
         afterText: "을 떠올려<br>내 생활과 연결하는<br>질문을 만드는 방법",
@@ -1851,25 +3146,38 @@ body {
     */
 
     function renderSelectScreen() {
-      const app = document.getElementById("app");
+  const app = document.getElementById("app");
+  const doneCount =
+    (progress.direct ? 1 : 0) +
+    (progress.infer ? 1 : 0) +
+    (progress.opinion ? 1 : 0) +
+    (progress.connect ? 1 : 0);
 
-      app.innerHTML =
-        '<section class="screen">' +
-          '<div class="screen-title-row">' +
-            '<div>' +
-              '<span class="title-badge">읽기 중 질문 연습</span>' +
-              '<h1 class="main-title">질문의 힘을 골라 연습해요</h1>' +
-            '</div>' +
+  const ready = canStartReview();
+
+  app.innerHTML =
+    '<section class="screen select-screen">' +
+      '<div class="screen-title-row select-title-row">' +
+        '<div>' +
+          '<span class="title-badge">읽기 중 질문 연습</span>' +
+          '<h1 class="main-title">질문의 힘을 골라 연습해요</h1>' +
+        '</div>' +
+
+        '<div class="select-progress-area">' +
+          '<div class="select-progress-pill">' +
+            '<span class="select-progress-label">진행률</span>' +
+            '<strong>' + doneCount + ' / 4</strong>' +
           '</div>' +
+          '<button class="main-button select-review-button" type="button" ' + (ready ? '' : 'disabled') + ' onclick="goReviewScreen()">총 복습 시작 →</button>' +
+        '</div>' +
+      '</div>' +
 
-          '<div class="question-map">' +
-            questionTypes.map(renderQuestionCell).join("") +
-            '<div class="question-core">질문<br>꾸러미<span>?</span></div>' +
-          '</div>' +
-
-          renderReviewGate() +
-        '</section>';
-    }
+      '<div class="question-map">' +
+        questionTypes.map(renderQuestionCell).join("") +
+        '<div class="question-core">질문<br>꾸러미<span>?</span></div>' +
+      '</div>' +
+    '</section>';
+}
 
     function renderQuestionCell(item) {
       const open = isTypeOpen(item.id);
@@ -1941,85 +3249,74 @@ body {
     }
 
     function renderMethodScreen() {
-      const app = document.getElementById("app");
-      const item = getSelectedQuestionType();
-      const currentExampleText = item.exampleTexts[methodExampleIndex];
-      const currentExampleQuestion = item.exampleQuestions[methodExampleIndex];
+  const app = document.getElementById("app");
+  const item = getSelectedQuestionType();
+  const currentExampleText = item.exampleTexts[methodExampleIndex];
+  const currentExampleQuestion = item.exampleQuestions[methodExampleIndex];
 
-      app.innerHTML =
-        '<section class="screen">' +
-          '<div class="screen-title-row">' +
-            '<div>' +
-              '<span class="title-badge">방법 알기</span>' +
-              '<h1 class="main-title">' + item.methodTitle + '</h1>' +
-            '</div>' +
-            '<div class="progress-pill">' + item.number + ' 질문</div>' +
+  app.innerHTML =
+    '<section class="screen method-screen">' +
+      '<div class="screen-title-row">' +
+        '<div>' +
+          '<span class="title-badge">방법 알기</span>' +
+          '<h1 class="main-title">' + item.methodTitle + '</h1>' +
+        '</div>' +
+        '<div class="progress-pill">' + item.number + ' 질문</div>' +
+      '</div>' +
+
+      '<article class="dark-card method-full-card">' +
+        '<div class="method-card-top">' +
+          '<p class="section-label">핵심 주문</p>' +
+          '<button class="example-toggle-button method-top-example-button" type="button" onclick="toggleMethodExamplePanel()">' +
+            (methodExampleOpen ? "예시 닫기" : "예시 보기") +
+          '</button>' +
+        '</div>' +
+
+        '<div class="method-rune-frame method-rune-wide">' +
+          '<div class="method-rune-text method-rune-text-wide">' +
+            item.beforeText +
+            '<button class="hidden-keyword method-keyword-wide" type="button" onclick="revealKeyword()">' +
+              (keywordRevealed ? item.hiddenWord : "?") +
+            '</button>' +
+            item.afterText +
           '</div>' +
+        '</div>' +
 
-          '<div class="two-column-layout method-layout">' +
-            '<article class="dark-card method-main-card">' +
-              '<p class="section-label">핵심 주문</p>' +
+        '<div class="method-actions">' +
+          '<button class="plain-button method-big-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
+          '<button class="main-button method-big-button" type="button" onclick="goBasicPracticeScreen()">기본 연습으로 →</button>' +
+        '</div>' +
+      '</article>' +
 
-              '<div class="method-rune-frame">' +
-                '<div class="method-rune-text">' +
-                  item.beforeText +
-                  '<button class="hidden-keyword" type="button" onclick="revealKeyword()">' +
-                    (keywordRevealed ? item.hiddenWord : "?") +
-                  '</button>' +
-                  item.afterText +
+      (
+        methodExampleOpen
+          ? '<aside class="floating-example-panel">' +
+              '<div class="floating-example-header">' +
+                '<div>' +
+                  '<p class="floating-example-title">예시 ' + (methodExampleIndex + 1) + '</p>' +
+                  '<p class="floating-example-count">' + (methodExampleIndex + 1) + ' / ' + item.exampleTexts.length + '</p>' +
                 '</div>' +
+                '<button class="floating-close-button" type="button" onclick="toggleMethodExamplePanel()">×</button>' +
               '</div>' +
 
-              '<div class="lumi-feedback">' +
-                '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                '<p>' +
-                  (keywordRevealed
-                    ? item.lumiText
-                    : "가운데 물음표를 눌러 이 질문의 핵심 낱말을 먼저 확인해 보자!") +
-                '</p>' +
+              '<div class="floating-example-box">' +
+                '<div class="method-example-icon">' + currentExampleText.icon + '</div>' +
+                '<p class="method-example-text">' + currentExampleText.text + '</p>' +
               '</div>' +
 
-              '<div class="method-actions">' +
-                '<button class="plain-button method-big-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-                '<button class="main-button method-big-button" type="button" onclick="goBasicPracticeScreen()">기본 연습으로 →</button>' +
+              '<div class="method-example-arrow">↳ 관련된 질문</div>' +
+
+              '<div class="floating-example-question-box">' +
+                '<div class="method-example-icon">?</div>' +
+                '<p class="method-example-question">' + currentExampleQuestion + '</p>' +
               '</div>' +
-            '</article>' +
 
-            '<aside class="method-side-area">' +
-              '<button class="example-toggle-button" type="button" onclick="toggleMethodExamplePanel()">' +
-                (methodExampleOpen ? "예시 닫기" : "예시 보기") +
-              '</button>' +
-
-              (
-                methodExampleOpen
-                  ? '<article class="dark-card method-example-panel">' +
-                      '<div class="method-example-top">' +
-                        '<p class="method-example-title">예시 ' + (methodExampleIndex + 1) + '</p>' +
-                        '<p class="method-example-count">' + (methodExampleIndex + 1) + ' / ' + item.exampleTexts.length + '</p>' +
-                      '</div>' +
-
-                      '<div class="method-example-box">' +
-                        '<div class="method-example-icon">' + currentExampleText.icon + '</div>' +
-                        '<p class="method-example-text">' + currentExampleText.text + '</p>' +
-                      '</div>' +
-
-                      '<div class="method-example-arrow">↳ 관련된 질문</div>' +
-
-                      '<div class="method-example-question-box">' +
-                        '<div class="method-example-icon">?</div>' +
-                        '<p class="method-example-question">' + currentExampleQuestion + '</p>' +
-                      '</div>' +
-
-                      '<div class="method-example-actions">' +
-                        '<button class="main-button method-big-button example-next-button" type="button" onclick="nextMethodExample()">다음 예시 →</button>' +
-                      '</div>' +
-                    '</article>'
-                  : '<div class="method-side-tip">예시 보기 버튼을 누르면 예시 문장과 그에 맞는 질문이 이곳에 보여요.</div>'
-              ) +
-            '</aside>' +
-          '</div>' +
-        '</section>';
-    }
+              '<button class="main-button floating-next-button" type="button" onclick="nextMethodExample()">다음 예시 →</button>' +
+            '</aside>'
+          : ""
+      ) +
+    '</section>';
+}
 
     /*
       =========================================================
@@ -2028,8 +3325,9 @@ body {
     */
 
     function getCurrentBasicQuestions() {
-      return basicQuestions[selectedQuestionType] || basicQuestions.direct;
-    }
+  const questions = basicQuestions[selectedQuestionType] || basicQuestions.direct;
+  return questions.slice(0, 1);
+}
 
     function selectBasicChoice(choiceIndex) {
       selectedBasicChoice = choiceIndex;
@@ -2129,8 +3427,9 @@ body {
     */
 
     function getCurrentDeepQuestions() {
-      return deepQuestions[selectedQuestionType] || deepQuestions.direct;
-    }
+  const questions = deepQuestions[selectedQuestionType] || deepQuestions.direct;
+  return questions.slice(0, 1);
+}
 
     function updateDeepInput(value) {
       deepInputValue = value;
@@ -2169,8 +3468,8 @@ body {
       }
 
       progress[selectedQuestionType] = true;
-      saveProgress();
-      renderCompleteScreen();
+saveProgress();
+goSelectScreen();
     }
 
     function renderDeepPracticeScreen() {
@@ -2294,11 +3593,13 @@ body {
     }
 
     function selectReviewType(type) {
-      reviewSelectedType = type;
-      reviewChecked = false;
-      reviewResult = null;
-      renderReviewScreen();
-    }
+  if (reviewCompletedQuestions[type]) return;
+
+  reviewSelectedType = type;
+  reviewChecked = false;
+  reviewResult = null;
+  renderReviewScreen();
+}
 
     function updateReviewQuestion(value) {
       reviewQuestionInput = value;
@@ -2386,8 +3687,7 @@ body {
           '<div class="screen-title-row">' +
             '<div>' +
               '<span class="title-badge">총 복습</span>' +
-              '<h1 class="main-title">한 편의 글에서 4가지 질문을 만들어 봐요</h1>' +
-              '<p class="main-desc">글 부분을 고르고, 질문 종류에 맞는 질문을 직접 써 봐요.</p>' +
+              '<h1 class="main-title review-main-title">한 편의 글에서 4가지 질문을 만들어 봐요</h1>' +
             '</div>' +
           '</div>' +
 
@@ -2405,22 +3705,6 @@ body {
             '</article>' +
 
             '<article class="review-workshop">' +
-              '<p class="section-label">질문 제작대</p>' +
-
-              '<div class="review-status">' +
-                '<p class="review-status-title">완성한 질문</p>' +
-                '<div class="review-status-list">' +
-                  '<div class="review-status-item ' + (reviewCompletedQuestions.direct ? "done" : "") + '">바로 답 찾기</div>' +
-                  '<div class="review-status-item ' + (reviewCompletedQuestions.infer ? "done" : "") + '">답 짐작하기</div>' +
-                  '<div class="review-status-item ' + (reviewCompletedQuestions.opinion ? "done" : "") + '">생각·느낌</div>' +
-                  '<div class="review-status-item ' + (reviewCompletedQuestions.connect ? "done" : "") + '">내 삶 연결</div>' +
-                '</div>' +
-              '</div>' +
-
-              '<div class="review-selected-box">' +
-                '<strong>선택한 글 부분</strong>' +
-                (selectedPart ? selectedPart.text : "왼쪽에서 질문을 만들 글 부분을 골라요.") +
-              '</div>' +
 
               '<p class="section-label">질문 종류 선택</p>' +
               '<div class="review-type-grid">' +
@@ -2459,12 +3743,19 @@ body {
     }
 
     function renderReviewTypeButton(type, label) {
-      return (
-        '<button class="review-type-button ' + (reviewSelectedType === type ? "selected" : "") + '" type="button" onclick="selectReviewType(\'' + type + '\')">' +
-          label +
-        '</button>'
-      );
-    }
+  const done = reviewCompletedQuestions[type];
+
+  return (
+    '<button class="review-type-button ' +
+      (reviewSelectedType === type ? "selected " : "") +
+      (done ? "disabled done" : "") +
+    '" type="button" ' +
+      (done ? "disabled" : "") +
+    ' onclick="selectReviewType(\'' + type + '\')">' +
+      (done ? "✓ " : "") + label +
+    '</button>'
+  );
+}
 
     /*
       =========================================================
