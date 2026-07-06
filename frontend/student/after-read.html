@@ -2520,6 +2520,452 @@
     font-size: 14px;
   }
 }
+
+    /* =========================================================
+       추가 수정본: 짧은 글 직접 연습 화면 압축 + 내 책 질문 쓰기 확대
+       ========================================================= */
+
+    #practiceWritePanel .ar-practice-write-layout {
+      grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr) !important;
+      gap: 12px !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #practiceWritePanel .ar-study-card {
+      padding: 14px 16px !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #practiceWritePanel .ar-practice-reading-card {
+      gap: 8px !important;
+      grid-template-rows: auto auto minmax(0, 1fr) !important;
+    }
+
+    #practiceWritePanel .ar-practice-write-card {
+      gap: 8px !important;
+      overflow: hidden !important;
+      padding-right: 0 !important;
+    }
+
+    #practiceWritePanel .ar-practice-write-list {
+      gap: 8px !important;
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+
+    #practiceWritePanel .ar-practice-write-item {
+      padding: 9px 13px !important;
+      min-height: 0 !important;
+      border-radius: 16px !important;
+    }
+
+    #practiceWritePanel .ar-input-label {
+      margin: 5px 0 4px !important;
+    }
+
+    #practiceWritePanel .ar-question-input {
+      height: 42px !important;
+      padding: 0 12px !important;
+    }
+
+    #practiceWritePanel .ar-answer-input {
+      height: 66px !important;
+      min-height: 66px !important;
+      padding: 9px 12px !important;
+      line-height: 1.35 !important;
+    }
+
+    #practiceWritePanel .ar-material-guide,
+    #practiceWritePanel .ar-practice-guide {
+      padding: 9px 12px !important;
+      line-height: 1.32 !important;
+    }
+
+    #practiceWritePanel .ar-extra-practice-text,
+    #practiceWritePanel .ar-practice-text {
+      min-height: 0 !important;
+      height: 100% !important;
+      padding: 18px 22px !important;
+      overflow: hidden !important;
+    }
+
+    #writePanel.ar-study-panel.is-active {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+      gap: 12px !important;
+    }
+
+    #writePanel .ar-panel-title h2 {
+      font-size: 38px !important;
+      line-height: 1.15 !important;
+    }
+
+    #writePanel .ar-write-grid {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 0 !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #writePanel .ar-qa-card {
+      display: grid !important;
+      width: 100% !important;
+      min-height: 390px !important;
+      padding: 30px 36px !important;
+      border-radius: 26px !important;
+      background: rgba(255, 250, 236, 0.92) !important;
+      border: 2px solid rgba(63, 132, 46, 0.55) !important;
+    }
+
+    #writePanel .ar-qa-card.is-hidden {
+      display: none !important;
+    }
+
+    #writePanel .ar-qa-card.current-card {
+      border-color: rgba(63, 132, 46, 0.88) !important;
+      box-shadow:
+        0 14px 24px rgba(44, 90, 28, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+    }
+
+    #writePanel .ar-qa-card.passed {
+      border-color: rgba(63, 132, 46, 0.70) !important;
+    }
+
+    #writePanel .ar-qa-head-row {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin-bottom: 18px !important;
+    }
+
+    #writePanel .ar-qa-card h3 {
+      margin: 0 !important;
+      color: #42240e !important;
+      font-size: 30px !important;
+      font-weight: 900 !important;
+    }
+
+    #writePanel .ar-add-question-button {
+      height: 48px !important;
+      padding: 0 22px !important;
+      border: 0 !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #965d25, #562b0c) !important;
+      color: #fff8e3 !important;
+      font-size: 17px !important;
+      font-weight: 900 !important;
+      box-shadow: 0 5px 0 rgba(45, 22, 7, 0.78) !important;
+    }
+
+    #writePanel .ar-add-question-button:disabled {
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.35) !important;
+    }
+
+    #writePanel .ar-input-label {
+      color: #5a3415 !important;
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      margin: 12px 0 8px !important;
+    }
+
+    #writePanel .ar-question-textarea {
+      height: 72px !important;
+      min-height: 72px !important;
+      padding: 15px 16px !important;
+      resize: none !important;
+      font-size: 21px !important;
+      line-height: 1.45 !important;
+      font-weight: 850 !important;
+    }
+
+    #writePanel .ar-answer-input {
+      height: 150px !important;
+      min-height: 150px !important;
+      padding: 16px !important;
+      font-size: 21px !important;
+      line-height: 1.5 !important;
+      font-weight: 850 !important;
+    }
+
+    #writePanel .ar-after-feedback-card.is-question-feedback {
+      min-height: 112px !important;
+      padding: 16px 20px !important;
+      display: grid !important;
+      grid-template-columns: 86px minmax(0, 1fr) auto !important;
+      gap: 18px !important;
+      align-items: center !important;
+    }
+
+    #writePanel .ar-after-feedback-lumi {
+      width: 82px !important;
+      height: 82px !important;
+    }
+
+    #writePanel .ar-after-feedback-title {
+      font-size: 28px !important;
+      font-weight: 900 !important;
+    }
+
+    #writePanel .ar-after-feedback-message {
+      min-height: 54px !important;
+      padding: 13px 16px !important;
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      line-height: 1.5 !important;
+    }
+
+    .ar-after-feedback-button {
+      height: 52px !important;
+      padding: 0 26px !important;
+      border: 0 !important;
+      border-radius: 999px !important;
+      background: linear-gradient(180deg, #3f842e, #245716) !important;
+      color: #fff8e3 !important;
+      font-size: 18px !important;
+      font-weight: 900 !important;
+      white-space: nowrap !important;
+      box-shadow: 0 5px 0 rgba(24, 45, 12, 0.78) !important;
+    }
+
+    #writePanel .ar-panel-actions .ar-action-button {
+      height: 50px !important;
+      min-width: 140px !important;
+      font-size: 18px !important;
+    }
+
+    #bookSummaryButton:disabled {
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.35) !important;
+    }
+
+    #summaryPanel.ar-study-panel.is-active {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) auto auto !important;
+      gap: 12px !important;
+    }
+
+    #summaryPanel .ar-summary-layout {
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* =========================================================
+   AI 루미 피드백 크게 보기
+   - 여러 개 오류가 떠도 잘 보이게 수정
+   ========================================================= */
+
+/* 내 책 질문 쓰기 화면 */
+#writePanel .ar-after-feedback-card.is-question-feedback {
+  min-height: 150px !important;
+  padding: 18px 22px !important;
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+#writePanel .ar-after-feedback-lumi {
+  width: 84px !important;
+  height: 84px !important;
+  align-self: center !important;
+}
+
+#writePanel .ar-after-feedback-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+#writePanel .ar-after-feedback-title {
+  font-size: 28px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+#writePanel .ar-after-feedback-message {
+  min-height: 88px !important;
+  max-height: 140px !important;
+  padding: 14px 18px !important;
+  font-size: 18px !important;
+  font-weight: 850 !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-y: auto !important;
+  display: block !important;
+}
+
+/* 오류 목록이 여러 개일 때 보기 좋게 */
+#writePanel .ar-after-feedback-message .ar-feedback-list,
+#writePanel .ar-after-feedback-message ul {
+  margin: 8px 0 0 18px !important;
+  padding: 0 !important;
+}
+
+#writePanel .ar-after-feedback-message .ar-feedback-list li,
+#writePanel .ar-after-feedback-message ul li {
+  margin-bottom: 6px !important;
+  line-height: 1.5 !important;
+}
+
+/* 검사하기 버튼도 피드백 높이에 맞춰 정렬 */
+#writePanel .ar-after-feedback-card.is-question-feedback .ar-after-feedback-button {
+  align-self: center !important;
+  height: 54px !important;
+  padding: 0 24px !important;
+  font-size: 18px !important;
+}
+
+/* 간추리기 완성 화면 피드백도 같이 크게 */
+#summaryPanel .ar-after-feedback-card {
+  min-height: 140px !important;
+  padding: 18px 22px !important;
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  align-items: start !important;
+}
+
+#summaryPanel .ar-after-feedback-lumi {
+  width: 84px !important;
+  height: 84px !important;
+  align-self: center !important;
+}
+
+#summaryPanel .ar-after-feedback-title {
+  font-size: 28px !important;
+  font-weight: 900 !important;
+}
+
+#summaryPanel .ar-after-feedback-message {
+  min-height: 82px !important;
+  max-height: 132px !important;
+  padding: 14px 18px !important;
+  font-size: 18px !important;
+  line-height: 1.55 !important;
+  overflow-y: auto !important;
+  white-space: normal !important;
+}
+/* =========================================================
+   AI 루미 피드백 박스 확대
+   - 루미 이미지 크게
+   - 베이지색 바깥 상자가 흰색 메시지 박스보다 크게 보이게
+   ========================================================= */
+
+/* 내 책 질문 쓰기 화면 AI 피드백 전체 베이지 박스 */
+#writePanel .ar-after-feedback-card.is-question-feedback {
+  min-height: 190px !important;
+  padding: 24px 28px !important;
+  display: grid !important;
+  grid-template-columns: 128px minmax(0, 1fr) auto !important;
+  gap: 24px !important;
+  align-items: center !important;
+  border-radius: 28px !important;
+  overflow: visible !important;
+}
+
+/* 루미 이미지 크게 */
+#writePanel .ar-after-feedback-lumi {
+  width: 118px !important;
+  height: 118px !important;
+  align-self: center !important;
+  transform: translateY(-4px) !important;
+}
+
+/* AI 루미 피드백 제목 + 흰색 박스 영역 */
+#writePanel .ar-after-feedback-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+}
+
+/* AI 루미 피드백 제목 */
+#writePanel .ar-after-feedback-title {
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+}
+
+/* 안쪽 흰색 메시지 박스 */
+#writePanel .ar-after-feedback-message {
+  min-height: 86px !important;
+  max-height: 112px !important;
+  padding: 14px 18px !important;
+  font-size: 19px !important;
+  font-weight: 850 !important;
+  line-height: 1.55 !important;
+  border-radius: 18px !important;
+  overflow-y: auto !important;
+  white-space: normal !important;
+}
+
+/* 검사하기 버튼 */
+#writePanel .ar-after-feedback-button {
+  height: 58px !important;
+  padding: 0 30px !important;
+  font-size: 19px !important;
+  border-radius: 999px !important;
+  align-self: center !important;
+}
+
+/* 오류 목록 여백 */
+#writePanel .ar-after-feedback-message ul,
+#writePanel .ar-after-feedback-message .ar-feedback-list {
+  margin: 8px 0 0 20px !important;
+  padding: 0 !important;
+}
+
+#writePanel .ar-after-feedback-message li {
+  margin-bottom: 6px !important;
+  line-height: 1.5 !important;
+}
+
+/* 간추리기 화면 AI 피드백도 동일하게 확대 */
+#summaryPanel .ar-after-feedback-card {
+  min-height: 180px !important;
+  padding: 24px 28px !important;
+  display: grid !important;
+  grid-template-columns: 128px minmax(0, 1fr) !important;
+  gap: 24px !important;
+  align-items: center !important;
+  border-radius: 28px !important;
+  overflow: visible !important;
+}
+
+#summaryPanel .ar-after-feedback-lumi {
+  width: 118px !important;
+  height: 118px !important;
+  align-self: center !important;
+  transform: translateY(-4px) !important;
+}
+
+#summaryPanel .ar-after-feedback-title {
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+}
+
+#summaryPanel .ar-after-feedback-message {
+  min-height: 86px !important;
+  max-height: 112px !important;
+  padding: 14px 18px !important;
+  font-size: 19px !important;
+  line-height: 1.55 !important;
+  border-radius: 18px !important;
+  overflow-y: auto !important;
+  white-space: normal !important;
+}
   </style>
 </head>
 
@@ -2640,10 +3086,6 @@
               <article class="ar-study-card ar-practice-question-card">
                 <h3>간추리기 질문 고르기</h3>
 
-                <p class="ar-practice-guide">
-                  이 글을 간추리는 데 도움이 되는 질문을 골라요.
-                </p>
-
                 <div class="ar-practice-question-list" id="practiceQuestionList"></div>
 
                 <div class="ar-practice-choice-feedback" id="practiceChoiceFeedback">
@@ -2748,48 +3190,101 @@
           <section class="ar-study-panel ar-write-panel" id="writePanel">
             <div class="ar-panel-title">
               <h2>내 책에 맞는 질문을 직접 써요</h2>
-              <p>질문에 답하면 간추리기의 재료가 돼요.</p>
             </div>
 
-            <div class="ar-write-grid">
-              <article class="ar-qa-card">
-                <h3>질문 1</h3>
+            <div class="ar-write-grid" id="bookQaList">
+              <article class="ar-qa-card current-card" data-feedback-passed="false">
+                <div class="ar-qa-head-row">
+                  <h3>질문 1</h3>
+                  <button
+                    class="ar-add-question-button"
+                    type="button"
+                    onclick="addBookQuestionCard()"
+                    disabled
+                  >
+                    질문 쓰기
+                  </button>
+                </div>
+
                 <label class="ar-input-label" for="question1">간추리기 질문</label>
                 <textarea
-  class="ar-question-input ar-question-textarea"
-  id="question1"
-  oninput="checkBookQuestionFeedback()"
-></textarea>
+                  class="ar-question-input ar-question-textarea"
+                  id="question1"
+                  placeholder="예) 처음에 어떤 일이 있었나요?"
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
+
                 <label class="ar-input-label" for="answer1">질문에 대한 답</label>
-                <textarea class="ar-answer-input" id="answer1" oninput="checkBookQuestionFeedback()"></textarea>
+                <textarea
+                  class="ar-answer-input"
+                  id="answer1"
+                  placeholder="질문 1에 대한 답을 책에서 찾아 적어 보세요."
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
               </article>
 
-              <article class="ar-qa-card">
-                <h3>질문 2</h3>
+              <article class="ar-qa-card is-hidden" data-feedback-passed="false">
+                <div class="ar-qa-head-row">
+                  <h3>질문 2</h3>
+                  <button
+                    class="ar-add-question-button"
+                    type="button"
+                    onclick="addBookQuestionCard()"
+                    disabled
+                  >
+                    질문 쓰기
+                  </button>
+                </div>
+
                 <label class="ar-input-label" for="question2">간추리기 질문</label>
                 <textarea
-  class="ar-question-input ar-question-textarea"
-  id="question2"
-  oninput="checkBookQuestionFeedback()"
-></textarea>
+                  class="ar-question-input ar-question-textarea"
+                  id="question2"
+                  placeholder="예) 가운데에 어떤 문제가 생겼나요?"
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
+
                 <label class="ar-input-label" for="answer2">질문에 대한 답</label>
-                <textarea class="ar-answer-input" id="answer2" oninput="checkBookQuestionFeedback()"></textarea>
+                <textarea
+                  class="ar-answer-input"
+                  id="answer2"
+                  placeholder="질문 2에 대한 답을 책에서 찾아 적어 보세요."
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
               </article>
 
-              <article class="ar-qa-card">
-                <h3>질문 3</h3>
+              <article class="ar-qa-card is-hidden" data-feedback-passed="false">
+                <div class="ar-qa-head-row">
+                  <h3>질문 3</h3>
+                  <button
+                    class="ar-add-question-button"
+                    type="button"
+                    onclick="addBookQuestionCard()"
+                    disabled
+                  >
+                    질문 쓰기
+                  </button>
+                </div>
+
                 <label class="ar-input-label" for="question3">간추리기 질문</label>
                 <textarea
-  class="ar-question-input ar-question-textarea"
-  id="question3"
-  oninput="checkBookQuestionFeedback()"
-></textarea>
+                  class="ar-question-input ar-question-textarea"
+                  id="question3"
+                  placeholder="예) 마지막에는 어떻게 되었나요?"
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
+
                 <label class="ar-input-label" for="answer3">질문에 대한 답</label>
-                <textarea class="ar-answer-input" id="answer3" oninput="checkBookQuestionFeedback()"></textarea>
+                <textarea
+                  class="ar-answer-input"
+                  id="answer3"
+                  placeholder="질문 3에 대한 답을 책에서 찾아 적어 보세요."
+                  oninput="resetCurrentBookQuestionFeedback()"
+                ></textarea>
               </article>
             </div>
 
-            <article class="ar-after-feedback-card">
+            <article class="ar-after-feedback-card is-question-feedback">
               <img
                 class="ar-after-feedback-lumi"
                 src="../assets/images/class-reading/class-reading-lumi-feedback.png"
@@ -2798,15 +3293,22 @@
               <div class="ar-after-feedback-content">
                 <div class="ar-after-feedback-title">✦ AI 루미 피드백</div>
                 <div class="ar-after-feedback-message" id="bookQuestionAiFeedback">
-                  내 책에 맞는 질문과 답을 쓰면 루미가 간추리기 재료로 알맞은지 살펴봐 줄게.
+                  질문 1과 답을 쓴 뒤 검사하기를 눌러 봐.
                 </div>
               </div>
+              <button
+                class="ar-after-feedback-button"
+                type="button"
+                onclick="checkBookQuestionFeedback()"
+              >
+                검사하기
+              </button>
             </article>
 
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('practiceWrite')">이전 화면</button>
-              <button class="ar-action-button" type="button" onclick="makeSummaryGuide()">답을 모아 간추리기</button>
+              <button class="ar-action-button" type="button" id="bookSummaryButton" onclick="makeSummaryGuide()" disabled>답을 모아 간추리기</button>
             </div>
           </section>
 
@@ -2823,7 +3325,12 @@
 
               <article class="ar-study-card">
                 <h3>내가 쓴 간추리기</h3>
-                <textarea class="ar-summary-textarea" id="summaryText" oninput="checkSummaryFeedback()"></textarea>
+                <textarea
+                  class="ar-summary-textarea"
+                  id="summaryText"
+                  placeholder="질문과 답을 보고 중요한 내용을 이어서 간추려 써 보세요."
+                  oninput="checkSummaryFeedback()"
+                ></textarea>
               </article>
             </div>
 
@@ -2844,6 +3351,7 @@
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">책 유형 고르기</button>
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('write')">이전 화면</button>
+              <button class="ar-action-button" type="button" onclick="checkSummaryFeedback()">검사하기</button>
               <button class="ar-action-button" type="button" onclick="saveSummary()">저장하고 공유하기</button>
             </div>
           </section>
@@ -3711,6 +4219,370 @@
         teacherReturnButton.style.display = "block";
       }
     }
+
+    /* =========================================================
+       추가 수정본: 내 책 질문 하나씩 만들기 + 검사하기 + 간추리기 화면 이동
+       ========================================================= */
+
+    function prepareBookQuestionCards() {
+      const cards = Array.from(document.querySelectorAll("#writePanel .ar-qa-card"));
+
+      cards.forEach(function(card, index) {
+        card.dataset.feedbackPassed = "false";
+        card.classList.remove("passed");
+        card.classList.remove("current-card");
+
+        if (index === 0) {
+          card.classList.remove("is-hidden");
+          card.classList.add("current-card");
+        } else {
+          card.classList.add("is-hidden");
+        }
+      });
+
+      const summaryButton = document.getElementById("bookSummaryButton");
+
+      if (summaryButton) {
+        summaryButton.disabled = true;
+      }
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "",
+        "질문 1과 답을 쓴 뒤 검사하기를 눌러 봐."
+      );
+
+      updateAddQuestionButton();
+    }
+
+    function getCurrentBookQuestionCard() {
+      return (
+        document.querySelector("#writePanel .ar-qa-card.current-card") ||
+        document.querySelector("#writePanel .ar-qa-card:not(.is-hidden)")
+      );
+    }
+
+    function getBookQuestionCards() {
+      return Array.from(document.querySelectorAll("#writePanel .ar-qa-card"));
+    }
+
+    function getBookQuestionNumber(card) {
+      const cards = getBookQuestionCards();
+      return cards.indexOf(card) + 1;
+    }
+
+    function getBookQuestionFromCard(card) {
+      const questionInput = card.querySelector(".ar-question-textarea");
+      const answerInput = card.querySelector(".ar-answer-input");
+
+      return {
+        question: questionInput ? questionInput.value.trim() : "",
+        answer: answerInput ? answerInput.value.trim() : ""
+      };
+    }
+
+    function getQuestionAnswerData() {
+      const question1 = document.getElementById("question1");
+      const question2 = document.getElementById("question2");
+      const question3 = document.getElementById("question3");
+      const answer1 = document.getElementById("answer1");
+      const answer2 = document.getElementById("answer2");
+      const answer3 = document.getElementById("answer3");
+
+      return [
+        {
+          question: question1 ? question1.value.trim() : "",
+          answer: answer1 ? answer1.value.trim() : ""
+        },
+        {
+          question: question2 ? question2.value.trim() : "",
+          answer: answer2 ? answer2.value.trim() : ""
+        },
+        {
+          question: question3 ? question3.value.trim() : "",
+          answer: answer3 ? answer3.value.trim() : ""
+        }
+      ];
+    }
+
+    function resetCurrentBookQuestionFeedback() {
+      const card = getCurrentBookQuestionCard();
+
+      if (!card) {
+        return;
+      }
+
+      card.dataset.feedbackPassed = "false";
+      card.classList.remove("passed");
+
+      const number = getBookQuestionNumber(card);
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "",
+        "질문 " + number + "과 답을 쓴 뒤 검사하기를 눌러 봐."
+      );
+
+      const summaryButton = document.getElementById("bookSummaryButton");
+
+      if (summaryButton) {
+        summaryButton.disabled = true;
+      }
+
+      updateAddQuestionButton();
+    }
+
+    function validateBookQuestionAnswer(item, number) {
+      const problems = [];
+      const question = item.question;
+      const answer = item.answer;
+
+      if (!question) {
+        problems.push("질문 " + number + ": 간추리기 질문이 비어 있어.");
+        return problems;
+      }
+
+      if (!question.endsWith("?")) {
+        problems.push("질문 " + number + ": 질문은 물음표(?)로 끝나야 해.");
+      }
+
+      if (question.replace(/\s/g, "").length < 5) {
+        problems.push("질문 " + number + ": 질문을 조금 더 길게 써줘.");
+      }
+
+      if (!answer || answer.replace(/\s/g, "").length < 5) {
+        problems.push("질문 " + number + ": 답을 한 문장 이상으로 적어줘.");
+      }
+
+      return problems;
+    }
+
+    function updateAddQuestionButton() {
+      const cards = getBookQuestionCards();
+      const currentCard = getCurrentBookQuestionCard();
+      const buttons = Array.from(document.querySelectorAll("#writePanel .ar-add-question-button"));
+
+      buttons.forEach(function(button) {
+        button.disabled = true;
+        button.textContent = "질문 쓰기";
+      });
+
+      if (!currentCard) {
+        return;
+      }
+
+      const currentIndex = cards.indexOf(currentCard);
+      const currentButton = currentCard.querySelector(".ar-add-question-button");
+
+      if (!currentButton) {
+        return;
+      }
+
+      if (currentIndex >= cards.length - 1) {
+        currentButton.textContent = "질문 3개 완료";
+        currentButton.disabled = true;
+        return;
+      }
+
+      currentButton.textContent = "질문 쓰기";
+      currentButton.disabled = currentCard.dataset.feedbackPassed !== "true";
+    }
+
+    function checkBookQuestionFeedback() {
+      const card = getCurrentBookQuestionCard();
+
+      if (!card) {
+        return;
+      }
+
+      const number = getBookQuestionNumber(card);
+      const item = getBookQuestionFromCard(card);
+      const problems = validateBookQuestionAnswer(item, number);
+
+      if (problems.length > 0) {
+        card.dataset.feedbackPassed = "false";
+        card.classList.remove("passed");
+
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          '<b>고칠 부분이 있어.</b><ul class="ar-feedback-list"><li>' + problems.join("</li><li>") + "</li></ul>"
+        );
+
+        updateAddQuestionButton();
+        return;
+      }
+
+      card.dataset.feedbackPassed = "true";
+      card.classList.add("passed");
+
+      const cards = getBookQuestionCards();
+      const allPassed = cards.every(function(itemCard) {
+        return itemCard.dataset.feedbackPassed === "true";
+      });
+
+      const summaryButton = document.getElementById("bookSummaryButton");
+
+      if (summaryButton) {
+        summaryButton.disabled = !allPassed;
+      }
+
+      updateAddQuestionButton();
+
+      if (allPassed) {
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "good",
+          "좋아! 질문 3개와 답 3개가 모두 준비되었어. 이제 답을 모아 간추리기로 이어 가 보자."
+        );
+        return;
+      }
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "good",
+        "좋아! 질문 " + number + "번이 통과했어. 질문 쓰기 버튼을 눌러 다음 질문을 만들어 보자."
+      );
+    }
+
+    function addBookQuestionCard() {
+      const cards = getBookQuestionCards();
+      const currentCard = getCurrentBookQuestionCard();
+
+      if (!currentCard) {
+        return;
+      }
+
+      if (currentCard.dataset.feedbackPassed !== "true") {
+        alert("지금 질문과 답을 먼저 검사한 뒤 다음 질문을 쓸 수 있어.");
+        return;
+      }
+
+      const currentIndex = cards.indexOf(currentCard);
+      const nextCard = cards[currentIndex + 1];
+
+      if (!nextCard) {
+        alert("질문은 모두 3개까지 만들 수 있어.");
+        return;
+      }
+
+      cards.forEach(function(card) {
+        card.classList.add("is-hidden");
+        card.classList.remove("current-card");
+      });
+
+      nextCard.classList.remove("is-hidden");
+      nextCard.classList.add("current-card");
+
+      const nextNumber = currentIndex + 2;
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "",
+        "질문 " + nextNumber + "과 답을 쓴 뒤 검사하기를 눌러 봐."
+      );
+
+      updateAddQuestionButton();
+    }
+
+    function makeSummaryGuide() {
+      const qaData = getQuestionAnswerData();
+
+      const isFilled = qaData.every(function(item) {
+        return item.question && item.answer;
+      });
+
+      if (!isFilled) {
+        alert("질문 3개와 답 3개를 모두 적어 주세요.");
+        return;
+      }
+
+      const cards = getBookQuestionCards();
+      const allPassed = cards.every(function(card) {
+        return card.dataset.feedbackPassed === "true";
+      });
+
+      if (!allPassed) {
+        alert("질문 3개를 모두 검사한 뒤 간추리기로 넘어갈 수 있어요.");
+        return;
+      }
+
+      const connectBox = document.getElementById("connectBox");
+
+      if (connectBox) {
+        connectBox.innerHTML = "";
+
+        qaData.forEach(function(item, index) {
+          const div = document.createElement("div");
+          div.className = "ar-connect-item";
+          div.innerHTML =
+            "<strong>질문 " + (index + 1) + "</strong><br>" +
+            "Q. " + escapeHtml(item.question) + "<br>" +
+            "A. " + escapeHtml(item.answer);
+
+          connectBox.appendChild(div);
+        });
+      }
+
+      const summaryText = document.getElementById("summaryText");
+      const data = bookTypeData[selectedBookType];
+
+      if (summaryText) {
+        if (data && data.summaryTemplate) {
+          summaryText.value = data.summaryTemplate;
+        } else {
+          summaryText.value = qaData.map(function(item) {
+            return item.answer;
+          }).join("\n");
+        }
+      }
+
+      setAfterAiFeedback(
+        "summaryAiFeedback",
+        "",
+        "질문과 답을 보며 중요한 내용을 이어 간추리기를 완성해 봐."
+      );
+
+      showStudyPanel("summary");
+      setTimeout(checkSummaryFeedback, 0);
+    }
+
+    const originalShowStudyPanelForQuestionWrite = showStudyPanel;
+
+    showStudyPanel = function(panelName) {
+      originalShowStudyPanelForQuestionWrite(panelName);
+
+      if (panelName === "write") {
+        const cards = getBookQuestionCards();
+        const hasCurrent = cards.some(function(card) {
+          return card.classList.contains("current-card") && !card.classList.contains("is-hidden");
+        });
+
+        if (!hasCurrent) {
+          prepareBookQuestionCards();
+        }
+
+        updateAddQuestionButton();
+      }
+    };
+
+    const originalGoWritePanelAfterPractice = goWritePanelAfterPractice;
+
+    goWritePanelAfterPractice = function() {
+      const question1 = document.getElementById("practiceQuestion1").value.trim();
+      const question2 = document.getElementById("practiceQuestion2").value.trim();
+      const answer1 = document.getElementById("practiceAnswer1").value.trim();
+      const answer2 = document.getElementById("practiceAnswer2").value.trim();
+
+      if (!question1 || !question2 || !answer1 || !answer2) {
+        alert("직접 만든 질문 2개와 답 2개를 모두 적어 주세요.");
+        return;
+      }
+
+      prepareBookQuestionCards();
+      showStudyPanel("write");
+    };
+
   </script>
 
   <script src="../js/individual-power.js"></script>
