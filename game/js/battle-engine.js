@@ -38,8 +38,8 @@ const BattleEngine = (() => {
   }
 
   // 방어: 기본 방어 (기존 로직 유지)
-  function skillBangeo(dungeonAtk) {
-    const defenseRate = PlayerStats.calcDefenseRate();
+  function skillBangeo(dungeonAtk, wisdom) {
+    const defenseRate = PlayerStats.calcDefenseRate(wisdom);
     const damage = Math.floor(dungeonAtk * (1 - defenseRate / 100));
     return { damage, blocked: true, type: 'defend' };
   }
@@ -69,7 +69,7 @@ const BattleEngine = (() => {
   function playerNormalAttack(magic) { return skillIlgyeok(magic); }
   function playerHeavyAttack(magic)  { return skillBulkkot(magic); }
 
-  function enemyNormalAttack(dungeonAtk, isDefending, defenseMode) {
+  function enemyNormalAttack(dungeonAtk, isDefending, defenseMode, wisdom) {
   // 철벽 상태면 피해를 0으로 막음
   if (isDefending && defenseMode === 'ironWall') {
     return { damage: 0, blocked: true, defenseMode: 'ironWall' };
@@ -77,7 +77,7 @@ const BattleEngine = (() => {
 
   // 일반 방어 상태면 피해 감소
   if (isDefending) {
-    const defenseRate = PlayerStats.calcDefenseRate();
+    const defenseRate = PlayerStats.calcDefenseRate(wisdom);
     const damage = Math.floor(dungeonAtk * (1 - defenseRate / 100));
     return { damage, blocked: true, defenseMode: 'guard' };
   }
@@ -85,7 +85,7 @@ const BattleEngine = (() => {
   return { damage: dungeonAtk, blocked: false, defenseMode: null };
 }
 
-  function enemyHeavyAttack(dungeonHeavyAtk, isDefending, defenseMode) {
+  function enemyHeavyAttack(dungeonHeavyAtk, isDefending, defenseMode, wisdom) {
   // 철벽 상태면 강한 공격도 피해를 0으로 막음
   if (isDefending && defenseMode === 'ironWall') {
     return { damage: 0, blocked: true, defenseMode: 'ironWall' };
@@ -93,7 +93,7 @@ const BattleEngine = (() => {
 
   // 일반 방어 상태면 피해 감소
   if (isDefending) {
-    const defenseRate = PlayerStats.calcDefenseRate();
+    const defenseRate = PlayerStats.calcDefenseRate(wisdom);
     const damage = Math.floor(dungeonHeavyAtk * (1 - defenseRate / 100));
     return { damage, blocked: true, defenseMode: 'guard' };
   }

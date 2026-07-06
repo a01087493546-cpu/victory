@@ -38,10 +38,10 @@ const PlayerStats = (() => {
     return Math.max(5000, 20000 - courage * 150);
   }
 
-  // 방어 시 받는 데미지 감소율 (%)
-  // 지금은 고정값, 나중에 능력치 연동 가능
-  function calcDefenseRate() {
-    return 80; // 방어 시 80% 데미지 감소
+  // 지혜 → 방어 시 받는 데미지 감소율 (%)
+  // 지혜 10 기준 83%, 최대 95%
+  function calcDefenseRate(wisdom) {
+    return Math.min(80 + Math.floor(wisdom * 0.3), 95);
   }
 
   // 용기 100 → 다른 능력치 +3 전환

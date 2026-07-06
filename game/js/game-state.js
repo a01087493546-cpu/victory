@@ -21,6 +21,7 @@ const GameState = (() => {
         magic:    playerData.magic,
         stamina:  playerData.stamina,
         courage:  playerData.courage,
+        wisdom:   playerData.wisdom,
         isDefending: false,
         defenseMode: null, // 현재 방어 종류: null / 'guard' / 'ironWall'
       },
@@ -111,6 +112,7 @@ const GameState = (() => {
         magic:   _state.player.magic,
         stamina: _state.player.stamina,
         courage: _state.player.courage,
+        wisdom:  _state.player.wisdom,
       }
     };
   }

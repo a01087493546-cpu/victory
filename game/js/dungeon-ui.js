@@ -79,11 +79,6 @@ const DungeonUI = (() => {
     const s = GameState.get();
     if (!s) return;
 
-    const skillDefaults = {
-      ilgyeok: '기본 베기', yeonsoek: '연속 공격',
-      cheolbyeok: '완전 방어', bulkkot: '강한 공격', hwayeom: '초강력 필살기'
-    };
-
     ['ilgyeok','yeonsoek','cheolbyeok','bulkkot','hwayeom'].forEach(id => {
       const btn = $('btn-' + id);
       if (!btn) return;
@@ -97,7 +92,7 @@ const DungeonUI = (() => {
         btn.disabled = false;
         btn.classList.remove('disabled');
         const small = btn.querySelector('.skill-text small');
-        if (small) small.textContent = skillDefaults[id] || '';
+        if (small) small.textContent = '';
       }
     });
 
@@ -108,14 +103,6 @@ const DungeonUI = (() => {
       btn.classList.toggle('defending', isDefending);
     });
     setFighterClass('hero', 'defense-stance', isDefending);
-  }
-
-  function updateBattleHud() {
-    const s = GameState.get();
-    if (!s) return;
-    if ($('battle-hud-magic'))   $('battle-hud-magic').textContent   = s.player.magic;
-    if ($('battle-hud-stamina')) $('battle-hud-stamina').textContent = s.player.maxHp;
-    if ($('battle-hud-courage')) $('battle-hud-courage').textContent = s.player.courage + '%';
   }
 
   function addLog(msg, type) {
@@ -420,11 +407,12 @@ const DungeonUI = (() => {
     if ($('enemy-lbl2'))   $('enemy-lbl2').textContent   = s.dungeon.name;
     if ($('stat-magic'))   $('stat-magic').textContent   = s.player.magic;
     if ($('stat-stamina')) $('stat-stamina').textContent = s.player.stamina;
+    if ($('stat-wisdom'))  $('stat-wisdom').textContent  = s.player.wisdom;
     if ($('stat-courage')) $('stat-courage').textContent = s.player.courage;
 
     setAnim('hero-spr', 'idle');
     setAnim('enemy-spr', 'idle');
-    updateBars(); updateTimer(); updateBattleHud();
+    updateBars(); updateTimer();
     switchSkillTabInternal('atk');
 
     if ($('battle-log')) $('battle-log').innerHTML = '';
@@ -462,7 +450,8 @@ const DungeonUI = (() => {
         const result = BattleEngine.enemyNormalAttack(
           dungeon.enemy.normalAtk,
           s.player.isDefending,
-          s.player.defenseMode
+          s.player.defenseMode,
+          s.player.wisdom
         );
         GameState.damagePlayer(result.damage);
         if (result.blocked) {
@@ -492,7 +481,8 @@ const DungeonUI = (() => {
           const result = BattleEngine.enemyHeavyAttack(
             dungeon.enemy.heavyAtk,
             s.player.isDefending,
-            s.player.defenseMode
+            s.player.defenseMode,
+            s.player.wisdom
           );
           GameState.damagePlayer(result.damage);
           if (result.blocked) {
@@ -555,9 +545,9 @@ const DungeonUI = (() => {
       // 철벽은 더 강한 방어막 효과
       showImpact('hero','shield');
       showImpact('hero','shield');
-      showTextPopup('hero','철벽','block');
+      showTextPopup('hero','완전 방어','block');
       playFighterMotion('hero', 'ironwall-burst', 900);
-      addLog('철벽: 0 피해', 'defend');
+      addLog('완전 방어: 0 피해', 'defend');
     } else {
       // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
@@ -629,7 +619,7 @@ const DungeonUI = (() => {
             shakeScreen(hit.isCrit);
 
             // 로그는 나중에 다시 다듬을 예정이라 지금은 최소만 표시
-            addLog('연속 베기 ' + (index + 1) + '타: ' + hit.damage + ' 피해', hit.isCrit ? 'crit' : 'player');
+            addLog('연속 공격 ' + (index + 1) + '타: ' + hit.damage + ' 피해', hit.isCrit ? 'crit' : 'player');
 
             updateBars();
 
@@ -654,7 +644,7 @@ const DungeonUI = (() => {
         shakeScreen(result.isCrit);
 
         // 로그는 나중에 다시 다듬을 예정이라 지금은 최소만 표시
-        addLog('일격: ' + result.damage + ' 피해', result.isCrit ? 'crit' : 'player');
+        addLog('기본 베기: ' + result.damage + ' 피해', result.isCrit ? 'crit' : 'player');
 
         updateBars();
 
@@ -683,7 +673,7 @@ const DungeonUI = (() => {
 
     // 필살 스킬명은 한 번만 크게 보여줍니다.
     setTimeout(() => {
-      showTextPopup('hero', '불꽃 베기', 'charging-slot', 1250);
+      showTextPopup('hero', '강한 공격', 'charging-slot', 1250);
     }, 0);
 
     setTimeout(() => {
@@ -715,7 +705,7 @@ const DungeonUI = (() => {
         shakeScreen(true);
 
         // 로그는 나중에 다시 다듬을 예정
-        addLog('불꽃 베기: ' + result.damage + ' 피해', 'crit');
+        addLog('강한 공격: ' + result.damage + ' 피해', 'crit');
 
         updateBars();
 
@@ -743,7 +733,7 @@ const DungeonUI = (() => {
 
     // 필살 스킬명은 한 번만 크게 보여줍니다.
     setTimeout(() => {
-      showTextPopup('hero', '화염 폭발', 'charging-slot', 1500);
+      showTextPopup('hero', '초강력 필살기', 'charging-slot', 1500);
     }, 0);
 
     setTimeout(() => {
@@ -775,7 +765,7 @@ const DungeonUI = (() => {
         playHitEffect('enemy');
         shakeScreen(true);
 
-        addLog('화염 폭발: ' + result.damage + ' 피해', 'crit');
+        addLog('초강력 필살기: ' + result.damage + ' 피해', 'crit');
 
         updateBars();
 
@@ -804,8 +794,6 @@ const DungeonUI = (() => {
 
   // ── 전투 종료 / 결과 ──
   function endBattle(result) {
-    // 전투가 끝나면 오른쪽 상단 팝업을 닫습니다.
-    closeTopHudPopup();
     const s = GameState.get();
     if (!s || !s.isRunning) return;
     GameState.setRunning(false); clearTimers();
@@ -835,9 +823,13 @@ const DungeonUI = (() => {
     }
 
     if (isWin) {
+      // TODO(백엔드 연동 시): 여기서 GameState.get().player.magic += rewardAmount
+      // 형태로 실제 스탯을 증가시키고, GameState.toSaveData()를
+      // PUT /api/students/{studentId}/game-state 로 전송해야 함.
+      // 현재는 UI 표시만 하고 실제 데이터는 증가하지 않음.
       $('r-emoji').textContent = '🏆';
       $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
-      $('r-sub').textContent = '세계 지식 창고의 지식을 되찾았습니다!';
+      $('r-sub').innerHTML = '';
       $('r-rewards').innerHTML =
         '<div class="reward-chip-result">마법력 +' + s.player.magic + '</div>' +
         '<div class="reward-chip-result">체력 +' + s.player.stamina + '</div>' +
@@ -847,15 +839,8 @@ const DungeonUI = (() => {
       $('r-emoji').textContent = isTimeout ? '⌛' : '☠';
       $('r-title').textContent = isTimeout ? '시간이 모두 지났습니다' : '전투에 실패했습니다';
 
-      $('r-sub').innerHTML = isTimeout
-        ? '제한 시간 안에 용을 물리치지 못했어요.<br>능력치를 더 키운 뒤 다시 도전해 보세요.'
-        : '이번 전투에서는 용을 물리치지 못했어요.<br>능력치를 더 키운 뒤 다시 도전해 보세요.';
-
-      $('r-rewards').innerHTML = `
-        <div class="result-tip-line">
-          질문 활동으로 힘을 모으면 전투가 더 쉬워집니다.
-        </div>
-      `;
+      $('r-sub').innerHTML = '';
+      $('r-rewards').innerHTML = '';
     }
 
     showScreen('s-result');
@@ -926,6 +911,7 @@ function restartCurrentDungeon() {
   startBattle(s.dungeon.id);
 }
 
+<<<<<<< HEAD
 // 오른쪽 상단 알림/도움말/설정 팝업을 여는 함수입니다.
 // 현재 알림과 설정은 프론트 화면 확인용 임시 UI입니다.
 // 추후 백엔드 연동 시 학생별 알림 목록, 읽음 처리, 설정 저장 기능과 연결할 예정입니다.
@@ -1201,3 +1187,5 @@ function getSettingPanelHtml(type) {
     </div>
   `;
 }
+=======
+>>>>>>> d91f935 (던전 UI 전체 수정)
