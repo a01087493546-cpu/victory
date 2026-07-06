@@ -195,7 +195,7 @@
       min-width: 0;
       min-height: 0;
       display: grid;
-      grid-template-rows: 96px minmax(0, 1fr);
+      grid-template-rows: 150px minmax(0, 1fr);
       gap: 24px;
       padding: 34px 36px 38px;
       border-radius: 32px;
@@ -211,7 +211,7 @@
     }
 
     .ar-board-title {
-      height: 96px;
+      height: 150px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -246,14 +246,15 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 28px;
       align-items: stretch;
+      align-content: start;
+      margin-top: 112px;
       overflow: hidden;
     }
 
     .ar-type-card {
       width: 100%;
-      height: 100%;
       min-width: 0;
-      min-height: 0;
+      min-height: 360px;
       padding: 34px 28px;
       display: flex;
       align-items: center;
@@ -539,6 +540,7 @@
       min-height: 0;
       display: grid;
       grid-template-columns: 1fr;
+      align-items: center;
       overflow: hidden;
     }
 
@@ -562,11 +564,11 @@
     .ar-method-sentence {
       min-height: 190px;
       padding: 28px 36px;
-      text-align: center;
+      text-align: left;
       font-family: "Noto Serif KR", serif;
       font-size: 27px;
       font-weight: 900;
-      line-height: 1.75;
+      line-height: 1.95;
       letter-spacing: -0.7px;
       word-break: keep-all;
       border-radius: 24px;
@@ -594,13 +596,15 @@
       align-items: center;
       justify-content: center;
       vertical-align: middle;
-      margin: 0 6px;
+      margin: 4px 6px;
+      white-space: nowrap;
     }
 
     .method-blank-button {
       min-width: 96px;
       height: 38px;
       padding: 0 16px;
+      white-space: nowrap;
       border-radius: 999px;
       border: 2px solid rgba(255, 218, 134, 0.88);
       background:
@@ -616,6 +620,7 @@
       min-width: 104px;
       height: 38px;
       padding: 0 16px;
+      white-space: nowrap;
       align-items: center;
       justify-content: center;
       border-radius: 999px;
@@ -1285,7 +1290,7 @@
   }
 
   .ar-method-layout .ar-study-card h3 {
-    font-size: 30px;
+    font-size: 32px;
     margin-bottom: 0;
     text-align: center;
     line-height: 1.1;
@@ -1295,13 +1300,10 @@
     min-height: 0;
     height: 100%;
     padding: 26px 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    text-align: left;
     font-size: 30px;
     font-weight: 900;
-    line-height: 1.72;
+    line-height: 1.95;
     letter-spacing: -0.8px;
     border-radius: 26px;
   }
@@ -1309,13 +1311,13 @@
   .ar-tip-box {
     margin-top: 0;
     padding: 16px 22px;
-    font-size: 18px;
+    font-size: 19px;
     line-height: 1.55;
     border-radius: 18px;
   }
 
   .method-reveal-word {
-    margin: 0 8px;
+    margin: 4px 8px;
   }
 
   .method-blank-button {
@@ -1445,22 +1447,22 @@
   }
 
   .ar-method-sentence {
-    font-size: 34px;
-    line-height: 1.72;
+    font-size: 38px;
+    line-height: 1.95;
   }
 
   .method-blank-button {
-    min-width: 120px;
-    height: 48px;
+    min-width: 130px;
+    height: 52px;
     padding: 0 22px;
-    font-size: 17px;
+    font-size: 19px;
   }
 
   .method-keyword {
-    min-width: 128px;
-    height: 48px;
+    min-width: 138px;
+    height: 52px;
     padding: 0 22px;
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .ar-panel-actions {
@@ -2876,7 +2878,7 @@
       story: {
         label: "이야기 책",
         icon: "📖",
-        method: "이야기 책은 시간의 흐름이나 장소의 변화에 따라 등장인물에게 일어난 일을 중심으로 간추려요.",
+        method: "이야기 책은 시간의 흐름이나<br>장소의 변화에 따라 등장인물에게 일어난 일을<br>중심으로 간추려요.",
         tip: "처음, 가운데, 마지막에 인물에게 어떤 일이 일어났는지 떠올리면 간추리기 질문을 만들기 쉬워요.",
         blanks: ["시간의 흐름", "장소의 변화", "등장인물"],
         builderGuide: "이야기 책은 시간의 흐름이나 장소의 변화에 따라 등장인물에게 일어난 일을 중심으로 간추려요.",
@@ -2924,7 +2926,7 @@
       info: {
         label: "정보를 담은 책",
         icon: "🔍",
-        method: "정보를 담은 책은 문단이나 각 장의 중심 내용을 찾아 중요한 정보를 중심으로 간추려요.",
+        method: "정보를 담은 책은 중심 내용을 찾아 중요한 정보를 중심으로 간추려요.",
         tip: "무엇에 대한 글인지, 새롭게 알게 된 중요한 정보가 무엇인지 찾으면 좋아요.",
         blanks: ["중심 내용", "중요한 정보", "새롭게 알게 된 점"],
         builderGuide: "정보를 담은 책은 중심 내용과 중요한 정보를 찾아 간추려요.",
