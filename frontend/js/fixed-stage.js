@@ -81,12 +81,6 @@
         overflow: hidden !important;
       }
 
-      .mq-fixed-stage-page.mq-page-individual-after-reading {
-        height: auto !important;
-        min-height: 1080px !important;
-        overflow: visible !important;
-      }
-
       .mq-fixed-stage-page > main,
       .mq-fixed-stage-page > div:not(.home-modal-backdrop):not(.fw-question-modal):not(.fw-complete-modal):not(.fw-reward-overlay):not(.wr-guide-modal) {
         width: 1920px !important;
@@ -499,21 +493,10 @@
     }
 
     const scale = Math.min(window.innerWidth / STAGE_WIDTH, window.innerHeight / STAGE_HEIGHT, 1);
-    const allowPageScroll = page.classList.contains("mq-page-individual-after-reading");
-    const pageHeight = allowPageScroll
-      ? Math.max(STAGE_HEIGHT, 1500, page.scrollHeight)
-      : STAGE_HEIGHT;
-
     frame.style.setProperty("--stage-scale", scale);
     page.style.setProperty("--stage-scale", scale);
     frame.style.width = `${STAGE_WIDTH * scale}px`;
-    frame.style.height = `${pageHeight * scale}px`;
-
-    if (allowPageScroll) {
-      page.style.height = "auto";
-      page.style.minHeight = `${STAGE_HEIGHT}px`;
-      page.style.overflow = "visible";
-    }
+    frame.style.height = `${STAGE_HEIGHT * scale}px`;
   }
 
   function wrapPage() {
@@ -556,19 +539,6 @@
     setTimeout(updateScale, 80);
     setTimeout(updateScale, 300);
 
-    if (pageName === "individual-after-reading") {
-      const observer = new MutationObserver(() => {
-        requestAnimationFrame(updateScale);
-      });
-
-      observer.observe(page, {
-        attributes: true,
-        childList: true,
-        subtree: true
-      });
-
-      setInterval(updateScale, 700);
-    }
   }
 
   if (document.readyState === "loading") {

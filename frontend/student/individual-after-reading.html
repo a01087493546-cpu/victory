@@ -798,15 +798,15 @@
     }
 
     #questionScreen .iar-qa-card {
-      display: grid !important;
-      width: 100% !important;
-      min-height: 360px !important;
-      padding: 28px 32px !important;
-    }
+  display: grid !important;
+  width: 100% !important;
+  min-height: 300px !important;
+  padding: 24px 32px !important;
+}
 
     #questionScreen .iar-qa-card .iar-textarea {
-      min-height: 168px !important;
-    }
+  min-height: 120px !important;
+}
 
     #questionScreen .iar-qa-card label {
       font-size: 17px !important;
@@ -965,7 +965,7 @@
   inset: 0;
   display: none;
   place-items: center;
-  padding: 24px;
+  padding: 4px 24px !important;
   background: rgba(42, 25, 8, 0.46);
   z-index: 30;
 }
@@ -975,17 +975,22 @@
 }
 
 .iar-finish-modal-box {
-  width: min(720px, calc(100vw - 48px));
-  max-height: min(720px, calc(100vh - 48px));
-  display: grid;
-  grid-template-rows: auto auto auto auto;
-  gap: 18px;
-  padding: 28px;
-  border-radius: 32px;
-  border: 1px solid rgba(184, 116, 30, 0.28);
-  background: rgba(255, 250, 236, 0.98);
-  box-shadow: 0 24px 60px rgba(47, 28, 8, 0.28);
-  overflow-y: auto;
+  width: min(1080px, calc(100vw - 64px)) !important;
+  height: 94vh !important;
+min-height: 780px !important;
+max-height: calc(100vh - 8px) !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  gap: 16px !important;
+
+  padding: 28px 32px !important;
+  border-radius: 32px !important;
+  border: 1px solid rgba(184, 116, 30, 0.28) !important;
+  background: rgba(255, 250, 236, 0.98) !important;
+  box-shadow: 0 24px 60px rgba(47, 28, 8, 0.28) !important;
+
+  overflow: hidden !important;
 }
 
 .iar-finish-modal-head {
@@ -1080,23 +1085,61 @@
   box-shadow: 0 12px 20px rgba(128, 76, 18, 0.22);
 }
 
-.iar-represent-question-list {
-  display: grid;
-  gap: 9px;
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: 4px;
+.iar-represent-section {
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
+.iar-represent-category-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin: 0 0 20px !important;
+}
+
+.iar-represent-category-button {
+  height: 58px !important;
+  min-height: 58px !important;
+  padding: 0 26px !important;
+  border: 1px solid rgba(174, 109, 27, 0.22) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 252, 242, 0.94) !important;
+  color: #684018 !important;
+  font-size: 18px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+}
+
+.iar-represent-category-button.active {
+  border: none !important;
+  background: linear-gradient(180deg, #e6b656, #a8641e) !important;
+  color: #fff9e8 !important;
+  box-shadow: 0 10px 18px rgba(128, 76, 18, 0.18) !important;
+}
+
+.iar-represent-question-list {
+  display: grid !important;
+  gap: 10px !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 360px !important;
+  overflow-y: auto !important;
+  align-content: start !important;
+  padding-right: 8px !important;
+  padding-bottom: 12px !important;
+}
 .iar-represent-question-button {
   width: 100%;
-  min-height: 48px;
-  padding: 12px 14px;
+  min-height: 64px;
+  padding: 15px 17px;
   border: 1px solid rgba(171, 108, 31, 0.18);
   border-radius: 17px;
   background: rgba(255, 252, 242, 0.94);
   color: #5b3515;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 850;
   text-align: left;
   line-height: 1.45;
@@ -1104,6 +1147,16 @@
   overflow-wrap: anywhere;
   cursor: pointer;
 }
+
+.iar-represent-question-button small {
+  display: block;
+  margin-bottom: 5px;
+  color: #a1661d;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+
 
 .iar-represent-question-button.selected {
   border-color: rgba(168, 100, 30, 0.5);
@@ -1127,10 +1180,12 @@
 }
 
 .iar-finish-actions {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 12px;
-  padding-top: 4px;
+  display: grid !important;
+  grid-template-columns: 1fr 1.5fr !important;
+  gap: 12px !important;
+  padding-top: 4px !important;
+  background: rgba(255, 250, 236, 0.98) !important;
+  z-index: 2 !important;
 }
 
 .iar-finish-complete-box {
@@ -1659,8 +1714,10 @@ body.iar-teacher-share-mode .iar-share-guide {
 
 /* 1단계 책 종류 화면 */
 #typeScreen .iar-panel {
+  min-height: 390px !important;
+  padding: 34px 42px 30px !important;
   display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto auto !important;
   align-content: start !important;
 }
 
@@ -1988,8 +2045,8 @@ body.iar-teacher-share-mode .iar-share-guide {
 
 /* 이야기 책 / 정보를 담은 책 / 생각을 담은 책 카드 영역 */
 #typeScreen .iar-book-type-grid {
-  height: 250px !important;
-  min-height: 250px !important;
+  height: 180px !important;
+  min-height: 180px !important;
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 26px !important;
@@ -1999,8 +2056,8 @@ body.iar-teacher-share-mode .iar-share-guide {
 /* 안쪽 책 종류 카드 크게 */
 #typeScreen .iar-book-type-button {
   width: 100% !important;
-  height: 250px !important;
-  min-height: 250px !important;
+  height: 180px !important;
+  min-height: 180px !important;
   padding: 34px 22px !important;
   border-radius: 30px !important;
   display: grid !important;
@@ -2181,6 +2238,117 @@ body {
 .iar-step-card + .iar-screen,
 .iar-step-card + .iar-screen.active {
   margin-top: 24px !important;
+}
+
+/* =========================================================
+   읽기 후 화면: 스크롤 제거 및 한 화면 고정 최종 규칙
+   ========================================================= */
+
+html,
+body {
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.iar-page {
+  height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+  padding-bottom: 20px !important;
+}
+
+.iar-shell {
+  height: 100% !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: 64px auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+}
+
+.iar-screen,
+.iar-screen.active {
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 12px 0 0 !important;
+  overflow: hidden !important;
+}
+
+.iar-step-card + .iar-screen,
+.iar-step-card + .iar-screen.active {
+  margin-top: 12px !important;
+}
+
+.iar-panel {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#shareScreen .iar-panel {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 28px 32px 30px !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 16px !important;
+}
+
+#shareScreen .iar-panel-head {
+  margin-bottom: 0 !important;
+}
+
+#shareScreen .iar-panel-head p,
+#shareScreen .iar-share-guide {
+  display: none !important;
+}
+
+#shareScreen .iar-share-filter-row {
+  margin: 0 !important;
+}
+
+#shareScreen .iar-share-grid {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  align-items: start !important;
+  padding: 0 !important;
+}
+
+#shareScreen .iar-share-card {
+  height: auto !important;
+  min-height: 230px !important;
+  padding: 16px !important;
+  gap: 10px !important;
+  overflow: hidden !important;
+  align-self: start !important;
+  grid-template-rows: auto auto auto auto !important;
+}
+
+#shareScreen .iar-share-card h3 {
+  font-size: 20px !important;
+}
+
+#shareScreen .iar-share-type {
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+}
+
+#shareScreen .iar-share-summary {
+  min-height: 88px !important;
+  max-height: none !important;
+  padding: 12px 13px !important;
+  font-size: 12px !important;
+  line-height: 1.38 !important;
+  overflow: hidden !important;
+}
+
+#shareScreen .iar-like-button {
+  height: 36px !important;
+  padding: 0 13px !important;
+  font-size: 13px !important;
 }
 
 </style>
@@ -2406,17 +2574,27 @@ body {
       </div>
     </div>
 
-    <div class="iar-finish-section">
-      <h3>대표 질문 하나 선택</h3>
-      <p class="iar-finish-guide">
-        내가 만든 질문 중 이 책을 가장 잘 떠올리게 하는 질문을 하나 골라요.
-      </p>
-      <div class="iar-represent-question-list" id="representQuestionList">
-        <div class="iar-represent-empty">
-          불러올 질문을 준비하고 있어요.
-        </div>
-      </div>
+    <div class="iar-finish-section iar-represent-section">
+  <h3>대표 질문 하나 선택</h3>
+
+  <div class="iar-represent-category-row">
+    <button type="button" class="iar-represent-category-button active" onclick="changeRepresentCategory('before')">
+      읽기 전
+    </button>
+    <button type="button" class="iar-represent-category-button" onclick="changeRepresentCategory('during')">
+      읽기 중
+    </button>
+    <button type="button" class="iar-represent-category-button" onclick="changeRepresentCategory('after')">
+      읽기 후
+    </button>
+  </div>
+
+  <div class="iar-represent-question-list" id="representQuestionList">
+    <div class="iar-represent-empty">
+      불러올 질문을 준비하고 있어요.
     </div>
+  </div>
+</div>
 
     <div class="iar-finish-actions">
       <button type="button" class="iar-main-button" onclick="closeBookFinishModal()">취소</button>
@@ -2470,6 +2648,7 @@ let summaryFeedbackPassed = false;
 let selectedBookRating = 0;
 let selectedRepresentQuestion = "";
 let selectedRepresentQuestionIndex = -1;
+let selectedRepresentCategory = "before";
 // 우리 반 간추리기 모음에서 선택한 책 종류 필터입니다.
 let currentShareFilter = "all";
 
@@ -2987,11 +3166,13 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
 // 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
 function openBookFinishModal() {
   selectedBookRating = 0;
-  selectedRepresentQuestion = "";
-  selectedRepresentQuestionIndex = -1;
+selectedRepresentQuestion = "";
+selectedRepresentQuestionIndex = -1;
+selectedRepresentCategory = "before";
 
-  renderRatingStars();
-  renderRepresentQuestionList();
+renderRatingStars();
+renderRepresentCategoryButtons();
+renderRepresentQuestionList();
 
   const modal = document.getElementById("bookFinishModal");
 
@@ -3057,6 +3238,64 @@ function renderRatingStars() {
 // 대표 질문 후보를 가져옵니다.
 // 읽기 후 활동에서 학생이 쓴 질문과 답 목록 중 질문만 사용합니다.
 function getRepresentQuestionCandidates() {
+  if (selectedRepresentCategory === "before") {
+    return getBeforeRepresentQuestions();
+  }
+
+  if (selectedRepresentCategory === "during") {
+    return getDuringRepresentQuestions();
+  }
+
+  return getAfterRepresentQuestions();
+}
+
+function getBeforeRepresentQuestions() {
+  const candidates = [];
+
+  for (let index = 0; index < sessionStorage.length; index += 1) {
+    const key = sessionStorage.key(index);
+    const value = sessionStorage.getItem(key);
+
+    if (!key || !value) continue;
+
+    const isBeforeKey =
+      key.includes("Before") ||
+      key.includes("before") ||
+      key.includes("ReadingBefore") ||
+      key.includes("individualBefore");
+
+    if (!isBeforeKey) continue;
+
+    collectQuestionsFromStorageValue(value, candidates);
+  }
+
+  return uniqueQuestions(candidates);
+}
+
+function getDuringRepresentQuestions() {
+  const candidates = [];
+
+  for (let index = 0; index < sessionStorage.length; index += 1) {
+    const key = sessionStorage.key(index);
+    const value = sessionStorage.getItem(key);
+
+    if (!key || !value) continue;
+
+    const isDuringKey =
+      key.includes("During") ||
+      key.includes("during") ||
+      key.includes("ReadingDuring") ||
+      key.includes("individualDuring");
+
+    if (!isDuringKey) continue;
+
+    collectQuestionsFromStorageValue(value, candidates);
+  }
+
+  return uniqueQuestions(candidates);
+}
+
+function getAfterRepresentQuestions() {
   try {
     const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
 
@@ -3072,6 +3311,100 @@ function getRepresentQuestionCandidates() {
   }
 }
 
+function collectQuestionsFromStorageValue(value, candidates) {
+  try {
+    const parsed = JSON.parse(value);
+
+    if (Array.isArray(parsed)) {
+      parsed.forEach(function (item) {
+        collectQuestionFromItem(item, candidates);
+      });
+      return;
+    }
+
+    if (parsed && typeof parsed === "object") {
+      Object.keys(parsed).forEach(function (key) {
+        collectQuestionFromItem(parsed[key], candidates);
+      });
+    }
+  } catch (error) {
+    if (typeof value === "string" && value.includes("?") && value.length < 160) {
+      candidates.push(value);
+    }
+  }
+}
+
+function collectQuestionFromItem(item, candidates) {
+  if (!item) return;
+
+  if (typeof item === "string") {
+    if (item.includes("?")) {
+      candidates.push(item);
+    }
+    return;
+  }
+
+  if (Array.isArray(item)) {
+    item.forEach(function (child) {
+      collectQuestionFromItem(child, candidates);
+    });
+    return;
+  }
+
+  if (typeof item === "object") {
+    const question =
+      item.question ||
+      item.questionText ||
+      item.text ||
+      item.content ||
+      item.title ||
+      "";
+
+    if (typeof question === "string" && question.includes("?")) {
+      candidates.push(question);
+    }
+  }
+}
+
+function uniqueQuestions(questions) {
+  const seen = new Set();
+
+  return questions
+    .map(function (question) {
+      return String(question).trim();
+    })
+    .filter(function (question) {
+      if (!question || !question.includes("?")) return false;
+      if (seen.has(question)) return false;
+
+      seen.add(question);
+      return true;
+    });
+}
+function changeRepresentCategory(category) {
+  selectedRepresentCategory = category;
+  selectedRepresentQuestion = "";
+  selectedRepresentQuestionIndex = -1;
+
+  renderRepresentCategoryButtons();
+  renderRepresentQuestionList();
+}
+
+function renderRepresentCategoryButtons() {
+  const buttons = document.querySelectorAll(".iar-represent-category-button");
+
+  buttons.forEach(function (button) {
+    const text = button.textContent.trim();
+
+    const isActive =
+      (selectedRepresentCategory === "before" && text === "읽기 전") ||
+      (selectedRepresentCategory === "during" && text === "읽기 중") ||
+      (selectedRepresentCategory === "after" && text === "읽기 후");
+
+    button.classList.toggle("active", isActive);
+  });
+}
+
 // 대표 질문 목록을 팝업 안에 그립니다.
 function renderRepresentQuestionList() {
   const list = document.getElementById("representQuestionList");
@@ -3081,11 +3414,10 @@ function renderRepresentQuestionList() {
 
   if (questions.length === 0) {
     list.innerHTML = `
-      <div class="iar-represent-empty">
-        아직 고를 수 있는 질문이 없어요.<br>
-        읽기 후 활동에서 질문과 답을 먼저 저장해 주세요.
-      </div>
-    `;
+  <div class="iar-represent-empty">
+    이 단계에서 고를 수 있는 질문이 아직 없어요.
+  </div>
+`;
     return;
   }
 
@@ -3636,6 +3968,6 @@ function goAdventure() {
     </button>
   </div>
 </div>
-  <script src="../js/fixed-stage.js?v=after-reading-scroll-1"></script>
+  <script src="../js/fixed-stage.js?v=after-reading-no-scroll-1"></script>
 </body>
 </html>
