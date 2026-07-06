@@ -5270,8 +5270,28 @@
 #shareScreen .idr-book-chat-layout {
   width: 100% !important;
   max-width: none !important;
+  position: relative !important;
+  top: -45px !important;
+  margin-top: 0 !important;
+}
+/* 책수다방: 친구들의 책수다 실제 배경카드 높이만 키우기 */
+#shareScreen .idr-book-chat-layout .idr-share-list-card {
+  height: 600px !important;
+min-height: 600px !important;
+max-height: 600px !important;
+  overflow: hidden !important;
 }
 
+/* 친구 글 목록만 카드 안에서 스크롤 */
+#shareScreen .idr-book-chat-layout .idr-share-list-card .idr-list-scroll {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 8px !important;
+  padding-bottom: 24px !important;
+}
 #shareScreen .idr-work-header p {
   display: none !important;
 }
@@ -6552,6 +6572,47 @@ body.idr-book-chat-open .idr-share-card p {
   font-size: 15px !important;
   line-height: 1.55 !important;
 }
+/* 책수다방: 친구들의 책수다를 책수다방 활동 바로 아래로 올리기 */
+body.idr-book-chat-open .idr-book-chat-main {
+  align-content: start !important;
+  align-items: start !important;
+}
+
+body.idr-book-chat-open .idr-book-chat-content {
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  align-content: start !important;
+  align-items: start !important;
+  gap: 16px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+/* 책수다방 활동 카드 바로 아래에 목록 붙이기 */
+body.idr-book-chat-open .idr-book-chat-layout {
+  margin-top: 0 !important;
+  align-self: start !important;
+  height: 440px !important;
+  min-height: 440px !important;
+  max-height: 440px !important;
+  overflow: hidden !important;
+}
+
+/* 친구들의 책수다 카드 */
+body.idr-book-chat-open .idr-share-list-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 24px 26px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+}
+
+
+
+
   </style>
 </head>
 
