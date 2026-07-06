@@ -22,17 +22,10 @@
     }
 
     body {
-      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
-      color: #3f260f;
-      background:
-        linear-gradient(
-          90deg,
-          rgba(24, 17, 9, 0.38) 0%,
-          rgba(255, 245, 219, 0.56) 42%,
-          rgba(31, 21, 10, 0.34) 100%
-        ),
-        url("../assets/images/individual-reading/individual-reading.png") center / cover no-repeat;
-    }
+font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+color: #3f260f;
+background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
+}
 
     button {
       font-family: inherit;
@@ -732,6 +725,52 @@
   background: #ead7b9 !important;
   color: #6f431b !important;
 }
+html {
+  background: #1b120a;
+}
+/* ===== 상단 고정 버튼 글자/이모지 복구 ===== */
+.mq-fixed-stage-button,
+.mq-fixed-stage-nav button,
+.fixed-stage-button,
+.fixed-stage-nav button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+
+  min-width: 92px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+
+  color: #3f2a14 !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+
+  background: rgba(92, 61, 25, 0.78) !important;
+  border: 1px solid rgba(255, 236, 190, 0.35) !important;
+  border-radius: 999px !important;
+}
+
+/* 가운데 현재 단계 버튼 */
+.mq-fixed-stage-button.is-active,
+.mq-fixed-stage-nav button.is-active,
+.fixed-stage-button.is-active,
+.fixed-stage-nav button.is-active {
+  min-width: 120px !important;
+  color: #4a2f13 !important;
+  background: linear-gradient(180deg, #f0d081 0%, #c7953e 100%) !important;
+}
+
+/* 버튼 안 아이콘/이모지 */
+.mq-fixed-stage-button span,
+.mq-fixed-stage-nav button span,
+.fixed-stage-button span,
+.fixed-stage-nav button span {
+  display: inline-flex !important;
+  color: inherit !important;
+  opacity: 1 !important;
+}
   </style>
 </head>
 
@@ -748,9 +787,9 @@
     🏠 홈으로
   </button>
 
-  <button class="ir-top-archive" type="button" onclick="location.href='reading-archive.html'">
-    📚 나의 독서 보관함
-  </button>
+  <button class="ir-top-archive" type="button" onclick="location.href='individual-reading-archive.html'">
+  📚 나의 독서 보관함
+</button>
 
   <button class="ir-top-power" type="button" onclick="location.href='my-power.html'">
     <img src="../assets/story/char-lumi-01-basic.png" alt="" />

@@ -50,15 +50,9 @@
       }
 
       body:has(.mq-page-individual-reading) .mq-fixed-stage-viewport {
-        background:
-          linear-gradient(
-            90deg,
-            rgba(24, 17, 9, 0.38) 0%,
-            rgba(255, 245, 219, 0.56) 42%,
-            rgba(31, 21, 10, 0.34) 100%
-          ),
-          url("../assets/images/individual-reading/individual-reading.png") center / cover no-repeat !important;
-      }
+  background-color: #1f140d !important;
+  background-image: none !important;
+}
 
       body:has(.mq-page-read-before-book-intro) .mq-fixed-stage-viewport {
         background:

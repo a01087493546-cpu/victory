@@ -24,6 +24,7 @@
   <title>문답책 - 읽기 전 질문 만들기</title>
 
   <style>
+    
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
 
     * {
@@ -1811,6 +1812,440 @@ textarea {
         line-height: 1.45 !important;
       }
     }
+    /* ====== 읽기 전 질문 만들기: 가로폭 통일 + 밝은 베이지 톤 최종 적용 ====== */
+
+/* 1) 가로폭을 문답책 공통 폭(1500px)에 맞춰 통일 */
+.page-inner {
+  max-width: 1500px !important;
+}
+
+.top-info,
+.book-strip,
+.activity-layout {
+  width: 100% !important;
+}
+
+.activity-card {
+  width: 100% !important;
+  max-width: 1500px !important;
+  margin: 0 auto !important;
+}
+
+/* 2) 배경: 어두운 브라운 → 밝고 신비로운 베이지 톤 */
+body {
+  color: #3a2a1b !important;
+  background:
+    linear-gradient(rgba(250, 244, 232, 0.90), rgba(238, 226, 204, 0.94)),
+    url("../assets/images/home/home-library-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.page::before {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 226, 162, 0.30), transparent 24%),
+    radial-gradient(circle at 88% 24%, rgba(255, 214, 135, 0.22), transparent 24%),
+    radial-gradient(circle at 52% 0%, rgba(255, 245, 216, 0.46), transparent 32%),
+    linear-gradient(180deg, rgba(255, 251, 243, 0.18), rgba(242, 233, 218, 0.10)) !important;
+}
+
+.nav-button {
+  border: 1px solid rgba(181, 138, 78, 0.42) !important;
+  background: rgba(255, 248, 235, 0.90) !important;
+  color: #4d341a !important;
+  box-shadow: 0 8px 18px rgba(88, 58, 24, 0.08) !important;
+}
+
+.nav-button:hover {
+  background: rgba(255, 240, 205, 0.98) !important;
+}
+
+.book-strip {
+  border: 1px solid rgba(206, 170, 114, 0.34) !important;
+  background: rgba(255, 250, 242, 0.86) !important;
+  box-shadow:
+    0 14px 28px rgba(88, 58, 24, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.book-small-label { color: #8b5c1e !important; }
+.book-title { color: #2f2116 !important; }
+.book-meta { color: rgba(74, 52, 28, 0.8) !important; }
+.progress-step { color: rgba(86, 58, 25, 0.72) !important; }
+
+.progress-circle {
+  border-color: rgba(184, 142, 79, 0.30) !important;
+  background: rgba(255, 250, 242, 0.94) !important;
+  color: #6d4720 !important;
+}
+
+.progress-step.active .progress-circle {
+  border-color: rgba(205, 156, 77, 0.94) !important;
+  background: radial-gradient(circle, #ffefbf 0%, #cb9444 80%) !important;
+  color: #4a2f14 !important;
+  box-shadow: 0 0 18px rgba(218, 171, 89, 0.24) !important;
+}
+
+.progress-step.done .progress-circle {
+  border-color: rgba(122, 210, 152, 0.72) !important;
+  background: rgba(226, 244, 227, 0.92) !important;
+  color: #2c5934 !important;
+}
+
+.progress-line { background: rgba(192, 154, 93, 0.28) !important; }
+
+.activity-card {
+  border-radius: 30px !important;
+  background: rgba(255, 250, 242, 0.97) !important;
+  color: #312419 !important;
+  box-shadow:
+    0 20px 40px rgba(88, 58, 24, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+.activity-title { color: #2f2116 !important; }
+
+.tab-button {
+  border: 1px solid rgba(180, 136, 74, 0.58) !important;
+  background: linear-gradient(180deg, #f3e0b4 0%, #c89a54 100%) !important;
+  color: #4a2f14 !important;
+  box-shadow:
+    0 8px 16px rgba(124, 86, 36, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.56) !important;
+}
+
+.tab-button.active {
+  background: linear-gradient(180deg, #fff0c7 0%, #d6a151 100%) !important;
+  color: #3b250f !important;
+}
+
+.write-panel,
+.example-panel {
+  background: #fbf3e6 !important;
+  border: 1px solid #dec7a1 !important;
+}
+
+.input-label { color: #3b2a1b !important; }
+.input-help { color: #b48938 !important; }
+
+textarea {
+  border: 1px solid #ddc6a1 !important;
+  background: #fffdf9 !important;
+  color: #33261b !important;
+}
+
+.plain-button {
+  background: #dfd1bd !important;
+  color: #654f39 !important;
+}
+
+.main-button {
+  background: linear-gradient(180deg, #e0ad43 0%, #bd7f18 100%) !important;
+  color: #fff7e7 !important;
+  box-shadow: 0 10px 18px rgba(143, 91, 8, 0.16) !important;
+}
+
+.small-note {
+  background: #fff2cf !important;
+  border: 1px solid #e7c574 !important;
+  color: #5a421c !important;
+}
+
+.summary-item {
+  background: #fffaf0 !important;
+  border: 1px solid #ead9bd !important;
+}
+
+.summary-title { color: #bb7d13 !important; }
+.summary-text { color: #443123 !important; }
+
+.feedback-box {
+  background: #fff3d5 !important;
+  border: 1px solid #eac675 !important;
+  color: #5a3e19 !important;
+}
+
+.feedback-box.good {
+  background: #eff8e8 !important;
+  border-color: #b7d991 !important;
+  color: #355628 !important;
+}
+
+.feedback-box.need {
+  background: #fff0df !important;
+  border-color: #e6b178 !important;
+  color: #6a3d17 !important;
+}
+/* 바깥 여백(뷰포트) 배경을 어두운 브라운 → 밝은 베이지로 변경 */
+body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
+  background-color: #efe4d0 !important;
+  background-image: none !important;
+}
+/* ===== 최종 수정: 상단 문답책 카드와 활동 카드 가로폭 완전 일치 ===== */
+
+.page {
+  padding: 14px 48px 22px !important;
+}
+
+.page-inner {
+  width: min(1500px, calc(100vw - 96px)) !important;
+  max-width: 1500px !important;
+  margin: 0 auto !important;
+}
+
+.top-info,
+.book-strip,
+.activity-layout {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.activity-layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+}
+
+.side-steps {
+  display: none !important;
+}
+
+/* 01. 제목을 보고 질문 만들기 전체 카드 */
+.activity-card {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 660px !important;
+  margin: 0 !important;
+  padding: 38px 56px 34px !important;
+  box-sizing: border-box !important;
+}
+
+/* 내부 작성 영역도 카드 폭에 맞게 확장 */
+.content-grid,
+.write-panel,
+.example-panel,
+.write-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.write-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+/* ===== 최종: 상단 문답책 폭과 01 활동 카드 폭 일치 ===== */
+
+.page {
+  padding: 14px 24px 22px !important;
+}
+
+.page-inner {
+  width: min(1500px, calc(100vw - 48px)) !important;
+  max-width: 1500px !important;
+  margin: 0 auto !important;
+}
+
+.top-info,
+.book-strip,
+.activity-layout {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.activity-layout {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+}
+
+.side-steps {
+  display: none !important;
+}
+
+.activity-card {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  min-height: 660px !important;
+  padding: 38px 48px 34px !important;
+  box-sizing: border-box !important;
+}
+
+.content-grid,
+.write-panel,
+.example-panel,
+.write-grid {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.write-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+/* ===== 최종 수정: 고급스럽고 밝은 브라운 톤 배경 ===== */
+
+/* 전체 바깥 배경: 카드와 구분되는 밝은 브라운 */
+body {
+  color: #3a2a1b !important;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(214, 188, 146, 0.92) 0%,
+      rgba(190, 154, 105, 0.90) 45%,
+      rgba(226, 204, 168, 0.92) 100%
+    ),
+    url("../assets/images/home/home-library-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* 신비로운 빛감은 살리되 너무 어둡지 않게 */
+.page::before {
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 238, 186, 0.34), transparent 26%),
+    radial-gradient(circle at 88% 20%, rgba(190, 132, 62, 0.18), transparent 28%),
+    radial-gradient(circle at 48% 4%, rgba(255, 246, 218, 0.28), transparent 32%),
+    linear-gradient(
+      180deg,
+      rgba(126, 84, 39, 0.08),
+      rgba(105, 70, 35, 0.10)
+    ) !important;
+}
+
+/* Safari/특정 고정 화면 바깥 여백도 같은 톤으로 */
+body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
+  background:
+    linear-gradient(
+      135deg,
+      #d4bb91 0%,
+      #bd9868 48%,
+      #dfcaa4 100%
+    ) !important;
+}
+
+/* 상단 책 정보 카드는 배경보다 조금 밝게 */
+.book-strip {
+  background: rgba(255, 248, 234, 0.88) !important;
+  border: 1px solid rgba(145, 100, 49, 0.28) !important;
+  box-shadow:
+    0 14px 28px rgba(83, 55, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.76) !important;
+}
+
+/* 메인 활동 카드는 배경과 확실히 분리 */
+.activity-card {
+  background: rgba(255, 250, 240, 0.97) !important;
+  border: 1px solid rgba(139, 96, 47, 0.20) !important;
+  box-shadow:
+    0 22px 42px rgba(80, 52, 22, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+}
+
+/* 입력 패널은 카드보다 살짝 어두운 아이보리 */
+.write-panel,
+.example-panel {
+  background: #f7ead6 !important;
+  border: 1px solid #c9aa79 !important;
+}
+
+/* 입력칸은 흰색에 가깝게 유지해서 흑백 인쇄 시 구분 잘 되게 */
+textarea {
+  background: #fffdf8 !important;
+  border: 1px solid #c9aa79 !important;
+  color: #33261b !important;
+}
+
+/* 상단 버튼도 배경과 어울리는 브라운 */
+.nav-button {
+  background: rgba(255, 244, 222, 0.92) !important;
+  border: 1px solid rgba(128, 86, 39, 0.34) !important;
+  color: #4a3016 !important;
+}
+
+.nav-button:hover {
+  background: rgba(246, 226, 190, 0.98) !important;
+}
+
+/* 예시 보기 버튼 */
+.tab-button {
+  background: linear-gradient(180deg, #e6c27d 0%, #b9853d 100%) !important;
+  color: #3b250f !important;
+  border: 1px solid rgba(100, 63, 24, 0.42) !important;
+}
+
+/* 이전/저장 버튼 톤 정리 */
+.plain-button {
+  background: #d9c4a3 !important;
+  color: #5a432b !important;
+}
+
+.main-button {
+  background: linear-gradient(180deg, #d99c32 0%, #a96d12 100%) !important;
+  color: #fff8e8 !important;
+}
+/* 내가 만든 읽기 전 질문 0 / 100 글자 크기 키우기 */
+.my-count {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  padding: 14px 26px !important;
+  letter-spacing: -0.02em !important;
+}
+/* ===== 입력 제목 + 글자 수 크기 키우기 ===== */
+
+.input-label-row {
+  margin-bottom: 12px !important;
+}
+
+.input-label {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.03em !important;
+  color: #2f2116 !important;
+}
+
+.input-help {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  color: #a06d12 !important;
+}
+
+/* 혹시 id 우선 적용 */
+#questionLength,
+#answerLength {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+}
+body {
+  background-image: url("../assets/images/practice/before-reading-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+/* ===== 읽기 전 화면 배경 이미지 최종 적용 ===== */
+body {
+  background:
+    linear-gradient(
+      rgba(255, 246, 226, 0.42),
+      rgba(235, 209, 164, 0.52)
+    ),
+    url("../assets/images/practice/before-reading-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* 화면 바깥 여백까지 같은 배경 적용 */
+body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
+  background:
+    linear-gradient(
+      rgba(255, 246, 226, 0.42),
+      rgba(235, 209, 164, 0.52)
+    ),
+    url("../assets/images/practice/before-reading-bg.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
   </style>
 </head>
 
@@ -1999,7 +2434,11 @@ textarea {
       =========================================================
     */
 
-    initPage();
+    if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPage);
+} else {
+  initPage();
+}
 
     function initPage() {
       selectedBook = getSelectedBook();
@@ -2107,30 +2546,35 @@ textarea {
     }
 
     function updateQuestionCount() {
-      const count = answers.filter(function(item) {
-        return item.passed;
-      }).length;
+  const count = answers.filter(function(item) {
+    return item.passed;
+  }).length;
 
-      document.getElementById("questionCount").textContent = "(" + count + "/4)";
-    }
+  const questionCountEl = document.getElementById("questionCount");
+
+  if (questionCountEl) {
+    questionCountEl.textContent = "(" + count + "/4)";
+  }
+}
 
     function updateLumiText() {
-      if (currentMode === "summary") {
-        document.getElementById("lumiText").textContent =
-          "잘했어! 네 질문들이 책을 읽을 때 생각의 길잡이가 되어 줄 거야.";
-        return;
-      }
+  const lumiTextEl = document.getElementById("lumiText");
+  if (!lumiTextEl) return;
 
-      const step = steps[currentStepIndex];
+  if (currentMode === "summary") {
+    lumiTextEl.textContent = "잘했어! 네 질문들이 책을 읽을 때 생각의 길잡이가 되어 줄 거야.";
+    return;
+  }
 
-      if (currentMode === "write") {
-        document.getElementById("lumiText").textContent =
-          "질문과 답을 적어 봐.\\n정답을 맞히는 것보다 책 내용을 상상하는 게 더 중요해!";
-        return;
-      }
+  const step = steps[currentStepIndex];
 
-      document.getElementById("lumiText").textContent = step.tip;
-    }
+  if (currentMode === "write") {
+    lumiTextEl.textContent = "질문과 답을 적어 봐.\\n정답을 맞히는 것보다 책 내용을 상상하는 게 더 중요해!";
+    return;
+  }
+
+  lumiTextEl.textContent = step.tip;
+}
 
     /*
       =========================================================

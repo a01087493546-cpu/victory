@@ -26,6 +26,96 @@
 
   <!-- 학생 화면 전용 CSS입니다. -->
   <link rel="stylesheet" href="../css/student.css">
+  
+ <style>
+  .ability-intro-page {
+    min-height: 100vh;
+    background-image: url("../assets/images/ability/ability-intro-bg.png") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  /* 바깥 큰 카드 */
+  .ability-intro-card {
+    background: rgba(235, 206, 156, 0.58) !important;
+    border: 1.5px solid rgba(255, 245, 226, 0.45) !important;
+    box-shadow: 0 18px 40px rgba(108, 73, 32, 0.18) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* 안쪽 능력치 카드 */
+  .ability-card {
+  background: linear-gradient(
+    180deg,
+    rgba(244, 215, 165, 0.72) 0%,
+    rgba(226, 184, 124, 0.72) 100%
+  ) !important;
+  border: 1px solid rgba(255, 247, 230, 0.65) !important;
+  box-shadow: 0 8px 18px rgba(121, 80, 38, 0.1) !important;
+}
+.ability-card h2 {
+  color: #5a3516 !important;
+}
+
+.ability-info-box strong {
+  color: #5a3516 !important;
+}
+
+.ability-info-box p {
+  color: #654322 !important;
+}
+  /* 설명 박스 */
+  .ability-info-box {
+    background: rgba(247, 232, 206, 0.78) !important;
+    border: 1px solid rgba(255, 245, 226, 0.42) !important;
+    box-shadow: none !important;
+  }
+
+  /* 제목들 */
+  .ability-kicker,
+  .ability-step-label {
+    color: #6f4a24 !important;
+  }
+
+  .ability-title,
+  .ability-card h2,
+  .ability-info-box strong {
+    color: #4e2f12 !important;
+  }
+
+  .ability-info-box p {
+    color: #5f4021 !important;
+  }
+
+  /* 진행 점 */
+  .ability-progress-dot {
+    background: rgba(153, 103, 49, 0.22) !important;
+  }
+
+  .ability-progress-dot.is-active {
+    background: #d7ab61 !important;
+  }
+
+  /* 버튼 */
+  .ability-nav-button {
+    background: rgba(184, 142, 92, 0.55) !important;
+    color: #6a441f !important;
+    border: 1px solid rgba(255, 240, 212, 0.25) !important;
+  }
+
+  .ability-start-button {
+    background: linear-gradient(180deg, #f7e3ac 0%, #e6be65 100%) !important;
+    color: #5b3815 !important;
+    border: 1px solid rgba(255, 244, 223, 0.5) !important;
+    box-shadow: 0 6px 14px rgba(141, 93, 39, 0.18) !important;
+  }
+</style>
 </head>
 
 <body>

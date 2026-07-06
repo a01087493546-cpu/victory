@@ -1739,7 +1739,7 @@
 
     #shareScreen.idr-work-screen.active {
       display: grid !important;
-      grid-template-rows: 86px 210px 60px minmax(0, 1fr) !important;
+      grid-template-rows: 86px 70px 0px minmax(0, 1fr) !important;
       gap: 14px !important;
       width: min(1160px, 100%) !important;
       max-width: 1160px !important;
@@ -5271,14 +5271,10 @@
   width: 100% !important;
   max-width: none !important;
   position: relative !important;
-  top: -45px !important;
   margin-top: 0 !important;
 }
 /* 책수다방: 친구들의 책수다 실제 배경카드 높이만 키우기 */
 #shareScreen .idr-book-chat-layout .idr-share-list-card {
-  height: 600px !important;
-min-height: 600px !important;
-max-height: 600px !important;
   overflow: hidden !important;
 }
 
@@ -5978,88 +5974,7 @@ body.idr-book-chat-open html {
   overflow: hidden !important;
 }
 
-/* 기존 1920px 고정 화면 제거 */
-body.idr-book-chat-open .idr-page {
-  width: 100vw !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
-  padding: 14px 28px 18px !important;
-  overflow: hidden !important;
-}
 
-/* 전체 껍데기 화면 폭에 맞춤 */
-body.idr-book-chat-open .idr-shell {
-  width: 100% !important;
-  max-width: 1480px !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  margin: 0 auto !important;
-  display: grid !important;
-  grid-template-rows: 64px minmax(0, 1fr) !important;
-  gap: 12px !important;
-}
-
-/* 책수다방 전체 화면 */
-body.idr-book-chat-open #shareScreen.idr-work-screen.active {
-  width: 100% !important;
-  max-width: none !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  gap: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-}
-
-/* 기존 가짜 루미 안내 영역 제거 */
-body.idr-book-chat-open #shareScreen::before,
-body.idr-book-chat-open #shareScreen::after {
-  content: none !important;
-  display: none !important;
-}
-
-/* 책수다방 fullscreen 영역도 화면 안에 맞춤 */
-body.idr-book-chat-open .idr-book-chat-fullscreen {
-  position: static !important;
-  inset: auto !important;
-  width: 100% !important;
-  height: 100% !important;
-  display: grid !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  gap: 0 !important;
-  overflow: hidden !important;
-  background: transparent !important;
-}
-
-/* 책수다방 본문: 오른쪽 루미 자리 제거하고 전체 사용 */
-body.idr-book-chat-open .idr-book-chat-main {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  gap: 0 !important;
-  overflow: hidden !important;
-}
-
-/* 루미 카드, 루미 이미지, 말풍선 완전 제거 */
-body.idr-book-chat-open .idr-book-chat-side-card,
-body.idr-book-chat-open .idr-book-chat-side-lumi,
-body.idr-book-chat-open .idr-book-chat-speech {
-  display: none !important;
-}
-
-/* 왼쪽 내용 영역이 전체 폭 차지 */
-body.idr-book-chat-open .idr-book-chat-content {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
-  gap: 16px !important;
-  overflow: hidden !important;
-}
 
 /* 상단 책수다방 카드 */
 body.idr-book-chat-open .idr-book-chat-activity-card {
@@ -6580,22 +6495,19 @@ body.idr-book-chat-open .idr-book-chat-main {
 
 body.idr-book-chat-open .idr-book-chat-content {
   display: grid !important;
-  grid-template-rows: auto auto !important;
-  align-content: start !important;
-  align-items: start !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  align-content: stretch !important;
+  align-items: stretch !important;
   gap: 16px !important;
-  height: auto !important;
+  height: 100% !important;
   min-height: 0 !important;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 
 /* 책수다방 활동 카드 바로 아래에 목록 붙이기 */
 body.idr-book-chat-open .idr-book-chat-layout {
   margin-top: 0 !important;
   align-self: start !important;
-  height: 440px !important;
-  min-height: 440px !important;
-  max-height: 440px !important;
   overflow: hidden !important;
 }
 
@@ -6613,6 +6525,770 @@ body.idr-book-chat-open .idr-share-list-card {
 
 
 
+
+
+
+/* 실제 흰 배경카드가 부모 높이를 꽉 채우게 */
+#shareScreen .idr-book-chat-layout .idr-share-list-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+/* 친구 글 목록만 카드 안에서 스크롤 */
+#shareScreen .idr-book-chat-layout .idr-share-list-card .idr-list-scroll {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 8px !important;
+  padding-bottom: 24px !important;
+}
+/* =========================================================
+   책수다방 최종 정리
+   - 위치 이동 X
+   - 친구들의 책수다 배경카드 세로 길이만 강제로 늘림
+   ========================================================= */
+
+
+
+/* 친구 글 목록만 카드 안에서 스크롤 */
+#shareScreen .idr-book-chat-layout .idr-list-scroll {
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 8px !important;
+}
+
+/* 글 카드 크기는 그대로 */
+#shareScreen .idr-book-chat-layout .idr-share-card {
+  height: auto !important;
+}
+/* =========================================================
+   책수다방 화면 위치 재정리
+   - 친구들의 책수다 배경카드를 위로 올림
+   - 위쪽 안내/활동 카드 높이 줄임
+   - 아래 카드 높이는 유지하되 시작 위치만 위로 당김
+========================================================= */
+
+body:has(#shareScreen.active) .idr-page {
+  padding-top: 10px !important;
+  padding-bottom: 18px !important;
+}
+
+body:has(#shareScreen.active) .idr-shell {
+  grid-template-rows: 58px auto !important;
+  gap: 8px !important;
+}
+
+#shareScreen.idr-work-screen.active {
+  grid-template-rows: auto auto auto auto !important;
+  gap: 8px !important;
+  width: min(1190px, 100%) !important;
+  max-width: 1190px !important;
+  margin: 0 auto !important;
+}
+
+/* 맨 위 제목 카드 조금 압축 */
+#shareScreen .idr-share-title-card {
+  min-height: 72px !important;
+  padding: 12px 22px !important;
+}
+
+#shareScreen .idr-work-header h1 {
+  font-size: 34px !important;
+  line-height: 1.05 !important;
+}
+
+#shareScreen .idr-work-header p {
+  margin-top: 4px !important;
+  font-size: 13px !important;
+}
+
+/* 책수다방 활동 카드 높이 줄여서 아래 카드 위로 올림 */
+#shareScreen .idr-share-hero {
+  min-height: 108px !important;
+  gap: 10px !important;
+}
+
+#shareScreen .idr-share-guide-card {
+  min-height: 108px !important;
+  grid-template-columns: 110px minmax(0, 1fr) !important;
+  padding: 10px 18px !important;
+}
+
+#shareScreen .idr-share-lumi {
+  width: 104px !important;
+  max-height: 104px !important;
+}
+
+#shareScreen .idr-share-speech {
+  padding: 14px 18px !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+}
+
+#shareScreen .idr-share-activity-card {
+  min-height: 108px !important;
+  padding: 16px 22px !important;
+  gap: 8px !important;
+  align-content: center !important;
+}
+
+/* 필터 카드가 공간 차지하지 않게 압축 */
+#shareScreen .idr-share-filter-card {
+  padding: 8px 14px !important;
+  border-radius: 18px !important;
+}
+
+#shareScreen .idr-filter-button {
+  height: 36px !important;
+  font-size: 12px !important;
+  border-radius: 13px !important;
+}
+
+/* 핵심: 친구들의 책수다 배경카드 시작 위치 위로 당기기 */
+#shareScreen .idr-share-layout {
+  margin-top: 0 !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+/* 아래 배경카드는 길게 유지 */
+#shareScreen .idr-share-list-card,
+#shareScreen .idr-selected-card {
+  min-height: 520px !important;
+  padding: 22px 24px !important;
+}
+
+/* =========================================================
+   책수다방 보조창 오류 수정
+   - 회색 배경 제거
+   - 보조창 중앙 정렬
+   - 친구 의견/내 생각 영역 겹침 제거
+   - 버튼 가림 방지
+   - 카드 안 세로 스크롤 생성
+========================================================= */
+
+/* 배경카드 안 목록 스크롤 확실히 생성 */
+body.idr-book-chat-open .idr-share-list-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+body.idr-book-chat-open .idr-share-list-card .idr-list-scroll,
+body.idr-book-chat-open .idr-book-chat-layout .idr-list-scroll {
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 8px !important;
+  padding-bottom: 28px !important;
+}
+
+/* 보조창 전체 어두운 회색 배경 제거 + 중앙 정렬 */
+#bookChatDetailModal.idr-book-chat-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 24px !important;
+  background: rgba(64, 48, 28, 0.28) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+/* hidden일 때는 완전 숨김 */
+#bookChatDetailModal.idr-book-chat-modal.hidden {
+  display: none !important;
+}
+
+/* 보조창 카드 - 전체 화면 기준으로 크게 */
+#bookChatDetailModal .idr-book-chat-modal-panel {
+  width: min(1120px, calc(100vw - 96px)) !important;
+  height: min(660px, calc(100vh - 96px)) !important;
+  max-height: calc(100vh - 96px) !important;
+
+  margin: 0 auto !important;
+  padding: 28px 32px 30px !important;
+
+  border-radius: 30px !important;
+  border: 1px solid rgba(180, 116, 34, 0.22) !important;
+  background: rgba(255, 251, 242, 0.98) !important;
+  box-shadow: 0 24px 48px rgba(58, 35, 12, 0.28) !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 16px !important;
+
+  overflow: hidden !important;
+}
+/* 보조창 안쪽 내용 배치 크게 */
+#bookChatDetailModal .idr-book-chat-modal-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 42px !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-title-row h2 {
+  font-size: 28px !important;
+}
+
+#bookChatDetailModal .idr-selected-question {
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+}
+
+#bookChatDetailModal .idr-reply-box {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto 56px auto 54px !important;
+  gap: 14px !important;
+  padding: 18px 20px !important;
+  overflow: hidden !important;
+}
+
+#bookChatDetailModal .idr-reply-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+#bookChatDetailModal .idr-reply-actions .idr-main-button {
+  height: 56px !important;
+  font-size: 15px !important;
+}
+
+#bookChatDetailModal #bookChatReasonInput {
+  width: 100% !important;
+  height: 130px !important;
+  min-height: 130px !important;
+  max-height: 130px !important;
+  overflow-y: auto !important;
+}
+
+#bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
+  height: 54px !important;
+  min-height: 54px !important;
+  font-size: 16px !important;
+}
+
+#bookChatDetailModal #bookChatThoughtList {
+  height: 100% !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+}
+/* 보조창 상단 */
+#bookChatDetailModal .idr-book-chat-modal-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 38px !important;
+  gap: 12px !important;
+  align-items: start !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-title-row h2 {
+  margin: 0 !important;
+  color: #4d2b10 !important;
+  font-size: 24px !important;
+  font-weight: 950 !important;
+  line-height: 1.2 !important;
+}
+
+#bookChatDetailModal .idr-book-chat-replies-toggle {
+  height: 40px !important;
+  padding: 0 18px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+}
+
+#bookChatDetailModal .idr-book-chat-close {
+  width: 38px !important;
+  height: 38px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: rgba(120, 75, 28, 0.12) !important;
+  color: #5f3714 !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+}
+
+/* 상황 설명 카드 */
+#bookChatDetailModal .idr-selected-question {
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 20px !important;
+  background: rgba(247, 253, 239, 0.78) !important;
+  border: 1px solid rgba(101, 145, 66, 0.18) !important;
+}
+
+#bookChatDetailModal .idr-selected-question p {
+  margin: 0 !important;
+  color: #355628 !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  line-height: 1.45 !important;
+}
+
+#bookChatDetailModal .idr-selected-question p strong {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #527831 !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+/* 내 생각 쓰기 박스 */
+#bookChatDetailModal .idr-reply-box {
+  display: grid !important;
+  grid-template-rows: auto auto auto auto !important;
+  gap: 12px !important;
+
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 252, 244, 0.96) !important;
+  border: 1px solid rgba(181, 117, 37, 0.18) !important;
+}
+
+/* A/B 버튼 겹침 방지 */
+#bookChatDetailModal .idr-reply-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+#bookChatDetailModal .idr-reply-actions .idr-main-button {
+  min-height: 48px !important;
+  height: auto !important;
+  padding: 10px 12px !important;
+  white-space: normal !important;
+  line-height: 1.25 !important;
+}
+
+/* 이유 입력칸 */
+#bookChatDetailModal #bookChatReasonInput {
+  width: 100% !important;
+  height: 96px !important;
+  min-height: 96px !important;
+  max-height: 140px !important;
+  overflow-y: auto !important;
+}
+
+/* 내 생각 남기기 버튼이 가려지지 않도록 */
+#bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
+  height: 48px !important;
+  min-height: 48px !important;
+  align-self: end !important;
+}
+
+/* 친구 의견 목록 */
+#bookChatDetailModal #bookChatThoughtList {
+  min-height: 0 !important;
+  max-height: 360px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  display: grid !important;
+  gap: 10px !important;
+  padding: 14px !important;
+
+  border-radius: 20px !important;
+  background: rgba(255, 250, 237, 0.78) !important;
+  border: 1px solid rgba(181, 117, 37, 0.16) !important;
+}
+
+/* 친구 의견 숨김 상태 */
+#bookChatDetailModal #bookChatThoughtList.hidden {
+  display: none !important;
+}
+
+/* 친구 의견 보기 상태에서는 내 생각 쓰기 영역 숨김 */
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-reply-box {
+  display: none !important;
+}
+
+/* 친구 의견 보기 상태에서는 상황 설명도 유지하되 작게 */
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-selected-question {
+  display: block !important;
+}
+
+/* 내 생각 쓰기 상태에서는 친구 의견 숨김 */
+#bookChatDetailModal .idr-book-chat-modal-panel:not(.showing-replies) #bookChatThoughtList {
+  display: none !important;
+}
+
+/* 모바일/작은 화면 대응 */
+@media (max-height: 760px) {
+  #bookChatDetailModal .idr-book-chat-modal-panel {
+    max-height: calc(100vh - 56px) !important;
+    padding: 18px 20px !important;
+    gap: 10px !important;
+  }
+
+  #bookChatDetailModal #bookChatReasonInput {
+    height: 82px !important;
+    min-height: 82px !important;
+  }
+}
+/* =========================================================
+   책수다방 보조창 최종 덮어쓰기
+   - 회색 배경은 유지
+   - 보조창을 전체 화면 비율에 맞게 크게
+   - 친구 의견 보기에서도 상황 설명 유지
+   - 내 생각 쓰기/친구 의견 보기 겹침 제거
+========================================================= */
+
+#bookChatDetailModal.idr-book-chat-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 24px !important;
+
+  background: rgba(58, 45, 30, 0.36) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+#bookChatDetailModal.idr-book-chat-modal.hidden {
+  display: none !important;
+}
+
+/* 보조창 자체 크기 */
+#bookChatDetailModal .idr-book-chat-modal-panel {
+  width: min(1080px, calc(100vw - 96px)) !important;
+  height: min(640px, calc(100vh - 96px)) !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  margin: 0 auto !important;
+  padding: 26px 30px 28px !important;
+
+  border-radius: 30px !important;
+  border: 1px solid rgba(180, 116, 34, 0.24) !important;
+  background: rgba(255, 251, 242, 0.98) !important;
+  box-shadow: 0 26px 54px rgba(58, 35, 12, 0.32) !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 16px !important;
+
+  overflow: hidden !important;
+}
+
+/* 상단 제목 */
+#bookChatDetailModal .idr-book-chat-modal-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 42px !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-title-row h2 {
+  margin: 0 !important;
+  color: #4d2b10 !important;
+  font-size: 28px !important;
+  font-weight: 950 !important;
+  line-height: 1.18 !important;
+}
+
+#bookChatDetailModal .idr-book-chat-replies-toggle {
+  height: 42px !important;
+  min-width: 210px !important;
+  padding: 0 20px !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
+}
+
+#bookChatDetailModal .idr-book-chat-close {
+  width: 42px !important;
+  height: 42px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: rgba(120, 75, 28, 0.14) !important;
+  color: #5f3714 !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  cursor: pointer !important;
+}
+
+/* 상황 설명은 친구 의견 보기 상태에서도 유지 */
+#bookChatDetailModal .idr-selected-question,
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-selected-question {
+  display: block !important;
+  margin: 0 !important;
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+  background: rgba(247, 253, 239, 0.82) !important;
+  border: 1px solid rgba(101, 145, 66, 0.18) !important;
+}
+
+#bookChatDetailModal .idr-selected-question p {
+  margin: 0 !important;
+  color: #355628 !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  line-height: 1.45 !important;
+}
+
+#bookChatDetailModal .idr-selected-question p strong {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: #527831 !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+}
+
+/* 내 생각 쓰기 영역 */
+#bookChatDetailModal .idr-reply-box {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto 58px auto 56px !important;
+  gap: 14px !important;
+
+  margin: 0 !important;
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 252, 244, 0.96) !important;
+  border: 1px solid rgba(181, 117, 37, 0.18) !important;
+
+  overflow: hidden !important;
+}
+
+/* A/B 버튼 */
+#bookChatDetailModal .idr-reply-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+#bookChatDetailModal .idr-reply-actions .idr-main-button {
+  height: 58px !important;
+  min-height: 58px !important;
+  padding: 10px 14px !important;
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+  white-space: normal !important;
+}
+
+/* 선택 이유 입력칸 */
+#bookChatDetailModal #bookChatReasonInput {
+  width: 100% !important;
+  height: 138px !important;
+  min-height: 138px !important;
+  max-height: 138px !important;
+  overflow-y: auto !important;
+}
+
+/* 내 생각 남기기 버튼 */
+#bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
+  height: 56px !important;
+  min-height: 56px !important;
+  font-size: 16px !important;
+}
+
+/* 친구 의견 목록 */
+#bookChatDetailModal #bookChatThoughtList {
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+
+  display: grid !important;
+  align-content: start !important;
+  gap: 12px !important;
+
+  padding: 18px !important;
+  border-radius: 22px !important;
+  background: rgba(255, 250, 237, 0.84) !important;
+  border: 1px solid rgba(181, 117, 37, 0.16) !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* 기본 상태: 친구 의견 숨김 */
+#bookChatDetailModal .idr-book-chat-modal-panel:not(.showing-replies) #bookChatThoughtList {
+  display: none !important;
+}
+
+/* 친구 의견 보기 상태: 내 생각 쓰기 숨김, 친구 의견 표시 */
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-reply-box {
+  display: none !important;
+}
+
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies #bookChatThoughtList {
+  display: grid !important;
+}
+
+/* 친구 의견 보기 상태 레이아웃 */
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies {
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+}
+
+/* 작은 화면 대응 */
+@media (max-height: 760px) {
+  #bookChatDetailModal .idr-book-chat-modal-panel {
+    width: min(1040px, calc(100vw - 72px)) !important;
+    height: calc(100vh - 64px) !important;
+    padding: 20px 24px 22px !important;
+    gap: 12px !important;
+  }
+
+  #bookChatDetailModal #bookChatReasonInput {
+    height: 100px !important;
+    min-height: 100px !important;
+    max-height: 100px !important;
+  }
+}
+/* =========================================================
+   최최종 수정: 보조창 전체화면 + 내부 구조 + 하단 버튼 고정
+   ========================================================= */
+
+/* 책수다 목록 스크롤 */
+body.idr-book-chat-open .idr-share-list-card {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+body.idr-book-chat-open .idr-list-scroll {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 8px !important;
+  padding-bottom: 20px !important;
+}
+
+/* 보조창 전체화면 오버레이 */
+#bookChatDetailModal.idr-book-chat-modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  background: rgba(46, 32, 18, 0.46) !important;
+  backdrop-filter: blur(3px) !important;
+}
+#bookChatDetailModal.idr-book-chat-modal.hidden { display: none !important; }
+
+#bookChatDetailModal .idr-book-chat-modal-panel {
+  position: relative !important;
+  width: min(1040px, calc(100vw - 80px)) !important;
+  height: min(680px, calc(100vh - 80px)) !important;
+  max-height: calc(100vh - 80px) !important;
+  margin: 0 !important;
+  padding: 26px 28px 22px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+  overflow: hidden !important;
+  border-radius: 28px !important;
+  border: 1px solid rgba(180, 116, 34, 0.24) !important;
+  background: rgba(255, 251, 242, 0.99) !important;
+  box-shadow: 0 26px 54px rgba(58, 35, 12, 0.32) !important;
+}
+
+/* 내부 스크롤 + 겹침 방지: 상황설명은 항상, 나머지는 택1 */
+#bookChatDetailModal .idr-book-chat-modal-body {
+  min-height: 0 !important;
+  height: 100% !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 14px !important;
+  overflow-y: auto !important;
+  padding-right: 6px !important;
+}
+#bookChatDetailModal .idr-selected-question { display: block !important; margin: 0 !important; }
+#bookChatDetailModal .idr-reply-box {
+  display: grid !important;
+  grid-template-rows: auto auto auto auto !important;
+  gap: 12px !important;
+  margin: 0 !important;
+}
+#bookChatDetailModal #bookChatThoughtList {
+  display: none !important;
+  margin: 0 !important;
+  gap: 12px !important;
+  align-content: start !important;
+}
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-reply-box { display: none !important; }
+#bookChatDetailModal .idr-book-chat-modal-panel.showing-replies #bookChatThoughtList { display: grid !important; }
+
+/* 하단 버튼 잘림 방지 */
+#bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
+  position: sticky !important;
+  bottom: 0 !important;
+  height: 50px !important;
+  margin-top: 4px !important;
+}
+#shareScreen.idr-work-screen.active .idr-share-card .idr-question-card-top,
+body.idr-book-chat-open #shareScreen .idr-share-card .idr-question-card-top {
+  font-size: 18px !important;
+}
+#shareScreen.idr-work-screen.active .idr-share-card strong,
+body.idr-book-chat-open #shareScreen .idr-share-card strong {
+  font-size: 26px !important;
+  line-height: 1.35 !important;
+}
+#shareScreen.idr-work-screen.active .idr-share-card p,
+body.idr-book-chat-open #shareScreen .idr-share-card p {
+  font-size: 19px !important;
+  line-height: 1.5 !important;
+}
+#shareScreen.idr-work-screen.active .idr-comment-count,
+body.idr-book-chat-open #shareScreen .idr-comment-count {
+  font-size: 18px !important;
+}
+/* 보조창 친구 생각 목록: 초록색 대신 브라운 계열로 구분 */
+#bookChatDetailModal #bookChatThoughtList .idr-reply-item {
+  background: rgba(255, 247, 231, 0.92) !important;
+  border: 1px solid rgba(180, 116, 34, 0.28) !important;
+  color: #5a3a17 !important;
+}
+
+#bookChatDetailModal #bookChatThoughtList .idr-reply-item strong {
+  color: #8a5a1f !important;
+}
   </style>
 </head>
 
@@ -7493,7 +8169,31 @@ function renderBookChatRoom(selectedIndex = 0) {
           content: "내가 맡은 일도 약속이니까 먼저 끝내고 도와줄 것 같아."
         }
       ]
+    },
+    {
+  id: "sample-book-chat-3",
+  writer: "하윤",
+  label: "하윤",
+  bookTitle: "우정 이야기",
+  title: "친구를 기다리기 vs 먼저 출발하기",
+  scene: "책 속 주인공은 친구가 늦게 와서 혼자 먼저 갈지, 조금 더 기다릴지 고민했어. 너라면 어떻게 할래?",
+  optionA: "친구를 기다리기",
+  optionB: "먼저 출발하기",
+  imageData: "",
+  createdDate: getTodayDateKey(),
+  replies: [
+    {
+      writer: "민준",
+      choice: "A",
+      content: "친구와 약속했으니까 조금 더 기다리는 게 좋다고 생각해."
+    },
+    {
+      writer: "서아",
+      choice: "B",
+      content: "상황에 따라 먼저 가고 나중에 설명해도 된다고 생각해."
     }
+  ]
+},
   ];
 
   // 내가 쓴 글에는 목록에서 '나의 글' 표시를 붙입니다.
@@ -7569,10 +8269,9 @@ if (allBookChatPosts.length === 0) {
             이전날
           </button>
 
-          <span style="min-width: 160px; text-align: center; color: #5f3714; font-size: 15px; font-weight: 950;">
-            ${formatBookChatDate(selectedBookChatDate)}
-          </span>
-
+          <span style="min-width: 190px; text-align: center; color: #5f3714; font-size: 20px; font-weight: 950;">
+  ${formatBookChatDate(selectedBookChatDate)}
+</span>
           <button
             class="idr-top-button"
             type="button"
@@ -7804,9 +8503,9 @@ const displayReplies = [
   이전날
 </button>
 
-    <span style="min-width: 160px; text-align: center; color: #5f3714; font-size: 15px; font-weight: 950;">
-      ${formatBookChatDate(selectedBookChatDate)}
-    </span>
+    <span style="min-width: 200px; text-align: center; color: #5f3714; font-size: 22px !important; font-weight: 950;">
+  ${formatBookChatDate(selectedBookChatDate)}
+</span>
 
    <button
   class="idr-top-button"
@@ -7896,72 +8595,54 @@ const displayReplies = [
           <button type="button" class="idr-book-chat-close" onclick="window.closeBookChatDetail()">×</button>
         </div>
 
-        <div class="idr-selected-question">
-          ${
-            selectedPost.imageData
-              ? `
-                <img
-                  src="${selectedPost.imageData}"
-                  alt="선택한 책수다 첨부 사진"
-                  class="idr-book-chat-detail-image"
-                >
-              `
-              : ""
-          }
+        <div class="idr-book-chat-modal-body">
+          <div class="idr-selected-question">
+            ${
+              selectedPost.imageData
+                ? `<img src="${selectedPost.imageData}" alt="선택한 책수다 첨부 사진" class="idr-book-chat-detail-image">`
+                : ""
+            }
+            <p><strong>상황 설명</strong>${selectedPost.scene}</p>
+          </div>
 
-          <p>
-            <strong>상황 설명</strong>
-            ${selectedPost.scene}
-          </p>
-        </div>
+          <div class="idr-reply-box">
+            <label class="idr-label">나는 어떤 선택을 할까?</label>
 
-        <div class="idr-reply-box">
-          <label class="idr-label">나는 어떤 선택을 할까?</label>
+            <div class="idr-reply-actions">
+              <button class="idr-main-button" id="bookChatChoiceAButton" data-book-chat-choice="A" type="button" onclick="window.selectBookChatChoice('A')">
+                A. ${selectedPost.optionA} · <span id="bookChatACount">${selectedACount}</span>명
+              </button>
+              <button class="idr-main-button" id="bookChatChoiceBButton" data-book-chat-choice="B" type="button" onclick="window.selectBookChatChoice('B')">
+                B. ${selectedPost.optionB} · <span id="bookChatBCount">${selectedBCount}</span>명
+              </button>
+            </div>
 
-          <div class="idr-reply-actions">
-            <button
-              class="idr-main-button"
-              id="bookChatChoiceAButton"
-              data-book-chat-choice="A"
-              type="button"
-              onclick="window.selectBookChatChoice('A')"
-            >
-              A. ${selectedPost.optionA} · <span id="bookChatACount">${selectedACount}</span>명
-            </button>
+            <div class="idr-field">
+              <label for="bookChatReasonInput">선택한 이유</label>
+              <textarea class="idr-textarea" id="bookChatReasonInput" placeholder="왜 그렇게 생각했는지 이유를 적어 보세요." style="height: 110px;"></textarea>
+            </div>
 
-            <button
-              class="idr-main-button"
-              id="bookChatChoiceBButton"
-              data-book-chat-choice="B"
-              type="button"
-              onclick="window.selectBookChatChoice('B')"
-            >
-              B. ${selectedPost.optionB} · <span id="bookChatBCount">${selectedBCount}</span>명
+            <button class="idr-main-button primary" type="button" onclick="window.saveBookChatThought()">
+              내 생각 남기기
             </button>
           </div>
 
-          <div class="idr-field">
-            <label for="bookChatReasonInput">선택한 이유</label>
-            <textarea
-              class="idr-textarea"
-              id="bookChatReasonInput"
-              placeholder="왜 그렇게 생각했는지 이유를 적어 보세요."
-              style="height: 120px;"
-            ></textarea>
+          <div class="idr-reply-list" id="bookChatThoughtList">
+            ${selectedRepliesHtml}
           </div>
-
-          <button class="idr-main-button primary" type="button" onclick="window.saveBookChatThought()">
-            내 생각 남기기
-          </button>
-        </div>
-
-        <div class="idr-reply-list hidden" id="bookChatThoughtList">
-          ${selectedRepliesHtml}
         </div>
       </div>
     </div>
   `;
+// 이전에 body로 옮겨둔 오래된 보조창이 남아있으면 지우고, 방금 새로 만든 보조창만 남깁니다.
+  document.querySelectorAll("body > .idr-book-chat-modal").forEach(function (oldModal) {
+    oldModal.remove();
+  });
 
+  const bookChatModalEl = document.getElementById("bookChatDetailModal");
+  if (bookChatModalEl) {
+    document.body.appendChild(bookChatModalEl);
+  }
   // 글을 새로 선택했을 때 이전 A/B 선택 상태를 초기화합니다.
   selectedBookChatChoice = "";
   window.selectedBookChatChoice = "";
@@ -8034,101 +8715,63 @@ function renderBookChatWriteScreen() {
   if (!shareScreen) return;
 
   shareScreen.innerHTML = `
-    <section class="idr-card idr-work-header">
-      <div>
-        <h1>책수다 글쓰기</h1>
-        <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
-      </div>
+    <div style="width: 100%; height: 100%; max-width: 1180px; margin: 0 auto; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 16px; overflow-y: auto; padding: 4px 8px;">
+      <section class="idr-card idr-work-header">
+        <div>
+          <h1>책수다 글쓰기</h1>
+          <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
+        </div>
+        <div class="idr-work-actions">
+          <button class="idr-top-button" type="button" onclick="renderBookChatRoom()">책수다방</button>
+        </div>
+      </section>
 
-      <div class="idr-work-actions">
-        <button class="idr-top-button" type="button" onclick="renderBookChatRoom()">
-          책수다방
-        </button>
-      </div>
-    </section>
+      <section class="idr-card" style="padding: 26px; display: grid; gap: 18px; overflow-y: auto;">
+        <div style="display: grid; gap: 8px;">
+          <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
+          <p style="margin: 0; color: #795024; font-size: 15px; font-weight: 900; line-height: 1.5;">
+            책 속 장면을 친구들이 이해할 수 있게 알려 준 뒤, 두 가지 선택지로 생각을 물어봐요.
+          </p>
+        </div>
 
-    <section class="idr-card" style="padding: 26px; display: grid; gap: 18px; overflow-y: auto;">
-      <div style="display: grid; gap: 8px;">
-        <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
-        <p style="margin: 0; color: #795024; font-size: 15px; font-weight: 900; line-height: 1.5;">
-          책 속 장면을 친구들이 이해할 수 있게 알려 준 뒤, 두 가지 선택지로 생각을 물어봐요.
-        </p>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-        <div class="idr-field">
-          <label for="bookChatBookInput">내가 읽은 책</label>
-          <input
-            class="idr-small-input"
-            id="bookChatBookInput"
-            type="text"
-            placeholder="예) 마당을 나온 암탉"
-          >
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="idr-field">
+            <label for="bookChatBookInput">내가 읽은 책</label>
+            <input class="idr-small-input" id="bookChatBookInput" type="text" placeholder="예) 마당을 나온 암탉">
+          </div>
+          <div class="idr-field">
+            <label for="bookChatTitleInput">밸런스 제목</label>
+            <input class="idr-small-input" id="bookChatTitleInput" type="text" placeholder="예) 안전한 길 vs 새로운 도전">
+          </div>
         </div>
 
         <div class="idr-field">
-          <label for="bookChatTitleInput">밸런스 제목</label>
-          <input
-            class="idr-small-input"
-            id="bookChatTitleInput"
-            type="text"
-            placeholder="예) 안전한 길 vs 새로운 도전"
-          >
+          <label for="bookChatSceneInput">장면 설명</label>
+          <textarea class="idr-textarea" id="bookChatSceneInput" placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요." style="height: 150px;"></textarea>
         </div>
-      </div>
 
-      <div class="idr-field">
-        <label for="bookChatSceneInput">장면 설명</label>
-        <textarea
-          class="idr-textarea"
-          id="bookChatSceneInput"
-          placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요."
-          style="height: 150px;"
-        ></textarea>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-        <div class="idr-field">
-          <label for="bookChatOptionAInput">A 선택지</label>
-          <input
-            class="idr-small-input"
-            id="bookChatOptionAInput"
-            type="text"
-            placeholder="예) 안전한 길"
-          >
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div class="idr-field">
+            <label for="bookChatOptionAInput">A 선택지</label>
+            <input class="idr-small-input" id="bookChatOptionAInput" type="text" placeholder="예) 안전한 길">
+          </div>
+          <div class="idr-field">
+            <label for="bookChatOptionBInput">B 선택지</label>
+            <input class="idr-small-input" id="bookChatOptionBInput" type="text" placeholder="예) 새로운 도전">
+          </div>
         </div>
 
         <div class="idr-field">
-          <label for="bookChatOptionBInput">B 선택지</label>
-          <input
-            class="idr-small-input"
-            id="bookChatOptionBInput"
-            type="text"
-            placeholder="예) 새로운 도전"
-          >
+          <label for="bookChatImageInput">사진 첨부</label>
+          <input id="bookChatImageInput" type="file" accept="image/*" style="padding: 12px; border-radius: 16px; background: rgba(255, 250, 237, 0.96); border: 1px solid rgba(171, 108, 31, 0.22); color: #5f3714; font-weight: 900;">
         </div>
-      </div>
 
-      <div class="idr-field">
-        <label for="bookChatImageInput">사진 첨부</label>
-        <input
-          id="bookChatImageInput"
-          type="file"
-          accept="image/*"
-          style="padding: 12px; border-radius: 16px; background: rgba(255, 250, 237, 0.96); border: 1px solid rgba(171, 108, 31, 0.22); color: #5f3714; font-weight: 900;"
-        >
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">
-  취소
-</button>
-
-     <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">
-  책수다 올리기
-</button>
-      </div>
-    </section>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">취소</button>
+          <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">책수다 올리기</button>
+        </div>
+      </section>
+    </div>
   `;
 }
 /*

@@ -1059,4 +1059,24 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 버튼 안에 배치 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
+  {
+  title: "능력치 설명 배경 이미지",
+  type: "이미지",
+  file: "ability-intro-bg.png",
+  description: "능력치 설명 화면에 사용한 밝은 베이지 브라운톤의 신비로운 별빛 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  location: "능력치 설명 화면 배경",
+  modified: "화면 분위기에 맞게 밝기와 색감 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용 약관 증빙 자료 확보"
+},
+{
+  title: "읽기 전 질문 만들기 배경 이미지",
+  type: "이미지",
+  file: "before-reading-bg.png",
+  description: "읽기 전 질문 만들기 화면에 사용한 밝은 숲속 모험 분위기의 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  location: "읽기 전 질문 만들기 화면 배경",
+  modified: "화면 분위기에 맞게 밝기와 색감 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용 약관 증빙 자료 확보"
+},
 ];
