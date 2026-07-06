@@ -2019,13 +2019,12 @@ body.iar-teacher-share-mode .iar-share-guide {
     font-size: 25px !important;
   }
 }
-/* 읽기 후 1단계 카드 높이/내부 카드/이모지 확대 */
 #typeScreen .iar-panel {
-  min-height: 520px !important;
-  padding: 44px 42px 42px !important;
+  min-height: 365px !important;
+  padding: 30px 42px 28px !important;
   display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
-  align-content: stretch !important;
+  grid-template-rows: auto auto auto !important;
+  align-content: start !important;
 }
 
 /* 제목 영역 */
@@ -2350,7 +2349,53 @@ body {
   padding: 0 13px !important;
   font-size: 13px !important;
 }
+/* 읽기 후 1단계 배경 카드 + 내부 카드 최종 조정 */
+#typeScreen .iar-panel {
+  min-height: 520px !important;
+  height: auto !important;
+  padding: 44px 42px 42px !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto !important;
+  align-content: start !important;
+}
 
+/* 제목과 카드 사이 간격 */
+#typeScreen .iar-panel-head {
+  margin-bottom: 36px !important;
+}
+
+/* 내부 카드 묶음 높이 */
+#typeScreen .iar-book-type-grid {
+  height: 250px !important;
+  min-height: 250px !important;
+  align-items: stretch !important;
+}
+
+/* 이야기책 / 정보책 / 생각책 카드 */
+#typeScreen .iar-book-type-button {
+  height: 250px !important;
+  min-height: 250px !important;
+  padding: 38px 22px !important;
+}
+
+/* 다음으로 버튼 */
+#typeScreen .iar-bottom-actions {
+  margin-top: 34px !important;
+}
+/* 읽기 후 2단계 배경 카드 높이만 조정 */
+#questionScreen .iar-panel {
+  min-height: 560px !important;
+  height: auto !important;
+  padding: 34px 42px 30px !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto !important;
+  align-content: start !important;
+}
+
+/* 2단계 하단 버튼 여백만 살짝 줄이기 */
+#questionScreen .iar-bottom-actions {
+  margin-top: 22px !important;
+}
 </style>
 </head>
 

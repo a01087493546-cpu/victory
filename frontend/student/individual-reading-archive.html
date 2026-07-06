@@ -583,6 +583,89 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
+    /* 나의 독서 보관함 화면 폭 최종 조정
+   - 읽기중/질문 만들기 화면과 비슷한 폭으로 맞춤 */
+.ira-page {
+  padding: 16px 28px 28px !important;
+}
+
+.ira-shell {
+  width: 100% !important;
+  max-width: 1480px !important;
+  margin: 0 auto !important;
+}
+
+/* 상단 문답책 헤더 폭 */
+.ira-top-bar {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* 상단 소개 카드 폭 */
+.ira-hero-card {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* 읽은 책 목록 배경 카드 폭 */
+.ira-panel {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* 책 카드들이 넓어진 폭에 맞게 자연스럽게 배치 */
+.ira-book-grid {
+  width: 100% !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 20px !important;
+}
+/* 나의 독서 보관함 - 읽은 책 목록 배경 카드 높이 조정 */
+#bookListView .ira-panel {
+  min-height: 750px !important;
+  padding: 34px 32px 38px !important;
+}
+/* 나의 독서 보관함 상세 화면: 배경 카드 높이 확대 + 안쪽 스크롤 */
+#bookDetailView.active .ira-panel {
+  height: 760px !important;
+  min-height: 760px !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  padding: 34px 32px 70px !important;
+}
+
+/* 상세 화면에서 페이지 자체도 아래로 내려갈 수 있게 허용 */
+#bookDetailView {
+  overflow: visible !important;
+}
+
+.ira-page {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+  padding-bottom: 90px !important;
+}
+
+/* 질문 기록이 아래에서 잘리지 않도록 여백 확보 */
+#bookDetailView .ira-record-list {
+  padding-bottom: 80px !important;
+}
+
+/* 상세 화면 안 기록 목록이 카드 안에서 자연스럽게 이어지도록 */
+#bookDetailView .ira-record-list {
+  padding-bottom: 40px !important;
+}
+
+/* 상단 설명 문구 제거:
+   "책을 누르면 읽기 전, 읽는 중, 읽은 후 기록과 간추린 내용을 확인할 수 있어요." */
+.ira-hero-card p {
+  display: none !important;
+}
+
+/* 상세 화면 설명 문구 제거:
+   "읽기 전, 읽는 중, 읽은 후, 간추린 내용을 단계별로 확인해 봐요." */
+.ira-detail-desc {
+  display: none !important;
+}
   </style>
 </head>
 
