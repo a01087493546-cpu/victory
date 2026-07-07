@@ -630,7 +630,7 @@ white-space: normal;
 }
 
 .feedback-lumi {
-  width: 78px;
+  width: 80px;
   height: auto;
   object-fit: contain;
   flex-shrink: 0;
@@ -640,9 +640,9 @@ white-space: normal;
 .feedback-message {
   flex: 1;
   color: inherit;
-  font-size: 16px;
+  font-size: 27px;
   font-weight: 900;
-  line-height: 1.5;
+  line-height: 1.7;
   word-break: keep-all;
 }
     .bottom-row {
@@ -2769,7 +2769,7 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
               '</div>' +
             '</div>' +
 
-            '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox" style="display: none;">' +
+            '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox" style="display: flex;">' +
               '<img class="feedback-lumi" src="../assets/images/read-before/intro/pre-reading-lumi-question-note.png" alt="피드백을 주는 루미">' +
               '<div class="feedback-message">질문과 답을 적고 저장하면 루미가 피드백을 줄게!</div>' +
             '</div>' +
@@ -2784,7 +2784,7 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
         (isExampleMode
           ? '<button class="main-button" type="button" onclick="toggleExample()">질문 만들기</button>'
           : '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
-            '<button class="main-button" type="button" onclick="checkAndGoNext()">저장하고 다음 →</button>'
+            '<button class="main-button" id="saveNextButton" type="button" onclick="checkAndGoNext()">저장하기</button>'
         ) +
       '</div>' +
     '</div>';
@@ -2862,7 +2862,7 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
               '</div>' +
             '</div>' +
 
-            '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox" style="display: none;">' +
+            '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox" style="display: flex;">' +
               '<img class="feedback-lumi" src="../assets/images/read-before/intro/pre-reading-lumi-question-note.png" alt="피드백을 주는 루미">' +
               '<div class="feedback-message">질문과 답을 적고 저장하면 루미가 피드백을 줄게!</div>' +
             '</div>' +
@@ -2972,39 +2972,71 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
     */
 
     function checkAndGoNext() {
-      const questionInput = document.getElementById("questionInput");
-      const answerInput = document.getElementById("answerInput");
-      const feedbackBox = document.getElementById("feedbackBox");
+  const questionInput = document.getElementById("questionInput");
+  const answerInput = document.getElementById("answerInput");
+  const feedbackBox = document.getElementById("feedbackBox");
 
-      const question = questionInput.value.trim();
-      const expectedAnswer = answerInput.value.trim();
+  if (!questionInput || !answerInput || !feedbackBox) {
+    console.error("질문 입력칸, 답 입력칸 또는 피드백 상자를 찾지 못했습니다.");
+    return;
+  }
 
-      const result = validateQuestionAndAnswer(question, expectedAnswer);
+  const question = questionInput.value.trim();
+  const expectedAnswer = answerInput.value.trim();
 
-      feedbackBox.style.display = "flex";
-      feedbackBox.classList.remove("good", "need");
-      feedbackBox.classList.add(result.ok ? "good" : "need");
-      feedbackBox.querySelector(".feedback-message").textContent = result.message;
+  const result = validateQuestionAndAnswer(question, expectedAnswer);
 
-      if (!result.ok) {
-        return;
-      }
+  feedbackBox.style.display = "flex";
+  feedbackBox.classList.remove("good", "need");
+  feedbackBox.classList.add(result.ok ? "good" : "need");
 
-      answers[currentStepIndex].question = question;
-      answers[currentStepIndex].expectedAnswer = expectedAnswer;
-      answers[currentStepIndex].passed = true;
+  const feedbackMessage = feedbackBox.querySelector(".feedback-message");
 
-      setTimeout(function() {
-        if (currentStepIndex < steps.length - 1) {
-          currentStepIndex++;
-          currentMode = "write";
-          renderAll();
-        } else {
-          currentMode = "summary";
-          renderAll();
-        }
-      }, 900);
+  if (feedbackMessage) {
+    feedbackMessage.textContent = result.message;
+  }
+
+  if (!result.ok) {
+    return;
+  }
+
+  answers[currentStepIndex].question = question;
+  answers[currentStepIndex].expectedAnswer = expectedAnswer;
+  answers[currentStepIndex].passed = true;
+
+  questionInput.disabled = true;
+  answerInput.disabled = true;
+
+  const nextButton = document.querySelector(
+    '.main-button[onclick="checkAndGoNext()"]'
+  );
+
+  if (nextButton) {
+    nextButton.disabled = true;
+    nextButton.textContent = "저장 완료! 다음 단계로 이동 중...";
+  }
+
+  setTimeout(function() {
+    if (currentStepIndex < steps.length - 1) {
+      currentStepIndex++;
+      currentMode = "write";
+      renderAll();
+    } else {
+      currentMode = "summary";
+      renderAll();
     }
+  }, 1800);
+}
+function goNextAfterFeedback() {
+  if (currentStepIndex < steps.length - 1) {
+    currentStepIndex++;
+    currentMode = "write";
+    renderAll();
+  } else {
+    currentMode = "summary";
+    renderAll();
+  }
+}
 
     function validateQuestionAndAnswer(question, expectedAnswer) {
       if (!question) {

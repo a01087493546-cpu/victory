@@ -428,6 +428,7 @@
       line-height: 1.45;
       word-break: keep-all;
       display: -webkit-box;
+      line-clamp: 2;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
@@ -929,6 +930,476 @@
 .teacher-return-button:hover {
   transform: translateY(-2px);
 }
+  
+    /* 온책읽기 책수다방: 질문 목록은 본 화면, 1·2단계 활동은 보조창 */
+    .board-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .board-card {
+      width: 100%;
+    }
+
+    .question-list {
+      max-height: 560px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-content: start;
+    }
+
+    .book-chat-modal.hidden { display: none !important; }
+
+    .book-chat-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      padding: 34px;
+      background: rgba(43, 29, 18, 0.46);
+      backdrop-filter: blur(4px);
+    }
+
+    .book-chat-modal-panel {
+      width: min(980px, calc(100vw - 68px));
+      max-height: calc(100vh - 68px);
+      padding: 24px 26px 26px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 14px;
+      background: rgba(255, 251, 242, 0.99);
+      box-shadow: 0 28px 60px rgba(47, 28, 10, 0.34);
+    }
+
+    .book-chat-modal-head {
+      margin-bottom: 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(186,130,58,0.22);
+    }
+
+    .modal-step-guide {
+      display: block;
+      margin-top: 5px;
+      color: #7b5836;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .modal-close-button {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(175,119,53,0.34);
+      border-radius: 14px;
+      background: rgba(255,252,245,0.94);
+      color: #654220;
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .book-chat-modal-body {
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    body.book-chat-modal-open { overflow: hidden; }
+
+    @media (max-width: 760px) {
+      .question-list { grid-template-columns: 1fr; }
+      .book-chat-modal { padding: 14px; }
+      .book-chat-modal-panel { width: 100%; max-height: calc(100vh - 28px); padding: 18px; }
+    }
+    
+/* =========================================================
+   책수다방 화면 수정본
+   1) 루미/말풍선 삭제 + 책수다방 활동 가로형
+   2) 설명 문구 삭제 대응
+   3) 책퀴즈 / 생각나누기 폰트 키우고 가운데 정렬
+   4) 질문 고르기 상자 가로 확장 + 글씨 키우기
+========================================================= */
+
+/* 상단 큰 영역: 루미/말풍선 숨기기 */
+.hero {
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  margin-bottom: 16px !important;
+}
+
+.hero-left {
+  display: none !important;
+}
+
+/* 책수다방 활동 영역을 가로로 길게 */
+.activity-card {
+  min-height: 138px !important;
+  padding: 20px 28px !important;
+  display: grid !important;
+  grid-template-columns: 240px minmax(0, 1fr) !important;
+  gap: 22px !important;
+  align-items: center !important;
+}
+
+.activity-title {
+  margin: 0 !important;
+  font-size: 38px !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1px !important;
+  white-space: nowrap !important;
+}
+
+.stat-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  margin: 0 !important;
+}
+
+.stat-box {
+  min-height: 88px !important;
+  padding: 14px 18px !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.stat-label {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+
+.stat-value {
+  margin-top: 6px !important;
+  font-size: 40px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+/* 혹시 남아 있어도 안 보이게 */
+.activity-desc {
+  display: none !important;
+}
+
+/* 필터 영역 */
+.filter-card {
+  padding: 14px 18px !important;
+}
+
+.filter-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 220px !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+.filter-button,
+.sort-select {
+  height: 56px !important;
+  border-radius: 16px !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+}
+
+.filter-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 8px !important;
+}
+
+.sort-select {
+  padding: 0 16px !important;
+  text-align: center !important;
+  text-align-last: center !important;
+}
+
+/* 질문 고르기 영역 더 넓게 */
+.board-grid {
+  grid-template-columns: 1.18fr 0.82fr !important;
+  gap: 16px !important;
+  align-items: start !important;
+}
+
+.board-card,
+.selected-card {
+  padding: 24px 28px !important;
+}
+
+/* 질문 고르기 제목 크게 */
+.section-head {
+  margin-bottom: 13px !important;
+}
+
+.section-title {
+  font-size: 42px !important;
+  line-height: 1.1 !important;
+  letter-spacing: -1px !important;
+}
+
+.count-pill {
+  padding: 10px 16px !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+
+/* 혹시 남아 있으면 숨김 */
+.guide-box {
+  display: none !important;
+}
+
+/* 질문 리스트 */
+.question-list {
+  gap: 12px !important;
+  max-height: 650px !important;
+}
+
+.question-button {
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+}
+
+.question-top {
+  margin-bottom: 10px !important;
+}
+
+.student-name {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+}
+
+.type-badge,
+.talk-badge {
+  font-size: 14px !important;
+  padding: 5px 10px !important;
+}
+
+.time-text {
+  font-size: 15px !important;
+}
+
+.question-text {
+  font-size: 23px !important;
+  line-height: 1.45 !important;
+}
+
+.question-answer-preview {
+  margin-top: 10px !important;
+  font-size: 17px !important;
+  line-height: 1.45 !important;
+}
+
+/* 오른쪽 생각 나누기 영역도 제목만 약간 키움 */
+.selected-question {
+  font-size: 26px !important;
+}
+
+.selected-answer {
+  font-size: 17px !important;
+}
+
+/* 하단 설명문이 너무 작으면 살짝 키움 */
+.bottom-note {
+  font-size: 16px !important;
+  text-align: center !important;
+}
+/* 책수다방 활동 박스를 중간 필터 박스와 같은 가로폭으로 확장 */
+.hero {
+  width: 100% !important;
+  display: block !important;
+}
+
+.activity-card {
+  width: 100% !important;
+  min-height: 150px !important;
+  padding: 22px 30px !important;
+
+  display: grid !important;
+  grid-template-columns: 280px minmax(0, 1fr) !important;
+  gap: 26px !important;
+  align-items: center !important;
+}
+
+/* 책수다방 활동 제목 크게 */
+.activity-title {
+  font-size: 40px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+}
+
+/* 통계 영역 전체 너비 사용 */
+.stat-row {
+  width: 100% !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+/* 통계 박스 자체 크게 */
+.stat-box {
+  width: 100% !important;
+  min-height: 100px !important;
+  padding: 16px 22px !important;
+}
+
+/* 공유된 질문 / 내 생각 / 이어쓰기 글씨 */
+.stat-label {
+  font-size: 21px !important;
+}
+
+/* 6개 / 1개 / 0개 숫자 */
+.stat-value {
+  margin-top: 8px !important;
+  font-size: 46px !important;
+  line-height: 1 !important;
+}
+/* 질문 고르기 영역을 가로 전체로 확장 */
+.board-grid {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* 질문 고르기 상자 전체 너비 */
+.board-card {
+  width: 100% !important;
+  min-height: 320px !important;
+  padding: 24px 30px !important;
+}
+
+/* 오른쪽 생각 나누기 상자는 보조창으로 쓰므로 기본 화면에서 숨김 */
+.selected-card {
+  display: none !important;
+}
+
+/* 질문 고르기 제목 영역 */
+.board-card .section-head {
+  margin-bottom: 18px !important;
+}
+
+/* 질문 고르기 제목 크게 */
+.board-card .section-title {
+  font-size: 40px !important;
+  line-height: 1.1 !important;
+}
+
+/* 질문 개수 표시 크게 */
+.board-card .count-pill {
+  padding: 10px 18px !important;
+  font-size: 19px !important;
+}
+
+/* 질문 목록을 가로 방향으로 배치 */
+.question-list {
+  width: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+}
+
+/* 질문 카드도 가로 칸에 맞게 넓게 */
+.question-button {
+  width: 100% !important;
+  min-height: 210px !important;
+  padding: 20px 22px !important;
+  border-radius: 22px !important;
+}
+
+/* 학생 이름 */
+.question-button .student-name {
+  font-size: 24px !important;
+}
+
+/* 질문 종류, 수다 수 */
+.question-button .type-badge,
+.question-button .talk-badge {
+  font-size: 15px !important;
+  padding: 6px 11px !important;
+}
+
+/* 날짜 */
+.question-button .time-text {
+  font-size: 15px !important;
+}
+
+/* 질문 본문 */
+.question-button .question-text {
+  margin-top: 12px !important;
+  font-size: 24px !important;
+  line-height: 1.5 !important;
+}
+
+/* 처음 생각 */
+.question-button .question-answer-preview {
+  margin-top: 14px !important;
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+
+  display: -webkit-box !important;
+  line-clamp: 3 !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+/* 질문 카드 자체를 가로로 길게 */
+.question-list {
+  display: block !important;
+}
+
+.question-button {
+  width: 100% !important;
+  min-height: 150px !important;
+  padding: 22px 26px !important;
+  border-radius: 24px !important;
+}
+
+/* 카드 위쪽 정보 한 줄 정리 */
+.question-top {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+}
+
+/* 학생 이름 */
+.student-name {
+  font-size: 25px !important;
+}
+
+/* 책 퀴즈, 수다 태그 */
+.type-badge,
+.talk-badge {
+  font-size: 16px !important;
+  padding: 6px 12px !important;
+}
+
+/* 날짜는 오른쪽 끝 */
+.time-text {
+  margin-left: auto !important;
+  font-size: 17px !important;
+}
+
+/* 질문 글 */
+.question-text {
+  font-size: 26px !important;
+  line-height: 1.45 !important;
+  margin-top: 6px !important;
+}
+
+/* 처음 생각 */
+.question-answer-preview {
+  margin-top: 14px !important;
+  font-size: 19px !important;
+  line-height: 1.5 !important;
+
+  display: block !important;
+  line-clamp: unset !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: initial !important;
+  overflow: visible !important;
+}
   </style>
 </head>
 
@@ -946,7 +1417,6 @@
 
         <div class="title-area">
           <h1 class="main-title">책수다방</h1>
-          <p class="main-desc">질문을 고르고, 생각을 나누고, 더 깊은 질문으로 바꿔 보아요!</p>
         </div>
 
         <div class="top-actions">
@@ -964,7 +1434,7 @@
         </article>
 
         <article class="activity-card">
-          <h2 class="activity-title">책수다방 활동</h2>
+          <h2 class="activity-title">활동 내역</h2>
 
           <div class="stat-row">
             <div class="stat-box">
@@ -980,10 +1450,6 @@
               <p class="stat-value" id="myReplyCount">0개</p>
             </div>
             
-
-          <p class="activity-desc">
-            질문을 고른 뒤 내 생각을 쓰고 친구 생각에 이어쓰며 의견을 나눠봐요.
-          </p>
         </article>
       </section>
 
@@ -1007,23 +1473,23 @@
             <span class="count-pill" id="visibleQuestionCount">0개</span>
           </div>
 
-          <div class="guide-box">
-            친구들과 이야기해 보고 싶은 질문을 골라 봐요.<br>
-            책을 다시 읽고, 여러 생각이 나올 수 있는 질문이면 좋아요.
-          </div>
-
           <div class="question-list" id="questionList"></div>
         </article>
 
-        <article class="selected-card">
-          <div class="section-head">
-            <h2 class="section-title">생각 나누기</h2>
-            <span class="count-pill">질문 → 생각 → 이어쓰기</span>
-          </div>
-
-          <div id="talkArea"></div>
-        </article>
       </section>
+
+      <div class="book-chat-modal hidden" id="bookChatModal" aria-hidden="true" onclick="closeBookChatModal(event)">
+        <article class="selected-card book-chat-modal-panel" role="dialog" aria-modal="true" aria-labelledby="bookChatModalTitle" onclick="event.stopPropagation()">
+          <div class="section-head book-chat-modal-head">
+            <div>
+              <h2 class="section-title" id="bookChatModalTitle">생각 나누기</h2>
+              <span class="modal-step-guide">1단계에서 내 생각을 쓰고, 2단계에서 친구들의 생각을 살펴봐요.</span>
+            </div>
+            <button class="modal-close-button" type="button" onclick="closeBookChatModal()" aria-label="보조창 닫기">×</button>
+          </div>
+          <div id="talkArea" class="book-chat-modal-body"></div>
+        </article>
+      </div>
 
       <p class="bottom-note">
         책수다방은 친구들과 질문을 고르고, 생각을 이어 쓰며 의견을 나누는 곳이에요.
@@ -1689,7 +2155,29 @@ if (currentType === "talk") {
       activeReplyTarget = null;
       activeReplyType = null;
       renderAll();
+      openBookChatModal();
     }
+
+    function openBookChatModal() {
+      const modal = document.getElementById("bookChatModal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("book-chat-modal-open");
+    }
+
+    function closeBookChatModal(event) {
+      if (event && event.target !== event.currentTarget) return;
+      const modal = document.getElementById("bookChatModal");
+      if (!modal) return;
+      modal.classList.add("hidden");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("book-chat-modal-open");
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") closeBookChatModal();
+    });
 
     function saveThought(questionId) {
       const mainInput = document.getElementById("thoughtMain");

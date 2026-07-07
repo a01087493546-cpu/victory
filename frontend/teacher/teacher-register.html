@@ -962,11 +962,19 @@
       }
 
       if (!isSimpleId(teacherId)) {
-        alert("교사 아이디는 영어 소문자와 숫자만 사용할 수 있어요.");
-        return;
-      }
+  alert("교사 아이디는 영어 소문자와 숫자만 사용할 수 있어요.");
+  document.getElementById("teacherId").focus();
+  return;
+}
 
-      if (teacherPw.length < 4) {
+if (isIdAlreadyUsed(teacherId)) {
+  alert("이미 사용하고 있는 아이디입니다.");
+  document.getElementById("teacherId").focus();
+  document.getElementById("teacherId").select();
+  return;
+}
+
+if (teacherPw.length < 4) {
         alert("비밀번호는 4자 이상으로 입력해 주세요.");
         return;
       }
@@ -1008,6 +1016,44 @@
     function isSimpleId(text) {
       return /^[a-z0-9]+$/.test(String(text || ""));
     }
+    /* 지금까지 이 브라우저에서 등록한 모든 아이디를 가져와요. */
+function getRegisteredIds() {
+  try {
+    const savedIds = JSON.parse(
+      localStorage.getItem("registeredAccountIds") || "[]"
+    );
+
+    return Array.isArray(savedIds) ? savedIds : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+/* 아이디가 이미 등록되어 있는지 확인해요. */
+function isIdAlreadyUsed(id) {
+  const normalizedId = String(id || "").trim().toLowerCase();
+  const registeredIds = getRegisteredIds();
+
+  return registeredIds.includes(normalizedId);
+}
+
+/* 새로 등록한 아이디를 기존 목록에 저장해요. */
+function saveRegisteredIds(ids) {
+  const registeredIds = getRegisteredIds();
+
+  ids.forEach(function(id) {
+    const normalizedId = String(id || "").trim().toLowerCase();
+
+    if (normalizedId && !registeredIds.includes(normalizedId)) {
+      registeredIds.push(normalizedId);
+    }
+  });
+
+  localStorage.setItem(
+    "registeredAccountIds",
+    JSON.stringify(registeredIds)
+  );
+}
 
     function makeSafePrefix(prefix) {
       const safe = String(prefix || "s")
@@ -1135,22 +1181,64 @@
 
       const uniqueIdList = new Set(idList);
 
-      if (uniqueIdList.size !== idList.length) {
-        alert("중복된 학생 아이디가 있어요. 아이디를 확인해 주세요.");
-        return;
-      }
+if (uniqueIdList.size !== idList.length) {
+  alert("중복된 학생 아이디가 있어요. 아이디를 확인해 주세요.");
+  return;
+}
 
-      const savedData = {
+/* 교사 아이디와 학생 아이디가 같은지도 확인해요. */
+if (idList.includes(teacherData.id)) {
+  alert("교사 아이디와 동일한 학생 아이디가 있어요. 아이디를 변경해 주세요.");
+  return;
+}
+
+/* 예전에 등록한 아이디와 중복되는지 확인해요. */
+const alreadyUsedStudent = studentData.find(function(student) {
+  return isIdAlreadyUsed(student.id);
+});
+
+if (alreadyUsedStudent) {
+  alert(
+    alreadyUsedStudent.id +
+    " 아이디는 이미 사용하고 있는 아이디입니다."
+  );
+
+  const duplicatedRow = rows.find(function(row) {
+    const inputs = row.querySelectorAll("input");
+    return inputs[2].value.trim() === alreadyUsedStudent.id;
+  });
+
+  if (duplicatedRow) {
+    const duplicatedInput = duplicatedRow.querySelectorAll("input")[2];
+    duplicatedInput.focus();
+    duplicatedInput.select();
+  }
+
+  return;
+}
+
+const savedData = {
         teacher: teacherData,
         classInfo: classData,
         students: studentData,
         createdAt: new Date().toISOString()
       };
 
-      localStorage.setItem("teacherRegisterData", JSON.stringify(savedData));
+      localStorage.setItem(
+  "teacherRegisterData",
+  JSON.stringify(savedData)
+);
 
-      renderSummary();
-      showPanel("complete");
+/* 교사와 학생 아이디를 사용된 아이디 목록에 저장해요. */
+saveRegisteredIds([
+  teacherData.id,
+  ...studentData.map(function(student) {
+    return student.id;
+  })
+]);
+
+renderSummary();
+showPanel("complete");
     }
 
     function renderSummary() {

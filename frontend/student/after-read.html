@@ -566,7 +566,7 @@
       padding: 28px 36px;
       text-align: left;
       font-family: "Noto Serif KR", serif;
-      font-size: 27px;
+      font-size: 45px;
       font-weight: 900;
       line-height: 1.95;
       letter-spacing: -0.7px;
@@ -1574,8 +1574,8 @@
     min-height: 0;
     height: 100%;
     padding: 24px 26px;
-    font-size: 30px;
-    line-height: 1.8;
+    font-size: 40px;
+    line-height: 2.0;
     border-radius: 22px;
     word-break: keep-all;
     white-space: pre-line;
@@ -2563,8 +2563,22 @@
     }
 
     #practiceWritePanel .ar-input-label {
-      margin: 5px 0 4px !important;
-    }
+  margin: 5px 0 4px !important;
+  font-size: 25px !important;
+  font-weight: 900 !important;
+}
+
+#practiceWritePanel .ar-question-input,
+#practiceWritePanel .ar-answer-input {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+}
+
+#practiceWritePanel .ar-question-input::placeholder,
+#practiceWritePanel .ar-answer-input::placeholder {
+  font-size: 25px !important;
+  font-weight: 750 !important;
+}
 
     #practiceWritePanel .ar-question-input {
       height: 42px !important;
@@ -2965,6 +2979,368 @@
   border-radius: 18px !important;
   overflow-y: auto !important;
   white-space: normal !important;
+}
+/* =========================================================
+   짧은 글 질문 연습 화면 가독성 확대
+   - 예시 글 글자/줄 간격 확대
+   - 객관식/피드백 글자 확대
+   - 세로 여백은 축소
+   ========================================================= */
+
+/* 전체 좌우 카드 내부 세로 여백 줄이기 */
+#practicePanel .ar-study-card,
+#practiceQuestionPanel .ar-study-card,
+.ar-practice-reading-card,
+.ar-practice-question-card {
+  padding: 14px 16px !important;
+}
+
+/* 좌우 카드 제목 */
+.ar-practice-reading-card h3,
+.ar-practice-question-card h3 {
+  margin-bottom: 8px !important;
+  font-size: 25px !important;
+  line-height: 1.2 !important;
+}
+
+/* 왼쪽 초록 안내 박스 */
+.ar-material-guide {
+  padding: 10px 14px !important;
+  font-size: 16px !important;
+  line-height: 1.35 !important;
+  margin-bottom: 8px !important;
+}
+
+/* 예시 글 박스 */
+.ar-practice-text {
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 22px 24px !important;
+  font-size: 27px !important;
+  line-height: 1.95 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.4px !important;
+  overflow-y: auto !important;
+}
+
+/* 오른쪽 질문 선택지 목록 간격 줄이기 */
+.ar-practice-question-list {
+  gap: 8px !important;
+}
+
+/* 객관식 질문 버튼 */
+.ar-practice-question-button {
+  min-height: 58px !important;
+  padding: 9px 16px !important;
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+  border-radius: 15px !important;
+}
+
+/* 선택지 사이 세로 여백 더 줄이기 */
+.ar-practice-question-button + .ar-practice-question-button {
+  margin-top: 0 !important;
+}
+
+/* 아래 피드백 박스 */
+.ar-practice-choice-feedback {
+  min-height: 50px !important;
+  padding: 10px 15px !important;
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+  font-weight: 900 !important;
+  margin-top: 0 !important;
+}
+
+/* 정답/오답 피드백도 동일하게 크게 */
+.ar-practice-choice-feedback.is-good,
+.ar-practice-choice-feedback.is-need {
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+}
+
+/* 화면 전체 내부 간격 축소 */
+.ar-builder-layout {
+  gap: 12px !important;
+}
+
+.ar-practice-reading-card,
+.ar-practice-question-card {
+  gap: 8px !important;
+}
+
+/* 아래 버튼 영역 위쪽 여백 줄이기 */
+.ar-panel-actions {
+  margin-top: 0 !important;
+  gap: 10px !important;
+}
+
+/* 아래 버튼 높이도 살짝 줄여 공간 확보 */
+.ar-panel-actions .ar-action-button {
+  height: 44px !important;
+  padding: 0 18px !important;
+  font-size: 16px !important;
+}
+/* =========================================================
+   짧은 글로 질문 연습하기 최종 강제 수정
+   반드시 모든 CSS의 맨 마지막에 넣기
+   ========================================================= */
+
+/* 좌우 큰 카드 여백 줄이기 */
+#builderPanel .ar-builder-layout {
+  gap: 14px !important;
+}
+
+#builderPanel .ar-practice-reading-card,
+#builderPanel .ar-practice-question-card {
+  padding: 14px 16px !important;
+  gap: 8px !important;
+}
+
+/* 카드 제목 크게 */
+#builderPanel .ar-practice-reading-card > h3,
+#builderPanel .ar-practice-question-card > h3 {
+  margin: 0 0 8px !important;
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+}
+
+/* 왼쪽 초록 안내 박스 */
+#builderPanel #builderGuide {
+  min-height: 48px !important;
+  padding: 10px 14px !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+}
+
+/* 왼쪽 예시 글: 글자와 줄 간격 확실히 확대 */
+#builderPanel #practiceText {
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 22px 24px !important;
+
+  font-size: 32px !important;
+  line-height: 2.05 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px !important;
+
+  white-space: pre-line !important;
+  overflow-y: auto !important;
+}
+
+/* 질문 선택지 목록 간격 축소 */
+#builderPanel #practiceQuestionList {
+  display: grid !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 객관식 질문 버튼 글자 크게 */
+#builderPanel #practiceQuestionList .ar-practice-question-button {
+  width: 100% !important;
+  min-height: 60px !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+
+  font-size: 23px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+
+  border-radius: 16px !important;
+}
+
+/* 선택 상태에서도 같은 글자 크기 유지 */
+#builderPanel #practiceQuestionList .ar-practice-question-button.is-selected,
+#builderPanel #practiceQuestionList .ar-practice-question-button.is-wrong {
+  font-size: 23px !important;
+  line-height: 1.35 !important;
+}
+
+/* 맨 아래 피드백 박스 크게, 세로 여백은 줄이기 */
+#builderPanel #practiceChoiceFeedback {
+  min-height: 58px !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+
+  font-size: 20px !important;
+  line-height: 1.4 !important;
+  font-weight: 900 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 16px !important;
+}
+
+/* 정답/오답 피드백이 바뀌어도 크기 고정 */
+#builderPanel #practiceChoiceFeedback.is-good,
+#builderPanel #practiceChoiceFeedback.is-need {
+  min-height: 58px !important;
+  padding: 10px 16px !important;
+  font-size: 20px !important;
+  line-height: 1.4 !important;
+  font-weight: 900 !important;
+}
+
+/* 삭제하기로 했던 안내 문구가 남아 있다면 숨김 */
+#builderPanel .ar-practice-guide {
+  display: none !important;
+}
+
+/* 아래 버튼 영역 여백 축소 */
+#builderPanel .ar-panel-actions {
+  margin-top: 0 !important;
+  gap: 10px !important;
+}
+/* 새로운 짧은 글 읽기 제목 */
+#practiceWritePanel .ar-practice-reading-card > h3 {
+  font-size: 30px !important;
+  font-weight: 900 !important;
+}
+
+/* 초록색 안내문 */
+#practiceWritePanel .ar-material-guide {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1.4 !important;
+}
+
+/* 흰색 박스 안 짧은 글 본문 */
+#practiceWritePanel .ar-extra-practice-text {
+  font-size: 40px !important;
+  line-height: 1.9 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.3px !important;
+}
+/* 맨 아래 초록 피드백 박스 크게 */
+#practiceWritePanel .ar-check-feedback {
+  min-height: 52px !important;
+  padding: 12px 16px !important;
+  font-size: 25px !important;
+  line-height: 1.45 !important;
+  font-weight: 900 !important;
+  border-radius: 16px !important;
+}
+/* =========================================================
+   짧은 글 질문 고르기 글씨 크기 강제 확대
+   ========================================================= */
+
+/* 오른쪽 객관식 질문 4개 */
+#builderPanel #practiceQuestionList .ar-practice-question-button {
+  font-size: 35px !important;
+  line-height: 1.7 !important;
+  font-weight: 900 !important;
+  padding: 12px 16px !important;
+  min-height: 60px !important;
+}
+
+/* 선택된 초록 버튼도 같은 크기로 유지 */
+#builderPanel #practiceQuestionList .ar-practice-question-button.is-selected,
+#builderPanel #practiceQuestionList .ar-practice-question-button.is-wrong {
+  font-size: 30px !important;
+  line-height: 1.5 !important;
+  font-weight: 900 !important;
+}
+
+/* 아래 피드백 박스 글씨 */
+#builderPanel #practiceChoiceFeedback {
+  font-size: 30px !important;
+  line-height: 1.45 !important;
+  font-weight: 900 !important;
+  padding: 12px 16px !important;
+  min-height: 58px !important;
+}
+
+/* 정답/오답 상태에서도 크기 유지 */
+#builderPanel #practiceChoiceFeedback.is-good,
+#builderPanel #practiceChoiceFeedback.is-need {
+  font-size: 30px !important;
+  line-height: 1.45 !important;
+  font-weight: 900 !important;
+}
+#builderPanel #practiceText {
+  font-size: 42px !important;
+  line-height: 2.1 !important;
+  font-weight: 900 !important;
+}
+/* 간추리기 비법 문장 글씨 크게 */
+#methodPanel .ar-method-sentence {
+  font-size: 45px !important;
+  line-height: 2.0 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.6px !important;
+}
+/* =========================================================
+   내 책에 맞는 질문 쓰기 글씨 크기 확대
+   ========================================================= */
+
+/* 간추리기 질문 / 질문에 대한 답 라벨 */
+#writePanel .ar-input-label {
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+}
+
+/* 질문 입력칸 안의 실제 입력 글씨 */
+#writePanel .ar-question-input,
+#writePanel .ar-question-textarea {
+  font-size: 25px !important;
+  font-weight: 850 !important;
+  line-height: 1.45 !important;
+}
+
+/* 답 입력칸 안의 실제 입력 글씨 */
+#writePanel .ar-answer-input {
+  font-size: 25px !important;
+  font-weight: 850 !important;
+  line-height: 1.5 !important;
+}
+
+/* 질문 입력칸 안 회색 안내 문구 */
+#writePanel .ar-question-input::placeholder,
+#writePanel .ar-question-textarea::placeholder {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+/* 답 입력칸 안 회색 안내 문구 */
+#writePanel .ar-answer-input::placeholder {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+  opacity: 1 !important;
+}
+/* 내 책 질문 쓰기 화면 - AI 루미 피드백 글씨 크게 */
+#writePanel .ar-after-feedback-title {
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+}
+
+#writePanel .ar-after-feedback-message {
+  font-size: 30px !important;
+  font-weight: 850 !important;
+  line-height: 1.55 !important;
+}
+
+/* 피드백 안에 오류 목록이 여러 줄로 나올 때 */
+#writePanel .ar-after-feedback-message ul,
+#writePanel .ar-after-feedback-message .ar-feedback-list {
+  font-size: 25px !important;
+  line-height: 1.55 !important;
+}
+
+#writePanel .ar-after-feedback-message li {
+  font-size: 25px !important;
+  line-height: 1.55 !important;
+  margin-bottom: 6px !important;
 }
   </style>
 </head>
