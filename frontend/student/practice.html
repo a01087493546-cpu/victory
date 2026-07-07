@@ -450,6 +450,30 @@
     transform: none;
   }
 
+  /* 완료한 단계는 초록빛으로 표시합니다. */
+  .step-card.done {
+    border-color: rgba(150, 201, 108, 0.85) !important;
+    background:
+      radial-gradient(circle at 78% 4%, rgba(150, 201, 108, 0.22), transparent 42%),
+      linear-gradient(180deg, rgba(92, 122, 68, 0.92) 0%, rgba(58, 79, 42, 0.94) 100%) !important;
+    box-shadow:
+      0 16px 34px rgba(0, 0, 0, 0.28),
+      0 0 0 2px rgba(150, 201, 108, 0.3) !important;
+  }
+
+  .step-card.done .step-sub-title,
+  .step-card.done .step-number {
+    color: #d7f0bd !important;
+  }
+
+  .step-card.done .step-button {
+    border: 1px solid rgba(150, 201, 108, 0.7) !important;
+    background: linear-gradient(180deg, #bfe08f 0%, #7fae55 100%) !important;
+    color: #24390f !important;
+    cursor: pointer;
+    box-shadow: none;
+  }
+
     .guide-box {
     display: none;
   }
@@ -779,13 +803,17 @@ function goAfterReadingPage() {
 
       const guideText = document.getElementById("guideText");
 
-      stepBefore.classList.remove("locked");
+      stepBefore.classList.remove("locked", "done");
       stepBefore.classList.add("active");
       beforeButton.disabled = false;
       beforeButton.textContent = "시작하기";
       guideText.innerHTML = "<strong>읽기 전</strong>부터 시작해요.";
 
       if (progress.before === true) {
+        stepBefore.classList.remove("active");
+        stepBefore.classList.add("done");
+        beforeButton.textContent = "완료 ✓";
+
         stepDuring.classList.remove("locked");
         stepDuring.classList.add("active");
         duringButton.disabled = false;

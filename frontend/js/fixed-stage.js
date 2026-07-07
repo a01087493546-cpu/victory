@@ -44,9 +44,8 @@
       }
 
       body:has(.mq-page-read-before-intro) .mq-fixed-stage-viewport {
-        background:
-          linear-gradient(rgba(22, 14, 8, 0.18), rgba(22, 14, 8, 0.34)),
-          url("../assets/images/read-before/intro/pre-reading-bg-magic-greenhouse.png") center / cover no-repeat !important;
+        background-color: #1f140d !important;
+        background-image: none !important;
       }
 
       body:has(.mq-page-individual-reading) .mq-fixed-stage-viewport {
@@ -55,9 +54,8 @@
 }
 
       body:has(.mq-page-read-before-book-intro) .mq-fixed-stage-viewport {
-        background:
-          linear-gradient(rgba(255, 248, 235, 0.5), rgba(255, 241, 215, 0.68)),
-          url("../assets/images/read-before/intro/read-before-intro-bg.png") center / cover no-repeat !important;
+        background-color: #1f140d !important;
+        background-image: none !important;
       }
 
       .mq-fixed-stage-frame {
@@ -76,7 +74,7 @@
       }
 
       .mq-fixed-stage-page > main,
-      .mq-fixed-stage-page > div:not(.home-modal-backdrop):not(.fw-question-modal):not(.fw-complete-modal):not(.fw-reward-overlay):not(.wr-guide-modal) {
+      .mq-fixed-stage-page > div:not(.home-modal-backdrop):not(.fw-question-modal):not(.fw-complete-modal):not(.fw-reward-overlay):not(.wr-guide-modal):not(.help-modal-overlay) {
         width: 1920px !important;
         max-width: none !important;
         min-height: 1080px !important;

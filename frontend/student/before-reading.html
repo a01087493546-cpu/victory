@@ -2246,6 +2246,103 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+
+/* ===== 도움 받기 모달: 루미 힌트 + 예시 질문 3개 ===== */
+.help-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(42, 25, 8, 0.46);
+  z-index: 40;
+}
+
+.help-modal-overlay.show {
+  display: grid;
+}
+
+.help-modal-box {
+  position: relative;
+  width: 1400px;
+  max-height: 920px;
+  padding: 36px 42px 40px;
+  border-radius: 32px;
+  border: 1px solid rgba(184, 116, 30, 0.3);
+  background: rgba(255, 250, 236, 0.98);
+  box-shadow: 0 28px 64px rgba(47, 28, 8, 0.32);
+  overflow-y: auto;
+}
+
+.help-modal-close {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(174, 109, 27, 0.24);
+  border-radius: 50%;
+  background: rgba(255, 250, 237, 0.94);
+  color: #7a4618;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.help-modal-lumi-row {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 26px;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 26px;
+  padding-right: 56px;
+  border-bottom: 1px dashed rgba(184, 116, 30, 0.32);
+}
+
+.help-modal-lumi-img {
+  width: 148px;
+  height: 148px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(94, 56, 15, 0.24));
+}
+
+.help-modal-kicker {
+  margin: 0 0 8px;
+  color: #9b6a20;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.help-modal-bubble {
+  position: relative;
+  padding: 20px 26px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 226, 155, 0.58);
+  background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(242, 218, 170, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.help-modal-bubble::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-right: 14px solid rgba(255, 247, 225, 0.96);
+}
+
+.help-modal-bubble p {
+  margin: 0;
+  color: #4c2b13;
+  font-family: "Noto Serif KR", serif;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.55;
+  word-break: keep-all;
+}
   </style>
 </head>
 
@@ -2290,6 +2387,31 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
 
     </div>
   </main>
+
+  <!-- 도움 받기 모달: 루미가 힌트를 주고, 예시 질문 3개를 보여줍니다. -->
+  <div class="help-modal-overlay" id="helpModal">
+    <div class="help-modal-box">
+      <button class="help-modal-close" type="button" onclick="closeHelpModal()">✕</button>
+
+      <div class="help-modal-lumi-row">
+        <img
+          class="help-modal-lumi-img"
+          src="../assets/images/read-before/intro/pre-reading-lumi-clue-book.png"
+          alt="힌트를 주는 루미"
+        >
+
+        <div>
+          <p class="help-modal-kicker">루미의 힌트</p>
+
+          <div class="help-modal-bubble">
+            <p id="helpModalLumiText"></p>
+          </div>
+        </div>
+      </div>
+
+      <div id="helpModalExamplePanel" class="example-panel"></div>
+    </div>
+  </div>
 
   <script>
     /*
@@ -2595,8 +2717,8 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
       '<h2 class="activity-title">' + step.number + '. ' + step.title + '</h2>' +
 
       '<div class="tab-box">' +
-        '<button class="tab-button ' + (isExampleMode ? "active" : "") + '" onclick="toggleExample()">' +
-          (isExampleMode ? "질문 만들기" : "✨ 예시 보기") +
+        '<button class="tab-button ' + (isExampleMode ? "active" : "") + '" onclick="' + (isExampleMode ? "toggleExample()" : "openHelpModal()") + '">' +
+          (isExampleMode ? "질문 만들기" : "도움 받기 💡") +
         '</button>' +
       '</div>' +
     '</div>' +
@@ -2686,8 +2808,8 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
       '<h2 class="activity-title">' + step.number + '. ' + step.title + '</h2>' +
 
       '<div class="tab-box">' +
-        '<button class="tab-button ' + (isExampleMode ? "active" : "") + '" onclick="toggleExample()">' +
-          (isExampleMode ? "질문 만들기" : "✨ 예시 보기") +
+        '<button class="tab-button ' + (isExampleMode ? "active" : "") + '" onclick="' + (isExampleMode ? "toggleExample()" : "openHelpModal()") + '">' +
+          (isExampleMode ? "질문 만들기" : "도움 받기 💡") +
         '</button>' +
       '</div>' +
     '</div>' +
@@ -2769,6 +2891,58 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
     function toggleExample() {
       currentMode = currentMode === "example" ? "write" : "example";
       renderAll();
+    }
+
+    /*
+      =========================================================
+      5-1. 도움 받기 모달 (루미 힌트 + 예시 질문 3개)
+      =========================================================
+    */
+
+    const helpLumiLines = {
+      title: "제목 속 낱말을 보고 어떤 내용일지 궁금한 점을 떠올려요.",
+      contents: "차례의 순서를 보고 앞으로 나올 내용을 예상하며 질문해요.",
+      picture: "그림 속 인물, 장소, 행동을 보고 궁금한 점을 찾아요.",
+      skim: "글을 빠르게 살펴보며 모르는 말이나 더 알고 싶은 내용을 질문해요."
+    };
+
+    function openHelpModal() {
+      const step = steps[currentStepIndex];
+
+      document.getElementById("helpModalLumiText").textContent =
+        helpLumiLines[step.type] || step.tip.replace(/\\n/g, " ");
+
+      document.getElementById("helpModalExamplePanel").innerHTML =
+        '<div class="panel-title-row">' +
+          '<h3 class="panel-title">예시 질문</h3>' +
+          '<span class="book-tag">' + selectedBook.title + '</span>' +
+        '</div>' +
+
+        '<div class="example-list">' +
+          step.examples.map(function(example, index) {
+            return '<article class="example-item">' +
+              '<div class="example-card-top">' +
+                '<div class="example-num">' + (index + 1) + '</div>' +
+              '</div>' +
+
+              '<div class="example-qa-card question-card-mini">' +
+                '<span class="example-label">질문</span>' +
+                '<p class="example-question">' + example.q + '</p>' +
+              '</div>' +
+
+              '<div class="example-qa-card answer-card-mini">' +
+                '<span class="example-label">생각한 답</span>' +
+                '<p class="example-answer">' + example.a + '</p>' +
+              '</div>' +
+            '</article>';
+          }).join("") +
+        '</div>';
+
+      document.getElementById("helpModal").classList.add("show");
+    }
+
+    function closeHelpModal() {
+      document.getElementById("helpModal").classList.remove("show");
     }
 
     function bindTextareaEvents() {
@@ -2924,11 +3098,11 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
         '</div>' +
 
         '<div class="bottom-row">' +
-          '<div class="small-note">✨ 모두 완성하면 공유하기 화면에서 친구들의 질문도 볼 수 있어요.</div>' +
+          '<div class="small-note">✨ 4개 질문을 모두 완성했어요! 이제 읽기 중 활동으로 넘어갈 수 있어요.</div>' +
 
           '<div class="action-area">' +
             '<button class="plain-button" type="button" onclick="editIncompleteOrFirst()">수정하기</button>' +
-            '<button class="main-button" type="button" onclick="completeAndGoShare()">공유하기로 이동 →</button>' +
+            '<button class="main-button" type="button" onclick="completeAndGoPractice()">읽기 단계 선택으로 이동 →</button>' +
           '</div>' +
         '</div>';
     }
@@ -2943,7 +3117,9 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
       renderAll();
     }
 
-    function completeAndGoShare() {
+    // 질문 4개를 모두 완성하면 읽기 전 질문 공유하기 화면은 건너뛰고,
+    // 바로 읽기 전/중/후 3단계 선택 화면(practice.html)으로 이동합니다.
+    function completeAndGoPractice() {
       const incompleteIndex = answers.findIndex(function(item) {
         return !item.passed;
       });
@@ -2958,7 +3134,7 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
           feedbackBox.style.display = "flex";
           feedbackBox.classList.add("need");
          feedbackBox.querySelector(".feedback-message").textContent =
-  "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 공유하기로 갈 수 있어!";
+  "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
         }, 100);
 
         return;
@@ -2966,7 +3142,22 @@ body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
 
       saveBeforeReadingData();
 
-      location.href = "./before-reading-share.html";
+      const progressKey = "practiceProgress_" + studentId;
+      const progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
+        book: false,
+        before: false,
+        during: false,
+        classRead: false,
+        after: false
+      };
+
+      progress.book = true;
+      progress.before = true;
+
+      sessionStorage.setItem(progressKey, JSON.stringify(progress));
+      sessionStorage.setItem("beforeReadingCompleted_" + studentId, "true");
+
+      location.href = "./practice.html";
     }
 
     function saveBeforeReadingData() {

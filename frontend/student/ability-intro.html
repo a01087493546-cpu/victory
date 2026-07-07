@@ -115,11 +115,55 @@
     border: 1px solid rgba(255, 244, 223, 0.5) !important;
     box-shadow: 0 6px 14px rgba(141, 93, 39, 0.18) !important;
   }
+
+  /* 오른쪽 위 홈으로/건너뛰기 버튼 영역입니다. */
+  /* 화면이 1920x1080 고정 캔버스로 렌더링되므로 위치는 고정 px 값을 씁니다. */
+  .ability-top-actions {
+    position: absolute;
+    top: 32px;
+    right: 40px;
+    z-index: 20;
+    display: flex;
+    gap: 14px;
+  }
+
+  .ability-top-button {
+    height: 46px;
+    padding: 0 24px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 224, 158, 0.55);
+    background: linear-gradient(180deg, rgba(91, 58, 26, 0.92), rgba(45, 29, 14, 0.88));
+    color: #fff1c7;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+    transition: transform 0.15s ease;
+  }
+
+  .ability-top-button:hover {
+    transform: translateY(-2px);
+  }
+
+  .ability-top-button:active {
+    transform: translateY(1px);
+  }
 </style>
 </head>
 
 <body>
   <main class="ability-intro-page">
+
+    <!-- 오른쪽 위 홈으로/건너뛰기 버튼입니다. -->
+    <div class="ability-top-actions">
+      <button type="button" class="ability-top-button" onclick="location.href='../index.html'">
+        🏠 홈으로
+      </button>
+
+      <button type="button" class="ability-top-button" onclick="location.href='./individual-reading.html'">
+        건너뛰기
+      </button>
+    </div>
 
     <!-- 능력치 설명 카드 전체 영역입니다. -->
     <section class="ability-intro-card">

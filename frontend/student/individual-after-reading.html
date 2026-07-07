@@ -2413,7 +2413,7 @@ body {
           <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="iar-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="iar-top-button" onclick="goAdventure()">오늘의 독서 모험</button>
-          <button type="button" class="iar-top-button primary" onclick="goIndividualHome()">책읽기 홈</button>
+          <button type="button" class="mq-book-home-button" onclick="goIndividualHome()">책읽기 홈</button>
         </div>
       </header>
 
@@ -2697,6 +2697,17 @@ let selectedRepresentQuestionIndex = -1;
 let selectedRepresentCategory = "before";
 // 우리 반 간추리기 모음에서 선택한 책 종류 필터입니다.
 let currentShareFilter = "all";
+
+// 책 종류 필터 버튼을 누르면 선택한 종류의 간추리기만 보여줍니다.
+function changeShareFilter(filterKey) {
+  currentShareFilter = filterKey;
+
+  document.querySelectorAll(".iar-share-filter-button").forEach(function (button) {
+    button.classList.toggle("active", button.dataset.filter === filterKey);
+  });
+
+  renderShareSummaries();
+}
 
     document.addEventListener("DOMContentLoaded", function () {
   bindBookTypeButtons();

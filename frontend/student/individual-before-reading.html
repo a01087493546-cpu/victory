@@ -679,20 +679,11 @@
     }
 
     .ibr-modal-box h2 {
-      margin: 0 0 10px;
+      margin: 0 0 26px;
       color: #4d2b10;
       font-size: 28px;
       font-weight: 900;
       letter-spacing: -0.04em;
-    }
-
-    .ibr-modal-box p {
-      margin: 0 0 22px;
-      color: #765026;
-      font-size: 16px;
-      font-weight: 800;
-      line-height: 1.5;
-      word-break: keep-all;
     }
 
     @media (max-height: 760px) {
@@ -1733,7 +1724,7 @@
           <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="ibr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="ibr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
-          <button type="button" class="ibr-top-button" onclick="goIndividualReading()">책읽기 홈</button>
+          <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">책읽기 홈</button>
          
         </div>
       </header>
@@ -1943,11 +1934,7 @@
     <div class="ibr-modal-box">
       <div class="ibr-modal-icon">📖</div>
       <h2>읽기 전 활동 완료!</h2>
-      <p>
-        4개의 읽기 전 질문을 모두 만들었어.<br>
-        이제 오늘의 독서 모험에서 읽기 중 활동이 열릴 거야!
-      </p>
-      <button type="button" class="ibr-button primary" onclick="goTodayAdventure()">오늘의 독서 모험으로 돌아가기</button>
+      <button type="button" class="ibr-button primary" onclick="goTodayAdventure()">넘어가기</button>
     </div>
   </div>
 
