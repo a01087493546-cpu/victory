@@ -1421,6 +1421,391 @@
     0 5px 10px rgba(35, 20, 8, 0.3),
     inset 0 1px 0 rgba(255, 238, 205, 0.14);
 }
+  
+
+    /* ===== 단순화된 책 속 생각 쓰기 화면 ===== */
+    .shell {
+      width: min(1080px, calc(100vw - 40px));
+      grid-template-rows: 64px minmax(0, 1fr) 150px;
+    }
+
+    .top {
+      grid-template-columns: 240px minmax(0, 1fr) 260px;
+    }
+
+    .main-title::after {
+      content: "책 속 생각 쓰기";
+    }
+
+    .main-desc {
+      font-size: 15px;
+    }
+
+    .main-grid {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .write-card {
+      padding: 22px 28px;
+    }
+
+    .section-title {
+      font-size: 28px;
+    }
+
+    #questionInput { height: 98px; }
+    #answerInput { height: 118px; }
+
+    .bottom-grid {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      max-width: 1080px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .feedback-card {
+      grid-template-columns: 120px minmax(0, 1fr);
+      padding: 12px 18px;
+    }
+
+    .lumi-img { width: 112px; }
+
+    .feedback-message {
+      min-height: 78px;
+      max-height: 92px;
+      font-size: 16px;
+      padding: 13px 16px;
+    }
+
+    .next-card {
+      min-height: 0;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 9px;
+      overflow: hidden;
+    }
+
+    .pass-count {
+      min-height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(190, 130, 55, 0.28);
+      background: rgba(255, 249, 235, 0.9);
+      color: #8c5c1e;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .next-button {
+      height: 50px;
+      border: 1px solid rgba(102, 71, 33, 0.18);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #e6ad45, #b06a0d);
+      color: #fff9eb;
+      font-family: "Noto Serif KR", serif;
+      font-size: 19px;
+      font-weight: 900;
+      box-shadow: 0 6px 0 rgba(105, 57, 5, 0.66), inset 0 1px 0 rgba(255,255,255,.34);
+    }
+
+    .next-button:disabled {
+      background: linear-gradient(180deg, #cfc7bb, #aaa195);
+      color: #fffaf1;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @media (max-height: 760px) {
+      .shell { grid-template-rows: 56px minmax(0, 1fr) 132px; }
+      .write-card { padding: 16px 22px; }
+      #questionInput { height: 76px; }
+      #answerInput { height: 88px; }
+      .feedback-message { min-height: 64px; max-height: 74px; font-size: 14px; }
+      .lumi-img { width: 94px; }
+    }
+   /* 화면 확대 최종 수정 */
+
+.page {
+  padding: 8px 10px 10px !important;
+}
+
+.shell {
+  width: min(1450px, calc(100vw - 20px)) !important;
+  max-width: 1450px !important;
+  height: calc(100vh - 18px) !important;
+  grid-template-rows: 64px minmax(0, 1fr) 180px !important;
+  gap: 10px !important;
+}
+
+.main-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  width: 100% !important;
+  min-height: 0 !important;
+}
+
+.write-card {
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: 22px 28px !important;
+  border-radius: 28px !important;
+}
+
+.brand {
+  font-size: 28px !important;
+}
+
+.brand-icon {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+.section-title {
+  font-size: 30px !important;
+}
+
+.small-label {
+  font-size: 19px !important;
+  margin-bottom: 8px !important;
+}
+
+.type-buttons {
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+.type-button {
+  height: 48px !important;
+  font-size: 17px !important;
+  border-radius: 15px !important;
+}
+
+textarea {
+  padding: 15px 17px !important;
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  border-radius: 17px !important;
+}
+
+#questionInput {
+  height: 105px !important;
+}
+
+#answerInput {
+  height: 125px !important;
+}
+
+.write-actions {
+  grid-template-columns: 150px 1fr !important;
+  gap: 12px !important;
+  padding-top: 12px !important;
+}
+
+.sub-button,
+.main-button {
+  height: 50px !important;
+  font-size: 18px !important;
+}
+
+.bottom-grid {
+  grid-template-columns: 1fr 320px !important;
+  gap: 12px !important;
+}
+
+.feedback-card {
+  padding: 16px 22px !important;
+  grid-template-columns: 145px 1fr !important;
+  gap: 18px !important;
+}
+
+.lumi-img {
+  width: 140px !important;
+}
+
+.feedback-message {
+  min-height: 84px !important;
+  max-height: 104px !important;
+  padding: 14px 18px !important;
+  font-size: 17px !important;
+}
+
+.share-card {
+  padding: 16px 18px !important;
+}
+
+.share-title {
+  font-size: 21px !important;
+}
+
+.share-button {
+  height: 54px !important;
+  font-size: 21px !important;
+}
+
+.share-note,
+.share-desc {
+  font-size: 13px !important;
+}
+/* 책 속 생각 쓰기 상자 가로 폭 확장 최종 */
+
+.shell {
+  width: calc(100vw - 40px) !important;
+  max-width: 1580px !important;
+  margin: 0 auto !important;
+}
+
+.main-grid {
+  width: 100% !important;
+  max-width: none !important;
+  display: block !important;
+}
+
+.write-card {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  padding-left: 38px !important;
+  padding-right: 38px !important;
+}
+
+/* 입력칸도 상자 폭에 맞게 확장 */
+.write-card textarea {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* 질문 유형 버튼도 전체 폭 사용 */
+.type-buttons {
+  width: 100% !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+/* ==================================================
+   하단 전체 영역을 책 속 생각 쓰기와 같은 폭으로 확장
+================================================== */
+
+.bottom-grid {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  justify-self: stretch !important;
+  align-self: stretch !important;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 300px !important;
+  gap: 14px !important;
+}
+
+/* 루미 피드백 큰 바깥 상자 */
+.feedback-card {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+
+  padding: 18px 26px !important;
+
+  display: grid !important;
+  grid-template-columns: 150px minmax(0, 1fr) !important;
+  gap: 22px !important;
+  align-items: center !important;
+
+  border-radius: 28px !important;
+}
+
+/* 루미 이미지 영역 */
+.feedback-left {
+  width: 150px !important;
+  min-width: 150px !important;
+  height: 100% !important;
+
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+}
+
+/* 루미 이미지 */
+.lumi-img {
+  width: 145px !important;
+  max-width: 145px !important;
+  max-height: 170px !important;
+  object-fit: contain !important;
+}
+
+/* 피드백 오른쪽 전체 내용 */
+.feedback-right,
+.feedback-content {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+/* 루미의 피드백 제목 */
+.feedback-right .section-title,
+.feedback-content .section-title,
+.feedback-title {
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: 29px !important;
+}
+
+/* 실제 피드백 문장이 들어가는 상자 */
+.feedback-message {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+
+  min-height: 82px !important;
+  padding: 15px 20px !important;
+
+  font-size: 18px !important;
+  line-height: 1.5 !important;
+  border-radius: 18px !important;
+}
+
+/* 오른쪽 다음 단계 상자 */
+.next-card {
+  width: 300px !important;
+  max-width: 300px !important;
+  min-width: 300px !important;
+  margin: 0 !important;
+
+  padding: 16px 18px !important;
+  border-radius: 28px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+/* 다음 단계 버튼 */
+.next-button {
+  display: block !important;
+  visibility: visible !important;
+
+  width: 100% !important;
+  height: 56px !important;
+
+  font-size: 21px !important;
+  border-radius: 16px !important;
+}
+
+
   </style>
 </head>
 
@@ -1437,7 +1822,7 @@
 
         <div class="title-area">
           <h1 class="main-title"></h1>
-          <p class="main-desc">질문 유형을 고르고, 질문과 내 생각을 써 봐.</p>
+          <p class="main-desc">질문과 내 생각을 쓰고 루미에게 확인 받아 봐.</p>
         </div>
 
         <div class="top-actions">
@@ -1446,106 +1831,66 @@
   </button>
 
   <div class="date-pill" id="todayText">오늘 날짜</div>
-
-  <button class="top-share" id="topShareButton" type="button" onclick="shareSelectedQuestions()" disabled>
-    질문 나누기
-  </button>
 </div>
       </header>
 
       <section class="main-grid">
-  <!-- 왼쪽: 질문 만들기 -->
-  <article class="card write-card">
-    <h2 class="section-title">✎ 질문 만들기</h2>
-    <div class="title-line"></div>
+        <article class="card write-card">
+          <h2 class="section-title">✎ 책 속 생각 쓰기</h2>
+          <div class="title-line"></div>
 
-    <div class="type-box">
-      <div class="small-label">질문 유형 선택</div>
-      <div class="type-buttons">
-        <button class="type-button active" type="button" data-type="direct">🔍 바로 찾기</button>
-        <button class="type-button" type="button" data-type="infer">💡 짐작하기</button>
-        <button class="type-button" type="button" data-type="opinion">💛 생각·느낌</button>
-        <button class="type-button" type="button" data-type="connect">🔗 삶과 연결</button>
-      </div>
-    </div>
+          <div class="type-box">
+            <div class="small-label">질문 유형 선택</div>
+            <div class="type-buttons">
+              <button class="type-button active" type="button" data-type="direct">🔍 바로 찾기</button>
+              <button class="type-button" type="button" data-type="infer">💡 짐작하기</button>
+              <button class="type-button" type="button" data-type="opinion">💛 생각·느낌</button>
+              <button class="type-button" type="button" data-type="connect">🔗 삶과 연결</button>
+            </div>
+          </div>
 
-    <div class="input-block">
-      <div class="input-head">
-        <label class="small-label" for="questionInput">질문 쓰기</label>
-        <span class="count" id="questionCount">0 / 200자</span>
-      </div>
-      <textarea id="questionInput" maxlength="200" placeholder="책을 읽으며 떠오른 질문을 써 보세요."></textarea>
-    </div>
+          <div class="input-block">
+            <div class="input-head">
+              <label class="small-label" for="questionInput">질문 쓰기</label>
+              <span class="count" id="questionCount">0 / 200자</span>
+            </div>
+            <textarea id="questionInput" maxlength="200" placeholder="책을 읽으며 떠오른 질문을 써 보세요."></textarea>
+          </div>
 
-    <div class="input-block">
-      <div class="input-head">
-        <label class="small-label" for="answerInput">내 생각 / 답</label>
-        <span class="count" id="answerCount">0 / 400자</span>
-      </div>
-      <textarea id="answerInput" maxlength="400" placeholder="이 질문에 대한 내 생각이나 답을 자유롭게 써 보세요."></textarea>
-    </div>
+          <div class="input-block">
+            <div class="input-head">
+              <label class="small-label" for="answerInput">내 생각 / 답</label>
+              <span class="count" id="answerCount">0 / 400자</span>
+            </div>
+            <textarea id="answerInput" maxlength="400" placeholder="이 질문에 대한 내 생각이나 답을 자유롭게 써 보세요."></textarea>
+          </div>
 
-    <div class="write-actions">
-      <button class="sub-button" type="button" onclick="resetForm()">다시 쓰기</button>
-      <button class="main-button" type="button" onclick="checkQuestion()">✨ 루미에게 확인 받기</button>
-    </div>
-  </article>
-
-  <!-- 오른쪽: 오늘 만든 질문 -->
-  <article class="card today-card">
-    <div class="today-head">
-      <h2 class="today-title">오늘 만든 질문</h2>
-      <div class="select-count" id="selectCount">0 / 3개 선택됨</div>
-    </div>
-
-    <p class="today-guide">
-      친구들과 나누고 싶은 질문을 최대 3개까지 선택해요.
-    </p>
-
-    <div class="question-list" id="questionList">
-      <div class="empty">
-        아직 만든 질문이 없어요.<br>
-        왼쪽에서 질문을 쓰고 루미에게 확인 받아 보세요.
-      </div>
-    </div>
-  </article>
-</section>
-
+          <div class="write-actions">
+            <button class="sub-button" type="button" onclick="resetForm()">다시 쓰기</button>
+            <button class="main-button" type="button" onclick="checkQuestion()">✨ 루미에게 확인 받기</button>
+          </div>
+        </article>
+      </section>
 <section class="bottom-grid">
-  <!-- 아래쪽: 루미 피드백을 가로로 길게 -->
-  <article class="card feedback-card">
-    <div class="feedback-left">
-      <img
-        class="lumi-img"
-        src="../assets/images/class-reading/class-reading-lumi-feedback.png"
-        alt="루미"
-      >
-    </div>
+        <article class="card feedback-card">
+          <div class="feedback-left">
+            <img class="lumi-img" src="../assets/images/class-reading/class-reading-lumi-feedback.png" alt="루미">
+          </div>
+          <div class="feedback-right">
+            <h2 class="section-title">✦ 루미의 피드백</h2>
+            <div class="feedback-message" id="feedbackBox">
+              질문과 내 생각을 쓴 뒤 <strong>루미에게 확인 받기</strong>를 눌러 봐.
+              3개 이상 통과하면 다음 단계로 갈 수 있어.
+            </div>
+          </div>
+        </article>
 
-    <div class="feedback-right">
-      <h2 class="section-title">✦ 루미의 피드백</h2>
-
-      <div class="feedback-message" id="feedbackBox">
-        질문을 쓰고 <strong>루미에게 확인 받기</strong> 버튼을 눌러 봐.
-        루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.
-      </div>
-    </div>
-  </article>
-
-  <!-- 오른쪽: 질문 나누기 -->
-  <article class="card share-card">
-    <h2 class="share-title">질문 나누기</h2>
-    <p class="share-desc">
-      선택한 질문만 친구들에게 공유돼요.
-    </p>
-
-    <button class="share-button" id="shareButton" type="button" onclick="shareSelectedQuestions()" disabled>
-      질문 나누기
-    </button>
-
-    <p class="share-note">최대 3개까지 선택할 수 있어요.</p>
-  </article>
-</section>
+        <article class="card next-card">
+          <div class="pass-count" id="passCount">통과 0 / 3개</div>
+          <button class="next-button" id="nextButton" type="button" onclick="goNextStep()" disabled>다음 단계</button>
+          <p class="share-note">루미에게 3개 이상 통과받아야 열려요.</p>
+        </article>
+      </section>
     </div>
   </main>
 
@@ -1594,6 +1939,8 @@
     const selectCount = document.getElementById("selectCount");
     const shareButton = document.getElementById("shareButton");
     const topShareButton = document.getElementById("topShareButton");
+    const passCount = document.getElementById("passCount");
+    const nextButton = document.getElementById("nextButton");
     const todayText = document.getElementById("todayText");
 
     initPage();
@@ -1672,7 +2019,7 @@
       setFeedback(
         "good",
         result.message +
-        "<br><br>좋아! 오늘 만든 질문 목록에 저장했어. 아래에서 친구들과 나누고 싶은 질문을 최대 3개까지 골라 봐."
+        "<br><br>좋아! 루미 확인을 통과했어. 현재 " + todayQuestions.length + "개가 통과했어. 3개 이상이면 다음 단계로 갈 수 있어."
       );
 
       questionInput.value = "";
@@ -1872,9 +2219,13 @@
     }
 
     function renderTodayQuestions() {
-      selectCount.textContent = selectedQuestionIds.length + " / 3개 선택됨";
-      shareButton.disabled = selectedQuestionIds.length === 0;
-      topShareButton.disabled = selectedQuestionIds.length === 0;
+      const passed = todayQuestions.length;
+      if (passCount) passCount.textContent = "통과 " + Math.min(passed, 3) + " / 3개";
+      if (nextButton) nextButton.disabled = passed < 3;
+      if (!questionList) return;
+      if (selectCount) selectCount.textContent = selectedQuestionIds.length + " / 3개 선택됨";
+      if (shareButton) shareButton.disabled = selectedQuestionIds.length === 0;
+      if (topShareButton) topShareButton.disabled = selectedQuestionIds.length === 0;
 
       if (todayQuestions.length === 0) {
         questionList.innerHTML =
@@ -1999,11 +2350,22 @@
   // 질문 나누기 화면으로 이동합니다.
   location.href = "./friend-question.html";
 }
+
+function goNextStep() {
+  if (todayQuestions.length < 3) {
+    setFeedback("need", "아직 " + (3 - todayQuestions.length) + "개가 더 필요해. 질문과 내 생각을 쓰고 루미에게 확인 받아 봐.");
+    return;
+  }
+
+  localStorage.setItem("classReadingPassedQuestions", JSON.stringify(todayQuestions));
+  location.href = "./friend-question.html";
+}
+
 function goReadingMain() {
   location.href = "./class-reading.html";
 }
 function goHome() {
-  location.href = "./individual-reading.html";
+  location.href = "./class-reading.html";
 }
 
     function escapeHtml(text) {
