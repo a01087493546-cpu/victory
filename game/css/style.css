@@ -3901,3 +3901,43 @@ body {
   color: #f1d27a;
   letter-spacing: -0.01em;
 }
+
+/* =============================================
+   던전 선택 화면 우측 상단 "책읽기 홈" 버튼
+   - individual-reading.html 상단의 홈/보관함/나의 힘 버튼과
+     같은 계열(높이 46px, 필 형태, 진한 브라운)로 맞췄습니다.
+   - 화면이 1920x1080 고정 스테이지라 위치도 고정 px로 둡니다.
+   ============================================= */
+.dungeon-home-button {
+  position: absolute;
+  top: 28px;
+  right: 40px;
+  z-index: 20;
+  height: 46px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(122, 79, 30, 0.48);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(91, 58, 26, 0.94), rgba(45, 29, 14, 0.92));
+  color: #fff1c7;
+  font-size: 16px;
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 8px 18px rgba(26, 15, 5, 0.22),
+    inset 0 0 0 1px rgba(255, 224, 151, 0.12);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.dungeon-home-button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(112, 73, 34, 0.96), rgba(58, 37, 18, 0.95));
+}
+
+.dungeon-home-button:active {
+  transform: translateY(0);
+}

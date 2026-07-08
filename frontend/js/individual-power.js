@@ -27,6 +27,14 @@
     courage: "용기"
   };
 
+  // 보상 모달에서 능력치를 구분해서 보여줄 아이콘/색상 키입니다.
+  const POWER_ICONS = {
+    magic: "🔮",
+    stamina: "💪",
+    wisdom: "📖",
+    courage: "🛡️"
+  };
+
     // 능력치 설명 표시용입니다.
   // ability-intro.html의 능력치 안내 문구와 의미가 맞도록 정리합니다.
   const POWER_DESCRIPTIONS = {
@@ -343,11 +351,15 @@ function getRewardHistory() {
     보상 모달에서는 보조 설명을 제거하고,
     이번에 오른 능력치를 가로 그래프로 보여줍니다.
     예: 마법력 +8
+    4개 능력치를 한 줄에 나란히 보여주기 위해 아이콘 + 능력치별 강조색을 씁니다.
   */
   const percent = Math.round((amount / MAX_POWER) * 100);
+  const icon = POWER_ICONS[type] || "✨";
 
   return `
-    <div class="individual-reward-item">
+    <div class="individual-reward-item type-${type}">
+      <div class="individual-reward-icon">${icon}</div>
+
       <div class="individual-reward-row-head">
         <div class="individual-reward-name">${label}</div>
         <div class="individual-reward-amount">+${amount}</div>
@@ -591,12 +603,21 @@ function ensurePowerBarStyle() {
       letter-spacing: -0.04em !important;
     }
 
-    .individual-power-list,
-    .individual-reward-list {
+    .individual-power-list {
       display: grid !important;
       gap: 12px !important;
       margin-bottom: 20px !important;
       text-align: left !important;
+    }
+
+    /* 보상 모달의 능력치 4개는 한 줄(가로)로 나란히 보여서
+       스크롤 없이 한 화면에 다 들어오게 합니다. */
+    .individual-reward-list {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      margin-bottom: 18px !important;
+      text-align: center !important;
     }
 
     .individual-power-notice {
@@ -692,38 +713,52 @@ function ensurePowerBarStyle() {
       background: linear-gradient(90deg, #e8bc55, #a8641e) !important;
       transition: width 0.25s ease !important;
     }
-          .individual-reward-item {
-      padding: 16px 18px !important;
-      border-radius: 18px !important;
+    /* 보상 카드 하나(능력치 1개)입니다. 4개가 한 줄에 들어가도록
+       아이콘 위 / 이름·수치 아래 / 그래프 순서로 세로로 압축했습니다. */
+    .individual-reward-item {
+      min-width: 0 !important;
+      padding: 12px 8px 10px !important;
+      border-radius: 16px !important;
       border: 1px solid rgba(180, 116, 34, 0.18) !important;
       background: rgba(255, 246, 220, 0.82) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+
+    .individual-reward-icon {
+      font-size: 22px !important;
+      line-height: 1 !important;
+      margin-bottom: 4px !important;
     }
 
     .individual-reward-row-head {
       display: flex !important;
+      flex-direction: column !important;
       align-items: center !important;
-      justify-content: space-between !important;
-      gap: 12px !important;
-      margin-bottom: 10px !important;
+      gap: 2px !important;
+      width: 100% !important;
+      margin-bottom: 8px !important;
     }
 
     .individual-reward-name {
       color: #4e2d10 !important;
-      font-size: 18px !important;
+      font-size: 13px !important;
       font-weight: 950 !important;
       line-height: 1.1 !important;
+      white-space: nowrap !important;
     }
 
     .individual-reward-amount {
-      color: #6f431b !important;
-      font-size: 17px !important;
+      color: #a8641e !important;
+      font-size: 15px !important;
       font-weight: 950 !important;
       white-space: nowrap !important;
     }
 
     .individual-reward-bar {
       width: 100% !important;
-      height: 14px !important;
+      height: 8px !important;
       border-radius: 999px !important;
       background: rgba(94, 58, 18, 0.14) !important;
       overflow: hidden !important;
@@ -735,6 +770,35 @@ function ensurePowerBarStyle() {
       border-radius: 999px !important;
       background: linear-gradient(90deg, #e8bc55, #a8641e) !important;
       transition: width 0.25s ease !important;
+    }
+
+    /* 능력치별 강조 색상: 한눈에 어떤 능력치인지 구분되도록 합니다. */
+    .individual-reward-item.type-magic .individual-reward-amount {
+      color: #7c4fd1 !important;
+    }
+    .individual-reward-item.type-magic .individual-reward-bar-fill {
+      background: linear-gradient(90deg, #cbb6f5, #7c4fd1) !important;
+    }
+
+    .individual-reward-item.type-stamina .individual-reward-amount {
+      color: #c0392b !important;
+    }
+    .individual-reward-item.type-stamina .individual-reward-bar-fill {
+      background: linear-gradient(90deg, #f3a58a, #c0392b) !important;
+    }
+
+    .individual-reward-item.type-wisdom .individual-reward-amount {
+      color: #2f7a6f !important;
+    }
+    .individual-reward-item.type-wisdom .individual-reward-bar-fill {
+      background: linear-gradient(90deg, #9adbcf, #2f7a6f) !important;
+    }
+
+    .individual-reward-item.type-courage .individual-reward-amount {
+      color: #4c8c3c !important;
+    }
+    .individual-reward-item.type-courage .individual-reward-bar-fill {
+      background: linear-gradient(90deg, #b3e0a0, #4c8c3c) !important;
     }
   `;
 

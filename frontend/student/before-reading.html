@@ -718,13 +718,13 @@ white-space: normal;
     .summary-title {
       margin-bottom: 8px;
       color: #bb7d13;
-      font-size: 17px;
+      font-size: 22px;
       font-weight: 900;
     }
 
     .summary-text {
       color: #443123;
-      font-size: 16px;
+      font-size: 20px;
       font-weight: 800;
       line-height: 1.55;
     }
@@ -2240,19 +2240,6 @@ body {
   background-repeat: no-repeat !important;
 }
 
-/* 화면 바깥 여백까지 같은 배경 적용 */
-body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
-  background:
-    linear-gradient(
-      rgba(255, 246, 226, 0.42),
-      rgba(235, 209, 164, 0.52)
-    ),
-    url("../assets/images/practice/before-reading-bg.png") !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-
 /* ===== 도움 받기 모달: 루미 힌트 + 예시 질문 3개 ===== */
 .help-modal-overlay {
   position: fixed;
@@ -3130,7 +3117,7 @@ function goNextAfterFeedback() {
             return '<article class="summary-item">' +
               '<h3 class="summary-title">' + step.number + '. ' + step.title + '</h3>' +
               '<p class="summary-text"><strong>질문</strong> · ' + (item.question || "아직 작성하지 않았어요.") + '</p>' +
-              '<p class="summary-text"><strong>내가 생각한 답</strong> · ' + (item.expectedAnswer || "아직 작성하지 않았어요.") + '</p>' +
+              '<p class="summary-text"><strong>답</strong> · ' + (item.expectedAnswer || "아직 작성하지 않았어요.") + '</p>' +
             '</article>';
           }).join("") +
         '</div>' +
