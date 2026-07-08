@@ -1079,4 +1079,14 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   modified: "화면 분위기에 맞게 밝기와 색감 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용 약관 증빙 자료 확보"
 },
+{
+  title: "연습읽기 읽기중 배경 이미지",
+  type: "이미지",
+  fileName: "mystic-forest-bg.png",
+  description: "연습읽기 읽기중 화면의 신비로운 숲 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "연습읽기 읽기중 화면",
+  edit: "문답책 화면 분위기와 화면 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
 ];

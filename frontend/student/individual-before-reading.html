@@ -921,7 +921,7 @@
     }
 
     .ibr-field-row label {
-      font-size: 15px !important;
+      font-size: 19px !important;
     }
 
     .ibr-count {
@@ -938,11 +938,11 @@
 
     .ibr-feedback {
       min-height: 72px !important;
-      height: 72px !important;
+      height: auto !important;
       grid-template-columns: 56px 1fr !important;
-      padding: 10px 14px !important;
-      font-size: 14px !important;
-      line-height: 1.35 !important;
+      padding: 12px 16px !important;
+      font-size: 16px !important;
+      line-height: 1.4 !important;
       overflow: hidden !important;
     }
 
@@ -1724,7 +1724,7 @@
           <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="ibr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="ibr-top-button" onclick="goTodayAdventure()">오늘의 독서 모험</button>
-          <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">책읽기 홈</button>
+          <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
          
         </div>
       </header>
@@ -2637,7 +2637,7 @@ function goTodayAdventure() {
     .mq-fixed-stage-page .ibr-form-card {
       width: 100% !important;
       grid-template-rows: auto auto auto minmax(76px, auto) !important;
-      gap: 18px !important;
+      gap: 26px !important;
     }
 
     .mq-fixed-stage-page .ibr-input {
@@ -2650,17 +2650,17 @@ function goTodayAdventure() {
     .mq-fixed-stage-page .ibr-textarea {
       min-height: 154px !important;
       padding: 18px 20px !important;
-      font-size: 18px !important;
+      font-size: 20px !important;
       border-radius: 22px !important;
     }
 
     .mq-fixed-stage-page .ibr-page:not(.book-step) .ibr-form-card {
-      grid-template-rows: minmax(172px, 1fr) minmax(172px, 1fr) 82px !important;
+      grid-template-rows: minmax(150px, 1fr) minmax(150px, 1fr) minmax(82px, auto) !important;
     }
 
     .mq-fixed-stage-page .ibr-page:not(.book-step) .ibr-textarea {
       height: 100% !important;
-      min-height: 172px !important;
+      min-height: 150px !important;
     }
 
     .mq-fixed-stage-page .ibr-book-type-grid {

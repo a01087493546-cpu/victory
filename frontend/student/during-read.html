@@ -41,9 +41,10 @@
   color: #3f2615;
   background:
     linear-gradient(180deg, rgba(255, 246, 222, 0.42), rgba(255, 232, 184, 0.46)),
-    url("../assets/images/class-reading/class-reading-question-bg.png");
+    url("../assets/images/practice/mystic-forest-bg.png");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
     button,
@@ -61,8 +62,8 @@
   padding: 12px 20px 14px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 35%),
-    linear-gradient(90deg, rgba(255, 246, 224, 0.72), rgba(255, 255, 255, 0.18), rgba(255, 246, 224, 0.72));
+    linear-gradient(180deg, rgba(255, 246, 222, 0.42), rgba(255, 232, 184, 0.46)),
+    url("../assets/images/practice/mystic-forest-bg.png") center / cover no-repeat;
 }
 
  .shell {
@@ -1383,6 +1384,43 @@
     font-size: 17px;
   }
 }
+
+/* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
+.mq-book-home-button {
+  height: 42px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(214, 173, 99, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5c3c22 0%, #2c1a0d 100%);
+  color: #fbf0da;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 8px 16px rgba(35, 20, 8, 0.32),
+    inset 0 1px 0 rgba(255, 238, 205, 0.16);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.mq-book-home-button:hover {
+  background: linear-gradient(180deg, #6e4a29 0%, #3a2411 100%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 20px rgba(35, 20, 8, 0.38),
+    inset 0 1px 0 rgba(255, 238, 205, 0.22);
+}
+
+.mq-book-home-button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 5px 10px rgba(35, 20, 8, 0.3),
+    inset 0 1px 0 rgba(255, 238, 205, 0.14);
+}
   </style>
 </head>
 
@@ -1403,8 +1441,8 @@
         </div>
 
         <div class="top-actions">
-  <button class="home-button" type="button" onclick="goHome()">
-    홈
+  <button class="mq-book-home-button" type="button" onclick="goHome()">
+    📚 책읽기 홈
   </button>
 
   <div class="date-pill" id="todayText">오늘 날짜</div>

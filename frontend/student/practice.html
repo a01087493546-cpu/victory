@@ -612,6 +612,43 @@
     font-size: 22px !important;
     border-radius: 18px !important;
   }
+
+  /* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
+  .mq-book-home-button {
+    height: 42px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(214, 173, 99, 0.5);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5c3c22 0%, #2c1a0d 100%);
+    color: #fbf0da;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow:
+      0 8px 16px rgba(35, 20, 8, 0.32),
+      inset 0 1px 0 rgba(255, 238, 205, 0.16);
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  }
+
+  .mq-book-home-button:hover {
+    background: linear-gradient(180deg, #6e4a29 0%, #3a2411 100%);
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 20px rgba(35, 20, 8, 0.38),
+      inset 0 1px 0 rgba(255, 238, 205, 0.22);
+  }
+
+  .mq-book-home-button:active {
+    transform: translateY(0);
+    box-shadow:
+      0 5px 10px rgba(35, 20, 8, 0.3),
+      inset 0 1px 0 rgba(255, 238, 205, 0.14);
+  }
 </style>
 </head>
 
@@ -625,8 +662,8 @@
         <span>문답책</span>
       </div>
 
-      <button class="home-button" onclick="goHome()">
-        ← 홈으로
+      <button class="mq-book-home-button" onclick="goHome()">
+        📚 책읽기 홈
       </button>
     </header>
 

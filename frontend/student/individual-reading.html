@@ -210,8 +210,8 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
 
     .ir-radar {
       position: relative;
-      width: 132px;
-      height: 132px;
+      width: 165px;
+      height: 165px;
       margin: 0 auto;
     }
 
@@ -219,19 +219,19 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     .ir-radar::after {
       content: "";
       position: absolute;
-      inset: 20px;
+      inset: 25px;
       border: 1px solid rgba(126, 77, 20, 0.22);
       transform: rotate(45deg);
     }
 
     .ir-radar::after {
-      inset: 36px;
+      inset: 45px;
       border-color: rgba(126, 77, 20, 0.14);
     }
 
     .ir-radar-core {
       position: absolute;
-      inset: 46px;
+      inset: 58px;
       z-index: 2;
       background: linear-gradient(180deg, #d99b32, #b06a1d);
       clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
@@ -241,7 +241,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       position: absolute;
       z-index: 3;
       color: #4f2f13;
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 900;
       line-height: 1.2;
       text-align: center;
@@ -255,8 +255,8 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .radar-right {
-      right: -8px;
-      top: 54px;
+      right: -10px;
+      top: 68px;
     }
 
     .radar-bottom {
@@ -266,27 +266,27 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .radar-left {
-      left: -8px;
-      top: 54px;
+      left: -10px;
+      top: 68px;
     }
 
     .ir-power-bars {
       display: grid;
-      gap: 10px;
+      gap: 13px;
     }
 
     .ir-power-row {
       display: grid;
-      grid-template-columns: 58px 1fr 68px;
+      grid-template-columns: 70px 1fr 84px;
       align-items: center;
-      gap: 8px;
-      font-size: 13px;
+      gap: 10px;
+      font-size: 16px;
       font-weight: 900;
       color: #543315;
     }
 
     .ir-power-row div {
-      height: 10px;
+      height: 13px;
       border-radius: 999px;
       background: rgba(113, 75, 31, 0.15);
       overflow: hidden;
@@ -549,7 +549,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .ir-practice-card::after {
-      content: "맨 처음 해요";
+      content: "처음해요";
       position: absolute;
       top: 16px;
       right: 20px;
@@ -606,7 +606,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     .ir-flow-card {
       height: 128px !important;
       grid-template-columns: 92px minmax(0, 1fr) 34px !important;
-      gap: 14px !important;
+      gap: 16px !important;
       padding: 16px 18px !important;
     }
 
@@ -616,18 +616,18 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .ir-flow-text strong {
-      font-size: 23px !important;
+      font-size: 26px !important;
       line-height: 1.15 !important;
     }
 
     .ir-card-arrow {
-      width: 34px !important;
-      height: 34px !important;
-      font-size: 23px !important;
+      width: 40px !important;
+      height: 40px !important;
+      font-size: 26px !important;
     }
 
     .ir-flow-arrow {
-      font-size: 32px !important;
+      font-size: 38px !important;
     }
 
     .ir-dungeon {
@@ -784,7 +784,7 @@ html {
 
       <div class="ir-top-actions">
   <button class="ir-top-home" type="button" onclick="location.href='../index.html'">
-    🏠 홈으로
+    🏠 로그인 화면으로
   </button>
 
   <button class="ir-top-archive" type="button" onclick="location.href='individual-reading-archive.html'">

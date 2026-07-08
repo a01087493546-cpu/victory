@@ -6,6 +6,10 @@
   1. 읽기 전 활동을 마친 학생을 칭찬합니다.
   2. 읽기 중에는 책을 읽으며 생긴 궁금함에 답해 보는 활동을 안내합니다.
   3. 읽기 중 질문의 종류를 하나씩 연습하고 실제 책읽기에 적용하도록 연결합니다.
+
+  참고: 읽기 전 인트로 화면(read-before-intro.html)과 배경 이미지/레이아웃을
+  동일하게 맞춘 화면입니다. 화면 크기는 1920x1080 고정이며, 창을 줄여도
+  fixed-stage.js가 비율 그대로 축소해서 레이아웃이 깨지지 않습니다.
 -->
 
 <!DOCTYPE html>
@@ -17,327 +21,231 @@
 
   <title>문답책 - 읽기 중 인트로</title>
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
+ <style>
+  /* 제목과 중요한 문구에 사용할 폰트입니다. */
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-    body {
-      min-height: 100vh;
-      overflow: hidden;
-      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-      color: #fff5df;
-      background:
-        linear-gradient(rgba(8, 6, 4, 0.34), rgba(8, 6, 4, 0.58)),
-        url("../assets/images/during-reading/intro/during-reading-intro-bg.png");
-      background-size: cover;
-      background-position: center;
-    }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 
-    button {
-      font-family: inherit;
-      cursor: pointer;
-    }
+  body {
+    font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    background: #1f140d;
+    color: #fff4e3;
+  }
 
-    .intro-page {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      padding: 34px 54px;
-    }
+  .intro-page {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(22, 14, 8, 0.18), rgba(22, 14, 8, 0.34)),
+      url("../assets/images/read-before/intro/pre-reading-bg-magic-greenhouse.png");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
 
-    .intro-page::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 18% 55%, rgba(255, 217, 139, 0.2), transparent 28%),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.32), transparent 58%, rgba(0, 0, 0, 0.12));
-      z-index: 0;
-    }
+  .intro-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 38%, rgba(255, 214, 133, 0.18), transparent 28%),
+      linear-gradient(90deg, rgba(20, 13, 9, 0.12), rgba(20, 13, 9, 0.02) 52%, rgba(20, 13, 9, 0.18));
+    pointer-events: none;
+    z-index: 1;
+  }
 
-    .top-bar {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  .intro-lumi {
+    position: absolute;
+    right: 192px;
+    bottom: 0;
+    z-index: 2;
+    width: 460px;
+    max-height: 950px;
+    object-fit: contain;
+    object-position: bottom center;
+    filter:
+      drop-shadow(0 18px 28px rgba(0, 0, 0, 0.34))
+      drop-shadow(0 0 12px rgba(231, 178, 82, 0.16));
+  }
 
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #fff4d6;
-      font-family: "Noto Serif KR", serif;
-      font-size: 27px;
-      font-weight: 900;
-      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
-    }
+  .story-box {
+    position: absolute;
+    left: 115px;
+    bottom: 130px;
+    z-index: 3;
+    width: 600px;
+    min-height: 318px;
+    padding: 28px 28px 24px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(36, 31, 31, 0.88), rgba(21, 19, 25, 0.92));
+    border: 1px solid rgba(238, 212, 158, 0.18);
+    box-shadow:
+      0 18px 36px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 247, 226, 0.08);
+    backdrop-filter: blur(4px);
+  }
 
-    .logo-area img {
-      width: 58px;
-      height: 58px;
-      object-fit: contain;
-    }
+  .speaker-name {
+    position: absolute;
+    left: 34px;
+    top: -28px;
+    min-width: 120px;
+    padding: 11px 22px;
+    border-radius: 12px 12px 4px 4px;
+    background: linear-gradient(180deg, rgba(70, 51, 32, 0.98), rgba(41, 31, 24, 0.98));
+    border: 1px solid rgba(237, 207, 151, 0.22);
+    color: #fff2d7;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+  }
 
-    .home-button {
-      border: 1px solid rgba(255, 229, 170, 0.32);
-      border-radius: 999px;
-      padding: 13px 26px;
-      background: rgba(91, 63, 34, 0.78);
-      color: #fff3d5;
-      font-size: 17px;
-      font-weight: 900;
-      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.24);
-      backdrop-filter: blur(5px);
-    }
+  .scene-label {
+    margin-bottom: 12px;
+    color: #e8c481;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: -0.2px;
+  }
 
-    .home-button:hover {
-      transform: translateY(-2px);
-      background: rgba(122, 84, 42, 0.84);
-    }
+  .story-text {
+    min-height: 150px;
+    font-family: "Noto Serif KR", serif;
+    color: #fff6e8;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.48;
+    letter-spacing: -1px;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.34);
+    white-space: pre-line;
+  }
 
-    .scene-layout {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      align-items: end;
-      height: calc(100vh - 92px);
-    }
+  .story-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
 
-    .dialog-zone {
-      align-self: center;
-      max-width: 720px;
-      margin-top: 20px;
-    }
+  .dot-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
-    .speaker-name {
-      display: inline-block;
-      min-width: 150px;
-      margin-left: 34px;
-      padding: 14px 32px;
-      border: 1px solid rgba(234, 204, 144, 0.32);
-      border-radius: 12px 12px 0 0;
-      background: rgba(41, 31, 24, 0.88);
-      color: #f6d99b;
-      text-align: center;
-      font-size: 20px;
-      font-weight: 900;
-      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
-    }
+  .dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255, 246, 224, 0.22);
+  }
 
-    .dialog-card {
-      position: relative;
-      min-height: 330px;
-      padding: 42px 48px 34px;
-      border: 1px solid rgba(234, 204, 144, 0.28);
-      border-radius: 0 18px 18px 18px;
-      background: rgba(28, 24, 22, 0.84);
-      box-shadow:
-        0 22px 48px rgba(0, 0, 0, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.07);
-      backdrop-filter: blur(6px);
-    }
+  .dot.active {
+    width: 42px;
+    background: linear-gradient(90deg, #e2ae59, #f0d28b);
+    box-shadow: 0 0 10px rgba(230, 178, 88, 0.34);
+  }
 
-    .scene-label {
-      margin-bottom: 22px;
-      color: #f0c777;
-      font-size: 17px;
-      font-weight: 900;
-    }
+  .next-button {
+    min-width: 164px;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 30px;
+    background: linear-gradient(180deg, #f3e4bf, #d8bf87);
+    color: #4b3420;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    transition: 0.2s ease;
+  }
 
-    .main-text {
-      font-family: "Noto Serif KR", serif;
-      color: #fff8e8;
-      font-size: 40px;
-      font-weight: 900;
-      line-height: 1.38;
-      letter-spacing: -1.2px;
-      word-break: keep-all;
-      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.36);
-    }
+  .next-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, #fff0c8, #e5ca91);
+  }
 
-    .sub-text {
-      margin-top: 24px;
-      color: rgba(255, 239, 207, 0.86);
-      font-size: 19px;
-      font-weight: 800;
-      line-height: 1.65;
-      word-break: keep-all;
-    }
+  .prev-button {
+    min-width: 120px;
+    border: none;
+    border-radius: 999px;
+    padding: 16px 26px;
+    background: linear-gradient(180deg, #9a6a35, #5c3214);
+    color: #fff1d2;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    transition: 0.2s ease;
+    display: none;
+  }
 
-    .dialog-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 34px;
-      gap: 18px;
-    }
+  .prev-button:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(180deg, #b47a3a, #6c3b17);
+  }
 
-    .dot-row {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-
-    .dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      background: rgba(255, 239, 207, 0.28);
-    }
-
-    .dot.active {
-      width: 56px;
-      background: linear-gradient(90deg, #f2c66c, #c4892e);
-      box-shadow: 0 0 16px rgba(237, 190, 95, 0.32);
-    }
-
-    .button-row {
-      display: flex;
-      gap: 14px;
-    }
-
-    .prev-button,
-    .next-button {
-      border: none;
-      border-radius: 999px;
-      min-width: 160px;
-      padding: 17px 30px;
-      font-size: 19px;
-      font-weight: 900;
-      transition: 0.18s ease;
-    }
-
-    .prev-button {
-      background: rgba(255, 244, 219, 0.9);
-      color: #6a4820;
-    }
-
-    .next-button {
-      background: linear-gradient(180deg, #2f2117, #130d09);
-      color: #f5d385;
-      border: 1px solid rgba(246, 205, 120, 0.38);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.28);
-    }
-
-    .prev-button:hover,
-    .next-button:hover {
-      transform: translateY(-2px);
-    }
-
-    .lumi-zone {
-      position: relative;
-      height: 100%;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      overflow: visible;
-    }
-
-    /*
-      장면마다 루미 원본 이미지 크기가 달라도,
-      화면에서는 높이 기준으로 비슷하게 보이도록 통일합니다.
-    */
-    .lumi-image {
-      height: 78vh;
-      max-height: 720px;
-      min-height: 600px;
-      width: auto;
-      object-fit: contain;
-      object-position: bottom center;
-      filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.36));
-      transform: translateX(-20px);
-    }
-
-    @media (max-width: 1100px) {
-      body {
-        overflow-y: auto;
-      }
-
-      .intro-page {
-        height: auto;
-        min-height: 100vh;
-        padding: 26px 24px;
-      }
-
-      .scene-layout {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-
-      .dialog-zone {
-        max-width: 100%;
-      }
-
-      .main-text {
-        font-size: 31px;
-      }
-
-      .lumi-image {
-        height: 56vh;
-        min-height: 420px;
-      }
-    }
-  </style>
+  .button-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+ </style>
 </head>
 
 <body>
   <main class="intro-page">
 
-    <header class="top-bar">
-      <div class="logo-area">
-        <img src="../assets/images/logo-book.png" alt="문답책 로고">
-        <span>문답책</span>
+    <!-- 장면마다 루미 이미지가 바뀝니다. -->
+    <img
+      class="intro-lumi"
+      id="lumiImage"
+      src="../assets/images/during-reading/intro/during-reading-lumi-01-goodjob.png"
+      alt="읽기 중 활동을 안내하는 루미"
+    >
+
+    <!-- 대화창 영역입니다. -->
+    <section class="story-box">
+      <div class="speaker-name">루미</div>
+
+      <div class="scene-label" id="sceneLabel">
+        읽기 전 활동 완료
       </div>
 
-      <button class="home-button" type="button" onclick="goPractice()">
-        ← 연습하기
-      </button>
-    </header>
+      <div class="story-text" id="storyText"></div>
 
-    <section class="scene-layout">
-      <article class="dialog-zone">
-        <div class="speaker-name">루미</div>
+      <div class="story-bottom">
+        <div class="dot-row" id="dotRow"></div>
 
-        <div class="dialog-card">
-          <p class="scene-label" id="sceneLabel">읽기 중 질문 연습</p>
+        <div class="button-row">
+          <button class="prev-button" type="button" onclick="prevScene()" id="prevButton">
+            이전
+          </button>
 
-          <h1 class="main-text" id="mainText"></h1>
-
-          <p class="sub-text" id="subText"></p>
-
-          <div class="dialog-bottom">
-            <div class="dot-row" id="dotRow"></div>
-
-            <div class="button-row">
-              <button class="prev-button" type="button" onclick="prevScene()" id="prevButton">
-                이전
-              </button>
-
-              <button class="next-button" type="button" onclick="nextScene()" id="nextButton">
-                다음
-              </button>
-            </div>
-          </div>
+          <button class="next-button" type="button" onclick="nextScene()" id="nextButton">
+            다음
+          </button>
         </div>
-      </article>
-
-      <aside class="lumi-zone">
-        <img
-          class="lumi-image"
-          id="lumiImage"
-          src="../assets/images/during-reading/intro/during-reading-lumi-01-goodjob.png"
-          alt="읽기 중 활동을 안내하는 루미"
-        >
-      </aside>
+      </div>
     </section>
 
   </main>
@@ -352,37 +260,56 @@
     const scenes = [
       {
         label: "읽기 전 활동 완료",
-        main: "읽기 전 활동을 끝내다니,\n정말 대단한데?",
+        text: "읽기 전 활동을 끝내다니,\n정말 대단한데?",
         image: "../assets/images/during-reading/intro/during-reading-lumi-01-goodjob.png"
       },
       {
         label: "책을 읽으며 생각하기",
-        main: "이제는 책을 읽으면서\n생기는 궁금함에 답해 보는\n연습을 할 거야.",
+        text: "이제는 책을 읽으면서\n생기는 궁금함에 답해 보는\n연습을 할 거야.",
         image: "../assets/images/during-reading/intro/during-reading-lumi-02-question-note.png"
       },
       {
         label: "읽기 중 질문 연습",
-        main: "읽기 중에 할 수 있는 질문을\n하나씩 차근차근 연습하고,\n바로 책읽기에 써 보자!",
+        text: "읽기 중에 할 수 있는 질문을\n하나씩 차근차근 연습하고,\n바로 책읽기에 써 보자!",
         image: "../assets/images/during-reading/intro/during-reading-lumi-03-practice.png"
       }
     ];
 
+    // 현재 보고 있는 장면 번호입니다.
     let currentSceneIndex = 0;
 
+    // 화면이 열리면 첫 장면을 보여줍니다.
     renderScene();
 
+    // 현재 장면을 화면에 그립니다.
     function renderScene() {
       const scene = scenes[currentSceneIndex];
 
       document.getElementById("sceneLabel").textContent = scene.label;
-      document.getElementById("mainText").textContent = scene.main;
-      document.getElementById("subText").textContent = scene.sub;
+      document.getElementById("storyText").textContent = scene.text;
       document.getElementById("lumiImage").src = scene.image;
 
+      const prevButton = document.getElementById("prevButton");
+
+      // 두 번째 장면부터 이전 버튼을 보여줍니다.
+      if (currentSceneIndex > 0) {
+        prevButton.style.display = "inline-block";
+      } else {
+        prevButton.style.display = "none";
+      }
+
+      const nextButton = document.getElementById("nextButton");
+
+      if (currentSceneIndex === scenes.length - 1) {
+        nextButton.textContent = "질문 연습하러 가기";
+      } else {
+        nextButton.textContent = "다음";
+      }
+
       renderDots();
-      updateButtons();
     }
 
+    // 아래 점 표시를 그립니다.
     function renderDots() {
       const dotRow = document.getElementById("dotRow");
       dotRow.innerHTML = "";
@@ -399,26 +326,7 @@
       });
     }
 
-    function updateButtons() {
-      const prevButton = document.getElementById("prevButton");
-      const nextButton = document.getElementById("nextButton");
-
-      prevButton.style.visibility = currentSceneIndex === 0 ? "hidden" : "visible";
-
-      if (currentSceneIndex === scenes.length - 1) {
-        nextButton.textContent = "질문 연습하러 가기";
-      } else {
-        nextButton.textContent = "다음";
-      }
-    }
-
-    function prevScene() {
-      if (currentSceneIndex > 0) {
-        currentSceneIndex--;
-        renderScene();
-      }
-    }
-
+    // 다음 장면으로 이동합니다.
     function nextScene() {
       if (currentSceneIndex < scenes.length - 1) {
         currentSceneIndex++;
@@ -433,8 +341,12 @@
       location.href = "./during-reading-practice.html";
     }
 
-    function goPractice() {
-      location.href = "./practice.html";
+    // 이전 장면으로 이동합니다.
+    function prevScene() {
+      if (currentSceneIndex > 0) {
+        currentSceneIndex--;
+        renderScene();
+      }
     }
   </script>
   <script src="../js/fixed-stage.js"></script>

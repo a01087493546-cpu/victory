@@ -218,13 +218,13 @@
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-flow-card {
         height: 146px !important;
-        grid-template-columns: 104px minmax(0, 1fr) 38px !important;
-        padding: 18px 22px !important;
+        grid-template-columns: 116px minmax(0, 1fr) 44px !important;
+        padding: 14px 20px !important;
       }
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-flow-card img {
-        width: 92px !important;
-        height: 92px !important;
+        width: 106px !important;
+        height: 106px !important;
       }
 
       .mq-fixed-stage-page.mq-page-before-reading .page {
