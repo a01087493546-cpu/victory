@@ -299,70 +299,71 @@
     }
 
     .tr-form-wrap {
-      width: min(1040px, 100%);
-      height: 100%;
-      margin: 0 auto;
-      padding: 34px 46px;
-      display: grid;
-      align-content: center;
-      border-radius: 30px;
-      border: 1.5px solid rgba(255, 222, 145, 0.72);
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255, 245, 207, 0.95), rgba(248, 227, 183, 0.88) 55%, rgba(215, 176, 104, 0.78));
-      color: #3f230e;
-      box-shadow:
-        0 18px 30px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.44);
-      overflow: hidden;
-    }
+  width: min(1250px, 100%);
+  height: 100%;
+  margin: 0 auto;
+  padding: 58px 66px;
+  display: grid;
+  align-content: center;
+  border-radius: 34px;
+  border: 2px solid rgba(255, 222, 145, 0.72);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 245, 207, 0.95), rgba(248, 227, 183, 0.88) 55%, rgba(215, 176, 104, 0.78));
+  color: #3f230e;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.44);
+  overflow: hidden;
+}
 
     .tr-form-grid {
       display: grid;
-      gap: 24px;
+      gap: 34px;
     }
 
     .tr-input-row {
       display: grid;
-      grid-template-columns: 150px minmax(0, 1fr);
-      gap: 20px;
-      align-items: center;
+      grid-template-columns: 190px minmax(0, 1fr);
+      gap: 28px;
+       align-items: center;
+  min-height: 72px;
     }
 
     .tr-label {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: #4b2a12;
-      font-size: 16px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #4b2a12;
+  font-size: 25px;
+  font-weight: 900;
+  white-space: nowrap;
+}
     .tr-label span {
-      width: 25px;
-      height: 25px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #3f842e;
-      color: #fff8e3;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #3f842e;
+  color: #fff8e3;
+  font-size: 19px;
+  font-weight: 900;
+  box-shadow: 0 3px 0 rgba(31, 86, 24, 0.45);
+}
     .tr-input,
-    .tr-select {
-      width: 100%;
-      height: 54px;
-      border: 2px solid rgba(135, 82, 34, 0.24);
-      border-radius: 16px;
-      background: rgba(255, 253, 246, 0.94);
-      color: #3e2310;
-      font-size: 17px;
-      font-weight: 800;
-      outline: none;
-      padding: 0 16px;
-    }
+.tr-select {
+  width: 100%;
+  height: 72px;
+  border: 3px solid rgba(135, 82, 34, 0.24);
+  border-radius: 20px;
+  background: rgba(255, 253, 246, 0.96);
+  color: #3e2310;
+  font-size: 22px;
+  font-weight: 800;
+  outline: none;
+  padding: 0 24px;
+}
 
     .tr-input:focus,
     .tr-select:focus {
@@ -378,18 +379,18 @@
     }
 
     .tr-action-button {
-      min-width: 124px;
-      height: 46px;
-      padding: 0 22px;
-      border: 0;
-      border-radius: 999px;
-      background: linear-gradient(180deg, #3f842e, #245716);
-      color: #fff8e3;
-      font-size: 15px;
-      font-weight: 900;
-      white-space: nowrap;
-      box-shadow: 0 5px 0 rgba(24, 45, 12, 0.78);
-    }
+  min-width: 150px;
+  height: 58px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #3f842e, #245716);
+  color: #fff8e3;
+  font-size: 19px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 6px 0 rgba(24, 45, 12, 0.78);
+}
 
     .tr-action-button.is-brown {
       background: linear-gradient(180deg, #965d25, #562b0c);
@@ -403,64 +404,63 @@
     }
 
     .tr-student-layout {
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 350px minmax(0, 1fr);
-      gap: 18px;
-      overflow: hidden;
-    }
-
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 24px;
+  overflow: hidden;
+}
     .tr-setting-card,
-    .tr-table-card {
-      min-width: 0;
-      min-height: 0;
-      padding: 24px;
-      border-radius: 26px;
-      border: 1.5px solid rgba(255, 215, 132, 0.46);
-      background:
-        linear-gradient(180deg, rgba(255, 249, 226, 0.92), rgba(244, 224, 180, 0.84));
-      color: #3f230e;
-      box-shadow:
-        0 12px 24px rgba(0, 0, 0, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.42);
-      overflow: hidden;
-    }
+.tr-table-card {
+  min-width: 0;
+  min-height: 0;
+  padding: 32px;
+  border-radius: 28px;
+  border: 2px solid rgba(255, 215, 132, 0.46);
+  background:
+    linear-gradient(180deg, rgba(255, 249, 226, 0.92), rgba(244, 224, 180, 0.84));
+  color: #3f230e;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  overflow: hidden;
+}
 
     .tr-setting-card h3,
-    .tr-table-card h3 {
-      margin-bottom: 16px;
-      color: #42240e;
-      font-family: "Noto Serif KR", serif;
-      font-size: 23px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-    }
+.tr-table-card h3 {
+  margin-bottom: 22px;
+  color: #42240e;
+  font-family: "Noto Serif KR", serif;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
 
     .tr-setting-list {
       display: grid;
       gap: 16px;
     }
 
-    .tr-mini-label {
-      display: block;
-      margin-bottom: 6px;
-      color: #674019;
-      font-size: 13px;
-      font-weight: 900;
-    }
+   .tr-mini-label {
+  display: block;
+  margin-bottom: 9px;
+  color: #674019;
+  font-size: 18px;
+  font-weight: 900;
+}
 
     .tr-help-box {
-      margin-top: 16px;
-      padding: 14px 15px;
-      border-radius: 18px;
-      border: 1px solid rgba(76, 113, 48, 0.26);
-      background: rgba(76, 113, 48, 0.16);
-      color: #3f4e1c;
-      font-size: 13px;
-      font-weight: 850;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(76, 113, 48, 0.26);
+  background: rgba(76, 113, 48, 0.16);
+  color: #3f4e1c;
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.65;
+  word-break: keep-all;
+}
 
     .tr-table-card {
       display: grid;
@@ -479,31 +479,30 @@
       border-collapse: separate;
       border-spacing: 0 10px;
     }
-
-    .tr-student-table th {
-      height: 34px;
-      color: #5a3513;
-      font-size: 14px;
-      font-weight: 900;
-      text-align: center;
-    }
+.tr-student-table th {
+  height: 46px;
+  color: #5a3513;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
 
     .tr-student-table td {
       padding: 0 5px;
     }
 
-    .tr-student-table input {
-      width: 100%;
-      height: 43px;
-      border: 2px solid rgba(135, 82, 34, 0.18);
-      border-radius: 13px;
-      background: rgba(255, 253, 246, 0.92);
-      color: #3e2310;
-      font-size: 14px;
-      font-weight: 800;
-      text-align: center;
-      outline: none;
-    }
+   .tr-student-table input {
+  width: 100%;
+  height: 54px;
+  border: 2px solid rgba(135, 82, 34, 0.18);
+  border-radius: 15px;
+  background: rgba(255, 253, 246, 0.92);
+  color: #3e2310;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
 
     .tr-student-table input:focus {
       border-color: rgba(63, 132, 46, 0.78);
@@ -519,21 +518,21 @@
 
     .tr-student-count {
       color: #5a3513;
-      font-size: 14px;
+      font-size: 19px;
       font-weight: 900;
     }
 
     .tr-plus-button {
-      width: 38px;
-      height: 38px;
-      border: 0;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #3f842e, #245716);
-      color: #fff8e3;
-      font-size: 24px;
-      font-weight: 900;
-      box-shadow: 0 4px 0 rgba(24, 45, 12, 0.72);
-    }
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #3f842e, #245716);
+  color: #fff8e3;
+  font-size: 32px;
+  font-weight: 900;
+  box-shadow: 0 5px 0 rgba(24, 45, 12, 0.72);
+}
 
     .tr-complete-wrap {
       width: min(1040px, 100%);
@@ -613,62 +612,242 @@
       text-align: left;
       word-break: keep-all;
     }
+/* =========================================================
+   1920 × 1080 고정 화면
+========================================================= */
 
-    @media (max-width: 1180px) {
-      body {
-        overflow: auto;
-      }
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-      .tr-page {
-        height: auto;
-        min-height: 100vh;
-        overflow: visible;
-      }
+body {
+  margin: 0;
+}
 
-      .tr-shell {
-        height: auto;
-        grid-template-rows: auto auto;
-      }
+.tr-stage-viewport {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+}
 
-      .tr-topbar {
-        height: auto;
-        grid-template-columns: 1fr;
-        padding: 14px;
-      }
+.tr-stage-frame {
+  position: relative;
+  width: calc(1920px * var(--stage-scale, 1));
+  height: calc(1080px * var(--stage-scale, 1));
+  flex: 0 0 auto;
+}
 
-      .tr-brand,
-      .tr-top-actions {
-        justify-content: center;
-      }
+.tr-page {
+  width: 1920px;
+  height: 1080px;
+  min-height: 1080px;
+  padding: 30px 52px 38px;
+  overflow: hidden;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: top left;
+}
 
-      .tr-main,
-      .tr-board,
-      .tr-panel {
-        height: auto;
-        overflow: visible;
-      }
+.tr-shell {
+  width: 100%;
+  max-width: 1816px;
+  height: 1012px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: 88px minmax(0, 1fr);
+  gap: 22px;
+}
 
-      .tr-panel.is-active,
-      #completePanel.is-active {
-        grid-template-rows: auto;
-      }
+/* 상단 바 확대 */
 
-      .tr-choice-grid,
-      .tr-student-layout {
-        grid-template-columns: 1fr;
-      }
+.tr-topbar {
+  width: 100%;
+  height: 88px;
+  grid-template-columns: 330px minmax(0, 1fr) 330px;
+  padding: 0 24px;
+  border-radius: 28px;
+}
 
-      .tr-input-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-      }
-    }
+.tr-brand {
+  gap: 16px;
+  font-size: 34px;
+}
+
+.tr-brand-mark {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  border-radius: 18px;
+}
+
+.tr-brand-mark img {
+  width: 48px;
+  height: 48px;
+}
+
+.tr-title {
+  font-size: 50px;
+}
+
+.tr-pill-button {
+  height: 50px;
+  padding: 0 26px;
+  font-size: 18px;
+}
+
+/* 등록 대상을 골라요 전체 상자 확대 */
+
+.tr-main {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.tr-board {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 42px 70px 52px;
+  border-radius: 36px;
+}
+
+.tr-panel.is-active {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 32px;
+}
+
+/* 제목 확대 */
+
+.tr-panel-title h2 {
+  font-size: 48px;
+  line-height: 1.15;
+}
+
+.tr-panel-title p {
+  margin-top: 10px;
+  font-size: 21px;
+}
+
+/* 카드 그리드 고정 */
+
+.tr-choice-grid {
+  width: 100%;
+  max-width: 1260px;
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px;
+  align-items: stretch;
+}
+
+/* 카드 확대 */
+
+.tr-choice-card {
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  padding: 48px 38px;
+  border-radius: 34px;
+}
+
+.tr-choice-card > div {
+  width: 100%;
+}
+
+/* 아이콘 확대 */
+
+.tr-choice-icon {
+  width: 158px;
+  height: 158px;
+  margin: 0 auto 30px;
+  border-width: 3px;
+  font-size: 76px;
+}
+
+/* 카드 글씨 확대 */
+
+.tr-choice-card h3 {
+  font-size: 46px;
+  line-height: 1.2;
+}
+
+.tr-choice-card p {
+  margin-top: 22px;
+  font-size: 23px;
+  line-height: 1.65;
+}
+
+/* 첫 선택 화면에 아래 버튼 공간이 남지 않게 처리 */
+
+#selectPanel.is-active {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+#selectPanel .tr-action-row {
+  display: none;
+}
+
+/* 고정 화면 안에서는 무조건 두 칸 유지 */
+
+.tr-stage-frame .tr-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tr-stage-frame .tr-topbar {
+  grid-template-columns: 330px minmax(0, 1fr) 330px;
+}
+    /* 학생 계정 일괄 생성 화면을 위로 올리기 */
+#studentPanel.is-active {
+  transform: translateY(-18px);
+}
+.tr-setting-card .tr-help-box {
+  margin-top: 14px !important;
+  padding: 13px 16px !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+}
+/* 학생 계정 화면 잘림 수정 */
+#studentPanel.is-active {
+  transform: translateY(-18px);
+}
+
+.tr-setting-card {
+  padding: 26px 32px !important;
+}
+
+.tr-setting-card h3 {
+  margin-bottom: 14px !important;
+}
+
+.tr-setting-list {
+  gap: 13px !important;
+}
+
+.tr-setting-card .tr-help-box {
+  margin-top: 14px !important;
+  padding: 13px 16px !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+}
   </style>
 </head>
 
 <body>
-  <div class="tr-page">
-    <div class="tr-shell">
+  <div class="tr-stage-viewport">
+    <div class="tr-stage-frame" id="teacherRegisterStageFrame">
+      <div class="tr-page" id="teacherRegisterFixedStage">
+        <div class="tr-shell">
       <header class="tr-topbar">
         <div class="tr-brand">
           <div class="tr-brand-mark">
@@ -708,10 +887,6 @@
                   <p>학생 계정은 교사가 만든 뒤<br>학생에게 나누어 줄 수 있어요.</p>
                 </div>
               </button>
-            </div>
-
-            <div class="tr-action-row">
-              <button class="tr-action-button" type="button" onclick="showPanel('teacher')">교사 등록하기</button>
             </div>
           </section>
 
@@ -805,7 +980,6 @@
           <section class="tr-panel" id="studentPanel">
             <div class="tr-panel-title">
               <h2>학생 계정 일괄 생성</h2>
-              <p>자동생성을 누르면 학생 계정이 단순한 규칙으로 만들어져요.</p>
             </div>
 
             <div class="tr-student-layout">
@@ -892,10 +1066,35 @@
           </section>
         </section>
       </main>
+           </div>
+      </div>
     </div>
   </div>
 
   <script>
+    function updateTeacherRegisterStageScale() {
+  const stage = document.getElementById("teacherRegisterFixedStage");
+  const frame = document.getElementById("teacherRegisterStageFrame");
+
+  if (!stage || !frame) {
+    return;
+  }
+
+  const scale = Math.min(
+    window.innerWidth / 1920,
+    window.innerHeight / 1080,
+    1
+  );
+
+  stage.style.setProperty("--stage-scale", scale);
+  frame.style.setProperty("--stage-scale", scale);
+
+  frame.style.width = `${1920 * scale}px`;
+  frame.style.height = `${1080 * scale}px`;
+}
+
+updateTeacherRegisterStageScale();
+window.addEventListener("resize", updateTeacherRegisterStageScale);
     let teacherData = {};
     let classData = {};
     let studentData = [];
