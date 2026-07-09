@@ -187,10 +187,12 @@
     }
 
     .ira-hero-summary {
-      min-width: 172px;
-      display: grid;
-      gap: 6px;
-      padding: 15px 18px;
+      min-width: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 28px;
       border-radius: 22px;
       background: rgba(255, 246, 220, 0.82);
       border: 1px solid rgba(181, 117, 37, 0.18);
@@ -200,15 +202,16 @@
     .ira-hero-summary strong {
       display: block;
       color: #4e2d10;
-      font-size: 26px;
+      font-size: 30px;
       font-weight: 950;
       line-height: 1.05;
     }
 
     .ira-hero-summary span {
       color: #8a5a22;
-      font-size: 13px;
-      font-weight: 900;
+      font-size: 24px;
+      font-weight: 950;
+      white-space: nowrap;
     }
 
     .ira-view {
@@ -616,8 +619,8 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
 /* 책 카드들이 넓어진 폭에 맞게 자연스럽게 배치 */
 .ira-book-grid {
   width: 100% !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 20px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 24px !important;
 }
 /* 나의 독서 보관함 - 읽은 책 목록 배경 카드 높이 조정 */
 #bookListView .ira-panel {
@@ -666,6 +669,73 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
 .ira-detail-desc {
   display: none !important;
 }
+
+/* 보관함 카드 가독성 확대 */
+.ira-book-card {
+  min-height: 330px !important;
+  gap: 18px !important;
+  padding: 30px 34px !important;
+  border-radius: 30px !important;
+}
+
+.ira-book-card-head {
+  gap: 18px !important;
+}
+
+.ira-book-title {
+  font-size: 36px !important;
+  line-height: 1.12 !important;
+}
+
+.ira-book-author {
+  margin-top: 8px !important;
+  font-size: 21px !important;
+  line-height: 1.25 !important;
+}
+
+.ira-book-date {
+  padding: 9px 16px !important;
+  font-size: 18px !important;
+}
+
+.ira-book-meta-line {
+  gap: 14px !important;
+}
+
+.ira-book-finish-info {
+  gap: 10px !important;
+}
+
+.ira-book-info-pill {
+  padding: 9px 16px !important;
+  font-size: 22px !important;
+  line-height: 1.15 !important;
+}
+
+.ira-book-rating {
+  min-width: 138px !important;
+  justify-content: center !important;
+  letter-spacing: 0.08em !important;
+}
+
+.ira-represent-question-box {
+  min-height: 96px !important;
+  padding: 18px 20px !important;
+  font-size: 22px !important;
+  line-height: 1.45 !important;
+  border-radius: 22px !important;
+}
+
+.ira-represent-question-box strong {
+  margin-bottom: 9px !important;
+  font-size: 20px !important;
+}
+
+.ira-book-actions .ira-main-button {
+  min-width: 170px !important;
+  height: 58px !important;
+  font-size: 22px !important;
+}
   </style>
 </head>
 
@@ -694,7 +764,7 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
         </div>
 
         <div class="ira-hero-summary">
-          <span>보관된 책</span>
+          <span>보관된 책 :</span>
           <strong id="archiveBookCount">0권</strong>
         </div>
       </section>
@@ -927,7 +997,6 @@ function renderArchiveSummary() {
 
       <div class="ira-book-meta-line">
         <div class="ira-book-finish-info">
-          <span class="ira-book-info-pill">완독 날짜 ${escapeHtml(completedAt)}</span>
           <span class="ira-book-info-pill ira-book-rating">${ratingStars}</span>
         </div>
 

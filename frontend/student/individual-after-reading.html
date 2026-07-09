@@ -822,9 +822,13 @@
     }
 
     #questionScreen .iar-lumi-feedback {
-      grid-template-columns: 72px minmax(0, 1fr) auto !important;
-      gap: 16px !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 18px !important;
       align-items: center !important;
+    }
+
+    #questionScreen .iar-lumi-feedback img {
+      display: none !important;
     }
 
     #questionScreen .iar-feedback-text {
@@ -2377,6 +2381,177 @@ body {
   padding: 0 13px !important;
   font-size: 13px !important;
 }
+
+/* 간추리기 공유 글을 위쪽으로 자연스럽게 모으고, 마무리 버튼 여백을 정리합니다. */
+#shareScreen .iar-panel {
+  padding-top: 24px !important;
+  grid-template-rows: auto auto minmax(0, auto) auto !important;
+  align-content: start !important;
+  gap: 14px !important;
+}
+
+#shareScreen .iar-share-grid {
+  margin-top: 2px !important;
+}
+
+#shareScreen .iar-bottom-actions {
+  margin-top: 18px !important;
+  align-self: start !important;
+}
+
+/* 대표 질문 선택 보조창을 넓고 안정적인 선택 패널로 확장합니다. */
+.iar-finish-modal-box {
+  width: min(1120px, calc(100vw - 56px)) !important;
+  height: min(840px, calc(100vh - 56px)) !important;
+  max-height: calc(100vh - 56px) !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  padding: 32px 36px !important;
+  overflow: hidden !important;
+}
+
+.iar-represent-section {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 12px !important;
+}
+
+.iar-represent-section h3,
+.iar-represent-section .iar-finish-guide {
+  margin-bottom: 0 !important;
+}
+
+.iar-represent-category-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 2px 0 0 !important;
+}
+
+.iar-represent-category-button {
+  height: 46px !important;
+  border-radius: 999px !important;
+}
+
+.iar-represent-question-list {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+}
+
+.iar-represent-question-button {
+  min-height: 68px !important;
+  padding: 15px 18px !important;
+  font-size: 16px !important;
+}
+
+/* 질문으로 간추리기/스스로 간추리기 피드백 박스의 용 이미지를 제거합니다. */
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+}
+
+#questionScreen .iar-lumi-feedback img,
+#summaryScreen .iar-lumi-feedback img {
+  display: none !important;
+}
+
+#summaryScreen .iar-feedback-text {
+  min-height: 62px !important;
+  display: grid !important;
+  align-content: center !important;
+}
+
+/* 읽기 후 화면 카드 팔레트 정리: 밝은 베이지, 부드러운 브라운, 골드 포인트 */
+.iar-top-bar,
+.iar-step-card,
+.iar-panel,
+.iar-finish-modal-box {
+  border-color: rgba(209, 162, 88, 0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.94), rgba(255, 247, 229, 0.88)) !important;
+  box-shadow:
+    0 18px 34px rgba(142, 103, 52, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.iar-panel-head h2,
+.iar-step-title,
+.iar-book-type-button strong,
+.iar-summary-left h3,
+.iar-summary-right h3,
+.iar-share-card h3,
+.iar-finish-modal-head strong {
+  color: #5a381e !important;
+}
+
+.iar-step-pill,
+.iar-share-filter-button,
+.iar-represent-category-button {
+  border-color: rgba(214, 171, 99, 0.34) !important;
+  background: rgba(255, 251, 241, 0.84) !important;
+  color: #7b5630 !important;
+}
+
+.iar-step-pill.active,
+.iar-share-filter-button.active,
+.iar-represent-category-button.active,
+.iar-main-button.primary,
+.iar-star-button.selected {
+  background: linear-gradient(180deg, #e9bd63, #c78a34) !important;
+  color: #fffdf6 !important;
+  box-shadow: 0 10px 18px rgba(182, 125, 44, 0.20) !important;
+}
+
+.iar-book-type-button,
+.iar-qa-card,
+.iar-summary-left,
+.iar-summary-right,
+.iar-summary-qa-card,
+.iar-share-card,
+.iar-finish-section {
+  border-color: rgba(213, 168, 96, 0.30) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 236, 181, 0.26), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 244, 0.92), rgba(255, 247, 231, 0.86)) !important;
+  box-shadow: 0 12px 24px rgba(142, 103, 52, 0.10) !important;
+}
+
+.iar-book-type-button.selected,
+.iar-represent-question-button.selected {
+  border-color: rgba(199, 138, 52, 0.58) !important;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 226, 144, 0.42), transparent 36%),
+    linear-gradient(180deg, rgba(255, 250, 237, 0.98), rgba(255, 239, 201, 0.92)) !important;
+  box-shadow: 0 14px 24px rgba(178, 121, 41, 0.16) !important;
+}
+
+.iar-input,
+.iar-textarea,
+.iar-summary-textarea,
+.iar-share-summary,
+.iar-represent-question-button,
+.iar-feedback-text {
+  border-color: rgba(214, 171, 99, 0.28) !important;
+  background: rgba(255, 253, 247, 0.90) !important;
+  color: #5b3b22 !important;
+}
+
+.iar-share-type,
+.iar-represent-question-button small {
+  background: rgba(232, 243, 219, 0.82) !important;
+  color: #4f6f32 !important;
+}
+
+.iar-like-button,
+.iar-finish-close-button,
+.iar-star-button {
+  border-color: rgba(214, 171, 99, 0.34) !important;
+  background: rgba(255, 250, 238, 0.92) !important;
+  color: #9a6728 !important;
+}
 /* 읽기 후 1단계 배경 카드 + 내부 카드 최종 조정 */
 #typeScreen .iar-panel {
   min-height: 520px !important;
@@ -2564,7 +2739,6 @@ body {
           </div>
 
           <div class="iar-lumi-feedback">
-            <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
             <div class="iar-feedback-text" id="questionFeedback">
               질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
@@ -2608,7 +2782,6 @@ body {
           </div>
 
           <div class="iar-lumi-feedback">
-            <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
             <div class="iar-feedback-text" id="summaryFeedback">
   간추린 내용을 쓴 뒤 루미 피드백 받기를 눌러봐.
 </div>
@@ -3721,17 +3894,25 @@ function renderRepresentQuestionList() {
   list.innerHTML = questions
     .map(function (question, index) {
       const isSelected = selectedRepresentQuestionIndex === index;
+      const categoryLabel = getRepresentCategoryLabel(selectedRepresentCategory);
       return `
         <button
           type="button"
           class="iar-represent-question-button ${isSelected ? "selected" : ""}"
           onclick="selectRepresentQuestion(${index})"
         >
-          ${index + 1}. ${escapeHtml(question)}
+          <small>${categoryLabel} 질문 ${index + 1}</small>
+          ${escapeHtml(question)}
         </button>
       `;
     })
     .join("");
+}
+
+function getRepresentCategoryLabel(category) {
+  if (category === "before") return "읽기 전";
+  if (category === "during") return "읽기 중";
+  return "읽기 후";
 }
 
 // 대표 질문은 하나만 선택합니다.
@@ -3761,7 +3942,8 @@ function saveBookFinishRecord() {
     author: sessionStorage.getItem("individualCurrentBookAuthor_" + studentId) || "지은이 없음",
     finishedAt: getTodayText(),
     rating: selectedBookRating,
-    representativeQuestion: selectedRepresentQuestion
+    representativeQuestion: selectedRepresentQuestion,
+    representativeQuestionCategory: getRepresentCategoryLabel(selectedRepresentCategory)
   };
 
   sessionStorage.setItem("individualBookFinishRecord_" + studentId, JSON.stringify(finishRecord));

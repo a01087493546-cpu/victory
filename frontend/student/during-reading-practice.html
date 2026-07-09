@@ -41,10 +41,9 @@
       color: #fff1d0;
       background:
         linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.76)),
-        url("../assets/images/during-reading/intro/during-reading-practice-bg.png");
+        url("../assets/images/practice/during-reading-magic-space-bg.png");
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
       overflow: hidden;
     }
 
@@ -61,6 +60,9 @@
   height: 100vh;
   padding: 18px 38px 18px;
   overflow: hidden;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.76)),
+    url("../assets/images/practice/during-reading-magic-space-bg.png") center / cover no-repeat;
 }
 
     .page-inner {
@@ -2678,6 +2680,420 @@ height: calc(100% + 110px);
     line-height: 1.35;
   }
 }
+
+/* =========================================================
+   읽기 중 연습 화면 톤 재정의 (인트로 화면 제외)
+   - 검정/금색 판타지 톤 → 밝은 베이지/브라운/골드 톤으로 통일
+   - individual-reading.html 카드 톤 기준: 크림색 배경 + 얇은 브라운 테두리 + 은은한 그림자
+   - 겹겹이 있던 radial-gradient 장식, 이중 그림자를 걷어내고 단순화
+========================================================= */
+
+/* 화면 전체를 감싸는 가장 바깥 카드 */
+.hero-card {
+  background: rgba(255, 250, 238, 0.96) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  box-shadow:
+    0 20px 44px rgba(99, 61, 17, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+.hero-card::before {
+  display: none !important;
+}
+
+/* 큰 틀 카드/보드형 컨테이너 공통 톤 */
+.question-map,
+.dark-card,
+.story-box,
+.support-grid,
+.method-rune-frame,
+.review-gate,
+.review-book,
+.review-workshop,
+.question-maker {
+  background: rgba(255, 250, 238, 0.95) !important;
+  border: 1px solid rgba(186, 130, 58, 0.28) !important;
+  box-shadow:
+    0 10px 24px rgba(99, 61, 17, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+}
+
+.review-gate.locked {
+  opacity: 0.6 !important;
+  filter: none !important;
+}
+
+/* 질문 유형 선택 카드(01~04) */
+.question-cell {
+  background: rgba(255, 250, 238, 0.95) !important;
+  border: 1px solid rgba(186, 130, 58, 0.28) !important;
+  box-shadow: 0 8px 18px rgba(99, 61, 17, 0.10) !important;
+  color: #4b2a13 !important;
+}
+
+.question-cell.open {
+  border-color: rgba(180, 122, 40, 0.6) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 246, 222, 0.98), rgba(247, 227, 190, 0.95)) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(200, 145, 60, 0.28),
+    0 10px 22px rgba(99, 61, 17, 0.14) !important;
+}
+
+.question-cell.locked {
+  opacity: 0.5 !important;
+  filter: grayscale(0.5) !important;
+}
+
+.question-cell.done {
+  border-color: rgba(124, 174, 85, 0.65) !important;
+}
+
+.cell-number {
+  color: #a8641e !important;
+}
+
+.cell-title {
+  color: #3f2615 !important;
+  text-shadow: none !important;
+}
+
+.cell-state {
+  background: rgba(255, 246, 222, 0.9) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  color: #8a6a3f !important;
+}
+
+.question-cell.open .cell-state {
+  background: linear-gradient(180deg, #e4ad45, #b06d0d) !important;
+  color: #fff9ec !important;
+}
+
+.question-core {
+  background: radial-gradient(circle at 42% 26%, #f7e2ab 0%, #d6a34a 55%, #8a5a1f 100%) !important;
+  border: 1px solid rgba(180, 122, 40, 0.55) !important;
+  box-shadow: 0 10px 24px rgba(99, 61, 17, 0.18) !important;
+  color: #4b2a13 !important;
+}
+
+.question-core span {
+  color: #a8641e !important;
+  text-shadow: none !important;
+}
+
+/* 제목/라벨/보조 텍스트 */
+.title-badge {
+  background: linear-gradient(180deg, #e4ad45, #b06d0d) !important;
+  border: 1px solid rgba(180, 122, 40, 0.5) !important;
+  color: #fff9ec !important;
+  box-shadow: none !important;
+}
+
+.main-title {
+  color: #3f2615 !important;
+  text-shadow: none !important;
+}
+
+.main-desc {
+  color: #6e4b2e !important;
+}
+
+.progress-pill {
+  background: rgba(255, 250, 238, 0.9) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  color: #96621d !important;
+}
+
+.section-label {
+  color: #96621d !important;
+}
+
+.story-box p {
+  color: #3f2615 !important;
+  text-shadow: none !important;
+}
+
+.story-highlight {
+  background: rgba(228, 173, 69, 0.24) !important;
+  box-shadow: none !important;
+  color: #4b2a13 !important;
+}
+
+.support-card {
+  background: rgba(247, 232, 206, 0.7) !important;
+  border: 1px solid rgba(186, 130, 58, 0.22) !important;
+  color: #5f452d !important;
+}
+
+.support-card strong {
+  color: #96621d !important;
+}
+
+.choice-guide-title,
+.workshop-guide {
+  background: rgba(247, 232, 206, 0.7) !important;
+  border: 1px solid rgba(186, 130, 58, 0.28) !important;
+  color: #4b2a13 !important;
+}
+
+.choice-list {
+  background: rgba(255, 250, 238, 0.6) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+}
+
+.choice-button {
+  background: rgba(255, 250, 238, 0.92) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+  color: #4b2a13 !important;
+  box-shadow: none !important;
+}
+
+.choice-button:hover {
+  border-color: rgba(180, 122, 40, 0.5) !important;
+  background: rgba(250, 240, 220, 0.96) !important;
+}
+
+.choice-button.selected {
+  border-color: rgba(124, 174, 85, 0.7) !important;
+  background: rgba(233, 245, 222, 0.92) !important;
+  box-shadow: none !important;
+}
+
+.lumi-feedback {
+  background: rgba(255, 250, 238, 0.92) !important;
+  border: 1px solid rgba(186, 130, 58, 0.28) !important;
+  color: #4b2a13 !important;
+  box-shadow: none !important;
+}
+
+.lumi-feedback::before {
+  display: none !important;
+}
+
+.lumi-feedback p {
+  color: #4b2a13 !important;
+}
+
+.lumi-feedback.good {
+  border-color: rgba(124, 174, 85, 0.6) !important;
+  background: rgba(236, 246, 227, 0.92) !important;
+  box-shadow: none !important;
+}
+
+.lumi-feedback.need {
+  border-color: rgba(224, 158, 74, 0.6) !important;
+  background: rgba(253, 240, 219, 0.92) !important;
+  box-shadow: none !important;
+}
+
+/* 버튼 */
+.plain-button {
+  background: #ece0cc !important;
+  color: #6c5a48 !important;
+}
+
+.main-button {
+  background: linear-gradient(180deg, #e4ad45, #b06d0d) !important;
+  color: #fff9ec !important;
+  box-shadow: 0 8px 16px rgba(143, 91, 8, 0.2) !important;
+}
+
+.main-button:disabled {
+  background: #d9cdb8 !important;
+  color: #a89478 !important;
+}
+
+.example-toggle-button {
+  background: linear-gradient(180deg, #e4ad45, #b06d0d) !important;
+  color: #fff9ec !important;
+  box-shadow: 0 8px 16px rgba(143, 91, 8, 0.2) !important;
+}
+
+/* 방법 알기(핵심 주문) 화면 */
+.method-rune-text {
+  color: #3f2615 !important;
+  text-shadow: none !important;
+}
+
+.hidden-keyword {
+  background: radial-gradient(circle, #fff0b7, #d6a34a 72%) !important;
+  border: 1px solid rgba(180, 122, 40, 0.6) !important;
+  color: #3a2109 !important;
+  box-shadow: none !important;
+}
+
+.method-side-tip {
+  background: rgba(247, 232, 206, 0.6) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+  color: #5f452d !important;
+}
+
+.method-example-title {
+  color: #4b2a13 !important;
+}
+
+.method-example-count {
+  color: #96621d !important;
+}
+
+.method-example-box,
+.method-example-question-box {
+  background: rgba(247, 232, 206, 0.6) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+}
+
+.method-example-icon {
+  background: rgba(228, 173, 69, 0.18) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+}
+
+.method-example-text,
+.method-example-question {
+  color: #4b2a13 !important;
+}
+
+.method-example-arrow {
+  color: #96621d !important;
+}
+
+/* 예시 보기 보조창 */
+.floating-example-panel {
+  background: rgba(255, 250, 238, 0.98) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  box-shadow: 0 20px 44px rgba(99, 61, 17, 0.2) !important;
+}
+
+.floating-example-title {
+  color: #4b2a13 !important;
+}
+
+.floating-example-count {
+  color: #96621d !important;
+}
+
+.floating-close-button {
+  background: rgba(247, 232, 206, 0.9) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  color: #6c5a48 !important;
+}
+
+.floating-example-box,
+.floating-example-question-box {
+  background: rgba(247, 232, 206, 0.55) !important;
+  border: 1px solid rgba(186, 130, 58, 0.22) !important;
+}
+
+.floating-example-panel .method-example-text,
+.floating-example-panel .method-example-question {
+  color: #4b2a13 !important;
+}
+
+.floating-example-panel .method-example-arrow {
+  color: #96621d !important;
+}
+
+/* 총 복습 화면 */
+.review-story-title {
+  color: #4b2a13 !important;
+}
+
+.review-gate-title {
+  color: #4b2a13 !important;
+}
+
+.review-gem {
+  background: rgba(255, 250, 238, 0.7) !important;
+  border: 1px solid rgba(186, 130, 58, 0.3) !important;
+  color: #b08a5a !important;
+}
+
+.review-gem.done {
+  background: rgba(124, 174, 85, 0.18) !important;
+  border-color: rgba(124, 174, 85, 0.6) !important;
+  color: #4c7a3c !important;
+  box-shadow: none !important;
+}
+
+.review-story-part {
+  background: rgba(247, 232, 206, 0.5) !important;
+  border: 1px solid rgba(186, 130, 58, 0.2) !important;
+  color: #4b2a13 !important;
+}
+
+.review-story-part:hover {
+  border-color: rgba(180, 122, 40, 0.45) !important;
+  background: rgba(250, 240, 220, 0.7) !important;
+}
+
+.review-story-part.selected {
+  border-color: rgba(200, 145, 60, 0.6) !important;
+  background: rgba(247, 227, 190, 0.85) !important;
+  box-shadow: none !important;
+}
+
+.review-selected-box {
+  background: rgba(247, 232, 206, 0.55) !important;
+  border: 1px solid rgba(186, 130, 58, 0.26) !important;
+  color: #5f452d !important;
+}
+
+.review-selected-box strong {
+  color: #96621d !important;
+}
+
+.review-type-button {
+  background: rgba(255, 250, 238, 0.9) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+  color: #4b2a13 !important;
+}
+
+.review-type-button.selected {
+  border-color: rgba(124, 174, 85, 0.6) !important;
+  background: rgba(233, 245, 222, 0.9) !important;
+  box-shadow: none !important;
+}
+
+.review-input-label {
+  color: #96621d !important;
+}
+
+.review-status {
+  background: rgba(236, 246, 227, 0.6) !important;
+  border: 1px solid rgba(124, 174, 85, 0.3) !important;
+}
+
+.review-status-title {
+  color: #4c7a3c !important;
+}
+
+.review-status-item {
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+  color: #8a6a3f !important;
+}
+
+.review-status-item.done {
+  background: rgba(124, 174, 85, 0.16) !important;
+  border-color: rgba(124, 174, 85, 0.55) !important;
+  color: #4c7a3c !important;
+}
+
+.maker-title {
+  color: #96621d !important;
+}
+
+.maker-frame {
+  color: #3f2615 !important;
+}
+
+.question-maker {
+  background: rgba(255, 250, 238, 0.9) !important;
+}
+
+.deep-hint-box {
+  background: rgba(247, 232, 206, 0.5) !important;
+  border: 1px solid rgba(186, 130, 58, 0.24) !important;
+  color: #5f452d !important;
+}
   </style>
 </head>
 
@@ -3259,7 +3675,7 @@ height: calc(100% + 110px);
       '<div class="screen-title-row">' +
         '<div>' +
           '<span class="title-badge">방법 알기</span>' +
-          '<h1 class="main-title">' + item.methodTitle + '</h1>' +
+          '<h1 class="main-title">' + item.title + '</h1>' +
         '</div>' +
         '<div class="progress-pill">' + item.number + ' 질문</div>' +
       '</div>' +

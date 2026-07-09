@@ -43,11 +43,7 @@
       overflow-x: hidden;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #3f2615;
-      background:
-        linear-gradient(180deg, rgba(255, 248, 226, 0.46), rgba(255, 238, 199, 0.58)),
-        url("../assets/images/class-reading/class-reading-question-bg.png");
-      background-size: cover;
-      background-position: center;
+      background: linear-gradient(150deg, #fdf6e9 0%, #f6e7c8 48%, #ecd7a7 100%);
     }
 
     button,
@@ -61,11 +57,34 @@
     }
 
     .page {
+      position: relative;
       min-height: 100vh;
       padding: 24px 28px 26px;
+      overflow: hidden;
       background:
-        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 34%),
-        linear-gradient(90deg, rgba(255, 246, 224, 0.70), rgba(255, 255, 255, 0.16), rgba(255, 246, 224, 0.70));
+        radial-gradient(circle at 16% 10%, rgba(255, 214, 133, 0.30), transparent 32%),
+        radial-gradient(circle at 84% 82%, rgba(230, 168, 82, 0.24), transparent 34%),
+        linear-gradient(150deg, #fdf6e9 0%, #f6e7c8 48%, #ecd7a7 100%);
+    }
+
+    /* 창 비율이 안 맞아 여백(레터박스)이 생겨도 배경 톤이 어긋나 보이지 않게 맞춥니다. */
+    body:has(.mq-fixed-stage-page) .mq-fixed-stage-viewport {
+      background-color: #ecd7a7 !important;
+      background-image: none !important;
+    }
+
+    /* 은은한 별빛/입자 느낌을 더하는 장식용 레이어입니다. */
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(255, 226, 150, 0.55) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(255, 196, 86, 0.30) 0 1px, transparent 3px);
+      background-size: 130px 130px, 86px 86px;
+      background-position: 0 0, 40px 55px;
     }
 
     .shell {
@@ -397,8 +416,10 @@
 
     .question-card h3 {
       grid-column: 1 / -1;
+      grid-row: 2;
+      margin-top: 2px;
       color: #3f2615;
-      font-size: 19px;
+      font-size: 22px;
       font-weight: 900;
       line-height: 1.43;
       word-break: keep-all;
@@ -406,8 +427,9 @@
 
     .answer-preview {
       grid-column: 1 / 2;
+      grid-row: 3;
       color: #6f4e2f;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 760;
       line-height: 1.45;
       word-break: keep-all;
@@ -424,7 +446,7 @@
 
     .view-button {
       grid-column: 2;
-      grid-row: 2 / 4;
+      grid-row: 3;
       align-self: end;
       justify-self: end;
       height: 36px;
@@ -597,6 +619,43 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+
+    /* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
+    .mq-book-home-button {
+      height: 42px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(214, 173, 99, 0.5);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #5c3c22 0%, #2c1a0d 100%);
+      color: #fbf0da;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow:
+        0 8px 16px rgba(35, 20, 8, 0.32),
+        inset 0 1px 0 rgba(255, 238, 205, 0.16);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .mq-book-home-button:hover {
+      background: linear-gradient(180deg, #6e4a29 0%, #3a2411 100%);
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 20px rgba(35, 20, 8, 0.38),
+        inset 0 1px 0 rgba(255, 238, 205, 0.22);
+    }
+
+    .mq-book-home-button:active {
+      transform: translateY(0);
+      box-shadow:
+        0 5px 10px rgba(35, 20, 8, 0.3),
+        inset 0 1px 0 rgba(255, 238, 205, 0.14);
+    }
   </style>
 </head>
 
@@ -613,12 +672,11 @@
 
         <div class="title-area">
           <h1 class="main-title">나의 질문 모음</h1>
-          <p class="main-desc">내가 만든 질문과 생각을 날짜별로 모아 볼 수 있어요.</p>
         </div>
 
         <div class="top-actions">
           <button class="nav-button primary" type="button" onclick="goClassReading()">우리반 책읽기</button>
-          <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
+          <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">🏠 책읽기 홈</button>
         </div>
       </header>
 
@@ -675,7 +733,7 @@
         <div class="question-grid" id="questionGrid"></div>
       </section>
 
-      <p class="bottom-note">질문을 다시 보고 싶다면 “다시 보기” 버튼을 눌러 보세요!</p>
+      
     </div>
   </main>
 
@@ -933,7 +991,7 @@
             </p>
 
             <button class="view-button" type="button" onclick="focusQuestion('${question.id}')">
-              다시 보기 ›
+              자세히 보기 ›
             </button>
           </article>
         `;
@@ -1089,8 +1147,8 @@ function closeQuestionModal() {
       location.href = "./class-reading.html";
     }
 
-    function goHome() {
-      location.href = "./home.html";
+    function goIndividualReading() {
+      location.href = "./individual-reading.html";
     }
 
     function escapeHtml(text) {

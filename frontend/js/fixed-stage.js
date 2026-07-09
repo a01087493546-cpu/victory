@@ -200,6 +200,31 @@
         padding: 22px 42px !important;
       }
 
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-practice-card::after {
+        top: 18px !important;
+        right: 22px !important;
+        height: 48px !important;
+        min-width: 116px !important;
+        padding: 0 24px !important;
+        font-size: 19px !important;
+        font-weight: 950 !important;
+        border-width: 2px !important;
+        box-shadow:
+          0 10px 20px rgba(15, 45, 18, 0.30),
+          0 0 0 4px rgba(255, 226, 126, 0.16),
+          inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-individual-reading .ir-practice-text {
+        width: fit-content !important;
+        min-width: 320px !important;
+        margin-left: 8px !important;
+        margin-right: auto !important;
+        padding-right: 130px !important;
+        text-align: center !important;
+        transform: translateX(-34px) !important;
+      }
+
       .mq-fixed-stage-page.mq-page-individual-reading .ir-practice-lumi {
         width: 220px !important;
         height: 224px !important;
