@@ -832,7 +832,13 @@
 
         <div class="top-actions">
           <button class="nav-button" type="button" onclick="goTeacherHome()">교사 홈</button>
-          <button class="nav-button primary" type="button" onclick="goPracticeTeacher()">수업차례로</button>
+          <button
+  class="nav-button primary"
+  type="button"
+  onclick="goIndividualReadingHome()"
+>
+  홈
+</button>
         </div>
       </header>
 
@@ -1555,9 +1561,9 @@
       location.href = "./home.html";
     }
 
-    function goPracticeTeacher() {
-      location.href = "./practice-teacher.html";
-    }
+   function goIndividualReadingHome() {
+  location.href = "./individual-reading-manage.html";
+}
 
     function escapeHtml(text) {
       return String(text || "")
