@@ -1032,7 +1032,7 @@
 
     .ar-after-feedback-message {
       min-height: 38px;
-      max-height: 48px;
+      max-height: 50px;
       padding: 8px 12px;
       border-radius: 14px;
       border: 1px solid rgba(186, 130, 58, 0.28);
@@ -1042,7 +1042,7 @@
       font-weight: 850;
       line-height: 1.35;
       word-break: keep-all;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     .ar-after-feedback-message.good {
@@ -1837,7 +1837,7 @@
 
   .ar-practice-write-panel .ar-after-feedback-message {
     min-height: 50px;
-    max-height: 58px;
+    max-height: 60px;
     padding: 12px 16px;
     font-size: 17px;
     line-height: 1.45;
@@ -1949,7 +1949,7 @@
 
   .ar-practice-write-panel .ar-after-feedback-message {
     min-height: 42px;
-    max-height: 48px;
+    max-height: 50px;
     padding: 9px 13px;
     font-size: 15px;
   }
@@ -2755,6 +2755,11 @@
       font-size: 18px !important;
     }
 
+    /* AI 루미 피드백 박스가 커진 만큼 아래 버튼 줄과 겹치지 않게 여백 확보 */
+    #writePanel .ar-panel-actions {
+      margin-top: 20px !important;
+    }
+
     #bookSummaryButton:disabled {
       opacity: 0.45 !important;
       cursor: not-allowed !important;
@@ -2815,7 +2820,7 @@
   line-height: 1.55 !important;
   white-space: normal !important;
   word-break: keep-all !important;
-  overflow-y: auto !important;
+  overflow: hidden !important;
   display: block !important;
 }
 
@@ -2867,7 +2872,7 @@
   padding: 14px 18px !important;
   font-size: 18px !important;
   line-height: 1.55 !important;
-  overflow-y: auto !important;
+  overflow: hidden !important;
   white-space: normal !important;
 }
 /* =========================================================
@@ -2920,7 +2925,7 @@
   font-weight: 850 !important;
   line-height: 1.55 !important;
   border-radius: 18px !important;
-  overflow-y: auto !important;
+  overflow: hidden !important;
   white-space: normal !important;
 }
 
@@ -2977,7 +2982,7 @@
   font-size: 19px !important;
   line-height: 1.55 !important;
   border-radius: 18px !important;
-  overflow-y: auto !important;
+  overflow: hidden !important;
   white-space: normal !important;
 }
 /* =========================================================
@@ -3792,8 +3797,38 @@
     const STORAGE_KEY = "afterReadSummaries";
     const LIKE_STORAGE_KEY = "afterReadSummaryLikes";
 
+    const API_BASE_URL = "http://localhost:8080";
+
+    function requestAiFeedback(type, bookType, qaList, questionNumber, summaryText) {
+      const requestBody = { type: type, bookType: bookType, qaList: qaList || [] };
+
+      if (typeof questionNumber === "number") {
+        requestBody.question_number = questionNumber;
+      }
+
+      if (typeof summaryText === "string") {
+        requestBody.summaryText = summaryText;
+      }
+
+      return fetch(API_BASE_URL + "/api/feedback/ai-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      }).then(function(response) {
+        if (!response.ok) {
+          throw new Error("AI 피드백 요청 실패: " + response.status);
+        }
+        return response.json();
+      });
+    }
+
     let selectedBookType = "";
     let selectedPracticeQuestionIndexes = [];
+
+    function getBookTypeLabelForAi() {
+      const data = bookTypeData[selectedBookType];
+      return data ? data.label : selectedBookType;
+    }
 
     const bookTypeData = {
       story: {
@@ -4193,9 +4228,22 @@
 
         setAfterAiFeedback(
           "extraPracticeAiFeedback",
-          "good",
-          "좋아요! 질문과 답이 모두 준비되었어. 이제 내가 읽은 책에도 적용해 보자."
+          "",
+          "루미가 답변을 읽고 있어요..."
         );
+
+        requestAiFeedback("extra_practice", getBookTypeLabelForAi(), [
+          { question: question1, answer: answer1 },
+          { question: question2, answer: answer2 }
+        ]).then(function(result) {
+          setAfterAiFeedback("extraPracticeAiFeedback", result.status, result.message);
+        }).catch(function() {
+          setAfterAiFeedback(
+            "extraPracticeAiFeedback",
+            "need",
+            "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘."
+          );
+        });
         return;
       }
 
@@ -4346,9 +4394,19 @@
 
       setAfterAiFeedback(
         "summaryAiFeedback",
-        "good",
-        "좋아! 질문에 답한 내용이 모여 간추리기가 되었어. 저장하고 친구들과 함께 볼 수 있어."
+        "",
+        "루미가 답변을 읽고 있어요..."
       );
+
+      requestAiFeedback("summary", getBookTypeLabelForAi(), null, undefined, summaryText).then(function(result) {
+        setAfterAiFeedback("summaryAiFeedback", result.status, result.message);
+      }).catch(function() {
+        setAfterAiFeedback(
+          "summaryAiFeedback",
+          "need",
+          "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘."
+        );
+      });
     }
 
     function saveSummary() {
@@ -4561,6 +4619,33 @@
 
       box.className = "ar-after-feedback-message" + (state ? " " + state : "");
       box.innerHTML = message;
+      applyAiFeedbackFontScale(box);
+    }
+
+    function applyAiFeedbackFontScale(box) {
+      box.style.fontSize = "";
+
+      // 매번 원래 CSS 기준 크기부터 85%로 다시 계산해야
+      // 메시지가 바뀔 때마다 폰트가 계속 더 작아지는 걸 막을 수 있음.
+      const baseFontSize = parseFloat(window.getComputedStyle(box).fontSize);
+
+      if (baseFontSize) {
+        box.style.fontSize = (baseFontSize * 0.85) + "px";
+      }
+
+      requestAnimationFrame(function() {
+        shrinkAiFeedbackFontToFit(box);
+      });
+    }
+
+    function shrinkAiFeedbackFontToFit(box) {
+      const minFontSize = 8;
+      let fontSize = parseFloat(window.getComputedStyle(box).fontSize);
+
+      while (box.scrollHeight > box.clientHeight && fontSize > minFontSize) {
+        fontSize -= 1;
+        box.style.fontSize = fontSize + "px";
+      }
     }
 
     function escapeHtml(text) {
@@ -4841,21 +4926,37 @@
       }
 
       updateAddQuestionButton();
+      requestBookQuestionAiFeedback(item, number);
+    }
 
-      if (allPassed) {
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "good",
-          "좋아! 질문 3개와 답 3개가 모두 준비되었어. 이제 답을 모아 간추리기로 이어 가 보자."
-        );
-        return;
-      }
+    let bookQuestionAiRequestId = 0;
+
+    function requestBookQuestionAiFeedback(item, number) {
+      const requestId = ++bookQuestionAiRequestId;
 
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
-        "good",
-        "좋아! 질문 " + number + "번이 통과했어. 질문 쓰기 버튼을 눌러 다음 질문을 만들어 보자."
+        "",
+        "루미가 답변을 읽고 있어요..."
       );
+
+      requestAiFeedback("book_question", getBookTypeLabelForAi(), [
+        { question: item.question, answer: item.answer }
+      ], number).then(function(result) {
+        if (requestId !== bookQuestionAiRequestId) {
+          return;
+        }
+        setAfterAiFeedback("bookQuestionAiFeedback", result.status, result.message);
+      }).catch(function() {
+        if (requestId !== bookQuestionAiRequestId) {
+          return;
+        }
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "need",
+          "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘."
+        );
+      });
     }
 
     function addBookQuestionCard() {

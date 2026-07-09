@@ -407,7 +407,7 @@
     }
 
     .iar-feedback-text {
-      min-height: 42px;
+      min-height: 48px;
       display: grid;
       align-items: center;
       color: #5a3718;
@@ -828,8 +828,15 @@
     }
 
     #questionScreen .iar-feedback-text {
+      min-height: 58px !important;
       font-size: 17px !important;
       line-height: 1.55 !important;
+    }
+
+    .iar-lumi-feedback-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .iar-lumi-feedback-action {
@@ -844,6 +851,11 @@
       cursor: pointer;
       box-shadow: 0 10px 18px rgba(58, 105, 38, 0.13);
       white-space: nowrap;
+    }
+
+    #nextQuestionButton {
+      background: linear-gradient(180deg, #f0a53a, #c97613);
+      box-shadow: 0 10px 18px rgba(150, 90, 15, 0.16);
     }
     /* =========================================================
    읽기 후 순서 바 4단계를 한 줄로 정리
@@ -2449,7 +2461,7 @@ body {
 
             <button type="button" class="iar-book-type-button" data-type="opinion">
               <div class="iar-book-type-icon">💬</div>
-              <strong>생각을 담은 책</strong>
+              <strong>주장을 담은 책</strong>
               <span>글쓴이의 주장, 까닭, 생각을 중심으로 읽는 책</span>
             </button>
           </div>
@@ -2509,7 +2521,10 @@ body {
             <div class="iar-feedback-text" id="questionFeedback">
               질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
-            <button type="button" class="iar-lumi-feedback-action" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
+            <div class="iar-lumi-feedback-actions">
+              <button type="button" class="iar-lumi-feedback-action" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
+              <button type="button" class="iar-lumi-feedback-action" id="nextQuestionButton" onclick="goToNextQuestionCard()" hidden>다음 질문으로</button>
+            </div>
           </div>
 
           <div class="iar-bottom-actions">
@@ -2581,7 +2596,7 @@ body {
     🔍 정보를 담은 책
   </button>
   <button type="button" class="iar-share-filter-button" data-filter="opinion" onclick="changeShareFilter('opinion')">
-    💬 생각을 담은 책
+    💬 주장을 담은 책
   </button>
 </div>
 
@@ -2671,6 +2686,31 @@ body {
   </main>
 
   <script>
+    const API_BASE_URL = "http://localhost:8080";
+
+    function requestAiFeedback(type, bookType, qaList, questionNumber, summaryText) {
+      const requestBody = { type: type, bookType: bookType, qaList: qaList || [] };
+
+      if (typeof questionNumber === "number") {
+        requestBody.question_number = questionNumber;
+      }
+
+      if (typeof summaryText === "string") {
+        requestBody.summaryText = summaryText;
+      }
+
+      return fetch(API_BASE_URL + "/api/feedback/ai-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody)
+      }).then(function(response) {
+        if (!response.ok) {
+          throw new Error("AI 피드백 요청 실패: " + response.status);
+        }
+        return response.json();
+      });
+    }
+
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 
     const AFTER_KEYS = {
@@ -2751,6 +2791,13 @@ function changeShareFilter(filterKey) {
           if (card) {
             card.dataset.feedbackPassed = "false";
             card.classList.remove("passed");
+
+            // good 판정 후 다시 답을 고치면 그 판정은 더 이상 유효하지
+            // 않으므로 "다음 질문으로" 버튼도 같이 숨긴다.
+            if (card === cardPendingAdvance) {
+              cardPendingAdvance = null;
+              setNextQuestionButtonVisible(false);
+            }
           }
 
           updateQuestionProgress();
@@ -2793,6 +2840,7 @@ function changeShareFilter(filterKey) {
     function showQuestionScreen() {
       switchScreen("questionScreen");
       setActiveStep("stepQuestion");
+      updateQuestionPlaceholders();
     }
 
     function showSummaryScreen() {
@@ -2929,6 +2977,23 @@ function changeShareFilter(filterKey) {
       };
     }
 
+    // 이미 통과한 카드들의 질문 텍스트를 공백 제거한 형태로 모아 온다.
+    // (excludeCard는 지금 검사 중인 카드 자신을 비교 대상에서 빼기 위함)
+    function getPassedQuestionTexts(excludeCard) {
+      const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
+
+      return cards
+        .filter(function (card) {
+          return card !== excludeCard && card.dataset.feedbackPassed === "true";
+        })
+        .map(function (card) {
+          return getQuestionAnswerFromCard(card).question.replace(/\s/g, "");
+        })
+        .filter(function (text) {
+          return text.length > 0;
+        });
+    }
+
     function checkCurrentQuestionFeedback() {
       const card =
         document.querySelector(".iar-qa-card.current-card:not(.is-hidden)") ||
@@ -2948,21 +3013,103 @@ function changeShareFilter(filterKey) {
       const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
       const number = cards.indexOf(card) + 1;
       const item = getQuestionAnswerFromCard(card);
-      const problems = validateQuestionAnswer(item, number);
+      const usedQuestionTexts = getPassedQuestionTexts(card);
+      const problems = validateQuestionAnswer(item, number, usedQuestionTexts);
+
+      // 다시 확인받기를 누르면 이전 판정에 딸려 있던 "다음 질문으로"는
+      // 더 이상 유효하지 않으므로 항상 숨긴다.
+      cardPendingAdvance = null;
+      setNextQuestionButtonVisible(false);
 
       if (problems.length > 0) {
         card.dataset.feedbackPassed = "false";
         card.classList.remove("passed");
         setFeedback("questionFeedback", "need", `<b>고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
         updateSequentialQuestionLock();
-      } else {
-        card.dataset.feedbackPassed = "true";
-        card.classList.add("passed");
-        updateQuestionProgress();
+        return;
+      }
+
+      // 형식 체크만 통과한 상태. AI 판정이 오기 전까지는 카드를
+      // 통과 처리하지도, 다음 카드로 넘기지도 않는다.
+      requestIndividualQuestionAiFeedback(card, item, number);
+    }
+
+    let individualQuestionAiRequestId = 0;
+
+    function requestIndividualQuestionAiFeedback(card, item, number) {
+      const requestId = ++individualQuestionAiRequestId;
+
+      setFeedback("questionFeedback", "", "루미가 답변을 읽고 있어요...");
+
+      requestAiFeedback("individual_question", getBookTypeLabelForAi(), [
+        { question: item.question, answer: item.answer }
+      ], number).then(function(result) {
+        if (requestId !== individualQuestionAiRequestId) {
+          return;
+        }
+        applyIndividualQuestionAiResult(card, result.status, result.message);
+      }).catch(function() {
+        if (requestId !== individualQuestionAiRequestId) {
+          return;
+        }
+        applyIndividualQuestionAiResult(card, "need", "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘.");
+      });
+    }
+
+    // good 판정을 받았지만 아직 "다음 질문으로"를 누르지 않은 카드.
+    // 이 값이 있는 동안에만 다음 질문 버튼이 보인다.
+    let cardPendingAdvance = null;
+
+    function applyIndividualQuestionAiResult(card, status, message) {
+      setFeedback("questionFeedback", status, message);
+
+      if (status !== "good") {
+        // AI가 need로 판정하면 통과 처리하지 않고 이 카드에 그대로 머무른다.
+        card.dataset.feedbackPassed = "false";
+        card.classList.remove("passed");
+        cardPendingAdvance = null;
+        setNextQuestionButtonVisible(false);
+        updateSequentialQuestionLock();
+        return;
+      }
+
+      // AI가 good으로 판정해도 카드만 통과 처리해 두고, 다음 카드로
+      // 넘어가는 것과 보상 지급은 학생이 "다음 질문으로"를 눌러야 실행된다.
+      card.dataset.feedbackPassed = "true";
+      card.classList.add("passed");
+      cardPendingAdvance = card;
+      setNextQuestionButtonVisible(true);
+    }
+
+    function setNextQuestionButtonVisible(visible) {
+      const button = document.getElementById("nextQuestionButton");
+      if (button) button.hidden = !visible;
+    }
+
+    function goToNextQuestionCard() {
+      if (!cardPendingAdvance) {
+        return;
+      }
+
+      const advancedCard = cardPendingAdvance;
+      cardPendingAdvance = null;
+      setNextQuestionButtonVisible(false);
+
+      // 다음 카드로 넘기는 것, 완료 시 보상/모달 지급, 간추리기 버튼
+      // 활성화까지 전부 여기서 한 번에 처리된다.
+      updateQuestionProgress();
+
+      const activeCard = document.querySelector(".iar-qa-card.current-card");
+
+      // 실제로 다른 카드로 넘어간 경우에만 피드백 박스를 기본 안내
+      // 문구로 되돌린다. 마지막 질문이라 같은 카드에 그대로 머무는
+      // 경우는 방금 받은 good 메시지를 계속 보여준다.
+      if (activeCard && activeCard !== advancedCard) {
+        setFeedback("questionFeedback", "", '질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.');
       }
     }
 
-    function validateQuestionAnswer(item, number) {
+    function validateQuestionAnswer(item, number, usedQuestionTexts) {
       const problems = [];
       const question = item.question;
       const answer = item.answer;
@@ -2978,6 +3125,10 @@ function changeShareFilter(filterKey) {
 
       if (question.replace(/\s/g, "").length < 8) {
         problems.push(`질문 ${number}: 질문이 너무 짧아. 책 내용을 떠올릴 수 있게 조금 더 구체적으로 써줘.`);
+      }
+
+      if (usedQuestionTexts && usedQuestionTexts.includes(question.replace(/\s/g, ""))) {
+        problems.push(`질문 ${number}: 다른 질문을 만들어봐, 이미 쓴 질문이야.`);
       }
 
       if (!answer || answer.replace(/\s/g, "").length < 8) {
@@ -3029,11 +3180,6 @@ function changeShareFilter(filterKey) {
 ]
       });
     }
-
-    setFeedback("questionFeedback", "good", "좋아! 모든 질문과 답이 순서대로 루미 피드백을 통과했어. 마법력과 지혜가 +1씩 자랐어. 이제 간추리기를 쓸 수 있어.");
-  } else {
-    const nextNumber = Math.min(passedCount + 1, cards.length);
-    setFeedback("questionFeedback", "need", `질문 ${cards.length}개 중 ${passedCount}개가 통과했어. 지금은 질문 ${nextNumber}번을 쓰고 피드백 받을 차례야.`);
   }
 
   updateSequentialQuestionLock();
@@ -3062,8 +3208,40 @@ function changeShareFilter(filterKey) {
     function getBookTypeHint() {
       if (selectedBookType === "story") return "이야기 책은 처음·가운데·마지막, 인물, 사건, 문제와 해결을 묻는 질문이 좋아.";
       if (selectedBookType === "info") return "정보를 담은 책은 중요한 사실, 특징, 원인, 결과, 방법을 묻는 질문이 좋아.";
-      if (selectedBookType === "opinion") return "생각을 담은 책은 주장, 까닭, 근거, 글쓴이의 생각을 묻는 질문이 좋아.";
+      if (selectedBookType === "opinion") return "주장을 담은 책은 주장, 까닭, 근거, 글쓴이의 생각을 묻는 질문이 좋아.";
       return "책 종류에 맞는 질문인지 다시 살펴봐.";
+    }
+
+    // 책 유형별 질문 1·2·3 예시. story 배열은 기존에 하드코딩되어 있던
+    // 기본 placeholder 문구와 동일하게 맞춰서, story 선택 시 이전과
+    // 같은 문구가 그대로 보이도록 한다.
+    const questionExamplesByBookType = {
+      story: [
+        "처음에 어떤 일이 있었나요?",
+        "가운데에 어떤 문제가 생겼나요?",
+        "마지막에는 어떻게 되었나요?"
+      ],
+      info: [
+        "이 글은 무엇에 대해 알려주나요?",
+        "가장 중요한 정보는 무엇인가요?",
+        "그 정보에서 알게 된 새로운 사실은 무엇인가요?"
+      ],
+      opinion: [
+        "글쓴이는 무엇을 해야 한다고 주장하나요?",
+        "그렇게 주장하는 까닭은 무엇인가요?",
+        "그 주장을 뒷받침하는 근거는 무엇인가요?"
+      ]
+    };
+
+    function updateQuestionPlaceholders() {
+      const examples = questionExamplesByBookType[selectedBookType] || questionExamplesByBookType.story;
+      const questionInputs = document.querySelectorAll("#qaList .qa-question");
+
+      questionInputs.forEach(function (input, index) {
+        if (examples[index]) {
+          input.placeholder = "예) " + examples[index];
+        }
+      });
     }
 
     function saveQuestionAnswers() {
@@ -3125,9 +3303,13 @@ function changeShareFilter(filterKey) {
   document.getElementById("finishAfterButton").disabled = false;
   sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
 
-  
+  setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
 
-  setFeedback("summaryFeedback", "good", "좋아! 질문과 답에서 중요한 내용을 가져와 자연스럽게 간추렸어. 이제 읽기 후 활동을 완료해도 돼.");
+  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), null, undefined, summaryText).then(function(result) {
+    setFeedback("summaryFeedback", result.status, result.message);
+  }).catch(function() {
+    setFeedback("summaryFeedback", "need", "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘.");
+  });
 }
 
     function countAnswerKeywordOverlap(summaryText, questionAnswers) {
@@ -3748,7 +3930,7 @@ function confirmMiniRewardModal() {
     {
       id: "friend-summary-3",
       name: "서연",
-      bookType: "💬 생각을 담은 책",
+      bookType: "💬 주장을 담은 책",
       bookTypeKey: "opinion",
       bookTitle: "왜 약속을 지켜야 할까",
       createdAt: "2026.06.14",
@@ -3890,8 +4072,15 @@ function getTodayText() {
     function getSelectedBookTypeLabel() {
       if (selectedBookType === "story") return "📖 이야기 책";
       if (selectedBookType === "info") return "🔍 정보를 담은 책";
-      if (selectedBookType === "opinion") return "💬 생각을 담은 책";
+      if (selectedBookType === "opinion") return "💬 주장을 담은 책";
       return "책";
+    }
+
+    function getBookTypeLabelForAi() {
+      if (selectedBookType === "story") return "이야기 책";
+      if (selectedBookType === "info") return "정보를 담은 책";
+      if (selectedBookType === "opinion") return "주장을 담은 책";
+      return selectedBookType;
     }
 
     function getCurrentBookTitle() {
@@ -3915,6 +4104,25 @@ function goFriendBookShelf() {
       feedback.classList.remove("good", "need");
       if (state) feedback.classList.add(state);
       feedback.innerHTML = message;
+      applyAiFeedbackFontScale(feedback);
+    }
+
+    function applyAiFeedbackFontScale(box) {
+      box.style.fontSize = "";
+
+      requestAnimationFrame(function() {
+        shrinkAiFeedbackFontToFit(box);
+      });
+    }
+
+    function shrinkAiFeedbackFontToFit(box) {
+      const minFontSize = 10;
+      let fontSize = parseFloat(window.getComputedStyle(box).fontSize);
+
+      while (box.scrollHeight > box.clientHeight && fontSize > minFontSize) {
+        fontSize -= 1;
+        box.style.fontSize = fontSize + "px";
+      }
     }
 
     function escapeHtml(value) {
