@@ -116,7 +116,7 @@
     box-shadow: 0 6px 14px rgba(141, 93, 39, 0.18) !important;
   }
 
-  /* 오른쪽 위 홈으로/건너뛰기 버튼 영역입니다. */
+  /* 오른쪽 위 돌아가기 버튼 영역입니다. */
   /* 화면이 1920x1080 고정 캔버스로 렌더링되므로 위치는 고정 px 값을 씁니다. */
   .ability-top-actions {
     position: absolute;
@@ -154,14 +154,10 @@
 <body>
   <main class="ability-intro-page">
 
-    <!-- 오른쪽 위 홈으로/건너뛰기 버튼입니다. -->
+    <!-- 오른쪽 위 돌아가기 버튼입니다. -->
     <div class="ability-top-actions">
-      <button type="button" class="ability-top-button" onclick="location.href='../index.html'">
-        🏠 로그인 화면으로
-      </button>
-
       <button type="button" class="ability-top-button" onclick="location.href='./individual-reading.html'">
-        건너뛰기
+        ← 돌아가기
       </button>
     </div>
 
@@ -319,16 +315,7 @@
     </section>
   </main>
 
-  <!-- 로그인 확인 기능입니다. -->
-  <script src="../js/auth.js"></script>
-
   <script>
-    /*
-      능력치 안내 화면도 로그인한 학생만 볼 수 있으므로
-      페이지가 열리면 로그인 여부를 확인합니다.
-    */
-    checkLogin();
-
     const abilityCards = Array.from(document.querySelectorAll(".ability-card"));
     const abilityDots = Array.from(document.querySelectorAll(".ability-progress-dot"));
     const abilityStepLabel = document.getElementById("abilityStepLabel");
