@@ -1110,13 +1110,13 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 {
-  title: "읽기후 용 배경 이미지",
+  title: "읽기후 신비로운 책 우주 배경 이미지",
   category: "이미지",
-  fileName: "after-reading-dragon-bg.png",
-  description: "연습읽기 읽기후 화면에 사용되는 신비로운 용과 구름 분위기의 베이지톤 배경 이미지",
+  fileName: "after-reading-space-bg.png",
+  description: "읽기후 활동 화면에서 사용하는 밝은 베이지톤의 신비로운 우주 배경 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "연습읽기 읽기후 화면 배경",
-  modified: "파일명 변경 및 화면 배경에 맞게 CSS로 크기 조정",
+  usage: "개별읽기 읽기후 활동 화면 배경 이미지",
+  modified: "읽기후 화면 배경 크기에 맞게 CSS로 cover 적용",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 ];

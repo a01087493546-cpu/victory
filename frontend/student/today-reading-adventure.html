@@ -952,11 +952,12 @@
     }
 
     function isStageUnlocked(stageKey) {
-      const currentStage = getCurrentStage();
+      // 그 단계 자체를 이미 완료했다면, 다른 조건과 상관없이 항상 다시 볼 수 있어야 합니다.
+      if (isStageDone(stageKey)) return true;
 
-      if (stageKey === "before") return currentStage === "before" || isStageDone("before");
-      if (stageKey === "during") return isStageDone("before") || currentStage === "during";
-      if (stageKey === "after") return isStageDone("during") || currentStage === "after";
+      if (stageKey === "before") return true;
+      if (stageKey === "during") return isStageDone("before");
+      if (stageKey === "after") return isStageDone("during");
 
       return false;
     }
