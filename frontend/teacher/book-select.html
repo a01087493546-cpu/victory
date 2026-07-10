@@ -1039,12 +1039,14 @@
           </button>
 
           <button
-            class="bs-home-btn"
-            type="button"
-            onclick="goTeacherPractice()"
-          >
-            ← 교사홈
-          </button>
+  class="bs-home-btn"
+  id="teacherHomeButton"
+  type="button"
+  onclick="goTeacherPractice()"
+  style="display: none;"
+>
+  ← 교사 홈
+</button>
         </div>
       </header>
 
@@ -1315,10 +1317,11 @@
     /*
       페이지가 열렸을 때 기존 등록 정보를 불러옵니다.
     */
-    function initPage() {
-      loadSavedBook();
-      updatePreview();
-    }
+   function initPage() {
+  loadSavedBook();
+  updatePreview();
+  checkTeacherMode();
+}
 
     /*
       기존에 등록된 책 불러오기
@@ -1675,6 +1678,23 @@
     function goTeacherPractice() {
       location.href = "book-manage.html";
     }
+    /*
+  교사모드로 들어왔을 때만 교사 홈 버튼 표시
+*/
+function checkTeacherMode() {
+  const params = new URLSearchParams(location.search);
+  const teacherHomeButton =
+    document.getElementById("teacherHomeButton");
+
+  if (
+    params.get("mode") === "teacher" &&
+    teacherHomeButton
+  ) {
+    teacherHomeButton.style.display = "inline-flex";
+    teacherHomeButton.style.alignItems = "center";
+    teacherHomeButton.style.justifyContent = "center";
+  }
+}
 
     /*
       미리보기 안에 안전하게 글자 출력
