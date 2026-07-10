@@ -3106,7 +3106,10 @@ height: calc(100% + 110px);
           <span>문답책</span>
         </div>
 
-        <button class="nav-button" type="button" onclick="goPractice()">← 연습하기</button>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="nav-button" type="button" onclick="goIndividualHome()">← 홈</button>
+          <button class="nav-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+        </div>
       </header>
 
       <section class="hero-card" id="app"></section>
@@ -3482,8 +3485,12 @@ height: calc(100% + 110px);
       return progress.direct && progress.infer && progress.opinion && progress.connect;
     }
 
-    function goPractice() {
-      window.location.href = "during-read.html";
+    function goIndividualHome() {
+      window.location.href = "individual-reading.html";
+    }
+
+    function goClassReading() {
+      window.location.href = "class-reading.html";
     }
 
     function goSelectScreen() {
@@ -3682,7 +3689,6 @@ height: calc(100% + 110px);
 
       '<article class="dark-card method-full-card">' +
         '<div class="method-card-top">' +
-          '<p class="section-label">핵심 주문</p>' +
           '<button class="example-toggle-button method-top-example-button" type="button" onclick="toggleMethodExamplePanel()">' +
             (methodExampleOpen ? "예시 닫기" : "예시 보기") +
           '</button>' +
@@ -3900,7 +3906,6 @@ goSelectScreen();
             '<div>' +
               '<span class="title-badge">심화 연습 ' + (currentDeepIndex + 1) + ' / ' + questions.length + '</span>' +
               '<h1 class="main-title">직접 질문을 만들어 봐요</h1>' +
-              '<p class="main-desc">' + item.title + '을 스스로 써 보는 연습이에요.</p>' +
             '</div>' +
             '<div class="progress-pill">' + item.number + ' 질문</div>' +
           '</div>' +
@@ -4081,7 +4086,7 @@ goSelectScreen();
       if (!complete) return;
 
       alert("총 복습까지 완료했어요!");
-      goSelectScreen();
+      window.location.href = "class-reading.html";
     }
 
     function renderReviewScreen() {
