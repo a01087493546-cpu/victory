@@ -12,7 +12,7 @@
 
       이 화면에서 하는 일:
       1. 내가 만든 질문과 답을 날짜별로 모아 봅니다.
-      2. 질문 유형별 필터와 검색 기능을 제공합니다.
+      2. 질문 유형별 필터와 정렬 기능을 제공합니다.
       3. 질문을 다시 선택하면 오른쪽에서 질문과 답을 자세히 봅니다.
       4. 읽기 전/읽기 중/읽기 후 사이드바와 루미 말풍선은 사용하지 않습니다.
     */
@@ -88,7 +88,7 @@
     }
 
     .shell {
-      width: min(1160px, calc(100vw - 56px));
+      width: min(1380px, calc(100vw - 48px));
       margin: 0 auto;
     }
 
@@ -99,7 +99,7 @@
     .top {
       position: relative;
       display: grid;
-      grid-template-columns: 180px 1fr 280px;
+      grid-template-columns: 200px 1fr 360px;
       align-items: center;
       gap: 14px;
       margin-bottom: 18px;
@@ -111,7 +111,7 @@
       gap: 10px;
       color: #4b2a13;
       font-family: "Noto Serif KR", serif;
-      font-size: 25px;
+      font-size: 29px;
       font-weight: 900;
       letter-spacing: -0.8px;
       text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
@@ -127,7 +127,7 @@
       color: #fff5d6;
       border: 1px solid rgba(255, 224, 158, 0.78);
       box-shadow: 0 8px 16px rgba(91, 47, 10, 0.18);
-      font-size: 22px;
+      font-size: 25px;
     }
 
     .title-area {
@@ -137,7 +137,7 @@
     .main-title {
       font-family: "Noto Serif KR", serif;
       color: #4b2a13;
-      font-size: 46px;
+      font-size: 52px;
       font-weight: 900;
       line-height: 1.04;
       letter-spacing: -1.5px;
@@ -149,7 +149,7 @@
     .main-desc {
       margin-top: 8px;
       color: #6e4b2e;
-      font-size: 17px;
+      font-size: 20px;
       font-weight: 850;
     }
 
@@ -160,13 +160,13 @@
     }
 
     .nav-button {
-      height: 42px;
-      padding: 0 15px;
+      height: 52px;
+      padding: 0 22px;
       border-radius: 15px;
       border: 1px solid rgba(177, 122, 57, 0.34);
       background: rgba(255, 250, 238, 0.82);
       color: #4f2e16;
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 900;
       box-shadow:
         0 7px 14px rgba(116, 71, 20, 0.10),
@@ -184,8 +184,8 @@
     ========================= */
 
     .summary-card {
-      margin-bottom: 18px;
-      padding: 18px 24px;
+      margin-bottom: 20px;
+      padding: 20px 28px;
       border-radius: 24px;
       border: 1px solid rgba(193, 133, 61, 0.34);
       background:
@@ -203,9 +203,9 @@
     }
 
     .summary-item {
-      min-height: 86px;
+      min-height: 100px;
       display: grid;
-      grid-template-columns: 58px 1fr;
+      grid-template-columns: 68px 1fr;
       align-items: center;
       gap: 12px;
       padding: 10px 16px;
@@ -217,26 +217,26 @@
     }
 
     .summary-icon {
-      width: 50px;
-      height: 50px;
+      width: 58px;
+      height: 58px;
       display: grid;
       place-items: center;
       border-radius: 50%;
       background: rgba(224, 166, 72, 0.16);
       color: #b06d0d;
-      font-size: 24px;
+      font-size: 28px;
     }
 
     .summary-label {
       color: #7f6247;
-      font-size: 15px;
+      font-size: 20px;
       font-weight: 850;
     }
 
     .summary-value {
       margin-top: 4px;
       color: #4a2a10;
-      font-size: 31px;
+      font-size: 36px;
       font-weight: 900;
       letter-spacing: -0.8px;
     }
@@ -253,7 +253,7 @@
       border-radius: 999px;
       background: rgba(113, 174, 84, 0.18);
       color: #4f7130;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
     }
 
@@ -262,7 +262,8 @@
     ========================= */
 
     .board {
-      padding: 20px 22px 18px;
+      min-height: 700px;
+      padding: 24px 26px 22px;
       border-radius: 25px;
       border: 1px solid rgba(193, 133, 61, 0.34);
       background:
@@ -286,7 +287,7 @@
     .board-title {
       color: #4b2a13;
       font-family: "Noto Serif KR", serif;
-      font-size: 27px;
+      font-size: 32px;
       font-weight: 900;
       letter-spacing: -0.7px;
     }
@@ -297,28 +298,27 @@
       border: 1px solid rgba(190, 130, 55, 0.26);
       background: rgba(255, 249, 235, 0.88);
       color: #8c5c1e;
-      font-size: 14px;
+      font-size: 17px;
       font-weight: 900;
       white-space: nowrap;
     }
 
     .control-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr)) 1.15fr 130px;
-      gap: 10px;
+      grid-template-columns: repeat(5, minmax(0, 1fr)) 170px;
+      gap: 12px;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .type-button,
-    .search-input,
     .sort-select {
-      height: 44px;
-      border-radius: 14px;
+      height: 54px;
+      border-radius: 16px;
       border: 1px solid rgba(192, 130, 55, 0.34);
       background: rgba(255, 252, 245, 0.84);
       color: #5a3820;
-      font-size: 15px;
+      font-size: 18px;
       font-weight: 900;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
     }
@@ -330,31 +330,50 @@
       box-shadow: 0 7px 13px rgba(176, 112, 25, 0.16);
     }
 
-    .search-input {
+    .sort-select {
       padding: 0 14px;
       outline: none;
-      font-weight: 750;
     }
 
-    .sort-select {
-      padding: 0 10px;
-      outline: none;
+    .question-scroll-area {
+      height: 580px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px 12px 4px 4px;
+      scrollbar-width: thick;
+      scrollbar-color: #bd7c24 rgba(240, 220, 183, 0.75);
+    }
+
+    .question-scroll-area::-webkit-scrollbar {
+      width: 14px;
+    }
+
+    .question-scroll-area::-webkit-scrollbar-track {
+      border-radius: 999px;
+      background: rgba(240, 220, 183, 0.75);
+    }
+
+    .question-scroll-area::-webkit-scrollbar-thumb {
+      border: 3px solid rgba(240, 220, 183, 0.75);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #dca64e, #a96412);
     }
 
     .question-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 16px;
+      padding-bottom: 8px;
     }
 
     .question-card {
       min-width: 0;
-      min-height: 154px;
+      min-height: 190px;
       display: grid;
       grid-template-columns: 1fr auto;
       grid-template-rows: auto 1fr auto;
       gap: 9px 14px;
-      padding: 16px 18px;
+      padding: 20px 22px;
       border-radius: 18px;
       border: 1px solid rgba(186, 130, 58, 0.25);
       background: rgba(255, 255, 255, 0.66);
@@ -383,7 +402,7 @@
       min-height: 28px;
       padding: 5px 9px;
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 17px;
       font-weight: 900;
       white-space: nowrap;
     }
@@ -449,13 +468,13 @@
       grid-row: 3;
       align-self: end;
       justify-self: end;
-      height: 36px;
+      height: 44px;
       padding: 0 15px;
       border-radius: 999px;
       border: 1px solid rgba(177, 122, 57, 0.28);
       background: rgba(255, 250, 238, 0.82);
       color: #7a4d1e;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
     }
 /* 다시 보기 팝업 배경 */
@@ -560,7 +579,7 @@
 
 .question-modal-button {
   height: 44px;
-  padding: 0 20px;
+  padding: 0 24px;
   border-radius: 15px;
   border: 1px solid rgba(176, 111, 25, 0.40);
   background: linear-gradient(180deg, #e4ad45, #b06d0d);
@@ -622,7 +641,7 @@
 
     /* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
     .mq-book-home-button {
-      height: 42px;
+      height: 52px;
       padding: 0 20px;
       display: inline-flex;
       align-items: center;
@@ -721,7 +740,6 @@
           <button class="type-button" type="button" data-type="feeling">생각·느낌</button>
           <button class="type-button" type="button" data-type="life">삶과 연결</button>
 
-          <input class="search-input" id="searchInput" type="search" placeholder="내 질문 검색">
 
           <select class="sort-select" id="sortSelect">
             <option value="latest">최신순</option>
@@ -730,7 +748,9 @@
           </select>
         </div>
 
-        <div class="question-grid" id="questionGrid"></div>
+        <div class="question-scroll-area">
+          <div class="question-grid" id="questionGrid"></div>
+        </div>
       </section>
 
       
@@ -761,7 +781,6 @@
 
     const typeButtons = document.querySelectorAll(".type-button");
     const questionGrid = document.getElementById("questionGrid");
-    const searchInput = document.getElementById("searchInput");
     const sortSelect = document.getElementById("sortSelect");
 
     init();
@@ -787,7 +806,6 @@
         });
       });
 
-      searchInput.addEventListener("input", render);
       sortSelect.addEventListener("change", render);
     }
 
@@ -834,7 +852,12 @@
         console.error("공유 질문 데이터를 불러오지 못했습니다.", error);
       }
 
-      // 3. 같은 질문이 중복 저장된 경우 한 번만 보여줍니다.
+      // 3. 유형별 예시 질문을 함께 보여 줍니다.
+      getExampleQuestions().forEach(function(question) {
+        questions.push(normalizeQuestion(question));
+      });
+
+      // 4. 같은 질문이 중복 저장된 경우 한 번만 보여줍니다.
       const uniqueMap = {};
 
       questions.forEach(function(question) {
@@ -846,6 +869,95 @@
       });
 
       return Object.values(uniqueMap);
+    }
+
+    function getExampleQuestions() {
+      return [
+        {
+          text: "주인공이 처음 만난 동물은 무엇인가요?",
+          answer: "주인공이 처음 만난 동물은 토끼입니다.",
+          type: "direct",
+          typeLabel: "바로 답 찾기",
+          dateText: "2026.07.10"
+        },
+        {
+          text: "주인공은 어디에서 보물 지도를 발견했나요?",
+          answer: "주인공은 오래된 책장 뒤에서 보물 지도를 발견했습니다.",
+          type: "direct",
+          typeLabel: "바로 답 찾기",
+          dateText: "2026.07.09"
+        },
+        {
+          text: "할머니가 아이에게 건네준 물건은 무엇인가요?",
+          answer: "할머니는 아이에게 작은 은빛 열쇠를 건네주었습니다.",
+          type: "direct",
+          typeLabel: "바로 답 찾기",
+          dateText: "2026.07.08"
+        },
+        {
+          text: "주인공은 왜 혼자 숲속으로 들어갔을까요?",
+          answer: "친구를 꼭 찾고 싶었기 때문에 무서워도 숲속으로 들어갔다고 생각합니다.",
+          type: "infer",
+          typeLabel: "답 짐작하기",
+          dateText: "2026.07.10"
+        },
+        {
+          text: "마지막 장면에서 비가 그친 뒤 어떤 일이 생길까요?",
+          answer: "구름이 걷히고 친구들이 다시 길을 찾아 집으로 돌아갈 것 같습니다.",
+          type: "infer",
+          typeLabel: "답 짐작하기",
+          dateText: "2026.07.09"
+        },
+        {
+          text: "주인공이 편지를 숨긴 까닭은 무엇일까요?",
+          answer: "친구가 걱정할까 봐 자신의 속마음을 바로 말하지 못했기 때문이라고 생각합니다.",
+          type: "infer",
+          typeLabel: "답 짐작하기",
+          dateText: "2026.07.08"
+        },
+        {
+          text: "주인공이 친구를 다시 만났을 때 어떤 마음이 들었을까요?",
+          answer: "걱정했던 친구를 다시 만나 안심되고 무척 기뻤을 것 같습니다.",
+          type: "feeling",
+          typeLabel: "생각·느낌",
+          dateText: "2026.07.10"
+        },
+        {
+          text: "이 이야기에서 가장 마음에 남는 장면은 무엇인가요?",
+          answer: "주인공이 겁이 나도 친구를 도와준 장면이 가장 마음에 남습니다.",
+          type: "feeling",
+          typeLabel: "생각·느낌",
+          dateText: "2026.07.09"
+        },
+        {
+          text: "주인공의 선택에 대해 어떻게 생각하나요?",
+          answer: "자신보다 친구를 먼저 생각한 용기 있는 선택이라고 생각합니다.",
+          type: "feeling",
+          typeLabel: "생각·느낌",
+          dateText: "2026.07.08"
+        },
+        {
+          text: "나도 주인공처럼 용기를 낸 경험이 있나요?",
+          answer: "친구에게 먼저 사과하기 어려웠지만 용기를 내어 제 마음을 이야기한 적이 있습니다.",
+          type: "life",
+          typeLabel: "삶과 연결",
+          dateText: "2026.07.10"
+        },
+        {
+          text: "내가 주인공이라면 친구를 위해 어떻게 행동했을까요?",
+          answer: "혼자 해결하려 하지 않고 주변 어른에게 도움을 요청했을 것입니다.",
+          type: "life",
+          typeLabel: "삶과 연결",
+          dateText: "2026.07.09"
+        },
+        {
+          text: "이 책을 읽고 앞으로 실천하고 싶은 것은 무엇인가요?",
+          answer: "친구가 힘들어할 때 모른 척하지 않고 먼저 다가가 도와주고 싶습니다.",
+          type: "life",
+          typeLabel: "삶과 연결",
+          dateText: "2026.07.08"
+        }
+      ];
     }
 
     function normalizeQuestion(question, isShared) {
@@ -909,23 +1021,11 @@
     }
 
     function getFilteredQuestions() {
-      const keyword = searchInput.value.trim().toLowerCase();
-
       let questions = allQuestions.slice();
 
       if (selectedType !== "all") {
         questions = questions.filter(function(question) {
           return question.type === selectedType;
-        });
-      }
-
-      if (keyword) {
-        questions = questions.filter(function(question) {
-          return (
-            question.text.toLowerCase().includes(keyword) ||
-            question.answer.toLowerCase().includes(keyword) ||
-            question.typeLabel.toLowerCase().includes(keyword)
-          );
         });
       }
 
@@ -969,7 +1069,7 @@
         questionGrid.innerHTML = `
           <div class="empty-box">
             조건에 맞는 질문이 없어요.<br>
-            다른 유형을 누르거나 검색어를 바꿔 보세요.
+            다른 질문 유형을 눌러 보세요.
           </div>
         `;
         return;
