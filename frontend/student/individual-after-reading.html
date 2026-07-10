@@ -3322,6 +3322,135 @@ body {
   font-size: 20px !important;
   line-height: 1.5 !important;
 }
+
+/* =========================================================
+   3단계 스스로 간추리기 최종 높이 조정
+   - 좌우 카드를 아래로 더 확대
+   - 질문 1·2·3 카드를 남는 높이에 맞춰 확대
+   - 간추리기 입력창이 바깥 카드를 침범하지 않게 정리
+   - 피드백 카드와 버튼을 화면 아래쪽으로 이동
+   ========================================================= */
+
+/* 제목 아래 영역의 높이를 늘려 하단 빈 공간을 채웁니다. */
+#summaryScreen .iar-panel {
+  grid-template-rows:
+    auto
+    430px
+    148px
+    auto !important;
+
+  gap: 14px !important;
+  align-content: start !important;
+}
+
+/* 좌우 카드 영역 */
+#summaryScreen .iar-summary-layout {
+  width: 100% !important;
+  height: 430px !important;
+  min-height: 430px !important;
+  align-items: stretch !important;
+  gap: 18px !important;
+}
+
+/* 좌우 카드를 같은 높이로 확대 */
+#summaryScreen .iar-summary-left,
+#summaryScreen .iar-summary-right {
+  width: 100% !important;
+  height: 430px !important;
+  min-height: 430px !important;
+  padding: 20px !important;
+  overflow: hidden !important;
+}
+
+/* 왼쪽 카드: 제목 아래 공간을 질문 3개가 균등하게 사용 */
+#summaryScreen .iar-summary-left {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 10px !important;
+}
+
+#summaryScreen .iar-summary-left h3,
+#summaryScreen .iar-summary-right h3 {
+  margin: 0 !important;
+}
+
+/* 질문 목록 스크롤 제거 */
+#summaryScreen .iar-summary-qa-list {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  display: grid !important;
+  grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* 질문 1·2·3 카드를 남는 높이에 맞춰 확대 */
+#summaryScreen .iar-summary-qa-card {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+
+  padding: 15px 18px !important;
+  border-radius: 20px !important;
+}
+
+/* 오른쪽 카드: 입력창이 카드 안에서만 커지도록 구성 */
+#summaryScreen .iar-summary-right {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 10px !important;
+}
+
+#summaryScreen .iar-summary-right label {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 10px !important;
+}
+
+/* 흰색 간추리기 입력창이 바깥 카드를 침범하지 않게 합니다. */
+#summaryScreen .iar-summary-textarea {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  padding: 18px 20px !important;
+  resize: none !important;
+  overflow-y: auto !important;
+}
+
+/* 피드백 카드는 확대된 좌우 카드 바로 아래에 배치 */
+#summaryScreen .iar-lumi-feedback {
+  width: 100% !important;
+  height: 148px !important;
+  min-height: 148px !important;
+  margin-top: 30px !important;
+}
+
+/* 버튼 영역도 함께 아래쪽으로 이동 */
+#summaryScreen .iar-bottom-actions {
+  width: 100% !important;
+  margin: 48px 0 0 !important;
+  padding: 0 !important;
+
+  align-self: end !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
 </style>
 </head>
 
@@ -3662,21 +3791,39 @@ function changeShareFilter(filterKey) {
   renderShareSummaries();
 }
 
-    document.addEventListener("DOMContentLoaded", function () {
-  bindBookTypeButtons();
-  bindInputResetEvents();
-  restoreSelectedBookType();
-  prepareQuestionFeedbackCards();
-  updateQuestionProgress();
-  updateSequentialQuestionLock();
+  document.addEventListener("DOMContentLoaded", function () {
+    /*
+      이전 책의 읽기 후 활동을 완료한 뒤 새로 들어온 경우,
+      이전 질문·답과 간추리기 내용을 초기화합니다.
+    */
+    const previousAfterDone =
+      sessionStorage.getItem(AFTER_KEYS.afterDone) === "true";
 
-  const params = new URLSearchParams(location.search);
-  const teacherView = params.get("teacherView");
+    if (previousAfterDone) {
+      sessionStorage.removeItem(AFTER_KEYS.bookType);
+      sessionStorage.removeItem(AFTER_KEYS.questionAnswers);
+      sessionStorage.removeItem(AFTER_KEYS.summary);
+      sessionStorage.setItem(AFTER_KEYS.afterDone, "false");
 
-  if (teacherView === "summaryShare") {
-    activateTeacherSummaryShareMode();
-  }
-});
+      selectedBookType = "";
+      questionFeedbackPassed = false;
+      summaryFeedbackPassed = false;
+    }
+
+    bindBookTypeButtons();
+    bindInputResetEvents();
+    restoreSelectedBookType();
+    prepareQuestionFeedbackCards();
+    updateQuestionProgress();
+    updateSequentialQuestionLock();
+
+    const params = new URLSearchParams(location.search);
+    const teacherView = params.get("teacherView");
+
+    if (teacherView === "summaryShare") {
+      activateTeacherSummaryShareMode();
+    }
+  });
 
     function bindBookTypeButtons() {
       const typeButtons = document.querySelectorAll(".iar-book-type-button");
@@ -5028,9 +5175,15 @@ function getTodayText() {
     function getCurrentBookTitle() {
       return sessionStorage.getItem("individualCurrentBookTitle_" + studentId) || "내가 읽은 책";
     }
-function goFriendBookShelf() {
-  location.href = "./friend-book-shelf.html";
-}
+
+
+    function goIndividualHome() {
+      location.href = "./individual-reading.html";
+    }
+    
+    function goFriendBookShelf() {
+      location.href = "./friend-book-shelf.html";
+    }
     function goClassReading() {
       location.href = "./class-reading.html";
     }
