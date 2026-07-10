@@ -1401,6 +1401,304 @@
   -webkit-box-orient: initial !important;
   overflow: visible !important;
 }
+  
+    /* =========================================================
+       최종 수정: 전체 화면 고정 + 질문 목록 내부 스크롤 + 2단계 보조창
+       ========================================================= */
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      overflow: hidden !important;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    .page {
+      width: 100%;
+      height: 100vh;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      padding: 14px 26px 18px !important;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 52px));
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .top,
+    .hero,
+    .filter-card,
+    .board-grid,
+    .bottom-note {
+      margin: 0 !important;
+      min-height: 0;
+    }
+
+    .top {
+      margin-bottom: 0 !important;
+    }
+
+    .activity-card {
+      min-height: 118px !important;
+      padding: 16px 26px !important;
+    }
+
+    .stat-box {
+      min-height: 78px !important;
+    }
+
+    .filter-card {
+      padding: 10px 16px !important;
+    }
+
+    .filter-button,
+    .sort-select {
+      height: 48px !important;
+    }
+
+    .board-grid {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    .board-card {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      padding: 20px 26px !important;
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      overflow: hidden !important;
+    }
+
+    .board-card .section-head {
+      margin-bottom: 14px !important;
+    }
+
+    .question-list {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      align-content: start !important;
+      gap: 12px !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      padding: 2px 10px 14px 2px !important;
+    }
+
+    .question-list::-webkit-scrollbar,
+    .book-chat-modal-body::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .question-list::-webkit-scrollbar-track,
+    .book-chat-modal-body::-webkit-scrollbar-track {
+      border-radius: 999px;
+      background: rgba(116, 77, 38, 0.10);
+    }
+
+    .question-list::-webkit-scrollbar-thumb,
+    .book-chat-modal-body::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: rgba(142, 91, 36, 0.50);
+      background-clip: padding-box;
+    }
+
+    .question-button {
+      flex: none !important;
+      min-height: 138px !important;
+      padding: 18px 22px !important;
+    }
+
+    .question-answer-preview {
+      display: -webkit-box !important;
+      -webkit-box-orient: vertical !important;
+      -webkit-line-clamp: 2 !important;
+      line-clamp: 2 !important;
+      overflow: hidden !important;
+    }
+
+    .bottom-note {
+      display: none !important;
+    }
+
+    /* 기존 selected-card 숨김 규칙보다 우선하여 보조창은 표시 */
+    .book-chat-modal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 20000 !important;
+      display: grid !important;
+      place-items: center !important;
+      padding: 28px !important;
+      overflow: hidden !important;
+      background: rgba(43, 29, 18, 0.58) !important;
+      backdrop-filter: blur(5px);
+    }
+
+    .book-chat-modal.hidden {
+      display: none !important;
+    }
+
+    .book-chat-modal .book-chat-modal-panel {
+      display: grid !important;
+      width: min(1040px, calc(100vw - 56px)) !important;
+      height: min(860px, calc(100vh - 56px)) !important;
+      max-height: calc(100vh - 56px) !important;
+      min-height: 0 !important;
+      padding: 22px 25px 25px !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 14px !important;
+      overflow: hidden !important;
+      border-radius: 26px !important;
+      background: rgba(255, 251, 242, 0.99) !important;
+      box-shadow: 0 28px 70px rgba(47, 28, 10, 0.38) !important;
+    }
+
+    .book-chat-modal-head {
+      flex: none !important;
+      margin: 0 !important;
+      padding-bottom: 13px !important;
+    }
+
+    .modal-step-guide {
+      font-size: 16px !important;
+      line-height: 1.45 !important;
+    }
+
+    .book-chat-modal-body {
+      min-height: 0 !important;
+      height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      padding: 2px 10px 24px 2px !important;
+    }
+
+    .book-chat-modal-body .selected-question-box {
+      position: relative;
+      margin-bottom: 14px !important;
+    }
+
+    .book-chat-modal-body .accordion-box {
+      margin-top: 14px !important;
+    }
+
+    .book-chat-modal-body .accordion-body {
+      padding: 18px 20px 22px !important;
+    }
+
+    .book-chat-modal-body .text-area {
+      min-height: 100px !important;
+      font-size: 18px !important;
+      resize: vertical;
+    }
+
+    .book-chat-modal-body .field-label {
+      font-size: 18px !important;
+    }
+
+    .book-chat-modal-body .field-guide,
+    .book-chat-modal-body .feedback-box {
+      font-size: 15px !important;
+    }
+
+    .book-chat-modal-body .comment-card {
+      padding: 17px 18px !important;
+    }
+
+    .book-chat-modal-body .thought-lines {
+      font-size: 17px !important;
+    }
+
+    body.book-chat-modal-open {
+      overflow: hidden !important;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 10px 12px 12px !important;
+      }
+
+      .shell {
+        width: 100% !important;
+      }
+
+      .activity-card {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+
+      .activity-title {
+        font-size: 30px !important;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr 1fr !important;
+      }
+
+      .sort-select {
+        grid-column: 1 / -1;
+      }
+
+      .book-chat-modal {
+        padding: 10px !important;
+      }
+
+      .book-chat-modal .book-chat-modal-panel {
+        width: 100% !important;
+        height: calc(100vh - 20px) !important;
+        max-height: calc(100vh - 20px) !important;
+        padding: 16px !important;
+      }
+    }
+/* 질문 고르기 제목 옆 안내 문구 */
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.section-guide {
+  color: #7a5a3b;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+@media (max-width: 800px) {
+  .section-title-wrap {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .section-guide {
+    font-size: 15px;
+  }
+}
   </style>
 </head>
 
@@ -1470,10 +1768,15 @@
       <section class="board-grid">
         <article class="board-card">
           <div class="section-head">
-            <h2 class="section-title">질문 고르기</h2>
-            <span class="count-pill" id="visibleQuestionCount">0개</span>
-          </div>
+  <div class="section-title-wrap">
+    <h2 class="section-title">질문 고르기</h2>
+    <p class="section-guide">
+      질문을 누르면 내 생각을 쓰고 친구 생각에 의견을 이어 쓸 수 있어요.
+    </p>
+  </div>
 
+  <span class="count-pill" id="visibleQuestionCount">0개</span>
+</div>
           <div class="question-list" id="questionList"></div>
         </article>
 
@@ -1484,7 +1787,7 @@
           <div class="section-head book-chat-modal-head">
             <div>
               <h2 class="section-title" id="bookChatModalTitle">생각 나누기</h2>
-              <span class="modal-step-guide">1단계에서 내 생각을 쓰고, 2단계에서 친구들의 생각을 살펴봐요.</span>
+              <span class="modal-step-guide">1단계에서 내 생각을 등록하고, 2단계에서 친구 생각에 대댓글처럼 이어 쓰며 의견을 나눠요.</span>
             </div>
             <button class="modal-close-button" type="button" onclick="closeBookChatModal()" aria-label="보조창 닫기">×</button>
           </div>
@@ -2531,11 +2834,11 @@ if (currentType === "talk") {
     }
 
     function goHome() {
-      location.href = "./home.html";
-    }
+  window.location.href = "individual-reading.html";
+}
 
     function goClassReading() {
-      location.href = "./class-reading.html";
+      location.href = "individual-reading.html";
     }
 
     function escapeHtml(text) {
