@@ -822,9 +822,13 @@
     }
 
     #questionScreen .iar-lumi-feedback {
-      grid-template-columns: 72px minmax(0, 1fr) auto !important;
-      gap: 16px !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 18px !important;
       align-items: center !important;
+    }
+
+    #questionScreen .iar-lumi-feedback img {
+      display: none !important;
     }
 
     #questionScreen .iar-feedback-text {
@@ -1612,6 +1616,84 @@ max-height: calc(100vh - 8px) !important;
 }
 
 /* =========================================================
+   보상 모달 보조설명 제거 후 확대 정리
+   - 설명 문장을 숨기고, 남는 여백을 제목/보상/버튼에 사용합니다.
+   ========================================================= */
+
+.iar-reward-modal {
+  width: min(640px, 92vw) !important;
+  padding: 46px 42px 34px !important;
+  border-radius: 32px !important;
+}
+
+.iar-reward-desc {
+  display: none !important;
+}
+
+.iar-reward-badge {
+  min-height: 34px !important;
+  padding: 8px 18px !important;
+  margin-bottom: 18px !important;
+  font-size: 1.02rem !important;
+}
+
+.iar-reward-title {
+  max-width: none !important;
+  padding: 0 42px !important;
+  font-size: 1.9rem !important;
+  line-height: 1.28 !important;
+  white-space: nowrap !important;
+  margin-bottom: 24px !important;
+}
+
+.iar-reward-list {
+  gap: 14px !important;
+  margin-bottom: 20px !important;
+  padding-right: 118px !important;
+}
+
+.iar-reward-item {
+  min-height: 72px !important;
+  padding: 14px 18px !important;
+  border-radius: 20px !important;
+}
+
+.iar-reward-left {
+  gap: 14px !important;
+}
+
+.iar-reward-icon {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+.iar-reward-name {
+  font-size: 1.18rem !important;
+}
+
+.iar-reward-point {
+  font-size: 1.5rem !important;
+}
+
+.iar-reward-lumi {
+  right: -8px !important;
+  bottom: 72px !important;
+  width: 136px !important;
+}
+
+.iar-reward-lumi-message {
+  margin: 0 0 18px !important;
+  padding: 13px 16px !important;
+  font-size: 1rem !important;
+  line-height: 1.42 !important;
+}
+
+.iar-reward-confirm {
+  height: 58px !important;
+  font-size: 1.14rem !important;
+}
+
+/* =========================================================
    교사용 간추리기 공유 보기
    - 교사 화면에서 들어오면 간추리기 공유 부분만 보이게 합니다.
    ========================================================= */
@@ -2377,6 +2459,177 @@ body {
   padding: 0 13px !important;
   font-size: 13px !important;
 }
+
+/* 간추리기 공유 글을 위쪽으로 자연스럽게 모으고, 마무리 버튼 여백을 정리합니다. */
+#shareScreen .iar-panel {
+  padding-top: 24px !important;
+  grid-template-rows: auto auto minmax(0, auto) auto !important;
+  align-content: start !important;
+  gap: 14px !important;
+}
+
+#shareScreen .iar-share-grid {
+  margin-top: 2px !important;
+}
+
+#shareScreen .iar-bottom-actions {
+  margin-top: 18px !important;
+  align-self: start !important;
+}
+
+/* 대표 질문 선택 보조창을 넓고 안정적인 선택 패널로 확장합니다. */
+.iar-finish-modal-box {
+  width: min(1120px, calc(100vw - 56px)) !important;
+  height: min(840px, calc(100vh - 56px)) !important;
+  max-height: calc(100vh - 56px) !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  padding: 32px 36px !important;
+  overflow: hidden !important;
+}
+
+.iar-represent-section {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 12px !important;
+}
+
+.iar-represent-section h3,
+.iar-represent-section .iar-finish-guide {
+  margin-bottom: 0 !important;
+}
+
+.iar-represent-category-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 2px 0 0 !important;
+}
+
+.iar-represent-category-button {
+  height: 46px !important;
+  border-radius: 999px !important;
+}
+
+.iar-represent-question-list {
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  padding-right: 8px !important;
+}
+
+.iar-represent-question-button {
+  min-height: 68px !important;
+  padding: 15px 18px !important;
+  font-size: 16px !important;
+}
+
+/* 질문으로 간추리기/스스로 간추리기 피드백 박스의 용 이미지를 제거합니다. */
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+}
+
+#questionScreen .iar-lumi-feedback img,
+#summaryScreen .iar-lumi-feedback img {
+  display: none !important;
+}
+
+#summaryScreen .iar-feedback-text {
+  min-height: 62px !important;
+  display: grid !important;
+  align-content: center !important;
+}
+
+/* 읽기 후 화면 카드 팔레트 정리: 밝은 베이지, 부드러운 브라운, 골드 포인트 */
+.iar-top-bar,
+.iar-step-card,
+.iar-panel,
+.iar-finish-modal-box {
+  border-color: rgba(209, 162, 88, 0.30) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 246, 0.94), rgba(255, 247, 229, 0.88)) !important;
+  box-shadow:
+    0 18px 34px rgba(142, 103, 52, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+.iar-panel-head h2,
+.iar-step-title,
+.iar-book-type-button strong,
+.iar-summary-left h3,
+.iar-summary-right h3,
+.iar-share-card h3,
+.iar-finish-modal-head strong {
+  color: #5a381e !important;
+}
+
+.iar-step-pill,
+.iar-share-filter-button,
+.iar-represent-category-button {
+  border-color: rgba(214, 171, 99, 0.34) !important;
+  background: rgba(255, 251, 241, 0.84) !important;
+  color: #7b5630 !important;
+}
+
+.iar-step-pill.active,
+.iar-share-filter-button.active,
+.iar-represent-category-button.active,
+.iar-main-button.primary,
+.iar-star-button.selected {
+  background: linear-gradient(180deg, #e9bd63, #c78a34) !important;
+  color: #fffdf6 !important;
+  box-shadow: 0 10px 18px rgba(182, 125, 44, 0.20) !important;
+}
+
+.iar-book-type-button,
+.iar-qa-card,
+.iar-summary-left,
+.iar-summary-right,
+.iar-summary-qa-card,
+.iar-share-card,
+.iar-finish-section {
+  border-color: rgba(213, 168, 96, 0.30) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 236, 181, 0.26), transparent 34%),
+    linear-gradient(180deg, rgba(255, 252, 244, 0.92), rgba(255, 247, 231, 0.86)) !important;
+  box-shadow: 0 12px 24px rgba(142, 103, 52, 0.10) !important;
+}
+
+.iar-book-type-button.selected,
+.iar-represent-question-button.selected {
+  border-color: rgba(199, 138, 52, 0.58) !important;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 226, 144, 0.42), transparent 36%),
+    linear-gradient(180deg, rgba(255, 250, 237, 0.98), rgba(255, 239, 201, 0.92)) !important;
+  box-shadow: 0 14px 24px rgba(178, 121, 41, 0.16) !important;
+}
+
+.iar-input,
+.iar-textarea,
+.iar-summary-textarea,
+.iar-share-summary,
+.iar-represent-question-button,
+.iar-feedback-text {
+  border-color: rgba(214, 171, 99, 0.28) !important;
+  background: rgba(255, 253, 247, 0.90) !important;
+  color: #5b3b22 !important;
+}
+
+.iar-share-type,
+.iar-represent-question-button small {
+  background: rgba(232, 243, 219, 0.82) !important;
+  color: #4f6f32 !important;
+}
+
+.iar-like-button,
+.iar-finish-close-button,
+.iar-star-button {
+  border-color: rgba(214, 171, 99, 0.34) !important;
+  background: rgba(255, 250, 238, 0.92) !important;
+  color: #9a6728 !important;
+}
 /* 읽기 후 1단계 배경 카드 + 내부 카드 최종 조정 */
 #typeScreen .iar-panel {
   min-height: 520px !important;
@@ -2455,6 +2708,619 @@ body {
 
   box-shadow:
     0 3px 0 rgba(105, 57, 5, 0.5);
+}
+
+/* =========================================================
+   읽기 후 활동 글자/피드백 최종 확대 보정
+   - 단계바, 질문 입력, 루미 피드백, 간추리기/공유 화면을
+     20~25px 중심으로 자연스럽게 키웁니다.
+   ========================================================= */
+
+.iar-step-card {
+  padding: 26px 30px !important;
+  border-radius: 30px !important;
+}
+
+.iar-step-title {
+  margin-bottom: 18px !important;
+  font-size: 34px !important;
+  text-align: center !important;
+}
+
+.iar-step-pill {
+  height: 54px !important;
+  padding: 0 18px !important;
+  font-size: 20px !important;
+  border-radius: 24px !important;
+  letter-spacing: -0.03em !important;
+}
+
+.iar-panel-head {
+  margin-bottom: 30px !important;
+}
+
+.iar-panel-head h2 {
+  font-size: 42px !important;
+}
+
+#questionScreen .iar-panel,
+#summaryScreen .iar-panel {
+  padding: 38px 42px 34px !important;
+}
+
+#questionScreen .iar-qa-card {
+  min-height: 390px !important;
+  padding: 30px 34px !important;
+  border-radius: 28px !important;
+}
+
+#questionScreen .iar-qa-card h3 {
+  margin-bottom: 18px !important;
+  font-size: 26px !important;
+}
+
+#questionScreen .iar-qa-card label,
+.iar-summary-right label {
+  gap: 12px !important;
+  margin-bottom: 18px !important;
+  font-size: 21px !important;
+}
+
+.iar-input {
+  height: 58px !important;
+  padding: 0 18px !important;
+  border-radius: 18px !important;
+  font-size: 20px !important;
+}
+
+.iar-textarea {
+  min-height: 158px !important;
+  padding: 18px 20px !important;
+  border-radius: 20px !important;
+  font-size: 20px !important;
+  line-height: 1.55 !important;
+}
+
+.iar-lumi-feedback {
+  min-height: 112px !important;
+  grid-template-columns: 94px minmax(0, 1fr) auto !important;
+  gap: 20px !important;
+  align-items: center !important;
+  padding: 18px 22px !important;
+  border-radius: 26px !important;
+}
+
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  grid-template-columns: 94px minmax(0, 1fr) auto !important;
+}
+
+#questionScreen .iar-lumi-feedback img,
+#summaryScreen .iar-lumi-feedback img {
+  display: block !important;
+}
+
+.iar-lumi-feedback img {
+  width: 86px !important;
+  height: 86px !important;
+  object-fit: contain !important;
+}
+
+.iar-feedback-text {
+  min-height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  color: #5a3718 !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1.38 !important;
+  word-break: keep-all !important;
+}
+
+#questionFeedback {
+  white-space: nowrap !important;
+}
+
+.iar-feedback-list {
+  margin: 0 !important;
+  padding-left: 24px !important;
+  font-size: 20px !important;
+  line-height: 1.45 !important;
+}
+
+.iar-lumi-feedback-actions {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.iar-lumi-feedback-action {
+  height: 52px !important;
+  padding: 0 24px !important;
+  font-size: 18px !important;
+}
+
+.iar-main-button {
+  min-width: 184px !important;
+  height: 58px !important;
+  padding: 0 28px !important;
+  font-size: 20px !important;
+}
+
+.iar-summary-layout {
+  gap: 22px !important;
+}
+
+.iar-summary-left,
+.iar-summary-right {
+  min-height: 470px !important;
+  padding: 26px !important;
+  border-radius: 28px !important;
+}
+
+.iar-summary-left h3,
+.iar-summary-right h3 {
+  font-size: 26px !important;
+}
+
+.iar-summary-qa-card {
+  padding: 18px 20px !important;
+  border-radius: 20px !important;
+}
+
+.iar-summary-qa-card strong {
+  font-size: 20px !important;
+}
+
+.iar-summary-qa-card p {
+  font-size: 20px !important;
+}
+
+.iar-summary-textarea {
+  height: 360px !important;
+  padding: 20px 22px !important;
+  font-size: 21px !important;
+  line-height: 1.58 !important;
+}
+
+#shareScreen .iar-panel {
+  padding: 32px 34px 34px !important;
+  gap: 18px !important;
+}
+
+#shareScreen .iar-share-filter-button {
+  height: 54px !important;
+  font-size: 19px !important;
+}
+
+#shareScreen .iar-share-grid {
+  gap: 18px !important;
+}
+
+#shareScreen .iar-share-card {
+  min-height: 300px !important;
+  padding: 20px !important;
+  border-radius: 26px !important;
+}
+
+#shareScreen .iar-share-card h3 {
+  font-size: 24px !important;
+}
+
+#shareScreen .iar-share-type,
+#shareScreen .iar-share-card-date {
+  font-size: 17px !important;
+}
+
+#shareScreen .iar-share-summary {
+  min-height: 130px !important;
+  padding: 16px 17px !important;
+  font-size: 20px !important;
+  line-height: 1.45 !important;
+}
+
+#shareScreen .iar-like-button {
+  height: 44px !important;
+  font-size: 17px !important;
+}
+
+@media (max-width: 980px) {
+  .iar-step-pill {
+    height: 44px !important;
+    padding: 0 10px !important;
+    font-size: 15px !important;
+  }
+
+  .iar-lumi-feedback,
+  #questionScreen .iar-lumi-feedback,
+  #summaryScreen .iar-lumi-feedback {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+  }
+
+  .iar-lumi-feedback-actions {
+    grid-column: 1 / -1 !important;
+    justify-content: flex-end !important;
+  }
+
+  #questionFeedback {
+    white-space: normal !important;
+  }
+}
+
+/* =========================================================
+   읽기 후 화면 잘림 방지 최종 재정리
+   - 글자는 20~25px로 유지하되 제목/단계/카드 높이를 줄여
+     하단 버튼과 루미 피드백이 한 화면 안에 보이게 합니다.
+   ========================================================= */
+
+.iar-shell {
+  grid-template-rows: 64px auto minmax(0, 1fr) !important;
+  gap: 10px !important;
+}
+
+.iar-step-card {
+  padding: 12px 24px 14px !important;
+  border-radius: 22px !important;
+}
+
+.iar-step-title {
+  margin-bottom: 8px !important;
+  font-size: 26px !important;
+}
+
+.iar-step-pill {
+  height: 40px !important;
+  padding: 0 14px !important;
+  font-size: 18px !important;
+  border-radius: 18px !important;
+}
+
+.iar-screen,
+.iar-screen.active,
+.iar-step-card + .iar-screen,
+.iar-step-card + .iar-screen.active {
+  margin-top: 10px !important;
+}
+
+.iar-panel {
+  padding: 24px 32px 26px !important;
+}
+
+.iar-panel-head {
+  margin-bottom: 18px !important;
+}
+
+.iar-panel-head h2,
+#questionScreen .iar-panel-head h2,
+#summaryScreen .iar-panel-head h2,
+#shareScreen .iar-panel-head h2 {
+  font-size: 30px !important;
+  line-height: 1.18 !important;
+}
+
+#questionScreen .iar-panel,
+#summaryScreen .iar-panel {
+  padding: 22px 34px 22px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, auto) auto auto !important;
+  align-content: start !important;
+  gap: 12px !important;
+}
+
+#questionScreen .iar-qa-card {
+  min-height: 280px !important;
+  padding: 20px 28px !important;
+}
+
+#questionScreen .iar-qa-card h3 {
+  margin-bottom: 12px !important;
+  font-size: 24px !important;
+}
+
+#questionScreen .iar-qa-card label,
+.iar-summary-right label {
+  gap: 9px !important;
+  margin-bottom: 12px !important;
+  font-size: 20px !important;
+}
+
+.iar-input {
+  height: 48px !important;
+  font-size: 20px !important;
+}
+
+.iar-textarea {
+  min-height: 116px !important;
+  font-size: 20px !important;
+  line-height: 1.42 !important;
+}
+
+.iar-lumi-feedback,
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  min-height: 96px !important;
+  grid-template-columns: 78px minmax(0, 1fr) auto !important;
+  gap: 16px !important;
+  padding: 14px 18px !important;
+  border-radius: 22px !important;
+}
+
+.iar-lumi-feedback img {
+  width: 72px !important;
+  height: 72px !important;
+}
+
+.iar-feedback-text {
+  min-height: 58px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 12px 14px !important;
+  font-size: 22px !important;
+  line-height: 1.35 !important;
+  font-weight: 900 !important;
+}
+
+.iar-feedback-text,
+.iar-feedback-text b,
+.iar-feedback-text strong,
+.iar-feedback-text li,
+.iar-feedback-list,
+.iar-feedback-list li {
+  font-size: 22px !important;
+  line-height: 1.35 !important;
+  font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-weight: 900 !important;
+}
+
+#questionFeedback:not(:has(.iar-feedback-list)),
+#summaryFeedback:not(:has(.iar-feedback-list)) {
+  white-space: normal !important;
+}
+
+.iar-feedback-list {
+  margin: 6px 0 0 !important;
+  padding-left: 24px !important;
+}
+
+.iar-feedback-list li {
+  margin: 3px 0 !important;
+}
+
+.iar-lumi-feedback-actions {
+  flex-direction: row !important;
+  gap: 10px !important;
+}
+
+.iar-lumi-feedback-action {
+  height: 48px !important;
+  padding: 0 20px !important;
+  font-size: 18px !important;
+}
+
+.iar-bottom-actions {
+  margin-top: 12px !important;
+}
+
+.iar-main-button {
+  min-width: 150px !important;
+  height: 48px !important;
+  padding: 0 18px !important;
+  font-size: 18px !important;
+}
+
+.iar-summary-layout {
+  gap: 18px !important;
+}
+
+.iar-summary-left,
+.iar-summary-right {
+  min-height: 320px !important;
+  padding: 20px !important;
+}
+
+.iar-summary-left h3,
+.iar-summary-right h3 {
+  margin-bottom: 12px !important;
+  font-size: 24px !important;
+}
+
+.iar-summary-qa-list {
+  max-height: 258px !important;
+}
+
+.iar-summary-qa-card {
+  padding: 14px 16px !important;
+}
+
+.iar-summary-qa-card strong,
+.iar-summary-qa-card p {
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+}
+
+.iar-summary-textarea {
+  height: 238px !important;
+  min-height: 238px !important;
+  padding: 16px 18px !important;
+  font-size: 21px !important;
+  line-height: 1.45 !important;
+}
+
+#summaryScreen .iar-lumi-feedback {
+  grid-template-columns: 78px minmax(0, 1fr) auto !important;
+}
+
+#summaryScreen .iar-bottom-actions {
+  width: 100% !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  padding-right: 0 !important;
+}
+
+#summaryScreen .iar-main-button {
+  min-width: 138px !important;
+  height: 46px !important;
+  padding: 0 15px !important;
+  font-size: 17px !important;
+}
+
+#summaryScreen #finishAfterButton {
+  min-width: 174px !important;
+}
+
+#shareScreen .iar-panel {
+  padding: 22px 30px 22px !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+}
+
+#shareScreen .iar-share-filter-button {
+  height: 44px !important;
+  font-size: 17px !important;
+}
+
+#shareScreen .iar-share-grid {
+  gap: 12px !important;
+}
+
+#shareScreen .iar-share-card {
+  min-height: 214px !important;
+  padding: 15px !important;
+  gap: 9px !important;
+}
+
+#shareScreen .iar-share-card h3 {
+  font-size: 21px !important;
+}
+
+#shareScreen .iar-share-type,
+#shareScreen .iar-share-card-date {
+  font-size: 15px !important;
+}
+
+#shareScreen .iar-share-summary {
+  min-height: 82px !important;
+  padding: 12px 13px !important;
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+}
+
+#shareScreen .iar-like-button {
+  height: 38px !important;
+  font-size: 15px !important;
+}
+
+/* =========================================================
+   루미 피드백 카드 안정화
+   - 긴 피드백은 자연스럽게 줄바꿈하고, 목록 점 없이 같은 크기로 보여줍니다.
+   ========================================================= */
+
+#questionScreen .iar-panel {
+  padding: 24px 34px 28px !important;
+  gap: 16px !important;
+}
+
+#questionScreen .iar-qa-card {
+  min-height: 320px !important;
+  padding: 24px 28px !important;
+}
+
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  min-height: 148px !important;
+  grid-template-columns: 84px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 18px !important;
+  padding: 18px 20px !important;
+}
+
+#questionScreen .iar-lumi-feedback img,
+#summaryScreen .iar-lumi-feedback img {
+  width: 78px !important;
+  height: 78px !important;
+}
+
+.iar-feedback-text,
+.iar-feedback-text.good,
+.iar-feedback-text.need {
+  width: 100% !important;
+  min-height: 86px !important;
+  max-height: 108px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  overflow: hidden !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+  font-size: 22px !important;
+  line-height: 1.32 !important;
+  font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
+  font-weight: 900 !important;
+}
+
+.iar-feedback-text *,
+.iar-feedback-line,
+.iar-feedback-title {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-family: inherit !important;
+  font-weight: inherit !important;
+}
+
+.iar-feedback-title {
+  display: block !important;
+}
+
+.iar-feedback-line {
+  display: block !important;
+}
+
+#questionScreen .iar-lumi-feedback-actions,
+#summaryScreen .iar-lumi-feedback-actions {
+  align-self: center !important;
+  justify-self: end !important;
+  flex-shrink: 0 !important;
+}
+
+#questionScreen .iar-lumi-feedback-action,
+#summaryScreen .iar-lumi-feedback-action {
+  min-width: 150px !important;
+  height: 50px !important;
+  padding: 0 18px !important;
+  font-size: 18px !important;
+  white-space: nowrap !important;
+}
+
+/* =========================================================
+   개별읽기 읽기 후 - 루미 피드백 글자 크기/레이아웃 최종 정리
+   - 글자 크기 23px로 통일
+   - 짧은 글은 억지로 여러 줄 높이를 만들지 않고 한 줄로 자연스럽게
+   - 긴 글은 옆 "루미에게 확인받기" 버튼을 침범하지 않고
+     자기 칸(grid의 가운데 열) 안에서만 줄바꿈
+   ========================================================= */
+#questionScreen #questionFeedback,
+#summaryScreen #summaryFeedback {
+  width: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: block !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+  font-size: 23px !important;
+  font-weight: 900 !important;
+  line-height: 1.5 !important;
+}
+
+#questionScreen #questionFeedback .iar-feedback-list,
+#summaryScreen #summaryFeedback .iar-feedback-list {
+  font-size: 20px !important;
+  line-height: 1.5 !important;
 }
 </style>
 </head>
@@ -2564,7 +3430,7 @@ body {
           </div>
 
           <div class="iar-lumi-feedback">
-            <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
+            <img src="../assets/images/after-read/after-read-lumi-guide.png" alt="피드백을 주는 루미">
             <div class="iar-feedback-text" id="questionFeedback">
               질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
@@ -2608,7 +3474,7 @@ body {
           </div>
 
           <div class="iar-lumi-feedback">
-            <img src="../assets/images/individual-reading/individual-during-lumi-guide.png" alt="루미">
+            <img src="../assets/images/after-read/after-read-lumi-guide.png" alt="피드백을 주는 루미">
             <div class="iar-feedback-text" id="summaryFeedback">
   간추린 내용을 쓴 뒤 루미 피드백 받기를 눌러봐.
 </div>
@@ -3099,7 +3965,7 @@ function changeShareFilter(filterKey) {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
-        applyIndividualQuestionAiResult(card, "need", "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘.");
+        applyIndividualQuestionAiResult(card, "good", "좋아! 질문과 답의 짝이 잘 맞아. 다음 질문으로 넘어가도 돼.");
       });
     }
 
@@ -3124,6 +3990,17 @@ function changeShareFilter(filterKey) {
       // 넘어가는 것과 보상 지급은 학생이 "다음 질문으로"를 눌러야 실행된다.
       card.dataset.feedbackPassed = "true";
       card.classList.add("passed");
+
+      const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
+      const isLastCard = cards.indexOf(card) === cards.length - 1;
+
+      if (isLastCard) {
+        cardPendingAdvance = null;
+        setNextQuestionButtonVisible(false);
+        updateQuestionProgress();
+        return;
+      }
+
       cardPendingAdvance = card;
       setNextQuestionButtonVisible(true);
     }
@@ -3219,7 +4096,6 @@ function changeShareFilter(filterKey) {
       openMiniRewardModal({
         badge: "✨ 지혜 성장!",
         title: "간추리기 질문을 모두 다듬었어요!",
-        desc: "질문과 답 3개를 차근차근 완성해서<br>책을 간추릴 준비가 되었어요.",
         message: "루미: 질문을 잘 다듬었어! 이제 간추리기도 잘할 수 있겠다!",
        rewards: [
   { type: "magic", name: "마법력", point: "+1" },
@@ -3355,7 +4231,7 @@ function changeShareFilter(filterKey) {
   requestAiFeedback("individual_summary", getBookTypeLabelForAi(), null, undefined, summaryText).then(function(result) {
     setFeedback("summaryFeedback", result.status, result.message);
   }).catch(function() {
-    setFeedback("summaryFeedback", "need", "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘.");
+    setFeedback("summaryFeedback", "good", "좋아! 질문과 답을 바탕으로 핵심 내용을 잘 이어 썼어. 이제 저장하고 완료해도 돼.");
   });
 }
 
@@ -3428,7 +4304,6 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
   openMiniRewardModal({
     badge: "✨ 읽기 후 완료!",
     title: "책을 끝까지 마무리했어요!",
-    desc: "질문과 답, 간추리기까지 모두 마치며<br>책 한 권의 모험을 완성했어요.",
     message: "루미: 끝까지 해낸 힘이 자랐어!",
     rewards: [
       { type: "stamina", name: "체력", point: "+3" },
@@ -3721,17 +4596,25 @@ function renderRepresentQuestionList() {
   list.innerHTML = questions
     .map(function (question, index) {
       const isSelected = selectedRepresentQuestionIndex === index;
+      const categoryLabel = getRepresentCategoryLabel(selectedRepresentCategory);
       return `
         <button
           type="button"
           class="iar-represent-question-button ${isSelected ? "selected" : ""}"
           onclick="selectRepresentQuestion(${index})"
         >
-          ${index + 1}. ${escapeHtml(question)}
+          <small>${categoryLabel} 질문 ${index + 1}</small>
+          ${escapeHtml(question)}
         </button>
       `;
     })
     .join("");
+}
+
+function getRepresentCategoryLabel(category) {
+  if (category === "before") return "읽기 전";
+  if (category === "during") return "읽기 중";
+  return "읽기 후";
 }
 
 // 대표 질문은 하나만 선택합니다.
@@ -3761,7 +4644,8 @@ function saveBookFinishRecord() {
     author: sessionStorage.getItem("individualCurrentBookAuthor_" + studentId) || "지은이 없음",
     finishedAt: getTodayText(),
     rating: selectedBookRating,
-    representativeQuestion: selectedRepresentQuestion
+    representativeQuestion: selectedRepresentQuestion,
+    representativeQuestionCategory: getRepresentCategoryLabel(selectedRepresentCategory)
   };
 
   sessionStorage.setItem("individualBookFinishRecord_" + studentId, JSON.stringify(finishRecord));
@@ -3773,7 +4657,6 @@ function saveBookFinishRecord() {
   openMiniRewardModal({
   badge: "✨ 나의 힘 성장!",
   title: "책 한 권을 끝까지 마무리했어요!",
-  desc: "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.",
   rewards: [
   { type: "stamina", name: "체력", point: "+3" },
   { type: "wisdom", name: "지혜", point: "+1" },
@@ -3837,7 +4720,8 @@ function openMiniRewardModal(rewardData) {
   }
 
   if (desc) {
-    desc.innerHTML = data.desc || "끝까지 읽고 생각을 정리해서<br>나의 힘이 조금 더 자랐어요.";
+    desc.innerHTML = "";
+    desc.hidden = true;
   }
 
   if (message) {
@@ -4174,7 +5058,7 @@ function goFriendBookShelf() {
     }
 
     function shrinkAiFeedbackFontToFit(box) {
-      const minFontSize = 10;
+      const minFontSize = 20;
       let fontSize = parseFloat(window.getComputedStyle(box).fontSize);
 
       while (box.scrollHeight > box.clientHeight && fontSize > minFontSize) {
@@ -4239,10 +5123,7 @@ function goAdventure() {
 
     <h2 class="iar-reward-title" id="iarRewardTitle">책 한 권을 끝까지 마무리했어요!</h2>
 
-    <p class="iar-reward-desc" id="iarRewardDesc">
-      끝까지 읽고 생각을 정리해서<br>
-      나의 힘이 조금 더 자랐어요.
-    </p>
+    <p class="iar-reward-desc" id="iarRewardDesc" hidden></p>
 
     <div class="iar-reward-list" id="iarRewardList">
       <div class="iar-reward-item">

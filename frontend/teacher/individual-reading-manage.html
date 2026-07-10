@@ -22,25 +22,30 @@
 
     :root {
       --brown: #4b2a13;
+      --brown-deep: #381b09;
       --brown-soft: #765136;
+
       --gold: #e4ad45;
+      --gold-light: #f1cc77;
       --gold-dark: #a9630b;
+
       --cream: #fff8e9;
       --cream-deep: #f2ddb7;
+
       --green: #849d42;
       --green-dark: #61762e;
 
-      --paper: rgba(255, 254, 249, 0.96);
-      --paper-warm: rgba(255, 247, 231, 0.95);
+      --paper: rgba(255, 254, 249, 0.97);
+      --paper-warm: rgba(255, 247, 231, 0.96);
 
-      --line: rgba(190, 130, 55, 0.34);
+      --line: rgba(190, 130, 55, 0.38);
 
       --shadow:
-        0 13px 27px rgba(82, 51, 23, 0.16);
+        0 13px 27px rgba(82, 51, 23, 0.17);
 
-      --radius-large: 28px;
+      --radius-large: 27px;
       --radius-medium: 20px;
-      --radius-small: 15px;
+      --radius-small: 14px;
     }
 
     html,
@@ -61,8 +66,8 @@
       background:
         linear-gradient(
           180deg,
-          rgba(255, 247, 226, 0.34),
-          rgba(214, 195, 162, 0.48)
+          rgba(255, 247, 226, 0.25),
+          rgba(214, 195, 162, 0.44)
         ),
         url("../assets/images/class-reading/class-reading-question-bg.png");
 
@@ -70,12 +75,8 @@
       background-position: center;
     }
 
-    button,
-    input {
-      font-family: inherit;
-    }
-
     button {
+      font-family: inherit;
       cursor: pointer;
     }
 
@@ -83,37 +84,41 @@
        전체 화면
     ========================================================= */
 
-    .wr-page {
+    .ir-page {
       width: 100%;
       height: 100vh;
 
-      padding: 14px 20px 16px;
+      padding: 13px 20px 15px;
 
       overflow: hidden;
 
       background:
         radial-gradient(
           circle at 50% 0%,
-          rgba(255, 255, 255, 0.64),
-          transparent 34%
+          rgba(255, 255, 255, 0.66),
+          transparent 35%
         ),
         linear-gradient(
           90deg,
-          rgba(255, 246, 224, 0.62),
-          rgba(255, 255, 255, 0.12),
-          rgba(255, 246, 224, 0.62)
+          rgba(255, 246, 224, 0.61),
+          rgba(255, 255, 255, 0.11),
+          rgba(255, 246, 224, 0.61)
         );
     }
 
-    .wr-shell {
-      width: min(1580px, calc(100vw - 40px));
+    .ir-shell {
+      width: min(1620px, calc(100vw - 40px));
       height: 100%;
 
       margin: 0 auto;
 
       display: grid;
-      grid-template-rows: 78px minmax(0, 1fr);
-      gap: 12px;
+      grid-template-rows:
+        76px
+        minmax(0, 1fr)
+        148px;
+
+      gap: 11px;
 
       overflow: hidden;
     }
@@ -122,9 +127,9 @@
        상단바
     ========================================================= */
 
-    .wr-topbar {
+    .ir-topbar {
       min-width: 0;
-      height: 78px;
+      height: 76px;
 
       display: grid;
       grid-template-columns:
@@ -135,7 +140,7 @@
       align-items: center;
       gap: 16px;
 
-      padding: 10px 18px;
+      padding: 9px 18px;
 
       border: 1.5px solid var(--line);
       border-radius: 25px;
@@ -143,16 +148,16 @@
       background:
         linear-gradient(
           180deg,
-          rgba(255, 254, 249, 0.96),
-          rgba(255, 247, 231, 0.94)
+          rgba(255, 254, 249, 0.97),
+          rgba(255, 247, 231, 0.95)
         );
 
       box-shadow:
         var(--shadow),
-        inset 0 1px 0 rgba(255, 255, 255, 0.75);
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
 
-    .wr-brand {
+    .ir-brand {
       min-width: 0;
 
       display: flex;
@@ -168,7 +173,7 @@
       white-space: nowrap;
     }
 
-    .wr-brand-icon {
+    .ir-brand-icon {
       width: 45px;
       height: 45px;
       flex: 0 0 45px;
@@ -192,7 +197,7 @@
         0 7px 14px rgba(91, 47, 10, 0.18);
     }
 
-    .wr-brand-icon img {
+    .ir-brand-icon img {
       width: 31px;
       height: 31px;
 
@@ -200,14 +205,14 @@
       object-fit: contain;
     }
 
-    .wr-top-title {
+    .ir-top-title {
       min-width: 0;
 
       text-align: center;
       white-space: nowrap;
     }
 
-    .wr-top-title-small {
+    .ir-top-title-small {
       margin-bottom: 1px;
 
       color: #8a5a21;
@@ -216,7 +221,7 @@
       font-weight: 900;
     }
 
-    .wr-main-title {
+    .ir-main-title {
       color: var(--brown);
 
       font-family: "Noto Serif KR", serif;
@@ -227,10 +232,10 @@
       line-height: 1.1;
 
       text-shadow:
-        0 3px 0 rgba(255, 255, 255, 0.7);
+        0 3px 0 rgba(255, 255, 255, 0.72);
     }
 
-    .wr-top-pills {
+    .ir-top-pills {
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -239,30 +244,31 @@
       white-space: nowrap;
     }
 
-    .wr-pill,
-    .wr-home-button {
+    .ir-pill,
+    .ir-home-button {
       height: 39px;
 
       padding: 0 14px;
 
       border-radius: 13px;
 
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 900;
 
       white-space: nowrap;
     }
 
-    .wr-pill {
+    .ir-pill {
       color: #4f2e16;
 
-      border: 1px solid rgba(177, 122, 57, 0.32);
+      border:
+        1px solid rgba(177, 122, 57, 0.32);
 
       background:
         rgba(255, 250, 238, 0.88);
     }
 
-    .wr-home-button {
+    .ir-home-button {
       color: #fff9ec;
 
       border:
@@ -279,7 +285,7 @@
         0 4px 0 rgba(105, 57, 5, 0.52);
     }
 
-    .wr-home-button:active {
+    .ir-home-button:active {
       transform: translateY(2px);
 
       box-shadow:
@@ -287,45 +293,10 @@
     }
 
     /* =========================================================
-       메인 배치
+       공통 카드
     ========================================================= */
 
-    .wr-dashboard {
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-
-      display: grid;
-      grid-template-columns:
-        minmax(0, 1.45fr)
-        minmax(430px, 0.85fr);
-
-      gap: 12px;
-
-      overflow: hidden;
-    }
-
-    .wr-left-area,
-    .wr-right-area {
-      min-width: 0;
-      min-height: 0;
-      height: 100%;
-    }
-
-    .wr-left-area {
-      display: flex;
-    }
-
-    .wr-right-area {
-      display: grid;
-      grid-template-rows:
-        minmax(0, 1fr)
-        minmax(0, 0.9fr);
-
-      gap: 10px;
-    }
-
-    .wr-card {
+    .ir-card {
       position: relative;
 
       min-width: 0;
@@ -348,7 +319,7 @@
       overflow: hidden;
     }
 
-    .wr-card::before {
+    .ir-card::before {
       content: "";
 
       position: absolute;
@@ -357,33 +328,29 @@
       background:
         radial-gradient(
           circle at 100% 0%,
-          rgba(255, 219, 129, 0.11),
-          transparent 36%
+          rgba(255, 219, 129, 0.12),
+          transparent 35%
         );
 
       pointer-events: none;
     }
 
-    .wr-card-inner {
+    .ir-card-inner {
       position: relative;
       z-index: 1;
 
       width: 100%;
       height: 100%;
-
-      padding: 17px 19px;
     }
 
-    .wr-card-title-row {
+    .ir-card-title-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
-
-      margin-bottom: 11px;
     }
 
-    .wr-card-title {
+    .ir-card-title {
       color: var(--brown);
 
       font-family: "Noto Serif KR", serif;
@@ -394,7 +361,7 @@
       line-height: 1.2;
     }
 
-    .wr-card-sub {
+    .ir-card-sub {
       margin-top: 4px;
 
       color: var(--brown-soft);
@@ -404,8 +371,9 @@
       line-height: 1.35;
     }
 
-    .wr-small-tag {
-      min-width: 61px;
+    .ir-small-tag,
+    .ir-criteria-button {
+      min-width: 72px;
       height: 35px;
       flex-shrink: 0;
 
@@ -413,10 +381,10 @@
       align-items: center;
       justify-content: center;
 
-      padding: 0 11px;
+      padding: 0 12px;
 
       border:
-        1px solid rgba(190, 130, 55, 0.28);
+        1px solid rgba(190, 130, 55, 0.29);
       border-radius: 999px;
 
       background:
@@ -428,77 +396,216 @@
       font-weight: 900;
     }
 
+    .ir-criteria-button {
+      gap: 5px;
+
+      box-shadow:
+        0 3px 0 rgba(135, 90, 35, 0.2);
+    }
+
+    .ir-criteria-button:active {
+      transform: translateY(1px);
+    }
+
     /* =========================================================
-       학생별 달성도 미리보기
+       가운데 배치
     ========================================================= */
 
-    .wr-preview-card {
+    .ir-dashboard {
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(470px, 0.98fr);
+
+      gap: 11px;
+
+      overflow: hidden;
+    }
+
+    .ir-left-area,
+    .ir-right-area {
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .ir-left-area {
+      display: flex;
+    }
+
+    .ir-right-area {
+      display: flex;
+    }
+
+    /* =========================================================
+       학생별 달성도
+    ========================================================= */
+
+    .ir-preview-card {
       width: 100%;
       height: 100%;
     }
 
-    .wr-preview-card .wr-card-inner {
-      display: flex;
-      flex-direction: column;
-
-      padding: 19px 21px 17px;
-    }
-
-    .wr-preview-card .wr-card-title {
-      font-size: 28px;
-    }
-
-    .wr-preview-card .wr-card-sub {
-      font-size: 15px;
-    }
-
-    .wr-preview-list {
-      flex: 1;
-      min-height: 0;
-
+    .ir-preview-card .ir-card-inner {
       display: grid;
       grid-template-rows:
-        repeat(4, minmax(0, 1fr));
+        auto
+        minmax(0, 1fr)
+        47px;
 
-      gap: 10px;
+      gap: 9px;
+
+      padding: 16px 18px 14px;
     }
 
-    .wr-student-row {
+    .ir-preview-card .ir-card-title {
+      font-size: 27px;
+    }
+
+    .ir-title-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .ir-preview-scroll {
       min-width: 0;
       min-height: 0;
 
-      display: grid;
-      grid-template-columns:
-        105px
-        minmax(170px, 1fr)
-        94px;
+      overflow-y: auto;
+      overflow-x: hidden;
 
-      align-items: center;
-      gap: 15px;
-
-      padding: 12px 16px;
+      padding-right: 7px;
 
       border:
-        1px solid rgba(190, 130, 55, 0.23);
+        1px solid rgba(190, 130, 55, 0.24);
       border-radius: 18px;
 
       background:
-        rgba(255, 255, 255, 0.65);
+        rgba(255, 255, 255, 0.5);
 
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.66);
+      scrollbar-width: thin;
+      scrollbar-color: #b9771d #f0dfc3;
     }
 
-    .wr-student-name {
-      color: var(--brown);
+    .ir-preview-scroll::-webkit-scrollbar,
+    .ir-support-scroll::-webkit-scrollbar,
+    .ir-modal-content::-webkit-scrollbar {
+      width: 12px;
+    }
 
-      font-size: 19px;
+    .ir-preview-scroll::-webkit-scrollbar-track,
+    .ir-support-scroll::-webkit-scrollbar-track,
+    .ir-modal-content::-webkit-scrollbar-track {
+      margin: 7px 0;
+
+      border-radius: 999px;
+
+      background: #f0dfc3;
+    }
+
+    .ir-preview-scroll::-webkit-scrollbar-thumb,
+    .ir-support-scroll::-webkit-scrollbar-thumb,
+    .ir-modal-content::-webkit-scrollbar-thumb {
+      border: 3px solid #f0dfc3;
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #daa43a,
+          #9c5d13
+        );
+    }
+
+    .ir-list-header {
+      position: sticky;
+      top: 0;
+      z-index: 4;
+
+      display: grid;
+      grid-template-columns:
+        115px
+        minmax(150px, 1fr)
+        92px;
+
+      align-items: center;
+      gap: 12px;
+
+      min-height: 37px;
+
+      padding: 7px 14px;
+
+      border-bottom:
+        1px solid rgba(190, 130, 55, 0.25);
+
+      background:
+        rgba(255, 249, 235, 0.97);
+
+      color: #7c552f;
+
+      font-size: 13px;
       font-weight: 900;
     }
 
-    .wr-achieve-bar {
+    .ir-list-header-center {
+      text-align: center;
+    }
+
+    .ir-list-header-right {
+      text-align: right;
+    }
+
+    .ir-preview-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .ir-student-row {
+      min-width: 0;
+      min-height: 62px;
+
+      display: grid;
+      grid-template-columns:
+        115px
+        minmax(150px, 1fr)
+        92px;
+
+      align-items: center;
+      gap: 12px;
+
+      padding: 8px 14px;
+
+      border-bottom:
+        1px solid rgba(190, 130, 55, 0.19);
+
+      background:
+        rgba(255, 255, 255, 0.48);
+    }
+
+    .ir-student-row:last-child {
+      border-bottom: 0;
+    }
+
+    .ir-student-row:hover {
+      background:
+        rgba(255, 250, 238, 0.92);
+    }
+
+    .ir-student-name {
+      color: var(--brown);
+
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .ir-achieve-bar {
       width: 100%;
-      height: 18px;
+      height: 15px;
 
       border-radius: 999px;
 
@@ -507,7 +614,7 @@
       overflow: hidden;
     }
 
-    .wr-achieve-fill {
+    .ir-achieve-fill {
       height: 100%;
 
       border-radius: 999px;
@@ -515,12 +622,12 @@
       background:
         linear-gradient(
           90deg,
-          #f2ca70,
-          #bd7816
+          #efc469,
+          #b76d0b
         );
     }
 
-    .wr-state-good .wr-achieve-fill {
+    .ir-state-good .ir-achieve-fill {
       background:
         linear-gradient(
           90deg,
@@ -529,7 +636,7 @@
         );
     }
 
-    .wr-state-need .wr-achieve-fill {
+    .ir-state-need .ir-achieve-fill {
       background:
         linear-gradient(
           90deg,
@@ -538,7 +645,7 @@
         );
     }
 
-    .wr-state-danger .wr-achieve-fill {
+    .ir-state-danger .ir-achieve-fill {
       background:
         linear-gradient(
           90deg,
@@ -547,37 +654,34 @@
         );
     }
 
-    .wr-student-result {
+    .ir-student-result {
       text-align: right;
     }
 
-    .wr-student-percent {
+    .ir-student-percent {
       color: #a76315;
 
-      font-size: 21px;
+      font-size: 19px;
       font-weight: 900;
       line-height: 1;
     }
 
-    .wr-student-state {
-      margin-top: 4px;
+    .ir-student-state {
+      margin-top: 3px;
 
       color: #74553d;
 
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
     }
 
-    .wr-more-button {
+    .ir-more-button {
       width: 100%;
-      height: 49px;
-      flex-shrink: 0;
-
-      margin-top: 10px;
+      height: 47px;
 
       border:
         1px solid rgba(132, 78, 15, 0.5);
-      border-radius: 16px;
+      border-radius: 15px;
 
       background:
         linear-gradient(
@@ -588,16 +692,16 @@
 
       color: #fffaf0;
 
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
 
       box-shadow:
-        0 5px 0 rgba(105, 57, 5, 0.5),
+        0 4px 0 rgba(105, 57, 5, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
-    .wr-more-button:active {
-      transform: translateY(3px);
+    .ir-more-button:active {
+      transform: translateY(2px);
 
       box-shadow:
         0 2px 0 rgba(105, 57, 5, 0.5);
@@ -607,109 +711,157 @@
        오늘의 학습 현황
     ========================================================= */
 
-    .wr-status-card .wr-card-inner {
-      display: flex;
-      flex-direction: column;
+    .ir-status-card {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ir-status-card .ir-card-inner {
+      display: grid;
+      grid-template-rows:
+        auto
+        94px
+        auto
+        minmax(0, 1fr);
+
+      gap: 10px;
 
       padding: 15px 17px;
     }
 
-    .wr-status-card .wr-card-title-row {
-      margin-bottom: 8px;
+    .ir-status-card .ir-card-title {
+      font-size: 25px;
     }
 
-    .wr-status-card .wr-card-title {
-      font-size: 23px;
-    }
-
-    .wr-today-main {
+    .ir-today-main {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns:
+        1fr
+        1fr;
 
-      margin-bottom: 8px;
+      gap: 9px;
     }
 
-    .wr-today-box {
-      min-height: 64px;
-
+    .ir-today-box {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
 
-      padding: 5px 7px;
+      padding: 7px 8px;
 
       border:
         1px solid rgba(190, 130, 55, 0.27);
-      border-radius: 16px;
+      border-radius: 17px;
 
       background:
         rgba(255, 250, 238, 0.88);
     }
 
-    .wr-today-value {
+    .ir-today-value {
       color: #a76315;
 
-      font-size: 28px;
+      font-size: 31px;
       font-weight: 900;
       line-height: 1;
     }
 
-    .wr-today-label {
-      margin-top: 3px;
+    .ir-today-label {
+      margin-top: 6px;
 
       color: #745239;
 
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .ir-support-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+
+      padding: 0 3px;
+
+      color: var(--brown);
+
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .ir-support-count {
+      color: #a76315;
+
       font-size: 13px;
       font-weight: 900;
-      line-height: 1.2;
     }
 
-    .wr-support-list {
-      flex: 1;
-      min-height: 0;
-
-      display: grid;
-      grid-template-rows:
-        repeat(3, minmax(0, 1fr));
-
-      gap: 6px;
-    }
-
-    .wr-support-item {
+    .ir-support-scroll {
       min-width: 0;
       min-height: 0;
 
-      display: grid;
-      grid-template-columns:
-        84px
-        minmax(0, 1fr);
+      overflow-y: auto;
+      overflow-x: hidden;
 
-      align-items: center;
-      gap: 7px;
-
-      padding: 6px 11px;
+      padding-right: 6px;
 
       border:
-        1px solid rgba(190, 130, 55, 0.22);
-      border-radius: 13px;
+        1px solid rgba(190, 130, 55, 0.23);
+      border-radius: 15px;
 
       background:
-        rgba(255, 255, 255, 0.64);
+        rgba(255, 255, 255, 0.5);
+
+      scrollbar-width: thin;
+      scrollbar-color: #b9771d #f0dfc3;
     }
 
-    .wr-support-name {
+    .ir-support-list {
+      display: grid;
+    }
+
+    .ir-support-item {
+      min-width: 0;
+      min-height: 52px;
+
+      display: grid;
+      grid-template-columns:
+        86px
+        minmax(0, 1fr)
+        22px;
+
+      align-items: center;
+      gap: 8px;
+
+      padding: 8px 11px;
+
+      border-bottom:
+        1px solid rgba(190, 130, 55, 0.19);
+
+      background:
+        rgba(255, 255, 255, 0.5);
+    }
+
+    .ir-support-item:last-child {
+      border-bottom: 0;
+    }
+
+    .ir-support-item:hover {
+      background:
+        rgba(255, 250, 238, 0.94);
+    }
+
+    .ir-support-name {
       color: var(--brown);
 
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 900;
     }
 
-    .wr-support-reason {
+    .ir-support-reason {
       color: #704e32;
 
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 850;
 
       overflow: hidden;
@@ -717,73 +869,123 @@
       white-space: nowrap;
     }
 
+    .ir-support-arrow {
+      color: #b17523;
+
+      font-size: 19px;
+      font-weight: 900;
+
+      text-align: right;
+    }
+
     /* =========================================================
-       개별읽기 관리
+       화면 최하단 관리 메뉴
     ========================================================= */
 
-    .wr-manage-card .wr-card-inner {
-      display: flex;
-      flex-direction: column;
-
-      padding: 13px 16px 11px;
-    }
-
-    .wr-manage-card .wr-card-title-row {
-      margin-bottom: 6px;
-    }
-
-    .wr-manage-card .wr-card-title {
-      font-size: 22px;
-    }
-
-    /* 관리 버튼 3개 세로 배치 */
-
-    .wr-main-buttons {
-      flex: 1;
-      min-height: 0;
-
-      display: grid;
-      grid-template-rows: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .wr-big-button {
-      width: 100%;
-      min-height: 54px;
+    .ir-bottom-menu {
       min-width: 0;
+      min-height: 0;
+      height: 148px;
+    }
 
-      padding: 9px 16px;
+    .ir-bottom-menu .ir-card-inner {
+      display: grid;
+      grid-template-rows:
+        32px
+        minmax(0, 1fr);
 
+      gap: 7px;
+
+      padding: 11px 16px 14px;
+    }
+
+    .ir-bottom-title {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 9px;
 
-      border:
-        1px solid rgba(176, 111, 25, 0.37);
-      border-radius: 13px;
+      color: var(--brown);
+
+      font-family: "Noto Serif KR", serif;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .ir-bottom-title-icon {
+      width: 29px;
+      height: 29px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      color: #fff8ea;
 
       background:
         linear-gradient(
           180deg,
-          #fff7e7,
-          #f1d8aa
+          #c6882b,
+          #86500e
+        );
+
+      font-size: 16px;
+    }
+
+    .ir-main-buttons {
+      min-width: 0;
+      min-height: 0;
+
+      display: grid;
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 14px;
+    }
+
+    .ir-big-button {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+
+      padding: 10px 18px;
+
+      display: grid;
+      grid-template-columns:
+        50px
+        minmax(0, 1fr)
+        22px;
+
+      align-items: center;
+      gap: 10px;
+
+      border:
+        1px solid rgba(176, 111, 25, 0.4);
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #fff9ed,
+          #efd5a3
         );
 
       color: var(--brown);
 
-      font-size: 13px;
+      font-size: 20px;
       font-weight: 900;
 
-      white-space: nowrap;
-
       box-shadow:
-        0 4px 0 rgba(127, 87, 35, 0.33),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        0 5px 0 rgba(127, 87, 35, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.56);
     }
 
-    .wr-big-button.green {
+    .ir-big-button.green {
       color: #fffaf0;
+
+      border-color:
+        rgba(70, 83, 31, 0.5);
 
       background:
         linear-gradient(
@@ -793,35 +995,49 @@
         );
 
       box-shadow:
-        0 4px 0 rgba(70, 83, 31, 0.44);
+        0 5px 0 rgba(70, 83, 31, 0.44);
     }
 
-    .wr-big-button:active {
-      transform: translateY(2px);
+    .ir-big-button:active {
+      transform: translateY(3px);
+
+      box-shadow:
+        0 2px 0 rgba(127, 87, 35, 0.34);
     }
 
-    .wr-big-button-icon {
-      width: 24px;
-      height: 24px;
-      flex: 0 0 24px;
+    .ir-big-button-icon {
+      width: 50px;
+      height: 50px;
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
-      border-radius: 9px;
+      border-radius: 15px;
 
       background:
-        rgba(255, 255, 255, 0.36);
+        rgba(255, 255, 255, 0.44);
 
-      font-size: 13px;
+      font-size: 25px;
+    }
+
+    .ir-big-button-label {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .ir-big-button-arrow {
+      font-size: 25px;
+      font-weight: 900;
+
+      text-align: right;
     }
 
     /* =========================================================
-       학생별 상세 평가 보조창
+       공통 보조창
     ========================================================= */
 
-    .wr-detail-modal {
+    .ir-modal {
       position: fixed;
       inset: 0;
       z-index: 99999;
@@ -838,12 +1054,12 @@
       backdrop-filter: blur(5px);
     }
 
-    .wr-detail-modal.show {
+    .ir-modal.show {
       display: flex;
     }
 
-    .wr-detail-panel {
-      width: min(1120px, calc(100vw - 50px));
+    .ir-modal-panel {
+      width: min(1050px, calc(100vw - 50px));
       max-height: calc(100vh - 50px);
 
       display: flex;
@@ -866,7 +1082,7 @@
       overflow: hidden;
     }
 
-    .wr-detail-header {
+    .ir-modal-header {
       flex-shrink: 0;
 
       display: flex;
@@ -887,7 +1103,7 @@
         );
     }
 
-    .wr-detail-title {
+    .ir-modal-title {
       color: var(--brown);
 
       font-family: "Noto Serif KR", serif;
@@ -895,7 +1111,7 @@
       font-weight: 900;
     }
 
-    .wr-detail-description {
+    .ir-modal-description {
       margin-top: 4px;
 
       color: var(--brown-soft);
@@ -904,7 +1120,7 @@
       font-weight: 850;
     }
 
-    .wr-detail-close {
+    .ir-modal-close {
       min-width: 80px;
       height: 43px;
       flex-shrink: 0;
@@ -929,11 +1145,11 @@
         0 4px 0 rgba(105, 57, 5, 0.5);
     }
 
-    .wr-detail-content {
+    .ir-modal-content {
       flex: 1;
       min-height: 0;
 
-      padding: 15px;
+      padding: 17px;
 
       overflow-y: auto;
       overflow-x: hidden;
@@ -942,28 +1158,63 @@
       scrollbar-color: #bd7a1e #f1dfc4;
     }
 
-    .wr-detail-content::-webkit-scrollbar {
-      width: 11px;
+    /* =========================================================
+       평가 기준
+    ========================================================= */
+
+    .ir-criteria-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 13px;
     }
 
-    .wr-detail-content::-webkit-scrollbar-track {
-      background: #f1dfc4;
-    }
+    .ir-criteria-item {
+      padding: 18px;
 
-    .wr-detail-content::-webkit-scrollbar-thumb {
       border:
-        3px solid #f1dfc4;
-      border-radius: 999px;
+        1px solid rgba(190, 130, 55, 0.29);
+      border-radius: 18px;
 
       background:
-        linear-gradient(
-          180deg,
-          #dda83d,
-          #9a5d16
-        );
+        rgba(255, 250, 238, 0.94);
+
+      box-shadow:
+        0 7px 14px rgba(116, 71, 20, 0.09);
     }
 
-    .wr-detail-grid {
+    .ir-criteria-name {
+      color: var(--brown);
+
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .ir-criteria-weight {
+      margin-top: 5px;
+
+      color: #a76315;
+
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .ir-criteria-text {
+      margin-top: 10px;
+
+      color: #67462c;
+
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    /* =========================================================
+       상세 평가
+    ========================================================= */
+
+    .ir-detail-grid {
       display: grid;
       grid-template-columns:
         repeat(2, minmax(0, 1fr));
@@ -971,7 +1222,7 @@
       gap: 12px;
     }
 
-    .wr-detail-card {
+    .ir-detail-card {
       min-width: 0;
 
       padding: 15px 17px;
@@ -987,7 +1238,7 @@
         0 7px 14px rgba(116, 71, 20, 0.09);
     }
 
-    .wr-detail-card-header {
+    .ir-detail-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -996,14 +1247,14 @@
       margin-bottom: 11px;
     }
 
-    .wr-detail-name {
+    .ir-detail-name {
       color: var(--brown);
 
       font-size: 21px;
       font-weight: 900;
     }
 
-    .wr-state-chip {
+    .ir-state-chip {
       padding: 6px 11px;
 
       border-radius: 999px;
@@ -1032,15 +1283,15 @@
       background: #b65b36;
     }
 
-    .wr-detail-bars {
+    .ir-detail-bars {
       display: grid;
       gap: 9px;
     }
 
-    .wr-detail-bar-row {
+    .ir-detail-bar-row {
       display: grid;
       grid-template-columns:
-        92px
+        100px
         minmax(0, 1fr)
         44px;
 
@@ -1048,14 +1299,14 @@
       gap: 9px;
     }
 
-    .wr-detail-bar-name {
+    .ir-detail-bar-name {
       color: #59371e;
 
       font-size: 15px;
       font-weight: 900;
     }
 
-    .wr-detail-bar {
+    .ir-detail-bar {
       height: 14px;
 
       border-radius: 999px;
@@ -1065,7 +1316,7 @@
       overflow: hidden;
     }
 
-    .wr-detail-bar-fill {
+    .ir-detail-bar-fill {
       height: 100%;
 
       border-radius: 999px;
@@ -1078,7 +1329,7 @@
         );
     }
 
-    .wr-detail-bar-value {
+    .ir-detail-bar-value {
       color: #a76315;
 
       font-size: 15px;
@@ -1087,7 +1338,7 @@
       text-align: right;
     }
 
-    .wr-teacher-note {
+    .ir-teacher-note {
       margin-top: 11px;
       padding: 9px 11px;
 
@@ -1109,134 +1360,169 @@
        낮은 화면 보정
     ========================================================= */
 
-    @media (min-width: 1101px) and (max-height: 820px) {
-      .wr-page {
-        padding:
-          9px 15px 11px;
+    @media (min-width: 1101px) and (max-height: 850px) {
+      .ir-page {
+        padding: 8px 14px 10px;
       }
 
-      .wr-shell {
-        width:
-          min(1580px, calc(100vw - 30px));
+      .ir-shell {
+        width: min(1620px, calc(100vw - 28px));
 
         grid-template-rows:
-          67px minmax(0, 1fr);
+          66px
+          minmax(0, 1fr)
+          125px;
 
-        gap: 9px;
+        gap: 8px;
       }
 
-      .wr-topbar {
-        height: 67px;
+      .ir-topbar {
+        height: 66px;
 
-        padding:
-          7px 15px;
+        padding: 7px 14px;
       }
 
-      .wr-brand {
-        font-size: 21px;
+      .ir-brand {
+        font-size: 20px;
       }
 
-      .wr-brand-icon {
+      .ir-brand-icon {
         width: 39px;
         height: 39px;
         flex-basis: 39px;
       }
 
-      .wr-brand-icon img {
+      .ir-brand-icon img {
         width: 27px;
         height: 27px;
       }
 
-      .wr-main-title {
-        font-size: 27px;
+      .ir-main-title {
+        font-size: 26px;
       }
 
-      .wr-top-title-small {
-        font-size: 11px;
+      .ir-top-title-small {
+        font-size: 10px;
       }
 
-      .wr-pill,
-      .wr-home-button {
-        height: 34px;
+      .ir-pill,
+      .ir-home-button {
+        height: 33px;
 
-        padding:
-          0 11px;
+        padding: 0 10px;
 
         font-size: 12px;
       }
 
-      .wr-dashboard {
-        gap: 9px;
-      }
-
-      .wr-right-area {
+      .ir-dashboard {
         gap: 8px;
       }
 
-      .wr-preview-card .wr-card-inner {
-        padding:
-          15px 17px 14px;
+      .ir-preview-card .ir-card-inner {
+        padding: 12px 14px 11px;
       }
 
-      .wr-preview-card .wr-card-title {
-        font-size: 24px;
+      .ir-preview-card .ir-card-title {
+        font-size: 23px;
       }
 
-      .wr-preview-list {
-        gap: 7px;
+      .ir-card-sub {
+        font-size: 12px;
       }
 
-      .wr-student-row {
-        padding:
-          8px 13px;
+      .ir-list-header {
+        min-height: 31px;
+
+        padding: 5px 12px;
       }
 
-      .wr-more-button {
+      .ir-student-row {
+        min-height: 51px;
+
+        padding: 6px 12px;
+      }
+
+      .ir-student-name {
+        font-size: 15px;
+      }
+
+      .ir-student-percent {
+        font-size: 17px;
+      }
+
+      .ir-more-button {
+        height: 40px;
+
+        font-size: 14px;
+      }
+
+      .ir-status-card .ir-card-inner {
+        grid-template-rows:
+          auto
+          76px
+          auto
+          minmax(0, 1fr);
+
+        padding: 11px 13px;
+      }
+
+      .ir-status-card .ir-card-title {
+        font-size: 21px;
+      }
+
+      .ir-today-value {
+        font-size: 25px;
+      }
+
+      .ir-today-label {
+        font-size: 12px;
+      }
+
+      .ir-support-item {
+        min-height: 43px;
+
+        padding: 5px 9px;
+      }
+
+      .ir-bottom-menu {
+        height: 125px;
+      }
+
+      .ir-bottom-menu .ir-card-inner {
+        grid-template-rows:
+          27px
+          minmax(0, 1fr);
+
+        padding: 8px 13px 11px;
+      }
+
+      .ir-bottom-title {
+        font-size: 19px;
+      }
+
+      .ir-bottom-title-icon {
+        width: 25px;
+        height: 25px;
+
+        font-size: 14px;
+      }
+
+      .ir-big-button {
+        grid-template-columns:
+          42px
+          minmax(0, 1fr)
+          18px;
+
+        padding: 7px 14px;
+
+        font-size: 17px;
+      }
+
+      .ir-big-button-icon {
+        width: 42px;
         height: 42px;
-        margin-top: 8px;
 
-        font-size: 15px;
-      }
-
-      .wr-status-card .wr-card-inner {
-        padding:
-          12px 14px;
-      }
-
-      .wr-today-box {
-        min-height: 53px;
-      }
-
-      .wr-today-value {
-        font-size: 24px;
-      }
-
-      .wr-support-item {
-        padding:
-          4px 9px;
-      }
-
-      .wr-manage-card .wr-card-inner {
-        padding:
-          10px 13px 9px;
-      }
-
-      .wr-main-buttons {
-        gap: 7px;
-      }
-
-      .wr-big-button {
-        min-height: 44px;
-        padding: 7px 13px;
-        font-size: 15px;
-      }
-
-      .wr-big-button-icon {
-        width: 21px;
-        height: 21px;
-        flex-basis: 21px;
-
-        font-size: 11px;
+        font-size: 21px;
       }
     }
 
@@ -1251,22 +1537,24 @@
         overflow-y: auto;
       }
 
-      .wr-page {
+      .ir-page {
         height: auto;
         min-height: 100vh;
         overflow: visible;
       }
 
-      .wr-shell {
+      .ir-shell {
         height: auto;
 
         grid-template-rows:
-          auto auto;
+          auto
+          auto
+          auto;
 
         overflow: visible;
       }
 
-      .wr-topbar {
+      .ir-topbar {
         height: auto;
 
         grid-template-columns:
@@ -1275,16 +1563,16 @@
         padding: 14px;
       }
 
-      .wr-brand,
-      .wr-top-pills {
+      .ir-brand,
+      .ir-top-pills {
         justify-content: center;
       }
 
-      .wr-top-title {
+      .ir-top-title {
         white-space: normal;
       }
 
-      .wr-dashboard {
+      .ir-dashboard {
         height: auto;
 
         grid-template-columns:
@@ -1293,25 +1581,32 @@
         overflow: visible;
       }
 
-      .wr-right-area {
-        grid-template-rows:
-          auto auto;
+      .ir-left-area,
+      .ir-right-area {
+        height: 610px;
       }
 
-      .wr-preview-card {
+      .ir-bottom-menu {
         height: auto;
       }
 
-      .wr-preview-list {
+      .ir-bottom-menu .ir-card-inner {
         grid-template-rows:
-          repeat(4, auto);
+          auto
+          auto;
       }
 
-      .wr-student-row {
+      .ir-main-buttons {
+        grid-template-columns:
+          1fr;
+      }
+
+      .ir-big-button {
         min-height: 78px;
       }
 
-      .wr-detail-grid {
+      .ir-criteria-grid,
+      .ir-detail-grid {
         grid-template-columns:
           1fr;
       }
@@ -1320,14 +1615,14 @@
 </head>
 
 <body>
-  <main class="wr-page">
-    <div class="wr-shell">
+  <main class="ir-page">
+    <div class="ir-shell">
 
-      <!-- 상단 -->
-      <header class="wr-topbar">
+      <!-- 상단바 -->
+      <header class="ir-topbar">
 
-        <div class="wr-brand">
-          <div class="wr-brand-icon">
+        <div class="ir-brand">
+          <div class="ir-brand-icon">
             <img
               src="../assets/images/logo-book.png"
               alt="문답책 로고"
@@ -1337,247 +1632,524 @@
           <span>문답책</span>
         </div>
 
-        <div class="wr-top-title">
-          <div class="wr-top-title-small">
+        <div class="ir-top-title">
+          <div class="ir-top-title-small">
             📚 개별읽기 대시보드
           </div>
 
-          <h1 class="wr-main-title">
+          <h1 class="ir-main-title">
             우리 반 개별읽기 한눈에 보기
           </h1>
         </div>
 
-        <div class="wr-top-pills">
+        <div class="ir-top-pills">
+
           <button
-            class="wr-pill"
+            class="ir-pill"
             type="button"
           >
             교사 송은정
           </button>
 
           <button
-            class="wr-pill"
+            class="ir-pill"
             type="button"
           >
             4학년 1반
           </button>
 
           <button
-            class="wr-home-button"
+            class="ir-home-button"
             type="button"
             onclick="goTeacherHome()"
           >
             교사 홈
           </button>
+
         </div>
       </header>
 
-      <!-- 본문 -->
-      <section class="wr-dashboard">
+      <!-- 메인 영역 -->
+      <section class="ir-dashboard">
 
-        <!-- 학생별 달성도 -->
-        <div class="wr-left-area">
-          <article class="wr-card wr-preview-card">
-            <div class="wr-card-inner">
+        <!-- 왼쪽 학생별 달성도 -->
+        <div class="ir-left-area">
 
-              <div class="wr-card-title-row">
+          <article class="ir-card ir-preview-card">
+            <div class="ir-card-inner">
+
+              <div class="ir-card-title-row">
+
                 <div>
-                  <h2 class="wr-card-title">
+                  <h2 class="ir-card-title">
                     학생별 달성도 미리보기
                   </h2>
 
-                  <p class="wr-card-sub">
+                  <p class="ir-card-sub">
                     학생별 개별읽기 활동 상태를 확인할 수 있어요.
                   </p>
                 </div>
 
-                <span class="wr-small-tag">
-                  4명 표시
-                </span>
+                <div class="ir-title-actions">
+
+                  <button
+                    class="ir-criteria-button"
+                    type="button"
+                    onclick="openCriteriaModal()"
+                  >
+                    평가 기준
+                    <span>ⓘ</span>
+                  </button>
+
+                  <span class="ir-small-tag">
+                    전체 학생
+                  </span>
+
+                </div>
               </div>
 
-              <div
-                class="wr-preview-list"
-                id="studentPreviewList"
-              ></div>
+              <!-- 학생 목록 내부 스크롤 -->
+              <div class="ir-preview-scroll">
+
+                <div class="ir-list-header">
+                  <div>
+                    학생 이름
+                  </div>
+
+                  <div class="ir-list-header-center">
+                    달성도
+                  </div>
+
+                  <div class="ir-list-header-right">
+                    상태
+                  </div>
+                </div>
+
+                <div
+                  class="ir-preview-list"
+                  id="studentPreviewList"
+                ></div>
+
+              </div>
 
               <button
-                class="wr-more-button"
+                class="ir-more-button"
                 type="button"
                 onclick="openStudentDetailModal()"
               >
                 개별 평가 상세히 보기
               </button>
+
             </div>
           </article>
+
         </div>
 
-        <!-- 오른쪽 -->
-        <div class="wr-right-area">
+        <!-- 오른쪽 오늘 현황 -->
+        <div class="ir-right-area">
 
-          <!-- 오늘 현황 -->
-          <article class="wr-card wr-status-card">
-            <div class="wr-card-inner">
+          <article class="ir-card ir-status-card">
+            <div class="ir-card-inner">
 
-              <div class="wr-card-title-row">
-                <h2 class="wr-card-title">
-                  오늘의 학습 현황
-                </h2>
+              <div class="ir-card-title-row">
 
-                <span class="wr-small-tag">
+                <div>
+                  <h2 class="ir-card-title">
+                    오늘의 학습 현황
+                  </h2>
+
+                  <p class="ir-card-sub">
+                    오늘 개별읽기 활동에서 확인이 필요한 내용을 살펴봐요.
+                  </p>
+                </div>
+
+                <span class="ir-small-tag">
                   오늘
                 </span>
+
               </div>
 
-              <div class="wr-today-main">
+              <div class="ir-today-main">
 
-                <div class="wr-today-box">
-                  <div class="wr-today-value">
+                <div class="ir-today-box">
+                  <div class="ir-today-value">
                     76%
                   </div>
 
-                  <div class="wr-today-label">
+                  <div class="ir-today-label">
                     오늘 참여율
                   </div>
                 </div>
 
-                <div class="wr-today-box">
-                  <div class="wr-today-value">
+                <div class="ir-today-box">
+                  <div class="ir-today-value">
                     3명
                   </div>
 
-                  <div class="wr-today-label">
+                  <div class="ir-today-label">
                     추가 지원 필요
                   </div>
                 </div>
+
               </div>
 
-              <div class="wr-support-list">
+              <div class="ir-support-heading">
+                <span>
+                  확인이 필요한 학생
+                </span>
 
-                <div class="wr-support-item">
-                  <div class="wr-support-name">
-                    김수현
+                <span class="ir-support-count">
+                  최근 활동 기준
+                </span>
+              </div>
+
+              <!-- 오늘 현황 내부 스크롤 -->
+              <div class="ir-support-scroll">
+
+                <div class="ir-support-list">
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      김수현
+                    </div>
+
+                    <div class="ir-support-reason">
+                      오늘 독서 기록 미작성
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
                   </div>
 
-                  <div class="wr-support-reason">
-                    질문 미제출
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      이재훈
+                    </div>
+
+                    <div class="ir-support-reason">
+                      읽기 활동 참여 부족
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
                   </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      정우진
+                    </div>
+
+                    <div class="ir-support-reason">
+                      독서 실천 일수 부족
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      박서연
+                    </div>
+
+                    <div class="ir-support-reason">
+                      기록 내용이 짧고 불완전함
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      최지우
+                    </div>
+
+                    <div class="ir-support-reason">
+                      책 내용과 기록 연결 부족
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      한지민
+                    </div>
+
+                    <div class="ir-support-reason">
+                      간추리기 활동 미완료
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      윤태호
+                    </div>
+
+                    <div class="ir-support-reason">
+                      책수다방 글 미등록
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      이서윤
+                    </div>
+
+                    <div class="ir-support-reason">
+                      추천 책장 활동 미완료
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
+                  <div class="ir-support-item">
+                    <div class="ir-support-name">
+                      김도윤
+                    </div>
+
+                    <div class="ir-support-reason">
+                      최근 3일간 독서 기록 없음
+                    </div>
+
+                    <div class="ir-support-arrow">
+                      ›
+                    </div>
+                  </div>
+
                 </div>
-
-                <div class="wr-support-item">
-                  <div class="wr-support-name">
-                    이재훈
-                  </div>
-
-                  <div class="wr-support-reason">
-                    읽기 활동 참여 부족
-                  </div>
-                </div>
-
-                <div class="wr-support-item">
-                  <div class="wr-support-name">
-                    송은정
-                  </div>
-
-                  <div class="wr-support-reason">
-                    질문 수정 횟수 많음
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </article>
-
-          <!-- 개별읽기 관리 -->
-          <article class="wr-card wr-manage-card">
-            <div class="wr-card-inner">
-
-              <div class="wr-card-title-row">
-                <h2 class="wr-card-title">
-                  개별읽기 관리
-                </h2>
               </div>
 
-              <div class="wr-main-buttons">
-
-                <button
-                  class="wr-big-button"
-                  type="button"
-                  onclick="goBookChatManage()"
-                >
-                  <span>책수다방 관리</span>
-                  <span class="wr-big-button-icon">💬</span>
-                </button>
-
-                <button
-                  class="wr-big-button"
-                  type="button"
-                  onclick="goRecommendShelf()"
-                >
-                  <span>추천 책장</span>
-                  <span class="wr-big-button-icon">📚</span>
-                </button>
-
-                <button
-                  class="wr-big-button green"
-                  type="button"
-                  onclick="goSummaryActivity()"
-                >
-                  <span>간추리기</span>
-                  <span class="wr-big-button-icon">✏️</span>
-                </button>
-
-              </div>
             </div>
           </article>
 
         </div>
       </section>
+
+      <!-- 화면 최하단 관리 메뉴 -->
+      <section class="ir-card ir-bottom-menu">
+        <div class="ir-card-inner">
+
+          <div class="ir-bottom-title">
+
+            <span class="ir-bottom-title-icon">
+              ⚙
+            </span>
+
+            <span>
+              개별읽기 관리 메뉴
+            </span>
+
+          </div>
+
+          <div class="ir-main-buttons">
+
+            <button
+              class="ir-big-button"
+              type="button"
+              onclick="goBookChatManage()"
+            >
+              <span class="ir-big-button-icon">
+                💬
+              </span>
+
+              <span class="ir-big-button-label">
+                책수다방 관리
+              </span>
+
+              <span class="ir-big-button-arrow">
+                ›
+              </span>
+            </button>
+
+            <button
+              class="ir-big-button"
+              type="button"
+              onclick="goRecommendShelf()"
+            >
+              <span class="ir-big-button-icon">
+                📚
+              </span>
+
+              <span class="ir-big-button-label">
+                추천 책장
+              </span>
+
+              <span class="ir-big-button-arrow">
+                ›
+              </span>
+            </button>
+
+            <button
+              class="ir-big-button green"
+              type="button"
+              onclick="goSummaryActivity()"
+            >
+              <span class="ir-big-button-icon">
+                ✏️
+              </span>
+
+              <span class="ir-big-button-label">
+                간추리기
+              </span>
+
+              <span class="ir-big-button-arrow">
+                ›
+              </span>
+            </button>
+
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 
-  <!-- 학생별 평가 상세 보조창 -->
+  <!-- 개별읽기 평가 기준 -->
   <div
-    class="wr-detail-modal"
+    class="ir-modal"
+    id="criteriaModal"
+    onclick="closeCriteriaByBackground(event)"
+  >
+    <div
+      class="ir-modal-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="criteriaTitle"
+    >
+
+      <div class="ir-modal-header">
+
+        <div>
+          <h2
+            class="ir-modal-title"
+            id="criteriaTitle"
+          >
+            개별읽기 평가 기준
+          </h2>
+
+          <p class="ir-modal-description">
+            학생의 개별 독서 실천과 기록 활동을 중심으로 살펴봐요.
+          </p>
+        </div>
+
+        <button
+          class="ir-modal-close"
+          type="button"
+          onclick="closeCriteriaModal()"
+        >
+          닫기
+        </button>
+
+      </div>
+
+      <div class="ir-modal-content">
+
+        <div class="ir-criteria-grid">
+
+          <article class="ir-criteria-item">
+
+            <h3 class="ir-criteria-name">
+              독서 실천도
+            </h3>
+
+            <div class="ir-criteria-weight">
+              개별읽기 활동 참여
+            </div>
+
+            <p class="ir-criteria-text">
+              자신이 선택한 책을 꾸준히 읽고 정해진 독서 활동에
+              지속적으로 참여했는지 살펴봅니다. 독서 일수와
+              활동 참여 횟수를 함께 확인합니다.
+            </p>
+
+          </article>
+
+          <article class="ir-criteria-item">
+
+            <h3 class="ir-criteria-name">
+              기록 완성도
+            </h3>
+
+            <div class="ir-criteria-weight">
+              독서 기록과 활동 결과
+            </div>
+
+            <p class="ir-criteria-text">
+              읽은 책의 내용과 자신의 생각이 독서 기록에
+              알맞게 드러나는지, 각 활동을 빠짐없이
+              끝까지 완성했는지 살펴봅니다.
+            </p>
+
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 학생별 상세 평가 -->
+  <div
+    class="ir-modal"
     id="studentDetailModal"
     onclick="closeStudentDetailByBackground(event)"
   >
     <div
-      class="wr-detail-panel"
+      class="ir-modal-panel"
       role="dialog"
       aria-modal="true"
       aria-labelledby="studentDetailTitle"
     >
 
-      <div class="wr-detail-header">
+      <div class="ir-modal-header">
 
         <div>
           <h2
-            class="wr-detail-title"
+            class="ir-modal-title"
             id="studentDetailTitle"
           >
             학생별 개별읽기 평가 상세
           </h2>
 
-          <p class="wr-detail-description">
+          <p class="ir-modal-description">
             학생별 독서 실천도와 기록 완성도를 확인해요.
           </p>
         </div>
 
         <button
-          class="wr-detail-close"
+          class="ir-modal-close"
           type="button"
           onclick="closeStudentDetailModal()"
         >
           닫기
         </button>
+
       </div>
 
-      <div class="wr-detail-content">
+      <div class="ir-modal-content">
+
         <div
-          class="wr-detail-grid"
+          class="ir-detail-grid"
           id="studentDetailGrid"
         ></div>
+
       </div>
     </div>
   </div>
@@ -1615,24 +2187,90 @@
         recordCompletion: 58,
         state: "집중 지원",
         note: "꾸준한 독서 실천과 독서 기록 완성을 함께 도와줄 필요가 있어요."
+      },
+      {
+        name: "박서연",
+        total: 47,
+        readingPractice: 52,
+        recordCompletion: 43,
+        state: "지원 필요",
+        note: "읽은 내용을 자신의 말로 정리하여 기록하는 연습이 필요해요."
+      },
+      {
+        name: "최지우",
+        total: 36,
+        readingPractice: 42,
+        recordCompletion: 31,
+        state: "지원 필요",
+        note: "짧은 문장부터 독서 기록을 완성하도록 단계적인 도움이 필요해요."
+      },
+      {
+        name: "정우진",
+        total: 28,
+        readingPractice: 30,
+        recordCompletion: 25,
+        state: "집중 지원",
+        note: "읽을 분량을 나누어 안내하고 독서 실천 여부를 자주 확인해 주세요."
+      },
+      {
+        name: "한지민",
+        total: 82,
+        readingPractice: 85,
+        recordCompletion: 80,
+        state: "우수",
+        note: "책의 내용을 잘 이해하고 자신의 생각을 독서 기록에 자연스럽게 표현해요."
+      },
+      {
+        name: "윤태호",
+        total: 73,
+        readingPractice: 76,
+        recordCompletion: 70,
+        state: "보통",
+        note: "독서 활동에는 참여하고 있으나 기록을 끝까지 마무리하는 연습이 필요해요."
+      },
+      {
+        name: "이서윤",
+        total: 95,
+        readingPractice: 97,
+        recordCompletion: 93,
+        state: "매우 우수",
+        note: "다양한 책을 꾸준히 읽고 독서 기록과 추천 활동에도 적극적으로 참여해요."
+      },
+      {
+        name: "김도윤",
+        total: 61,
+        readingPractice: 58,
+        recordCompletion: 64,
+        state: "지원 필요",
+        note: "독서 활동 사이의 간격이 길어지지 않도록 꾸준한 실천을 격려해 주세요."
+      },
+      {
+        name: "박하린",
+        total: 78,
+        readingPractice: 80,
+        recordCompletion: 76,
+        state: "보통",
+        note: "독서 기록은 잘 완성하고 있으며 자신의 생각을 조금 더 자세히 적으면 좋아요."
       }
     ];
 
-
     function getPreviewStateClass(state) {
       if (state === "매우 우수") {
-        return "wr-state-excellent";
+        return "ir-state-excellent";
       }
 
-      if (state === "우수") {
-        return "wr-state-good";
+      if (
+        state === "우수" ||
+        state === "보통"
+      ) {
+        return "ir-state-good";
       }
 
       if (state === "지원 필요") {
-        return "wr-state-need";
+        return "ir-state-need";
       }
 
-      return "wr-state-danger";
+      return "ir-state-danger";
     }
 
     function getDetailChipClass(state) {
@@ -1640,7 +2278,10 @@
         return "chip-excellent";
       }
 
-      if (state === "우수") {
+      if (
+        state === "우수" ||
+        state === "보통"
+      ) {
         return "chip-good";
       }
 
@@ -1661,27 +2302,29 @@
         .map(function (student) {
           return `
             <div
-              class="wr-student-row ${getPreviewStateClass(student.state)}"
+              class="ir-student-row ${getPreviewStateClass(student.state)}"
             >
-              <div class="wr-student-name">
+              <div class="ir-student-name">
                 ${student.name}
               </div>
 
-              <div class="wr-achieve-bar">
+              <div class="ir-achieve-bar">
                 <div
-                  class="wr-achieve-fill"
+                  class="ir-achieve-fill"
                   style="width: ${student.total}%;"
                 ></div>
               </div>
 
-              <div class="wr-student-result">
-                <div class="wr-student-percent">
+              <div class="ir-student-result">
+
+                <div class="ir-student-percent">
                   ${student.total}%
                 </div>
 
-                <div class="wr-student-state">
+                <div class="ir-student-state">
                   ${student.state}
                 </div>
+
               </div>
             </div>
           `;
@@ -1691,21 +2334,23 @@
 
     function makeDetailBar(label, value) {
       return `
-        <div class="wr-detail-bar-row">
-          <div class="wr-detail-bar-name">
+        <div class="ir-detail-bar-row">
+
+          <div class="ir-detail-bar-name">
             ${label}
           </div>
 
-          <div class="wr-detail-bar">
+          <div class="ir-detail-bar">
             <div
-              class="wr-detail-bar-fill"
+              class="ir-detail-bar-fill"
               style="width: ${value}%;"
             ></div>
           </div>
 
-          <div class="wr-detail-bar-value">
+          <div class="ir-detail-bar-value">
             ${value}%
           </div>
+
         </div>
       `;
     }
@@ -1719,21 +2364,23 @@
       grid.innerHTML = students
         .map(function (student) {
           return `
-            <article class="wr-detail-card">
+            <article class="ir-detail-card">
 
-              <div class="wr-detail-card-header">
-                <div class="wr-detail-name">
+              <div class="ir-detail-card-header">
+
+                <div class="ir-detail-name">
                   ${student.name}
                 </div>
 
                 <span
-                  class="wr-state-chip ${getDetailChipClass(student.state)}"
+                  class="ir-state-chip ${getDetailChipClass(student.state)}"
                 >
                   ${student.state}
                 </span>
+
               </div>
 
-              <div class="wr-detail-bars">
+              <div class="ir-detail-bars">
 
                 ${makeDetailBar(
                   "독서 실천도",
@@ -1747,17 +2394,41 @@
 
               </div>
 
-              <div class="wr-teacher-note">
+              <div class="ir-teacher-note">
                 <strong>교사 참고:</strong>
                 ${student.note}
               </div>
+
             </article>
           `;
         })
         .join("");
     }
 
+    function openCriteriaModal() {
+      document
+        .getElementById("criteriaModal")
+        .classList.add("show");
+    }
+
+    function closeCriteriaModal() {
+      document
+        .getElementById("criteriaModal")
+        .classList.remove("show");
+    }
+
+    function closeCriteriaByBackground(event) {
+      if (
+        event.target.id ===
+        "criteriaModal"
+      ) {
+        closeCriteriaModal();
+      }
+    }
+
     function openStudentDetailModal() {
+      renderStudentDetail();
+
       const modal =
         document.getElementById(
           "studentDetailModal"
@@ -1765,10 +2436,8 @@
 
       const content =
         modal.querySelector(
-          ".wr-detail-content"
+          ".ir-modal-content"
         );
-
-      renderStudentDetail();
 
       modal.classList.add("show");
 
@@ -1778,12 +2447,11 @@
     }
 
     function closeStudentDetailModal() {
-      const modal =
-        document.getElementById(
+      document
+        .getElementById(
           "studentDetailModal"
-        );
-
-      modal.classList.remove("show");
+        )
+        .classList.remove("show");
     }
 
     function closeStudentDetailByBackground(event) {
@@ -1799,22 +2467,20 @@
       "keydown",
       function (event) {
         if (event.key === "Escape") {
+          closeCriteriaModal();
           closeStudentDetailModal();
         }
       }
     );
 
     function goTeacherHome() {
-      location.href = "home.html";
-    }
-
-    function goBookSelect() {
-      location.href = "book-select.html";
+      location.href =
+        "home.html";
     }
 
     function goBookChatManage() {
       location.href =
-        "book-chat-manage.html";
+        "individual-book-chat-manage.html";
     }
 
     function goRecommendShelf() {
@@ -1822,21 +2488,10 @@
         "../student/friend-book-shelf.html?mode=teacher";
     }
 
-    /*
-      teacher/book-manage.html
-              ↓
-      student/after-read.html
-
-      open=share:
-      간추리기 화면 바로 열기
-
-      mode=teacher:
-      교사 모드 돌아가기 버튼 표시
-    */
     function goSummaryActivity() {
-  location.href =
-    "../student/individual-after-reading.html?teacherView=summaryShare";
-}
+      location.href =
+        "../student/individual-after-reading.html?teacherView=summaryShare";
+    }
 
     renderStudentPreview();
   </script>

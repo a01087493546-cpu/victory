@@ -105,11 +105,14 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 0 18px;
+      min-width: 158px;
+      justify-content: center;
+      padding: 0 20px;
       border: 1px solid rgba(255, 221, 143, 0.68);
       background: rgba(35, 23, 11, 0.74);
       color: #fff5d2;
       font-size: 16px;
+      white-space: nowrap;
     }
 
     .ir-top-power img {
@@ -771,6 +774,45 @@ html {
   color: inherit !important;
   opacity: 1 !important;
 }
+
+/* 연습읽기 카드의 "처음해요" 배지를 크게 강조 */
+.ir-practice-card::after {
+  top: 18px !important;
+  right: 22px !important;
+  height: 48px !important;
+  min-width: 116px !important;
+  padding: 0 24px !important;
+  border: 2px solid rgba(255, 239, 172, 0.96) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.58), transparent 36%),
+    linear-gradient(180deg, #fff0a8 0%, #d99e2d 58%, #a86b19 100%) !important;
+  color: #3d250b !important;
+  font-size: 19px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.03em !important;
+  box-shadow:
+    0 10px 20px rgba(15, 45, 18, 0.30),
+    0 0 0 4px rgba(255, 226, 126, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+  transform: translateY(-2px) !important;
+  z-index: 3 !important;
+}
+
+.ir-practice-text {
+  width: fit-content !important;
+  min-width: 320px !important;
+  margin-left: 8px !important;
+  margin-right: auto !important;
+  padding-right: 130px !important;
+  text-align: center !important;
+  transform: translateX(-34px) !important;
+}
+
+.ir-practice-text button {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
   </style>
 </head>
 
@@ -791,9 +833,8 @@ html {
   📚 나의 독서 보관함
 </button>
 
-  <button class="ir-top-power" type="button" onclick="location.href='my-power.html'">
-    <img src="../assets/story/char-lumi-01-basic.png" alt="" />
-    나의 힘
+  <button class="ir-top-power" type="button" onclick="location.href='ability-intro.html'">
+    ✨ 나의 힘 쌓는 법
   </button>
 </div>
     </header>

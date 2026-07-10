@@ -1048,7 +1048,7 @@
     }
 
     .idr-stat-box {
-      padding: 17px;
+      padding: 20px;
       border-radius: 20px;
       background: rgba(255, 246, 220, 0.82);
       border: 1px solid rgba(181, 117, 37, 0.16);
@@ -1057,15 +1057,15 @@
     .idr-stat-box span {
       display: block;
       color: #a1661d;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: 900;
     }
 
     .idr-stat-box strong {
       display: block;
-      margin-top: 5px;
+      margin-top: 6px;
       color: #4e2d10;
-      font-size: 26px;
+      font-size: 32px;
       font-weight: 950;
     }
 
@@ -1366,7 +1366,7 @@
       align-items: center !important;
       color: #4e2d10 !important;
       font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
-      font-size: 29px !important;
+      font-size: 34px !important;
       font-weight: 950 !important;
       letter-spacing: -0.045em !important;
       line-height: 1.1 !important;
@@ -1493,12 +1493,12 @@
       height: 100% !important;
       min-height: 0 !important;
       margin: 0 !important;
-      padding: 15px 17px !important;
+      padding: 16px 18px !important;
       border-radius: 18px !important;
       border: 1px solid rgba(171, 108, 31, 0.22) !important;
       background: rgba(255, 250, 237, 0.96) !important;
       color: #4d2b10 !important;
-      font-size: 15px !important;
+      font-size: 26px !important;
       font-weight: 850 !important;
       line-height: 1.5 !important;
       resize: none !important;
@@ -4760,8 +4760,12 @@
   border: 2px solid rgba(150, 91, 25, 0.34) !important;
 }
 
+.idr-question-panel .idr-field:nth-of-type(2) .idr-textarea {
+  height: 158px !important;
+}
+
 .idr-question-panel .idr-field:nth-of-type(3) .idr-textarea {
-  height: 112px !important;
+  height: 158px !important;
 }
 
 .idr-question-panel .idr-question-actions {
@@ -4770,8 +4774,8 @@
 }
 
 .idr-question-panel .idr-question-actions .idr-main-button {
-  height: 54px !important;
-  font-size: 16px !important;
+  height: 60px !important;
+  font-size: 19px !important;
 }
 
 .idr-select-modal-list .idr-question-card {
@@ -4827,10 +4831,10 @@
 .idr-inline-feedback {
   display: grid !important;
   grid-template-columns: 76px minmax(0, 1fr) !important;
-  align-items: center !important;
+  align-items: stretch !important;
   column-gap: 16px !important;
-  row-gap: 8px !important;
-  padding: 16px 18px !important;
+  row-gap: 0 !important;
+  padding: 18px 20px !important;
   border-radius: 20px !important;
   border: 1.5px solid rgba(137, 82, 28, 0.24) !important;
   background:
@@ -4838,27 +4842,29 @@
 }
 
 .idr-inline-feedback-lumi {
-  grid-row: 1 / span 2 !important;
-  width: 70px !important;
-  height: 82px !important;
+  grid-row: 1 !important;
+  align-self: end !important;
+  width: 76px !important;
+  height: auto !important;
+  max-height: 100% !important;
   object-fit: contain !important;
   object-position: bottom center !important;
   filter: drop-shadow(0 8px 10px rgba(94, 56, 15, 0.14)) !important;
 }
 
 .idr-inline-feedback-title {
-  grid-column: 2 !important;
-  margin: 0 !important;
-  color: #4e2d10 !important;
-  font-size: 21px !important;
-  font-weight: 950 !important;
-  line-height: 1.2 !important;
+  display: none !important;
 }
 
 .idr-inline-feedback .idr-feedback-box {
   grid-column: 2 !important;
-  min-height: 54px !important;
-  font-size: 16px !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 80px !important;
+  height: 100% !important;
+  font-size: 22px !important;
+  line-height: 1.4 !important;
 }
 
 .idr-select-overlay {
@@ -5909,7 +5915,7 @@ body.idr-book-chat-open .idr-book-chat-side-lumi {
 /* 질문 쓰기 / 내 생각 답 글자도 질문 유형 선택과 맞춤 */
 .idr-question-panel .idr-field:nth-of-type(2) label,
 .idr-question-panel .idr-field:nth-of-type(3) label {
-  font-size: 19px !important;
+  font-size: 22px !important;
   font-weight: 950 !important;
   line-height: 1.15 !important;
 }
@@ -5917,30 +5923,68 @@ body.idr-book-chat-open .idr-book-chat-side-lumi {
    최종 수정: 질문 유형 선택 글자 제거 + 버튼 크게
    ========================================================= */
 
-/* 질문 유형 선택 글자 숨김 */
+/* 질문 유형 선택 라벨 표시 (우리반 책읽기 화면과 동일한 구조) */
 .idr-question-panel .idr-field:first-of-type > label,
 .idr-question-panel .idr-question-type-label {
-  display: none !important;
+  display: block !important;
+  margin: 0 0 10px !important;
+  color: #4f2d11 !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  line-height: 1.15 !important;
 }
 
-/* 질문 유형 버튼 줄 정리 */
+/* 질문 유형 줄 정리: 라벨이 위, 버튼 줄이 아래 */
 .idr-question-panel .idr-field:first-of-type,
 .idr-question-panel .idr-question-type-field {
   display: flex !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
   width: 100% !important;
-  min-height: 54px !important;
-  margin: 0 0 10px 0 !important;
+  min-height: 0 !important;
+  margin: 0 0 14px 0 !important;
   padding: 0 !important;
 }
 
-/* 버튼 묶음 */
+/* 버튼 묶음: 라벨 아래 한 줄로 가로 배치 */
 .idr-question-panel #questionTypeRow,
 .idr-question-panel .idr-question-type-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ID로 확실히 고정: 라벨 위, 버튼 한 줄 아래 */
+#questionTypeField {
   display: flex !important;
-  justify-content: flex-end !important;
-  align-items: center !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  gap: 10px !important;
+  margin: 0 0 14px 0 !important;
+  padding: 0 !important;
+}
+
+#questionTypeLabel {
+  display: block !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #4f2d11 !important;
+  font-size: 22px !important;
+  font-weight: 950 !important;
+  line-height: 1.15 !important;
+}
+
+#questionTypeRow {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   gap: 10px !important;
   width: 100% !important;
   margin: 0 !important;
@@ -5950,12 +5994,12 @@ body.idr-book-chat-open .idr-book-chat-side-lumi {
 /* 질문 유형 버튼 크게 */
 .idr-question-panel #questionTypeRow .idr-type-button,
 .idr-question-panel .idr-question-type-row .idr-type-button {
-  width: 132px !important;
-  height: 46px !important;
-  min-height: 46px !important;
+  width: 100% !important;
+  height: 52px !important;
+  min-height: 52px !important;
   padding: 0 12px !important;
-  border-radius: 15px !important;
-  font-size: 15px !important;
+  border-radius: 16px !important;
+  font-size: 18px !important;
   font-weight: 950 !important;
   white-space: nowrap !important;
 }
@@ -6569,6 +6613,15 @@ body.idr-book-chat-open .idr-share-list-card {
 /* 글 카드 크기는 그대로 */
 #shareScreen .idr-book-chat-layout .idr-share-card {
   height: auto !important;
+  min-height: 0 !important;
+  align-self: start !important;
+  align-content: start !important;
+  gap: 6px !important;
+}
+
+/* 친구 생각 보기 버튼을 카드 하단이 아니라 본문 바로 아래로 당김 */
+#shareScreen .idr-book-chat-card-actions {
+  margin-top: 2px !important;
 }
 /* =========================================================
    책수다방 화면 위치 재정리
@@ -7105,9 +7158,11 @@ body.idr-book-chat-open .idr-book-chat-layout .idr-list-scroll {
 /* 선택 이유 입력칸 */
 #bookChatDetailModal #bookChatReasonInput {
   width: 100% !important;
-  height: 138px !important;
-  min-height: 138px !important;
-  max-height: 138px !important;
+  height: 150px !important;
+  min-height: 150px !important;
+  max-height: 150px !important;
+  font-size: 22px !important;
+  line-height: 1.45 !important;
   overflow-y: auto !important;
 }
 
@@ -7214,8 +7269,8 @@ body.idr-book-chat-open .idr-list-scroll {
 #bookChatDetailModal .idr-book-chat-modal-panel {
   position: relative !important;
   width: min(1040px, calc(100vw - 80px)) !important;
-  height: min(680px, calc(100vh - 80px)) !important;
-  max-height: calc(100vh - 80px) !important;
+  height: min(740px, calc(100vh - 64px)) !important;
+  max-height: calc(100vh - 64px) !important;
   margin: 0 !important;
   padding: 26px 28px 22px !important;
   display: grid !important;
@@ -7242,8 +7297,9 @@ body.idr-book-chat-open .idr-list-scroll {
 #bookChatDetailModal .idr-reply-box {
   display: grid !important;
   grid-template-rows: auto auto auto auto !important;
-  gap: 12px !important;
+  gap: 14px !important;
   margin: 0 !important;
+  overflow: visible !important;
 }
 #bookChatDetailModal #bookChatThoughtList {
   display: none !important;
@@ -7254,12 +7310,12 @@ body.idr-book-chat-open .idr-list-scroll {
 #bookChatDetailModal .idr-book-chat-modal-panel.showing-replies .idr-reply-box { display: none !important; }
 #bookChatDetailModal .idr-book-chat-modal-panel.showing-replies #bookChatThoughtList { display: grid !important; }
 
-/* 하단 버튼 잘림 방지 */
+/* 하단 버튼 잘림 방지 (겹침 방지를 위해 sticky 대신 일반 흐름 배치) */
 #bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
-  position: sticky !important;
-  bottom: 0 !important;
-  height: 50px !important;
-  margin-top: 4px !important;
+  position: static !important;
+  height: 54px !important;
+  margin-top: 14px !important;
+  flex-shrink: 0 !important;
 }
 #shareScreen.idr-work-screen.active .idr-share-card .idr-question-card-top,
 body.idr-book-chat-open #shareScreen .idr-share-card .idr-question-card-top {
@@ -7272,12 +7328,14 @@ body.idr-book-chat-open #shareScreen .idr-share-card strong {
 }
 #shareScreen.idr-work-screen.active .idr-share-card p,
 body.idr-book-chat-open #shareScreen .idr-share-card p {
-  font-size: 19px !important;
+  font-size: 23px !important;
   line-height: 1.5 !important;
 }
-#shareScreen.idr-work-screen.active .idr-comment-count,
-body.idr-book-chat-open #shareScreen .idr-comment-count {
+#shareScreen.idr-work-screen.active .idr-comment-count {
   font-size: 18px !important;
+}
+body.idr-book-chat-open #shareScreen .idr-comment-count {
+  display: none !important;
 }
 /* 보조창 친구 생각 목록: 초록색 대신 브라운 계열로 구분 */
 #bookChatDetailModal #bookChatThoughtList .idr-reply-item {
@@ -7288,6 +7346,305 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
 
 #bookChatDetailModal #bookChatThoughtList .idr-reply-item strong {
   color: #8a5a1f !important;
+}
+
+/* =========================================================
+   책수다 글쓰기 화면 - 가로세로 비율 정리 + 글자 확대
+   ========================================================= */
+
+.idr-book-chat-write-card {
+  padding: 30px 34px !important;
+  display: grid !important;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto auto !important;
+  gap: 24px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.idr-book-chat-write-intro {
+  display: grid !important;
+  gap: 8px !important;
+}
+
+.idr-book-chat-write-intro p {
+  margin: 0 !important;
+  color: #795024 !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  line-height: 1.5 !important;
+}
+
+.idr-book-chat-write-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 22px !important;
+}
+
+.idr-book-chat-write-card .idr-field {
+  display: grid !important;
+  gap: 12px !important;
+  min-height: 0 !important;
+}
+
+.idr-book-chat-write-card .idr-field label {
+  color: #5c3615 !important;
+  font-size: 20px !important;
+  font-weight: 950 !important;
+}
+
+.idr-book-chat-write-card .idr-small-input {
+  height: 58px !important;
+  padding: 0 18px !important;
+  font-size: 22px !important;
+  border-radius: 18px !important;
+}
+
+.idr-book-chat-write-scene {
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  align-content: start !important;
+  gap: 12px !important;
+}
+
+.idr-book-chat-write-scene .idr-textarea {
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 18px 20px !important;
+  font-size: 24px !important;
+  line-height: 1.5 !important;
+}
+
+.idr-book-chat-write-options {
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+}
+
+.idr-book-chat-write-image input[type="file"] {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  border-radius: 16px !important;
+  background: rgba(255, 250, 237, 0.96) !important;
+  border: 1px solid rgba(171, 108, 31, 0.22) !important;
+  color: #5f3714 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+}
+
+.idr-book-chat-write-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+}
+
+.idr-book-chat-write-actions .idr-main-button {
+  height: 54px !important;
+  padding: 0 26px !important;
+  font-size: 18px !important;
+}
+
+/* 질문 쓰기 / 답 입력창 글자 크기: id로 확실히 고정 (클래스 규칙보다 항상 우선) */
+#questionInput,
+#answerInput {
+  font-size: 24px !important;
+  line-height: 1.5 !important;
+}
+
+/* =========================================================
+   읽기 중 홈 최종 보정
+   - 진행 카드와 책 종류 그래프의 글자/내부 요소 확대
+   - 다음 단계 버튼을 홈 화면 맨 아래에 배치
+   ========================================================= */
+
+#homeScreen .idr-home-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) !important;
+  grid-template-rows: minmax(0, 1fr) 190px 80px !important;
+  gap: 12px !important;
+}
+
+#homeScreen .idr-progress-card,
+#homeScreen .idr-question-graph-card {
+  padding: 30px 34px !important;
+}
+
+#homeScreen .idr-progress-card {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 40px !important;
+}
+
+#homeScreen .idr-progress-card .idr-section-title,
+#homeScreen .idr-graph-head h2 {
+  font-size: 36px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.04em !important;
+}
+
+#homeScreen .idr-progress-body {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  align-content: center !important;
+  justify-items: center !important;
+  gap: 18px !important;
+}
+
+#homeScreen .idr-ring {
+  width: 196px !important;
+  height: 196px !important;
+  box-shadow:
+    inset 0 0 0 20px rgba(255, 252, 244, 0.98),
+    0 16px 26px rgba(94, 56, 15, 0.14) !important;
+}
+
+#homeScreen .idr-ring span {
+  font-size: 48px !important;
+}
+
+#homeScreen .idr-progress-info {
+  width: min(100%, 540px) !important;
+  display: grid !important;
+  grid-template-rows: auto auto auto !important;
+  gap: 14px !important;
+  justify-items: stretch !important;
+  align-content: start !important;
+}
+
+#homeScreen .idr-progress-book {
+  padding: 14px 18px !important;
+  font-size: 24px !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+}
+
+#homeScreen .idr-progress-meta {
+  display: none !important;
+}
+
+#homeScreen .idr-progress-inputs {
+  gap: 18px !important;
+}
+
+#homeScreen .idr-small-field {
+  gap: 8px !important;
+}
+
+#homeScreen .idr-small-field label {
+  font-size: 19px !important;
+}
+
+#homeScreen .idr-small-input {
+  height: 58px !important;
+  padding: 0 18px !important;
+  font-size: 25px !important;
+  border-radius: 18px !important;
+}
+
+#homeScreen .idr-progress-actions .idr-main-button {
+  height: 62px !important;
+  font-size: 22px !important;
+  border-radius: 19px !important;
+}
+
+#homeScreen .idr-question-graph-card {
+  grid-template-rows: auto auto minmax(0, 1fr) !important;
+  gap: 16px !important;
+}
+
+#homeScreen .idr-graph-head {
+  align-items: center !important;
+  margin-bottom: 18px !important;
+}
+
+#homeScreen .idr-graph-total {
+  padding: 12px 20px !important;
+  font-size: 22px !important;
+}
+
+#homeScreen .idr-graph-feedback {
+  min-height: 66px !important;
+  padding: 16px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 18px !important;
+  font-size: 24px !important;
+  line-height: 1.35 !important;
+  font-weight: 950 !important;
+  word-break: keep-all !important;
+}
+
+#homeScreen .idr-graph-bars {
+  align-content: center !important;
+  gap: 26px !important;
+}
+
+#homeScreen .idr-graph-row {
+  grid-template-columns: 210px minmax(0, 1fr) 110px !important;
+  gap: 22px !important;
+}
+
+#homeScreen .idr-graph-label {
+  font-size: 27px !important;
+  line-height: 1.25 !important;
+}
+
+#homeScreen .idr-graph-track {
+  height: 34px !important;
+}
+
+#homeScreen .idr-graph-fill::after {
+  width: 42px !important;
+  height: 42px !important;
+  right: -21px !important;
+}
+
+#homeScreen .idr-graph-count {
+  font-size: 26px !important;
+}
+
+#homeScreen .idr-menu-card {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 / 3 !important;
+  min-height: 0 !important;
+  padding: 20px !important;
+}
+
+#homeScreen .idr-menu-button {
+  min-height: 150px !important;
+}
+
+#homeScreen .idr-next-stage-row {
+  grid-column: 1 / -1 !important;
+  grid-row: 3 / 4 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+#homeScreen .idr-next-stage-row .idr-finish-reading-button {
+  min-width: 380px !important;
+  height: 64px !important;
+  padding: 0 44px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(255, 232, 168, 0.9) !important;
+  background: linear-gradient(180deg, #f0c46e 0%, #c98a2e 45%, #9c5f16 100%) !important;
+  color: #fff8e8 !important;
+  font-size: 23px !important;
+  font-weight: 950 !important;
+  letter-spacing: -0.02em !important;
+  box-shadow:
+    0 14px 28px rgba(101, 61, 17, 0.28),
+    0 0 0 4px rgba(230, 178, 90, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(101, 61, 17, 0.2) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+#homeScreen .idr-next-stage-row .idr-finish-reading-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow:
+    0 18px 32px rgba(101, 61, 17, 0.32),
+    0 0 0 5px rgba(230, 178, 90, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    inset 0 -2px 4px rgba(101, 61, 17, 0.22) !important;
 }
   </style>
 </head>
@@ -7345,15 +7702,10 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
                   </div>
                 </div>
 
-                <div class="idr-progress-actions">
+<div class="idr-progress-actions">
   <!-- 오늘 읽은 쪽수를 저장하는 버튼입니다. -->
   <button type="button" class="idr-main-button primary" onclick="saveProgressData()">
     나의 진행률 저장하기
-  </button>
-
-  <!-- 책을 완독했을 때 읽기 후 활동을 열어 주는 버튼입니다. -->
-  <button type="button" class="idr-main-button idr-finish-reading-button" onclick="finishCurrentBook()">
-    책 다 읽었어요
   </button>
 </div>
               </div>
@@ -7369,11 +7721,11 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
              <span class="idr-graph-total" id="questionGraphTotal">0권</span>
             </div>
 
-            <div class="idr-graph-bars" id="questionGraphBars"></div>
-
             <div class="idr-graph-feedback" id="questionGraphFeedback">
-              아직 책 종류가 없어요. 읽기 전 활동에서 책 종류를 선택하면 여기에 표시돼요.
+              아직 책 종류를 고르지 않았어요. 읽기 전 활동에서 책 종류를 선택하면 여기에 표시돼요.
             </div>
+
+            <div class="idr-graph-bars" id="questionGraphBars"></div>
           </article>
 
           <article class="idr-card idr-menu-card">
@@ -7400,6 +7752,12 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
 </button>
 
           </article>
+
+          <div class="idr-next-stage-row">
+            <button type="button" class="idr-main-button idr-finish-reading-button" onclick="finishCurrentBook()">
+              다음 읽기 단계로 넘어가기
+            </button>
+          </div>
         </div>
       </section>
 
@@ -7425,7 +7783,7 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
         <section class="idr-question-main">
           <article class="idr-question-panel">
             <div class="idr-question-title-row">
-              <h2 class="idr-panel-title">✎ 질문 만들기</h2>
+              <h2 class="idr-panel-title">✎ 책 속 생각쓰기</h2>
               <span class="idr-made-count-badge" id="madeQuestionCountBadge">만든 질문 0개</span>
             </div>
             <div class="idr-divider"></div>
@@ -7436,8 +7794,8 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
             <input id="fromPageInput" type="number" hidden>
             <input id="toPageInput" type="number" hidden>
 
-            <div class="idr-field idr-question-type-field">
-  <label class="idr-question-type-label">질문 유형 선택</label>
+            <div class="idr-field idr-question-type-field" id="questionTypeField">
+  <label class="idr-question-type-label" id="questionTypeLabel">질문 유형 선택</label>
   <div class="idr-question-type-row" id="questionTypeRow"></div>
 </div>
 
@@ -7458,7 +7816,7 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
               <div class="idr-count-row">
                 <span id="answerLength">0 / 400자</span>
               </div>
-              <label for="answerInput">내 생각 / 답</label>
+              <label for="answerInput">답</label>
               <textarea
                 class="idr-textarea"
                 id="answerInput"
@@ -7476,14 +7834,14 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
               <h3 class="idr-inline-feedback-title">✦ 루미의 피드백</h3>
               <div class="idr-feedback-box" id="questionFeedbackBox">
                 <span id="questionFeedbackText">
-                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐. 루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.
+                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.
                 </span>
               </div>
             </div>
 
             <div class="idr-question-actions">
               <button type="button" class="idr-main-button primary" onclick="checkAndSaveQuestion()">✨ 루미에게 확인 받기</button>
-              <button type="button" class="idr-main-button" onclick="openQuestionSelectionStep()">다음 단계</button>
+              <button type="button" class="idr-main-button" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
             </div>
           </article>
 
@@ -7491,9 +7849,9 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
             <div class="idr-panel-head">
               <div>
                 <h2>오늘 만든 질문</h2>
-                <p>친구들과 나누고 싶은 질문을 최대 3개까지 선택해요.</p>
+                <p>책 속 생각쓰기에서 만든 질문이에요.</p>
               </div>
-              <div class="idr-select-badge" id="todaySelectBadge">0 / 3개 선택됨</div>
+              <div class="idr-select-badge" id="todaySelectBadge">만든 질문 0개</div>
             </div>
 
             <div class="idr-list-scroll" id="todayQuestionList"></div>
@@ -7512,17 +7870,16 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
               <h2 class="idr-feedback-title">✦ 루미의 피드백</h2>
               <div class="idr-feedback-box" id="questionFeedbackBoxHidden">
                 <span id="questionFeedbackTextHidden">
-                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐. 루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.
+                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.
                 </span>
               </div>
             </div>
           </article>
 
           <article class="idr-share-panel">
-            <h2>질문 나누기</h2>
-            <p>선택한 질문만 친구들에게 공유돼요.</p>
-            <button type="button" class="idr-main-button primary" id="bottomShareButton" onclick="completeDuringQuestionsAndShare()" disabled>질문 나누기</button>
-            <span class="idr-share-help">최대 3개까지 선택할 수 있어요.</span>
+            <h2>책수다방으로 이동</h2>
+            <p>질문을 3개 이상 만들면 책수다방으로 이동할 수 있어요.</p>
+            <button type="button" class="idr-main-button primary" id="bottomShareButton" onclick="completeDuringQuestionsAndShare()">책수다방으로 이동</button>
           </article>
         </section>
       </section>
@@ -7807,30 +8164,6 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   </div>
 </div>
 
-<div class="idr-select-overlay" id="questionSelectOverlay" aria-hidden="true">
-  <div class="idr-select-modal" role="dialog" aria-modal="true" aria-labelledby="questionSelectTitle">
-    <div class="idr-select-modal-head">
-      <div>
-        <h2 class="idr-select-modal-title" id="questionSelectTitle">오늘 만든 질문을 골라요</h2>
-        <p class="idr-select-modal-desc">
-          친구들과 생각을 나누고 싶은 질문을 3개 선택하세요.
-        </p>
-      </div>
-      <div class="idr-select-modal-count" id="questionSelectModalCount">0 / 3개 선택</div>
-    </div>
-
-    <div class="idr-select-filter-row" id="questionSelectFilterRow"></div>
-
-    <div class="idr-select-modal-list" id="questionSelectModalList"></div>
-
-    <div class="idr-select-modal-actions">
-      <button class="idr-main-button" type="button" onclick="closeQuestionSelectModal()">이전</button>
-      <button class="idr-main-button primary" type="button" id="questionSelectShareButton" onclick="completeDuringQuestionsAndShare()" disabled>
-        책수다방으로 이동
-      </button>
-    </div>
-  </div>
-</div>
   <script src="../js/auth.js"></script>
 
   <script>
@@ -7839,10 +8172,11 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 function completeDuringQuestionsAndShare() {
-  const selectedIds = getShareSelectedIds();
+  const today = document.getElementById("readDateInput").value;
+  const questions = getMyQuestions().filter((item) => item.date === today);
 
-  if (selectedIds.length !== 3) {
-    openQuestionSelectModal();
+  if (questions.length < 3) {
+    alert("질문을 3개 이상 만들고 루미에게 확인 받아야 책수다방으로 이동할 수 있어!");
     return;
   }
 
@@ -7858,7 +8192,7 @@ function completeDuringQuestionsAndShare() {
     openDuringRewardModal();
   }
 
-  showScreen("share");
+  showScreen("bookChat");
 }
     const STORAGE_KEYS = {
       bookTitle: "individualCurrentBookTitle_" + studentId,
@@ -7959,7 +8293,6 @@ const bookTypes = [
     let selectedType = "find";
     let activeShareFilter = "all";
     let activeCollectionFilter = "all";
-    let activeQuestionSelectFilter = "all";
     let selectedShareQuestionId = null;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -8715,26 +9048,26 @@ function renderBookChatWriteScreen() {
   if (!shareScreen) return;
 
   shareScreen.innerHTML = `
-    <div style="width: 100%; height: 100%; max-width: 1180px; margin: 0 auto; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 16px; overflow-y: auto; padding: 4px 8px;">
+    <div class="idr-book-chat-write" style="width: 100%; height: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 16px; overflow: hidden; padding: 4px 8px;">
       <section class="idr-card idr-work-header">
         <div>
           <h1>책수다 글쓰기</h1>
           <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
         </div>
         <div class="idr-work-actions">
-          <button class="idr-top-button" type="button" onclick="renderBookChatRoom()">책수다방</button>
+          <button class="idr-top-button" type="button" onclick="window.renderBookChatRoom()">← 책수다방</button>
         </div>
       </section>
 
-      <section class="idr-card" style="padding: 26px; display: grid; gap: 18px; overflow-y: auto;">
-        <div style="display: grid; gap: 8px;">
+      <section class="idr-card idr-book-chat-write-card">
+        <div class="idr-book-chat-write-intro">
           <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
-          <p style="margin: 0; color: #795024; font-size: 15px; font-weight: 900; line-height: 1.5;">
+          <p>
             책 속 장면을 친구들이 이해할 수 있게 알려 준 뒤, 두 가지 선택지로 생각을 물어봐요.
           </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="idr-book-chat-write-row">
           <div class="idr-field">
             <label for="bookChatBookInput">내가 읽은 책</label>
             <input class="idr-small-input" id="bookChatBookInput" type="text" placeholder="예) 마당을 나온 암탉">
@@ -8745,12 +9078,12 @@ function renderBookChatWriteScreen() {
           </div>
         </div>
 
-        <div class="idr-field">
+        <div class="idr-field idr-book-chat-write-scene">
           <label for="bookChatSceneInput">장면 설명</label>
-          <textarea class="idr-textarea" id="bookChatSceneInput" placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요." style="height: 150px;"></textarea>
+          <textarea class="idr-textarea" id="bookChatSceneInput" placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요."></textarea>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div class="idr-book-chat-write-row idr-book-chat-write-options">
           <div class="idr-field">
             <label for="bookChatOptionAInput">A 선택지</label>
             <input class="idr-small-input" id="bookChatOptionAInput" type="text" placeholder="예) 안전한 길">
@@ -8761,12 +9094,12 @@ function renderBookChatWriteScreen() {
           </div>
         </div>
 
-        <div class="idr-field">
+        <div class="idr-field idr-book-chat-write-image">
           <label for="bookChatImageInput">사진 첨부</label>
-          <input id="bookChatImageInput" type="file" accept="image/*" style="padding: 12px; border-radius: 16px; background: rgba(255, 250, 237, 0.96); border: 1px solid rgba(171, 108, 31, 0.22); color: #5f3714; font-weight: 900;">
+          <input id="bookChatImageInput" type="file" accept="image/*">
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <div class="idr-book-chat-write-actions">
           <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">취소</button>
           <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">책수다 올리기</button>
         </div>
@@ -9659,7 +9992,7 @@ function getBookTypeCounts() {
       if (clearFeedback) {
         const feedbackBox = document.getElementById("questionFeedbackBox");
         feedbackBox.classList.remove("good", "need");
-        document.getElementById("questionFeedbackText").textContent = "질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐. 루미가 질문 유형, 길이, 질문 형식, 답과의 연결을 살펴봐 줄게.";
+        document.getElementById("questionFeedbackText").textContent = "질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.";
       }
     }
 
@@ -9668,14 +10001,11 @@ function getBookTypeCounts() {
 
       if (!list) {
         updateMadeQuestionCountBadge();
-        renderQuestionSelectModal();
-        updateShareButtons();
         return;
       }
 
       const today = document.getElementById("readDateInput").value;
       const questions = getMyQuestions().filter((item) => item.date === today);
-      const selectedIds = getShareSelectedIds();
 
       if (questions.length === 0) {
         list.innerHTML = `
@@ -9685,30 +10015,27 @@ function getBookTypeCounts() {
           </div>
         `;
 
-        updateShareButtons();
+        updateMadeQuestionCountBadge();
         return;
       }
 
-      list.innerHTML = questions.map((item) => renderQuestionCard(item, true, selectedIds.includes(item.id))).join("");
+      list.innerHTML = questions.map((item) => renderQuestionCard(item)).join("");
       updateMadeQuestionCountBadge();
-      updateShareButtons();
     }
 
     function updateMadeQuestionCountBadge() {
-      const badge = document.getElementById("madeQuestionCountBadge");
-
-      if (!badge) return;
-
       const today = document.getElementById("readDateInput").value;
       const count = getMyQuestions().filter((item) => item.date === today).length;
-      badge.textContent = "만든 질문 " + count + "개";
+      const countText = "만든 질문 " + count + "개";
+
+      const badge = document.getElementById("madeQuestionCountBadge");
+      if (badge) badge.textContent = countText;
+
+      const todayBadge = document.getElementById("todaySelectBadge");
+      if (todayBadge) todayBadge.textContent = countText;
     }
 
-    function renderQuestionCard(item, canSelect = false, selected = false) {
-      const selectButton = canSelect
-        ? `<button type="button" class="idr-pill-button ${selected ? "primary" : ""}" onclick="toggleShareSelect('${item.id}')">${selected ? "선택됨" : "선택"}</button>`
-        : "";
-
+    function renderQuestionCard(item) {
       return `
         <article class="idr-question-card">
           <div class="idr-question-card-top">
@@ -9716,159 +10043,12 @@ function getBookTypeCounts() {
           </div>
           <strong>${escapeHtml(item.question)}</strong>
           <p>내 답: ${escapeHtml(item.answer)}</p>
-          ${selectButton}
         </article>
       `;
     }
 
-    function toggleShareSelect(questionId) {
-      let selectedIds = getShareSelectedIds();
-
-      if (selectedIds.includes(questionId)) {
-        selectedIds = selectedIds.filter((id) => id !== questionId);
-      } else {
-        if (selectedIds.length >= 3) {
-          alert("질문은 최대 3개까지 선택할 수 있어!");
-          return;
-        }
-
-        selectedIds.push(questionId);
-      }
-
-      saveShareSelectedIds(selectedIds);
-      renderTodayQuestionList();
-      renderQuestionSelectModal();
-      updateShareButtons();
-    }
-
     function updateShareButtons() {
-      const selectedIds = getShareSelectedIds();
-      const countText = selectedIds.length + " / 3개 선택됨";
-      const modalCount = document.getElementById("questionSelectModalCount");
-      const modalButton = document.getElementById("questionSelectShareButton");
-
-      const badge = document.getElementById("todaySelectBadge");
-
-      if (badge) {
-        badge.textContent = countText;
-      }
-
-      if (modalCount) {
-        modalCount.textContent = selectedIds.length + " / 3개 선택";
-      }
-
-      if (modalButton) {
-        modalButton.disabled = selectedIds.length !== 3;
-      }
-
-      ["topShareButton", "bottomShareButton"].forEach((id) => {
-        const button = document.getElementById(id);
-
-        if (button) {
-          button.disabled = selectedIds.length !== 3;
-        }
-      });
-    }
-
-    function openQuestionSelectModal() {
-      renderQuestionSelectModal();
-
-      const overlay = document.getElementById("questionSelectOverlay");
-
-      if (!overlay) return;
-
-      overlay.classList.add("is-open");
-      overlay.setAttribute("aria-hidden", "false");
-    }
-
-    function openQuestionSelectionStep() {
-      const today = document.getElementById("readDateInput").value;
-      const questions = getMyQuestions().filter((item) => item.date === today);
-
-      if (questions.length < 3) {
-        alert("질문을 3개 이상 만들고 루미에게 확인 받아야 다음 단계로 갈 수 있어!");
-        return;
-      }
-
-      openQuestionSelectModal();
-    }
-
-    function closeQuestionSelectModal() {
-      const overlay = document.getElementById("questionSelectOverlay");
-
-      if (!overlay) return;
-
-      overlay.classList.remove("is-open");
-      overlay.setAttribute("aria-hidden", "true");
-    }
-
-    function renderQuestionSelectModal() {
-      const list = document.getElementById("questionSelectModalList");
-
-      if (!list) return;
-
-      renderQuestionSelectFilterButtons();
-
-      const today = document.getElementById("readDateInput").value;
-      const questions = getMyQuestions().filter((item) => item.date === today);
-      const visibleQuestions = activeQuestionSelectFilter === "all"
-        ? questions
-        : questions.filter((item) => item.type === activeQuestionSelectFilter);
-      const selectedIds = getShareSelectedIds();
-
-      if (questions.length === 0) {
-        list.innerHTML = `
-          <div class="idr-empty-box">
-            아직 만든 질문이 없어요.<br>
-            질문을 쓰고 루미에게 확인 받아 보세요.
-          </div>
-        `;
-        updateShareButtons();
-        return;
-      }
-
-      if (visibleQuestions.length === 0) {
-        list.innerHTML = `
-          <div class="idr-empty-box">
-            이 질문 유형으로 만든 질문이 아직 없어요.<br>
-            다른 유형을 눌러 보거나 질문을 더 만들어 보세요.
-          </div>
-        `;
-        updateShareButtons();
-        return;
-      }
-
-      list.innerHTML = visibleQuestions
-        .map((item) => renderQuestionCard(item, true, selectedIds.includes(item.id)))
-        .join("");
-
-      updateShareButtons();
-    }
-
-    function renderQuestionSelectFilterButtons() {
-      const row = document.getElementById("questionSelectFilterRow");
-
-      if (!row) return;
-
-      const filterItems = [{ key: "all", label: "전체" }, ...questionTypes];
-      row.innerHTML = "";
-
-      filterItems.forEach((item) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "idr-select-filter-button";
-        button.classList.toggle("active", activeQuestionSelectFilter === item.key);
-        button.textContent = item.key === "all"
-          ? item.label
-          : item.label.replace(/^[^가-힣A-Za-z]+/, "");
-        button.onclick = () => setQuestionSelectFilter(item.key);
-        row.appendChild(button);
-      });
-    }
-
-    function setQuestionSelectFilter(typeKey) {
-      activeQuestionSelectFilter = typeKey;
-      renderQuestionSelectModal();
+      updateMadeQuestionCountBadge();
     }
 
     function renderShareQuestionList() {
@@ -9887,14 +10067,14 @@ function getBookTypeCounts() {
         list.innerHTML = `
           <div class="idr-empty-box">
             아직 나눌 질문이 없어요.<br>
-            질문 만들기에서 질문을 선택해 보세요.
+            책 속 생각쓰기에서 질문을 선택해 보세요.
           </div>
         `;
 
         document.getElementById("selectedQuestionArea").innerHTML = `
           <div class="idr-empty-box">
             왼쪽에 표시할 질문이 아직 없어요.<br>
-            질문 만들기에서 질문 3개를 선택해 보세요.
+            책 속 생각쓰기에서 질문 3개를 선택해 보세요.
           </div>
         `;
         return;
@@ -10176,7 +10356,7 @@ function getBookTypeCounts() {
       showScreen("question");
       updateTextCounts();
 
-      alert("질문 만들기 화면에 질문과 답을 옮겨놨어. 저장하면 나의 질문 모음과 질문 나누기에 반영돼!");
+      alert("책 속 생각쓰기 화면에 질문과 답을 옮겨놨어. 저장하면 나의 질문 모음과 질문 나누기에 반영돼!");
     }
 // 질문 나누기 화면의 내 생각, 비슷한 질문, 답을 한 번에 저장합니다.
 function saveShareActivity(questionId) {
@@ -10256,13 +10436,13 @@ function saveShareActivity(questionId) {
         list.innerHTML = `
           <div class="idr-empty-box">
             아직 모은 질문이 없어요.<br>
-            질문 만들기에서 오늘의 질문을 저장해 보세요.
+            책 속 생각쓰기에서 오늘의 질문을 저장해 보세요.
           </div>
         `;
         return;
       }
 
-      list.innerHTML = filtered.map((item) => renderQuestionCard(item, false, false)).join("");
+      list.innerHTML = filtered.map((item) => renderQuestionCard(item)).join("");
     }
 
     function getThisWeekQuestionCount(questions) {

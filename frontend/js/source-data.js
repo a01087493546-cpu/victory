@@ -1089,4 +1089,34 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   edit: "문답책 화면 분위기와 화면 크기에 맞게 CSS로 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
+{
+  title: "연습읽기 읽기중 배경 이미지",
+  type: "이미지",
+  fileName: "during-reading-magic-space-bg.png",
+  description: "연습읽기 읽기중 화면에 사용하는 밝은 베이지 톤의 우주 마법 별빛 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "연습읽기 읽기중 화면",
+  edit: "문답책 화면 분위기와 화면 크기에 맞게 밝은 베이지·골드 톤으로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "책수다방 배경 이미지",
+  category: "이미지",
+  fileName: "book-chat-bg.png",
+  description: "연습읽기 책수다방 화면에 사용되는 구름 속 용의 기운이 느껴지는 베이지톤 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "연습읽기 책수다방 화면 배경",
+  modified: "파일명 변경 및 화면 배경에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기후 신비로운 책 우주 배경 이미지",
+  category: "이미지",
+  fileName: "after-reading-space-bg.png",
+  description: "읽기후 활동 화면에서 사용하는 밝은 베이지톤의 신비로운 우주 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "개별읽기 읽기후 활동 화면 배경 이미지",
+  modified: "읽기후 화면 배경 크기에 맞게 CSS로 cover 적용",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
 ];
