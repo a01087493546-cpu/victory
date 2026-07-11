@@ -8188,8 +8188,16 @@ function completeDuringQuestionsAndShare() {
         })
       : false;
 
-  if (rewardResult && typeof openDuringRewardModal === "function") {
-    openDuringRewardModal();
+  if (rewardResult && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 나의 힘 성장!",
+      title: "책 속 생각쓰기를 완성했어요!",
+      message: "루미: 질문을 3개나 만들다니 대단해! 이제 책수다방으로 가보자!",
+      rewards: [
+        { type: "magic", name: "마법력", point: "+1" },
+        { type: "wisdom", name: "지혜", point: "+1" }
+      ]
+    });
   }
 
   showScreen("bookChat");
@@ -8377,11 +8385,35 @@ function showScreen(screenName) {
     updateShareButtons();
     updateMadeQuestionCountBadge();
   }
-  
+
+  /*
+    책수다방 화면입니다.
+    기존 질문 나누기 화면 영역을 먼저 재사용하고,
+    다음 단계에서 안쪽 내용을 책수다방 구조로 바꿉니다.
+  */
+  if (screenName === "bookChat") {
+    document.getElementById("shareScreen").classList.add("active");
+    renderBookChatRoom();
+  }
+
+  if (screenName === "share") {
+    document.getElementById("shareScreen").classList.add("active");
+    renderShareQuestionList();
+  }
+
+  if (screenName === "collection") {
+    document.getElementById("collectionScreen").classList.add("active");
+    renderCollection();
+  }
+}
+
 /*
   개별읽기 책수다방 화면을 그립니다.
   - 왼쪽 목록에서 글을 클릭하면 오른쪽 상세 화면이 해당 글 내용으로 바뀝니다.
   - 내가 쓴 글은 localStorage에서 불러오고, 샘플 친구 글과 함께 보여줍니다.
+  (아래 함수들은 원래 showScreen() 안에 실수로 중첩되어 있어서
+  전역에서 renderBookChatRoom()/saveBookChatPost() 등을 호출할 수 없던
+  버그가 있었습니다. showScreen()을 위에서 닫고 이 함수들은 최상위로 뺐습니다.)
 */
 function applyBookChatViewportMode() {
   document.body.classList.add("idr-book-chat-open");
@@ -9199,8 +9231,15 @@ function saveBookChatPostToStorage(post) {
       })
     : false;
 
-if (rewardResult && typeof openBookChatRewardModal === "function") {
-  openBookChatRewardModal();
+if (rewardResult && typeof openMiniRewardModal === "function") {
+  openMiniRewardModal({
+    badge: "✨ 용기 성장!",
+    title: "나의 밸런스 글을 나눴어요!",
+    message: "루미: 네가 만든 질문으로 친구들과 생각을 나눌 수 있겠다!",
+    rewards: [
+      { type: "courage", name: "용기", point: "+1" }
+    ]
+  });
 }
 }
 /*
@@ -9387,26 +9426,6 @@ window.renderBookChatRoom = renderBookChatRoom;
 // HTML onclick에서 책수다방 날짜 이동 함수를 찾을 수 있게 연결합니다.
 window.moveBookChatDate = moveBookChatDate;
 window.goTodayBookChatDate = goTodayBookChatDate;
-  /*
-    책수다방 화면입니다.
-    기존 질문 나누기 화면 영역을 먼저 재사용하고,
-    다음 단계에서 안쪽 내용을 책수다방 구조로 바꿉니다.
-  */
- if (screenName === "bookChat") {
-  document.getElementById("shareScreen").classList.add("active");
-  renderBookChatRoom();
-}
-
-  if (screenName === "share") {
-    document.getElementById("shareScreen").classList.add("active");
-    renderShareQuestionList();
-  }
-
-  if (screenName === "collection") {
-    document.getElementById("collectionScreen").classList.add("active");
-    renderCollection();
-  }
-}
 
     function getBookTitle() {
       return sessionStorage.getItem(STORAGE_KEYS.bookTitle) || sessionStorage.getItem("individualCurrentBookTitle_" + studentId) || "아직 읽을 책을 정하지 않았어요";
@@ -11109,8 +11128,15 @@ setTimeout(function () {
         })
       : false;
 
-  if (rewardResult && typeof openBookChatRewardModal === "function") {
-    openBookChatRewardModal();
+  if (rewardResult && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 용기 성장!",
+      title: "친구 글에 내 생각을 남겼어요!",
+      message: "루미: 친구의 글을 읽고 생각을 나누는 용기가 자랐어!",
+      rewards: [
+        { type: "courage", name: "용기", point: "+1" }
+      ]
+    });
   }
 }, 0);
 

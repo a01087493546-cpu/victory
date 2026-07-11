@@ -106,7 +106,8 @@ individual_before_complete: {
   subtitle: "책을 읽기 전에 궁금한 점을 만들며 모험을 준비했어요.",
   conditionText: "읽기 전 질문 4개를 모두 만들었어요.",
   rewards: {
-  magic: 1
+  magic: 1,
+  wisdom: 1
 }
 },
 
@@ -206,8 +207,8 @@ individual_friend_book_recommend: {
   conditionText: "책을 읽고 간추리기 활동을 마쳤어요.",
   rewards: {
   stamina: 3,
-  wisdom: 1,
-  courage: 1
+  magic: 1,
+  wisdom: 1
 }
 }
   };
@@ -867,12 +868,325 @@ function ensurePowerBarStyle() {
   }
 
   // ==============================
+  // 9-1. 활동 완료 보상 미니 모달 (공통 컴포넌트)
+  // ==============================
+  // 개별읽기 읽기 후 - 간추리기 완료 화면에서 쓰던 "간추리기 질문을 모두
+  // 다듬었어요!" 스타일의 보상 모달을 모든 화면(읽기 전/읽기 중/읽기 후/
+  // 책수다방)에서 공통으로 쓸 수 있게 여기로 옮겨 왔습니다.
+  // 화면마다 badge/title/message/rewards만 다르게 넘기면 됩니다.
+  const MINI_REWARD_ICON_MAP = {
+    magic: "../assets/images/individual-reading/reward/reward-magic-wand.png",
+    stamina: "../assets/images/individual-reading/reward/reward-stamina-heart.png",
+    wisdom: "../assets/images/individual-reading/reward/reward-wisdom-book.png",
+    courage: "../assets/images/individual-reading/reward/reward-courage-shield.png"
+  };
+
+  let miniRewardNextAction = null;
+
+  function escapeMiniRewardText(text) {
+    return String(text || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function ensureMiniRewardModalStyle() {
+    if (document.getElementById("miniRewardModalStyle")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "miniRewardModalStyle";
+
+    style.textContent = `
+      .mini-reward-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: 100000 !important;
+        display: none !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 24px !important;
+        background: rgba(42, 25, 10, 0.5) !important;
+        backdrop-filter: blur(5px) !important;
+      }
+
+      .mini-reward-overlay.is-open {
+        display: flex !important;
+      }
+
+      .mini-reward-modal {
+        position: relative !important;
+        width: min(640px, calc(100vw - 48px)) !important;
+        max-height: calc(100vh - 48px) !important;
+        overflow-y: auto !important;
+        padding: 46px 42px 34px !important;
+        border-radius: 32px !important;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(255, 231, 153, 0.75), transparent 34%),
+          radial-gradient(circle at 18% 22%, rgba(255, 244, 204, 0.72), transparent 28%),
+          radial-gradient(circle at 86% 80%, rgba(224, 158, 47, 0.22), transparent 34%),
+          linear-gradient(180deg, #fff9e9 0%, #f8ecd2 58%, #f0d8a9 100%) !important;
+        box-shadow: 0 24px 60px rgba(79, 50, 18, 0.30) !important;
+        text-align: center !important;
+      }
+
+      .mini-reward-close {
+        position: absolute !important;
+        top: 16px !important;
+        right: 18px !important;
+        width: 34px !important;
+        height: 34px !important;
+        border: none !important;
+        border-radius: 50% !important;
+        background: rgba(126, 77, 20, 0.10) !important;
+        color: #6a3d15 !important;
+        font-size: 22px !important;
+        font-weight: 900 !important;
+        cursor: pointer !important;
+      }
+
+      .mini-reward-badge {
+        display: inline-block !important;
+        margin: 0 0 14px !important;
+        padding: 8px 18px !important;
+        border-radius: 999px !important;
+        background: rgba(255, 231, 153, 0.6) !important;
+        color: #a86618 !important;
+        font-size: 16px !important;
+        font-weight: 900 !important;
+      }
+
+      .mini-reward-title {
+        margin: 0 0 24px !important;
+        font-family: "Noto Serif KR", "Noto Sans KR", serif !important;
+        color: #4f2f17 !important;
+        font-size: 30px !important;
+        font-weight: 900 !important;
+        line-height: 1.3 !important;
+        letter-spacing: -0.02em !important;
+      }
+
+      .mini-reward-list {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 14px !important;
+        margin-bottom: 20px !important;
+        /* 오른쪽에 루미 캐릭터가 서 있을 자리를 항상 비워 둡니다.
+           카드가 1개~3개 어떤 경우에도 능력치 수치가 캐릭터에 가려지지 않습니다. */
+        padding-right: 148px !important;
+        text-align: left !important;
+      }
+
+      .mini-reward-item {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 14px 18px !important;
+        border-radius: 20px !important;
+        background: linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78)) !important;
+        border: 1px solid rgba(180, 116, 34, 0.18) !important;
+      }
+
+      .mini-reward-left {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+
+      .mini-reward-icon {
+        width: 48px !important;
+        height: 48px !important;
+        object-fit: contain !important;
+      }
+
+      .mini-reward-name {
+        color: #4e2d10 !important;
+        font-size: 19px !important;
+        font-weight: 900 !important;
+      }
+
+      .mini-reward-point {
+        color: #b86e17 !important;
+        font-size: 24px !important;
+        font-weight: 950 !important;
+      }
+
+      .mini-reward-message {
+        margin-bottom: 22px !important;
+        padding: 13px 16px !important;
+        /* 루미 캐릭터 자리만큼 오른쪽 여백을 확보해서 말풍선 글자와 겹치지 않게 합니다. */
+        padding-right: 148px !important;
+        border-radius: 18px !important;
+        background: rgba(255, 249, 232, 0.82) !important;
+        color: #5d3615 !important;
+        font-size: 16px !important;
+        font-weight: 850 !important;
+        line-height: 1.5 !important;
+        word-break: keep-all !important;
+      }
+
+      .mini-reward-confirm {
+        width: 100% !important;
+        height: 58px !important;
+        border: none !important;
+        border-radius: 999px !important;
+        background: linear-gradient(180deg, #e8b64f 0%, #c9821d 52%, #a95f15 100%) !important;
+        color: #fff9e8 !important;
+        font-size: 19px !important;
+        font-weight: 900 !important;
+        cursor: pointer !important;
+        box-shadow: 0 8px 16px rgba(119, 72, 19, 0.22) !important;
+      }
+
+      .mini-reward-lumi {
+        position: absolute !important;
+        z-index: 2 !important;
+        right: 18px !important;
+        /* 하단 확인 버튼(34px 모달 패딩 + 58px 버튼 높이 = 92px) 위쪽에서
+           끝나도록 여유를 두어, 버튼과도 절대 겹치지 않게 고정합니다. */
+        bottom: 100px !important;
+        width: 108px !important;
+        height: auto !important;
+        max-height: 168px !important;
+        pointer-events: none !important;
+        filter: drop-shadow(0 10px 14px rgba(70, 38, 8, 0.24)) !important;
+      }
+
+      @media (max-width: 560px) {
+        .mini-reward-lumi {
+          display: none !important;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function ensureMiniRewardModal() {
+    let overlay = document.getElementById("miniRewardOverlay");
+
+    if (overlay) {
+      return overlay;
+    }
+
+    ensureMiniRewardModalStyle();
+
+    overlay = document.createElement("div");
+    overlay.id = "miniRewardOverlay";
+    overlay.className = "mini-reward-overlay";
+    overlay.setAttribute("aria-hidden", "true");
+
+    overlay.innerHTML = `
+      <div class="mini-reward-modal">
+        <button type="button" class="mini-reward-close" id="miniRewardCloseBtn" aria-label="닫기">×</button>
+
+        <img
+          class="mini-reward-lumi"
+          src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
+          alt="응원하는 루미"
+        >
+
+        <div class="mini-reward-badge" id="miniRewardBadge">✨ 나의 힘 성장!</div>
+        <h2 class="mini-reward-title" id="miniRewardTitle">보상을 받았어요!</h2>
+
+        <div class="mini-reward-list" id="miniRewardList"></div>
+
+        <div class="mini-reward-message" id="miniRewardMessage"></div>
+
+        <button type="button" class="mini-reward-confirm" id="miniRewardConfirmBtn">확인했어</button>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    document.getElementById("miniRewardCloseBtn").addEventListener("click", closeMiniRewardModal);
+    document.getElementById("miniRewardConfirmBtn").addEventListener("click", confirmMiniRewardModal);
+
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) {
+        closeMiniRewardModal();
+      }
+    });
+
+    return overlay;
+  }
+
+  /*
+    사용 예시:
+    openMiniRewardModal({
+      badge: "✨ 지혜 성장!",
+      title: "간추리기 질문을 모두 다듬었어요!",
+      message: "루미: 질문을 잘 다듬었어! 이제 간추리기도 잘할 수 있겠다!",
+      rewards: [
+        { type: "magic", name: "마법력", point: "+1" },
+        { type: "wisdom", name: "지혜", point: "+1" }
+      ]
+    });
+  */
+  function openMiniRewardModal(rewardData) {
+    const overlay = ensureMiniRewardModal();
+    const data = rewardData || {};
+
+    const rewards = data.rewards || [];
+
+    miniRewardNextAction = typeof data.nextAction === "function" ? data.nextAction : null;
+
+    document.getElementById("miniRewardBadge").textContent = data.badge || "✨ 나의 힘 성장!";
+    document.getElementById("miniRewardTitle").textContent = data.title || "보상을 받았어요!";
+    document.getElementById("miniRewardMessage").textContent = data.message || "";
+
+    document.getElementById("miniRewardList").innerHTML = rewards.map(function (reward) {
+      const iconSrc = MINI_REWARD_ICON_MAP[reward.type] || MINI_REWARD_ICON_MAP.magic;
+      const rewardName = escapeMiniRewardText(reward.name || POWER_LABELS[reward.type] || "능력치");
+      const rewardPoint = escapeMiniRewardText(reward.point || "+1");
+
+      return `
+        <div class="mini-reward-item">
+          <div class="mini-reward-left">
+            <img class="mini-reward-icon" src="${iconSrc}" alt="${rewardName}">
+            <span class="mini-reward-name">${rewardName}</span>
+          </div>
+          <strong class="mini-reward-point">${rewardPoint}</strong>
+        </div>
+      `;
+    }).join("");
+
+    overlay.classList.add("is-open");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closeMiniRewardModal() {
+    const overlay = document.getElementById("miniRewardOverlay");
+
+    if (!overlay) return;
+
+    overlay.classList.remove("is-open");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+
+  function confirmMiniRewardModal() {
+    closeMiniRewardModal();
+
+    if (typeof miniRewardNextAction === "function") {
+      const nextAction = miniRewardNextAction;
+      miniRewardNextAction = null;
+      nextAction();
+    }
+  }
+
+  // ==============================
   // 10. 외부에서 쓰도록 열어두기
   // ==============================
   window.openIndividualPowerModal = openIndividualPowerModal;
   window.givePowerRewardOnce = givePowerRewardOnce;
   window.getIndividualPowerState = getPowerState;
   window.REWARD_PRESETS = REWARD_PRESETS;
+  window.openMiniRewardModal = openMiniRewardModal;
+  window.closeMiniRewardModal = closeMiniRewardModal;
+  window.confirmMiniRewardModal = confirmMiniRewardModal;
 
   // ==============================
   // 11. 페이지 로드 시 기본 저장값 보장

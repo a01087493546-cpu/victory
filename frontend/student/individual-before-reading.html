@@ -1825,54 +1825,6 @@
       </section>
     </div>
   </main>
-<div class="ibr-complete-modal" id="beforeRewardModal">
-  <div class="ibr-before-reward-box">
-    <img
-      class="ibr-before-reward-lumi"
-      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
-      alt="응원하는 루미"
-    >
-
-    <div class="ibr-before-reward-badge">✨ 나의 힘 성장!</div>
-
-    <h2 class="ibr-before-reward-title">읽기 전 준비 보상!</h2>
-
-    <p class="ibr-before-reward-desc">
-      책을 읽기 전에 궁금한 점을 만들며<br>
-      모험을 준비했어요.
-    </p>
-
-    <div class="ibr-before-reward-list">
-      <div class="ibr-before-reward-item">
-        <span class="ibr-before-reward-name">마법력</span>
-        <strong class="ibr-before-reward-point">+1</strong>
-      </div>
-
-      <div class="ibr-before-reward-item">
-        <span class="ibr-before-reward-name">지혜</span>
-        <strong class="ibr-before-reward-point">+1</strong>
-      </div>
-    </div>
-
-    <div class="ibr-before-reward-message">
-      루미: 좋아! 이제 읽기 중 모험으로 떠나자!
-    </div>
-
-    <button type="button" class="ibr-before-reward-confirm" onclick="confirmBeforeRewardModal()">
-      확인했어
-    </button>
-  </div>
-</div>
-
-    <p style="margin-top:-6px;">
-      루미: 좋아! 이제 읽기 중 모험으로 떠나자!
-    </p>
-
-    <button type="button" class="ibr-button primary" onclick="confirmBeforeRewardModal()">
-      확인했어
-    </button>
-  </div>
-</div>
   <div class="ibr-complete-modal" id="completeModal">
     <div class="ibr-modal-box">
       <div class="ibr-modal-icon">📖</div>
@@ -2432,33 +2384,25 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
         })
       : false;
 
-  if (rewardResult && typeof openBeforeRewardModal === "function") {
-    openBeforeRewardModal();
+  if (rewardResult && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 나의 힘 성장!",
+      title: "읽기 전 준비 보상!",
+      message: "루미: 좋아! 이제 읽기 중 모험으로 떠나자!",
+      rewards: [
+        { type: "magic", name: "마법력", point: "+1" },
+        { type: "wisdom", name: "지혜", point: "+1" }
+      ],
+      nextAction: function () {
+        document.getElementById("completeModal").classList.add("show");
+      }
+    });
     return;
   }
 
   document.getElementById("completeModal").classList.add("show");
 }
-function openBeforeRewardModal() {
-  const modal = document.getElementById("beforeRewardModal");
 
-  if (modal) {
-    modal.classList.add("show");
-  }
-}
-
-function confirmBeforeRewardModal() {
-  const rewardModal = document.getElementById("beforeRewardModal");
-  const completeModal = document.getElementById("completeModal");
-
-  if (rewardModal) {
-    rewardModal.classList.remove("show");
-  }
-
-  if (completeModal) {
-    completeModal.classList.add("show");
-  }
-}
     function saveBeforeReadingAdventure() {
       const payload = {
         studentId,

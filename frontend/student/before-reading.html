@@ -2336,6 +2336,161 @@ body {
   line-height: 1.55;
   word-break: keep-all;
 }
+
+/* =========================================================
+   읽기 전 질문 만들기(01~04단계 공통) 카드 하단 잘림 방지
+   - 화면(1080px) 안에 항상 맞도록 세로 흐름을 flex로 다시 짭니다.
+   - 하단 "이전 단계 / 저장하고 다음" 버튼은 항상 화면에 보입니다.
+   ========================================================= */
+.page-inner {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.top-nav {
+  flex: 0 0 auto !important;
+}
+
+.top-info {
+  flex: 0 0 auto !important;
+}
+
+.activity-layout {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+}
+
+#activityCard {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 34px 56px !important;
+}
+
+#activityCard .activity-head {
+  flex: 0 0 auto !important;
+  margin-bottom: 16px !important;
+}
+
+/* 스크롤 없이 카드 안에서 자연스럽게 다 보이도록, 넘치는 대신 남는 칸을 그대로 채웁니다 */
+#activityCard .content-grid {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+#activityCard .write-panel,
+#activityCard .example-panel {
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 20px !important;
+}
+
+/* 질문/답 입력창 밑에 남는 세로 여백을 루미 안내 카드가 채우도록 write-panel을
+   세로 flex로 바꿉니다. 입력창(write-grid)은 원래 크기를 유지하고,
+   루미 안내 카드(feedback-box-with-lumi)만 남는 칸을 그대로 채웁니다. */
+#activityCard .write-panel {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#activityCard .write-grid {
+  flex: 0 0 auto !important;
+  gap: 22px !important;
+}
+
+#activityCard .bottom-row {
+  flex: 0 0 auto !important;
+  margin-top: 14px !important;
+}
+
+/* =========================================================
+   질문 쓰기 / 답 쓰기 입력창 글자 크기 확대 + 카드 안 여백 재배분
+   - 입력창 글자를 27px로 크게 키우고, 카드 패딩/루미 안내 박스 등
+     다른 여백을 줄여서 스크롤 없이 한 화면에 들어오도록 맞췄습니다.
+   ========================================================= */
+#activityCard textarea {
+  min-height: 340px !important;
+  padding: 20px !important;
+  font-size: 27px !important;
+  line-height: 1.5 !important;
+}
+
+#activityCard .input-label {
+  font-size: 26px !important;
+}
+
+#activityCard .input-help,
+#activityCard #questionLength,
+#activityCard #answerLength {
+  font-size: 22px !important;
+}
+
+#activityCard .feedback-box-with-lumi {
+  flex: 1 1 auto !important;
+  min-height: 60px !important;
+  max-height: 128px !important;
+  margin-top: 10px !important;
+  padding: 10px 14px !important;
+  gap: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+#activityCard .feedback-lumi {
+  width: 48px !important;
+}
+
+#activityCard .feedback-message {
+  font-size: 24px !important;
+  line-height: 1.5 !important;
+}
+
+/* =========================================================
+   내가 만든 읽기 전 질문 확인하기(요약) 화면
+   - 안내 문구를 뺀 만큼 버튼이 자연스럽게 오른쪽에 정렬됩니다.
+   - 제목-카드 목록 간격을 좁히고, 카드 4개가 남는 세로 공간을
+     고르게 나눠 가지며 커지도록 합니다.
+   - 질문/답 본문 글자 크기를 키우되, 01~04 제목이 항상 더 크게
+     보이도록 위계를 유지합니다.
+   ========================================================= */
+#activityCard .summary-list {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  margin-top: 6px !important;
+  margin-bottom: 30px !important;
+  display: grid !important;
+  grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+#activityCard .summary-item {
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 20px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+#activityCard .summary-title {
+  margin-bottom: 0 !important;
+  font-size: 26px !important;
+}
+
+#activityCard .summary-text {
+  font-size: 23px !important;
+  line-height: 1.5 !important;
+}
   </style>
 </head>
 
@@ -3123,7 +3278,7 @@ function goNextAfterFeedback() {
         '</div>' +
 
         '<div class="bottom-row">' +
-          '<div class="small-note">✨ 4개 질문을 모두 완성했어요! 이제 읽기 중 활동으로 넘어갈 수 있어요.</div>' +
+          '<div></div>' +
 
           '<div class="action-area">' +
             '<button class="plain-button" type="button" onclick="editIncompleteOrFirst()">수정하기</button>' +

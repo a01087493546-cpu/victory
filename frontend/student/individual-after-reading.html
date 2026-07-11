@@ -4445,7 +4445,7 @@ function changeShareFilter(filterKey) {
 
     /*
   읽기 후 최종 완료 보상:
-  체력 +3, 지혜 +1을 보상 화면에 보여줍니다.
+  체력 +3, 마법력 +1, 지혜 +1을 보상 화면에 보여줍니다.
 */
 if (rewardResult && typeof openMiniRewardModal === "function") {
   openMiniRewardModal({
@@ -4454,6 +4454,7 @@ if (rewardResult && typeof openMiniRewardModal === "function") {
     message: "루미: 끝까지 해낸 힘이 자랐어!",
     rewards: [
       { type: "stamina", name: "체력", point: "+3" },
+      { type: "magic", name: "마법력", point: "+1" },
       { type: "wisdom", name: "지혜", point: "+1" }
     ]
   });
@@ -4819,116 +4820,14 @@ function saveBookFinishRecord() {
   }
 });
 }
-// 능력치 성장 안내 미니 모달을 엽니다.
-// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리하고,
-// 지금은 활동 완료 보상을 학생에게 안내하는 용도로만 사용합니다.
-// 능력치별 이미지 경로를 한곳에서 관리합니다.
-// 실제 능력치 점수 누적과 저장은 나중에 백엔드 API에서 처리합니다.
-const REWARD_ICON_MAP = {
-  magic: "../assets/images/individual-reading/reward/reward-magic-wand.png",
-  stamina: "../assets/images/individual-reading/reward/reward-stamina-heart.png",
-  wisdom: "../assets/images/individual-reading/reward/reward-wisdom-book.png",
-  courage: "../assets/images/individual-reading/reward/reward-courage-shield.png"
-};
-
-// 보상 안내 확인 후 실행할 다음 동작입니다.
-// 예: 책 마무리 완료 팝업 열기, 추천 책장 이동 등
-let miniRewardNextAction = null;
-
-// 능력치 성장 안내 미니 모달을 엽니다.
-// rewardData를 넘기면 활동별로 제목, 설명, 보상 목록, 루미 메시지를 바꿔 보여줄 수 있습니다.
-function openMiniRewardModal(rewardData) {
-  const rewardOverlay = document.getElementById("iarRewardOverlay");
-  const badge = document.getElementById("iarRewardBadge");
-  const title = document.getElementById("iarRewardTitle");
-  const desc = document.getElementById("iarRewardDesc");
-  const list = document.getElementById("iarRewardList");
-  const message = document.getElementById("iarRewardMessage");
-
-  if (!rewardOverlay) {
-    return;
-  }
-
-  const data = rewardData || {};
-  const rewards = data.rewards || [
-    { type: "stamina", name: "체력", point: "+5" },
-    { type: "wisdom", name: "지혜", point: "+1" },
-    { type: "courage", name: "용기", point: "+1" }
-  ];
-
-  miniRewardNextAction = typeof data.nextAction === "function" ? data.nextAction : null;
-
-  if (badge) {
-    badge.textContent = data.badge || "✨ 나의 힘 성장!";
-  }
-
-  if (title) {
-    title.textContent = data.title || "책 한 권을 끝까지 마무리했어요!";
-  }
-
-  if (desc) {
-    desc.innerHTML = "";
-    desc.hidden = true;
-  }
-
-  if (message) {
-    message.textContent = data.message || "루미: 정말 멋지게 마무리했어!";
-  }
-
-  if (list) {
-    list.innerHTML = rewards.map(function (reward) {
-      const iconSrc = REWARD_ICON_MAP[reward.type] || REWARD_ICON_MAP.magic;
-      const rewardName = escapeHtml(reward.name || "능력치");
-      const rewardPoint = escapeHtml(reward.point || "+1");
-
-      return `
-        <div class="iar-reward-item">
-          <div class="iar-reward-left">
-            <img
-              class="iar-reward-icon"
-              src="${iconSrc}"
-              alt="${rewardName}"
-            >
-            <span class="iar-reward-name">${rewardName}</span>
-          </div>
-          <strong class="iar-reward-point">${rewardPoint}</strong>
-        </div>
-      `;
-    }).join("");
-  }
-
-  rewardOverlay.classList.add("is-open");
-  rewardOverlay.setAttribute("aria-hidden", "false");
-}
-
-// 능력치 성장 안내 미니 모달을 닫습니다.
-function closeMiniRewardModal() {
-  const rewardOverlay = document.getElementById("iarRewardOverlay");
-
-  if (!rewardOverlay) {
-    return;
-  }
-
-  rewardOverlay.classList.remove("is-open");
-  rewardOverlay.setAttribute("aria-hidden", "true");
-}
-
-// 보상 안내를 확인한 뒤 저장해 둔 다음 동작으로 이어갑니다.
-function confirmMiniRewardModal() {
-  closeMiniRewardModal();
-
-  if (typeof miniRewardNextAction === "function") {
-    miniRewardNextAction();
-    miniRewardNextAction = null;
-    return;
-  }
-
-  const completeModal = document.getElementById("bookFinishCompleteModal");
-
-  if (completeModal) {
-    completeModal.classList.add("show");
-  }
-}
+/*
+  능력치 성장 안내 미니 모달(openMiniRewardModal/closeMiniRewardModal/
+  confirmMiniRewardModal)은 이제 individual-power.js의 공통 컴포넌트를
+  씁니다. 읽기 전/읽기 중/읽기 후/책수다방이 모두 같은 디자인을 쓰도록
+  이 파일에 있던 로컬 구현은 제거했습니다.
+  "책 마무리" 완료 팝업으로 이어가야 하는 곳(위 openBookFinishModal
+  근처)은 openMiniRewardModal(...)에 nextAction을 직접 넘겨서 처리합니다.
+*/
     function saveAfterArchive(questionAnswers, summaryText) {
       const archive = getAfterArchive();
       const now = new Date().toISOString().slice(0, 10);
@@ -5253,78 +5152,9 @@ function goAdventure() {
   location.href = "../teacher/individual-reading-manage.html";
 }
   </script>
-  <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
+  <!-- 개별읽기 공통: 나의 힘 팝업 + 활동 완료 보상 미니 모달(openMiniRewardModal)
+       개별읽기 읽기 전/읽기 중/읽기 후/책수다방이 모두 이 공통 컴포넌트를 씁니다. -->
 <script src="../js/individual-power.js?v=power-common-2"></script>
-<!-- 능력치 성장 안내 미니 모달: 실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 안내 화면만 보여준다. -->
-<!-- 능력치 성장 안내 미니 모달
-     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다. -->
-<!-- 능력치 성장 안내 미니 모달
-     실제 점수 저장은 백엔드 연동 때 처리하고, 지금은 활동 완료 보상 안내만 보여줍니다.
-     id가 붙은 요소들은 JS에서 활동별 보상 문구와 능력치를 바꿔 넣습니다. -->
-<div class="iar-reward-overlay" id="iarRewardOverlay" aria-hidden="true">
-  <div class="iar-reward-modal">
-    <button class="iar-reward-close" type="button" onclick="closeMiniRewardModal()" aria-label="닫기">×</button>
-
-    <!-- 루미가 보상창을 응원하는 이미지입니다. -->
-    <img
-      class="iar-reward-lumi"
-      src="../assets/images/individual-reading/reward/reward-lumi-cheer.png"
-      alt="응원하는 루미"
-    >
-
-    <div class="iar-reward-badge" id="iarRewardBadge">✨ 나의 힘 성장!</div>
-
-    <h2 class="iar-reward-title" id="iarRewardTitle">책 한 권을 끝까지 마무리했어요!</h2>
-
-    <p class="iar-reward-desc" id="iarRewardDesc" hidden></p>
-
-    <div class="iar-reward-list" id="iarRewardList">
-      <div class="iar-reward-item">
-        <div class="iar-reward-left">
-          <img
-            class="iar-reward-icon"
-            src="../assets/images/individual-reading/reward/reward-stamina-heart.png"
-            alt="체력"
-          >
-          <span class="iar-reward-name">체력</span>
-        </div>
-        <strong class="iar-reward-point">+3</strong>
-      </div>
-
-      <div class="iar-reward-item">
-        <div class="iar-reward-left">
-          <img
-            class="iar-reward-icon"
-            src="../assets/images/individual-reading/reward/reward-wisdom-book.png"
-            alt="지혜"
-          >
-          <span class="iar-reward-name">지혜</span>
-        </div>
-        <strong class="iar-reward-point">+1</strong>
-      </div>
-
-      <div class="iar-reward-item">
-        <div class="iar-reward-left">
-          <img
-            class="iar-reward-icon"
-            src="../assets/images/individual-reading/reward/reward-courage-shield.png"
-            alt="용기"
-          >
-          <span class="iar-reward-name">용기</span>
-        </div>
-        <strong class="iar-reward-point">+1</strong>
-      </div>
-    </div>
-
-    <div class="iar-reward-lumi-message" id="iarRewardMessage">
-      루미: 정말 멋지게 마무리했어!
-    </div>
-
-    <button class="iar-reward-confirm" type="button" onclick="confirmMiniRewardModal()">
-      확인했어
-    </button>
-  </div>
-</div>
   <script src="../js/fixed-stage.js?v=after-reading-no-scroll-1"></script>
 </body>
 </html>
