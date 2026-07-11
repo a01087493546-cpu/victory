@@ -23,6 +23,7 @@ body {
 }
 
 body {
+  position: relative;
   font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
   color: #3f2615;
   background: #fff8e9 !important;
@@ -38,10 +39,17 @@ button {
 }
 
 .page {
-  width: 100%;
-  height: 100vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: 1920px;
+  height: 1080px;
   padding: 8px 20px 10px;
   overflow: hidden;
+
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+  transform-origin: center center;
 
   background-image:
     linear-gradient(
@@ -57,8 +65,8 @@ button {
   background-color: #fff8e9 !important;
 }
     .shell {
-      width: min(1580px, calc(100vw - 40px));
-      height: calc(100vh - 18px);
+      width: 1580px;
+      height: 1062px;
       margin: 0 auto;
 
       display: grid;
@@ -640,197 +648,12 @@ button {
       text-align: center;
     }
 
-    /* ==================================================
-       화면 높이가 낮은 경우
-    ================================================== */
+    /*
+      1920×1080 고정 스테이지를 사용하므로
+      화면 크기에 따라 글씨·버튼·카드 크기를 바꾸는 반응형 규칙은 사용하지 않습니다.
+      아래 스크립트가 전체 화면만 같은 비율로 축소·확대합니다.
+    */
 
-    @media (max-height: 900px) {
-      .shell {
-        grid-template-rows: 56px minmax(0, 1fr) 190px;
-        gap: 7px;
-      }
-
-      .brand {
-        font-size: 25px;
-      }
-
-      .brand-icon {
-        width: 42px;
-        height: 42px;
-        flex-basis: 42px;
-      }
-
-      .brand-icon img {
-        width: 31px;
-        height: 31px;
-      }
-
-      .mq-book-home-button,
-      .class-reading-button,
-      .date-pill {
-        height: 41px;
-        font-size: 15px;
-      }
-
-      .date-pill {
-        min-width: 178px;
-      }
-
-      .write-card {
-        padding: 15px 30px 13px;
-      }
-
-      .section-title {
-        font-size: 28px;
-      }
-
-      .title-line {
-        margin: 7px 0 8px;
-      }
-
-      .small-label {
-        font-size: 20px;
-        margin-bottom: 5px;
-      }
-
-      .type-buttons {
-        margin-bottom: 5px;
-      }
-
-      .type-button {
-        height: 46px;
-        font-size: 17px;
-      }
-
-      .input-block {
-        margin-top: 2px;
-      }
-
-      .answer-block {
-        margin-top: 5px;
-      }
-
-      .input-head {
-        margin-bottom: 4px;
-      }
-
-      .count {
-        font-size: 15px;
-      }
-
-      textarea {
-        padding: 12px 16px;
-        font-size: 19px;
-        line-height: 1.4;
-      }
-
-      textarea::placeholder {
-        font-size: 18px;
-      }
-
-      #questionInput {
-        height: 82px;
-        min-height: 82px;
-      }
-
-      #answerInput {
-        min-height: 95px;
-      }
-
-      .write-actions {
-        margin-top: 7px;
-      }
-
-      .sub-button,
-      .main-button {
-        height: 47px;
-        font-size: 17px;
-      }
-
-      .sub-button {
-        width: 140px;
-      }
-
-      .main-button {
-        width: 295px;
-      }
-
-      .bottom-grid {
-        grid-template-columns: minmax(0, 1fr) 300px;
-      }
-
-      .feedback-card {
-        grid-template-columns: 145px minmax(0, 1fr);
-        gap: 18px;
-        padding: 12px 22px;
-      }
-
-      .feedback-left {
-        width: 145px;
-        min-width: 145px;
-      }
-
-      .lumi-img {
-        width: 132px;
-        height: 156px;
-      }
-
-      .feedback-message {
-        height: 146px;
-        min-height: 146px;
-        max-height: 146px;
-
-        padding: 16px 20px;
-
-        font-size: 19px;
-        line-height: 1.48;
-      }
-
-      .next-card {
-        padding: 14px 18px;
-      }
-
-      .pass-count {
-        min-height: 36px;
-        font-size: 16px;
-      }
-
-      .next-button {
-        height: 50px;
-        font-size: 18px;
-      }
-
-      .share-note {
-        font-size: 12px;
-      }
-    }
-
-    @media (max-width: 1180px) {
-      body {
-        overflow: auto;
-      }
-
-      .page {
-        min-width: 1024px;
-        overflow: auto;
-      }
-
-      .top {
-        grid-template-columns: 250px minmax(0, 1fr) auto;
-      }
-
-      .mq-book-home-button,
-      .class-reading-button {
-        padding: 0 14px;
-        font-size: 15px;
-      }
-
-      .date-pill {
-        min-width: 170px;
-        font-size: 14px;
-      }
-    }
-    
   </style>
 </head>
 
@@ -1047,6 +870,31 @@ button {
       </section>
     </div>
   </main>
+
+  <script>
+    /* =========================================================
+       1920×1080 고정 화면 비율 유지
+       - 내부 글씨, 버튼, 카드 크기는 원본 그대로 유지
+       - 브라우저 창 크기에 맞춰 화면 전체만 동일 비율로 축소/확대
+    ========================================================= */
+    function fitFixedStage() {
+      const designWidth = 1920;
+      const designHeight = 1080;
+
+      const scaleX = window.innerWidth / designWidth;
+      const scaleY = window.innerHeight / designHeight;
+      const scale = Math.min(scaleX, scaleY);
+
+      document.documentElement.style.setProperty(
+        "--stage-scale",
+        String(scale)
+      );
+    }
+
+    window.addEventListener("resize", fitFixedStage);
+    window.addEventListener("DOMContentLoaded", fitFixedStage);
+    fitFixedStage();
+  </script>
 
   <script>
     /*

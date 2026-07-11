@@ -7,48 +7,44 @@
 
   <style>
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
-    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;900&display=swap");
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       width: 100%;
-      min-height: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
-      min-height: 100vh;
-      overflow-x: hidden;
+      position: fixed;
+      inset: 0;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #3f2615;
       background:
-        linear-gradient(180deg, rgba(255, 246, 222, 0.48), rgba(255, 232, 184, 0.50)),
-        url("../assets/images/practice/book-chat-bg.png");
-      background-size: cover;
-      background-position: center;
+        linear-gradient(180deg, rgba(255,246,222,.42), rgba(255,232,184,.46)),
+        url("../assets/images/practice/book-chat-bg.png") center / cover no-repeat;
     }
 
-    button, textarea, input, select {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
+    button, textarea, select { font-family: inherit; }
+    button { cursor: pointer; }
 
     .page {
-      position: relative;
-      min-height: 100vh;
-      padding: 18px 26px 24px;
-      overflow-x: hidden;
-      background:
-        linear-gradient(180deg, rgba(255, 246, 222, 0.42), rgba(255, 232, 184, 0.46)),
-        url("../assets/images/practice/book-chat-bg.png") center / cover no-repeat;
+      width: 100%;
+      height: 100vh;
+      padding: 14px 26px 18px;
+      overflow: hidden;
     }
 
     .shell {
       width: min(1180px, calc(100vw - 52px));
+      height: 100%;
       margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0,1fr);
+      gap: 12px;
+      overflow: hidden;
     }
 
     .top {
@@ -56,7 +52,6 @@
       grid-template-columns: 220px 1fr 245px;
       align-items: center;
       gap: 14px;
-      margin-bottom: 16px;
     }
 
     .brand {
@@ -67,8 +62,6 @@
       font-family: "Noto Serif KR", serif;
       font-size: 26px;
       font-weight: 900;
-      letter-spacing: -0.8px;
-      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
     }
 
     .brand-icon {
@@ -77,34 +70,21 @@
       display: grid;
       place-items: center;
       border-radius: 14px;
-      background: linear-gradient(180deg, #bf8740, #6d3a0d);
+      background: linear-gradient(180deg,#bf8740,#6d3a0d);
       color: #fff5d6;
-      border: 1px solid rgba(255, 224, 158, 0.78);
-      box-shadow: 0 8px 16px rgba(91, 47, 10, 0.18);
+      border: 1px solid rgba(255,224,158,.78);
+      box-shadow: 0 8px 16px rgba(91,47,10,.18);
       font-size: 22px;
     }
 
-    .title-area {
-      text-align: center;
-    }
-
     .main-title {
+      text-align: center;
       font-family: "Noto Serif KR", serif;
       color: #4b2a13;
       font-size: 44px;
       font-weight: 900;
-      line-height: 1.08;
       letter-spacing: -1.5px;
-      text-shadow:
-        0 2px 0 rgba(255,255,255,0.72),
-        0 8px 18px rgba(122,72,25,0.12);
-    }
-
-    .main-desc {
-      margin-top: 7px;
-      color: #6e4b2e;
-      font-size: 17px;
-      font-weight: 850;
+      text-shadow: 0 2px 0 rgba(255,255,255,.72), 0 8px 18px rgba(122,72,25,.12);
     }
 
     .top-actions {
@@ -117,187 +97,101 @@
       height: 43px;
       padding: 0 16px;
       border-radius: 15px;
-      border: 1px solid rgba(177, 122, 57, 0.34);
-      background: rgba(255, 250, 238, 0.82);
+      border: 1px solid rgba(177,122,57,.34);
+      background: rgba(255,250,238,.82);
       color: #4f2e16;
       font-size: 14px;
       font-weight: 900;
-      box-shadow:
-        0 7px 14px rgba(116,71,20,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.58);
+      box-shadow: 0 7px 14px rgba(116,71,20,.10);
     }
 
     .nav-button.primary {
-      background: linear-gradient(180deg, #e4ad45, #b06d0d);
+      background: linear-gradient(180deg,#e4ad45,#b06d0d);
       color: #fff9ec;
-      border-color: rgba(176, 111, 25, 0.40);
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 0.95fr 1fr;
-      gap: 18px;
-      align-items: stretch;
-      margin-bottom: 16px;
-    }
-
-    .hero-left,
     .activity-card,
     .filter-card,
     .board-card,
-    .selected-card,
-    .talk-card {
+    .modal-panel {
       border-radius: 24px;
-      border: 1px solid rgba(193, 133, 61, 0.34);
-      background: linear-gradient(180deg, rgba(255,254,249,0.92), rgba(255,247,231,0.90));
-      box-shadow:
-        0 14px 28px rgba(123,75,25,0.15),
-        inset 0 1px 0 rgba(255,255,255,0.72);
-      backdrop-filter: blur(2px);
-    }
-
-    .hero-left {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      align-items: center;
-      min-height: 160px;
-      padding: 16px 22px;
-    }
-
-    .lumi-img {
-      width: 150px;
-      align-self: end;
-      filter:
-        drop-shadow(0 12px 15px rgba(112,63,15,0.16))
-        drop-shadow(0 0 15px rgba(255,198,94,0.14));
-    }
-
-   .speech-box {
-  position: relative;
-  padding: 18px 24px;
-  border-radius: 22px;
-  border: 1px solid rgba(186, 130, 58, 0.28);
-  background: rgba(255, 254, 248, 0.78);
-  color: #4f2d15;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1.35;
-  word-break: keep-all;
-}
-
-    .speech-box::before {
-      content: "";
-      position: absolute;
-      left: -14px;
-      top: 50%;
-      width: 0;
-      height: 0;
-      transform: translateY(-50%);
-      border-top: 12px solid transparent;
-      border-bottom: 12px solid transparent;
-      border-right: 14px solid rgba(255, 254, 248, 0.92);
+      border: 1px solid rgba(193,133,61,.34);
+      background: linear-gradient(180deg,rgba(255,254,249,.94),rgba(255,247,231,.92));
+      box-shadow: 0 14px 28px rgba(123,75,25,.15), inset 0 1px 0 rgba(255,255,255,.72);
     }
 
     .activity-card {
-      padding: 22px 24px;
+      min-height: 118px;
+      padding: 16px 26px;
+      display: grid;
+      grid-template-columns: 280px minmax(0,1fr);
+      gap: 26px;
+      align-items: center;
+    }
+
+    .activity-title {
+      font-family: "Noto Serif KR", serif;
+      font-size: 40px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 16px;
+    }
+
+    .stat-box {
+      min-height: 78px;
+      padding: 14px 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(192,130,55,.28);
+      background: rgba(255,255,255,.58);
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .activity-title {
-      margin-bottom: 16px;
-      color: #4b2a13;
-      font-family: "Noto Serif KR", serif;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -0.7px;
+    .stat-label { color:#8b6a46; font-size:20px; font-weight:900; }
+    .stat-value { margin-top:6px; color:#4a2a10; font-size:42px; font-weight:900; line-height:1; }
+
+    .filter-card { padding: 10px 16px; }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 220px;
+      gap: 12px;
+      align-items: center;
     }
-
-   .stat-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-    .stat-box {
-      min-height: 76px;
-      padding: 13px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(192, 130, 55, 0.28);
-      background: rgba(255, 255, 255, 0.54);
-    }
-
-    .stat-label {
-      color: #8b6a46;
-      font-size: 13px;
-      font-weight: 900;
-      word-break: keep-all;
-    }
-
-    .stat-value {
-      margin-top: 6px;
-      color: #4a2a10;
-      font-size: 27px;
-      font-weight: 900;
-    }
-
-    .activity-desc {
-      color: #6f5031;
-      font-size: 16px;
-      font-weight: 820;
-      line-height: 1.52;
-      word-break: keep-all;
-    }
-
-    .filter-card {
-      margin-bottom: 14px;
-      padding: 14px 18px;
-    }
-
-   .filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 150px;
-  gap: 10px;
-  align-items: center;
-}
 
     .filter-button,
     .sort-select {
-      height: 44px;
-      border-radius: 14px;
-      border: 1px solid rgba(192, 130, 55, 0.34);
-      background: rgba(255, 252, 245, 0.84);
+      height: 48px;
+      border-radius: 16px;
+      border: 1px solid rgba(192,130,55,.34);
+      background: rgba(255,252,245,.84);
       color: #5a3820;
-      font-size: 15px;
+      font-size: 21px;
       font-weight: 900;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
     }
 
     .filter-button.active {
-      border-color: rgba(190,125,32,0.82);
-      background: linear-gradient(180deg, #f3c978, #c9902d);
-      color: #4a2a10;
-      box-shadow: 0 7px 13px rgba(176,112,25,0.16);
+      border-color: rgba(190,125,32,.82);
+      background: linear-gradient(180deg,#f3c978,#c9902d);
+      color:#4a2a10;
+      box-shadow: 0 7px 13px rgba(176,112,25,.16);
     }
 
-    .sort-select {
-      padding: 0 12px;
-      outline: none;
-    }
+    .sort-select { padding: 0 16px; text-align:center; text-align-last:center; outline:none; }
 
-    .board-grid {
+    .board-card {
+      height: 100%;
+      min-height: 0;
+      padding: 20px 26px;
       display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .board-card,
-    .selected-card {
-      padding: 22px 24px;
-      min-width: 0;
+      grid-template-rows: auto minmax(0,1fr);
+      overflow: hidden;
     }
 
     .section-head {
@@ -309,1724 +203,478 @@
     }
 
     .section-title {
-      color: #4b2a13;
       font-family: "Noto Serif KR", serif;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: -0.7px;
+      color:#4b2a13;
+      font-size:40px;
+      font-weight:900;
+      letter-spacing:-1px;
     }
 
     .count-pill {
-      padding: 8px 13px;
+      padding: 10px 16px;
       border-radius: 999px;
-      border: 1px solid rgba(190,130,55,0.26);
-      background: rgba(255,249,235,0.88);
-      color: #8c5c1e;
-      font-size: 14px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .guide-box {
-      margin-bottom: 13px;
-      padding: 14px 16px;
-      border-radius: 17px;
-      border: 1px dashed rgba(178, 122, 55, 0.36);
-      background: rgba(255, 255, 255, 0.48);
-      color: #694729;
-      font-size: 15px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
+      border:1px solid rgba(190,130,55,.26);
+      background:rgba(255,249,235,.88);
+      color:#8c5c1e;
+      font-size:18px;
+      font-weight:900;
     }
 
     .question-list {
-      display: grid;
-      gap: 10px;
-      max-height: 680px;
+      min-height: 0;
       overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .question-button {
-      width: 100%;
-      border: 1px solid rgba(186,130,58,0.26);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.66);
-      padding: 15px 17px;
-      text-align: left;
-      color: #4d321a;
-      transition: 0.15s ease;
-    }
-
-    .question-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 14px rgba(123,75,25,0.10);
-    }
-
-    .question-button.active {
-      border-color: rgba(83,133,60,0.65);
-      background: rgba(243,255,236,0.82);
-      box-shadow:
-        0 0 0 3px rgba(110,169,80,0.12),
-        inset 0 1px 0 rgba(255,255,255,0.72);
-    }
-
-    .question-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 9px;
-      flex-wrap: wrap;
-    }
-
-    .student-name {
-      color: #4b2a13;
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    .type-badge {
-      display: inline-block;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(222,168,79,0.18);
-      color: #8b5a1d;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .talk-badge {
-      display: inline-block;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(88, 139, 62, 0.14);
-      color: #47722c;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .time-text {
-      margin-left: auto;
-      color: #9c7141;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .question-text {
-      color: #3f2615;
-      font-size: 18px;
-      font-weight: 900;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .question-answer-preview {
-      margin-top: 9px;
-      color: #6f4e2f;
-      font-size: 15px;
-      font-weight: 800;
-      line-height: 1.45;
-      word-break: keep-all;
-      display: -webkit-box;
-      line-clamp: 2;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .question-answer-preview strong {
-      color: #4f7130;
-      font-weight: 900;
-    }
-
-    .selected-empty,
-    .empty-list {
+      overflow-x: hidden;
       display: grid;
-      place-items: center;
-      border-radius: 18px;
-      border: 1px dashed rgba(177,122,57,0.30);
-      background: rgba(255,255,255,0.50);
-      color: #92745a;
-      font-size: 17px;
-      font-weight: 850;
-      line-height: 1.5;
-      text-align: center;
-      word-break: keep-all;
-    }
-
-    .selected-empty {
-      min-height: 500px;
-    }
-
-    .empty-list {
-      min-height: 220px;
-    }
-
-    .selected-question-box,
-    .accordion-box,
-    .comment-card,
-    .deep-question-box {
-      border-radius: 18px;
-      border: 1px solid rgba(186,130,58,0.28);
-      background: rgba(255,255,255,0.64);
-    }
-
-    .selected-question-box {
-      padding: 18px 19px;
-      margin-bottom: 14px;
-    }
-
-    .selected-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .selected-name {
-      color: #4b2a13;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .selected-question {
-      color: #3f2615;
-      font-size: 24px;
-      font-weight: 900;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .selected-answer {
-      margin-top: 12px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(243,255,236,0.70);
-      border: 1px solid rgba(83,133,60,0.20);
-      color: #4f3219;
-      font-size: 16px;
-      font-weight: 820;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    .selected-answer strong {
-      color: #4f7130;
-      font-weight: 900;
-    }
-
-    .accordion-box {
-      margin-top: 12px;
-      overflow: hidden;
-      background: rgba(255,255,250,0.72);
-    }
-
-    .accordion-head {
-      width: 100%;
-      min-height: 58px;
-      padding: 14px 17px;
-      border: 0;
-      background: rgba(255, 250, 238, 0.60);
-      color: #4b2a13;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      text-align: left;
-    }
-
-    .accordion-title {
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .accordion-caption {
-      color: #8b6a46;
-      font-size: 13px;
-      font-weight: 850;
-    }
-
-    .accordion-mark {
-      min-width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.72);
-      border: 1px solid rgba(186,130,58,0.22);
-      color: #8c5c1e;
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .accordion-body {
-      display: none;
-      padding: 16px 17px 18px;
-      border-top: 1px solid rgba(186,130,58,0.18);
-    }
-
-    .accordion-box.open .accordion-body {
-      display: block;
-    }
-
-    .accordion-box.open .accordion-mark {
-      background: rgba(243,255,236,0.82);
-      color: #47722c;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .field {
-      display: grid;
-      gap: 6px;
-    }
-
-    .field-label {
-      color: #4f2d15;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .field-guide {
-      color: #8a6847;
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.35;
-      word-break: keep-all;
-    }
-
-    .text-input,
-    .text-area {
-      width: 100%;
-      outline: none;
-      padding: 13px 15px;
-      border-radius: 15px;
-      border: 1px solid rgba(196,138,69,0.34);
-      background: rgba(255,255,255,0.74);
-      color: #452713;
-      font-size: 16px;
-      font-weight: 760;
-      line-height: 1.45;
-    }
-
-    .text-input:focus,
-    .text-area:focus {
-      border-color: rgba(203,139,44,0.72);
-      box-shadow:
-        0 0 0 3px rgba(216,162,68,0.13),
-        inset 0 1px 0 rgba(255,255,255,0.72);
-    }
-
-    .text-area {
-      min-height: 84px;
-      resize: vertical;
-    }
-
-    .button-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .plain-button,
-    .main-button,
-    .small-button {
-      border-radius: 16px;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .plain-button,
-    .main-button {
-      height: 50px;
-    }
-
-    .small-button {
-      min-height: 38px;
-      padding: 8px 11px;
-    }
-
-    .plain-button {
-      border: 1px solid rgba(175,119,53,0.34);
-      background: rgba(255,252,245,0.78);
-      color: #654220;
-    }
-
-    .main-button {
-      border: 1px solid rgba(176,111,25,0.40);
-      background: linear-gradient(180deg, #e4ad45, #b06d0d);
-      color: #fff9ec;
-      box-shadow:
-        0 7px 0 rgba(105,57,5,0.68),
-        inset 0 1px 0 rgba(255,255,255,0.32);
-    }
-
-    .small-button.green {
-      border: 1px solid rgba(68, 124, 42, 0.38);
-      background: linear-gradient(180deg, #3f842e, #245716);
-      color: #fff8dd;
-    }
-
-    .small-button.brown {
-      border: 1px solid rgba(120, 73, 24, 0.38);
-      background: linear-gradient(180deg, #965d25, #562b0c);
-      color: #fff8dd;
-    }
-
-    .small-button.gold {
-      border: 1px solid rgba(176,111,25,0.40);
-      background: linear-gradient(180deg, #e4ad45, #b06d0d);
-      color: #fff9ec;
-    }
-
-    .feedback-box {
-      margin-top: 12px;
-      padding: 13px 15px;
-      border-radius: 15px;
-      border: 1px solid rgba(209,146,48,0.42);
-      background: rgba(255,250,238,0.78);
-      color: #5b3a1f;
-      font-size: 15px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .feedback-box.good {
-      border-color: rgba(97,155,72,0.40);
-      background: rgba(250,255,245,0.78);
-      color: #355628;
-    }
-
-    .comment-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .comment-card {
-      padding: 15px 16px;
-      background: rgba(255,255,255,0.62);
-    }
-
-    .comment-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .comment-name {
-      color: #4b2a13;
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    .comment-time {
-      margin-left: auto;
-      color: #9c7141;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .thought-lines {
-      display: grid;
-      gap: 8px;
-      color: #4f3219;
-      font-size: 15px;
-      font-weight: 820;
-      line-height: 1.48;
-      word-break: keep-all;
-    }
-
-    .thought-lines strong {
-      color: #4f7130;
-      font-weight: 950;
-    }
-
-    .reply-button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 13px;
-    }
-
-    .nested-write-box {
-      margin-top: 12px;
-      padding: 13px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(186, 130, 58, 0.22);
-      background: rgba(255, 250, 238, 0.74);
-    }
-
-    .nested-title {
-      margin-bottom: 9px;
-      color: #4b2a13;
-      font-size: 16px;
-      font-weight: 900;
-    }
-
-    .nested-guide {
-      margin-bottom: 9px;
-      color: #7a5a3b;
-      font-size: 14px;
-      font-weight: 820;
-      line-height: 1.42;
-      word-break: keep-all;
-    }
-
-    .nested-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 11px;
-      padding-left: 12px;
-      border-left: 3px solid rgba(205, 151, 67, 0.34);
-    }
-
-    .nested-item {
-      padding: 11px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(186,130,58,0.18);
-      background: rgba(255,255,255,0.64);
-      color: #4f3219;
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .nested-item strong {
-      color: #8b5a1d;
-      font-weight: 950;
-    }
-
-    .deep-question-box {
-      margin-top: 12px;
-      padding: 16px 17px;
-      background: rgba(255,255,250,0.74);
-    }
-
-    .deep-before {
-      margin-bottom: 12px;
-      padding: 13px 15px;
-      border-radius: 15px;
-      border: 1px solid rgba(186,130,58,0.20);
-      background: rgba(255,255,255,0.58);
-      color: #4f3219;
-      font-size: 15px;
-      font-weight: 850;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .deep-before strong {
-      color: #4f7130;
-      font-weight: 950;
-    }
-
-    .deep-saved {
-      margin-top: 12px;
-      padding: 13px 15px;
-      border-radius: 15px;
-      border: 1px solid rgba(83,133,60,0.22);
-      background: rgba(243,255,236,0.70);
-      color: #355628;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .bottom-note {
-      margin-top: 15px;
-      text-align: center;
-      color: #7e5d3a;
-      font-size: 16px;
-      font-weight: 850;
-      word-break: keep-all;
-    }
-
-    @media (max-width: 1050px) {
-      .top,
-      .hero,
-      .board-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .top-actions {
-        justify-content: center;
-      }
-
-      .filter-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .stat-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .hero-left {
-        grid-template-columns: 130px 1fr;
-      }
-
-      .lumi-img {
-        width: 130px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .page {
-        padding: 14px 14px 20px;
-      }
-
-      .shell {
-        width: 100%;
-      }
-
-      .main-title {
-        font-size: 36px;
-      }
-
-      .hero-left {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .lumi-img {
-        margin: 0 auto;
-      }
-
-      .speech-box::before {
-        display: none;
-      }
-
-      .filter-row,
-      .button-row {
-        grid-template-columns: 1fr;
-      }
-    }
-    .teacher-return-button {
-  position: fixed;
-  left: 24px;
-  bottom: 24px;
-  z-index: 9999;
-  border: 1px solid rgba(255, 215, 132, 0.72);
-  border-radius: 999px;
-  padding: 13px 20px;
-  background: linear-gradient(180deg, #965d25, #562b0c);
-  color: #fff5df;
-  font-size: 15px;
-  font-weight: 900;
-  box-shadow:
-    0 7px 0 rgba(45, 22, 7, 0.78),
-    0 12px 22px rgba(0, 0, 0, 0.28);
-}
-
-.teacher-return-button:hover {
-  transform: translateY(-2px);
-}
-  
-    /* 온책읽기 책수다방: 질문 목록은 본 화면, 1·2단계 활동은 보조창 */
-    .board-grid {
-      grid-template-columns: 1fr !important;
-    }
-
-    .board-card {
-      width: 100%;
-    }
-
-    .question-list {
-      max-height: 560px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-content: start;
-    }
-
-    .book-chat-modal.hidden { display: none !important; }
-
-    .book-chat-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: grid;
-      place-items: center;
-      padding: 34px;
-      background: rgba(43, 29, 18, 0.46);
-      backdrop-filter: blur(4px);
-    }
-
-    .book-chat-modal-panel {
-      width: min(980px, calc(100vw - 68px));
-      max-height: calc(100vh - 68px);
-      padding: 24px 26px 26px;
-      overflow: hidden;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      gap: 14px;
-      background: rgba(255, 251, 242, 0.99);
-      box-shadow: 0 28px 60px rgba(47, 28, 10, 0.34);
-    }
-
-    .book-chat-modal-head {
-      margin-bottom: 0;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(186,130,58,0.22);
-    }
-
-    .modal-step-guide {
-      display: block;
-      margin-top: 5px;
-      color: #7b5836;
-      font-size: 14px;
-      font-weight: 850;
-    }
-
-    .modal-close-button {
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(175,119,53,0.34);
-      border-radius: 14px;
-      background: rgba(255,252,245,0.94);
-      color: #654220;
-      font-size: 28px;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .book-chat-modal-body {
-      min-height: 0;
-      overflow-y: auto;
-      padding-right: 5px;
-    }
-
-    body.book-chat-modal-open { overflow: hidden; }
-
-    @media (max-width: 760px) {
-      .question-list { grid-template-columns: 1fr; }
-      .book-chat-modal { padding: 14px; }
-      .book-chat-modal-panel { width: 100%; max-height: calc(100vh - 28px); padding: 18px; }
-    }
-    
-/* =========================================================
-   책수다방 화면 수정본
-   1) 루미/말풍선 삭제 + 책수다방 활동 가로형
-   2) 설명 문구 삭제 대응
-   3) 책퀴즈 / 생각나누기 폰트 키우고 가운데 정렬
-   4) 질문 고르기 상자 가로 확장 + 글씨 키우기
-========================================================= */
-
-/* 상단 큰 영역: 루미/말풍선 숨기기 */
-.hero {
-  grid-template-columns: 1fr !important;
-  gap: 0 !important;
-  margin-bottom: 16px !important;
-}
-
-.hero-left {
-  display: none !important;
-}
-
-/* 책수다방 활동 영역을 가로로 길게 */
-.activity-card {
-  min-height: 138px !important;
-  padding: 20px 28px !important;
-  display: grid !important;
-  grid-template-columns: 240px minmax(0, 1fr) !important;
-  gap: 22px !important;
-  align-items: center !important;
-}
-
-.activity-title {
-  margin: 0 !important;
-  font-size: 38px !important;
-  line-height: 1.1 !important;
-  letter-spacing: -1px !important;
-  white-space: nowrap !important;
-}
-
-.stat-row {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 14px !important;
-  margin: 0 !important;
-}
-
-.stat-box {
-  min-height: 88px !important;
-  padding: 14px 18px !important;
-  border-radius: 18px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-}
-
-.stat-label {
-  font-size: 18px !important;
-  font-weight: 900 !important;
-}
-
-.stat-value {
-  margin-top: 6px !important;
-  font-size: 40px !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
-}
-
-/* 혹시 남아 있어도 안 보이게 */
-.activity-desc {
-  display: none !important;
-}
-
-/* 필터 영역 */
-.filter-card {
-  padding: 14px 18px !important;
-}
-
-.filter-row {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr 220px !important;
-  gap: 12px !important;
-  align-items: center !important;
-}
-
-.filter-button,
-.sort-select {
-  height: 56px !important;
-  border-radius: 16px !important;
-  font-size: 22px !important;
-  font-weight: 900 !important;
-}
-
-.filter-button {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  gap: 8px !important;
-}
-
-.sort-select {
-  padding: 0 16px !important;
-  text-align: center !important;
-  text-align-last: center !important;
-}
-
-/* 질문 고르기 영역 더 넓게 */
-.board-grid {
-  grid-template-columns: 1.18fr 0.82fr !important;
-  gap: 16px !important;
-  align-items: start !important;
-}
-
-.board-card,
-.selected-card {
-  padding: 24px 28px !important;
-}
-
-/* 질문 고르기 제목 크게 */
-.section-head {
-  margin-bottom: 13px !important;
-}
-
-.section-title {
-  font-size: 42px !important;
-  line-height: 1.1 !important;
-  letter-spacing: -1px !important;
-}
-
-.count-pill {
-  padding: 10px 16px !important;
-  font-size: 18px !important;
-  font-weight: 900 !important;
-}
-
-/* 혹시 남아 있으면 숨김 */
-.guide-box {
-  display: none !important;
-}
-
-/* 질문 리스트 */
-.question-list {
-  gap: 12px !important;
-  max-height: 650px !important;
-}
-
-.question-button {
-  padding: 18px 20px !important;
-  border-radius: 22px !important;
-}
-
-.question-top {
-  margin-bottom: 10px !important;
-}
-
-.student-name {
-  font-size: 24px !important;
-  font-weight: 900 !important;
-}
-
-.type-badge,
-.talk-badge {
-  font-size: 14px !important;
-  padding: 5px 10px !important;
-}
-
-.time-text {
-  font-size: 15px !important;
-}
-
-.question-text {
-  font-size: 23px !important;
-  line-height: 1.45 !important;
-}
-
-.question-answer-preview {
-  margin-top: 10px !important;
-  font-size: 17px !important;
-  line-height: 1.45 !important;
-}
-
-/* 오른쪽 생각 나누기 영역도 제목만 약간 키움 */
-.selected-question {
-  font-size: 26px !important;
-}
-
-.selected-answer {
-  font-size: 17px !important;
-}
-
-/* 하단 설명문이 너무 작으면 살짝 키움 */
-.bottom-note {
-  font-size: 16px !important;
-  text-align: center !important;
-}
-/* 책수다방 활동 박스를 중간 필터 박스와 같은 가로폭으로 확장 */
-.hero {
-  width: 100% !important;
-  display: block !important;
-}
-
-.activity-card {
-  width: 100% !important;
-  min-height: 150px !important;
-  padding: 22px 30px !important;
-
-  display: grid !important;
-  grid-template-columns: 280px minmax(0, 1fr) !important;
-  gap: 26px !important;
-  align-items: center !important;
-}
-
-/* 책수다방 활동 제목 크게 */
-.activity-title {
-  font-size: 40px !important;
-  line-height: 1.1 !important;
-  white-space: nowrap !important;
-}
-
-/* 통계 영역 전체 너비 사용 */
-.stat-row {
-  width: 100% !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 16px !important;
-}
-
-/* 통계 박스 자체 크게 */
-.stat-box {
-  width: 100% !important;
-  min-height: 100px !important;
-  padding: 16px 22px !important;
-}
-
-/* 공유된 질문 / 내 생각 / 이어쓰기 글씨 */
-.stat-label {
-  font-size: 21px !important;
-}
-
-/* 6개 / 1개 / 0개 숫자 */
-.stat-value {
-  margin-top: 8px !important;
-  font-size: 46px !important;
-  line-height: 1 !important;
-}
-/* 질문 고르기 영역을 가로 전체로 확장 */
-.board-grid {
-  display: block !important;
-  width: 100% !important;
-}
-
-/* 질문 고르기 상자 전체 너비 */
-.board-card {
-  width: 100% !important;
-  min-height: 320px !important;
-  padding: 24px 30px !important;
-}
-
-/* 오른쪽 생각 나누기 상자는 보조창으로 쓰므로 기본 화면에서 숨김 */
-.selected-card {
-  display: none !important;
-}
-
-/* 질문 고르기 제목 영역 */
-.board-card .section-head {
-  margin-bottom: 18px !important;
-}
-
-/* 질문 고르기 제목 크게 */
-.board-card .section-title {
-  font-size: 40px !important;
-  line-height: 1.1 !important;
-}
-
-/* 질문 개수 표시 크게 */
-.board-card .count-pill {
-  padding: 10px 18px !important;
-  font-size: 19px !important;
-}
-
-/* 질문 목록을 가로 방향으로 배치 */
-.question-list {
-  width: 100% !important;
-  max-height: none !important;
-  overflow: visible !important;
-
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 16px !important;
-}
-
-/* 질문 카드도 가로 칸에 맞게 넓게 */
-.question-button {
-  width: 100% !important;
-  min-height: 210px !important;
-  padding: 20px 22px !important;
-  border-radius: 22px !important;
-}
-
-/* 학생 이름 */
-.question-button .student-name {
-  font-size: 24px !important;
-}
-
-/* 질문 종류, 수다 수 */
-.question-button .type-badge,
-.question-button .talk-badge {
-  font-size: 15px !important;
-  padding: 6px 11px !important;
-}
-
-/* 날짜 */
-.question-button .time-text {
-  font-size: 15px !important;
-}
-
-/* 질문 본문 */
-.question-button .question-text {
-  margin-top: 12px !important;
-  font-size: 24px !important;
-  line-height: 1.5 !important;
-}
-
-/* 처음 생각 */
-.question-button .question-answer-preview {
-  margin-top: 14px !important;
-  font-size: 18px !important;
-  line-height: 1.5 !important;
-
-  display: -webkit-box !important;
-  line-clamp: 3 !important;
-  -webkit-line-clamp: 3 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-}
-/* 질문 카드 자체를 가로로 길게 */
-.question-list {
-  display: block !important;
-}
-
-.question-button {
-  width: 100% !important;
-  min-height: 150px !important;
-  padding: 22px 26px !important;
-  border-radius: 24px !important;
-}
-
-/* 카드 위쪽 정보 한 줄 정리 */
-.question-top {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  margin-bottom: 14px !important;
-}
-
-/* 학생 이름 */
-.student-name {
-  font-size: 25px !important;
-}
-
-/* 책 퀴즈, 수다 태그 */
-.type-badge,
-.talk-badge {
-  font-size: 16px !important;
-  padding: 6px 12px !important;
-}
-
-/* 날짜는 오른쪽 끝 */
-.time-text {
-  margin-left: auto !important;
-  font-size: 17px !important;
-}
-
-/* 질문 글 */
-.question-text {
-  font-size: 26px !important;
-  line-height: 1.45 !important;
-  margin-top: 6px !important;
-}
-
-/* 처음 생각 */
-.question-answer-preview {
-  margin-top: 14px !important;
-  font-size: 19px !important;
-  line-height: 1.5 !important;
-
-  display: block !important;
-  line-clamp: unset !important;
-  -webkit-line-clamp: unset !important;
-  -webkit-box-orient: initial !important;
-  overflow: visible !important;
-}
-  
-    /* =========================================================
-       최종 수정: 전체 화면 고정 + 질문 목록 내부 스크롤 + 2단계 보조창
-       ========================================================= */
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      min-height: 100%;
-      overflow: hidden !important;
-    }
-
-    body {
-      position: fixed;
-      inset: 0;
-    }
-
-    .page {
-      width: 100%;
-      height: 100vh;
-      min-height: 0 !important;
-      overflow: hidden !important;
-      padding: 14px 26px 18px !important;
-    }
-
-    .shell {
-      width: min(1180px, calc(100vw - 52px));
-      height: 100%;
-      display: grid;
-      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
       gap: 12px;
-      overflow: hidden;
-    }
-
-    .top,
-    .hero,
-    .filter-card,
-    .board-grid,
-    .bottom-note {
-      margin: 0 !important;
-      min-height: 0;
-    }
-
-    .top {
-      margin-bottom: 0 !important;
-    }
-
-    .activity-card {
-      min-height: 118px !important;
-      padding: 16px 26px !important;
-    }
-
-    .stat-box {
-      min-height: 78px !important;
-    }
-
-    .filter-card {
-      padding: 10px 16px !important;
-    }
-
-    .filter-button,
-    .sort-select {
-      height: 48px !important;
-    }
-
-    .board-grid {
-      display: block !important;
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 0 !important;
-      overflow: hidden !important;
-    }
-
-    .board-card {
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 0 !important;
-      padding: 20px 26px !important;
-      display: grid !important;
-      grid-template-rows: auto minmax(0, 1fr) !important;
-      overflow: hidden !important;
-    }
-
-    .board-card .section-head {
-      margin-bottom: 14px !important;
-    }
-
-    .question-list {
-      width: 100% !important;
-      height: 100% !important;
-      min-height: 0 !important;
-      max-height: none !important;
-      display: grid !important;
-      grid-template-columns: 1fr !important;
-      align-content: start !important;
-      gap: 12px !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-      overscroll-behavior: contain;
+      padding: 2px 10px 14px 2px;
       scrollbar-gutter: stable;
-      padding: 2px 10px 14px 2px !important;
     }
 
     .question-list::-webkit-scrollbar,
-    .book-chat-modal-body::-webkit-scrollbar {
-      width: 12px;
-    }
-
+    .modal-body::-webkit-scrollbar { width:12px; }
     .question-list::-webkit-scrollbar-track,
-    .book-chat-modal-body::-webkit-scrollbar-track {
-      border-radius: 999px;
-      background: rgba(116, 77, 38, 0.10);
-    }
-
+    .modal-body::-webkit-scrollbar-track { border-radius:999px; background:rgba(116,77,38,.10); }
     .question-list::-webkit-scrollbar-thumb,
-    .book-chat-modal-body::-webkit-scrollbar-thumb {
-      border: 3px solid transparent;
-      border-radius: 999px;
-      background: rgba(142, 91, 36, 0.50);
-      background-clip: padding-box;
+    .modal-body::-webkit-scrollbar-thumb { border:3px solid transparent; border-radius:999px; background:rgba(142,91,36,.50); background-clip:padding-box; }
+
+    .question-card {
+      width:100%;
+      min-height:138px;
+      padding:18px 22px;
+      border:1px solid rgba(186,130,58,.26);
+      border-radius:24px;
+      background:rgba(255,255,255,.68);
+      color:#4d321a;
+      text-align:left;
+      transition:.15s ease;
     }
 
-    .question-button {
-      flex: none !important;
-      min-height: 138px !important;
-      padding: 18px 22px !important;
+    .question-card:hover { transform:translateY(-1px); box-shadow:0 8px 14px rgba(123,75,25,.10); }
+
+    .question-top {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
     }
+
+    .student-name { color:#4b2a13; font-size:24px; font-weight:900; }
+
+    .type-badge,
+    .talk-badge {
+      display:inline-block;
+      padding:6px 11px;
+      border-radius:999px;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .type-badge { background:rgba(222,168,79,.18); color:#8b5a1d; }
+    .talk-badge { background:rgba(88,139,62,.14); color:#47722c; }
+
+    .card-actions {
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .thought-write-button {
+      min-height:38px;
+      padding:8px 14px;
+      border:1px solid rgba(68,124,42,.38);
+      border-radius:14px;
+      background:linear-gradient(180deg,#3f842e,#245716);
+      color:#fff8dd;
+      font-size:15px;
+      font-weight:900;
+      box-shadow:0 4px 0 rgba(36,87,22,.34);
+    }
+
+    .time-text { color:#9c7141; font-size:16px; font-weight:800; white-space:nowrap; }
+
+    .question-main-click {
+      width:100%;
+      padding:0;
+      border:0;
+      background:transparent;
+      color:inherit;
+      text-align:left;
+    }
+
+    .question-text { font-size:25px; font-weight:900; line-height:1.45; word-break:keep-all; }
 
     .question-answer-preview {
-      display: -webkit-box !important;
-      -webkit-box-orient: vertical !important;
-      -webkit-line-clamp: 2 !important;
-      line-clamp: 2 !important;
+      margin-top:12px;
+      color:#6f4e2f;
+      font-size:18px;
+      font-weight:800;
+      line-height:1.5;
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:2;
+      overflow:hidden;
+    }
+
+    .question-answer-preview strong { color:#4f7130; }
+
+    .empty-list {
+      min-height:220px;
+      display:grid;
+      place-items:center;
+      border-radius:18px;
+      border:1px dashed rgba(177,122,57,.30);
+      background:rgba(255,255,255,.50);
+      color:#92745a;
+      font-size:18px;
+      font-weight:850;
+      text-align:center;
+    }
+
+    .modal.hidden { display:none !important; }
+
+    .modal {
+      position:fixed;
+      inset:0;
+      z-index:20000;
+      display:grid;
+      place-items:center;
+      padding:28px;
+      background:rgba(43,29,18,.58);
+      backdrop-filter:blur(5px);
+    }
+
+    .modal-panel {
+      width:min(1040px,calc(100vw - 56px));
+      height:min(860px,calc(100vh - 56px));
+      padding:22px 25px 25px;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr);
+      gap:14px;
+      overflow:hidden;
+      background:rgba(255,251,242,.99);
+      box-shadow:0 28px 70px rgba(47,28,10,.38);
+    }
+
+    .modal-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding-bottom:13px;
+      border-bottom:1px solid rgba(186,130,58,.22);
+    }
+
+    .modal-title {
+      font-family:"Noto Serif KR",serif;
+      color:#4b2a13;
+      font-size:34px;
+      font-weight:900;
+    }
+
+    .modal-close-button {
+      width:44px;
+      height:44px;
+      border:1px solid rgba(175,119,53,.34);
+      border-radius:14px;
+      background:rgba(255,252,245,.94);
+      color:#654220;
+      font-size:28px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .modal-body {
+      min-height:0;
+      overflow-y:auto;
+      padding:2px 10px 24px 2px;
+      scrollbar-gutter:stable;
+    }
+
+    .selected-question-box,
+    .comment-card,
+    .write-box {
+      border-radius:18px;
+      border:1px solid rgba(186,130,58,.28);
+      background:rgba(255,255,255,.66);
+    }
+
+    .selected-question-box { padding:18px 19px; margin-bottom:14px; }
+    .selected-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .selected-name { font-size:18px; font-weight:900; }
+    .selected-question { font-size:25px; font-weight:900; line-height:1.45; }
+    .selected-answer { margin-top:12px; padding:14px 16px; border-radius:16px; background:rgba(243,255,236,.70); border:1px solid rgba(83,133,60,.20); font-size:17px; font-weight:820; line-height:1.5; }
+
+    .form-grid { display:grid; gap:14px; }
+    .field { display:grid; gap:7px; }
+    .field-label { font-size:20px; font-weight:900; }
+    .text-area { width:100%; min-height:105px; padding:14px 16px; resize:vertical; outline:none; border-radius:15px; border:1px solid rgba(196,138,69,.34); background:rgba(255,255,255,.78); color:#452713; font-size:18px; font-weight:760; line-height:1.5; }
+    .text-area:focus { border-color:rgba(203,139,44,.72); box-shadow:0 0 0 3px rgba(216,162,68,.13); }
+
+    .button-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+
+    .plain-button,
+    .main-button {
+      height:50px;
+      border-radius:16px;
+      font-size:17px;
+      font-weight:900;
+    }
+
+    .plain-button { border:1px solid rgba(175,119,53,.34); background:rgba(255,252,245,.78); color:#654220; }
+    .main-button { border:1px solid rgba(176,111,25,.40); background:linear-gradient(180deg,#e4ad45,#b06d0d); color:#fff9ec; box-shadow:0 7px 0 rgba(105,57,5,.68); }
+
+    .comment-list { display:grid; gap:14px; }
+    .comment-card { padding:17px 18px; }
+    .comment-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+    .comment-name { font-size:18px; font-weight:900; }
+    .comment-time { margin-left:auto; color:#9c7141; font-size:14px; font-weight:800; }
+    .thought-lines { display:grid; gap:8px; color:#4f3219; font-size:17px; font-weight:820; line-height:1.5; }
+    .thought-lines strong { color:#4f7130; }
+
+    .reply-button-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+
+    .reply-type-button {
+      min-height:40px;
+      padding:8px 13px;
+      border-radius:14px;
+      font-size:15px;
+      font-weight:900;
+      color:#fff8dd;
+    }
+    .reply-type-button.green { border:1px solid rgba(68,124,42,.38); background:linear-gradient(180deg,#3f842e,#245716); }
+    .reply-type-button.brown { border:1px solid rgba(120,73,24,.38); background:linear-gradient(180deg,#965d25,#562b0c); }
+    .reply-type-button.gold { border:1px solid rgba(176,111,25,.40); background:linear-gradient(180deg,#e4ad45,#b06d0d); }
+
+    .write-box { margin-top:12px; padding:14px; background:rgba(255,250,238,.76); }
+    .write-title { margin-bottom:10px; font-size:18px; font-weight:900; }
+
+    .nested-list { display:grid; gap:8px; margin-top:12px; padding-left:12px; border-left:3px solid rgba(205,151,67,.34); }
+    .nested-item { padding:11px 12px; border-radius:14px; border:1px solid rgba(186,130,58,.18); background:rgba(255,255,255,.64); font-size:15px; font-weight:800; line-height:1.45; }
+    .nested-item strong { color:#8b5a1d; }
+
+    .teacher-return-button {
+      position:fixed;
+      left:24px;
+      bottom:24px;
+      z-index:9999;
+      border:1px solid rgba(255,215,132,.72);
+      border-radius:999px;
+      padding:13px 20px;
+      background:linear-gradient(180deg,#965d25,#562b0c);
+      color:#fff5df;
+      font-size:15px;
+      font-weight:900;
+      box-shadow:0 7px 0 rgba(45,22,7,.78),0 12px 22px rgba(0,0,0,.28);
+    }
+
+    /* 1920×1080 고정 캔버스: 브라우저 확대/축소에도 내부 배치 유지 */
+    :root {
+      --stage-scale: 1;
+      --stage-left: 0px;
+      --stage-top: 0px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
       overflow: hidden !important;
     }
 
-    .bottom-note {
-      display: none !important;
+    body {
+      position: relative !important;
+      inset: auto !important;
     }
 
-    /* 기존 selected-card 숨김 규칙보다 우선하여 보조창은 표시 */
-    .book-chat-modal {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 20000 !important;
-      display: grid !important;
-      place-items: center !important;
-      padding: 28px !important;
-      overflow: hidden !important;
-      background: rgba(43, 29, 18, 0.58) !important;
-      backdrop-filter: blur(5px);
+    .page {
+      position: absolute !important;
+      left: var(--stage-left) !important;
+      top: var(--stage-top) !important;
+      width: 1920px !important;
+      height: 1080px !important;
+      min-width: 1920px !important;
+      min-height: 1080px !important;
+      transform: scale(var(--stage-scale));
+      transform-origin: top left;
     }
 
-    .book-chat-modal.hidden {
-      display: none !important;
-    }
-
-    .book-chat-modal .book-chat-modal-panel {
-      display: grid !important;
-      width: min(1040px, calc(100vw - 56px)) !important;
-      height: min(860px, calc(100vh - 56px)) !important;
-      max-height: calc(100vh - 56px) !important;
-      min-height: 0 !important;
-      padding: 22px 25px 25px !important;
-      grid-template-rows: auto minmax(0, 1fr) !important;
-      gap: 14px !important;
-      overflow: hidden !important;
-      border-radius: 26px !important;
-      background: rgba(255, 251, 242, 0.99) !important;
-      box-shadow: 0 28px 70px rgba(47, 28, 10, 0.38) !important;
-    }
-
-    .book-chat-modal-head {
-      flex: none !important;
-      margin: 0 !important;
-      padding-bottom: 13px !important;
-    }
-
-    .modal-step-guide {
-      font-size: 16px !important;
-      line-height: 1.45 !important;
-    }
-
-    .book-chat-modal-body {
-      min-height: 0 !important;
+    .shell {
+      width: 1180px !important;
       height: 100% !important;
-      overflow-x: hidden !important;
-      overflow-y: auto !important;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
-      padding: 2px 10px 24px 2px !important;
     }
 
-    .book-chat-modal-body .selected-question-box {
-      position: relative;
-      margin-bottom: 14px !important;
+    .modal-panel {
+      width: 1040px !important;
+      height: 860px !important;
+      max-width: none !important;
+      max-height: none !important;
     }
-
-    .book-chat-modal-body .accordion-box {
-      margin-top: 14px !important;
-    }
-
-    .book-chat-modal-body .accordion-body {
-      padding: 18px 20px 22px !important;
-    }
-
-    .book-chat-modal-body .text-area {
-      min-height: 100px !important;
-      font-size: 18px !important;
-      resize: vertical;
-    }
-
-    .book-chat-modal-body .field-label {
-      font-size: 18px !important;
-    }
-
-    .book-chat-modal-body .field-guide,
-    .book-chat-modal-body .feedback-box {
-      font-size: 15px !important;
-    }
-
-    .book-chat-modal-body .comment-card {
-      padding: 17px 18px !important;
-    }
-
-    .book-chat-modal-body .thought-lines {
-      font-size: 17px !important;
-    }
-
-    body.book-chat-modal-open {
-      overflow: hidden !important;
-    }
-
-    @media (max-width: 760px) {
-      .page {
-        padding: 10px 12px 12px !important;
-      }
-
-      .shell {
-        width: 100% !important;
-      }
-
-      .activity-card {
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
-      }
-
-      .activity-title {
-        font-size: 30px !important;
-      }
-
-      .filter-row {
-        grid-template-columns: 1fr 1fr !important;
-      }
-
-      .sort-select {
-        grid-column: 1 / -1;
-      }
-
-      .book-chat-modal {
-        padding: 10px !important;
-      }
-
-      .book-chat-modal .book-chat-modal-panel {
-        width: 100% !important;
-        height: calc(100vh - 20px) !important;
-        max-height: calc(100vh - 20px) !important;
-        padding: 16px !important;
-      }
-    }
-/* 질문 고르기 제목 옆 안내 문구 */
-.section-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 0;
-}
-
-.section-guide {
-  color: #7a5a3b;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.4;
-  word-break: keep-all;
-}
-
-@media (max-width: 800px) {
-  .section-title-wrap {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .section-guide {
-    font-size: 15px;
-  }
-}
   </style>
 </head>
-
 <body>
-  <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">
-  ← 교사용 수업차례로
-</button>
+  <button class="teacher-return-button" id="teacherReturnButton" type="button" onclick="goTeacherPractice()" style="display:none;">← 교사용 수업차례로</button>
+
   <main class="page">
     <div class="shell">
       <header class="top">
-        <div class="brand">
-          <div class="brand-icon">📖</div>
-          <span>문답책</span>
-        </div>
-
-        <div class="title-area">
-          <h1 class="main-title">책수다방</h1>
-        </div>
-
+        <div class="brand"><div class="brand-icon">📖</div><span>문답책</span></div>
+        <h1 class="main-title">책수다방</h1>
         <div class="top-actions">
           <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
           <button class="nav-button primary" type="button" onclick="goClassReading()">우리반 책읽기</button>
         </div>
       </header>
 
-      <section class="hero">
-        <article class="hero-left">
-          <img class="lumi-img" src="../assets/images/class-reading/class-reading-lumi-feedback.png" alt="루미">
-          <div class="speech-box">
-  친구들과 이야기해 보고 싶은 질문을 골라 봐!
-</div>
-        </article>
-
-        <article class="activity-card">
-          <h2 class="activity-title">활동 내역</h2>
-
-          <div class="stat-row">
-            <div class="stat-box">
-              <p class="stat-label">공유된 질문</p>
-              <p class="stat-value" id="questionCount">0개</p>
-            </div>
-            <div class="stat-box">
-              <p class="stat-label">내 생각</p>
-              <p class="stat-value" id="myThoughtCount">0개</p>
-            </div>
-            <div class="stat-box">
-              <p class="stat-label">이어쓰기</p>
-              <p class="stat-value" id="myReplyCount">0개</p>
-            </div>
-            
-        </article>
+      <section class="activity-card">
+        <h2 class="activity-title">활동 내역</h2>
+        <div class="stat-row">
+          <div class="stat-box"><p class="stat-label">공유된 질문</p><p class="stat-value" id="questionCount">0개</p></div>
+          <div class="stat-box"><p class="stat-label">내 생각</p><p class="stat-value" id="myThoughtCount">0개</p></div>
+          <div class="stat-box"><p class="stat-label">이어쓰기</p><p class="stat-value" id="myReplyCount">0개</p></div>
+        </div>
       </section>
 
       <section class="filter-card">
         <div class="filter-row">
-  <button class="filter-button active" type="button" data-type="quiz">📖 책 퀴즈</button>
-  <button class="filter-button" type="button" data-type="talk">💬 생각 나누기</button>
-
-  <select class="sort-select" id="sortSelect">
-    <option value="talk">수다 많은 순</option>
-    <option value="latest">최신순</option>
-    <option value="name">이름순</option>
-  </select>
-</div>
+          <button class="filter-button active" type="button" data-type="quiz">📖 책 퀴즈</button>
+          <button class="filter-button" type="button" data-type="talk">💬 생각 나누기</button>
+          <select class="sort-select" id="sortSelect">
+            <option value="talk">수다 많은 순</option>
+            <option value="latest">최신순</option>
+            <option value="name">이름순</option>
+          </select>
+        </div>
       </section>
 
-      <section class="board-grid">
-        <article class="board-card">
-          <div class="section-head">
-  <div class="section-title-wrap">
-    <h2 class="section-title">질문 고르기</h2>
-    <p class="section-guide">
-      질문을 누르면 내 생각을 쓰고 친구 생각에 의견을 이어 쓸 수 있어요.
-    </p>
-  </div>
-
-  <span class="count-pill" id="visibleQuestionCount">0개</span>
-</div>
-          <div class="question-list" id="questionList"></div>
-        </article>
-
+      <section class="board-card">
+        <div class="section-head">
+          <h2 class="section-title">질문 고르기</h2>
+          <span class="count-pill" id="visibleQuestionCount">0개</span>
+        </div>
+        <div class="question-list" id="questionList"></div>
       </section>
-
-      <div class="book-chat-modal hidden" id="bookChatModal" aria-hidden="true" onclick="closeBookChatModal(event)">
-        <article class="selected-card book-chat-modal-panel" role="dialog" aria-modal="true" aria-labelledby="bookChatModalTitle" onclick="event.stopPropagation()">
-          <div class="section-head book-chat-modal-head">
-            <div>
-              <h2 class="section-title" id="bookChatModalTitle">생각 나누기</h2>
-              <span class="modal-step-guide">1단계에서 내 생각을 등록하고, 2단계에서 친구 생각에 대댓글처럼 이어 쓰며 의견을 나눠요.</span>
-            </div>
-            <button class="modal-close-button" type="button" onclick="closeBookChatModal()" aria-label="보조창 닫기">×</button>
-          </div>
-          <div id="talkArea" class="book-chat-modal-body"></div>
-        </article>
-      </div>
-
-      <p class="bottom-note">
-       
-      </p>
     </div>
   </main>
+
+  <div class="modal hidden" id="thoughtModal" aria-hidden="true" onclick="closeThoughtModal(event)">
+    <article class="modal-panel" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h2 class="modal-title">내 생각 쓰기</h2>
+        <button class="modal-close-button" type="button" onclick="closeThoughtModal()">×</button>
+      </div>
+      <div class="modal-body" id="thoughtModalBody"></div>
+    </article>
+  </div>
+
+  <div class="modal hidden" id="commentsModal" aria-hidden="true" onclick="closeCommentsModal(event)">
+    <article class="modal-panel" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h2 class="modal-title">친구 생각 보기</h2>
+        <button class="modal-close-button" type="button" onclick="closeCommentsModal()">×</button>
+      </div>
+      <div class="modal-body" id="commentsModalBody"></div>
+    </article>
+  </div>
 
   <script>
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     const studentName = sessionStorage.getItem("name") || "나";
 
     const typeInfo = {
-  direct: { label: "책 퀴즈", icon: "📖" },
-  infer: { label: "생각 나누기", icon: "💬" },
-  feeling: { label: "생각 나누기", icon: "💬" },
-  life: { label: "생각 나누기", icon: "💬" }
-};
-   let currentType = "quiz";
+      direct: { label:"책 퀴즈", icon:"📖" },
+      infer: { label:"생각 나누기", icon:"💬" },
+      feeling: { label:"생각 나누기", icon:"💬" },
+      life: { label:"생각 나누기", icon:"💬" }
+    };
+
+    let currentType = "quiz";
+    let allQuestions = [];
     let selectedQuestionId = null;
-    let openedSection = "thought";
     let activeReplyTarget = null;
     let activeReplyType = null;
-    let allQuestions = [];
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const sortSelect = document.getElementById("sortSelect");
     const questionList = document.getElementById("questionList");
-    const talkArea = document.getElementById("talkArea");
+    const thoughtModal = document.getElementById("thoughtModal");
+    const thoughtModalBody = document.getElementById("thoughtModalBody");
+    const commentsModal = document.getElementById("commentsModal");
+    const commentsModalBody = document.getElementById("commentsModalBody");
 
     initPage();
 
     function initPage() {
       allQuestions = buildQuestionData();
-
-      if (allQuestions.length > 0) {
-        selectedQuestionId = allQuestions[0].id;
-      }
-
       bindEvents();
       renderAll();
+      showTeacherButtonWhenNeeded();
     }
 
     function bindEvents() {
-      filterButtons.forEach(function(button) {
+      filterButtons.forEach(button => {
         button.addEventListener("click", function() {
-          filterButtons.forEach(function(btn) {
-            btn.classList.remove("active");
-          });
-
+          filterButtons.forEach(btn => btn.classList.remove("active"));
           button.classList.add("active");
           currentType = button.dataset.type;
-          selectedQuestionId = null;
-
-          const filtered = getFilteredQuestions();
-
-          if (filtered.length > 0) {
-            selectedQuestionId = filtered[0].id;
-          }
-
-          openedSection = "thought";
-          activeReplyTarget = null;
-          activeReplyType = null;
           renderAll();
         });
       });
-
-      sortSelect.addEventListener("change", function() {
-        renderAll();
-      });
+      sortSelect.addEventListener("change", renderAll);
     }
 
     function buildQuestionData() {
       const myQuestions = loadMySharedQuestions();
-
       const mockFriends = [
-        {
-          name: "민지",
-          questions: [
-            {
-              text: "주인공은 왜 무서웠는데도 친구를 도왔을까?",
-              answer: "친구가 혼자 힘들어하는 모습을 보고 그냥 지나칠 수 없었기 때문이라고 생각해.",
-              type: "infer",
-              createdAt: "06.11 09:10"
-            },
-            {
-              text: "나라면 주인공처럼 친구를 도울 수 있었을까?",
-              answer: "나라면 처음에는 무서웠겠지만, 친구가 정말 위험하다면 도와주려고 했을 것 같아.",
-              type: "life",
-              createdAt: "06.11 09:14"
-            }
-          ]
-        },
-        {
-          name: "서준",
-          questions: [
-            {
-              text: "이 장면에서 주인공의 마음은 어떻게 바뀌었을까?",
-              answer: "처음에는 겁이 났지만, 친구를 생각하면서 용기를 낸 것 같아.",
-              type: "feeling",
-              createdAt: "06.11 09:21"
-            },
-            {
-              text: "주인공이 다시 돌아간 장면에서 알 수 있는 것은 무엇일까?",
-              answer: "주인공이 친구를 소중하게 생각한다는 것을 알 수 있어.",
-              type: "direct",
-              createdAt: "06.11 09:25"
-            }
-          ]
-        },
-        {
-          name: "하윤",
-          questions: [
-            {
-              text: "친구를 도와주는 마음은 왜 중요할까?",
-              answer: "친구를 도와주면 서로 믿을 수 있고, 어려운 일을 함께 이겨낼 수 있기 때문이야.",
-              type: "feeling",
-              createdAt: "06.11 09:32"
-            },
-            {
-              text: "주인공이 혼자였다면 다른 선택을 했을까?",
-              answer: "혼자였다면 더 무서워서 도망갔을 수도 있을 것 같아.",
-              type: "infer",
-              createdAt: "06.11 09:37"
-            }
-          ]
-        }
+        { name:"민지", questions:[
+          { text:"주인공은 왜 무서웠는데도 친구를 도왔을까?", answer:"친구가 혼자 힘들어하는 모습을 보고 그냥 지나칠 수 없었기 때문이라고 생각해.", type:"infer", createdAt:"06.11 09:10" },
+          { text:"나라면 주인공처럼 친구를 도울 수 있었을까?", answer:"나라면 처음에는 무서웠겠지만, 친구가 정말 위험하다면 도와주려고 했을 것 같아.", type:"life", createdAt:"06.11 09:14" }
+        ]},
+        { name:"서준", questions:[
+          { text:"이 장면에서 주인공의 마음은 어떻게 바뀌었을까?", answer:"처음에는 겁이 났지만, 친구를 생각하면서 용기를 낸 것 같아.", type:"feeling", createdAt:"06.11 09:21" },
+          { text:"주인공이 다시 돌아간 장면에서 알 수 있는 것은 무엇일까?", answer:"주인공이 친구를 소중하게 생각한다는 것을 알 수 있어.", type:"direct", createdAt:"06.11 09:25" }
+        ]},
+        { name:"하윤", questions:[
+          { text:"친구를 도와주는 마음은 왜 중요할까?", answer:"친구를 도와주면 서로 믿을 수 있고, 어려운 일을 함께 이겨낼 수 있기 때문이야.", type:"feeling", createdAt:"06.11 09:32" },
+          { text:"주인공이 혼자였다면 다른 선택을 했을까?", answer:"혼자였다면 더 무서워서 도망갔을 수도 있을 것 같아.", type:"infer", createdAt:"06.11 09:37" }
+        ]}
       ];
 
       const people = [];
+      if (myQuestions) people.push(myQuestions);
+      mockFriends.forEach(friend => people.push(friend));
 
-      if (myQuestions) {
-        people.push(myQuestions);
-      }
-
-      mockFriends.forEach(function(friend) {
-        people.push(friend);
-      });
-
-      let flattened = [];
-
-      people.forEach(function(person) {
-        person.questions.forEach(function(question, index) {
-          const normalizedType = normalizeType(question.type);
-          const id = person.name + "-" + index + "-" + question.text;
-
+      const flattened = [];
+      people.forEach(person => {
+        person.questions.forEach((question,index) => {
+          const type = normalizeType(question.type);
           flattened.push({
-            id: id,
+            id: person.name + "-" + index + "-" + question.text,
             name: person.name,
-            isMine: person.isMine || false,
+            isMine: !!person.isMine,
             text: question.text,
             answer: question.answer || "",
-            type: normalizedType,
-            typeLabel: question.typeLabel || getTypeLabel(normalizedType),
+            type,
             createdAt: question.createdAt || "오늘",
-            baseTalkCount: getBaseTalkCount(normalizedType, index)
+            baseTalkCount: getBaseTalkCount(type,index)
           });
         });
       });
-
       return flattened;
     }
 
     function loadMySharedQuestions() {
-      const sharedData = localStorage.getItem("mySharedQuestions");
-
-      if (sharedData) {
-        try {
-          const parsedData = JSON.parse(sharedData);
-
-          if (
-            parsedData &&
-            Array.isArray(parsedData.questions) &&
-            parsedData.questions.length > 0
-          ) {
-            return {
-              name: parsedData.name || studentName,
-              isMine: true,
-              questions: parsedData.questions
-            };
-          }
-        } catch (error) {
-          console.error("공유한 내 질문 데이터를 불러오지 못했습니다.", error);
-        }
-      }
-
-      const todayInfo = getTodayInfoForQuestionShare();
-      const todayQuestionKey = "classReadingQuestions_" + studentId + "_" + todayInfo.key;
-      const todayQuestionData = localStorage.getItem(todayQuestionKey);
-
-      if (!todayQuestionData) {
-        return null;
-      }
-
+      const raw = localStorage.getItem("mySharedQuestions");
+      if (!raw) return null;
       try {
-        const parsedQuestions = JSON.parse(todayQuestionData);
-
-        if (!Array.isArray(parsedQuestions) || parsedQuestions.length === 0) {
-          return null;
-        }
-
-        return {
-          name: studentName || "나",
-          isMine: true,
-          questions: parsedQuestions.map(function(question) {
-            return {
-              text: question.text,
-              answer: question.answer,
-              type: question.type,
-              typeLabel: question.typeLabel,
-              createdAt: question.dateText
-                ? question.dateText + " " + (question.createdAt || "")
-                : todayInfo.display
-            };
-          })
-        };
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.questions) || !parsed.questions.length) return null;
+        return { name:parsed.name || studentName, isMine:true, questions:parsed.questions };
       } catch (error) {
-        console.error("오늘 만든 내 질문 데이터를 불러오지 못했습니다.", error);
+        console.error(error);
         return null;
       }
-    }
-
-    function getTodayInfoForQuestionShare() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const date = String(today.getDate()).padStart(2, "0");
-      const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
-      const day = dayNames[today.getDay()];
-
-      return {
-        key: year + "-" + month + "-" + date,
-        display: year + "." + month + "." + date + " (" + day + ")"
-      };
     }
 
     function normalizeType(type) {
@@ -2035,841 +683,322 @@
       return type || "direct";
     }
 
-    function getTypeLabel(type) {
-      return typeInfo[type] ? typeInfo[type].label : "질문";
-    }
-
-    function getBaseTalkCount(type, index) {
+    function getBaseTalkCount(type,index) {
       if (type === "infer") return 5 + index;
       if (type === "feeling") return 4 + index;
       if (type === "life") return 3 + index;
       return 2 + index;
     }
 
-    function renderAll() {
-      const filteredQuestions = getFilteredQuestions();
-
-      if (!selectedQuestionId && filteredQuestions.length > 0) {
-        selectedQuestionId = filteredQuestions[0].id;
-      }
-
-      renderQuestionList(filteredQuestions);
-      renderTalkArea(filteredQuestions);
-      updateCounts(filteredQuestions);
-    }
-
     function getFilteredQuestions() {
       let questions = allQuestions.slice();
+      questions = currentType === "quiz"
+        ? questions.filter(q => q.type === "direct")
+        : questions.filter(q => q.type !== "direct");
 
-      if (currentType === "quiz") {
-  questions = questions.filter(function(question) {
-    return question.type === "direct";
-  });
-}
-
-if (currentType === "talk") {
-  questions = questions.filter(function(question) {
-    return question.type !== "direct";
-  });
-}
-
-      if (sortSelect.value === "name") {
-        questions.sort(function(a, b) {
-          return a.name.localeCompare(b.name, "ko");
-        });
-      } else if (sortSelect.value === "latest") {
-        questions.sort(function(a, b) {
-          return String(b.createdAt).localeCompare(String(a.createdAt));
-        });
-      } else {
-        questions.sort(function(a, b) {
-          return getTalkCount(b.id, b.baseTalkCount) - getTalkCount(a.id, a.baseTalkCount);
-        });
-      }
-
+      if (sortSelect.value === "name") questions.sort((a,b) => a.name.localeCompare(b.name,"ko"));
+      else if (sortSelect.value === "latest") questions.sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      else questions.sort((a,b) => getTalkCount(b) - getTalkCount(a));
       return questions;
     }
 
+    function renderAll() {
+      const questions = getFilteredQuestions();
+      renderQuestionList(questions);
+      updateCounts(questions);
+    }
+
     function renderQuestionList(questions) {
-      if (questions.length === 0) {
+      if (!questions.length) {
         questionList.innerHTML = '<div class="empty-list">이 유형으로 공유된 질문이 아직 없어요.</div>';
         return;
       }
 
-      questionList.innerHTML = questions.map(function(question) {
-        const isActive = selectedQuestionId === question.id;
-        const type = typeInfo[question.type] || { label: "질문", icon: "❓" };
-        const talkCount = getTalkCount(question.id, question.baseTalkCount);
-
+      questionList.innerHTML = questions.map(question => {
+        const type = typeInfo[question.type] || {label:"질문",icon:"❓"};
         return `
-          <button class="question-button ${isActive ? "active" : ""}" type="button" onclick="selectQuestion('${escapeAttribute(question.id)}')">
+          <article class="question-card">
             <div class="question-top">
               <span class="student-name">${escapeHtml(question.isMine ? "나의 질문" : question.name)}</span>
               <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
-              <span class="talk-badge">수다 ${talkCount}개</span>
-              <span class="time-text">${escapeHtml(question.createdAt || "오늘")}</span>
-            </div>
-
-            <div class="question-text">${escapeHtml(question.text)}</div>
-
-            ${question.answer ? `
-              <div class="question-answer-preview">
-                <strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong>
-                ${escapeHtml(question.answer)}
+              <button class="talk-badge" type="button" onclick="openCommentsModal('${escapeAttribute(question.id)}'); event.stopPropagation();">수다 ${getTalkCount(question)}개</button>
+              <div class="card-actions">
+                <button class="thought-write-button" type="button" onclick="openThoughtModal('${escapeAttribute(question.id)}'); event.stopPropagation();">내 생각 쓰기</button>
+                <span class="time-text">${escapeHtml(question.createdAt)}</span>
               </div>
-            ` : ""}
-          </button>
+            </div>
+            <button class="question-main-click" type="button" onclick="openCommentsModal('${escapeAttribute(question.id)}')">
+              <div class="question-text">${escapeHtml(question.text)}</div>
+              ${question.answer ? `<div class="question-answer-preview"><strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong> ${escapeHtml(question.answer)}</div>` : ""}
+            </button>
+          </article>
         `;
       }).join("");
     }
 
-    function renderTalkArea(questions) {
-      const selectedQuestion = questions.find(function(question) {
-        return question.id === selectedQuestionId;
-      });
+    function openThoughtModal(questionId) {
+      selectedQuestionId = questionId;
+      const question = allQuestions.find(q => q.id === questionId);
+      if (!question) return;
 
-      if (!selectedQuestion) {
-        talkArea.innerHTML = `
-          <div class="selected-empty">
-            왼쪽에서 질문을 하나 선택해 봐요.<br>
-            선택한 질문으로 책수다방을 시작할 수 있어요.
-          </div>
-        `;
-        return;
-      }
-
-      const type = typeInfo[selectedQuestion.type] || { label: "질문", icon: "❓" };
-      const comments = getCommentsForQuestion(selectedQuestion);
-
-      talkArea.innerHTML = `
-        <article class="selected-question-box">
-          <div class="selected-meta">
-            <span class="selected-name">${escapeHtml(selectedQuestion.isMine ? "나의 질문" : selectedQuestion.name + "의 질문")}</span>
-            <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
-            <span class="time-text">${escapeHtml(selectedQuestion.createdAt || "오늘")}</span>
-          </div>
-
-          <div class="selected-question">${escapeHtml(selectedQuestion.text)}</div>
-
-          ${selectedQuestion.answer ? `
-            <div class="selected-answer">
-              <strong>${selectedQuestion.isMine ? "내가 처음 쓴 생각" : "친구가 처음 쓴 생각"}</strong><br>
-              ${escapeHtml(selectedQuestion.answer)}
-            </div>
-          ` : ""}
-        </article>
-
-        ${renderAccordion(
-          "thought",
-          "1단계 · 내 생각 쓰기",
-          "내 생각, 까닭, 책에서 찾은 부분을 나누어 써요.",
-          renderThoughtForm(selectedQuestion)
-        )}
-
-        ${renderAccordion(
-          "comments",
-          "2단계 · 친구 생각에 이어쓰기",
-          "비슷한 생각, 다른 생각, 책에서 찾은 부분을 이어 써요.",
-          renderCommentList(selectedQuestion, comments)
-        )}
-
-      `;
-
-      fillSavedThought(selectedQuestion.id);
-    }
-
-    function renderAccordion(sectionId, title, caption, bodyHtml) {
-      const isOpen = openedSection === sectionId;
-
-      return `
-        <article class="accordion-box ${isOpen ? "open" : ""}" id="accordion-${sectionId}">
-          <button class="accordion-head" type="button" onclick="toggleSection('${sectionId}')">
-            <div>
-              <div class="accordion-title">${title}</div>
-              <div class="accordion-caption">${caption}</div>
-            </div>
-            <div class="accordion-mark">${isOpen ? "−" : "+"}</div>
-          </button>
-
-          <div class="accordion-body">
-            ${bodyHtml}
-          </div>
-        </article>
-      `;
-    }
-
-    function renderThoughtForm(question) {
-      return `
+      const saved = getSavedThought(questionId);
+      thoughtModalBody.innerHTML = `
+        ${renderSelectedQuestion(question)}
         <div class="form-grid">
-          <div class="field">
-            <label class="field-label" for="thoughtMain">내 생각은:</label>
-            <p class="field-guide">이 질문에 대한 나의 생각을 한 문장으로 써 봐요.</p>
-            <textarea class="text-area" id="thoughtMain" maxlength="300" placeholder="예: 주인공이 무서웠지만 포기하지 않았다는 것이다."></textarea>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="thoughtReason">그렇게 생각한 까닭은:</label>
-            <p class="field-guide">왜 그렇게 생각했는지 까닭을 써 봐요.</p>
-            <textarea class="text-area" id="thoughtReason" maxlength="300" placeholder="예: 계속 도망가고 싶어 했지만 결국 친구를 도왔기 때문이다."></textarea>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="thoughtEvidence">책에서 찾은 부분은:</label>
-            <p class="field-guide">책 속 장면이나 문장을 떠올려 써 봐요.</p>
-            <textarea class="text-area" id="thoughtEvidence" maxlength="300" placeholder="예: 친구를 구하러 다시 돌아간 장면이다."></textarea>
-          </div>
-
+          <div class="field"><label class="field-label" for="thoughtMain">내 생각은:</label><textarea class="text-area" id="thoughtMain" maxlength="300"></textarea></div>
+          <div class="field"><label class="field-label" for="thoughtReason">그렇게 생각한 까닭은:</label><textarea class="text-area" id="thoughtReason" maxlength="300"></textarea></div>
+          <div class="field"><label class="field-label" for="thoughtEvidence">책에서 찾은 부분은:</label><textarea class="text-area" id="thoughtEvidence" maxlength="300"></textarea></div>
           <div class="button-row">
             <button class="plain-button" type="button" onclick="clearThoughtForm()">지우기</button>
-            <button class="main-button" type="button" onclick="saveThought('${escapeAttribute(question.id)}')">등록하기</button>
-          </div>
-
-          <div class="feedback-box" id="thoughtFeedback">
-            세 칸을 나누어 쓰면 친구들이 네 생각을 더 잘 이해할 수 있어.
+            <button class="main-button" type="button" onclick="saveThought('${escapeAttribute(questionId)}')">등록하기</button>
           </div>
         </div>
       `;
-    }
 
-    function renderCommentList(question, comments) {
-      if (comments.length === 0) {
-        return `
-          <div class="empty-list">
-            아직 이 질문에 올라온 생각이 없어요.<br>
-            먼저 내 생각을 써 봐요.
-          </div>
-        `;
+      if (saved) {
+        document.getElementById("thoughtMain").value = saved.main || "";
+        document.getElementById("thoughtReason").value = saved.reason || "";
+        document.getElementById("thoughtEvidence").value = saved.evidence || "";
       }
 
-      return `
-        <div class="comment-list">
-          ${comments.map(function(comment) {
-            const nestedReplies = getNestedReplies(question.id, comment.id);
+      thoughtModal.classList.remove("hidden");
+      thoughtModal.setAttribute("aria-hidden","false");
+    }
 
-            return `
-              <article class="comment-card">
-                <div class="comment-head">
-                  <span class="comment-name">${escapeHtml(comment.name)}</span>
-                  ${comment.isMine ? '<span class="talk-badge">내 생각</span>' : '<span class="type-badge">친구 생각</span>'}
-                  <span class="comment-time">${escapeHtml(comment.savedAt || "오늘")}</span>
-                </div>
+    function closeThoughtModal(event) {
+      if (event && event.target !== thoughtModal) return;
+      thoughtModal.classList.add("hidden");
+      thoughtModal.setAttribute("aria-hidden","true");
+    }
 
-                <div class="thought-lines">
-                  <p><strong>내 생각은</strong> ${escapeHtml(comment.main)}</p>
-                  <p><strong>그렇게 생각한 까닭은</strong> ${escapeHtml(comment.reason)}</p>
-                  <p><strong>책에서 찾은 부분은</strong> ${escapeHtml(comment.evidence)}</p>
-                </div>
+    function openCommentsModal(questionId) {
+      selectedQuestionId = questionId;
+      activeReplyTarget = null;
+      activeReplyType = null;
+      renderCommentsModal();
+      commentsModal.classList.remove("hidden");
+      commentsModal.setAttribute("aria-hidden","false");
+    }
 
-                <div class="reply-button-row">
-                  <button class="small-button green" type="button" onclick="openNestedReply('${escapeAttribute(question.id)}', '${escapeAttribute(comment.id)}', 'similar')">비슷해요</button>
-                  <button class="small-button brown" type="button" onclick="openNestedReply('${escapeAttribute(question.id)}', '${escapeAttribute(comment.id)}', 'different')">다르게 생각해요</button>
-                  <button class="small-button gold" type="button" onclick="openNestedReply('${escapeAttribute(question.id)}', '${escapeAttribute(comment.id)}', 'evidence')">책에서 찾았어요</button>
-                </div>
+    function closeCommentsModal(event) {
+      if (event && event.target !== commentsModal) return;
+      commentsModal.classList.add("hidden");
+      commentsModal.setAttribute("aria-hidden","true");
+    }
 
-                ${renderNestedWriteBox(question.id, comment.id)}
+    function renderCommentsModal() {
+      const question = allQuestions.find(q => q.id === selectedQuestionId);
+      if (!question) return;
+      const comments = getCommentsForQuestion(question);
 
-                ${nestedReplies.length > 0 ? `
-                  <div class="nested-list">
-                    ${nestedReplies.map(function(reply) {
-                      return `
-                        <div class="nested-item">
-                          <strong>${escapeHtml(reply.name)} · ${escapeHtml(reply.label)}</strong><br>
-                          ${escapeHtml(reply.text)}
-                        </div>
-                      `;
-                    }).join("")}
-                  </div>
-                ` : ""}
-              </article>
-            `;
-          }).join("")}
-        </div>
+      commentsModalBody.innerHTML = `
+        ${renderSelectedQuestion(question)}
+        ${comments.length ? `<div class="comment-list">${comments.map(comment => renderCommentCard(question,comment)).join("")}</div>` : '<div class="empty-list">아직 올라온 생각이 없어요.<br>먼저 내 생각을 써 봐요.</div>'}
       `;
     }
 
-    function renderNestedWriteBox(questionId, commentId) {
-      if (activeReplyTarget !== commentId) {
-        return "";
-      }
-
-      const template = getNestedTemplate(activeReplyType);
-
+    function renderSelectedQuestion(question) {
+      const type = typeInfo[question.type] || {label:"질문",icon:"❓"};
       return `
-        <div class="nested-write-box">
-          <div class="nested-title">${escapeHtml(template.title)}</div>
-          <div class="nested-guide">${template.guide}</div>
+        <article class="selected-question-box">
+          <div class="selected-meta">
+            <span class="selected-name">${escapeHtml(question.isMine ? "나의 질문" : question.name + "의 질문")}</span>
+            <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
+            <span class="time-text">${escapeHtml(question.createdAt)}</span>
+          </div>
+          <div class="selected-question">${escapeHtml(question.text)}</div>
+          ${question.answer ? `<div class="selected-answer"><strong>${question.isMine ? "내가 처음 쓴 생각" : "친구가 처음 쓴 생각"}</strong><br>${escapeHtml(question.answer)}</div>` : ""}
+        </article>
+      `;
+    }
 
-          <textarea class="text-area" id="nestedReplyInput" maxlength="350" placeholder="${escapeAttribute(template.placeholder)}"></textarea>
+    function renderCommentCard(question,comment) {
+      const replies = getNestedReplies(question.id,comment.id);
+      return `
+        <article class="comment-card">
+          <div class="comment-head">
+            <span class="comment-name">${escapeHtml(comment.name)}</span>
+            ${comment.isMine ? '<span class="talk-badge">내 생각</span>' : '<span class="type-badge">친구 생각</span>'}
+            <span class="comment-time">${escapeHtml(comment.savedAt || "오늘")}</span>
+          </div>
+          <div class="thought-lines">
+            <p><strong>내 생각은</strong> ${escapeHtml(comment.main)}</p>
+            <p><strong>그렇게 생각한 까닭은</strong> ${escapeHtml(comment.reason)}</p>
+            <p><strong>책에서 찾은 부분은</strong> ${escapeHtml(comment.evidence)}</p>
+          </div>
+          <div class="reply-button-row">
+            <button class="reply-type-button green" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','similar')">비슷해요</button>
+            <button class="reply-type-button brown" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','different')">다르게 생각해요</button>
+            <button class="reply-type-button gold" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','evidence')">책에서 찾았어요</button>
+          </div>
+          ${activeReplyTarget === comment.id ? renderReplyWriteBox(question.id,comment.id) : ""}
+          ${replies.length ? `<div class="nested-list">${replies.map(reply => `<div class="nested-item"><strong>${escapeHtml(reply.name)} · ${escapeHtml(reply.label)}</strong><br>${escapeHtml(reply.text)}</div>`).join("")}</div>` : ""}
+        </article>
+      `;
+    }
 
+    function renderReplyWriteBox(questionId,commentId) {
+      const info = getReplyTypeInfo(activeReplyType);
+      return `
+        <div class="write-box">
+          <div class="write-title">${escapeHtml(info.title)}</div>
+          <textarea class="text-area" id="nestedReplyInput" maxlength="350" placeholder="${escapeAttribute(info.placeholder)}"></textarea>
           <div class="button-row">
             <button class="plain-button" type="button" onclick="closeNestedReply()">닫기</button>
-            <button class="main-button" type="button" onclick="saveNestedReply('${escapeAttribute(questionId)}', '${escapeAttribute(commentId)}', '${escapeAttribute(activeReplyType)}')">이어 쓰기</button>
-          </div>
-
-          <div class="feedback-box" id="nestedFeedback">
-            문장 틀을 따라 쓰면 친구 생각에 자연스럽게 이어 쓸 수 있어.
+            <button class="main-button" type="button" onclick="saveNestedReply('${escapeAttribute(questionId)}','${escapeAttribute(commentId)}','${escapeAttribute(activeReplyType)}')">이어 쓰기</button>
           </div>
         </div>
       `;
     }
 
-    function renderDeepQuestionForm(question) {
-      return `
-        <div class="deep-question-box">
-          <div class="deep-before">
-            <strong>처음 질문:</strong><br>
-            ${escapeHtml(question.text)}
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="deepQuestionInput">깊어진 질문:</label>
-            <p class="field-guide">
-              친구들의 생각을 읽고, 처음 질문에 까닭·상황·나의 선택을 더해 봐요.
-            </p>
-            <textarea class="text-area" id="deepQuestionInput" maxlength="400" placeholder="예: 주인공은 무서웠는데도 친구를 도운 이유는 무엇이고, 나라면 그런 상황에서 어떻게 했을까?"></textarea>
-          </div>
-
-          <div class="button-row">
-            <button class="plain-button" type="button" onclick="clearDeepQuestion()">지우기</button>
-            <button class="main-button" type="button" onclick="saveDeepQuestion('${escapeAttribute(question.id)}')">깊은 질문 저장</button>
-          </div>
-
-          <div class="feedback-box" id="deepFeedback">
-            좋은 질문은 책을 다시 읽고 싶게 만들어요.
-          </div>
-
-          <div id="deepSavedArea"></div>
-        </div>
-      `;
-    }
-
-    function getCommentsForQuestion(question) {
-      const exampleComments = getExampleComments(question);
-      const savedThought = getSavedThought(question.id);
-
-      if (savedThought) {
-        return [savedThought].concat(exampleComments);
-      }
-
-      return exampleComments;
-    }
-
-    function getExampleComments(question) {
-      if (question.type === "direct") {
-        return [
-          {
-            id: "ex-direct-1",
-            name: "도윤",
-            main: "주인공이 친구를 소중하게 생각했다는 것이다.",
-            reason: "친구를 보고 그냥 지나가지 않고 다시 돌아갔기 때문이다.",
-            evidence: "주인공이 친구에게 뛰어가는 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          },
-          {
-            id: "ex-direct-2",
-            name: "수아",
-            main: "주인공은 용기 있는 사람이라고 생각한다.",
-            reason: "무서운 마음이 있었는데도 행동했기 때문이다.",
-            evidence: "주인공이 잠깐 멈췄다가 다시 움직인 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          }
-        ];
-      }
-
-      if (question.type === "infer") {
-        return [
-          {
-            id: "ex-infer-1",
-            name: "지민",
-            main: "주인공은 친구가 걱정되어 도운 것 같다.",
-            reason: "친구가 혼자 있으면 더 위험할 수 있다고 생각했을 것 같기 때문이다.",
-            evidence: "주인공이 뒤를 돌아보며 망설이는 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          },
-          {
-            id: "ex-infer-2",
-            name: "현우",
-            main: "주인공은 무서웠지만 책임감을 느낀 것 같다.",
-            reason: "자기만 도망가면 친구가 더 힘들어진다고 생각했을 것 같기 때문이다.",
-            evidence: "친구의 이름을 부르며 다시 돌아가는 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          }
-        ];
-      }
-
-      if (question.type === "feeling") {
-        return [
-          {
-            id: "ex-feeling-1",
-            name: "서연",
-            main: "나는 이 장면이 가장 마음에 남았다.",
-            reason: "무서워도 친구를 생각하는 마음이 느껴졌기 때문이다.",
-            evidence: "주인공이 떨리는 목소리로 친구를 부르는 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          },
-          {
-            id: "ex-feeling-2",
-            name: "민준",
-            main: "주인공의 마음이 이해되었다.",
-            reason: "나도 겁이 나지만 친구를 도와주고 싶었던 적이 있기 때문이다.",
-            evidence: "주인공이 고민하는 장면이다.",
-            savedAt: "예시",
-            isMine: false
-          }
-        ];
-      }
-
-      return [
-        {
-          id: "ex-life-1",
-          name: "가은",
-          main: "나라면 친구에게 먼저 괜찮냐고 물어볼 것 같다.",
-          reason: "도와주기 전에 친구가 무엇이 필요한지 알아야 하기 때문이다.",
-          evidence: "주인공이 친구를 살피는 장면이다.",
-          savedAt: "예시",
-          isMine: false
-        },
-        {
-          id: "ex-life-2",
-          name: "준호",
-          main: "나도 비슷한 선택을 했을 것 같다.",
-          reason: "친구가 힘들 때 혼자 두면 마음이 불편할 것 같기 때문이다.",
-          evidence: "주인공이 친구를 두고 가지 못하는 장면이다.",
-          savedAt: "예시",
-          isMine: false
-        }
-      ];
-    }
-
-    function toggleSection(sectionId) {
-      openedSection = openedSection === sectionId ? "" : sectionId;
-      activeReplyTarget = null;
-      activeReplyType = null;
-      renderAll();
-    }
-
-    function selectQuestion(id) {
-      selectedQuestionId = id;
-      openedSection = "thought";
-      activeReplyTarget = null;
-      activeReplyType = null;
-      renderAll();
-      openBookChatModal();
-    }
-
-    function openBookChatModal() {
-      const modal = document.getElementById("bookChatModal");
-      if (!modal) return;
-      modal.classList.remove("hidden");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.classList.add("book-chat-modal-open");
-    }
-
-    function closeBookChatModal(event) {
-      if (event && event.target !== event.currentTarget) return;
-      const modal = document.getElementById("bookChatModal");
-      if (!modal) return;
-      modal.classList.add("hidden");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("book-chat-modal-open");
-    }
-
-    document.addEventListener("keydown", function(event) {
-      if (event.key === "Escape") closeBookChatModal();
-    });
-
-    function saveThought(questionId) {
-      const mainInput = document.getElementById("thoughtMain");
-      const reasonInput = document.getElementById("thoughtReason");
-      const evidenceInput = document.getElementById("thoughtEvidence");
-      const feedback = document.getElementById("thoughtFeedback");
-
-      if (!mainInput || !reasonInput || !evidenceInput || !feedback) return;
-
-      const main = mainInput.value.trim();
-      const reason = reasonInput.value.trim();
-      const evidence = evidenceInput.value.trim();
-
-      feedback.classList.remove("good");
-
-      if (!main || !reason || !evidence) {
-        feedback.textContent = "세 칸을 모두 채워야 등록할 수 있어. 내 생각, 까닭, 책에서 찾은 부분을 써 봐!";
-        return;
-      }
-
-      if (main.length < 5 || reason.length < 5 || evidence.length < 4) {
-        feedback.textContent = "조금 더 자세히 써 볼까? 친구들이 이해할 수 있게 한 문장씩 길게 써 봐.";
-        return;
-      }
-
-      const allThoughts = getAllThoughts();
-
-      allThoughts[questionId] = {
-        id: "mine-" + questionId,
-        questionId: questionId,
-        name: studentName,
-        main: main,
-        reason: reason,
-        evidence: evidence,
-        savedAt: getTodayText(),
-        isMine: true
-      };
-
-      localStorage.setItem(getThoughtKey(), JSON.stringify(allThoughts));
-
-      feedback.classList.add("good");
-      feedback.textContent = "좋아! 내 생각, 까닭, 책에서 찾은 부분을 잘 나누어 썼어.";
-
-      openedSection = "comments";
-      renderAll();
-    }
-
-    function clearThoughtForm() {
-      const mainInput = document.getElementById("thoughtMain");
-      const reasonInput = document.getElementById("thoughtReason");
-      const evidenceInput = document.getElementById("thoughtEvidence");
-      const feedback = document.getElementById("thoughtFeedback");
-
-      if (mainInput) mainInput.value = "";
-      if (reasonInput) reasonInput.value = "";
-      if (evidenceInput) evidenceInput.value = "";
-
-      if (feedback) {
-        feedback.classList.remove("good");
-        feedback.textContent = "입력칸을 비웠어. 다시 천천히 써 봐.";
-      }
-    }
-
-    function fillSavedThought(questionId) {
-      const savedThought = getSavedThought(questionId);
-
-      if (!savedThought) return;
-
-      const mainInput = document.getElementById("thoughtMain");
-      const reasonInput = document.getElementById("thoughtReason");
-      const evidenceInput = document.getElementById("thoughtEvidence");
-
-      if (mainInput) mainInput.value = savedThought.main || "";
-      if (reasonInput) reasonInput.value = savedThought.reason || "";
-      if (evidenceInput) evidenceInput.value = savedThought.evidence || "";
-    }
-
-    function openNestedReply(questionId, commentId, replyType) {
-      openedSection = "comments";
+    function openNestedReply(commentId,type) {
       activeReplyTarget = commentId;
-      activeReplyType = replyType;
-      renderAll();
+      activeReplyType = type;
+      renderCommentsModal();
+      setTimeout(() => document.getElementById("nestedReplyInput")?.focus(),0);
     }
 
     function closeNestedReply() {
       activeReplyTarget = null;
       activeReplyType = null;
+      renderCommentsModal();
+    }
+
+    function getReplyTypeInfo(type) {
+      if (type === "similar") return { title:"비슷한 생각 이어 쓰기", label:"비슷해요", placeholder:"나도 비슷하게 생각해요. 그 까닭은..." };
+      if (type === "different") return { title:"다른 생각 이어 쓰기", label:"다르게 생각해요", placeholder:"나는 조금 다르게 생각해요. 그 까닭은..." };
+      return { title:"책에서 찾은 내용 이어 쓰기", label:"책에서 찾았어요", placeholder:"책에서 이런 부분도 찾았어요..." };
+    }
+
+    function saveThought(questionId) {
+      const main = document.getElementById("thoughtMain").value.trim();
+      const reason = document.getElementById("thoughtReason").value.trim();
+      const evidence = document.getElementById("thoughtEvidence").value.trim();
+      if (!main || !reason || !evidence) {
+        alert("세 칸을 모두 써 주세요.");
+        return;
+      }
+      const data = getThoughtStore();
+      data[questionId] = { main, reason, evidence, savedAt:getNowText() };
+      localStorage.setItem("bookChatThoughts_" + studentId,JSON.stringify(data));
+      alert("내 생각을 등록했어요.");
+      closeThoughtModal();
       renderAll();
     }
 
-    function saveNestedReply(questionId, commentId, replyType) {
-      const input = document.getElementById("nestedReplyInput");
-      const feedback = document.getElementById("nestedFeedback");
-
-      if (!input || !feedback) return;
-
-      const value = input.value.trim();
-      const template = getNestedTemplate(replyType);
-
-      feedback.classList.remove("good");
-
-      if (!value) {
-        feedback.textContent = "이어 쓸 내용이 아직 비어 있어. 문장 틀을 보고 한 문장으로 적어 봐!";
-        return;
-      }
-
-      if (value.length < 8) {
-        feedback.textContent = "조금 더 자세히 써 볼까? 왜 그렇게 생각했는지 덧붙여 봐.";
-        return;
-      }
-
-      const allReplies = getAllNestedReplies();
-      const key = questionId + "__" + commentId;
-
-      if (!Array.isArray(allReplies[key])) {
-        allReplies[key] = [];
-      }
-
-      allReplies[key].push({
-        id: "reply-" + Date.now(),
-        questionId: questionId,
-        commentId: commentId,
-        type: replyType,
-        label: template.shortLabel,
-        name: studentName,
-        text: value,
-        savedAt: getTodayText()
+    function clearThoughtForm() {
+      ["thoughtMain","thoughtReason","thoughtEvidence"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
       });
+    }
 
-      localStorage.setItem(getNestedReplyKey(), JSON.stringify(allReplies));
-
+    function saveNestedReply(questionId,commentId,type) {
+      const input = document.getElementById("nestedReplyInput");
+      const text = input ? input.value.trim() : "";
+      if (!text) {
+        alert("이어 쓸 내용을 적어 주세요.");
+        return;
+      }
+      const store = getReplyStore();
+      if (!Array.isArray(store[questionId])) store[questionId] = [];
+      const info = getReplyTypeInfo(type);
+      store[questionId].push({ id:Date.now().toString(), commentId, type, label:info.label, text, name:studentName, savedAt:getNowText() });
+      localStorage.setItem("bookChatReplies_" + studentId,JSON.stringify(store));
       activeReplyTarget = null;
       activeReplyType = null;
+      renderCommentsModal();
       renderAll();
-    }
-
-    function getNestedTemplate(replyType) {
-      if (replyType === "different") {
-        return {
-          title: "나는 다르게 생각해요",
-          shortLabel: "다르게 생각해요",
-          guide: "나는 조금 다르게 생각해요. 책에서 [   ] 부분을 보면 [   ]라고 생각해요.",
-          placeholder: "나는 조금 다르게 생각해요. 책에서 ______ 부분을 보면 ______라고 생각해요."
-        };
-      }
-
-      if (replyType === "evidence") {
-        return {
-          title: "책에서 이런 부분도 찾았어요",
-          shortLabel: "책에서 찾았어요",
-          guide: "책에서 이런 부분도 찾았어요. [   ] 장면이 이 질문과 이어져요.",
-          placeholder: "책에서 이런 부분도 찾았어요. ______ 장면이 이 질문과 이어져요."
-        };
-      }
-
-      return {
-        title: "나도 비슷해요",
-        shortLabel: "비슷해요",
-        guide: "나도 비슷하게 생각해요. 왜냐하면 [   ] 때문이에요.",
-        placeholder: "나도 비슷하게 생각해요. 왜냐하면 ______ 때문이에요."
-      };
-    }
-
-    function saveDeepQuestion(questionId) {
-      const input = document.getElementById("deepQuestionInput");
-      const feedback = document.getElementById("deepFeedback");
-
-      if (!input || !feedback) return;
-
-      const value = input.value.trim();
-      feedback.classList.remove("good");
-
-      if (!value) {
-        feedback.textContent = "깊어진 질문이 아직 비어 있어. 처음 질문에 까닭이나 나의 선택을 더해 봐!";
-        return;
-      }
-
-      if (value.length < 12) {
-        feedback.textContent = "질문이 조금 짧아. 처음 질문보다 더 깊어지도록 상황이나 까닭을 더 넣어 봐.";
-        return;
-      }
-
-      if (!value.includes("?") && !value.includes("까")) {
-        feedback.textContent = "질문처럼 보이도록 물음표나 '왜', '어떻게', '무엇' 같은 말을 넣어 봐.";
-        return;
-      }
-
-      const allDeepQuestions = getAllDeepQuestions();
-
-      allDeepQuestions[questionId] = {
-        questionId: questionId,
-        text: value,
-        savedAt: getTodayText()
-      };
-
-      localStorage.setItem(getDeepQuestionKey(), JSON.stringify(allDeepQuestions));
-
-      feedback.classList.add("good");
-      feedback.textContent = "좋아! 처음 질문보다 더 깊게 생각할 수 있는 질문으로 바뀌었어.";
-
-      fillSavedDeepQuestion(questionId);
-      updateCounts(getFilteredQuestions());
-    }
-
-    function clearDeepQuestion() {
-      const input = document.getElementById("deepQuestionInput");
-      const feedback = document.getElementById("deepFeedback");
-
-      if (input) input.value = "";
-
-      if (feedback) {
-        feedback.classList.remove("good");
-        feedback.textContent = "입력칸을 비웠어. 친구들의 생각을 다시 읽고 질문을 바꿔 봐.";
-      }
-
-      const savedArea = document.getElementById("deepSavedArea");
-      if (savedArea) savedArea.innerHTML = "";
-    }
-
-    function fillSavedDeepQuestion(questionId) {
-      const saved = getSavedDeepQuestion(questionId);
-      const input = document.getElementById("deepQuestionInput");
-      const area = document.getElementById("deepSavedArea");
-
-      if (!saved) return;
-
-      if (input) {
-        input.value = saved.text || "";
-      }
-
-      if (area) {
-        area.innerHTML = `
-          <div class="deep-saved">
-            <strong>내가 저장한 깊어진 질문</strong><br>
-            ${escapeHtml(saved.text)}
-          </div>
-        `;
-      }
-    }
-
-    function updateCounts(filteredQuestions) {
-      const allThoughts = getAllThoughts();
-      const allReplies = getAllNestedReplies();
-
-      let replyCount = 0;
-
-      Object.keys(allReplies).forEach(function(key) {
-        if (Array.isArray(allReplies[key])) {
-          replyCount += allReplies[key].length;
-        }
-      });
-
-      document.getElementById("questionCount").textContent = allQuestions.length + "개";
-      document.getElementById("myThoughtCount").textContent = Object.keys(allThoughts).length + "개";
-      document.getElementById("myReplyCount").textContent = replyCount + "개";
-      document.getElementById("visibleQuestionCount").textContent = filteredQuestions.length + "개";
-    }
-
-    function getTalkCount(questionId, baseCount) {
-      const savedThought = getSavedThought(questionId) ? 1 : 0;
-      const allReplies = getAllNestedReplies();
-      let nestedCount = 0;
-
-      Object.keys(allReplies).forEach(function(key) {
-        if (key.startsWith(questionId + "__") && Array.isArray(allReplies[key])) {
-          nestedCount += allReplies[key].length;
-        }
-      });
-
-      return baseCount + savedThought + nestedCount;
     }
 
     function getSavedThought(questionId) {
-      const allThoughts = getAllThoughts();
-      return allThoughts[questionId] || null;
+      return getThoughtStore()[questionId] || null;
     }
 
-    function getSavedDeepQuestion(questionId) {
-      const allDeepQuestions = getAllDeepQuestions();
-      return allDeepQuestions[questionId] || null;
+    function getThoughtStore() {
+      try { return JSON.parse(localStorage.getItem("bookChatThoughts_" + studentId) || "{}"); }
+      catch { return {}; }
     }
 
-    function getNestedReplies(questionId, commentId) {
-      const allReplies = getAllNestedReplies();
-      const key = questionId + "__" + commentId;
-
-      if (!Array.isArray(allReplies[key])) {
-        return [];
-      }
-
-      return allReplies[key];
+    function getReplyStore() {
+      try { return JSON.parse(localStorage.getItem("bookChatReplies_" + studentId) || "{}"); }
+      catch { return {}; }
     }
 
-    function getAllThoughts() {
-      const saved = localStorage.getItem(getThoughtKey());
-
-      if (!saved) return {};
-
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        return {};
-      }
+    function getCommentsForQuestion(question) {
+      const comments = [
+        { id:"friend-1", name:"민지", isMine:false, main:"주인공은 친구를 혼자 둘 수 없어서 다시 돌아갔다고 생각해.", reason:"친구가 위험한데 혼자 도망가면 계속 마음이 불편했을 것 같기 때문이야.", evidence:"주인공이 멈춰 서서 친구가 있는 곳을 다시 바라본 장면이야.", savedAt:"06.11 09:40" },
+        { id:"friend-2", name:"하윤", isMine:false, main:"주인공이 용기를 냈다는 것을 알 수 있어.", reason:"무서웠지만 친구를 도와야 한다고 생각했기 때문이야.", evidence:"주인공이 다시 길을 되돌아간 장면이야.", savedAt:"06.11 09:45" }
+      ];
+      const mine = getSavedThought(question.id);
+      if (mine) comments.unshift({ id:"mine-" + question.id, name:studentName, isMine:true, ...mine });
+      return comments;
     }
 
-    function getAllNestedReplies() {
-      const saved = localStorage.getItem(getNestedReplyKey());
-
-      if (!saved) return {};
-
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        return {};
-      }
+    function getNestedReplies(questionId,commentId) {
+      const list = getReplyStore()[questionId];
+      return Array.isArray(list) ? list.filter(item => item.commentId === commentId) : [];
     }
 
-    function getAllDeepQuestions() {
-      const saved = localStorage.getItem(getDeepQuestionKey());
-
-      if (!saved) return {};
-
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        return {};
-      }
+    function getTalkCount(question) {
+      const replies = getReplyStore()[question.id];
+      const thought = getSavedThought(question.id) ? 1 : 0;
+      return question.baseTalkCount + thought + (Array.isArray(replies) ? replies.length : 0);
     }
 
-    function getThoughtKey() {
-      return "bookChatThoughts_" + studentId;
+    function updateCounts(visibleQuestions) {
+      const thoughtCount = Object.keys(getThoughtStore()).length;
+      const replyCount = Object.values(getReplyStore()).reduce((sum,list) => sum + (Array.isArray(list) ? list.length : 0),0);
+      document.getElementById("questionCount").textContent = allQuestions.length + "개";
+      document.getElementById("myThoughtCount").textContent = thoughtCount + "개";
+      document.getElementById("myReplyCount").textContent = replyCount + "개";
+      document.getElementById("visibleQuestionCount").textContent = visibleQuestions.length + "개";
     }
 
-    function getNestedReplyKey() {
-      return "bookChatNestedReplies_" + studentId;
-    }
-
-    function getDeepQuestionKey() {
-      return "bookChatDeepQuestions_" + studentId;
-    }
-
-    function getTodayText() {
+    function getNowText() {
       const now = new Date();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const date = String(now.getDate()).padStart(2, "0");
-      const hour = String(now.getHours()).padStart(2, "0");
-      const minute = String(now.getMinutes()).padStart(2, "0");
-
-      return month + "." + date + " " + hour + ":" + minute;
+      return String(now.getMonth()+1).padStart(2,"0") + "." + String(now.getDate()).padStart(2,"0") + " " + String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
     }
 
-    function goHome() {
-  window.location.href = "individual-reading.html";
-}
-
-    function goClassReading() {
-      location.href = "individual-reading.html";
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>'"]/g,char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
     }
 
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g,"&#96;");
     }
 
-    function escapeAttribute(text) {
-      return escapeHtml(text).replaceAll("`", "&#096;");
+    function goHome() { location.href = "individual-reading.html"; }
+    function goClassReading() { location.href = "class-reading.html"; }
+    function goTeacherPractice() { location.href = "../teacher/practice-teacher.html"; }
+
+    function showTeacherButtonWhenNeeded() {
+      const teacherMode = sessionStorage.getItem("teacherMode") === "true" || new URLSearchParams(location.search).get("teacher") === "1";
+      if (teacherMode) document.getElementById("teacherReturnButton").style.display = "block";
     }
-    function isTeacherMode() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("mode") === "teacher";
-}
 
-function goTeacherPractice() {
-  location.href = "../teacher/practice-teacher.html";
-}
+    window.addEventListener("keydown",event => {
+      if (event.key !== "Escape") return;
+      if (!thoughtModal.classList.contains("hidden")) closeThoughtModal();
+      if (!commentsModal.classList.contains("hidden")) closeCommentsModal();
+    });
 
-if (isTeacherMode()) {
-  const teacherReturnButton = document.getElementById("teacherReturnButton");
+    function fitFixedStage() {
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+      const scale = Math.min(window.innerWidth / baseWidth, window.innerHeight / baseHeight);
+      const left = Math.max(0, (window.innerWidth - baseWidth * scale) / 2);
+      const top = Math.max(0, (window.innerHeight - baseHeight * scale) / 2);
 
-  if (teacherReturnButton) {
-    teacherReturnButton.style.display = "block";
-  }
-}
-</script>
-  <script src="../js/fixed-stage.js"></script>
+      document.documentElement.style.setProperty("--stage-scale", String(scale));
+      document.documentElement.style.setProperty("--stage-left", left + "px");
+      document.documentElement.style.setProperty("--stage-top", top + "px");
+    }
+
+    window.addEventListener("resize", fitFixedStage);
+    window.addEventListener("load", fitFixedStage);
+    fitFixedStage();
+
+  </script>
 </body>
 </html>
