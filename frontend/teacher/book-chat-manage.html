@@ -23,8 +23,10 @@
     }
 
     body {
+      width: 100vw;
+      height: 100vh;
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #3f2615;
       background:
@@ -46,8 +48,11 @@
     }
 
     .page {
+      width: 100vw;
+      height: 100vh;
       min-height: 100vh;
-      padding: 20px 28px 28px;
+      overflow: hidden;
+      padding: 20px 28px 20px;
       background:
         radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.68), transparent 34%),
         linear-gradient(90deg, rgba(255, 246, 224, 0.72), rgba(255, 255, 255, 0.18), rgba(255, 246, 224, 0.72));
@@ -304,9 +309,13 @@
 
     .list-card,
     .detail-card {
-      padding: 22px 24px;
+      padding: 20px 24px;
       min-width: 0;
-      min-height: 650px;
+      min-height: 620px;
+    }
+
+    .detail-card {
+      padding-top: 18px;
     }
 
     .section-head {
@@ -352,7 +361,7 @@
     .post-list {
       display: grid;
       gap: 10px;
-      max-height: 640px;
+      max-height: 540px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -486,8 +495,8 @@
     }
 
     .detail-box {
-      padding: 18px 19px;
-      margin-bottom: 14px;
+      padding: 15px 19px;
+      margin-bottom: 10px;
     }
 
     .detail-meta {
@@ -514,12 +523,12 @@
 
     .detail-lines {
       display: grid;
-      gap: 10px;
-      margin-top: 14px;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .line-card {
-      padding: 14px 16px;
+      padding: 11px 16px;
       border-radius: 16px;
       background: rgba(255, 250, 238, 0.70);
       border: 1px solid rgba(186, 130, 58, 0.20);
@@ -539,8 +548,8 @@
 
     .reject-box,
     .teacher-note-box {
-      padding: 16px 17px;
-      margin-top: 12px;
+      padding: 13px 17px;
+      margin-top: 8px;
       background: rgba(255, 255, 250, 0.74);
     }
 
@@ -581,7 +590,7 @@
 
     .text-area {
       width: 100%;
-      min-height: 88px;
+      min-height: 68px;
       outline: none;
       resize: vertical;
       padding: 13px 15px;
@@ -605,7 +614,9 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 12px;
+      margin-top: 8px;
+      position: relative;
+      z-index: 2;
     }
 
     .button-row.three {
@@ -616,7 +627,7 @@
     .main-button,
     .danger-button,
     .brown-button {
-      min-height: 50px;
+      min-height: 46px;
       border-radius: 16px;
       font-size: 16px;
       font-weight: 900;
@@ -743,6 +754,86 @@
       word-break: keep-all;
     }
 
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(63, 38, 21, 0.48);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(720px, calc(100vw - 80px));
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+      padding: 26px 28px 24px;
+      border-radius: 26px;
+      border: 1px solid rgba(193, 133, 61, 0.42);
+      background: linear-gradient(180deg, #fffef8, #fff6e4);
+      box-shadow:
+        0 24px 60px rgba(69, 36, 12, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .modal-close {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(122, 74, 28, 0.10);
+      color: #5a3820;
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    .modal-desc {
+      margin-bottom: 14px;
+      color: #6a482c;
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .modal-button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .modal-card .reason-grid {
+      margin-top: 4px;
+    }
+
+    .modal-card .text-area {
+      min-height: 120px;
+    }
+
     @media (max-width: 1080px) {
       .top,
       .hero,
@@ -827,7 +918,6 @@
 
         <div class="title-area">
           <h1 class="main-title">책수다방 관리</h1>
-          <p class="main-desc">학생들이 올린 글을 확인하고, 승인된 글만 책수다방에 보여요.</p>
         </div>
 
         <div class="top-actions">
@@ -921,6 +1011,79 @@
     </div>
   </main>
 
+
+  <div class="modal-overlay" id="approveModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="approveModalTitle">
+      <div class="modal-head">
+        <h2 class="modal-title" id="approveModalTitle">게시물 승인하기</h2>
+        <button class="modal-close" type="button" onclick="closeApproveModal()" aria-label="닫기">×</button>
+      </div>
+
+      <p class="modal-desc">
+        승인 전에 남길 교사 메모가 있다면 적어 주세요. 메모는 선택 사항입니다.
+      </p>
+
+      <textarea
+        class="text-area"
+        id="approveTeacherNoteInput"
+        maxlength="300"
+        placeholder="예) 친구들과 이야기하기 좋은 질문이에요."
+      ></textarea>
+
+      <div class="modal-button-row">
+        <button class="plain-button" type="button" onclick="closeApproveModal()">취소</button>
+        <button class="main-button" type="button" onclick="confirmApprovePost()">승인 완료</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="rejectModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
+      <div class="modal-head">
+        <h2 class="modal-title" id="rejectModalTitle">게시물 거절하기</h2>
+        <button class="modal-close" type="button" onclick="closeRejectModal()" aria-label="닫기">×</button>
+      </div>
+
+      <p class="modal-desc">
+        학생에게 알려 줄 이유를 선택하거나 직접 적어 주세요.
+      </p>
+
+      <div class="reason-grid">
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="질문이 책 내용과 잘 이어지지 않아요.">
+          질문이 책 내용과 잘 이어지지 않아요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="친구들과 이야기하기 어려운 질문이에요.">
+          친구들과 이야기하기 어려운 질문이에요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="표현을 조금 더 바르게 고치면 좋아요.">
+          표현을 조금 더 바르게 고치면 좋아요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.">
+          내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.
+        </label>
+      </div>
+
+      <textarea
+        class="text-area"
+        id="modalRejectCommentInput"
+        maxlength="400"
+        placeholder="예) 질문은 좋아요. 다만 책 속 어느 장면에서 그렇게 생각했는지 한 문장 더 써서 다시 올려 봐요."
+      ></textarea>
+
+      <div class="modal-button-row">
+        <button class="plain-button" type="button" onclick="clearModalRejectForm()">내용 지우기</button>
+        <button class="danger-button" type="button" onclick="confirmRejectPost()">거절 완료</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const PENDING_KEY = "bookChatPendingPosts";
     const APPROVED_KEY = "bookChatApprovedPosts";
@@ -945,6 +1108,7 @@
     let currentStatus = "pending";
     let selectedPostId = null;
     let allPosts = [];
+    let modalTargetPostId = null;
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const sortSelect = document.getElementById("sortSelect");
@@ -1113,53 +1277,15 @@
       if (post.status === "pending") {
         return `
           <div class="teacher-note-box">
-            <div class="box-title">승인 전 교사 메모</div>
-            <textarea class="text-area" id="teacherNoteInput" maxlength="300" placeholder="선택 사항: 승인 전에 참고할 메모를 남길 수 있어요."></textarea>
+            <div class="box-title">게시물 처리</div>
 
             <div class="button-row">
-              <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
-              <button class="danger-button" type="button" onclick="focusRejectBox()">거절 이유 쓰기</button>
+              <button class="main-button" type="button" onclick="openApproveModal('${escapeAttribute(post.id)}')">승인하기</button>
+              <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
             </div>
 
             <div class="feedback-box good">
-              승인하면 이 글은 학생 책수다방에 공개돼요.
-            </div>
-          </div>
-
-          <div class="reject-box" id="rejectBox">
-            <div class="box-title">거절할 때 알려줄 점</div>
-
-            <div class="reason-grid">
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="질문이 책 내용과 잘 이어지지 않아요.">
-                질문이 책 내용과 잘 이어지지 않아요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="친구들과 이야기하기 어려운 질문이에요.">
-                친구들과 이야기하기 어려운 질문이에요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="표현을 조금 더 바르게 고치면 좋아요.">
-                표현을 조금 더 바르게 고치면 좋아요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.">
-                내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.
-              </label>
-            </div>
-
-            <textarea class="text-area" id="rejectCommentInput" maxlength="400" placeholder="선택 사항: 예) 질문은 좋아요. 다만 책 속 어느 장면에서 그렇게 생각했는지 한 문장 더 써서 다시 올려 봐요."></textarea>
-
-            <div class="button-row">
-              <button class="plain-button" type="button" onclick="clearRejectForm()">내용 지우기</button>
-              <button class="danger-button" type="button" onclick="rejectPost('${escapeAttribute(post.id)}')">거절하기</button>
-            </div>
-
-            <div class="feedback-box bad" id="rejectGuide">
-              거절 이유는 필수는 아니지만, 적어 주면 학생이 고쳐서 다시 올리기 좋아요.
+              승인 또는 거절 버튼을 누르면 내용을 적을 수 있는 보조창이 열려요.
             </div>
           </div>
         `;
@@ -1212,18 +1338,100 @@
 
     
 
+
+    function openApproveModal(id) {
+      modalTargetPostId = id;
+      const modal = document.getElementById("approveModal");
+      const input = document.getElementById("approveTeacherNoteInput");
+
+      if (input) input.value = "";
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeApproveModal() {
+      const modal = document.getElementById("approveModal");
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modalTargetPostId = null;
+    }
+
+    function confirmApprovePost() {
+      if (!modalTargetPostId) return;
+
+      const input = document.getElementById("approveTeacherNoteInput");
+      const note = input ? input.value.trim() : "";
+      const id = modalTargetPostId;
+
+      closeApproveModal();
+      approvePost(id, note);
+    }
+
+    function openRejectModal(id) {
+      modalTargetPostId = id;
+      clearModalRejectForm();
+
+      const modal = document.getElementById("rejectModal");
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeRejectModal() {
+      const modal = document.getElementById("rejectModal");
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modalTargetPostId = null;
+    }
+
+    function clearModalRejectForm() {
+      document.querySelectorAll('input[name="modalRejectReason"]').forEach(function(input) {
+        input.checked = false;
+      });
+
+      const commentInput = document.getElementById("modalRejectCommentInput");
+      if (commentInput) commentInput.value = "";
+    }
+
+    function confirmRejectPost() {
+      if (!modalTargetPostId) return;
+
+      const checkedReasons = Array.from(
+        document.querySelectorAll('input[name="modalRejectReason"]:checked')
+      ).map(function(input) {
+        return input.value;
+      });
+
+      const commentInput = document.getElementById("modalRejectCommentInput");
+      const directComment = commentInput ? commentInput.value.trim() : "";
+      const id = modalTargetPostId;
+
+      closeRejectModal();
+      rejectPost(id, checkedReasons, directComment);
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key !== "Escape") return;
+
+      if (document.getElementById("approveModal").classList.contains("show")) {
+        closeApproveModal();
+      }
+
+      if (document.getElementById("rejectModal").classList.contains("show")) {
+        closeRejectModal();
+      }
+    });
+
     function selectPost(id) {
       selectedPostId = id;
       renderAll();
     }
 
-    function approvePost(id) {
+    function approvePost(id, noteValue) {
       const post = findPostById(id);
 
       if (!post) return;
 
-      const noteInput = document.getElementById("teacherNoteInput");
-      const note = noteInput ? noteInput.value.trim() : "";
+      const note = String(noteValue || "").trim();
 
       movePost(id, post.status, "approved", {
         teacherNote: note,
@@ -1238,18 +1446,13 @@
       renderAll();
     }
 
-    function rejectPost(id) {
+    function rejectPost(id, checkedReasonsValue, directCommentValue) {
       const post = findPostById(id);
 
       if (!post) return;
 
-      const checkedReasons = Array.from(document.querySelectorAll('input[name="rejectReason"]:checked'))
-        .map(function(input) {
-          return input.value;
-        });
-
-      const commentInput = document.getElementById("rejectCommentInput");
-      const directComment = commentInput ? commentInput.value.trim() : "";
+      const checkedReasons = Array.isArray(checkedReasonsValue) ? checkedReasonsValue : [];
+      const directComment = String(directCommentValue || "").trim();
 
       const reasonParts = checkedReasons.slice();
 

@@ -1843,11 +1843,550 @@
           1fr;
       }
     }
+  
+
+    /* =========================================================
+       1920 × 1080 고정 화면
+       기존 디자인과 내부 그리드는 그대로 두고 전체 화면만 비율 축소합니다.
+    ========================================================= */
+    .wr-stage-viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      justify-items: center;
+      align-items: start;
+    }
+
+    .wr-stage-frame {
+      position: relative;
+      width: calc(1920px * var(--wr-stage-scale, 1));
+      height: calc(1080px * var(--wr-stage-scale, 1));
+      flex: 0 0 auto;
+    }
+
+    .wr-page {
+      width: 1920px;
+      height: 1080px;
+      min-height: 1080px;
+      transform: scale(var(--wr-stage-scale, 1));
+      transform-origin: top left;
+    }
+
+    .wr-shell {
+      width: min(1620px, calc(1920px - 40px));
+      height: 100%;
+    }
+
+    .wr-criteria-modal,
+    .wr-detail-modal {
+      width: 1920px;
+      height: 1080px;
+    }
+
+    /* 기존 반응형 규칙이 고정 그리드를 바꾸지 않도록 무효화 */
+    @media (max-width: 1100px) {
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .wr-page {
+        width: 1920px;
+        height: 1080px;
+        min-height: 1080px;
+        overflow: hidden;
+      }
+
+      .wr-shell {
+        width: min(1620px, calc(1920px - 40px));
+        height: 100%;
+        grid-template-rows: 76px minmax(0, 1fr) 148px;
+        overflow: hidden;
+      }
+
+      .wr-topbar {
+        height: 76px;
+        grid-template-columns: minmax(210px, 1fr) auto minmax(315px, 1fr);
+        padding: 9px 18px;
+      }
+
+      .wr-brand,
+      .wr-top-pills {
+        justify-content: initial;
+      }
+
+      .wr-top-pills {
+        justify-content: flex-end;
+      }
+
+      .wr-top-title {
+        white-space: nowrap;
+      }
+
+      .wr-dashboard {
+        height: 100%;
+        grid-template-columns: minmax(0, 1.25fr) minmax(470px, 0.98fr);
+        overflow: hidden;
+      }
+
+      .wr-left-area {
+        height: 100%;
+      }
+
+      .wr-right-area {
+        height: 100%;
+        grid-template-rows: minmax(0, 1fr) 170px;
+      }
+
+      .wr-bottom-menu {
+        height: 148px;
+      }
+
+      .wr-bottom-menu .wr-card-inner {
+        grid-template-rows: 32px minmax(0, 1fr);
+      }
+
+      .wr-main-buttons {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .wr-big-button {
+        min-height: 0;
+      }
+
+      .wr-detail-grid,
+      .wr-criteria-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+
+
+    /* =========================================================
+       1920 × 1080 확대형 레이아웃
+       기존 색상·모양·버튼 기능은 유지하고 전체 사용 면적과 글자만 확대
+    ========================================================= */
+    .wr-page {
+      padding: 10px 14px 12px;
+    }
+
+    .wr-shell {
+      width: 1892px;
+      max-width: none;
+      grid-template-rows: 88px minmax(0, 1fr) 174px;
+      gap: 13px;
+    }
+
+    .wr-topbar {
+      height: 88px;
+      grid-template-columns: minmax(280px, 1fr) auto minmax(390px, 1fr);
+      padding: 11px 22px;
+      border-radius: 28px;
+    }
+
+    .wr-brand {
+      gap: 13px;
+      font-size: 30px;
+    }
+
+    .wr-brand-icon {
+      width: 54px;
+      height: 54px;
+      flex-basis: 54px;
+      border-radius: 17px;
+    }
+
+    .wr-brand-icon img {
+      width: 38px;
+      height: 38px;
+    }
+
+    .wr-top-title-small {
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+
+    .wr-main-title {
+      font-size: 41px;
+    }
+
+    .wr-top-pills {
+      gap: 10px;
+    }
+
+    .wr-pill,
+    .wr-home-button {
+      height: 47px;
+      padding: 0 18px;
+      border-radius: 15px;
+      font-size: 16px;
+    }
+
+    .wr-dashboard {
+      grid-template-columns: minmax(0, 1.28fr) minmax(610px, 0.96fr);
+      gap: 13px;
+    }
+
+    .wr-right-area {
+      grid-template-rows: minmax(0, 1fr) 185px;
+      gap: 12px;
+    }
+
+    .wr-card {
+      border-radius: 30px;
+    }
+
+    .wr-preview-card .wr-card-inner {
+      grid-template-rows: auto minmax(0, 1fr) 58px;
+      gap: 12px;
+      padding: 20px 22px 18px;
+    }
+
+    .wr-preview-card .wr-card-title {
+      font-size: 33px;
+    }
+
+    .wr-card-sub,
+    .wr-preview-card .wr-card-sub {
+      margin-top: 6px;
+      font-size: 18px;
+    }
+
+    .wr-small-tag,
+    .wr-criteria-button {
+      min-width: 92px;
+      height: 43px;
+      padding: 0 16px;
+      font-size: 16px;
+    }
+
+    .wr-title-actions {
+      gap: 9px;
+    }
+
+    .wr-preview-scroll {
+      border-radius: 21px;
+    }
+
+    .wr-list-header {
+      grid-template-columns: 145px minmax(180px, 1fr) 115px;
+      min-height: 47px;
+      padding: 9px 17px;
+      font-size: 16px;
+    }
+
+    .wr-student-row {
+      grid-template-columns: 145px minmax(180px, 1fr) 115px;
+      min-height: 73px;
+      padding: 10px 17px;
+    }
+
+    .wr-student-name {
+      font-size: 21px;
+    }
+
+    .wr-achieve-bar {
+      height: 19px;
+    }
+
+    .wr-student-percent {
+      font-size: 24px;
+    }
+
+    .wr-student-state {
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .wr-more-button {
+      height: 58px;
+      border-radius: 17px;
+      font-size: 20px;
+    }
+
+    .wr-status-card .wr-card-inner {
+      grid-template-rows: auto 96px minmax(0, 1fr);
+      gap: 11px;
+      padding: 18px 20px;
+    }
+
+    .wr-status-card .wr-card-title {
+      font-size: 30px;
+    }
+
+    .wr-today-main {
+      gap: 11px;
+    }
+
+    .wr-today-box {
+      border-radius: 19px;
+      padding: 8px 10px;
+    }
+
+    .wr-today-value {
+      font-size: 38px;
+    }
+
+    .wr-today-label {
+      margin-top: 7px;
+      font-size: 16px;
+    }
+
+    .wr-support-scroll {
+      border-radius: 18px;
+    }
+
+    .wr-support-item {
+      grid-template-columns: 100px minmax(0, 1fr) 28px;
+      min-height: 57px;
+      gap: 10px;
+      padding: 9px 14px;
+    }
+
+    .wr-support-name,
+    .wr-support-reason {
+      font-size: 17px;
+    }
+
+    .wr-support-arrow {
+      font-size: 23px;
+    }
+
+    .wr-range-card .wr-card-inner {
+      grid-template-rows: auto 52px 42px;
+      gap: 9px;
+      padding: 16px 20px 15px;
+    }
+
+    .wr-range-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+
+    .wr-range-card .wr-card-title {
+      font-size: 27px;
+    }
+
+    .wr-range-input-row {
+      grid-template-columns: minmax(0, 1fr) 98px;
+      gap: 10px;
+    }
+
+    .wr-range-input,
+    .wr-range-save {
+      height: 52px;
+      font-size: 17px;
+      border-radius: 15px;
+    }
+
+    .wr-range-input {
+      padding: 0 16px;
+    }
+
+    .wr-current-range {
+      min-height: 42px;
+      padding: 8px 12px;
+      border-radius: 14px;
+      font-size: 15px;
+    }
+
+    .wr-bottom-menu {
+      height: 174px;
+    }
+
+    .wr-bottom-menu .wr-card-inner {
+      grid-template-rows: 39px minmax(0, 1fr);
+      gap: 9px;
+      padding: 14px 18px 17px;
+    }
+
+    .wr-bottom-title {
+      gap: 11px;
+      font-size: 27px;
+    }
+
+    .wr-bottom-title-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 11px;
+      font-size: 19px;
+    }
+
+    .wr-main-buttons {
+      gap: 16px;
+    }
+
+    .wr-big-button {
+      grid-template-columns: 61px minmax(0, 1fr) 27px;
+      gap: 12px;
+      padding: 12px 22px;
+      border-radius: 21px;
+      font-size: 25px;
+    }
+
+    .wr-big-button-icon {
+      width: 61px;
+      height: 61px;
+      border-radius: 17px;
+      font-size: 31px;
+    }
+
+    .wr-big-button-arrow {
+      font-size: 31px;
+    }
+
+    .wr-criteria-panel {
+      width: 1060px;
+    }
+
+    .wr-criteria-header,
+    .wr-detail-header {
+      padding: 22px 27px;
+    }
+
+    .wr-criteria-title,
+    .wr-detail-title {
+      font-size: 33px;
+    }
+
+    .wr-criteria-description,
+    .wr-detail-description {
+      margin-top: 6px;
+      font-size: 18px;
+    }
+
+    .wr-modal-close,
+    .wr-detail-close {
+      min-width: 96px;
+      height: 50px;
+      font-size: 18px;
+    }
+
+    .wr-criteria-content {
+      padding: 22px;
+    }
+
+    .wr-criteria-grid {
+      gap: 16px;
+    }
+
+    .wr-criteria-item {
+      padding: 22px;
+      border-radius: 21px;
+    }
+
+    .wr-criteria-name {
+      font-size: 25px;
+    }
+
+    .wr-criteria-weight {
+      margin-top: 7px;
+      font-size: 17px;
+    }
+
+    .wr-criteria-text {
+      margin-top: 12px;
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .wr-detail-panel {
+      width: 1240px;
+    }
+
+    .wr-detail-content {
+      padding: 19px;
+    }
+
+    .wr-detail-grid {
+      gap: 15px;
+    }
+
+    .wr-detail-card {
+      padding: 19px 21px;
+      border-radius: 21px;
+    }
+
+    .wr-detail-name {
+      font-size: 25px;
+    }
+
+    .wr-state-chip {
+      padding: 7px 13px;
+      font-size: 16px;
+    }
+
+    .wr-detail-bar-row {
+      grid-template-columns: 112px minmax(0, 1fr) 53px;
+      gap: 11px;
+    }
+
+    .wr-detail-bar-name,
+    .wr-detail-bar-value {
+      font-size: 18px;
+    }
+
+    .wr-detail-bar {
+      height: 17px;
+    }
+
+    .wr-teacher-note {
+      margin-top: 13px;
+      padding: 11px 13px;
+      font-size: 17px;
+      line-height: 1.5;
+    }
+
+    /* 고정 화면에서도 위 확대값이 미디어쿼리에 덮이지 않도록 유지 */
+    @media (max-width: 1100px) {
+      .wr-shell {
+        width: 1892px;
+        grid-template-rows: 88px minmax(0, 1fr) 174px;
+      }
+
+      .wr-topbar {
+        height: 88px;
+        grid-template-columns: minmax(280px, 1fr) auto minmax(390px, 1fr);
+        padding: 11px 22px;
+      }
+
+      .wr-dashboard {
+        grid-template-columns: minmax(0, 1.28fr) minmax(610px, 0.96fr);
+      }
+
+      .wr-right-area {
+        grid-template-rows: minmax(0, 1fr) 185px;
+      }
+
+      .wr-bottom-menu {
+        height: 174px;
+      }
+
+      .wr-bottom-menu .wr-card-inner {
+        grid-template-rows: 39px minmax(0, 1fr);
+      }
+
+      .wr-main-buttons {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .wr-detail-grid,
+      .wr-criteria-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
   </style>
 </head>
 
 <body>
-  <main class="wr-page">
+  <div class="wr-stage-viewport">
+    <div class="wr-stage-frame" id="wholeReadingStageFrame">
+  <main class="wr-page" id="wholeReadingFixedStage">
     <div class="wr-shell">
 
       <!-- 상단 -->
@@ -2258,7 +2797,7 @@
           </h2>
 
           <p class="wr-criteria-description">
-            학생의 온책읽기 활동을 다음 기준으로 살펴봐요.
+            학생의 참여도와 질문 이해도를 중심으로 살펴봐요.
           </p>
         </div>
 
@@ -2281,7 +2820,7 @@
             </h3>
 
             <div class="wr-criteria-weight">
-              전체 평가의 30%
+              전체 평가의 50%
             </div>
 
             <p class="wr-criteria-text">
@@ -2296,7 +2835,7 @@
             </h3>
 
             <div class="wr-criteria-weight">
-              전체 평가의 30%
+              전체 평가의 50%
             </div>
 
             <p class="wr-criteria-text">
@@ -2305,35 +2844,9 @@
             </p>
           </article>
 
-          <article class="wr-criteria-item">
-            <h3 class="wr-criteria-name">
-              성장도
-            </h3>
 
-            <div class="wr-criteria-weight">
-              전체 평가의 25%
-            </div>
 
-            <p class="wr-criteria-text">
-              루미 피드백을 활용하여 질문과 답을 고치고,
-              처음보다 생각이 깊어졌는지 살펴봅니다.
-            </p>
-          </article>
 
-          <article class="wr-criteria-item">
-            <h3 class="wr-criteria-name">
-              지속성
-            </h3>
-
-            <div class="wr-criteria-weight">
-              전체 평가의 15%
-            </div>
-
-            <p class="wr-criteria-text">
-              한 번의 활동에 그치지 않고 정해진 기간 동안
-              독서 활동을 꾸준히 이어 갔는지 살펴봅니다.
-            </p>
-          </article>
 
         </div>
       </div>
@@ -2386,7 +2899,33 @@
     </div>
   </div>
 
+    </div>
+  </div>
+
   <script>
+    function updateWholeReadingStageScale() {
+      const stage = document.getElementById("wholeReadingFixedStage");
+      const frame = document.getElementById("wholeReadingStageFrame");
+
+      if (!stage || !frame) {
+        return;
+      }
+
+      const scale = Math.min(
+        window.innerWidth / 1920,
+        window.innerHeight / 1080,
+        1
+      );
+
+      stage.style.setProperty("--wr-stage-scale", scale);
+      frame.style.setProperty("--wr-stage-scale", scale);
+      frame.style.width = `${1920 * scale}px`;
+      frame.style.height = `${1080 * scale}px`;
+    }
+
+    updateWholeReadingStageScale();
+    window.addEventListener("resize", updateWholeReadingStageScale);
+
     const students = [
       {
         name: "김민지",
