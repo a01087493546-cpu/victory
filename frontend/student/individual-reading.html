@@ -813,6 +813,26 @@ html {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* =========================================================
+   연습읽기(온책읽기) 읽기 후 완료 전에는 하단 3개 버튼을 잠급니다.
+   ========================================================= */
+.ir-flow-card:disabled {
+  opacity: 0.42 !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.5) !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+.ir-flow-locked-note {
+  margin: 10px 2px 0 !important;
+  color: #8a571c !important;
+  font-size: 15px !important;
+  font-weight: 850 !important;
+  text-align: center !important;
+  word-break: keep-all !important;
+}
   </style>
 </head>
 
@@ -929,7 +949,7 @@ html {
       </section>
 
       <section class="ir-flow">
-        <button class="ir-flow-card" type="button" onclick="location.href='book-recommend.html'">
+        <button class="ir-flow-card" id="bookRecommendBtn" type="button" onclick="location.href='book-recommend.html'">
           <img src="../assets/images/individual-reading/home/고풍스러운_필기_도구와_책.png" alt="" />
           <span class="ir-flow-text">
             <strong>책 추천 받기</strong>
@@ -939,7 +959,7 @@ html {
 
         <div class="ir-flow-arrow">›</div>
 
-        <button class="ir-flow-card" type="button" onclick="location.href='today-reading-adventure.html'">
+        <button class="ir-flow-card" id="todayAdventureBtn" type="button" onclick="location.href='today-reading-adventure.html'">
           <img src="../assets/images/individual-reading/home/마법의_나침반_장식.png" alt="" />
           <span class="ir-flow-text">
             <strong>오늘의 독서 모험</strong>
@@ -949,7 +969,7 @@ html {
 
         <div class="ir-flow-arrow">›</div>
 
-        <button class="ir-flow-card ir-dungeon" type="button" onclick="location.href='../../game/index.html'">
+        <button class="ir-flow-card ir-dungeon" id="dungeonBtn" type="button" onclick="location.href='../../game/index.html'">
           <img src="../assets/images/individual-reading/home/고대_던전의_석문.png" alt="" />
           <span class="ir-flow-text">
             <strong>던전 입장</strong>
@@ -957,10 +977,61 @@ html {
           <i class="ir-card-arrow">›</i>
         </button>
       </section>
+
+      <p class="ir-flow-locked-note" id="flowLockedNote" hidden>
+        🔒 연습읽기(온책읽기)에서 읽기 후까지 모두 마치면 이 3개 버튼을 사용할 수 있어요.
+      </p>
     </main>
   </div>
 
   <script src="../js/auth.js"></script>
   <script src="../js/fixed-stage.js"></script>
+
+  <script>
+    /*
+      연습읽기(온책읽기)의 "읽기 후"까지 모두 마쳐야만
+      하단 3개 버튼(책 추천 받기 / 오늘의 독서 모험 / 던전 입장)을 쓸 수 있게 합니다.
+      연습읽기 읽기 후 완료 여부는 individual-power.js의 givePowerRewardOnce()가
+      "practice_all_complete_<studentId>" 키로 남기는 보상 이력(localStorage)을
+      기준으로 판단합니다. after-read.html에서 "저장하고 공유하기"를 눌러
+      간추리기를 마쳤을 때 이 이력이 저장됩니다.
+    */
+    (function () {
+      const studentId = sessionStorage.getItem("studentId") || "student-demo";
+
+      function hasFinishedPracticeReading() {
+        try {
+          const raw = localStorage.getItem("individualRewardHistory_v2_" + studentId);
+          const history = raw ? JSON.parse(raw) : [];
+          return Array.isArray(history) && history.includes("practice_all_complete_" + studentId);
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function updateFlowButtonsLockState() {
+        const isUnlocked = hasFinishedPracticeReading();
+        const buttons = [
+          document.getElementById("bookRecommendBtn"),
+          document.getElementById("todayAdventureBtn"),
+          document.getElementById("dungeonBtn")
+        ];
+        const note = document.getElementById("flowLockedNote");
+
+        buttons.forEach(function (button) {
+          if (!button) return;
+          button.disabled = !isUnlocked;
+        });
+
+        if (note) {
+          note.hidden = isUnlocked;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", updateFlowButtonsLockState);
+      // 뒤로가기 등으로 캐시된 화면을 다시 보여줄 때도 최신 상태를 반영합니다.
+      window.addEventListener("pageshow", updateFlowButtonsLockState);
+    })();
+  </script>
 </body>
 </html>

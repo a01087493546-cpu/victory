@@ -269,7 +269,7 @@
     .ira-book-card {
       min-height: 250px;
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: auto 1fr;
       gap: 14px;
       padding: 24px;
      border: 2px solid rgba(181, 117, 37, 0.26);
@@ -736,6 +736,47 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
   height: 58px !important;
   font-size: 22px !important;
 }
+
+/* =========================================================
+   나의 독서 보관함 - 읽은 책 목록 안내 문구 확대
+   ========================================================= */
+#bookListView .ira-section-head p {
+  font-size: 19px !important;
+  line-height: 1.5 !important;
+}
+
+/* =========================================================
+   읽은 책 목록 카드 - 하단 여백 줄이기 + 스크롤 안전장치
+   - 배경 카드 높이를 늘려 아래쪽 빈 여백을 줄입니다.
+   - 책 카드 1~2개일 때는 목록 영역 가운데에 자연스럽게 놓이고,
+     책이 많아져 넘칠 때는 배경 카드가 늘어나는 대신
+     목록 영역 안에서만 스크롤됩니다.
+   ========================================================= */
+#bookListView .ira-panel {
+  height: 820px !important;
+  min-height: 820px !important;
+  max-height: 820px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 34px 32px 38px !important;
+}
+
+#bookListView .ira-section-head {
+  flex: 0 0 auto !important;
+  margin-bottom: 10px !important;
+}
+
+/* 제목/설명과 책 카드 목록 사이 간격을 좁히기 위해, 카드가 몇 개든
+   위쪽부터 자연스럽게 채워지도록 합니다(가운데 정렬 대신 start).
+   책이 많아 넘칠 때는 이 목록 영역 안에서만 세로 스크롤됩니다. */
+#bookListView .ira-book-grid {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  align-content: start !important;
+  overflow-y: auto !important;
+  padding-right: 6px !important;
+  margin-top: 4px !important;
+}
   </style>
 </head>
 
@@ -928,6 +969,96 @@ function getFinishedBookFromAfterReading() {
             }
           ],
           summary: "이 책은 감정을 느끼지 못하는 소년이 여러 사람을 만나면서 조금씩 마음을 이해하게 되는 이야기입니다. 처음에는 주인공이 다른 사람의 감정을 잘 알지 못했지만, 가운데에는 친구와 여러 사건을 겪으며 변화합니다. 마지막에는 다른 사람의 마음을 조금씩 받아들이게 됩니다."
+        },
+        {
+          // 카드가 2개 이상일 때 목록/스크롤이 자연스러운지 확인하기 위한
+          // 화면 확인용 예시 데이터입니다. 실제 서비스 로직과는 무관하며,
+          // 확인이 끝나면 이 항목만 지워도 됩니다.
+          id: "book-20260620-002",
+          title: "마당을 나온 암탉",
+          author: "황선미",
+          completedAt: "2026.06.20",
+          rating: 5,
+          representativeQuestion: "잎싹은 왜 양계장을 떠나기로 결심했을까?",
+          beforeQuestions: [
+            {
+              source: "제목을 보고 질문 만들기",
+              question: "마당을 나온 암탉에게는 어떤 일이 생길까?"
+            },
+            {
+              source: "차례를 보고 질문 만들기",
+              question: "암탉은 마당 밖에서 누구를 만나게 될까?"
+            }
+          ],
+          duringQuestions: [
+            {
+              date: "2026.06.19",
+              type: "바로 찾기",
+              question: "잎싹이 가장 하고 싶었던 일은 무엇이었나요?",
+              answer: "알을 품어서 병아리를 키우는 일이었습니다."
+            },
+            {
+              date: "2026.06.19",
+              type: "생각·느낌",
+              question: "잎싹은 위험한 순간에 어떤 마음이었을까?",
+              answer: "무섭지만 자식을 지키겠다는 마음이 더 컸을 것 같습니다."
+            }
+          ],
+          afterQuestions: [
+            {
+              question: "처음에는 어떤 일이 있었나요?",
+              answer: "처음에는 잎싹이 양계장에서 나가고 싶어 했습니다."
+            },
+            {
+              question: "가운데에는 어떤 문제가 생겼나요?",
+              answer: "잎싹이 청둥오리의 알을 품고 키우며 여러 위험을 겪었습니다."
+            },
+            {
+              question: "마지막에는 어떻게 되었나요?",
+              answer: "잎싹은 초록머리를 무사히 키워 하늘로 떠나보냈습니다."
+            }
+          ],
+          summary: "이 책은 양계장을 나온 암탉 잎싹이 청둥오리 초록머리를 키우며 겪는 이야기입니다. 처음에는 잎싹이 알을 품고 싶어 양계장을 나가기로 결심합니다. 가운데에는 초록머리를 지키기 위해 여러 위험을 이겨 냅니다. 마지막에는 초록머리를 훌륭하게 키워 자유롭게 떠나보냅니다."
+        },
+        {
+          // 카드가 3개 이상일 때 배치와 목록 스크롤이 자연스러운지 확인하기
+          // 위한 화면 확인용 예시 데이터입니다. 실제 서비스 로직과는 무관하며,
+          // 확인이 끝나면 이 항목만 지워도 됩니다.
+          id: "book-20260622-003",
+          title: "나무를 심은 사람",
+          author: "장 지오노",
+          completedAt: "2026.06.22",
+          rating: 4,
+          representativeQuestion: "엘제아르 부피에는 왜 혼자 나무를 심기 시작했을까?",
+          beforeQuestions: [
+            {
+              source: "제목을 보고 질문 만들기",
+              question: "나무를 심은 사람에게는 어떤 일이 있었을까?"
+            }
+          ],
+          duringQuestions: [
+            {
+              date: "2026.06.21",
+              type: "삶과 연결",
+              question: "내가 부피에라면 끝까지 나무를 심을 수 있었을까?",
+              answer: "쉽지 않겠지만 숲이 자라는 모습을 보면 계속하고 싶을 것 같습니다."
+            }
+          ],
+          afterQuestions: [
+            {
+              question: "처음에는 어떤 일이 있었나요?",
+              answer: "처음에는 황무지에 부피에 혼자 도토리를 심었습니다."
+            },
+            {
+              question: "가운데에는 어떤 문제가 생겼나요?",
+              answer: "오랜 시간 혼자 나무를 심어도 아무도 알아주지 않았습니다."
+            },
+            {
+              question: "마지막에는 어떻게 되었나요?",
+              answer: "황무지가 푸른 숲으로 바뀌고 많은 사람이 다시 모여 살게 되었습니다."
+            }
+          ],
+          summary: "이 책은 한 사람이 오랜 세월 혼자 나무를 심어 황무지를 숲으로 바꾸는 이야기입니다. 처음에는 부피에가 아무도 없는 땅에 홀로 도토리를 심습니다. 가운데에는 아무도 알아주지 않아도 꾸준히 나무를 심어 갑니다. 마지막에는 숲이 살아나 많은 사람이 다시 그 땅에 모여 삽니다."
         }
       ];
     }
@@ -1004,16 +1135,6 @@ function renderArchiveSummary() {
           <strong>대표 질문</strong>
           ${escapeHtml(representativeQuestion)}
         </p>
-      </div>
-
-      <div class="ira-book-actions">
-        <button
-          type="button"
-          class="ira-main-button primary"
-          onclick="event.stopPropagation(); showBookDetail('${escapeHtml(book.id)}')"
-        >
-          기록 보기
-        </button>
       </div>
     </article>
   `;

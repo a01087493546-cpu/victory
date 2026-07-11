@@ -3451,6 +3451,70 @@ body {
   justify-content: flex-end !important;
   gap: 10px !important;
 }
+
+/* =========================================================
+   2단계 "간추리기 질문과 답을 써요" 최종 높이 조정
+   - 3단계 스스로 간추리기와 같은 방식으로, 질문/답 카드와 루미 피드백
+     카드를 남는 세로 공간에 맞춰 키워서 하단 빈 여백을 채웁니다.
+   - 입력창 글자 크기를 키우고, 버튼 영역은 늘어난 카드 아래로 자연스럽게
+     이동시킵니다.
+   ========================================================= */
+#questionScreen .iar-panel {
+  display: grid !important;
+  grid-template-rows: auto 435px 180px auto !important;
+  gap: 16px !important;
+  align-content: start !important;
+}
+
+#questionScreen #qaList {
+  width: 100% !important;
+  height: 435px !important;
+  min-height: 0 !important;
+}
+
+#questionScreen .iar-qa-card {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding: 28px 30px !important;
+}
+
+#questionScreen .iar-qa-card label {
+  font-size: 21px !important;
+}
+
+#questionScreen .iar-qa-card .iar-input {
+  height: 58px !important;
+  font-size: 24px !important;
+}
+
+#questionScreen .iar-qa-card .iar-textarea {
+  height: 168px !important;
+  min-height: 168px !important;
+  font-size: 24px !important;
+  line-height: 1.5 !important;
+}
+
+/* 루미 피드백 카드도 남는 높이만큼 키웁니다. */
+#questionScreen .iar-lumi-feedback {
+  width: 100% !important;
+  height: 180px !important;
+  min-height: 180px !important;
+}
+
+#questionScreen #questionFeedback {
+  font-size: 25px !important;
+}
+
+/* 카드가 늘어난 만큼 버튼 영역을 자연스럽게 아래로 이동시킵니다. */
+#questionScreen .iar-bottom-actions {
+  width: 100% !important;
+  margin: 24px 0 0 !important;
+  align-self: end !important;
+}
 </style>
 </head>
 
@@ -4800,33 +4864,25 @@ function saveBookFinishRecord() {
 
   closeBookFinishModal();
 
-    // 책 마무리 저장 후, 완료 팝업을 바로 띄우지 않고
-  // 먼저 능력치 성장 안내 미니 모달을 보여줍니다.
-  openMiniRewardModal({
-  badge: "✨ 나의 힘 성장!",
-  title: "책 한 권을 끝까지 마무리했어요!",
-  rewards: [
-  { type: "stamina", name: "체력", point: "+3" },
-  { type: "wisdom", name: "지혜", point: "+1" },
-  { type: "courage", name: "용기", point: "+1" }
-],
-  message: "루미: 정말 멋지게 마무리했어!",
-  nextAction: function () {
-    const completeModal = document.getElementById("bookFinishCompleteModal");
+  /*
+    능력치 보상 모달은 "간추리기 완료"(finishAfterReading) 시점에서만 뜨도록 합니다.
+    책 마무리하기(별점·대표 질문 제출)는 실제로 능력치를 올리는 지점이 아니라
+    보관함에 기록을 저장하는 단계라서, 여기서는 능력치 보상 모달 없이
+    바로 일반 완료 안내(#bookFinishCompleteModal)만 보여줍니다.
+  */
+  const completeModal = document.getElementById("bookFinishCompleteModal");
 
-    if (completeModal) {
-      completeModal.classList.add("show");
-    }
+  if (completeModal) {
+    completeModal.classList.add("show");
   }
-});
 }
 /*
   능력치 성장 안내 미니 모달(openMiniRewardModal/closeMiniRewardModal/
   confirmMiniRewardModal)은 이제 individual-power.js의 공통 컴포넌트를
   씁니다. 읽기 전/읽기 중/읽기 후/책수다방이 모두 같은 디자인을 쓰도록
   이 파일에 있던 로컬 구현은 제거했습니다.
-  "책 마무리" 완료 팝업으로 이어가야 하는 곳(위 openBookFinishModal
-  근처)은 openMiniRewardModal(...)에 nextAction을 직접 넘겨서 처리합니다.
+  이 모달은 "간추리기 완료"(finishAfterReading) 시점에서만 띄우고,
+  "책 마무리하기"(saveBookFinishRecord)에서는 띄우지 않습니다.
 */
     function saveAfterArchive(questionAnswers, summaryText) {
       const archive = getAfterArchive();
