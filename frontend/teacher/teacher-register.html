@@ -597,11 +597,12 @@
 
     .tr-complete-card p {
       color: #5b3a1a;
-      font-size: 16px;
-      font-weight: 850;
-      line-height: 1.55;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.7;
+      letter-spacing: -0.35px;
       word-break: keep-all;
-      margin-bottom: 22px;
+      margin-bottom: 38px;
     }
 
     .tr-summary-box {
@@ -1048,10 +1049,6 @@ body {
                     학생 계정을 다시 만들더라도 등록이 끝나면 로그인 화면으로 이동하게 됩니다.
                   </p>
 
-                  <div class="tr-summary-box" id="summaryBox">
-                    등록 정보를 불러오는 중이에요.
-                  </div>
-
                   <button class="tr-action-button" type="button" onclick="confirmGoLogin()">로그인 하러 가기</button>
                 </div>
               </article>
@@ -1429,21 +1426,7 @@ saveRegisteredIds([
   })
 ]);
 
-renderSummary();
 showPanel("complete");
-    }
-
-    function renderSummary() {
-      const summaryBox = document.getElementById("summaryBox");
-
-      summaryBox.innerHTML =
-        "<strong>등록 정보</strong><br>" +
-        "학교: " + escapeHtml(teacherData.school) + "<br>" +
-        "교사: " + escapeHtml(teacherData.name) + "<br>" +
-        "학급: " + escapeHtml(classData.grade) + "학년 " +
-        escapeHtml(classData.classNumber) + "반 · " +
-        escapeHtml(classData.className) + "<br>" +
-        "학생 계정: " + studentData.length + "명 생성";
     }
 
     function confirmGoLogin() {

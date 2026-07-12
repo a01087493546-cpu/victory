@@ -105,9 +105,13 @@
       box-shadow: 0 7px 14px rgba(116,71,20,.10);
     }
 
-    .nav-button.primary {
+    .nav-button.primary,
+    .nav-button.reading-home {
+      border-radius: 999px;
+      border: 1px solid rgba(176,111,25,.46);
       background: linear-gradient(180deg,#e4ad45,#b06d0d);
       color: #fff9ec;
+      box-shadow: 0 6px 0 rgba(105,57,5,.50), 0 10px 18px rgba(116,71,20,.16);
     }
 
     .activity-card,
@@ -240,7 +244,7 @@
 
     .question-card {
       width:100%;
-      min-height:138px;
+      min-height:152px;
       padding:18px 22px;
       border:1px solid rgba(186,130,58,.26);
       border-radius:24px;
@@ -553,7 +557,7 @@
         <div class="brand"><div class="brand-icon">📖</div><span>문답책</span></div>
         <h1 class="main-title">책수다방</h1>
         <div class="top-actions">
-          <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
+          <button class="nav-button reading-home" type="button" onclick="goHome()">📚 책읽기 홈</button>
           <button class="nav-button primary" type="button" onclick="goClassReading()">우리반 책읽기</button>
         </div>
       </header>
@@ -747,20 +751,31 @@
 
       questionList.innerHTML = questions.map(question => {
         const type = typeInfo[question.type] || {label:"질문",icon:"❓"};
+        const isQuiz = question.type === "direct";
+        const quizDone = !!getSavedQuizAnswer(question.id);
+        const actionLabel = isQuiz ? (quizDone ? "친구 답 보기" : "퀴즈 풀기") : "내 생각 쓰기";
+        const actionClick = isQuiz
+          ? (quizDone ? `openCommentsModal('${escapeAttribute(question.id)}')` : `openThoughtModal('${escapeAttribute(question.id)}')`)
+          : `openThoughtModal('${escapeAttribute(question.id)}')`;
+        const countLabel = isQuiz ? `답 ${getQuizAnswerCount(question)}개` : `수다 ${getTalkCount(question)}개`;
+        const countClick = isQuiz
+          ? (quizDone ? `openCommentsModal('${escapeAttribute(question.id)}')` : `openThoughtModal('${escapeAttribute(question.id)}')`)
+          : `openCommentsModal('${escapeAttribute(question.id)}')`;
+
         return `
           <article class="question-card">
             <div class="question-top">
               <span class="student-name">${escapeHtml(question.isMine ? "나의 질문" : question.name)}</span>
               <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
-              <button class="talk-badge" type="button" onclick="openCommentsModal('${escapeAttribute(question.id)}'); event.stopPropagation();">수다 ${getTalkCount(question)}개</button>
+              <button class="talk-badge" type="button" onclick="${countClick}; event.stopPropagation();">${countLabel}</button>
               <div class="card-actions">
-                <button class="thought-write-button" type="button" onclick="openThoughtModal('${escapeAttribute(question.id)}'); event.stopPropagation();">내 생각 쓰기</button>
+                <button class="thought-write-button" type="button" onclick="${actionClick}; event.stopPropagation();">${actionLabel}</button>
                 <span class="time-text">${escapeHtml(question.createdAt)}</span>
               </div>
             </div>
-            <button class="question-main-click" type="button" onclick="openCommentsModal('${escapeAttribute(question.id)}')">
+            <button class="question-main-click" type="button" onclick="${countClick}">
               <div class="question-text">${escapeHtml(question.text)}</div>
-              ${question.answer ? `<div class="question-answer-preview"><strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong> ${escapeHtml(question.answer)}</div>` : ""}
+              ${question.answer ? `<div class="question-answer-preview"><strong>${isQuiz ? "문제 도움말" : (question.isMine ? "내 생각" : "처음 생각")}:</strong> ${escapeHtml(question.answer)}</div>` : ""}
             </button>
           </article>
         `;
@@ -772,13 +787,28 @@
       const question = allQuestions.find(q => q.id === questionId);
       if (!question) return;
 
-      const saved = getSavedThought(questionId);
-      thoughtModalBody.innerHTML = `
+      const isQuiz = question.type === "direct";
+      const saved = isQuiz ? getSavedQuizAnswer(questionId) : getSavedThought(questionId);
+
+      thoughtModal.querySelector(".modal-title").textContent = isQuiz ? "책 퀴즈 풀기" : "내 생각 쓰기";
+
+      thoughtModalBody.innerHTML = isQuiz ? `
+        ${renderSelectedQuestion(question)}
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label" for="quizAnswer">내 답:</label>
+            <textarea class="text-area" id="quizAnswer" maxlength="300" placeholder="질문에 대한 내 답을 써 보세요."></textarea>
+          </div>
+          <div class="button-row">
+            <button class="plain-button" type="button" onclick="clearQuizForm()">지우기</button>
+            <button class="main-button" type="button" onclick="saveQuizAnswer('${escapeAttribute(questionId)}')">확인</button>
+          </div>
+        </div>
+      ` : `
         ${renderSelectedQuestion(question)}
         <div class="form-grid">
           <div class="field"><label class="field-label" for="thoughtMain">내 생각은:</label><textarea class="text-area" id="thoughtMain" maxlength="300"></textarea></div>
           <div class="field"><label class="field-label" for="thoughtReason">그렇게 생각한 까닭은:</label><textarea class="text-area" id="thoughtReason" maxlength="300"></textarea></div>
-          <div class="field"><label class="field-label" for="thoughtEvidence">책에서 찾은 부분은:</label><textarea class="text-area" id="thoughtEvidence" maxlength="300"></textarea></div>
           <div class="button-row">
             <button class="plain-button" type="button" onclick="clearThoughtForm()">지우기</button>
             <button class="main-button" type="button" onclick="saveThought('${escapeAttribute(questionId)}')">등록하기</button>
@@ -787,9 +817,12 @@
       `;
 
       if (saved) {
-        document.getElementById("thoughtMain").value = saved.main || "";
-        document.getElementById("thoughtReason").value = saved.reason || "";
-        document.getElementById("thoughtEvidence").value = saved.evidence || "";
+        if (isQuiz) {
+          document.getElementById("quizAnswer").value = saved.answer || "";
+        } else {
+          document.getElementById("thoughtMain").value = saved.main || "";
+          document.getElementById("thoughtReason").value = saved.reason || "";
+        }
       }
 
       thoughtModal.classList.remove("hidden");
@@ -803,9 +836,19 @@
     }
 
     function openCommentsModal(questionId) {
+      const question = allQuestions.find(q => q.id === questionId);
+      if (!question) return;
+
+      if (question.type === "direct" && !getSavedQuizAnswer(questionId)) {
+        alert("먼저 퀴즈 답을 쓰고 확인해 주세요.");
+        openThoughtModal(questionId);
+        return;
+      }
+
       selectedQuestionId = questionId;
       activeReplyTarget = null;
       activeReplyType = null;
+      commentsModal.querySelector(".modal-title").textContent = question.type === "direct" ? "친구 답 보기" : "친구 생각 보기";
       renderCommentsModal();
       commentsModal.classList.remove("hidden");
       commentsModal.setAttribute("aria-hidden","false");
@@ -820,8 +863,30 @@
     function renderCommentsModal() {
       const question = allQuestions.find(q => q.id === selectedQuestionId);
       if (!question) return;
-      const comments = getCommentsForQuestion(question);
 
+      if (question.type === "direct") {
+        const answers = getQuizAnswersForQuestion(question);
+        commentsModalBody.innerHTML = `
+          ${renderSelectedQuestion(question)}
+          <div class="comment-list">
+            ${answers.map(answer => `
+              <article class="comment-card">
+                <div class="comment-head">
+                  <span class="comment-name">${escapeHtml(answer.name)}</span>
+                  ${answer.isMine ? '<span class="talk-badge">내 답</span>' : '<span class="type-badge">친구 답</span>'}
+                  <span class="comment-time">${escapeHtml(answer.savedAt || "오늘")}</span>
+                </div>
+                <div class="thought-lines">
+                  <p><strong>답</strong> ${escapeHtml(answer.answer)}</p>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        `;
+        return;
+      }
+
+      const comments = getCommentsForQuestion(question);
       commentsModalBody.innerHTML = `
         ${renderSelectedQuestion(question)}
         ${comments.length ? `<div class="comment-list">${comments.map(comment => renderCommentCard(question,comment)).join("")}</div>` : '<div class="empty-list">아직 올라온 생각이 없어요.<br>먼저 내 생각을 써 봐요.</div>'}
@@ -838,7 +903,7 @@
             <span class="time-text">${escapeHtml(question.createdAt)}</span>
           </div>
           <div class="selected-question">${escapeHtml(question.text)}</div>
-          ${question.answer ? `<div class="selected-answer"><strong>${question.isMine ? "내가 처음 쓴 생각" : "친구가 처음 쓴 생각"}</strong><br>${escapeHtml(question.answer)}</div>` : ""}
+          ${question.type !== "direct" && question.answer ? `<div class="selected-answer"><strong>${question.isMine ? "내가 처음 쓴 생각" : "친구가 처음 쓴 생각"}</strong><br>${escapeHtml(question.answer)}</div>` : ""}
         </article>
       `;
     }
@@ -855,12 +920,10 @@
           <div class="thought-lines">
             <p><strong>내 생각은</strong> ${escapeHtml(comment.main)}</p>
             <p><strong>그렇게 생각한 까닭은</strong> ${escapeHtml(comment.reason)}</p>
-            <p><strong>책에서 찾은 부분은</strong> ${escapeHtml(comment.evidence)}</p>
           </div>
           <div class="reply-button-row">
             <button class="reply-type-button green" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','similar')">비슷해요</button>
             <button class="reply-type-button brown" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','different')">다르게 생각해요</button>
-            <button class="reply-type-button gold" type="button" onclick="openNestedReply('${escapeAttribute(comment.id)}','evidence')">책에서 찾았어요</button>
           </div>
           ${activeReplyTarget === comment.id ? renderReplyWriteBox(question.id,comment.id) : ""}
           ${replies.length ? `<div class="nested-list">${replies.map(reply => `<div class="nested-item"><strong>${escapeHtml(reply.name)} · ${escapeHtml(reply.label)}</strong><br>${escapeHtml(reply.text)}</div>`).join("")}</div>` : ""}
@@ -898,30 +961,49 @@
     function getReplyTypeInfo(type) {
       if (type === "similar") return { title:"비슷한 생각 이어 쓰기", label:"비슷해요", placeholder:"나도 비슷하게 생각해요. 그 까닭은..." };
       if (type === "different") return { title:"다른 생각 이어 쓰기", label:"다르게 생각해요", placeholder:"나는 조금 다르게 생각해요. 그 까닭은..." };
-      return { title:"책에서 찾은 내용 이어 쓰기", label:"책에서 찾았어요", placeholder:"책에서 이런 부분도 찾았어요..." };
+      return { title:"생각 이어 쓰기", label:"이어 썼어요", placeholder:"내 생각을 이어서 써 보세요." };
     }
 
     function saveThought(questionId) {
       const main = document.getElementById("thoughtMain").value.trim();
       const reason = document.getElementById("thoughtReason").value.trim();
-      const evidence = document.getElementById("thoughtEvidence").value.trim();
-      if (!main || !reason || !evidence) {
-        alert("세 칸을 모두 써 주세요.");
+      if (!main || !reason) {
+        alert("두 칸을 모두 써 주세요.");
         return;
       }
       const data = getThoughtStore();
-      data[questionId] = { main, reason, evidence, savedAt:getNowText() };
+      data[questionId] = { main, reason, savedAt:getNowText() };
       localStorage.setItem("bookChatThoughts_" + studentId,JSON.stringify(data));
       alert("내 생각을 등록했어요.");
       closeThoughtModal();
       renderAll();
     }
 
+    function saveQuizAnswer(questionId) {
+      const answer = document.getElementById("quizAnswer")?.value.trim() || "";
+      if (!answer) {
+        alert("퀴즈 답을 써 주세요.");
+        return;
+      }
+      const data = getQuizAnswerStore();
+      data[questionId] = { answer, savedAt:getNowText() };
+      localStorage.setItem("bookChatQuizAnswers_" + studentId, JSON.stringify(data));
+      alert("답을 확인했어요. 이제 친구 답을 볼 수 있어요.");
+      closeThoughtModal();
+      renderAll();
+      openCommentsModal(questionId);
+    }
+
     function clearThoughtForm() {
-      ["thoughtMain","thoughtReason","thoughtEvidence"].forEach(id => {
+      ["thoughtMain","thoughtReason"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
       });
+    }
+
+    function clearQuizForm() {
+      const el = document.getElementById("quizAnswer");
+      if (el) el.value = "";
     }
 
     function saveNestedReply(questionId,commentId,type) {
@@ -951,6 +1033,15 @@
       catch { return {}; }
     }
 
+    function getSavedQuizAnswer(questionId) {
+      return getQuizAnswerStore()[questionId] || null;
+    }
+
+    function getQuizAnswerStore() {
+      try { return JSON.parse(localStorage.getItem("bookChatQuizAnswers_" + studentId) || "{}"); }
+      catch { return {}; }
+    }
+
     function getReplyStore() {
       try { return JSON.parse(localStorage.getItem("bookChatReplies_" + studentId) || "{}"); }
       catch { return {}; }
@@ -966,6 +1057,20 @@
       return comments;
     }
 
+    function getQuizAnswersForQuestion(question) {
+      const answers = [
+        { id:"quiz-friend-1", name:"민지", isMine:false, answer:"주인공이 다시 돌아간 장면에서 친구를 소중하게 여긴다는 것을 알 수 있어.", savedAt:"06.11 09:40" },
+        { id:"quiz-friend-2", name:"하윤", isMine:false, answer:"친구가 위험하다는 것을 알고 용기를 내어 도와주려고 했어.", savedAt:"06.11 09:45" }
+      ];
+      const mine = getSavedQuizAnswer(question.id);
+      if (mine) answers.unshift({ id:"quiz-mine-" + question.id, name:studentName, isMine:true, ...mine });
+      return answers;
+    }
+
+    function getQuizAnswerCount(question) {
+      return 2 + (getSavedQuizAnswer(question.id) ? 1 : 0);
+    }
+
     function getNestedReplies(questionId,commentId) {
       const list = getReplyStore()[questionId];
       return Array.isArray(list) ? list.filter(item => item.commentId === commentId) : [];
@@ -978,7 +1083,7 @@
     }
 
     function updateCounts(visibleQuestions) {
-      const thoughtCount = Object.keys(getThoughtStore()).length;
+      const thoughtCount = Object.keys(getThoughtStore()).length + Object.keys(getQuizAnswerStore()).length;
       const replyCount = Object.values(getReplyStore()).reduce((sum,list) => sum + (Array.isArray(list) ? list.length : 0),0);
       document.getElementById("questionCount").textContent = allQuestions.length + "개";
       document.getElementById("myThoughtCount").textContent = thoughtCount + "개";

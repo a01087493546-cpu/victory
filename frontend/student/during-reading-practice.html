@@ -4226,6 +4226,18 @@ body {
   font-size: 23px !important;
 }
 
+.practice-main-title {
+  white-space: nowrap;
+  font-size: 42px !important;
+  line-height: 1.2 !important;
+  letter-spacing: -1.5px;
+}
+.practice-main-title {
+  white-space: nowrap;
+  font-size: 42px !important;
+  line-height: 1.2 !important;
+  letter-spacing: -1.5px;
+}
 </style>
 </head>
 
@@ -4817,7 +4829,9 @@ body {
       '<div class="screen-title-row">' +
         '<div>' +
           '<span class="title-badge">방법 알기</span>' +
-          '<h1 class="main-title">' + item.title + '</h1>' +
+          '<h1 class="main-title practice-main-title">' +
+  item.title.replace(/<br\s*\/?>/gi, " ") +
+'</h1>' +
         '</div>' +
         '<div class="progress-pill">' + item.number + ' 질문</div>' +
       '</div>' +
@@ -4917,7 +4931,9 @@ body {
           '<div class="screen-title-row">' +
             '<div>' +
               '<span class="title-badge">기본 연습 ' + (currentBasicIndex + 1) + ' / ' + questions.length + '</span>' +
-              '<h1 class="main-title">' + item.title + '</h1>' +
+              '<h1 class="main-title practice-main-title">' +
+  item.title.replace(/<br\s*\/?>/gi, " ") +
+'</h1>' +
             '</div>' +
             '<div class="progress-pill">' + item.number + ' 질문</div>' +
           '</div>' +
