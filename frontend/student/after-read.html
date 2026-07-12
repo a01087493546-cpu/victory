@@ -145,9 +145,17 @@
       gap: 10px;
     }
 
-    .teacher-top-button {
-      display: none;
-    }
+    /* 학생 화면에서는 교사용 버튼을 무조건 숨김 */
+.teacher-top-button {
+  display: none !important;
+}
+
+/* 주소에 ?mode=teacher가 있을 때만 표시 */
+body.teacher-mode .teacher-top-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
 
     .ar-pill-button {
       height: 39px;
@@ -4509,7 +4517,33 @@
   font-weight: 900;
   line-height: 1.7;
 }
+/* 간추리기 비법 화면 크기 조정 */
+.ar-method-layout .ar-study-card {
+  max-width: 1320px !important;
+  width: 100% !important;
+  padding: 24px 30px !important;
+}
 
+.ar-method-sentence {
+  min-height: 430px !important;
+  padding: 34px 44px !important;
+  font-size: 46px !important;
+  line-height: 1.85 !important;
+}
+
+.method-blank-button {
+  min-width: 150px !important;
+  height: 60px !important;
+  padding: 0 24px !important;
+  font-size: 22px !important;
+}
+
+.method-keyword {
+  min-width: 158px !important;
+  height: 60px !important;
+  padding: 0 24px !important;
+  font-size: 24px !important;
+}
 </style>
 </head>
 
@@ -4528,8 +4562,25 @@
 
         <div class="ar-top-actions">
           <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">📚 책읽기 홈</button>
-          <button class="mq-book-home-button teacher-top-button" id="teacherHomeButton" type="button" onclick="location.href='../teacher/home.html'">🏠 교사홈</button>
-          <button class="mq-book-home-button teacher-top-button" id="wholeReadingManageButton" type="button" onclick="location.href='../teacher/book-manage.html'">📖 온책읽기 관리</button>
+          <button
+  class="mq-book-home-button teacher-top-button"
+  id="teacherHomeButton"
+  type="button"
+  hidden
+  onclick="location.href='../teacher/home.html'"
+>
+  🏠 교사홈
+</button>
+
+<button
+  class="mq-book-home-button teacher-top-button"
+  id="wholeReadingManageButton"
+  type="button"
+  hidden
+  onclick="location.href='../teacher/book-manage.html'"
+>
+  📖 온책읽기 관리
+</button>
         </div>
       </header>
 
@@ -5982,18 +6033,26 @@ if (selectedBookType === "opinion") {
     renderShareList();
     openAfterReadTargetFromUrl();
 
-    if (isTeacherMode()) {
-      const teacherHomeButton = document.getElementById("teacherHomeButton");
-      const wholeReadingManageButton = document.getElementById("wholeReadingManageButton");
+    function applyTeacherMode() {
+  const teacherMode = isTeacherMode();
 
-      if (teacherHomeButton) {
-        teacherHomeButton.style.display = "inline-flex";
-      }
+  // 학생 화면에서는 teacher-mode 클래스가 절대 남지 않도록 처리
+  document.body.classList.toggle("teacher-mode", teacherMode);
 
-      if (wholeReadingManageButton) {
-        wholeReadingManageButton.style.display = "inline-flex";
-      }
-    }
+  const teacherHomeButton = document.getElementById("teacherHomeButton");
+  const wholeReadingManageButton = document.getElementById("wholeReadingManageButton");
+
+  if (teacherHomeButton) {
+    teacherHomeButton.hidden = !teacherMode;
+  }
+
+  if (wholeReadingManageButton) {
+    wholeReadingManageButton.hidden = !teacherMode;
+  }
+}
+
+applyTeacherMode();
+    
 
     /* =========================================================
        추가 수정본: 내 책 질문 하나씩 만들기 + 검사하기 + 간추리기 화면 이동
