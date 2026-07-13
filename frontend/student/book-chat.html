@@ -775,7 +775,12 @@
             </div>
             <button class="question-main-click" type="button" onclick="${countClick}">
               <div class="question-text">${escapeHtml(question.text)}</div>
-              ${question.answer ? `<div class="question-answer-preview"><strong>${isQuiz ? "문제 도움말" : (question.isMine ? "내 생각" : "처음 생각")}:</strong> ${escapeHtml(question.answer)}</div>` : ""}
+              ${!isQuiz && question.answer
+  ? `<div class="question-answer-preview">
+       <strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong>
+       ${escapeHtml(question.answer)}
+     </div>`
+  : ""}
             </button>
           </article>
         `;
