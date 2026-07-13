@@ -72,50 +72,73 @@ document.addEventListener("DOMContentLoaded", function () {
     로그인 버튼을 눌렀을 때 실행됩니다.
     button type="submit"이기 때문에 form submit 이벤트로 처리합니다.
   */
-  loginForm.addEventListener("submit", function (event) {
-    /* form 기본 새로고침 동작을 막습니다. */
-    event.preventDefault();
+  loginForm.addEventListener("submit", async function (event) {
+  /* form 기본 새로고침 동작을 막습니다. */
+  event.preventDefault();
 
-    const loginId = loginIdInput.value.trim();
-    const loginPassword = loginPasswordInput.value.trim();
+  const loginId = loginIdInput.value.trim();
+  const loginPassword = loginPasswordInput.value.trim();
 
-    /* 아이디 입력 확인입니다. */
-    if (loginId === "") {
-      alert("아이디를 입력해주세요.");
-      loginIdInput.focus();
+  /* 아이디 입력 확인입니다. */
+  if (loginId === "") {
+    alert("아이디를 입력해주세요.");
+    loginIdInput.focus();
+    return;
+  }
+
+  /* 비밀번호 입력 확인입니다. */
+  if (loginPassword === "") {
+    alert("비밀번호를 입력해주세요.");
+    loginPasswordInput.focus();
+    return;
+  }
+
+  try {
+    /* 백엔드 로그인 API를 호출합니다. */
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        loginId: loginId,
+        password: loginPassword
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
+    }
+
+    /* 백엔드에서 받은 로그인 결과입니다. */
+    const data = await response.json();
+
+    /* 로그인 화면에서 선택한 역할과 실제 계정 역할이 같은지 확인합니다. */
+    if (data.role !== selectedRole) {
+      alert(
+        data.role === "student"
+          ? "학생 계정입니다. 학생 로그인을 선택해주세요."
+          : "교사 계정입니다. 교사 로그인을 선택해주세요."
+      );
       return;
     }
 
-    /* 비밀번호 입력 확인입니다. */
-    if (loginPassword === "") {
-      alert("비밀번호를 입력해주세요.");
-      loginPasswordInput.focus();
-      return;
-    }
-
-    /*
-      임시 로그인 처리입니다.
-      나중에 실제 서버 로그인 API로 교체하면 됩니다.
-    */
-    sessionStorage.setItem("token", "mock-token");
-    sessionStorage.setItem("role", selectedRole);
-    sessionStorage.setItem("name", loginId);
-
-    /*
-      학생 데이터는 studentId 기준으로 관리합니다.
-      지금은 임시로 입력한 아이디를 studentId로 사용합니다.
-    */
-    sessionStorage.setItem("studentId", loginId);
+    /* 실제 JWT 토큰과 숫자 사용자 ID를 저장합니다. */
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("studentId", String(data.id));
+    sessionStorage.setItem("role", data.role);
+    sessionStorage.setItem("name", data.name);
+    sessionStorage.setItem("loginId", data.loginId);
 
     /* 학생 로그인 처리입니다. */
-    if (selectedRole === "student") {
-      const studentId = sessionStorage.getItem("studentId");
-      const hasSeenStoryIntro = sessionStorage.getItem("hasSeenStoryIntro_" + studentId);
+    if (data.role === "student") {
+      const studentId = String(data.id);
+      const hasSeenStoryIntro =
+        sessionStorage.getItem("hasSeenStoryIntro_" + studentId);
 
       /* 스토리를 본 적 있으면 학생 홈으로 이동합니다. */
       if (hasSeenStoryIntro === "true") {
-        window.location.href = "./student/home.html";
-        return;
+        window.location.href = "./student/individual-reading.html";
       }
 
       /* 첫 로그인이라면 스토리 인트로 화면으로 이동합니다. */
@@ -124,11 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     /* 교사 로그인 처리입니다. */
-    if (selectedRole === "teacher") {
+    if (data.role === "teacher") {
       window.location.href = "./teacher/home.html";
-      return;
     }
-  });
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "로그인 중 오류가 발생했습니다.");
+  }
+});
 });
 /*
   사용 자료 출처 모달 기능입니다.

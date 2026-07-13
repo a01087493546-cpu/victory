@@ -4610,9 +4610,49 @@ body {
       =========================================================
     */
 
-    function saveProgress() {
-      sessionStorage.setItem(progressKey, JSON.stringify(progress));
+    async function saveProgress() {
+  const studentId = sessionStorage.getItem("studentId");
+  const token = sessionStorage.getItem("token");
+
+  /* 브라우저 임시 저장도 유지합니다. */
+  sessionStorage.setItem(
+    progressKey,
+    JSON.stringify(progress)
+  );
+
+  if (!studentId || !token) {
+    console.error("로그인 정보가 없습니다.");
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+  duringTypeProgress: progress
+})
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "읽기 중 진행 상태 저장에 실패했습니다."
+      );
     }
+
+    return true;
+  } catch (error) {
+    console.error(error);
+    alert("읽기 중 진행 상태를 저장하지 못했습니다.");
+    return false;
+  }
+}
 
     function getSelectedQuestionType() {
       return questionTypes.find(function(item) {
@@ -5028,22 +5068,28 @@ body {
       renderDeepPracticeScreen();
     }
 
-    function nextDeepQuestion() {
-      const questions = getCurrentDeepQuestions();
+    async function nextDeepQuestion() {
+  const questions = getCurrentDeepQuestions();
 
-      if (currentDeepIndex < questions.length - 1) {
-        currentDeepIndex++;
-        deepInputValue = "";
-        deepChecked = false;
-        deepResult = null;
-        renderDeepPracticeScreen();
-        return;
-      }
+  if (currentDeepIndex < questions.length - 1) {
+    currentDeepIndex++;
+    deepInputValue = "";
+    deepChecked = false;
+    deepResult = null;
+    renderDeepPracticeScreen();
+    return;
+  }
 
-      progress[selectedQuestionType] = true;
-saveProgress();
-goSelectScreen();
-    }
+  progress[selectedQuestionType] = true;
+
+  const saved = await saveProgress();
+
+  if (!saved) {
+    return;
+  }
+
+  goSelectScreen();
+}
 
     function renderDeepPracticeScreen() {
       const app = document.getElementById("app");
@@ -5227,18 +5273,30 @@ goSelectScreen();
       renderReviewScreen();
     }
 
-    function finishReview() {
-      const complete =
-        reviewCompletedQuestions.direct &&
-        reviewCompletedQuestions.infer &&
-        reviewCompletedQuestions.opinion &&
-        reviewCompletedQuestions.connect;
+    async function finishReview() {
+  const complete =
+    reviewCompletedQuestions.direct &&
+    reviewCompletedQuestions.infer &&
+    reviewCompletedQuestions.opinion &&
+    reviewCompletedQuestions.connect;
 
-      if (!complete) return;
+  if (!complete) {
+    return;
+  }
 
-      alert("총 복습까지 완료했어요!");
-      window.location.href = "class-reading.html";
-    }
+  /* 총 복습 완료 상태를 추가합니다. */
+  progress.review = true;
+
+  /* 백엔드 저장이 끝날 때까지 기다립니다. */
+  const saved = await saveProgress();
+
+  if (!saved) {
+    return;
+  }
+
+  alert("총 복습까지 완료했어요!");
+  window.location.href = "class-reading.html";
+}
 
     function renderReviewScreen() {
       const app = document.getElementById("app");

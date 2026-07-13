@@ -879,16 +879,31 @@ function goAfterReadingPage() {
       }
 
       if (progress.classRead === true) {
-        stepAfter.classList.remove("locked");
-        stepAfter.classList.add("active");
-        afterButton.disabled = false;
-        afterButton.textContent = "시작하기";
-        guideText.innerHTML = "<strong>읽기 후</strong>로 마무리해요.";
-      }
+  /* 읽기 중 단계를 완료 상태로 표시합니다. */
+  stepDuring.classList.remove("active", "locked");
+  stepDuring.classList.add("done");
+  duringButton.disabled = false;
+  duringButton.textContent = "완료 ✓";
+
+  /* 읽기 후 단계를 활성화합니다. */
+  stepAfter.classList.remove("locked");
+  stepAfter.classList.add("active");
+  afterButton.disabled = false;
+  afterButton.textContent = "시작하기";
+
+  guideText.innerHTML = "<strong>읽기 후</strong>로 마무리해요.";
+}
 
       if (progress.after === true) {
-        guideText.innerHTML = "모든 독서 활동을 마쳤어요. 책 속 이야기를 끝까지 잘 따라왔어요!";
-      }
+  stepAfter.classList.remove("active", "locked");
+  stepAfter.classList.add("done");
+
+  afterButton.disabled = false;
+  afterButton.textContent = "완료 ✓";
+
+  guideText.innerHTML =
+    "모든 독서 활동을 마쳤어요. 책 속 이야기를 끝까지 잘 따라왔어요!";
+}
     }
   </script>
   <script src="../js/fixed-stage.js"></script>
