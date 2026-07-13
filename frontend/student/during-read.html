@@ -633,6 +633,20 @@ button {
         inset 0 1px 0 rgba(255, 255, 255, 0.34);
     }
 
+    .type-button:disabled,
+    textarea:disabled,
+    .sub-button:disabled,
+    .main-button:disabled {
+      opacity: 0.62;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    textarea:disabled {
+      background: rgba(239, 235, 226, 0.88);
+      color: #8b7b6a;
+    }
+
     .next-button:disabled {
       background: linear-gradient(180deg, #cfc7bb, #aaa195);
       color: #fffaf1;
@@ -803,6 +817,7 @@ button {
           <div class="write-actions">
             <button
               class="sub-button"
+              id="resetButton"
               type="button"
               onclick="resetForm()"
             >
@@ -811,6 +826,7 @@ button {
 
             <button
               class="main-button"
+              id="checkButton"
               type="button"
               onclick="checkQuestion()"
             >
@@ -1010,6 +1026,12 @@ button {
     const nextButton =
       document.getElementById("nextButton");
 
+    const resetButton =
+      document.getElementById("resetButton");
+
+    const checkButton =
+      document.getElementById("checkButton");
+
     const todayText =
       document.getElementById("todayText");
 
@@ -1029,8 +1051,17 @@ button {
       updateCounts();
       renderTodayQuestions();
 
+      if (todayQuestions.length >= 3) {
+        setCompletionFeedback();
+      }
+
       typeButtons.forEach(function(button) {
         button.addEventListener("click", function() {
+          if (todayQuestions.length >= 3) {
+            setCompletionFeedback();
+            return;
+          }
+
           typeButtons.forEach(function(btn) {
             btn.classList.remove("active");
           });
@@ -1127,6 +1158,12 @@ button {
     */
 
     function checkQuestion() {
+      if (todayQuestions.length >= 3) {
+        lockQuestionForm();
+        setCompletionFeedback();
+        return;
+      }
+
       const question =
         questionInput.value.trim();
 
@@ -1154,18 +1191,24 @@ button {
         answer
       );
 
-      setFeedback(
-        "good",
-        result.message +
-          "<br><br>좋아! 루미 확인을 통과했어. 현재 " +
-          todayQuestions.length +
-          "개가 통과했어. 3개 이상이면 다음 단계로 갈 수 있어."
-      );
-
       questionInput.value = "";
       answerInput.value = "";
-
       updateCounts();
+
+      if (todayQuestions.length >= 3) {
+        lockQuestionForm();
+        setCompletionFeedback();
+      } else {
+        setFeedback(
+          "good",
+          result.message +
+            "<br><br>좋아! 루미 확인을 통과했어. 현재 " +
+            todayQuestions.length +
+            "개가 통과했어. " +
+            (3 - todayQuestions.length) +
+            "개를 더 쓰면 다음 단계로 갈 수 있어."
+        );
+      }
     }
 
     function validateQuestion(
@@ -1502,6 +1545,12 @@ button {
           passed < 3;
       }
 
+      if (passed >= 3) {
+        lockQuestionForm();
+      } else {
+        unlockQuestionForm();
+      }
+
       if (!questionList) {
         return;
       }
@@ -1670,7 +1719,57 @@ button {
       );
     }
 
+    function lockQuestionForm() {
+      questionInput.disabled = true;
+      answerInput.disabled = true;
+
+      typeButtons.forEach(function(button) {
+        button.disabled = true;
+      });
+
+      if (resetButton) {
+        resetButton.disabled = true;
+      }
+
+      if (checkButton) {
+        checkButton.disabled = true;
+        checkButton.textContent = "✓ 질문 3개 통과 완료";
+      }
+    }
+
+    function unlockQuestionForm() {
+      questionInput.disabled = false;
+      answerInput.disabled = false;
+
+      typeButtons.forEach(function(button) {
+        button.disabled = false;
+      });
+
+      if (resetButton) {
+        resetButton.disabled = false;
+      }
+
+      if (checkButton) {
+        checkButton.disabled = false;
+        checkButton.textContent = "✨ 루미에게 확인 받기";
+      }
+    }
+
+    function setCompletionFeedback() {
+      setFeedback(
+        "good",
+        "<div>🎉 질문 3개가 모두 통과했어! 이제 질문은 더 쓸 수 없어.<br>" +
+        "‘바로 찾기’ 유형은 책 퀴즈로, ‘짐작하기·생각과 느낌·삶과 연결’ 유형은 생각나누기로 자동 분류돼.<br>" +
+        "오른쪽의 다음 단계 버튼을 눌러 책수다방으로 가 보자.</div>"
+      );
+    }
+
     function resetForm() {
+      if (todayQuestions.length >= 3) {
+        setCompletionFeedback();
+        return;
+      }
+
       questionInput.value = "";
       answerInput.value = "";
 
