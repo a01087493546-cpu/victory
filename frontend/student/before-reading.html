@@ -3336,67 +3336,68 @@ function goNextAfterFeedback() {
 
     // 질문 4개를 모두 완성하면 읽기 전 질문 공유하기 화면은 건너뛰고,
     // 바로 읽기 전/중/후 3단계 선택 화면(practice.html)으로 이동합니다.
-    function completeAndGoPractice() {
-      const incompleteIndex = answers.findIndex(function(item) {
-        return !item.passed;
-      });
+    async function completeAndGoPractice() {
+  const incompleteIndex = answers.findIndex(function(item) {
+    return !item.passed;
+  });
 
-      if (incompleteIndex !== -1) {
-        currentStepIndex = incompleteIndex;
-        currentMode = "write";
-        renderAll();
+  if (incompleteIndex !== -1) {
+    currentStepIndex = incompleteIndex;
+    currentMode = "write";
+    renderAll();
 
-        setTimeout(function() {
-          const feedbackBox = document.getElementById("feedbackBox");
-          feedbackBox.style.display = "flex";
-          feedbackBox.classList.add("need");
-         feedbackBox.querySelector(".feedback-message").textContent =
-  "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
-        }, 100);
+    setTimeout(function() {
+      const feedbackBox = document.getElementById("feedbackBox");
 
-        return;
-      }
+      feedbackBox.style.display = "flex";
+      feedbackBox.classList.add("need");
 
-      saveBeforeReadingData();
+      feedbackBox.querySelector(".feedback-message").textContent =
+        "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
+    }, 100);
 
-      const progressKey = "practiceProgress_" + studentId;
-      const progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
-        book: false,
-        before: false,
-        during: false,
-        classRead: false,
-        after: false
-      };
+    return;
+  }
 
-      progress.book = true;
-      progress.before = true;
+  // 기존 질문과 답을 임시 저장합니다.
+  
 
-      sessionStorage.setItem(progressKey, JSON.stringify(progress));
-      sessionStorage.setItem("beforeReadingCompleted_" + studentId, "true");
+  const studentId = sessionStorage.getItem("studentId");
+  const token = sessionStorage.getItem("token");
 
-      location.href = "./practice.html";
-    }
+  if (!studentId || !token) {
+    alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+    return;
+  }
 
-    function saveBeforeReadingData() {
-      const payload = {
-        studentId: studentId,
-        studentName: studentName,
-        bookId: selectedBook.bookId,
-        bookTitle: selectedBook.title,
-        questions: steps.map(function(step, index) {
-          return {
-            type: step.type,
-            typeName: step.title,
-            question: answers[index].question,
-            expectedAnswer: answers[index].expectedAnswer
-          };
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          bookSelected: true,
+          beforeDone: true
         })
-      };
+      }
+    );
 
-      sessionStorage.setItem("beforeReadingQuestions_" + studentId, JSON.stringify(payload));
-      console.log("읽기 전 질문 저장 데이터:", payload);
+    if (!response.ok) {
+      throw new Error("읽기 전 완료 상태 저장에 실패했습니다.");
     }
 
+    // 저장 성공 후 연습읽기 단계 선택 화면으로 이동합니다.
+    location.href = "./practice.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("읽기 전 완료 상태를 저장하지 못했습니다.");
+  }
+}
     /*
       =========================================================
       8. 이동 함수

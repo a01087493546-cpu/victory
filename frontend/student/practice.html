@@ -779,30 +779,55 @@
       PATCH /api/students/{studentId}/practice-progress
     */
 
-    // 로그인한 학생 ID를 가져옵니다.
-    const studentId = sessionStorage.getItem("studentId") || "student-demo";
-    // 학생별 연습하기 진행 상태 저장 키입니다.
-    const progressKey = `practiceProgress_${studentId}`;
+    // 로그인한 학생 정보와 JWT 토큰을 가져옵니다.
+const studentId = sessionStorage.getItem("studentId");
+const token = sessionStorage.getItem("token");
 
-    // 저장된 진행 상태가 있으면 불러오고, 없으면 처음 상태로 시작합니다.
-    let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
-      before: false,
-      classRead: false,
-      after: false
-    };
-// 읽기 전 공유 활동을 완료했다면 읽기 중 단계를 열어 줍니다.
-if (sessionStorage.getItem("beforeReadingShareCompleted_" + studentId) === "true") {
-  progress.before = true;
-  sessionStorage.setItem(progressKey, JSON.stringify(progress));
-}
-// 우리반 책읽기를 완료했다면 읽기 후 단계를 열어 줍니다.
-if (sessionStorage.getItem("classReadingCompleted_" + studentId) === "true") {
-  progress.before = true;
-  progress.classRead = true;
-  sessionStorage.setItem(progressKey, JSON.stringify(progress));
-}
-    // 화면이 열리면 현재 진행 상태를 반영합니다.
+// 화면에 사용할 진행 상태 기본값입니다.
+let progress = {
+  before: false,
+  classRead: false,
+  after: false
+};
+
+// 백엔드에서 학생의 연습읽기 진행 상태를 불러옵니다.
+async function loadPracticeProgress() {
+  if (!studentId || !token) {
+    console.error("로그인 정보가 없습니다.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("진행 상태 조회에 실패했습니다.");
+    }
+
+    const data = await response.json();
+
+    progress.before = data.beforeDone;
+    progress.classRead = data.classReadDone;
+    progress.after = data.afterDone;
+
     updatePracticeScreen();
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+   // 화면이 열리면 백엔드에서 진행 상태를 불러옵니다.
+loadPracticeProgress();
 
     // 홈 화면으로 이동합니다.
     function goHome() {
@@ -821,12 +846,7 @@ function goBeforeIntroPage() {
 function goAfterReadingPage() {
   window.location.href = "./after-read.html";
 }
-    // 단계를 완료 처리합니다.
-    function completeStep(stepName) {
-      progress[stepName] = true;
-      sessionStorage.setItem(progressKey, JSON.stringify(progress));
-      updatePracticeScreen();
-    }
+
 
     // 진행 상태에 따라 다음 단계 버튼을 활성화합니다.
     function updatePracticeScreen() {
