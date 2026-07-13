@@ -34,11 +34,12 @@ CREATE TABLE users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE classes (
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    teacher_id  BIGINT       NOT NULL,
-    class_name  VARCHAR(100) NOT NULL,
-    grade       INT          NULL,
-    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id            BIGINT       NOT NULL AUTO_INCREMENT,
+    teacher_id    BIGINT       NOT NULL,
+    class_name    VARCHAR(100) NOT NULL,
+    class_number  INT          NULL,
+    grade         INT          NULL,
+    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -55,7 +56,7 @@ CREATE TABLE books (
     id             BIGINT       NOT NULL AUTO_INCREMENT,
     title          VARCHAR(200) NOT NULL,
     author         VARCHAR(100) NULL,
-    cover_image    TEXT         NULL,
+    cover_image    LONGTEXT     NULL,
     book_type      VARCHAR(30)  NULL,
     source         VARCHAR(20)  NOT NULL DEFAULT 'individual',
     class_id       BIGINT       NULL,
@@ -322,3 +323,19 @@ ALTER TABLE dungeon_records
 ALTER TABLE dungeon_records
     ADD CONSTRAINT fk_dungeon_records_dungeon
     FOREIGN KEY (dungeon_id) REFERENCES dungeons(id);
+
+-- ============================================================
+-- 3. MIGRATIONS - 이미 생성된 테이블에 반영할 변경 사항
+-- ============================================================
+
+-- books.cover_image: TEXT(약 64KB 한도) -> LONGTEXT(최대 4GB)
+-- book-select.html에서 표지 이미지를 압축 없이 base64로 그대로 저장하기 때문에
+-- TEXT로는 스마트폰 사진 한 장도 못 담을 수 있어 용량 한도를 늘림.
+ALTER TABLE books
+    MODIFY COLUMN cover_image LONGTEXT NULL;
+
+-- classes.class_number 컬럼 추가 (class_name 다음, grade 이전)
+-- teacher-register.html의 classSelect(<select value="1"~"10">)가 반 번호를 문자열로 넘기지만
+-- 의미상 숫자(정렬/비교 대상)라 grade와 동일하게 INT로 저장, 백엔드에서 parseInt 처리.
+ALTER TABLE classes
+    ADD COLUMN class_number INT NULL AFTER class_name;

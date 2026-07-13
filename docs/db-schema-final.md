@@ -69,6 +69,7 @@ book_votes — book-select.html이 "투표는 오프라인에서 진행하므로
 | id | BIGINT | N | PK | |
 | teacher_id | BIGINT | N | FK→users.id | 담당 교사 |
 | class_name | VARCHAR(100) | N | | 학급명 |
+| class_number | INT | Y | | 반 번호 (teacher-register.html classSelect) |
 | grade | INT | Y | | 학년 |
 | created_at | DATETIME | N | | |
 
@@ -167,7 +168,7 @@ book_votes — book-select.html이 "투표는 오프라인에서 진행하므로
 | id | BIGINT | N | PK | |
 | title | VARCHAR(200) | N | | |
 | author | VARCHAR(100) | Y | | |
-| cover_image | TEXT | Y | | base64 이미지 또는 URL |
+| cover_image | LONGTEXT | Y | | base64 이미지 또는 URL |
 | book_type | VARCHAR(30) | Y | | 이야기책/정보책/주장책 |
 | source | VARCHAR(20) | N | DEFAULT 'individual' | class(온책읽기 지정) / individual(자유도서) |
 | class_id | BIGINT | Y | FK→classes.id | source='class'일 때만 값 존재 |
