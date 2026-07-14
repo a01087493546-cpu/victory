@@ -3792,31 +3792,6 @@ body {
   </main>
 
   <script>
-    const API_BASE_URL = "http://localhost:8080";
-
-    function requestAiFeedback(type, bookType, qaList, questionNumber, summaryText) {
-      const requestBody = { type: type, bookType: bookType, qaList: qaList || [] };
-
-      if (typeof questionNumber === "number") {
-        requestBody.question_number = questionNumber;
-      }
-
-      if (typeof summaryText === "string") {
-        requestBody.summaryText = summaryText;
-      }
-
-      return fetch(API_BASE_URL + "/api/feedback/ai-review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody)
-      }).then(function(response) {
-        if (!response.ok) {
-          throw new Error("AI 피드백 요청 실패: " + response.status);
-        }
-        return response.json();
-      });
-    }
-
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
 
     const AFTER_KEYS = {
@@ -5210,6 +5185,7 @@ function goAdventure() {
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 + 활동 완료 보상 미니 모달(openMiniRewardModal)
        개별읽기 읽기 전/읽기 중/읽기 후/책수다방이 모두 이 공통 컴포넌트를 씁니다. -->
+<script src="../js/ai-feedback.js"></script>
 <script src="../js/individual-power.js?v=power-common-2"></script>
   <script src="../js/fixed-stage.js?v=after-reading-no-scroll-1"></script>
 </body>
