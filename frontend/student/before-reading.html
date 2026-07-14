@@ -3062,7 +3062,8 @@ body {
         (isExampleMode
           ? '<button class="main-button" type="button" onclick="toggleExample()">질문 만들기</button>'
           : '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
-            '<button class="main-button" type="button" onclick="checkAndGoNext()">저장하고 다음 →</button>'
+            '<button class="main-button" type="button" onclick="checkAndGoNext()">검사하기</button>' +
+            '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + (answer.passed ? "" : "disabled") + '>다음 →</button>'
         ) +
       '</div>' +
     '</div>';
@@ -3136,6 +3137,35 @@ body {
 
       questionInput.addEventListener("input", updateTextareaCount);
       answerInput.addEventListener("input", updateTextareaCount);
+
+      questionInput.addEventListener("input", resetPreReadingFeedbackOnEdit);
+      answerInput.addEventListener("input", resetPreReadingFeedbackOnEdit);
+    }
+
+    function resetPreReadingFeedbackOnEdit() {
+      const answer = answers[currentStepIndex];
+
+      if (!answer.passed) {
+        return;
+      }
+
+      answer.passed = false;
+      preReadingAiRequestId++;
+
+      const nextStepButton = document.getElementById("nextStepButton");
+      if (nextStepButton) {
+        nextStepButton.disabled = true;
+      }
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      if (feedbackBox) {
+        feedbackBox.classList.remove("good", "need");
+
+        const message = feedbackBox.querySelector(".feedback-message");
+        if (message) {
+          message.textContent = "질문이나 답을 바꿨으니 검사하기를 다시 눌러 줘!";
+        }
+      }
     }
 
     function updateTextareaCount() {
@@ -3189,28 +3219,52 @@ body {
   answers[currentStepIndex].expectedAnswer = expectedAnswer;
   answers[currentStepIndex].passed = true;
 
-  questionInput.disabled = true;
-  answerInput.disabled = true;
+  const nextStepButton = document.getElementById("nextStepButton");
 
-  const nextButton = document.querySelector(
-    '.main-button[onclick="checkAndGoNext()"]'
-  );
-
-  if (nextButton) {
-    nextButton.disabled = true;
-    nextButton.textContent = "저장 완료! 다음 단계로 이동 중...";
+  if (nextStepButton) {
+    nextStepButton.disabled = false;
   }
 
-  setTimeout(function() {
-    if (currentStepIndex < steps.length - 1) {
-      currentStepIndex++;
-      currentMode = "write";
-      renderAll();
-    } else {
-      currentMode = "summary";
-      renderAll();
+  requestPreReadingAiFeedback(feedbackBox, question, expectedAnswer);
+}
+
+let preReadingAiRequestId = 0;
+
+function requestPreReadingAiFeedback(feedbackBox, question, answer) {
+  const requestId = ++preReadingAiRequestId;
+  const loadingMessage = feedbackBox.querySelector(".feedback-message");
+
+  if (loadingMessage) {
+    loadingMessage.textContent = "루미가 답변을 읽고 있어요...";
+  }
+
+  requestAiFeedback("pre_reading_question", "", [
+    { question: question, answer: answer }
+  ]).then(function(result) {
+    if (requestId !== preReadingAiRequestId || !document.body.contains(feedbackBox)) {
+      return;
     }
-  }, 1800);
+
+    feedbackBox.classList.remove("good", "need");
+    feedbackBox.classList.add(result.status === "good" ? "good" : "need");
+
+    const message = feedbackBox.querySelector(".feedback-message");
+    if (message) {
+      message.textContent = result.message;
+    }
+  }).catch(function() {
+    if (requestId !== preReadingAiRequestId || !document.body.contains(feedbackBox)) {
+      return;
+    }
+
+    feedbackBox.classList.remove("good", "need");
+    feedbackBox.classList.add("need");
+
+    const message = feedbackBox.querySelector(".feedback-message");
+    if (message) {
+      message.textContent = "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어.";
+    }
+  });
 }
 function goNextAfterFeedback() {
   if (currentStepIndex < steps.length - 1) {
@@ -3426,5 +3480,6 @@ function goNextAfterFeedback() {
     }
   </script>
   <script src="../js/fixed-stage.js"></script>
+  <script src="../js/ai-feedback.js"></script>
 </body>
 </html>

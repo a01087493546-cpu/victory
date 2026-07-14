@@ -4263,6 +4263,8 @@ body {
     </div>
   </main>
 
+  <script src="../js/ai-feedback.js"></script>
+
   <script>
     /*
       =========================================================
@@ -4287,6 +4289,8 @@ body {
     let deepInputValue = "";
     let deepChecked = false;
     let deepResult = null;
+    let deepAiLoading = false;
+    let deepAiRequestId = 0;
 
     let reviewSelectedPartIndex = null;
     let reviewSelectedType = null;
@@ -4294,6 +4298,8 @@ body {
     let reviewAnswerInput = "";
     let reviewChecked = false;
     let reviewResult = null;
+    let reviewAiLoading = false;
+    let reviewAiRequestId = 0;
 
     let reviewCompletedQuestions = {
       direct: null,
@@ -5052,20 +5058,46 @@ body {
       const value = deepInputValue.trim();
 
       deepChecked = true;
+      deepAiLoading = false;
 
       if (value.length < 6 || value.indexOf("?") === -1) {
         deepResult = {
           ok: false,
           message: "질문은 조금 더 길게 쓰고, 끝에 물음표를 붙여 보자."
         };
-      } else {
-        deepResult = {
-          ok: true,
-          message: "좋아! 질문의 모양이 잘 되었어. 다음 문제로 넘어가 보자."
-        };
+        renderDeepPracticeScreen();
+        return;
       }
 
+      deepResult = {
+        ok: true,
+        message: "좋아! 질문의 모양이 잘 되었어. 다음 문제로 넘어가 보자."
+      };
+
+      requestDeepAiFeedback(value);
+    }
+
+    function requestDeepAiFeedback(question) {
+      const requestId = ++deepAiRequestId;
+      deepAiLoading = true;
       renderDeepPracticeScreen();
+
+      requestAiFeedback("during_reading_practice_deep", "", [
+        { question: question, answer: "" }
+      ]).then(function(result) {
+        if (requestId !== deepAiRequestId) return;
+        deepAiLoading = false;
+        deepResult = { ok: true, message: result.message };
+        renderDeepPracticeScreen();
+      }).catch(function() {
+        if (requestId !== deepAiRequestId) return;
+        deepAiLoading = false;
+        deepResult = {
+          ok: true,
+          message: "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어."
+        };
+        renderDeepPracticeScreen();
+      });
     }
 
     async function nextDeepQuestion() {
@@ -5132,15 +5164,20 @@ body {
               '</div>' +
 
               (
-                deepChecked
-                  ? '<div class="lumi-feedback ' + (deepResult.ok ? "good" : "need") + '">' +
+                deepAiLoading
+                  ? '<div class="lumi-feedback">' +
                       '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                      '<p>' + deepResult.message + '</p>' +
+                      '<p>루미가 답변을 읽고 있어요...</p>' +
                     '</div>'
-                  : '<div class="lumi-feedback">' +
-                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                      '<p>질문을 쓴 뒤 검사하기를 눌러 봐. 물음표가 있는 질문인지 확인해 줄게!</p>' +
-                    '</div>'
+                  : deepChecked
+                    ? '<div class="lumi-feedback ' + (deepResult.ok ? "good" : "need") + '">' +
+                        '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                        '<p>' + deepResult.message + '</p>' +
+                      '</div>'
+                    : '<div class="lumi-feedback">' +
+                        '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                        '<p>질문을 쓴 뒤 검사하기를 눌러 봐. 물음표가 있는 질문인지 확인해 줄게!</p>' +
+                      '</div>'
               ) +
 
               '<div class="method-actions">' +
@@ -5232,6 +5269,7 @@ body {
       const answerValue = reviewAnswerInput.trim();
 
       reviewChecked = true;
+      reviewAiLoading = false;
 
       if (reviewSelectedPartIndex === null) {
         reviewResult = {
@@ -5268,9 +5306,35 @@ body {
         reviewQuestionInput = "";
         reviewAnswerInput = "";
         reviewSelectedType = null;
+
+        requestReviewAiFeedback(questionValue, answerValue);
+        return;
       }
 
       renderReviewScreen();
+    }
+
+    function requestReviewAiFeedback(question, answer) {
+      const requestId = ++reviewAiRequestId;
+      reviewAiLoading = true;
+      renderReviewScreen();
+
+      requestAiFeedback("during_reading_practice_review", "", [
+        { question: question, answer: answer }
+      ]).then(function(result) {
+        if (requestId !== reviewAiRequestId) return;
+        reviewAiLoading = false;
+        reviewResult = { ok: true, message: result.message };
+        renderReviewScreen();
+      }).catch(function() {
+        if (requestId !== reviewAiRequestId) return;
+        reviewAiLoading = false;
+        reviewResult = {
+          ok: true,
+          message: "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어."
+        };
+        renderReviewScreen();
+      });
     }
 
     async function finishReview() {
@@ -5351,15 +5415,20 @@ body {
               '<textarea class="review-input" placeholder="내 답이나 생각을 써요." oninput="updateReviewAnswer(this.value)">' + escapeHtml(reviewAnswerInput) + '</textarea>' +
 
               (
-                reviewChecked && reviewResult
-                  ? '<div class="lumi-feedback ' + (reviewResult.ok ? "good" : "need") + '">' +
+                reviewAiLoading
+                  ? '<div class="lumi-feedback">' +
                       '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                      '<p>' + reviewResult.message + '</p>' +
+                      '<p>루미가 답변을 읽고 있어요...</p>' +
                     '</div>'
-                  : '<div class="lumi-feedback">' +
-                      '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                      '<p>글 부분과 질문 종류를 고른 뒤 질문을 만들어 봐!</p>' +
-                    '</div>'
+                  : reviewChecked && reviewResult
+                    ? '<div class="lumi-feedback ' + (reviewResult.ok ? "good" : "need") + '">' +
+                        '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                        '<p>' + reviewResult.message + '</p>' +
+                      '</div>'
+                    : '<div class="lumi-feedback">' +
+                        '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
+                        '<p>글 부분과 질문 종류를 고른 뒤 질문을 만들어 봐!</p>' +
+                      '</div>'
               ) +
 
               '<div class="method-actions">' +

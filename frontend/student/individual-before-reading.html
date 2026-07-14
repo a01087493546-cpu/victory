@@ -519,12 +519,19 @@
     }
 
     .ibr-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.2fr;
+      display: flex;
       gap: 14px;
       align-items: center;
       border-top: 1px solid rgba(181, 117, 37, 0.16);
       padding-top: 18px;
+    }
+
+    .ibr-actions .ibr-button {
+      flex: 1;
+    }
+
+    .ibr-actions .ibr-button.primary {
+      flex: 1.2;
     }
 
     .ibr-button {
@@ -738,9 +745,6 @@
       font-size: 16px !important;
     }
 
-    .ibr-actions {
-      grid-template-columns: 1fr 1fr 1.3fr !important;
-    }
 
     @media (max-height: 760px) {
       .ibr-card {
@@ -905,7 +909,6 @@
     .ibr-actions {
       height: 72px !important;
       padding-top: 14px !important;
-      grid-template-columns: 1fr 1fr 1.25fr !important;
       gap: 14px !important;
       align-items: end !important;
     }
@@ -1803,6 +1806,9 @@
             <button type="button" class="ibr-button primary" id="mainActionButton" onclick="handleMainAction()">
               저장하고 다음 →
             </button>
+            <button type="button" class="ibr-button primary" id="nextStepButton" onclick="goNextQuestionStep()" style="display: none;" disabled>
+              다음 →
+            </button>
           </div>
         </article>
 
@@ -1834,6 +1840,7 @@
   </div>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/ai-feedback.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -1923,6 +1930,7 @@ desc: "",
     ];
 
     let currentStepIndex = 0;
+    let individualPreReadingAiRequestId = 0;
     let answers = [
       { question: "", expectedAnswer: "", passed: false },
       { question: "", expectedAnswer: "", passed: false },
@@ -1973,6 +1981,37 @@ function selectBookType(type) {
       document.getElementById("bookAuthorInput").addEventListener("input", updateBookLabel);
       document.getElementById("questionInput").addEventListener("input", updateTextareaCount);
       document.getElementById("answerInput").addEventListener("input", updateTextareaCount);
+
+      document.getElementById("questionInput").addEventListener("input", resetIndividualPreReadingFeedbackOnEdit);
+      document.getElementById("answerInput").addEventListener("input", resetIndividualPreReadingFeedbackOnEdit);
+    }
+
+    function resetIndividualPreReadingFeedbackOnEdit() {
+      if (currentStepIndex === 0) {
+        return;
+      }
+
+      const answer = answers[currentStepIndex - 1];
+
+      if (!answer || !answer.passed) {
+        return;
+      }
+
+      answer.passed = false;
+      individualPreReadingAiRequestId++;
+
+      const nextStepButton = document.getElementById("nextStepButton");
+      if (nextStepButton) {
+        nextStepButton.disabled = true;
+      }
+
+      const feedbackBox = document.getElementById("feedbackBox");
+      const feedbackText = document.getElementById("feedbackText");
+
+      if (feedbackBox && feedbackText) {
+        feedbackBox.classList.remove("good", "need");
+        feedbackText.textContent = "질문이나 답을 바꿨으니 검사하기를 다시 눌러 줘!";
+      }
     }
 
     function renderAll() {
@@ -2046,6 +2085,8 @@ function selectBookType(type) {
     }
 
     function renderCurrentStep() {
+      individualPreReadingAiRequestId++;
+
       const step = steps[currentStepIndex];
       const isBookStep = currentStepIndex === 0;
 const answer = isBookStep ? null : answers[currentStepIndex - 1];
@@ -2099,11 +2140,22 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
         ? "책 제목을 적고 저장하면 4개의 읽기 전 질문 만들기가 시작돼!"
         : "질문과 답을 적고 저장하면 루미가 확인해줄게!";
 
-      document.getElementById("mainActionButton").textContent = isBookStep
+      const mainActionButton = document.getElementById("mainActionButton");
+      const nextStepButton = document.getElementById("nextStepButton");
+
+      mainActionButton.textContent = isBookStep
         ? "책 정하고 질문 만들기 →"
-        : currentStepIndex === steps.length - 1
+        : "검사하기";
+
+      if (isBookStep) {
+        nextStepButton.style.display = "none";
+      } else {
+        nextStepButton.style.display = "";
+        nextStepButton.textContent = currentStepIndex === steps.length - 1
           ? "읽기 전 활동 완료하기"
-          : "저장하고 다음 →";
+          : "다음 →";
+        nextStepButton.disabled = !(answer && answer.passed);
+      }
 
       renderLumi(step, isBookStep);
     }
@@ -2287,11 +2339,10 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
       const feedbackText = document.getElementById("feedbackText");
       const result = validateQuestionAndAnswer(question, expectedAnswer);
 
-      feedbackBox.classList.remove("good", "need");
-      feedbackBox.classList.add(result.ok ? "good" : "need");
-      feedbackText.textContent = result.message;
-
       if (!result.ok) {
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add("need");
+        feedbackText.textContent = result.message;
         return;
       }
 
@@ -2305,14 +2356,51 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
 
       sessionStorage.setItem(STORAGE_KEYS.beforeQuestions, JSON.stringify(answers));
 
-      setTimeout(() => {
-        if (currentStepIndex < steps.length - 1) {
-          currentStepIndex++;
-          renderAll();
-        } else {
-          completeBeforeReading();
+      const nextStepButton = document.getElementById("nextStepButton");
+      if (nextStepButton) {
+        nextStepButton.disabled = false;
+      }
+
+      requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, expectedAnswer);
+    }
+
+    function goNextQuestionStep() {
+      if (currentStepIndex < steps.length - 1) {
+        currentStepIndex++;
+        renderAll();
+      } else {
+        completeBeforeReading();
+      }
+    }
+
+    function getBookTypeLabelForAi() {
+      const bookType = selectedBookType || sessionStorage.getItem(STORAGE_KEYS.bookType) || "";
+      return BOOK_TYPE_LABELS[bookType] || bookType || "";
+    }
+
+    function requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, answer) {
+      const requestId = ++individualPreReadingAiRequestId;
+
+      feedbackBox.classList.remove("good", "need");
+      feedbackText.textContent = "루미가 답변을 읽고 있어요...";
+
+      requestAiFeedback("individual_pre_reading_question", getBookTypeLabelForAi(), [
+        { question: question, answer: answer }
+      ]).then(function(result) {
+        if (requestId !== individualPreReadingAiRequestId) {
+          return;
         }
-      }, 650);
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add(result.status === "good" ? "good" : "need");
+        feedbackText.textContent = result.message;
+      }).catch(function() {
+        if (requestId !== individualPreReadingAiRequestId) {
+          return;
+        }
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add("need");
+        feedbackText.textContent = "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어.";
+      });
     }
 
     function validateQuestionAndAnswer(question, expectedAnswer) {
@@ -2564,7 +2652,6 @@ function goTodayAdventure() {
     }
 
     .mq-fixed-stage-page .ibr-actions {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr) !important;
       gap: 16px !important;
     }
 

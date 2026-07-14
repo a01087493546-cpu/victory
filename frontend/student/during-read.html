@@ -1208,7 +1208,34 @@ button {
             (3 - todayQuestions.length) +
             "개를 더 쓰면 다음 단계로 갈 수 있어."
         );
+
+        requestDuringReadingAiFeedback(question, answer);
       }
+    }
+
+    let duringReadingAiRequestId = 0;
+
+    function requestDuringReadingAiFeedback(question, answer) {
+      const requestId = ++duringReadingAiRequestId;
+
+      setFeedback("", "루미가 답변을 읽고 있어요...");
+
+      requestAiFeedback("during_reading_question", "", [
+        { question: question, answer: answer }
+      ]).then(function(result) {
+        if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+        setFeedback(result.status, result.message);
+      }).catch(function() {
+        if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+        setFeedback(
+          "need",
+          "지금은 루미 피드백을 확인하기 어려워요. 질문은 잘 저장됐어, 잠시 후 다시 확인해봐."
+        );
+      });
     }
 
     function validateQuestion(
@@ -1863,6 +1890,7 @@ function goNextStep() {
     }
   </script>
 
+  <script src="../js/ai-feedback.js"></script>
   <!-- <script src="../js/fixed-stage.js"></script> -->
 </body>
 </html>

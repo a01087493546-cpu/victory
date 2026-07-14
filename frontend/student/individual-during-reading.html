@@ -8174,6 +8174,7 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
 </div>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/ai-feedback.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -9812,18 +9813,49 @@ function confirmDuringRewardModal() {
 
       if (!result.ok) return;
 
+      const question = document.getElementById("questionInput").value.trim();
+      const answer = document.getElementById("answerInput").value.trim();
+
       saveTodayQuestion();
       resetQuestionForm(false);
-
-      
-      feedbackBox.classList.add("good");
-      feedbackText.textContent = "좋아! 질문이 저장됐어. 더 만들 질문이 있으면 계속 쓰고, 끝나면 다음 단계를 눌러줘.";
 
       renderTodayQuestionList();
       renderCollection();
       renderShareQuestionList();
       updateShareButtons();
       updateMadeQuestionCountBadge();
+
+      requestIndividualDuringQuestionAiFeedback(question, answer);
+    }
+
+    function getBookTypeLabelForAi() {
+      const currentBookType = sessionStorage.getItem(STORAGE_KEYS.bookType);
+      return BOOK_TYPE_LABELS[currentBookType] || currentBookType || "";
+    }
+
+    let individualDuringQuestionAiRequestId = 0;
+
+    function requestIndividualDuringQuestionAiFeedback(question, answer) {
+      const requestId = ++individualDuringQuestionAiRequestId;
+      const feedbackBox = document.getElementById("questionFeedbackBox");
+      const feedbackText = document.getElementById("questionFeedbackText");
+
+      feedbackBox.classList.remove("good", "need");
+      feedbackText.textContent = "루미가 답변을 읽고 있어요...";
+
+      requestAiFeedback("individual_during_reading_question", getBookTypeLabelForAi(), [
+        { question: question, answer: answer }
+      ]).then(function(result) {
+        if (requestId !== individualDuringQuestionAiRequestId) return;
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add(result.status === "good" ? "good" : "need");
+        feedbackText.textContent = result.message;
+      }).catch(function() {
+        if (requestId !== individualDuringQuestionAiRequestId) return;
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add("need");
+        feedbackText.textContent = "지금은 루미 피드백을 확인하기 어려워요. 질문은 잘 저장됐어, 잠시 후 다시 확인해봐.";
+      });
     }
 
     function validateQuestionForm() {

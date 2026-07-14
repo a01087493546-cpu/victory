@@ -39,6 +39,11 @@ public class FeedbackAiService {
             - 정보를 담은 책: 문단이나 각 장의 중심 내용(정보)에 대한 질문이어야 함
             - 주장을 담은 책: 글쓴이의 주장과 그 이유에 대한 질문이어야 함
 
+            책 유형 정보가 비어 있거나 알 수 없을 때는(책 유형: (특정되지
+            않음)), 질문이 이야기(사건)/정보(지식)/주장(의견) 중 어느
+            하나의 기준에라도 논리적으로 맞으면 통과 기준에 맞는 것으로
+            판단해. 세 기준을 모두 만족할 필요는 없어.
+
             답변은 정답을 채점하는 게 아니라, 질문에 대한 논리적인 생각으로
             이어지는지만 확인해. 답에 특별한 오류가 없다면 통과시켜.
 
@@ -146,8 +151,12 @@ public class FeedbackAiService {
 
     private String buildQuestionUserContent(AiFeedbackRequest request) {
         StringBuilder sb = new StringBuilder();
+        String bookType = request.getBookType();
+        String bookTypeDisplay = (bookType == null || bookType.isBlank())
+                ? "(특정되지 않음)" : bookType;
+
         sb.append("활동 유형: ").append(request.getType()).append("\n");
-        sb.append("책 유형: ").append(request.getBookType()).append("\n");
+        sb.append("책 유형: ").append(bookTypeDisplay).append("\n");
         sb.append("질문과 답변 목록:\n");
 
         List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
