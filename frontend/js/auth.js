@@ -27,6 +27,22 @@ function checkLogin() {
 }
 
 /*
+  함수명: logoutAndGoLogin
+  역할: 로그아웃 버튼 공통 처리입니다. sessionStorage에 저장된 로그인 정보를
+  모두 지우고 로그인 화면으로 이동합니다. auth.js를 불러오는 화면이면
+  어디서든 이 함수를 그대로 재사용하면 됩니다.
+*/
+function logoutAndGoLogin() {
+  sessionStorage.removeItem("token");
+  sessionStorage.removeItem("studentId");
+  sessionStorage.removeItem("role");
+  sessionStorage.removeItem("name");
+  sessionStorage.removeItem("loginId");
+
+  window.location.href = "../index.html";
+}
+
+/*
   HTML 화면이 모두 준비된 뒤 로그인 기능을 연결합니다.
 */
 document.addEventListener("DOMContentLoaded", function () {

@@ -866,7 +866,7 @@ body {
         <h1 class="tr-title" id="topTitle">계정 관리</h1>
 
         <div class="tr-top-actions">
-          <button class="tr-pill-button" type="button" onclick="goLogin()">로그인으로</button>
+          <button class="tr-pill-button" type="button" onclick="logoutAndGoLogin()">로그아웃</button>
         </div>
       </header>
 
@@ -1451,6 +1451,7 @@ showPanel("complete");
         .replaceAll("'", "&#039;");
     }
   </script>
+  <script src="../js/auth.js"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>
