@@ -4,6 +4,7 @@ import com.victory.dto.LoginRequest;
 import com.victory.dto.LoginResponse;
 import com.victory.dto.RegisterRequest;
 import com.victory.dto.RegisterResponse;
+import com.victory.dto.StudentCreateRequest;
 import com.victory.entity.User;
 import com.victory.exception.DuplicateLoginIdException;
 import com.victory.exception.InvalidCredentialsException;
@@ -30,7 +31,7 @@ public class AuthService {
         user.setLoginId(request.getLoginId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
-        user.setRole(request.getRole());
+        user.setRole("teacher");
 
         User savedUser = userRepository.save(user);
 
@@ -40,6 +41,30 @@ public class AuthService {
                 savedUser.getName(),
                 savedUser.getRole(),
                 savedUser.getCreatedAt()
+        );
+    }
+
+    public RegisterResponse createStudent(Long teacherId, StudentCreateRequest request) {
+        if (userRepository.findByLoginId(request.getLoginId()).isPresent()) {
+            throw new DuplicateLoginIdException("이미 사용 중인 아이디입니다.");
+        }
+
+        User student = new User();
+        student.setLoginId(request.getLoginId());
+        student.setPassword(passwordEncoder.encode(request.getPassword()));
+        student.setName(request.getName());
+        student.setRole("student");
+
+        User savedStudent = userRepository.save(student);
+
+        // TODO: class_students 연결 - Class/ClassStudent 엔티티 도입 후 teacherId 기준으로 배정 처리 필요
+
+        return new RegisterResponse(
+                savedStudent.getId(),
+                savedStudent.getLoginId(),
+                savedStudent.getName(),
+                savedStudent.getRole(),
+                savedStudent.getCreatedAt()
         );
     }
 
