@@ -2491,6 +2491,43 @@ body {
   font-size: 23px !important;
   line-height: 1.5 !important;
 }
+
+/* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
+.mq-book-home-button {
+  height: 42px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(214, 173, 99, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5c3c22 0%, #2c1a0d 100%);
+  color: #fbf0da;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 8px 16px rgba(35, 20, 8, 0.32),
+    inset 0 1px 0 rgba(255, 238, 205, 0.16);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.mq-book-home-button:hover {
+  background: linear-gradient(180deg, #6e4a29 0%, #3a2411 100%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 20px rgba(35, 20, 8, 0.38),
+    inset 0 1px 0 rgba(255, 238, 205, 0.22);
+}
+
+.mq-book-home-button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 5px 10px rgba(35, 20, 8, 0.3),
+    inset 0 1px 0 rgba(255, 238, 205, 0.14);
+}
   </style>
 </head>
 
@@ -2500,7 +2537,7 @@ body {
 
       <header class="top-nav">
         <div class="nav-left">
-          <button class="nav-button" type="button" onclick="goHome()">⌂ 홈으로</button>
+          <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">📚 책읽기 홈</button>
           <button class="nav-button" type="button" onclick="goPractice()">▣ 연습하기로</button>
         </div>
 
@@ -3299,67 +3336,68 @@ function goNextAfterFeedback() {
 
     // 질문 4개를 모두 완성하면 읽기 전 질문 공유하기 화면은 건너뛰고,
     // 바로 읽기 전/중/후 3단계 선택 화면(practice.html)으로 이동합니다.
-    function completeAndGoPractice() {
-      const incompleteIndex = answers.findIndex(function(item) {
-        return !item.passed;
-      });
+    async function completeAndGoPractice() {
+  const incompleteIndex = answers.findIndex(function(item) {
+    return !item.passed;
+  });
 
-      if (incompleteIndex !== -1) {
-        currentStepIndex = incompleteIndex;
-        currentMode = "write";
-        renderAll();
+  if (incompleteIndex !== -1) {
+    currentStepIndex = incompleteIndex;
+    currentMode = "write";
+    renderAll();
 
-        setTimeout(function() {
-          const feedbackBox = document.getElementById("feedbackBox");
-          feedbackBox.style.display = "flex";
-          feedbackBox.classList.add("need");
-         feedbackBox.querySelector(".feedback-message").textContent =
-  "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
-        }, 100);
+    setTimeout(function() {
+      const feedbackBox = document.getElementById("feedbackBox");
 
-        return;
-      }
+      feedbackBox.style.display = "flex";
+      feedbackBox.classList.add("need");
 
-      saveBeforeReadingData();
+      feedbackBox.querySelector(".feedback-message").textContent =
+        "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
+    }, 100);
 
-      const progressKey = "practiceProgress_" + studentId;
-      const progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
-        book: false,
-        before: false,
-        during: false,
-        classRead: false,
-        after: false
-      };
+    return;
+  }
 
-      progress.book = true;
-      progress.before = true;
+  // 기존 질문과 답을 임시 저장합니다.
+  
 
-      sessionStorage.setItem(progressKey, JSON.stringify(progress));
-      sessionStorage.setItem("beforeReadingCompleted_" + studentId, "true");
+  const studentId = sessionStorage.getItem("studentId");
+  const token = sessionStorage.getItem("token");
 
-      location.href = "./practice.html";
-    }
+  if (!studentId || !token) {
+    alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+    return;
+  }
 
-    function saveBeforeReadingData() {
-      const payload = {
-        studentId: studentId,
-        studentName: studentName,
-        bookId: selectedBook.bookId,
-        bookTitle: selectedBook.title,
-        questions: steps.map(function(step, index) {
-          return {
-            type: step.type,
-            typeName: step.title,
-            question: answers[index].question,
-            expectedAnswer: answers[index].expectedAnswer
-          };
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          bookSelected: true,
+          beforeDone: true
         })
-      };
+      }
+    );
 
-      sessionStorage.setItem("beforeReadingQuestions_" + studentId, JSON.stringify(payload));
-      console.log("읽기 전 질문 저장 데이터:", payload);
+    if (!response.ok) {
+      throw new Error("읽기 전 완료 상태 저장에 실패했습니다.");
     }
 
+    // 저장 성공 후 연습읽기 단계 선택 화면으로 이동합니다.
+    location.href = "./practice.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("읽기 전 완료 상태를 저장하지 못했습니다.");
+  }
+}
     /*
       =========================================================
       8. 이동 함수
@@ -3378,8 +3416,9 @@ function goNextAfterFeedback() {
       renderAll();
     }
 
-    function goHome() {
-      location.href = "./home.html";
+    // 상단 "책읽기 홈" 버튼을 누르면 개별읽기 메인 홈으로 이동합니다.
+    function goIndividualReading() {
+      location.href = "./individual-reading.html";
     }
 
     function goPractice() {

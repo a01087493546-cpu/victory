@@ -652,7 +652,7 @@ min-height: 170px;
 
       <header class="top-nav">
         <div class="nav-left">
-          <button class="nav-button" type="button" onclick="location.href='../index.html'">⌂ 로그인 화면으로</button>
+          <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">📚 책읽기 홈</button>
           <button class="nav-button" type="button" onclick="location.href='practice.html'">▣ 연습하기로</button>
         </div>
 
@@ -700,6 +700,11 @@ min-height: 170px;
   </main>
 
   <script>
+    // 상단 "책읽기 홈" 버튼을 누르면 개별읽기 메인 홈으로 이동합니다.
+    function goIndividualReading() {
+      location.href = "./individual-reading.html";
+    }
+
     const defaultBook = {
       title: "신통방통 홈 쇼핑",
       author: "예시 작가",
@@ -884,6 +889,43 @@ min-height: 170px;
 
     .mq-fixed-stage-page.mq-page-read-before-book-intro .cover-slot.has-cover img {
       object-fit: contain !important;
+    }
+
+    /* 상단 "책읽기 홈" 버튼: 다른 화면들과 통일된 짙은 브라운 스타일입니다. */
+    .mq-book-home-button {
+      height: 42px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(214, 173, 99, 0.5);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #5c3c22 0%, #2c1a0d 100%);
+      color: #fbf0da;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow:
+        0 8px 16px rgba(35, 20, 8, 0.32),
+        inset 0 1px 0 rgba(255, 238, 205, 0.16);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .mq-book-home-button:hover {
+      background: linear-gradient(180deg, #6e4a29 0%, #3a2411 100%);
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 20px rgba(35, 20, 8, 0.38),
+        inset 0 1px 0 rgba(255, 238, 205, 0.22);
+    }
+
+    .mq-book-home-button:active {
+      transform: translateY(0);
+      box-shadow:
+        0 5px 10px rgba(35, 20, 8, 0.3),
+        inset 0 1px 0 rgba(255, 238, 205, 0.14);
     }
   </style>
 </body>

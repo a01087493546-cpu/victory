@@ -188,6 +188,12 @@
       gap: 0;
     }
 
+    #teacherPanel.is-active,
+    #classPanel.is-active {
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 22px;
+    }
+
     #completePanel .tr-complete-wrap {
       height: 100%;
       min-height: 0;
@@ -591,11 +597,12 @@
 
     .tr-complete-card p {
       color: #5b3a1a;
-      font-size: 16px;
-      font-weight: 850;
-      line-height: 1.55;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.7;
+      letter-spacing: -0.35px;
       word-break: keep-all;
-      margin-bottom: 22px;
+      margin-bottom: 38px;
     }
 
     .tr-summary-box {
@@ -891,11 +898,6 @@ body {
           </section>
 
           <section class="tr-panel" id="teacherPanel">
-            <div class="tr-panel-title">
-              <h2>교사 계정 등록</h2>
-              <p>로그인에 사용할 교사 계정 정보를 입력해요.</p>
-            </div>
-
             <div class="tr-form-wrap">
               <div class="tr-form-grid">
                 <div class="tr-input-row">
@@ -927,20 +929,12 @@ body {
           </section>
 
           <section class="tr-panel" id="classPanel">
-            <div class="tr-panel-title">
-              <h2>학급 정보 등록</h2>
-              <p>학생 계정을 만들 학급 정보를 입력해요.</p>
-            </div>
-
             <div class="tr-form-wrap">
               <div class="tr-form-grid">
                 <div class="tr-input-row">
                   <label class="tr-label" for="gradeSelect"><span>1</span> 학년 선택</label>
                   <select class="tr-select" id="gradeSelect">
                     <option value="">학년을 선택해요</option>
-                    <option value="1">1학년</option>
-                    <option value="2">2학년</option>
-                    <option value="3">3학년</option>
                     <option value="4">4학년</option>
                     <option value="5">5학년</option>
                     <option value="6">6학년</option>
@@ -1048,18 +1042,14 @@ body {
                 <div>
                   <div class="tr-check-badge">✔</div>
 
-                  <h2>학생 계정 생성이 완료되었어요</h2>
+                  <h2>계정 등록이 완료되었어요</h2>
 
                   <p>
-                    학생들에게 아이디와 비밀번호를 알려주면<br>
-                    문답책 활동을 바로 시작할 수 있어요.
+                    등록한 교사 아이디와 비밀번호로 로그인해 주세요.<br>
+                    학생 계정을 다시 만들더라도 등록이 끝나면 로그인 화면으로 이동하게 됩니다.
                   </p>
 
-                  <div class="tr-summary-box" id="summaryBox">
-                    등록 정보를 불러오는 중이에요.
-                  </div>
-
-                  <button class="tr-action-button" type="button" onclick="goLogin()">로그인 하러 가기</button>
+                  <button class="tr-action-button" type="button" onclick="confirmGoLogin()">로그인 하러 가기</button>
                 </div>
               </article>
             </div>
@@ -1436,21 +1426,16 @@ saveRegisteredIds([
   })
 ]);
 
-renderSummary();
 showPanel("complete");
     }
 
-    function renderSummary() {
-      const summaryBox = document.getElementById("summaryBox");
-
-      summaryBox.innerHTML =
-        "<strong>등록 정보</strong><br>" +
-        "학교: " + escapeHtml(teacherData.school) + "<br>" +
-        "교사: " + escapeHtml(teacherData.name) + "<br>" +
-        "학급: " + escapeHtml(classData.grade) + "학년 " +
-        escapeHtml(classData.classNumber) + "반 · " +
-        escapeHtml(classData.className) + "<br>" +
-        "학생 계정: " + studentData.length + "명 생성";
+    function confirmGoLogin() {
+      alert(
+        "계정 등록이 완료되었어요.\n\n" +
+        "등록한 교사 아이디와 비밀번호로 로그인해 주세요.\n" +
+        "학생 계정을 여러 번 만들어도 등록이 끝나면 로그인 화면으로 이동합니다."
+      );
+      goLogin();
     }
 
     function goLogin() {
