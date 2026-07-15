@@ -88,7 +88,7 @@
       width: 100%;
       height: 100vh;
 
-      padding: 13px 20px 15px;
+      padding: 13px 12px 15px;
 
       overflow: hidden;
 
@@ -107,7 +107,7 @@
     }
 
     .ir-shell {
-      width: min(1620px, calc(100vw - 40px));
+      width: 1840px;
       height: 100%;
 
       margin: 0 auto;
@@ -354,7 +354,7 @@
       color: var(--brown);
 
       font-family: "Noto Serif KR", serif;
-      font-size: 25px;
+      font-size: 29px;
       font-weight: 900;
 
       letter-spacing: -0.5px;
@@ -366,7 +366,7 @@
 
       color: var(--brown-soft);
 
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 850;
       line-height: 1.35;
     }
@@ -418,8 +418,8 @@
 
       display: grid;
       grid-template-columns:
-        minmax(0, 1.25fr)
-        minmax(470px, 0.98fr);
+        minmax(0, 1.35fr)
+        minmax(540px, 1fr);
 
       gap: 11px;
 
@@ -459,7 +459,7 @@
 
       gap: 9px;
 
-      padding: 16px 18px 14px;
+      padding: 18px 22px 16px;
     }
 
     .ir-preview-card .ir-card-title {
@@ -538,7 +538,7 @@
 
       min-height: 37px;
 
-      padding: 7px 14px;
+      padding: 8px 18px;
 
       border-bottom:
         1px solid rgba(190, 130, 55, 0.25);
@@ -578,7 +578,7 @@
       align-items: center;
       gap: 12px;
 
-      padding: 8px 14px;
+      padding: 10px 18px;
 
       border-bottom:
         1px solid rgba(190, 130, 55, 0.19);
@@ -599,13 +599,13 @@
     .ir-student-name {
       color: var(--brown);
 
-      font-size: 17px;
+      font-size: 22px;
       font-weight: 900;
     }
 
     .ir-achieve-bar {
       width: 100%;
-      height: 15px;
+      height: 19px;
 
       border-radius: 999px;
 
@@ -661,7 +661,7 @@
     .ir-student-percent {
       color: #a76315;
 
-      font-size: 19px;
+      font-size: 22px;
       font-weight: 900;
       line-height: 1;
     }
@@ -726,7 +726,7 @@
 
       gap: 10px;
 
-      padding: 15px 17px;
+      padding: 18px 21px;
     }
 
     .ir-status-card .ir-card-title {
@@ -761,7 +761,7 @@
     .ir-today-value {
       color: #a76315;
 
-      font-size: 31px;
+      font-size: 36px;
       font-weight: 900;
       line-height: 1;
     }
@@ -771,7 +771,7 @@
 
       color: #745239;
 
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
     }
 
@@ -785,7 +785,7 @@
 
       color: var(--brown);
 
-      font-size: 16px;
+      font-size: 25px;
       font-weight: 900;
     }
 
@@ -854,14 +854,14 @@
     .ir-support-name {
       color: var(--brown);
 
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
     }
 
     .ir-support-reason {
       color: #704e32;
 
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 850;
 
       overflow: hidden;
@@ -872,7 +872,7 @@
     .ir-support-arrow {
       color: #b17523;
 
-      font-size: 19px;
+      font-size: 22px;
       font-weight: 900;
 
       text-align: right;
@@ -973,7 +973,7 @@
 
       color: var(--brown);
 
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 900;
 
       box-shadow:
@@ -1027,7 +1027,7 @@
     }
 
     .ir-big-button-arrow {
-      font-size: 25px;
+      font-size: 29px;
       font-weight: 900;
 
       text-align: right;
@@ -1196,7 +1196,7 @@
 
       color: #a76315;
 
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
     }
 
@@ -1225,7 +1225,7 @@
     .ir-detail-card {
       min-width: 0;
 
-      padding: 15px 17px;
+      padding: 18px 21px;
 
       border:
         1px solid rgba(190, 130, 55, 0.29);
@@ -1379,7 +1379,7 @@
       .ir-topbar {
         height: 66px;
 
-        padding: 7px 14px;
+        padding: 8px 18px;
       }
 
       .ir-brand {
@@ -1513,7 +1513,7 @@
           minmax(0, 1fr)
           18px;
 
-        padding: 7px 14px;
+        padding: 8px 18px;
 
         font-size: 17px;
       }
@@ -1611,6 +1611,184 @@
           1fr;
       }
     }
+  
+    /* 1920×1080 고정 캔버스 + 가로 확장 */
+    :root {
+      --stage-scale: 1;
+      --stage-left: 0px;
+      --stage-top: 0px;
+    }
+
+    body {
+      position: relative;
+    }
+
+    .ir-page {
+      position: absolute;
+      left: var(--stage-left);
+      top: var(--stage-top);
+      width: 1920px !important;
+      height: 1080px !important;
+      min-width: 1920px !important;
+      min-height: 1080px !important;
+      transform: scale(var(--stage-scale));
+      transform-origin: top left;
+    }
+
+    .ir-shell {
+      width: 1840px !important;
+      height: 100% !important;
+    }
+
+    @media (max-width: 1100px), (max-height: 850px) {
+      html, body {
+        width: 100% !important;
+        height: 100% !important;
+        overflow: hidden !important;
+      }
+
+      .ir-page {
+        width: 1920px !important;
+        height: 1080px !important;
+        min-height: 1080px !important;
+        padding: 13px 12px 15px !important;
+        overflow: hidden !important;
+      }
+
+      .ir-shell {
+        width: 1840px !important;
+        height: 100% !important;
+        grid-template-rows: 76px minmax(0, 1fr) 148px !important;
+        gap: 11px !important;
+        overflow: hidden !important;
+      }
+
+      .ir-topbar {
+        height: 76px !important;
+        grid-template-columns: minmax(210px, 1fr) auto minmax(315px, 1fr) !important;
+        padding: 9px 18px !important;
+      }
+
+      .ir-dashboard {
+        height: 100% !important;
+        grid-template-columns: minmax(0, 1.35fr) minmax(540px, 1fr) !important;
+        gap: 11px !important;
+        overflow: hidden !important;
+      }
+
+      .ir-left-area, .ir-right-area { height: 100% !important; }
+      .ir-bottom-menu { height: 148px !important; }
+      .ir-main-buttons { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+      .ir-criteria-grid, .ir-detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    }
+
+
+    /* 전반적인 글씨·그래프 확대 — 카드 배치와 1920×1080 고정은 유지 */
+    .ir-brand { font-size: 29px !important; }
+    .ir-top-title-small { font-size: 15px !important; }
+    .ir-main-title { font-size: 40px !important; }
+
+    .ir-pill,
+    .ir-home-button { font-size: 17px !important; }
+
+    .ir-preview-card .ir-card-title,
+    .ir-status-card .ir-card-title { font-size: 31px !important; }
+    .ir-card-sub { font-size: 17px !important; line-height: 1.4 !important; }
+    .ir-small-tag,
+    .ir-criteria-button { font-size: 16px !important; }
+
+    .ir-list-header { font-size: 16px !important; }
+    .ir-student-name { font-size: 20px !important; }
+    .ir-student-percent { font-size: 23px !important; }
+    .ir-student-state { font-size: 13px !important; }
+    .ir-achieve-bar { height: 19px !important; }
+    .ir-more-button { font-size: 19px !important; }
+
+    .ir-today-value { font-size: 39px !important; }
+    .ir-today-label { font-size: 17px !important; }
+    .ir-support-heading { font-size: 25px !important; }
+    .ir-support-count { font-size: 15px !important; }
+    .ir-support-name { font-size: 17px !important; }
+    .ir-support-reason { font-size: 17px !important; }
+    .ir-support-arrow { font-size: 23px !important; }
+
+    .ir-bottom-title { font-size: 27px !important; }
+    .ir-bottom-title-icon { font-size: 19px !important; }
+    .ir-big-button { font-size: 24px !important; }
+    .ir-big-button-icon { font-size: 29px !important; }
+    .ir-big-button-arrow { font-size: 29px !important; }
+
+    .ir-modal-title { font-size: 32px !important; }
+    .ir-modal-description { font-size: 18px !important; }
+    .ir-modal-close { font-size: 17px !important; }
+    .ir-criteria-name,
+    .ir-detail-name { font-size: 24px !important; }
+    .ir-criteria-weight,
+    .ir-criteria-text,
+    .ir-teacher-note { font-size: 17px !important; }
+    .ir-detail-bar-name,
+    .ir-detail-bar-value { font-size: 17px !important; }
+    .ir-detail-bar { height: 17px !important; }
+    .ir-state-chip { font-size: 15px !important; }
+
+    /* 확인이 필요한 학생 영역 글씨 확대 */
+.ir-support-heading {
+  font-size: 21px;
+}
+
+.ir-support-count {
+  font-size: 17px;
+}
+
+.ir-support-name {
+  font-size: 18px;
+}
+
+.ir-support-reason {
+  font-size: 18px;
+}
+
+.ir-support-arrow {
+  font-size: 24px;
+}
+
+  
+    /* =========================================================
+       확인이 필요한 학생 영역 최종 글씨 확대
+       기존 !important 선언보다 아래에서 다시 덮어써 확실히 적용
+    ========================================================= */
+    .ir-status-card .ir-support-heading {
+      font-size: 27px !important;
+      line-height: 1.25 !important;
+    }
+
+    .ir-status-card .ir-support-count {
+      font-size: 19px !important;
+      line-height: 1.25 !important;
+    }
+
+    .ir-status-card .ir-support-item {
+      min-height: 58px !important;
+      grid-template-columns: 110px minmax(0, 1fr) 28px !important;
+      gap: 12px !important;
+      padding: 10px 14px !important;
+    }
+
+    .ir-status-card .ir-support-name {
+      font-size: 21px !important;
+      line-height: 1.3 !important;
+    }
+
+    .ir-status-card .ir-support-reason {
+      font-size: 21px !important;
+      line-height: 1.3 !important;
+    }
+
+    .ir-status-card .ir-support-arrow {
+      font-size: 28px !important;
+      line-height: 1 !important;
+    }
+
   </style>
 </head>
 
@@ -2493,7 +2671,25 @@
         "../student/individual-after-reading.html?teacherView=summaryShare";
     }
 
+
+
+    function fitFixedStage() {
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+      const scale = Math.min(window.innerWidth / baseWidth, window.innerHeight / baseHeight);
+      const left = Math.max(0, (window.innerWidth - baseWidth * scale) / 2);
+      const top = Math.max(0, (window.innerHeight - baseHeight * scale) / 2);
+
+      document.documentElement.style.setProperty("--stage-scale", String(scale));
+      document.documentElement.style.setProperty("--stage-left", left + "px");
+      document.documentElement.style.setProperty("--stage-top", top + "px");
+    }
+
+    window.addEventListener("resize", fitFixedStage);
+    window.addEventListener("load", fitFixedStage);
+
     renderStudentPreview();
+    fitFixedStage();
   </script>
 </body>
 </html>

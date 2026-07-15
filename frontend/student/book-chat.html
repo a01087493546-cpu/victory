@@ -42,7 +42,7 @@
       height: 100%;
       margin: 0 auto;
       display: grid;
-      grid-template-rows: auto auto auto minmax(0,1fr);
+      grid-template-rows: auto auto auto auto minmax(0,1fr);
       gap: 12px;
       overflow: hidden;
     }
@@ -190,7 +190,7 @@
     .sort-select { padding: 0 16px; text-align:center; text-align-last:center; outline:none; }
 
     .board-card {
-      height: 100%;
+      height: calc(100% - 4px);
       min-height: 0;
       padding: 20px 26px;
       display: grid;
