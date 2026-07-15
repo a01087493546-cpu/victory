@@ -929,6 +929,7 @@
       display: grid;
       grid-template-columns:
         minmax(0, 1fr)
+        minmax(0, 1fr)
         82px;
 
       gap: 8px;
@@ -1180,7 +1181,12 @@
 
     .wr-criteria-modal,
     .wr-detail-modal {
-      position: fixed;
+      /*
+        position: fixed는 .wr-page의 transform: scale(...)로 인해
+        브라우저마다 컨테이닝 블록 해석이 갈릴 수 있어(오른쪽으로 치우쳐 보이는 원인),
+        스케일된 .wr-page 기준으로 항상 정확히 채워지는 absolute를 씁니다.
+      */
+      position: absolute;
       inset: 0;
       z-index: 99999;
 
@@ -1878,11 +1884,6 @@
       height: 100%;
     }
 
-    .wr-criteria-modal,
-    .wr-detail-modal {
-      width: 1920px;
-      height: 1080px;
-    }
 
     /* 기존 반응형 규칙이 고정 그리드를 바꾸지 않도록 무효화 */
     @media (max-width: 1100px) {
@@ -2173,7 +2174,7 @@
     }
 
     .wr-range-input-row {
-      grid-template-columns: minmax(0, 1fr) 98px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 98px;
       gap: 10px;
     }
 
@@ -2669,10 +2670,19 @@
               <div class="wr-range-input-row">
 
                 <input
-                  id="readingRangeInput"
+                  id="totalPageInput"
                   class="wr-range-input"
-                  type="text"
-                  placeholder="예: 15쪽 ~ 28쪽"
+                  type="number"
+                  min="1"
+                  placeholder="전체 쪽수 (예: 100)"
+                />
+
+                <input
+                  id="currentPageInput"
+                  class="wr-range-input"
+                  type="number"
+                  min="0"
+                  placeholder="누적 읽은 쪽수 (예: 68)"
                 />
 
                 <button
@@ -2688,7 +2698,7 @@
                 class="wr-current-range"
                 id="currentReadingRange"
               >
-                현재 읽을 범위: 아직 저장된 읽기 범위가 없어요.
+                현재 진행: 아직 저장된 진행 정보가 없어요.
               </div>
             </div>
           </article>
@@ -3217,9 +3227,14 @@
     );
 
     function saveReadingRange() {
-      const input =
+      const totalInput =
         document.getElementById(
-          "readingRangeInput"
+          "totalPageInput"
+        );
+
+      const currentInput =
+        document.getElementById(
+          "currentPageInput"
         );
 
       const current =
@@ -3227,21 +3242,45 @@
           "currentReadingRange"
         );
 
-      const range =
-        input.value.trim();
+      const totalPages =
+        Number(totalInput.value);
 
-      if (!range) {
+      const currentPage =
+        Number(currentInput.value);
+
+      if (!totalPages || totalPages < 1) {
         alert(
-          "아이들에게 보여줄 읽기 범위를 먼저 적어 주세요."
+          "전체 쪽수를 먼저 적어 주세요."
         );
 
-        input.focus();
+        totalInput.focus();
+
+        return;
+      }
+
+      if (currentInput.value === "" || currentPage < 0) {
+        alert(
+          "누적 읽은 쪽수를 적어 주세요."
+        );
+
+        currentInput.focus();
+
+        return;
+      }
+
+      if (currentPage > totalPages) {
+        alert(
+          "누적 읽은 쪽수는 전체 쪽수보다 클 수 없어요."
+        );
+
+        currentInput.focus();
 
         return;
       }
 
       const rangeData = {
-        range: range,
+        totalPages: totalPages,
+        currentPage: currentPage,
         savedAt:
           new Date().toISOString()
       };
@@ -3252,15 +3291,20 @@
       );
 
       current.textContent =
-        "현재 읽을 범위: " + range;
+        "현재 진행: " + currentPage + "쪽 / " + totalPages + "쪽";
 
-      alert("읽기 범위를 저장했어요.");
+      alert("읽기 진행 정보를 저장했어요.");
     }
 
     function loadReadingRange() {
-      const input =
+      const totalInput =
         document.getElementById(
-          "readingRangeInput"
+          "totalPageInput"
+        );
+
+      const currentInput =
+        document.getElementById(
+          "currentPageInput"
         );
 
       const current =
@@ -3281,17 +3325,23 @@
         const rangeData =
           JSON.parse(saved);
 
-        if (rangeData.range) {
-          input.value =
-            rangeData.range;
+        if (rangeData.totalPages && rangeData.currentPage !== undefined) {
+          totalInput.value =
+            rangeData.totalPages;
+
+          currentInput.value =
+            rangeData.currentPage;
 
           current.textContent =
-            "현재 읽을 범위: " +
-            rangeData.range;
+            "현재 진행: " +
+            rangeData.currentPage +
+            "쪽 / " +
+            rangeData.totalPages +
+            "쪽";
         }
       } catch (error) {
         current.textContent =
-          "저장된 읽기 범위를 불러오지 못했어요.";
+          "저장된 진행 정보를 불러오지 못했어요.";
       }
     }
 
