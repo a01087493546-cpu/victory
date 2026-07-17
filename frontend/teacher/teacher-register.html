@@ -993,7 +993,7 @@ body {
 
                   <div>
                     <label class="tr-mini-label" for="studentPwInput">공통 비밀번호</label>
-                    <input class="tr-input" id="studentPwInput" type="text" value="1234" maxlength="12">
+                    <input class="tr-input" id="studentPwInput" type="text" value="a1234" maxlength="20">
                   </div>
 
                   <button class="tr-action-button is-gold" type="button" onclick="autoCreateStudents()">자동생성</button>
@@ -1163,10 +1163,11 @@ if (isIdAlreadyUsed(teacherId)) {
   return;
 }
 
-if (teacherPw.length < 4) {
-        alert("비밀번호는 4자 이상으로 입력해 주세요.");
-        return;
-      }
+if (!/^(?=.*[A-Za-z])(?=.*\d).{4,}$/.test(teacherPw)) {
+  alert("비밀번호는 4자 이상이며 영어와 숫자를 모두 포함해야 해요.");
+  document.getElementById("teacherPw").focus();
+  return;
+}
 
       teacherData = {
         name: teacherName,
@@ -1259,7 +1260,7 @@ function saveRegisteredIds(ids) {
 
       let count = Number(countInput.value);
       let prefix = makeSafePrefix(prefixInput.value);
-      let password = String(pwInput.value || "1234").trim();
+      let password = String(pwInput.value || "a1234").trim();
 
       if (!count || count < 1) {
         count = 1;
@@ -1270,9 +1271,8 @@ function saveRegisteredIds(ids) {
       }
 
       if (!password) {
-        password = "1234";
-      }
-
+  password = "a1234";
+}
       countInput.value = count;
       prefixInput.value = prefix;
       pwInput.value = password;
@@ -1327,107 +1327,139 @@ function saveRegisteredIds(ids) {
       document.getElementById("studentCountText").textContent = "총 " + count + "명";
     }
 
-    function finishRegister() {
-      const rows = Array.from(document.querySelectorAll("#studentTableBody tr"));
-
-      if (rows.length === 0) {
-        alert("학생 계정을 먼저 생성해 주세요.");
-        return;
-      }
-
-      studentData = rows.map(function(row) {
-        const inputs = row.querySelectorAll("input");
-
-        return {
-          number: inputs[0].value.trim(),
-          name: inputs[1].value.trim(),
-          id: inputs[2].value.trim(),
-          password: inputs[3].value.trim()
-        };
-      });
-
-      const hasEmpty = studentData.some(function(student) {
-        return !student.number || !student.name || !student.id || !student.password;
-      });
-
-      if (hasEmpty) {
-        alert("학생 번호, 이름, 아이디, 비밀번호를 모두 채워 주세요.");
-        return;
-      }
-
-      const hasWrongId = studentData.some(function(student) {
-        return !isSimpleId(student.id);
-      });
-
-      if (hasWrongId) {
-        alert("학생 아이디는 영어 소문자와 숫자만 사용할 수 있어요.");
-        return;
-      }
-
-      const idList = studentData.map(function(student) {
-        return student.id;
-      });
-
-      const uniqueIdList = new Set(idList);
-
-if (uniqueIdList.size !== idList.length) {
-  alert("중복된 학생 아이디가 있어요. 아이디를 확인해 주세요.");
-  return;
-}
-
-/* 교사 아이디와 학생 아이디가 같은지도 확인해요. */
-if (idList.includes(teacherData.id)) {
-  alert("교사 아이디와 동일한 학생 아이디가 있어요. 아이디를 변경해 주세요.");
-  return;
-}
-
-/* 예전에 등록한 아이디와 중복되는지 확인해요. */
-const alreadyUsedStudent = studentData.find(function(student) {
-  return isIdAlreadyUsed(student.id);
-});
-
-if (alreadyUsedStudent) {
-  alert(
-    alreadyUsedStudent.id +
-    " 아이디는 이미 사용하고 있는 아이디입니다."
+    async function finishRegister() {
+  const rows = Array.from(
+    document.querySelectorAll("#studentTableBody tr")
   );
 
-  const duplicatedRow = rows.find(function(row) {
-    const inputs = row.querySelectorAll("input");
-    return inputs[2].value.trim() === alreadyUsedStudent.id;
-  });
-
-  if (duplicatedRow) {
-    const duplicatedInput = duplicatedRow.querySelectorAll("input")[2];
-    duplicatedInput.focus();
-    duplicatedInput.select();
+  if (rows.length === 0) {
+    alert("학생 계정을 먼저 생성해 주세요.");
+    return;
   }
 
-  return;
-}
+  studentData = rows.map(function (row) {
+    const inputs = row.querySelectorAll("input");
 
-const savedData = {
-        teacher: teacherData,
-        classInfo: classData,
-        students: studentData,
-        createdAt: new Date().toISOString()
-      };
+    return {
+      studentNumber: Number(inputs[0].value.trim()),
+      name: inputs[1].value.trim(),
+      loginId: inputs[2].value.trim(),
+      password: inputs[3].value.trim()
+    };
+  });
 
-      localStorage.setItem(
-  "teacherRegisterData",
-  JSON.stringify(savedData)
-);
+  const hasEmpty = studentData.some(function (student) {
+    return (
+      !student.studentNumber ||
+      !student.name ||
+      !student.loginId ||
+      !student.password
+    );
+  });
 
-/* 교사와 학생 아이디를 사용된 아이디 목록에 저장해요. */
-saveRegisteredIds([
-  teacherData.id,
-  ...studentData.map(function(student) {
-    return student.id;
-  })
-]);
+  if (hasEmpty) {
+    alert("학생 번호, 이름, 아이디, 비밀번호를 모두 채워 주세요.");
+    return;
+  }
 
-showPanel("complete");
+  const hasWrongId = studentData.some(function (student) {
+    return !isSimpleId(student.loginId);
+  });
+
+  if (hasWrongId) {
+    alert("학생 아이디는 영어 소문자와 숫자만 사용할 수 있어요.");
+    return;
+  }
+
+  const hasWrongPassword = studentData.some(function (student) {
+    return !/^(?=.*[A-Za-z])(?=.*\d).{4,}$/.test(student.password);
+  });
+
+  if (hasWrongPassword) {
+    alert("학생 비밀번호는 4자 이상이며 영어와 숫자를 모두 포함해야 해요.");
+    return;
+  }
+
+  const idList = studentData.map(function (student) {
+    return student.loginId;
+  });
+
+  const uniqueIdList = new Set(idList);
+
+  if (uniqueIdList.size !== idList.length) {
+    alert("중복된 학생 아이디가 있어요. 아이디를 확인해 주세요.");
+    return;
+  }
+
+  if (idList.includes(teacherData.id)) {
+    alert("교사 아이디와 동일한 학생 아이디가 있어요.");
+    return;
+  }
+
+  const registerButton = document.querySelector(
+    '#studentPanel button[onclick="finishRegister()"]'
+  );
+
+  try {
+    if (registerButton) {
+      registerButton.disabled = true;
+      registerButton.textContent = "등록 중...";
     }
+
+    const response = await fetch(
+      "http://localhost:8080/api/teachers/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          loginId: teacherData.id,
+          password: teacherData.password,
+          name: teacherData.name,
+          school: teacherData.school,
+          className: classData.className,
+          grade: Number(classData.grade),
+          classNumber: Number(classData.classNumber),
+          students: studentData
+        })
+      }
+    );
+
+    let responseData = {};
+
+    try {
+      responseData = await response.json();
+    } catch (error) {
+      responseData = {};
+    }
+
+    if (!response.ok) {
+      const message =
+        responseData.message ||
+        responseData.error ||
+        "계정 등록에 실패했습니다.";
+
+      throw new Error(message);
+    }
+
+    console.log("교사·학급·학생 등록 성공:", responseData);
+
+    showPanel("complete");
+  } catch (error) {
+    console.error("계정 등록 오류:", error);
+
+    alert(
+      error.message ||
+      "서버와 통신하는 중 오류가 발생했습니다."
+    );
+  } finally {
+    if (registerButton) {
+      registerButton.disabled = false;
+      registerButton.textContent = "등록하기";
+    }
+  }
+}
 
     function confirmGoLogin() {
       alert(

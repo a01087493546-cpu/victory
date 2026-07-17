@@ -63,21 +63,10 @@
 | during_type_progress | JSON | `{direct, infer, opinion, connect, review}` | 유지 — `duringReadingPracticeProgress_<id>`와 일치. `review`는 "총 복습" 화면(`finishReview()`) 완료 여부를 기록하는 정식 필드로 확인됨(스키마 설명에 `review` 추가 필요). 단, 이 값이 다른 화면 흐름을 게이트하지는 않음 — 완료 여부 기록용 |
 | updated_at | DATETIME | | 유지 |
 
-### questions
-- **역할**: 교사/시스템이 등록한 질문 풀
-- **표**:
-
-| 컬럼명 | 타입 | 설명 | 비고 |
-|---|---|---|---|
-| id | BIGINT | PK | 유지 |
-| book_id | BIGINT | FK→books.id | 유지 |
-| class_id | BIGINT | FK→classes.id | 유지 |
-| teacher_id | BIGINT | FK→users.id | 유지 |
-| question_type | VARCHAR(30) | direct/infer/opinion/connect | 유지 |
-| stage | VARCHAR(20) | before/during/after | 유지 |
-| content | TEXT | 질문 본문 | 유지 |
-| expected_answer | TEXT | 모범답안 | 유지 |
-| created_at | DATETIME | | 유지 |
+### ~~questions~~ — 제거됨 (최종 테이블 설계 단계에서 재확인)
+- **역할(과거 설계)**: 교사/시스템이 등록한 질문 풀로 설계되어 있었음.
+- **제거 사유**: `frontend/teacher/` 전체를 재조사한 결과 교사가 질문을 미리 입력/등록하는 화면이 어디에도 없고, `before-reading.html`/`during-read.html`/`individual-before-reading.html` 등 질문이 등장하는 모든 학생 화면이 "내가 만든 질문"(`individual-before-reading.html:1770` 라벨 그대로)처럼 학생이 매번 직접 작성하는 구조임을 확인함. `db-schema-final.md`의 옛 설계를 그대로 이어받은, 코드 근거 없는 테이블이었음.
+- **정리**: `Question` Entity 삭제, `responses.question_id` FK도 함께 제거함. 학생이 쓰는 질문/답 텍스트는 `responses.content`/`extra_data`에 그대로 저장하면 되므로 기능 손실 없음.
 
 ### dungeons
 - **역할**: 던전 콘텐츠(스테이지) 정의. `game/index.html`의 `DUNGEON_INFO` 배열, `game/js/game-api.js`의 `DUNGEONS` 배열과 대조 확인함 — 실제로 두 곳에 중복 하드코딩되어 있는 상태(정상 존재하는 코드 기준, §0 참고).
@@ -227,16 +216,17 @@
 
 ## 4. 테이블 관계(FK) 요약
 
+> 최종 테이블 설계(Entity 16개, `docs/backend-implementation-status.md` 참고) 기준으로 갱신함 — `questions` 제거, `responses.class_id` 미추가, `book_recommendations.teaser_response_ids` 확인 완료 반영.
+
 ```
 users.id
  ├─ classes.teacher_id
  ├─ class_students.student_id
  ├─ practice_progress.student_id
- ├─ questions.teacher_id
  ├─ books.registered_by
  ├─ reading_records.student_id
  ├─ responses.student_id
- ├─ responses.reviewed_by          ← 신규
+ ├─ responses.reviewed_by
  ├─ summaries.student_id
  ├─ student_stats.student_id
  ├─ student_stat_reward_log.student_id
@@ -246,12 +236,10 @@ users.id
 
 classes.id
  ├─ class_students.class_id
- ├─ questions.class_id
- ├─ books.class_id
- └─ responses.class_id             ← 신규
+ └─ books.class_id
+ (responses는 class_id를 따로 두지 않음 — book_id 경유 조회로 충분하다고 확정)
 
 books.id
- ├─ questions.book_id
  ├─ reading_records.book_id
  ├─ responses.book_id
  └─ summaries.book_id
@@ -261,14 +249,11 @@ reading_records.id
  ├─ summaries.reading_record_id
  └─ reading_records.represent_response_id → responses.id (순환 참조, 생성 순서 주의)
 
-questions.id
- └─ responses.question_id
-
 responses.id
  ├─ responses.parent_id (자기참조, 대댓글)
  ├─ reading_records.represent_response_id
  ├─ content_likes.content_id (content_type='response', 다형성)
- └─ book_recommendations.teaser_response_ids (JSON 배열 내부, 논리적 참조 — 확인 필요)
+ └─ book_recommendations.teaser_response_ids (JSON 배열, responses.id 참조로 확정)
 
 summaries.id
  └─ content_likes.content_id (content_type='summary', 다형성)
@@ -277,7 +262,8 @@ book_recommendations.id
  └─ content_likes.content_id (content_type='book_recommendation', 다형성)
 
 dungeons.id
- └─ dungeon_records.dungeon_id
+ ├─ dungeon_records.dungeon_id
+ └─ dungeons.prerequisite_dungeon_id (자기참조, 선행 던전)
 ```
 
 ---
@@ -286,9 +272,9 @@ dungeons.id
 
 테이블 설계와는 별개로, "테이블은 있어도 프론트가 아직 그 데이터를 백엔드로 보내지 않는" 지점들입니다. 스키마 수정 대상은 아니라서 위 표에서 제외했지만, 실제 연동 작업 순서를 잡을 때 필요해서 남겨둡니다.
 
-1. **연습읽기 읽기 전 질문/답 내용이 아예 전송되지 않음**: `before-reading.html`의 `answers` 배열(4개 질문/답)은 메모리에만 있다가 `completeAndGoPractice()`가 백엔드로 `{bookSelected:true, beforeDone:true}`만 보내고 실제 질문/답 텍스트는 버림. `questions`/`responses` 테이블은 이미 이 데이터를 받을 준비가 되어 있음 — 프론트 쪽 API 연동만 빠진 상태.
+1. **연습읽기 읽기 전 질문/답 내용이 아예 전송되지 않음**: `before-reading.html`의 `answers` 배열(4개 질문/답)은 메모리에만 있다가 `completeAndGoPractice()`가 백엔드로 `{bookSelected:true, beforeDone:true}`만 보내고 실제 질문/답 텍스트는 버림. `responses` 테이블은 이미 이 데이터를 받을 준비가 되어 있음 — 프론트 쪽 API 연동만 빠진 상태. (참고: 이전 버전 문서에서 `questions` 테이블도 이 데이터를 받을 준비가 됐다고 적었으나, 재조사 결과 교사가 질문을 미리 등록하는 화면 자체가 없고 학생이 항상 직접 질문을 작성하는 구조로 확정되어 `questions` 테이블은 설계에서 제거됨 — 질문 텍스트도 `responses.content`/`extra_data`에 학생이 직접 쓴 그대로 저장하면 됨.)
 2. **교사 계정/학급/학생 등록이 완전히 로컬 목업**: `teacher-register.html`은 `fetch` 호출이 전혀 없고 `teacherRegisterData`/`registeredAccountIds`(localStorage)에만 저장함. `POST /api/teachers/register`는 문서화되어 있으나 프론트에서 호출하지 않음 — 로그인만 실제 백엔드를 쓰고 계정 생성은 아직 가짜.
-3. **선정 도서 키 불일치(버그)**: 교사용 `book-select.html`은 `localStorage["selectedClassBook"]`에 저장하는데, 학생용 `before-reading.html`/`read-before-book-intro.html`은 `sessionStorage["selectedBook"]`을 읽음 — 스토리지 종류와 키 이름이 모두 달라 교사가 고른 책이 학생 화면에 절대 반영되지 않음. 스키마상 `books`(source='class') 하나로 흡수되면 자동 해결되는 문제지만, 연동 순서상 짚어둘 필요.
+3. **선정 도서 키 불일치(버그, 재확인 완료)**: 교사용 `book-select.html`의 `saveSelectedBook()`(1495-1568행)이 제목/지은이 입력창(`bookTitle`/`bookAuthor`)에서 값을 읽어 `localStorage["selectedClassBook"] = {title, author, cover, savedAt}` 형태로 저장하는 것까지 실제 코드로 확인했다. 반면 학생용 `before-reading.html`의 `getSelectedBook()`(2760-2772행)과 `read-before-book-intro.html`(715행)은 `sessionStorage.getItem("selectedBook")`을 읽는데, 이 정확한 키(`sessionStorage["selectedBook"]`)에 값을 쓰는 코드는 프로젝트 전체에 **단 한 곳도 없음**(전체 grep 재확인) — 그래서 `getSelectedBook()`은 항상 실패하고 매번 하드코딩된 `defaultBook`(`title: "신통방통 홈 쇼핑"`, `author: "예시 작가"`)으로 폴백한다. 즉 코드만 보면 "동적으로 불러오는 구조"처럼 보이지만, 실질적으로는 100% 하드코딩과 똑같이 동작한다. `books` 테이블(Entity 확정, `title VARCHAR(200)`/`author VARCHAR(100)` 이미 존재)은 이 데이터를 받을 준비가 이미 되어 있으므로, 스키마 문제가 아니라 순수 프론트-백엔드 연동 누락임을 재확인. (개별읽기 쪽 `individual-reading-archive.html`의 `selectedBook` 변수는 이름만 같을 뿐 완전히 다른 용도의 로컬 변수이며 이 버그와 무관함을 확인.)
 4. **월별 완독 기록 / "나의 힘" 그래프가 완전히 하드코딩**: `individual-reading.html`의 능력치 4개 수치(마법력/체력/지혜/용기 각 `11/100` 등)와 12개월 막대그래프가 전부 정적 마크업이며 `individualPower_v2_<studentId>`나 `reading_records.finished_at` 기반 집계를 전혀 읽지 않음. 스키마(`student_stats`, `reading_records.finished_at`)는 이미 이 화면을 지원할 수 있음 — 프론트 연동만 빠진 상태.
 5. **개별읽기 보관함(`individual-reading-archive.html`)이 다권 누적을 지원하지 않음**: `individualReadingArchive_<studentId>` 키는 코드에서 참조는 되지만 **어디서도 실제로 쓰이지(setItem) 않음** — 현재는 "방금 완료한 책 1권"만 조합해서 보여주거나, 그마저 없으면 하드코딩 예시로 대체함. `reading_records`+`summaries`+`responses` 조합 쿼리로 실제 다권 보관함을 만들 수 있으나 아직 프론트/API 연동이 없음.
 

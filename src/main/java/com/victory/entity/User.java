@@ -41,6 +41,20 @@ public class User {
     @Column(name = "has_seen_story_intro", nullable = false)
     private Boolean hasSeenStoryIntro = false;
 
+    /*
+     * 던전(고급) 클리어 후 엔딩을 봤는지 여부.
+     * 학생 전용 플래그이며 교사 계정은 항상 false로 둔다.
+     */
+    @Column(name = "has_seen_ending", nullable = false)
+    private Boolean hasSeenEnding = false;
+
+    /*
+     * 교사 소속 학교명. teacher-register.html의 teacherRegisterData.teacher.school 대응.
+     * 학생 계정은 값이 없다(NULL).
+     */
+    @Column(name = "school", length = 100)
+    private String school;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
