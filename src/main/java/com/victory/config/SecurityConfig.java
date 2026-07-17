@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/feedback/**").permitAll()
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/teachers/register").permitAll()
+                        // 학급별 온책읽기 책 정보 조회/저장: 교사만 접근 가능
+                        .requestMatchers("/api/classes/*/reading-range").hasAuthority("teacher")
                         // 자리 표시: 도메인별 API가 아직 없어 예시 경로만 반영, 실제 컨트롤러 생성 시 세부 경로로 교체 필요
                         .requestMatchers("/api/teachers/**").hasAuthority("teacher")
                         .requestMatchers("/api/students/**").hasAuthority("student")

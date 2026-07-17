@@ -201,6 +201,34 @@
   .mq-source-button {
     margin-top: 16px !important;
   }
+
+  /* 처음 이용하는 교사를 위한 계정 등록 안내 */
+  .mq-register-guide {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #6b431f;
+  }
+
+  .mq-register-link {
+    padding: 0;
+    border: 0;
+    border-bottom: 2px solid #8c541d;
+    background: transparent;
+    color: #7a4517;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .mq-register-link:hover {
+    color: #3f842e;
+    border-bottom-color: #3f842e;
+  }
 </style>
 
   <!-- 사용 자료 출처 데이터 -->
@@ -356,6 +384,20 @@
             로그인하고 시작하기
           </button>
         </form>
+
+        <!-- 처음 이용하는 교사를 위한 계정 등록 안내: 로그인과 무관하게 바로 이동합니다. -->
+        <div class="mq-register-guide">
+          <span>처음 이용하시나요?</span>
+
+          <button
+            type="button"
+            class="mq-register-link"
+            onclick="location.href='./teacher/teacher-register.html'"
+          >
+            교사 계정 등록하러 가기
+          </button>
+        </div>
+
         <!-- 사용 자료 출처 버튼: 심사위원이 확인하기 쉽게 크게 배치 -->
         <button type="button" class="mq-source-button" id="openSourceButton">
           <span>ⓘ</span>

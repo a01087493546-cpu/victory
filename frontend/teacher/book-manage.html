@@ -2530,136 +2530,46 @@
 
               <div class="wr-today-main">
 
-                <div class="wr-today-box">
-                  <div class="wr-today-value">
-                    76%
-                  </div>
+  <div class="wr-today-box">
+    <div
+      class="wr-today-value"
+      id="todayParticipationRate"
+    >
+      0%
+    </div>
 
-                  <div class="wr-today-label">
-                    오늘 참여율
-                  </div>
-                </div>
+    <div class="wr-today-label">
+      오늘 참여율
+    </div>
+  </div>
 
-                <div class="wr-today-box">
-                  <div class="wr-today-value">
-                    7명
-                  </div>
+  <div class="wr-today-box">
+    <div
+      class="wr-today-value"
+      id="supportStudentCount"
+    >
+      0명
+    </div>
 
-                  <div class="wr-today-label">
-                    추가 지원 필요
-                  </div>
-                </div>
-              </div>
+    <div class="wr-today-label">
+      추가 지원 필요
+    </div>
+  </div>
 
-              <!-- 오늘의 학습 현황 내부 스크롤 -->
-              <div class="wr-support-scroll">
-                <div class="wr-support-list">
+</div>
 
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      김수현
-                    </div>
+<div class="wr-support-scroll">
+  <div
+    class="wr-support-list"
+    id="supportStudentList"
+  ></div>
+</div>
 
-                    <div class="wr-support-reason">
-                      질문 미제출
-                    </div>
+</div>
+</article>
 
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      이재훈
-                    </div>
-
-                    <div class="wr-support-reason">
-                      읽기 활동 참여 부족
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      정우진
-                    </div>
-
-                    <div class="wr-support-reason">
-                      읽기 진도 지연
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      박서연
-                    </div>
-
-                    <div class="wr-support-reason">
-                      이해도 낮음
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      최지우
-                    </div>
-
-                    <div class="wr-support-reason">
-                      질문 수정 횟수 많음
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      한지민
-                    </div>
-
-                    <div class="wr-support-reason">
-                      핵심 내용 요약 부족
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="wr-support-item">
-                    <div class="wr-support-name">
-                      윤태호
-                    </div>
-
-                    <div class="wr-support-reason">
-                      독후 활동 미완료
-                    </div>
-
-                    <div class="wr-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- 읽기 범위 -->
-          <article class="wr-card wr-range-card">
+<!-- 읽기 범위 -->
+<article class="wr-card wr-range-card">
             <div class="wr-card-inner">
 
               <div class="wr-range-title-row">
@@ -2947,7 +2857,9 @@
       "wholeReadingRange";
 async function loadTeacherDashboardData() {
   const token = sessionStorage.getItem("token");
-  const teacherId = sessionStorage.getItem("id");
+  const teacherId =
+  sessionStorage.getItem("id") ||
+  sessionStorage.getItem("studentId");
   const role = sessionStorage.getItem("role");
 
   if (!token || !teacherId || role !== "teacher") {
@@ -3008,9 +2920,10 @@ async function loadTeacherDashboardData() {
     });
 
     document.getElementById("studentCountTag").textContent =
-      `${students.length}명 표시`;
+  `${students.length}명 표시`;
 
-    renderStudentPreview();
+renderStudentPreview();
+renderTodayStatus();
   } catch (error) {
     console.error(error);
     alert(error.message);
@@ -3085,7 +2998,95 @@ async function loadTeacherDashboardData() {
         })
         .join("");
     }
+function renderTodayStatus() {
+  const participationElement =
+    document.getElementById("todayParticipationRate");
 
+  const supportCountElement =
+    document.getElementById("supportStudentCount");
+
+  const supportList =
+    document.getElementById("supportStudentList");
+
+  const activeStudents = students.filter(function (student) {
+    return student.total > 0;
+  });
+
+  const participationRate =
+    students.length === 0
+      ? 0
+      : Math.round(
+          (activeStudents.length / students.length) * 100
+        );
+
+  const supportStudents = students.filter(function (student) {
+    return student.total > 0 && student.total < 60;
+  });
+
+  participationElement.textContent =
+    `${participationRate}%`;
+
+  supportCountElement.textContent =
+    `${supportStudents.length}명`;
+
+  if (activeStudents.length === 0) {
+    supportList.innerHTML = `
+      <div class="wr-support-item">
+        <div class="wr-support-name">
+          안내
+        </div>
+
+        <div class="wr-support-reason">
+          아직 학습 기록이 없어요.
+        </div>
+
+        <div class="wr-support-arrow">
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  if (supportStudents.length === 0) {
+    supportList.innerHTML = `
+      <div class="wr-support-item">
+        <div class="wr-support-name">
+          안내
+        </div>
+
+        <div class="wr-support-reason">
+          추가 지원이 필요한 학생이 없어요.
+        </div>
+
+        <div class="wr-support-arrow">
+        </div>
+      </div>
+    `;
+
+    return;
+  }
+
+  supportList.innerHTML = supportStudents
+    .map(function (student) {
+      return `
+        <div class="wr-support-item">
+          <div class="wr-support-name">
+            ${student.name}
+          </div>
+
+          <div class="wr-support-reason">
+            온책읽기 활동 진행 확인 필요
+          </div>
+
+          <div class="wr-support-arrow">
+            ›
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
     function makeDetailBar(label, value) {
       return `
         <div class="wr-detail-bar-row">
