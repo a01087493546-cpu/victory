@@ -2851,10 +2851,95 @@
     updateWholeReadingStageScale();
     window.addEventListener("resize", updateWholeReadingStageScale);
 
-      let students = [];
+     let students = [];
+let currentClassId = null;
 
-    const readingRangeKey =
-      "wholeReadingRange";
+const readingRangeKey =
+  "wholeReadingRange";
+
+/*
+  practice-progress 응답(또는 조회 실패 시 null)을 받아
+  완료 항목 8개 기준의 달성도(total)와 상태 문구를 계산합니다.
+  progress가 null이면 모든 항목이 falsy로 처리되어
+  자연스럽게 0% · "미시작"이 됩니다.
+*/
+function computeAchievement(progress) {
+  const duringTypeProgress =
+    (progress && progress.duringTypeProgress) || {};
+
+  const items = [
+    progress && progress.bookSelected,
+    progress && progress.beforeDone,
+    duringTypeProgress.infer,
+    duringTypeProgress.direct,
+    duringTypeProgress.connect,
+    duringTypeProgress.opinion,
+    progress && progress.classReadDone,
+    progress && progress.afterDone
+  ];
+
+  const completedCount = items.filter(Boolean).length;
+
+  const total = Math.round(
+    (completedCount / items.length) * 100
+  );
+
+  let state = "미시작";
+
+  if (total === 100) {
+    state = "완료";
+  } else if (total >= 75) {
+    state = "우수";
+  } else if (total >= 50) {
+    state = "보통";
+  } else if (total >= 1) {
+    state = "지원 필요";
+  }
+
+  return {
+    completedCount: completedCount,
+    total: total,
+    state: state
+  };
+}
+
+/*
+  학생 한 명의 practice-progress를 조회합니다.
+  404이거나 조회에 실패하면 null을 반환해
+  화면 전체가 깨지지 않고 해당 학생만 0%/미시작으로 처리되게 합니다.
+*/
+async function fetchStudentPracticeProgress(studentId, token) {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `학생(${studentId}) 달성도 조회 실패: ${response.status}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(
+      `학생(${studentId})의 온책읽기 달성도를 불러오지 못했습니다.`,
+      error
+    );
+
+    return null;
+  }
+}
+
 async function loadTeacherDashboardData() {
   const token = sessionStorage.getItem("token");
   const teacherId =
@@ -2883,7 +2968,8 @@ async function loadTeacherDashboardData() {
     }
 
     const classData = await classResponse.json();
-
+currentClassId = classData.classId;
+await loadReadingRange();
     document.getElementById("teacherNamePill").textContent =
       `교사 ${classData.teacherName}`;
 
@@ -2905,17 +2991,37 @@ async function loadTeacherDashboardData() {
 
     const studentData = await studentResponse.json();
 
-    students = studentData.map(function (student) {
+    const progressResults = await Promise.allSettled(
+      studentData.map(function (student) {
+        return fetchStudentPracticeProgress(
+          student.studentId,
+          token
+        );
+      })
+    );
+
+    students = studentData.map(function (student, index) {
+      const progressResult = progressResults[index];
+
+      const progress =
+        progressResult.status === "fulfilled"
+          ? progressResult.value
+          : null;
+
+      const achievement = computeAchievement(progress);
+
       return {
         studentId: student.studentId,
         loginId: student.loginId,
         studentNumber: student.studentNumber,
         name: student.name,
-        total: 0,
-        participation: 0,
-        understanding: 0,
-        state: "미시작",
-        note: "아직 온책읽기 학습 기록이 없어요."
+        total: achievement.total,
+        participation: achievement.total,
+        understanding: achievement.total,
+        state: achievement.state,
+        note: progress
+          ? `온책읽기 활동 8개 중 ${achievement.completedCount}개를 완료했어요.`
+          : "아직 온책읽기 학습 기록이 없어요."
       };
     });
 
@@ -2930,7 +3036,7 @@ renderTodayStatus();
   }
 }
     function getPreviewStateClass(state) {
-      if (state === "매우 우수") {
+      if (state === "완료" || state === "매우 우수") {
         return "wr-state-excellent";
       }
 
@@ -2946,7 +3052,7 @@ renderTodayStatus();
     }
 
     function getDetailChipClass(state) {
-      if (state === "매우 우수") {
+      if (state === "완료" || state === "매우 우수") {
         return "chip-excellent";
       }
 
@@ -3221,125 +3327,157 @@ function renderTodayStatus() {
       }
     );
 
-    function saveReadingRange() {
-      const totalInput =
-        document.getElementById(
-          "totalPageInput"
-        );
+    async function saveReadingRange() {
+  const token = sessionStorage.getItem("token");
 
-      const currentInput =
-        document.getElementById(
-          "currentPageInput"
-        );
+  const totalInput =
+    document.getElementById("totalPageInput");
 
-      const current =
-        document.getElementById(
-          "currentReadingRange"
-        );
+  const currentInput =
+    document.getElementById("currentPageInput");
 
-      const totalPages =
-        Number(totalInput.value);
+  const current =
+    document.getElementById("currentReadingRange");
 
-      const currentPage =
-        Number(currentInput.value);
+  const totalPages = Number(totalInput.value);
+  const currentPage = Number(currentInput.value);
 
-      if (!totalPages || totalPages < 1) {
-        alert(
-          "전체 쪽수를 먼저 적어 주세요."
-        );
+  if (!token || !currentClassId) {
+    alert("학급 정보를 불러온 뒤 다시 시도해 주세요.");
+    return;
+  }
 
-        totalInput.focus();
+  if (!Number.isInteger(totalPages) || totalPages < 1) {
+    alert("전체 쪽수를 1쪽 이상으로 입력해 주세요.");
+    totalInput.focus();
+    return;
+  }
 
-        return;
+  if (!Number.isInteger(currentPage) || currentPage < 0) {
+    alert("누적 읽은 쪽수를 0쪽 이상으로 입력해 주세요.");
+    currentInput.focus();
+    return;
+  }
+
+  if (currentPage > totalPages) {
+    alert("누적 읽은 쪽수는 전체 쪽수를 넘을 수 없습니다.");
+    currentInput.focus();
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/classes/${currentClassId}/reading-range`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          totalPages: totalPages,
+          currentPage: currentPage
+        })
+      }
+    );
+
+    if (!response.ok) {
+      let message = "읽기 진행 정보를 저장하지 못했습니다.";
+
+      if (response.status === 404) {
+        message = "등록된 책이 없어요. 먼저 책을 등록해 주세요.";
+      } else {
+        try {
+          const errorData = await response.json();
+
+          if (errorData && errorData.message) {
+            message = errorData.message;
+          }
+        } catch (parseError) {
+          // 응답 본문이 없거나 JSON이 아니면 기본 안내문을 사용합니다.
+        }
       }
 
-      if (currentInput.value === "" || currentPage < 0) {
-        alert(
-          "누적 읽은 쪽수를 적어 주세요."
-        );
+      alert(message);
+      return;
+    }
 
-        currentInput.focus();
+    const savedData = await response.json();
 
-        return;
+    totalInput.value =
+      savedData.totalPages ?? totalPages;
+
+    currentInput.value =
+      savedData.currentPage ?? currentPage;
+
+    current.textContent =
+      `현재 진행: ${savedData.currentPage ?? currentPage}쪽 / ${savedData.totalPages ?? totalPages}쪽`;
+
+    alert("읽기 진행 정보를 저장했습니다.");
+  } catch (error) {
+    console.error(error);
+    alert("읽기 진행 정보를 저장하지 못했습니다.");
+  }
+}
+async function loadReadingRange() {
+  const token = sessionStorage.getItem("token");
+
+  const totalInput =
+    document.getElementById("totalPageInput");
+
+  const currentInput =
+    document.getElementById("currentPageInput");
+
+  const current =
+    document.getElementById("currentReadingRange");
+
+  if (!token || !currentClassId) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/classes/${currentClassId}/reading-range`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
+    );
 
-      if (currentPage > totalPages) {
-        alert(
-          "누적 읽은 쪽수는 전체 쪽수보다 클 수 없어요."
-        );
-
-        currentInput.focus();
-
-        return;
-      }
-
-      const rangeData = {
-        totalPages: totalPages,
-        currentPage: currentPage,
-        savedAt:
-          new Date().toISOString()
-      };
-
-      localStorage.setItem(
-        readingRangeKey,
-        JSON.stringify(rangeData)
-      );
+    if (response.status === 404) {
+      totalInput.value = "";
+      currentInput.value = "";
 
       current.textContent =
-        "현재 진행: " + currentPage + "쪽 / " + totalPages + "쪽";
+        "현재 진행: 아직 등록된 책이 없어요.";
 
-      alert("읽기 진행 정보를 저장했어요.");
+      return;
     }
 
-    function loadReadingRange() {
-      const totalInput =
-        document.getElementById(
-          "totalPageInput"
-        );
-
-      const currentInput =
-        document.getElementById(
-          "currentPageInput"
-        );
-
-      const current =
-        document.getElementById(
-          "currentReadingRange"
-        );
-
-      const saved =
-        localStorage.getItem(
-          readingRangeKey
-        );
-
-      if (!saved) {
-        return;
-      }
-
-      try {
-        const rangeData =
-          JSON.parse(saved);
-
-        if (rangeData.totalPages && rangeData.currentPage !== undefined) {
-          totalInput.value =
-            rangeData.totalPages;
-
-          currentInput.value =
-            rangeData.currentPage;
-
-          current.textContent =
-            "현재 진행: " +
-            rangeData.currentPage +
-            "쪽 / " +
-            rangeData.totalPages +
-            "쪽";
-        }
-      } catch (error) {
-        current.textContent =
-          "저장된 진행 정보를 불러오지 못했어요.";
-      }
+    if (!response.ok) {
+      throw new Error(
+        `읽기 진행 정보 조회 실패: ${response.status}`
+      );
     }
 
+    const rangeData = await response.json();
+    totalInput.value =
+      rangeData.totalPages ?? "";
+
+    currentInput.value =
+      rangeData.currentPage ?? 0;
+
+    current.textContent =
+      `현재 진행: ${rangeData.currentPage ?? 0}쪽 / ${rangeData.totalPages}쪽`;
+  } catch (error) {
+    console.error(error);
+
+    current.textContent =
+      "읽기 진행 정보를 불러오지 못했어요.";
+  }
+}
     function goTeacherHome() {
       location.href = "home.html";
     }
@@ -3359,7 +3497,7 @@ function renderTodayStatus() {
     }
 
     loadTeacherDashboardData();
-loadReadingRange();
+
   </script>
 </body>
 </html>

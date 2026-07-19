@@ -16,6 +16,13 @@ public class AiFeedbackRequest {
     private List<QAItem> qaList;
     private String summaryText;
 
+    /*
+     * pre_reading_question 전용 필드.
+     * 다른 활동 유형은 사용하지 않는다(항상 null).
+     */
+    private String bookTitle;
+    private String stepType;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

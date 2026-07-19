@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.victory.dto.ClassReadingBookRequest;
 import com.victory.dto.ClassReadingBookResponse;
+import com.victory.dto.ClassReadingProgressRequest;
 import com.victory.entity.ClassReadingBook;
 import com.victory.entity.SchoolClass;
 import com.victory.repository.ClassReadingBookRepository;
@@ -56,6 +57,39 @@ public class ClassReadingBookService {
         book.setBookTitle(request.getBookTitle());
         book.setAuthor(request.getAuthor());
         book.setCoverImage(request.getCoverImage());
+        book.setTotalPages(request.getTotalPages());
+        book.setCurrentPage(request.getCurrentPage());
+
+        ClassReadingBook savedBook =
+            classReadingBookRepository.save(book);
+
+        return ClassReadingBookResponse.from(savedBook);
+    }
+
+    /*
+     * 학급의 읽기 진행(전체 쪽수/누적 읽은 쪽수)만 수정한다.
+     * 책 제목·지은이·표지는 그대로 유지하고 건드리지 않는다.
+     * 아직 등록된 책이 없는 학급이면 404를 반환한다(진행 수정은 등록 이후에만 의미가 있다).
+     */
+    @Transactional
+    public ClassReadingBookResponse updateReadingProgress(
+            Long classId,
+            ClassReadingProgressRequest request) {
+
+        ClassReadingBook book = classReadingBookRepository
+            .findBySchoolClassId(classId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "등록된 온책읽기 책 정보가 없습니다. classId=" + classId
+            ));
+
+        if (request.getCurrentPage() > request.getTotalPages()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "누적 읽은 쪽수는 전체 쪽수를 넘을 수 없습니다."
+            );
+        }
+
         book.setTotalPages(request.getTotalPages());
         book.setCurrentPage(request.getCurrentPage());
 

@@ -4,12 +4,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.victory.dto.ClassReadingBookRequest;
 import com.victory.dto.ClassReadingBookResponse;
+import com.victory.dto.ClassReadingProgressRequest;
 import com.victory.service.ClassReadingBookService;
 
 import jakarta.validation.Valid;
@@ -39,6 +41,17 @@ public class ClassReadingBookController {
     ) {
         ClassReadingBookResponse response =
                 classReadingBookService.saveReadingBook(classId, request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{classId}/reading-range")
+    public ResponseEntity<ClassReadingBookResponse> updateReadingProgress(
+            @PathVariable("classId") Long classId,
+            @Valid @RequestBody ClassReadingProgressRequest request
+    ) {
+        ClassReadingBookResponse response =
+                classReadingBookService.updateReadingProgress(classId, request);
 
         return ResponseEntity.ok(response);
     }

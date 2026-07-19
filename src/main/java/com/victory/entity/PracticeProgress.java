@@ -92,7 +92,7 @@ public class PracticeProgress {
         this.updatedAt = LocalDateTime.now();
     }
 
-    private static Map<String, Boolean> createDefaultDuringProgress() {
+    public static Map<String, Boolean> createDefaultDuringProgress() {
         Map<String, Boolean> progress = new HashMap<>();
 
         progress.put("direct", false);

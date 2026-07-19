@@ -697,7 +697,7 @@
 
         <div class="top-actions">
           <button class="top-pill" type="button" onclick="goStepSelect()">단계 선택</button>
-          <button class="top-pill" type="button" onclick="goHome()">홈으로</button>
+          <button class="top-pill" type="button" onclick="goHome()">📚 책읽기 홈</button>
         </div>
       </header>
 
@@ -730,7 +730,7 @@
           <div class="status-info-grid">
             <div class="status-chip">
               <span>투표로 정해진 책</span>
-              <strong>투표로 정해진 책 제목</strong>
+              <strong id="classBookTitleDisplay">투표로 정해진 책 제목</strong>
             </div>
 
             <div class="status-chip">
@@ -849,30 +849,93 @@
     window.addEventListener("resize", updateFixedStageScale);
 
     /*
-      교사가 book-manage.html에서 저장한 읽기 진행 정보를 불러와 표시합니다.
-      지금은 프론트에서 같은 localStorage 키를 직접 읽어오는 방식이고,
-      나중에 백엔드가 연결되면 API 조회로 바꾸면 됩니다.
+      교사가 book-manage.html/book-select.html에서 등록·저장한 학급 온책읽기
+      정보(책 제목, 현재 읽는 구간)를 실제 API로 불러와 표시합니다.
+      학생 학급 조회(GET /api/students/{studentId}/class) →
+      학급 온책읽기 조회(GET /api/classes/{classId}/reading-range) 순서로 호출합니다.
     */
-    function loadCurrentReadingRange() {
-      const display = document.getElementById("currentReadingRangeDisplay");
-      if (!display) return;
+    async function loadCurrentReadingRange() {
+      const titleDisplay = document.getElementById("classBookTitleDisplay");
+      const rangeDisplay = document.getElementById("currentReadingRangeDisplay");
 
-      const saved = localStorage.getItem("wholeReadingRange");
-      if (!saved) {
-        display.textContent = "아직 정해지지 않았어요";
+      if (!titleDisplay || !rangeDisplay) return;
+
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+
+      const currentStudentId =
+        sessionStorage.getItem("studentId") ||
+        sessionStorage.getItem("id");
+
+      if (!token || !currentStudentId || role !== "student") {
+        console.error("학생 로그인 정보를 찾을 수 없습니다.");
+        titleDisplay.textContent = "로그인 정보를 확인해 주세요";
+        rangeDisplay.textContent = "로그인 정보를 확인해 주세요";
         return;
       }
 
       try {
-        const rangeData = JSON.parse(saved);
+        const classResponse = await fetch(
+          `http://localhost:8080/api/students/${currentStudentId}/class`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
-        if (rangeData.totalPages && rangeData.currentPage !== undefined) {
-          display.textContent = rangeData.currentPage + "쪽 / " + rangeData.totalPages + "쪽";
+        if (!classResponse.ok) {
+          throw new Error(
+            `학급 정보 조회 실패: ${classResponse.status}`
+          );
+        }
+
+        const classData = await classResponse.json();
+
+        const rangeResponse = await fetch(
+          `http://localhost:8080/api/classes/${classData.classId}/reading-range`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        if (rangeResponse.status === 404) {
+          titleDisplay.textContent = "아직 우리 반 책이 등록되지 않았어요.";
+          rangeDisplay.textContent = "아직 우리 반 책이 등록되지 않았어요.";
+          return;
+        }
+
+        if (!rangeResponse.ok) {
+          throw new Error(
+            `온책읽기 정보 조회 실패: ${rangeResponse.status}`
+          );
+        }
+
+        const rangeData = await rangeResponse.json();
+
+        titleDisplay.textContent =
+          rangeData.bookTitle || "아직 우리 반 책이 등록되지 않았어요.";
+
+        if (
+          rangeData.totalPages &&
+          rangeData.currentPage !== undefined &&
+          rangeData.currentPage !== null
+        ) {
+          rangeDisplay.textContent =
+            rangeData.currentPage + "쪽 / " + rangeData.totalPages + "쪽";
         } else {
-          display.textContent = "아직 정해지지 않았어요";
+          rangeDisplay.textContent = "아직 정해지지 않았어요";
         }
       } catch (error) {
-        display.textContent = "아직 정해지지 않았어요";
+        console.error(
+          "우리 반 온책읽기 정보를 불러오지 못했습니다.",
+          error
+        );
+
+        titleDisplay.textContent = "책 정보를 불러오지 못했어요";
+        rangeDisplay.textContent = "책 정보를 불러오지 못했어요";
       }
     }
 
@@ -880,52 +943,120 @@
 
     /*
       나의 독서 진행 상황을 계산합니다.
-      - 총복습점수: during-reading-practice.html이 sessionStorage에 남긴
-        progress.review 값이 true면 100, 아니면 0
-      - 쪽수진도: book-manage.html에서 교사가 저장한 전체쪽수/누적쪽수(localStorage["wholeReadingRange"])로 계산
-      - 최종 진행률 = 총복습점수 20% + 쪽수진도 80%
-      아직 백엔드 연동 전이라 프론트 저장값 기준으로 우선 계산합니다.
+      - 쪽수진도 = MIN(100, currentPage / totalPages * 100)
+        (GET /api/classes/{classId}/reading-range의 currentPage, totalPages 사용)
+      - 총복습점수 = 총복습(review) 완료 시 100, 미완료 시 0
+        (GET /api/students/{studentId}/practice-progress의 duringTypeProgress.review 사용.
+         이 필드는 during-reading-practice.html의 finishReview()가
+         "총 복습" 4문항을 모두 마쳤을 때 실제로 저장하는 값이다.)
+      - 최종 진행률 = 총복습점수 * 0.2 + 쪽수진도 * 0.8
     */
-    function loadMyReadingProgress() {
+    async function loadMyReadingProgress() {
       const ring = document.getElementById("myProgressRing");
       const title = document.getElementById("myProgressTitle");
       const fill = document.getElementById("myProgressFill");
       if (!ring || !title || !fill) return;
 
-      let reviewDone = false;
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
 
-      try {
-        const practiceProgress = JSON.parse(
-          sessionStorage.getItem("duringReadingPracticeProgress_" + studentId) || "{}"
-        );
-        reviewDone = practiceProgress.review === true;
-      } catch (error) {
-        reviewDone = false;
+      const currentStudentId =
+        sessionStorage.getItem("studentId") ||
+        sessionStorage.getItem("id");
+
+      if (!token || !currentStudentId || role !== "student") {
+        console.error("학생 로그인 정보를 찾을 수 없습니다.");
+        return;
       }
 
-      const reviewScore = reviewDone ? 100 : 0;
-
-      let pageScore = 0;
-
       try {
-        const rangeData = JSON.parse(localStorage.getItem("wholeReadingRange") || "{}");
+        const classResponse = await fetch(
+          `http://localhost:8080/api/students/${currentStudentId}/class`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
-        if (rangeData.totalPages && rangeData.totalPages > 0) {
-          pageScore = Math.min(
-            100,
-            Math.round((rangeData.currentPage / rangeData.totalPages) * 100)
+        if (!classResponse.ok) {
+          throw new Error(
+            `학급 정보 조회 실패: ${classResponse.status}`
           );
         }
+
+        const classData = await classResponse.json();
+
+        const [rangeResponse, progressResponse] = await Promise.all([
+          fetch(
+            `http://localhost:8080/api/classes/${classData.classId}/reading-range`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          ),
+          fetch(
+            `http://localhost:8080/api/students/${currentStudentId}/practice-progress`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }
+          )
+        ]);
+
+        let pageScore = 0;
+
+        if (rangeResponse.status !== 404) {
+          if (!rangeResponse.ok) {
+            throw new Error(
+              `온책읽기 정보 조회 실패: ${rangeResponse.status}`
+            );
+          }
+
+          const rangeData = await rangeResponse.json();
+
+          if (rangeData.totalPages && rangeData.totalPages > 0) {
+            pageScore = Math.min(
+              100,
+              (rangeData.currentPage / rangeData.totalPages) * 100
+            );
+          }
+        }
+
+        if (!progressResponse.ok) {
+          throw new Error(
+            `연습읽기 진행 조회 실패: ${progressResponse.status}`
+          );
+        }
+
+        const progressData = await progressResponse.json();
+
+        const duringTypeProgress =
+          progressData.duringTypeProgress || {};
+
+        const reviewScore =
+          duringTypeProgress.review === true ? 100 : 0;
+
+        const percent = Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round(reviewScore * 0.2 + pageScore * 0.8)
+          )
+        );
+
+        ring.style.setProperty("--percent", percent + "%");
+        ring.textContent = percent + "%";
+        title.textContent = "나의 진행률 " + percent + "%";
+        fill.style.width = percent + "%";
       } catch (error) {
-        pageScore = 0;
+        console.error(
+          "나의 독서 진행 상황을 불러오지 못했습니다.",
+          error
+        );
       }
-
-      const percent = Math.round(reviewScore * 0.2 + pageScore * 0.8);
-
-      ring.style.setProperty("--percent", percent + "%");
-      ring.textContent = percent + "%";
-      title.textContent = "나의 진행률 " + percent + "%";
-      fill.style.width = percent + "%";
     }
 
     loadMyReadingProgress();
@@ -1005,9 +1136,9 @@
 function goStepSelect() {
   location.href = "./practice.html";
 }
-    // 홈 화면으로 이동합니다.
+    // 개별읽기 메인 화면(나만의 독서 모험)으로 이동합니다.
     function goHome() {
-      location.href = "./home.html";
+      location.href = "./individual-reading.html";
     }
   </script>
   <script src="../js/fixed-stage.js"></script>
