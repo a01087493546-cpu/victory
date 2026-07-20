@@ -2598,6 +2598,7 @@ body {
     </div>
   </div>
 
+  <script src="../js/pre-reading-validation.js"></script>
   <script>
     /*
       =========================================================
@@ -2605,12 +2606,18 @@ body {
       =========================================================
     */
 
-    const studentId = sessionStorage.getItem("studentId") || "student-demo";
-    const studentName = sessionStorage.getItem("name") || "학생";
+    const studentId =
+  sessionStorage.getItem("studentId") ||
+  sessionStorage.getItem("id");
+
+const studentName =
+  sessionStorage.getItem("name") || "학생";
 
     let selectedBook = null;
     let currentStepIndex = 0;
     let currentMode = "write";
+
+const API_BASE_URL = "http://localhost:8080";
 
     const answers = [
       { question: "", expectedAnswer: "", passed: false },
@@ -2625,16 +2632,6 @@ body {
       =========================================================
     */
 
-    const defaultBook = {
-      bookId: "book001",
-      title: "신통방통 홈 쇼핑",
-      author: "예시 작가",
-      tableOfContents: [
-        "1장. 수상한 홈 쇼핑 방송",
-        "2장. 이상한 주문",
-        "3장. 생각지도 못한 선물"
-      ]
-    };
 
     const steps = [
       {
@@ -2658,8 +2655,8 @@ body {
             a: "좋은 일이 생기거나, 반대로 문제가 생길 수도 있을 것 같아요."
           }
         ],
-        questionPlaceholder: "예) 왜 홈 쇼핑이 신통방통하다고 했을까?",
-        answerPlaceholder: "예) 특별한 물건을 팔거나 이상한 일이 생길 것 같다."
+       questionPlaceholder: "예) 제목을 보고 궁금한 점을 질문으로 적어 보세요.",
+answerPlaceholder: "예) 제목을 보고 내가 예상한 답을 적어 보세요."
       },
       {
         type: "contents",
@@ -2682,8 +2679,8 @@ body {
             a: "처음에는 좋아 보이지만 나중에는 문제가 생길 수도 있을 것 같아요."
           }
         ],
-        questionPlaceholder: "예) 수상한 방송에서는 어떤 일이 일어날까?",
-        answerPlaceholder: "예) 이상한 물건이 소개되고 주인공이 주문하게 될 것 같다."
+        questionPlaceholder: "예) 차례를 보고 궁금한 점을 질문으로 적어 보세요.",
+answerPlaceholder: "예) 차례를 보고 내가 예상한 답을 적어 보세요."
       },
       {
         type: "picture",
@@ -2706,8 +2703,8 @@ body {
             a: "홈 쇼핑 물건을 사용하다가 예상하지 못한 일이 생길 것 같아요."
           }
         ],
-        questionPlaceholder: "예) 그림 속 인물은 왜 놀란 표정을 짓고 있을까?",
-        answerPlaceholder: "예) 이상한 물건을 보고 놀랐을 것 같다."
+        questionPlaceholder: "예) 책 속 그림을 보고 궁금한 점을 질문으로 적어 보세요.",
+answerPlaceholder: "예) 그림을 보고 내가 예상한 답을 적어 보세요."
       },
       {
         type: "skim",
@@ -2730,8 +2727,8 @@ body {
             a: "홈 쇼핑 물건을 살지 말지 고민하다가 결국 주문할 것 같아요."
           }
         ],
-        questionPlaceholder: "예) 글에서 자주 나오는 말은 왜 중요할까?",
-        answerPlaceholder: "예) 그 말이 사건의 중요한 단서가 될 것 같다."
+        questionPlaceholder: "예) 글을 훑어보고 궁금한 점을 질문으로 적어 보세요.",
+answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보세요."
       }
     ];
 
@@ -2747,29 +2744,96 @@ body {
   initPage();
 }
 
-    function initPage() {
-      selectedBook = getSelectedBook();
+    async function initPage() {
+  const loaded = await loadSelectedBook();
 
-      document.getElementById("bookTitle").textContent = "「" + selectedBook.title + "」";
-      document.getElementById("bookMeta").textContent = "작가: " + selectedBook.author;
+  if (!loaded) {
+    return;
+  }
 
-      renderAll();
-    }
+  renderAll();
+}
 
-    // 책 고르기/투표에서 저장된 책이 있으면 사용하고, 없으면 예시 책을 사용합니다.
-    function getSelectedBook() {
-      const savedBook = sessionStorage.getItem("selectedBook");
+    async function loadSelectedBook() {
+  const token = sessionStorage.getItem("token");
+  const role = sessionStorage.getItem("role");
 
-      if (savedBook) {
-        try {
-          return JSON.parse(savedBook);
-        } catch (error) {
-          console.warn("선정 도서 데이터를 읽을 수 없어 예시 책을 사용합니다.", error);
+  if (!token || !studentId || role !== "student") {
+    alert("학생 로그인이 필요합니다.");
+    location.href = "../../index.html";
+    return false;
+  }
+
+  try {
+    const classResponse = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/class`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       }
+    );
 
-      return defaultBook;
+    if (!classResponse.ok) {
+      throw new Error(
+        `학생 학급 조회 실패: ${classResponse.status}`
+      );
     }
+
+    const classData = await classResponse.json();
+
+    const bookResponse = await fetch(
+      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (bookResponse.status === 404) {
+      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
+      location.href = "./read-before-book-intro.html";
+      return false;
+    }
+
+    if (!bookResponse.ok) {
+      throw new Error(
+        `온책읽기 책 조회 실패: ${bookResponse.status}`
+      );
+    }
+
+    const bookData = await bookResponse.json();
+
+    selectedBook = {
+      bookId: bookData.id,
+      title: bookData.bookTitle,
+      author: bookData.author || "지은이 정보 없음",
+      coverImage: bookData.coverImage || "",
+      totalPages: bookData.totalPages,
+      currentPage: bookData.currentPage,
+      tableOfContents: []
+    };
+
+    document.getElementById("bookTitle").textContent =
+      `「${selectedBook.title}」`;
+
+    document.getElementById("bookMeta").textContent =
+      `지은이: ${selectedBook.author}`;
+
+    return true;
+  } catch (error) {
+    console.error(
+      "온책읽기 책 정보를 불러오지 못했습니다.",
+      error
+    );
+
+    alert("책 정보를 불러오지 못했습니다.");
+    return false;
+  }
+}
 
     function renderAll() {
   renderTopProgress();
@@ -2913,7 +2977,7 @@ body {
         ? '<section class="example-panel">' +
             '<div class="panel-title-row">' +
               '<h3 class="panel-title">예시 질문</h3>' +
-              '<span class="book-tag">' + selectedBook.title + '</span>' +
+              '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>' +
             '</div>' +
 
             '<div class="example-list">' +
@@ -3062,7 +3126,7 @@ body {
         (isExampleMode
           ? '<button class="main-button" type="button" onclick="toggleExample()">질문 만들기</button>'
           : '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
-            '<button class="main-button" type="button" onclick="checkAndGoNext()">검사하기</button>' +
+            '<button class="main-button" type="button" id="checkAnswerButton" onclick="checkAndGoNext()">검사하기</button>' +
             '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + (answer.passed ? "" : "disabled") + '>다음 →</button>'
         ) +
       '</div>' +
@@ -3101,7 +3165,7 @@ body {
       document.getElementById("helpModalExamplePanel").innerHTML =
         '<div class="panel-title-row">' +
           '<h3 class="panel-title">예시 질문</h3>' +
-          '<span class="book-tag">' + selectedBook.title + '</span>' +
+          '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>' +
         '</div>' +
 
         '<div class="example-list">' +
@@ -3196,73 +3260,108 @@ body {
     return;
   }
 
+  /* 요청이 진행 중이면 버튼이 비활성화되어 있지만, 혹시 모를 중복 클릭을 한 번 더 막는다. */
+  if (isPreReadingAiRequestInFlight) {
+    return;
+  }
+
   const question = questionInput.value.trim();
   const expectedAnswer = answerInput.value.trim();
 
-  const result = validateQuestionAndAnswer(question, expectedAnswer);
+  const localResult = validatePreReadingQuestionAndAnswer(
+    question,
+    expectedAnswer,
+    emptyQuestionMessages[steps[currentStepIndex].type]
+  );
 
   feedbackBox.style.display = "flex";
   feedbackBox.classList.remove("good", "need");
-  feedbackBox.classList.add(result.ok ? "good" : "need");
 
   const feedbackMessage = feedbackBox.querySelector(".feedback-message");
 
-  if (feedbackMessage) {
-    feedbackMessage.textContent = result.message;
-  }
+  if (!localResult.ok) {
+    feedbackBox.classList.add("need");
 
-  if (!result.ok) {
+    if (feedbackMessage) {
+      feedbackMessage.textContent = localResult.message;
+    }
+
+    /*
+      형식 검사에서 걸렸으므로 AI 호출 없이 여기서 끝낸다.
+      질문과 답의 연결성은 AI만 판단할 수 있으므로 통과 여부(passed)는
+      AI가 good을 줄 때만 true가 된다(아래 requestFeedbackForCurrentStep 참고).
+    */
+    answers[currentStepIndex].passed = false;
+
+    const nextStepButton = document.getElementById("nextStepButton");
+    if (nextStepButton) {
+      nextStepButton.disabled = true;
+    }
+
     return;
   }
 
   answers[currentStepIndex].question = question;
   answers[currentStepIndex].expectedAnswer = expectedAnswer;
-  answers[currentStepIndex].passed = true;
 
-  const nextStepButton = document.getElementById("nextStepButton");
-
-  if (nextStepButton) {
-    nextStepButton.disabled = false;
-  }
-
-  requestPreReadingAiFeedback(feedbackBox, question, expectedAnswer);
+  requestFeedbackForCurrentStep(feedbackBox, question, expectedAnswer);
 }
 
+/*
+  =========================================================
+  읽기 전 AI 피드백 요청
+  =========================================================
+  실제 요청/타임아웃/버튼 잠금 로직은 js/pre-reading-validation.js의
+  requestPreReadingAiFeedback()(개별읽기 읽기 전과 공용)를 그대로 쓰고,
+  여기서는 이 화면의 DOM/상태만 연결한다.
+*/
 let preReadingAiRequestId = 0;
+let isPreReadingAiRequestInFlight = false;
 
-function requestPreReadingAiFeedback(feedbackBox, question, answer) {
+function requestFeedbackForCurrentStep(feedbackBox, question, answer) {
   const requestId = ++preReadingAiRequestId;
+  const checkButton = document.getElementById("checkAnswerButton");
   const loadingMessage = feedbackBox.querySelector(".feedback-message");
 
-  if (loadingMessage) {
-    loadingMessage.textContent = "루미가 답변을 읽고 있어요...";
-  }
+  requestPreReadingAiFeedback({
+    stepType: steps[currentStepIndex].type,
+    bookTitle: selectedBook ? selectedBook.title : "",
+    question: question,
+    answer: answer,
+    requestButton: checkButton,
+    guard: {
+      isRequesting: function () {
+        return isPreReadingAiRequestInFlight;
+      },
+      setRequesting: function (value) {
+        isPreReadingAiRequestInFlight = value;
+      }
+    },
+    onLoading: function () {
+      feedbackBox.classList.remove("good", "need");
 
-  requestAiFeedback("pre_reading_question", "", [
-    { question: question, answer: answer }
-  ]).then(function(result) {
-    if (requestId !== preReadingAiRequestId || !document.body.contains(feedbackBox)) {
-      return;
-    }
+      if (loadingMessage) {
+        loadingMessage.textContent = "루미가 답변을 읽고 있어요...";
+      }
+    },
+    onResult: function (result) {
+      if (requestId !== preReadingAiRequestId || !document.body.contains(feedbackBox)) {
+        return;
+      }
 
-    feedbackBox.classList.remove("good", "need");
-    feedbackBox.classList.add(result.status === "good" ? "good" : "need");
+      feedbackBox.classList.remove("good", "need");
+      feedbackBox.classList.add(result.isGood ? "good" : "need");
 
-    const message = feedbackBox.querySelector(".feedback-message");
-    if (message) {
-      message.textContent = result.message;
-    }
-  }).catch(function() {
-    if (requestId !== preReadingAiRequestId || !document.body.contains(feedbackBox)) {
-      return;
-    }
+      if (loadingMessage) {
+        loadingMessage.textContent = result.message;
+      }
 
-    feedbackBox.classList.remove("good", "need");
-    feedbackBox.classList.add("need");
+      answers[currentStepIndex].passed = result.isGood;
 
-    const message = feedbackBox.querySelector(".feedback-message");
-    if (message) {
-      message.textContent = "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어.";
+      const nextStepButton = document.getElementById("nextStepButton");
+      if (nextStepButton) {
+        nextStepButton.disabled = !result.isGood;
+      }
     }
   });
 }
@@ -3277,61 +3376,170 @@ function goNextAfterFeedback() {
   }
 }
 
+    /*
+      =========================================================
+      6-1. 1차 형식 검사 (AI 호출 전, 프론트에서 무의미한 입력을 차단)
+      =========================================================
+    */
+
+    const emptyQuestionMessages = {
+      title: "질문이 아직 비어 있어. 제목에서 궁금한 점을 한 문장으로 적어 봐!",
+      contents: "질문이 아직 비어 있어. 차례를 보고 앞으로 어떤 일이 일어날지 궁금한 점을 적어 봐!",
+      picture: "질문이 아직 비어 있어. 책 속 그림을 보고 인물, 표정, 장소, 물건에서 궁금한 점을 적어 봐!",
+      skim: "질문이 아직 비어 있어. 글을 훑어보고 눈에 띄는 낱말이나 문장에서 궁금한 점을 적어 봐!"
+    };
+
+    /* 공백/구두점을 지운 나머지가 한글 자모(초성·모음)뿐이거나, 한글/영문 글자가 하나도 없으면 의미 없는 입력으로 본다. */
+    function isJamoOrSymbolOnly(text) {
+      const compact = text.replace(/[\s.?!~,·…ㆍ]/g, "");
+
+      if (!compact) {
+        return true;
+      }
+
+      const jamoOnlyPattern = /^[ㄱ-ㅎㅏ-ㅣ]+$/;
+      const hasRealLetter = /[가-힣a-zA-Z]/;
+
+      return jamoOnlyPattern.test(compact) || !hasRealLetter.test(compact);
+    }
+
+    /* 같은 글자 3번 이상 반복(가가가가가), 짧은 패턴 반복(abcabcabc, asdfasdf)을 잡아낸다. */
+    function hasExcessiveRepetition(text) {
+      const compact = text.replace(/[\s.?!~,·…ㆍ]/g, "");
+
+      if (!compact) {
+        return false;
+      }
+
+      if (/(.)\1{2,}/.test(compact)) {
+        return true;
+      }
+
+      if (/^(.{2,6})\1+$/.test(compact)) {
+        return true;
+      }
+
+      return false;
+    }
+
+    function countWithoutSpaces(text) {
+      return text.replace(/\s/g, "").length;
+    }
+
+    /*
+      물음표가 아니라 질문형 표현(왜/무엇/어떻게 등)이나 질문형 어미(~까, ~나요 등)로
+      질문인지 판단한다. 이 목록에 하나도 걸리지 않으면 질문으로 보지 않는다.
+    */
+    function looksLikeQuestion(text) {
+      const questionWordPattern = /왜|무엇|무슨|뭐|누구|누가|어디|언제|어떻게|어떤|어느|몇/;
+
+      if (questionWordPattern.test(text)) {
+        return true;
+      }
+
+      const stripped = text.replace(/[\s.?!~,·…ㆍ]+$/g, "");
+      const questionEndingPattern = /(까요?|나요|가요|는지|은지|인지|일지|인가|한가)$/;
+
+      return questionEndingPattern.test(stripped);
+    }
+
     function validateQuestionAndAnswer(question, expectedAnswer) {
       if (!question) {
-  const emptyQuestionMessages = {
-    title: "질문이 아직 비어 있어. 제목에서 궁금한 점을 한 문장으로 적어 봐!",
-    contents: "질문이 아직 비어 있어. 차례를 보고 앞으로 어떤 일이 일어날지 궁금한 점을 적어 봐!",
-    picture: "질문이 아직 비어 있어. 책 속 그림을 보고 인물, 표정, 장소, 물건에서 궁금한 점을 적어 봐!",
-    skim: "질문이 아직 비어 있어. 글을 훑어보고 눈에 띄는 낱말이나 문장에서 궁금한 점을 적어 봐!"
-  };
-
-  return {
-    ok: false,
-    message: emptyQuestionMessages[steps[currentStepIndex].type]
-  };
-}
-
-      if (question.length < 8) {
         return {
           ok: false,
-          message: "질문이 조금 짧아. 무엇이 궁금한지 더 자세히 적어 보면 좋아!"
+          failedRule: "INVALID_INPUT",
+          message: emptyQuestionMessages[steps[currentStepIndex].type]
         };
       }
 
-      if (!question.includes("?") && !question.includes("까") && !question.includes("왜") && !question.includes("어떤") && !question.includes("무슨")) {
+      if (isJamoOrSymbolOnly(question)) {
         return {
           ok: false,
-          message: "질문처럼 보이도록 바꿔 보자. 예를 들면 ‘왜 ~일까?’, ‘어떤 일이 생길까?’처럼 적으면 좋아!"
+          failedRule: "INVALID_INPUT",
+          message: "질문의 뜻이 잘 보이지 않아요. 궁금한 점을 문장으로 다시 적어 보세요."
+        };
+      }
+
+      if (hasExcessiveRepetition(question)) {
+        return {
+          ok: false,
+          failedRule: "REPEATED_INPUT",
+          message: "같은 글자가 너무 많이 반복됐어요. 궁금한 내용을 문장으로 적어 보세요."
+        };
+      }
+
+      if (countWithoutSpaces(question) < 5) {
+        return {
+          ok: false,
+          failedRule: "TOO_SHORT",
+          message: "질문이 너무 짧아요. 무엇이 궁금한지 조금 더 자세히 적어 보세요."
+        };
+      }
+
+      if (!looksLikeQuestion(question)) {
+        return {
+          ok: false,
+          failedRule: "NOT_A_QUESTION",
+          message: "질문의 뜻이 잘 보이지 않아요. 궁금한 점을 문장으로 다시 적어 보세요."
         };
       }
 
       if (!expectedAnswer) {
         return {
           ok: false,
+          failedRule: "INVALID_INPUT",
           message: "내가 생각한 답도 적어 줘. 아직 읽기 전이니까 상상해서 답해도 괜찮아!"
         };
       }
 
-      if (expectedAnswer.length < 8) {
+      if (isJamoOrSymbolOnly(expectedAnswer)) {
         return {
           ok: false,
-          message: "답이 조금 짧아. 왜 그렇게 생각했는지 한 문장만 더 자세히 적어 봐!"
+          failedRule: "INVALID_INPUT",
+          message: "답의 뜻이 잘 보이지 않아요. 내가 예상한 답을 문장으로 다시 적어 보세요."
         };
       }
 
-      const weakAnswers = ["몰라", "모르겠다", "없다", "그냥", "모름"];
-
-      if (weakAnswers.includes(expectedAnswer.replaceAll(" ", ""))) {
+      if (hasExcessiveRepetition(expectedAnswer)) {
         return {
           ok: false,
+          failedRule: "REPEATED_INPUT",
+          message: "같은 글자가 너무 많이 반복됐어요. 예상한 답을 문장으로 적어 보세요."
+        };
+      }
+
+      if (countWithoutSpaces(expectedAnswer) < 3) {
+        return {
+          ok: false,
+          failedRule: "TOO_SHORT",
+          message: "답이 너무 짧아요. 왜 그렇게 생각했는지 조금 더 자세히 적어 보세요."
+        };
+      }
+
+      const normalizedQuestion = question.replace(/\s/g, "");
+      const normalizedAnswer = expectedAnswer.replace(/\s/g, "");
+
+      if (normalizedQuestion === normalizedAnswer) {
+        return {
+          ok: false,
+          failedRule: "LOW_EFFORT_ANSWER",
+          message: "질문을 그대로 답으로 적었어요. 내가 예상한 답을 새로 생각해서 적어 보세요."
+        };
+      }
+
+      const weakAnswers = ["몰라", "모르겠다", "없다", "없음", "그냥", "모름", "아무거나"];
+
+      if (weakAnswers.includes(normalizedAnswer)) {
+        return {
+          ok: false,
+          failedRule: "LOW_EFFORT_ANSWER",
           message: "조금 더 상상해서 답해 보자. 정답이 아니어도 괜찮으니까 ‘~일 것 같다’처럼 써 보면 좋아!"
         };
       }
 
       return {
         ok: true,
-        message: "좋아! 책을 읽기 전에 내용을 짐작해 볼 수 있는 질문이야. 다음 단서도 살펴보자!"
+        message: "형식을 확인했어요. 루미에게 검사를 부탁할게요!"
       };
     }
 
@@ -3480,6 +3688,5 @@ function goNextAfterFeedback() {
     }
   </script>
   <script src="../js/fixed-stage.js"></script>
-  <script src="../js/ai-feedback.js"></script>
 </body>
 </html>

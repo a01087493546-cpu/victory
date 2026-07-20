@@ -1156,13 +1156,6 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
   return;
 }
 
-if (isIdAlreadyUsed(teacherId)) {
-  alert("이미 사용하고 있는 아이디입니다.");
-  document.getElementById("teacherId").focus();
-  document.getElementById("teacherId").select();
-  return;
-}
-
 if (!/^(?=.*[A-Za-z])(?=.*\d).{4,}$/.test(teacherPw)) {
   alert("비밀번호는 4자 이상이며 영어와 숫자를 모두 포함해야 해요.");
   document.getElementById("teacherPw").focus();
@@ -1206,44 +1199,10 @@ if (!/^(?=.*[A-Za-z])(?=.*\d).{4,}$/.test(teacherPw)) {
     function isSimpleId(text) {
       return /^[a-z0-9]+$/.test(String(text || ""));
     }
-    /* 지금까지 이 브라우저에서 등록한 모든 아이디를 가져와요. */
-function getRegisteredIds() {
-  try {
-    const savedIds = JSON.parse(
-      localStorage.getItem("registeredAccountIds") || "[]"
-    );
+   
 
-    return Array.isArray(savedIds) ? savedIds : [];
-  } catch (error) {
-    return [];
-  }
-}
 
-/* 아이디가 이미 등록되어 있는지 확인해요. */
-function isIdAlreadyUsed(id) {
-  const normalizedId = String(id || "").trim().toLowerCase();
-  const registeredIds = getRegisteredIds();
 
-  return registeredIds.includes(normalizedId);
-}
-
-/* 새로 등록한 아이디를 기존 목록에 저장해요. */
-function saveRegisteredIds(ids) {
-  const registeredIds = getRegisteredIds();
-
-  ids.forEach(function(id) {
-    const normalizedId = String(id || "").trim().toLowerCase();
-
-    if (normalizedId && !registeredIds.includes(normalizedId)) {
-      registeredIds.push(normalizedId);
-    }
-  });
-
-  localStorage.setItem(
-    "registeredAccountIds",
-    JSON.stringify(registeredIds)
-  );
-}
 
     function makeSafePrefix(prefix) {
       const safe = String(prefix || "s")

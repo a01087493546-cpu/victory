@@ -413,16 +413,26 @@
 
       <div class="tr-menu-grid">
         <article class="tr-menu-card ready">
-           <div class="tr-help-label">먼저 설정</div>
+           <div
+  class="tr-help-label"
+  id="accountStatusBadge"
+>
+  먼저 설정
+</div>
           <div class="tr-card-icon">📚</div>
           <h2 class="tr-menu-title">계정관리</h2>
           <p class="tr-menu-desc">
             교사 계정, 학급 정보,<br>
             학생 계정을 등록해요.
           </p>
-          <button class="tr-action-button" type="button" onclick="goTeacherRegister()">
-            계정 관리하기
-          </button>
+          <button
+  class="tr-action-button"
+  id="accountManageButton"
+  type="button"
+  onclick="goTeacherRegister()"
+>
+  계정 관리하기
+</button>
         </article>
 
         <article class="tr-menu-card ready">
@@ -468,11 +478,62 @@
     }
 
     updateTeacherHomeStageScale();
-    window.addEventListener("resize", updateTeacherHomeStageScale);
 
-    function goTeacherRegister() {
-      location.href = "teacher-register.html";
+async function loadAccountStatus() {
+  const token = sessionStorage.getItem("token");
+
+  const teacherId =
+    sessionStorage.getItem("id") ||
+    sessionStorage.getItem("studentId");
+
+  const role = sessionStorage.getItem("role");
+
+  if (!token || !teacherId || role !== "teacher") {
+    return;
+  }
+
+  const badge =
+    document.getElementById("accountStatusBadge");
+
+  const button =
+    document.getElementById("accountManageButton");
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/teachers/${teacherId}/class`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      badge.textContent = "먼저 설정";
+      button.textContent = "계정 관리하기";
+      return;
     }
+
+    badge.textContent = "생성 완료";
+    button.textContent = "계정 추가 등록";
+  } catch (error) {
+    console.error("계정 상태 조회 오류:", error);
+
+    badge.textContent = "먼저 설정";
+    button.textContent = "계정 관리하기";
+  }
+}
+
+loadAccountStatus();
+
+window.addEventListener(
+  "resize",
+  updateTeacherHomeStageScale
+);
+
+function goTeacherRegister() {
+  location.href = "teacher-register.html";
+}
     function goBookManage() {
   location.href = "book-manage.html";
 }

@@ -1,6 +1,5 @@
 package com.victory.service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -104,7 +103,7 @@ public class PracticeProgressService {
         progress.setBeforeDone(false);
         progress.setClassReadDone(false);
         progress.setAfterDone(false);
-        progress.setDuringTypeProgress(createDefaultDuringProgress());
+        progress.setDuringTypeProgress(PracticeProgress.createDefaultDuringProgress());
 
         return progress;
     }
@@ -136,7 +135,7 @@ public class PracticeProgressService {
         if (request.getDuringTypeProgress() != null) {
 
             Map<String, Boolean> mergedProgress =
-                createDefaultDuringProgress();
+                PracticeProgress.createDefaultDuringProgress();
 
             if (progress.getDuringTypeProgress() != null) {
                 mergedProgress.putAll(
@@ -155,20 +154,5 @@ public class PracticeProgressService {
 
             progress.setDuringTypeProgress(mergedProgress);
         }
-    }
-
-    /*
-     * 읽기 중 질문 유형 4개의 기본 상태
-     */
-    private Map<String, Boolean> createDefaultDuringProgress() {
-
-        Map<String, Boolean> progress = new HashMap<>();
-
-        progress.put("direct", false);
-        progress.put("infer", false);
-        progress.put("opinion", false);
-        progress.put("connect", false);
-
-        return progress;
     }
 }
