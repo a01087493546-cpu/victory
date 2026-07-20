@@ -30,7 +30,7 @@ public class AuthService {
         user.setLoginId(request.getLoginId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
-        user.setRole("teacher");
+        user.setRole(request.getRole());
 
         User savedUser = userRepository.save(user);
 
