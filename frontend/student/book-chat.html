@@ -42,7 +42,7 @@
       height: 100%;
       margin: 0 auto;
       display: grid;
-      grid-template-rows: auto auto auto minmax(0,1fr);
+      grid-template-rows: auto auto auto auto minmax(0,1fr);
       gap: 12px;
       overflow: hidden;
     }
@@ -190,7 +190,7 @@
     .sort-select { padding: 0 16px; text-align:center; text-align-last:center; outline:none; }
 
     .board-card {
-      height: 100%;
+      height: calc(100% - 4px);
       min-height: 0;
       padding: 20px 26px;
       display: grid;
@@ -243,6 +243,7 @@
     .modal-body::-webkit-scrollbar-thumb { border:3px solid transparent; border-radius:999px; background:rgba(142,91,36,.50); background-clip:padding-box; }
 
     .question-card {
+      position:relative;
       width:100%;
       min-height:152px;
       padding:18px 22px;
@@ -252,6 +253,25 @@
       color:#4d321a;
       text-align:left;
       transition:.15s ease;
+    }
+
+    .card-delete-button {
+      position:absolute;
+      right:16px;
+      bottom:14px;
+      padding:4px 11px;
+      border-radius:999px;
+      border:1px solid rgba(186,130,58,.32);
+      background:rgba(255,255,255,.82);
+      color:#8a5a2f;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .card-delete-button:hover {
+      background:rgba(214,68,58,.12);
+      border-color:rgba(214,68,58,.34);
+      color:#b23327;
     }
 
     .question-card:hover { transform:translateY(-1px); box-shadow:0 8px 14px rgba(123,75,25,.10); }
@@ -277,6 +297,53 @@
 
     .type-badge { background:rgba(222,168,79,.18); color:#8b5a1d; }
     .talk-badge { background:rgba(88,139,62,.14); color:#47722c; }
+
+    .moderation-badge {
+      display:inline-block;
+      margin-bottom:10px;
+      padding:6px 13px;
+      border-radius:999px;
+      border:1px solid transparent;
+      font-size:14px;
+      font-weight:900;
+    }
+
+    .moderation-legend {
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:2px;
+    }
+
+    .moderation-legend .moderation-badge { margin-bottom:0; }
+
+    .moderation-legend-text {
+      color:#7a5a35;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .moderation-badge.status-pending {
+      background:rgba(230,180,40,.22);
+      border-color:rgba(230,180,40,.4);
+      color:#8a6a10;
+    }
+
+    .moderation-badge.status-approved {
+      background:rgba(88,139,62,.18);
+      border-color:rgba(88,139,62,.4);
+      color:#2f6b1c;
+    }
+
+    .moderation-badge.status-rejected {
+      background:rgba(214,68,58,.16);
+      border-color:rgba(214,68,58,.4);
+      color:#b23327;
+      cursor:pointer;
+    }
+
+    .question-top .moderation-badge { margin-bottom:0; }
 
     .card-actions {
       margin-left:auto;
@@ -361,6 +428,43 @@
       overflow:hidden;
       background:rgba(255,251,242,.99);
       box-shadow:0 28px 70px rgba(47,28,10,.38);
+    }
+
+    .reject-reason-panel {
+      width:min(620px,calc(100vw - 80px));
+      height:auto;
+      max-height:calc(100vh - 70px);
+    }
+
+    .reject-reason-box {
+      padding:16px 18px;
+      border-radius:16px;
+      border:1px solid rgba(214,68,58,.28);
+      background:rgba(214,68,58,.08);
+      color:#7a281f;
+      font-size:16px;
+      font-weight:700;
+      line-height:1.6;
+    }
+
+    .reject-reason-box strong {
+      display:block;
+      margin-bottom:8px;
+      color:#b23327;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .reject-rewrite-button {
+      margin-top:16px;
+      width:100%;
+      min-height:48px;
+      border:1px solid rgba(68,124,42,.38);
+      border-radius:14px;
+      background:linear-gradient(180deg,#3f842e,#245716);
+      color:#fff8dd;
+      font-size:16px;
+      font-weight:900;
     }
 
     .modal-head {
@@ -562,6 +666,13 @@
         </div>
       </header>
 
+      <div class="moderation-legend">
+        <span class="moderation-badge status-pending">확인 중이에요</span>
+        <span class="moderation-badge status-approved">게시됐어요</span>
+        <span class="moderation-badge status-rejected">다시 써볼까요?</span>
+        <span class="moderation-legend-text">← 내 글 상태를 색깔로 알려줘요</span>
+      </div>
+
       <section class="activity-card">
         <h2 class="activity-title">활동 내역</h2>
         <div class="stat-row">
@@ -610,6 +721,16 @@
         <button class="modal-close-button" type="button" onclick="closeCommentsModal()">×</button>
       </div>
       <div class="modal-body" id="commentsModalBody"></div>
+    </article>
+  </div>
+
+  <div class="modal hidden" id="rejectReasonModal" aria-hidden="true" onclick="closeRejectReasonModal(event)">
+    <article class="modal-panel reject-reason-panel" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <h2 class="modal-title">다시 써볼까요?</h2>
+        <button class="modal-close-button" type="button" onclick="closeRejectReasonModal()">×</button>
+      </div>
+      <div class="modal-body" id="rejectReasonModalBody"></div>
     </article>
   </div>
 
@@ -684,19 +805,98 @@
       people.forEach(person => {
         person.questions.forEach((question,index) => {
           const type = normalizeType(question.type);
+          const moderationPost = person.isMine
+            ? findModerationPost("mySharedQuestions-" + index + "-" + String(question.text || ""))
+            : null;
+
           flattened.push({
             id: person.name + "-" + index + "-" + question.text,
             name: person.name,
             isMine: !!person.isMine,
+            myIndex: person.isMine ? index : null,
             text: question.text,
             answer: question.answer || "",
             type,
             createdAt: question.createdAt || "오늘",
-            baseTalkCount: getBaseTalkCount(type,index)
+            baseTalkCount: getBaseTalkCount(type,index),
+            /*
+              교사가 아직 book-chat-manage.html을 한 번도 열지 않았으면 이 글은
+              검수 큐(pending/approved/rejected)에 아직 들어가 있지 않을 수 있음.
+              그런 경우도 "검수 전" 상태이므로 기본값을 pending으로 둠(배지가 항상 뜨도록).
+            */
+            moderationStatus: person.isMine ? (moderationPost ? moderationPost.status : "pending") : null,
+            rejectReason: moderationPost ? moderationPost.rejectReason : ""
           });
         });
       });
       return flattened;
+    }
+
+    /*
+      교사가 book-chat-manage.html에서 승인/거절한 결과를 조회합니다.
+      아직 백엔드가 없어서 교사 화면과 같은 localStorage 키(대기중/승인됨/거절됨 3개 배열)를
+      그대로 읽어와 sourceId로 내 글을 찾습니다.
+    */
+    function findModerationPost(sourceId) {
+      const keys = ["bookChatPendingPosts", "bookChatApprovedPosts", "bookChatRejectedPosts"];
+
+      for (const key of keys) {
+        try {
+          const list = JSON.parse(localStorage.getItem(key) || "[]");
+          const found = list.find(post => post.sourceId === sourceId);
+          if (found) return found;
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return null;
+    }
+
+    function getModerationBadgeInfo(status) {
+      if (status === "approved") return { label:"게시됐어요", className:"status-approved" };
+      if (status === "rejected") return { label:"다시 써볼까요?", className:"status-rejected" };
+      return { label:"확인 중이에요", className:"status-pending" };
+    }
+
+    /*
+      내가 쓴 질문을 삭제합니다. mySharedQuestions.questions 배열에서 해당 인덱스를 지우고,
+      검수 큐(pending/approved/rejected)에 같은 글이 들어가 있으면 그것도 함께 지웁니다.
+    */
+    function deleteMyQuestion(myIndex) {
+      if (myIndex === null || myIndex === undefined) return;
+      if (!confirm("정말 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+
+      const raw = localStorage.getItem("mySharedQuestions");
+      if (!raw) return;
+
+      let parsedData = null;
+      try {
+        parsedData = JSON.parse(raw);
+      } catch (error) {
+        return;
+      }
+
+      if (!parsedData || !Array.isArray(parsedData.questions)) return;
+
+      const deletedQuestion = parsedData.questions[myIndex];
+      const sourceId = "mySharedQuestions-" + myIndex + "-" + String(deletedQuestion ? deletedQuestion.text || "" : "");
+
+      parsedData.questions.splice(myIndex, 1);
+      localStorage.setItem("mySharedQuestions", JSON.stringify(parsedData));
+
+      ["bookChatPendingPosts","bookChatApprovedPosts","bookChatRejectedPosts"].forEach(key => {
+        try {
+          const list = JSON.parse(localStorage.getItem(key) || "[]");
+          const filtered = list.filter(post => post.sourceId !== sourceId);
+          localStorage.setItem(key, JSON.stringify(filtered));
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      allQuestions = buildQuestionData();
+      renderAll();
     }
 
     function loadMySharedQuestions() {
@@ -762,11 +962,18 @@
           ? (quizDone ? `openCommentsModal('${escapeAttribute(question.id)}')` : `openThoughtModal('${escapeAttribute(question.id)}')`)
           : `openCommentsModal('${escapeAttribute(question.id)}')`;
 
+        const badge = question.isMine && question.moderationStatus
+          ? getModerationBadgeInfo(question.moderationStatus)
+          : null;
+        const badgeClick = question.moderationStatus === "rejected"
+          ? `onclick="openRejectReasonModal('${escapeAttribute(question.id)}'); event.stopPropagation();"`
+          : "";
+
         return `
           <article class="question-card">
             <div class="question-top">
               <span class="student-name">${escapeHtml(question.isMine ? "나의 질문" : question.name)}</span>
-              <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
+              ${badge ? `<span class="moderation-badge ${badge.className}" ${badgeClick}>${escapeHtml(badge.label)}</span>` : ""}
               <button class="talk-badge" type="button" onclick="${countClick}; event.stopPropagation();">${countLabel}</button>
               <div class="card-actions">
                 <button class="thought-write-button" type="button" onclick="${actionClick}; event.stopPropagation();">${actionLabel}</button>
@@ -782,6 +989,7 @@
      </div>`
   : ""}
             </button>
+            ${question.isMine ? `<button class="card-delete-button" type="button" onclick="deleteMyQuestion(${question.myIndex}); event.stopPropagation();">삭제</button>` : ""}
           </article>
         `;
       }).join("");
@@ -863,6 +1071,32 @@
       if (event && event.target !== commentsModal) return;
       commentsModal.classList.add("hidden");
       commentsModal.setAttribute("aria-hidden","true");
+    }
+
+    function openRejectReasonModal(questionId) {
+      const question = allQuestions.find(q => q.id === questionId);
+      if (!question) return;
+
+      const reasonModal = document.getElementById("rejectReasonModal");
+      const reasonBody = document.getElementById("rejectReasonModalBody");
+
+      reasonBody.innerHTML = `
+        <div class="reject-reason-box">
+          <strong>선생님이 남긴 이유</strong>
+          ${escapeHtml(question.rejectReason || "따로 남긴 이유가 없어요. 내용을 다시 살펴보고 고쳐 써 봐요.")}
+        </div>
+        <button class="reject-rewrite-button" type="button" onclick="location.href='./during-read.html';">다시 쓰기</button>
+      `;
+
+      reasonModal.classList.remove("hidden");
+      reasonModal.setAttribute("aria-hidden","false");
+    }
+
+    function closeRejectReasonModal(event) {
+      const reasonModal = document.getElementById("rejectReasonModal");
+      if (event && event.target !== reasonModal) return;
+      reasonModal.classList.add("hidden");
+      reasonModal.setAttribute("aria-hidden","true");
     }
 
     function renderCommentsModal() {

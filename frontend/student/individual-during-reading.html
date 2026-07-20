@@ -956,6 +956,7 @@
     }
 
     .idr-share-card {
+      position: relative;
       padding: 15px;
       border: 1px solid rgba(181, 117, 37, 0.16);
       border-radius: 20px;
@@ -1979,6 +1980,76 @@
       color: #9a631e !important;
       font-weight: 950 !important;
       white-space: nowrap !important;
+    }
+
+    .idr-moderation-badge {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .idr-moderation-status-pending {
+      background: rgba(230, 180, 40, 0.22);
+      border-color: rgba(230, 180, 40, 0.4);
+      color: #8a6a10;
+    }
+
+    .idr-moderation-status-approved {
+      background: rgba(88, 139, 62, 0.18);
+      border-color: rgba(88, 139, 62, 0.4);
+      color: #2f6b1c;
+    }
+
+    .idr-moderation-status-rejected {
+      background: rgba(214, 68, 58, 0.16);
+      border-color: rgba(214, 68, 58, 0.4);
+      color: #b23327;
+      cursor: pointer;
+    }
+
+    .idr-question-card-top .idr-moderation-badge {
+      margin-bottom: 0;
+    }
+
+    .idr-card-delete-button {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(181, 117, 37, 0.32);
+      background: rgba(255, 255, 255, 0.82);
+      color: #8a5a2f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .idr-card-delete-button:hover {
+      background: rgba(214, 68, 58, 0.1);
+      border-color: rgba(214, 68, 58, 0.34);
+      color: #b23327;
+    }
+
+    .idr-moderation-legend {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .idr-moderation-legend .idr-moderation-badge {
+      margin-bottom: 0;
+    }
+
+    .idr-moderation-legend-text {
+      color: #7a5a35;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     /*
@@ -5459,6 +5530,31 @@
   box-shadow: 0 26px 60px rgba(44, 24, 10, 0.26) !important;
 }
 
+.idr-reject-reason-panel {
+  width: min(560px, calc(100vw - 96px)) !important;
+  height: auto !important;
+  max-height: calc(100vh - 96px) !important;
+}
+
+.idr-reject-reason-box {
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(214, 68, 58, 0.28);
+  background: rgba(214, 68, 58, 0.08);
+  color: #7a281f;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.idr-reject-reason-box strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #b23327;
+  font-size: 15px;
+  font-weight: 900;
+}
+
 .idr-book-chat-modal-head {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) 44px !important;
@@ -8478,6 +8574,74 @@ function clearBookChatViewportMode() {
   });
 }
 
+/*
+  교사가 individual-book-chat-manage.html에서 승인/거절한 결과를 조회합니다.
+  아직 백엔드가 없어서 교사 화면과 같은 localStorage 키(대기중/승인됨/거절됨 3개 배열)를
+  그대로 읽어와 sourceId(=내 글의 id)로 내 글을 찾습니다.
+*/
+function findIndividualModerationPost(sourceId) {
+  const keys = [
+    "individualBookChatPendingPosts",
+    "individualBookChatApprovedPosts",
+    "individualBookChatRejectedPosts"
+  ];
+
+  for (let i = 0; i < keys.length; i++) {
+    try {
+      const list = JSON.parse(localStorage.getItem(keys[i]) || "[]");
+      const found = list.find(function (post) { return post.sourceId === sourceId; });
+      if (found) return found;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  return null;
+}
+
+function getIndividualModerationBadgeInfo(status) {
+  if (status === "approved") return { label: "게시됐어요", className: "status-approved" };
+  if (status === "rejected") return { label: "다시 써볼까요?", className: "status-rejected" };
+  return { label: "확인 중이에요", className: "status-pending" };
+}
+
+/*
+  내가 쓴 책수다 글을 삭제합니다. individualBookChatPosts_<studentId>에서 지우고,
+  검수 큐(pending/approved/rejected)에 같은 글이 들어가 있으면 그것도 함께 지웁니다.
+*/
+window.deleteMyBookChatPost = function (postId) {
+  if (!confirm("정말 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+
+  const studentId = sessionStorage.getItem("studentId") || "student-demo";
+  const storageKey = "individualBookChatPosts_" + studentId;
+
+  let posts = [];
+  try {
+    posts = JSON.parse(localStorage.getItem(storageKey) || "[]");
+  } catch (error) {
+    posts = [];
+  }
+
+  posts = posts.filter(function (post) { return post.id !== postId; });
+  localStorage.setItem(storageKey, JSON.stringify(posts));
+
+  [
+    "individualBookChatPendingPosts",
+    "individualBookChatApprovedPosts",
+    "individualBookChatRejectedPosts"
+  ].forEach(function (key) {
+    try {
+      const list = JSON.parse(localStorage.getItem(key) || "[]");
+      const filtered = list.filter(function (post) { return post.sourceId !== postId; });
+      localStorage.setItem(key, JSON.stringify(filtered));
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  renderBookChatRoom();
+};
+
 function renderBookChatRoom(selectedIndex = 0) {
   applyBookChatViewportMode();
   const shareScreen = document.getElementById("shareScreen");
@@ -8496,7 +8660,7 @@ function renderBookChatRoom(selectedIndex = 0) {
       id: "sample-book-chat-1",
       writer: "지민",
       label: "👑 인기글 · 지민",
-      bookTitle: "모험 이야기",
+      bookTitle: "불량한 자전거 여행",
       title: "안전한 길 vs 새로운 도전",
       scene: "책 속 주인공이 익숙한 곳을 떠나 새로운 곳으로 가야 하는 장면이 나와. 너라면 어떤 선택을 할래?",
       optionA: "안전한 길",
@@ -8525,7 +8689,7 @@ function renderBookChatRoom(selectedIndex = 0) {
       id: "sample-book-chat-2",
       writer: "민수",
       label: "민수",
-      bookTitle: "친구 이야기",
+      bookTitle: "긴긴밤",
       title: "친구를 도와주기 vs 내 일을 먼저 하기",
       scene: "주인공이 친구를 도와주면 자기 일이 늦어지는 상황이야. 너라면 어떻게 할래?",
       optionA: "친구를 도와주기",
@@ -8549,7 +8713,7 @@ function renderBookChatRoom(selectedIndex = 0) {
   id: "sample-book-chat-3",
   writer: "하윤",
   label: "하윤",
-  bookTitle: "우정 이야기",
+  bookTitle: "마당을 나온 암탉",
   title: "친구를 기다리기 vs 먼저 출발하기",
   scene: "책 속 주인공은 친구가 늦게 와서 혼자 먼저 갈지, 조금 더 기다릴지 고민했어. 너라면 어떻게 할래?",
   optionA: "친구를 기다리기",
@@ -8571,11 +8735,21 @@ function renderBookChatRoom(selectedIndex = 0) {
 },
   ];
 
-  // 내가 쓴 글에는 목록에서 '나의 글' 표시를 붙입니다.
+  // 내가 쓴 글에는 목록에서 '나의 글' 표시를 붙이고, 선생님 검수 상태도 함께 붙입니다.
   const myPosts = myBookChatPosts.map(function (post) {
+    const moderationPost = findIndividualModerationPost(post.id);
+
+    /*
+      선생님이 individual-book-chat-manage.html을 한 번도 안 열었으면
+      이 글이 아직 검수 큐에 들어가 있지 않을 수 있음 — 그 경우도 "검수 전" 상태이므로
+      기본값을 pending으로 둠(배지가 항상 뜨도록).
+    */
     return {
       ...post,
-      label: "나의 글"
+      label: "나의 글",
+      isMine: true,
+      moderationStatus: moderationPost ? moderationPost.status : "pending",
+      rejectReason: moderationPost ? moderationPost.rejectReason : ""
     };
   });
 
@@ -8672,6 +8846,13 @@ if (allBookChatPosts.length === 0) {
       <p style="margin: 0; color: #6f4720; font-size: 15px; font-weight: 900; line-height: 1.5;">
         오늘 읽은 장면을 골라 친구들과 A/B 생각을 나누어 봐요.
       </p>
+
+      <div class="idr-moderation-legend">
+        <span class="idr-moderation-badge idr-moderation-status-pending">확인 중이에요</span>
+        <span class="idr-moderation-badge idr-moderation-status-approved">게시됐어요</span>
+        <span class="idr-moderation-badge idr-moderation-status-rejected">다시 써볼까요?</span>
+        <span class="idr-moderation-legend-text">← 내 글 상태를 색깔로 알려줘요</span>
+      </div>
     </section>
 
     <section class="idr-share-layout idr-book-chat-layout">
@@ -8770,6 +8951,12 @@ const displayReplies = [
     const bCount = getChoiceCount(post, "B");
     const totalCount = aCount + bCount;
     const selectedClass = index === selectedIndex ? "selected" : "";
+    const moderationBadge = post.isMine && post.moderationStatus
+      ? getIndividualModerationBadgeInfo(post.moderationStatus)
+      : null;
+    const moderationBadgeClick = post.moderationStatus === "rejected"
+      ? `onclick="event.stopPropagation(); window.openIndividualRejectReasonModal('${post.id}');"`
+      : "";
 
     return `
       <article
@@ -8781,8 +8968,15 @@ const displayReplies = [
       >
         <div class="idr-question-card-top">
           <span>${post.label || post.writer}</span>
+          ${
+            moderationBadge
+              ? `<span class="idr-moderation-badge idr-moderation-${moderationBadge.className}" ${moderationBadgeClick}>${moderationBadge.label}</span>`
+              : ""
+          }
           <span class="idr-comment-count">참여 ${totalCount} · A ${aCount}명 · B ${bCount}명</span>
         </div>
+
+        <span style="display: inline-block; margin-bottom: 8px; padding: 4px 12px; border-radius: 999px; background: rgba(181, 117, 37, 0.14); color: #8b5421; font-size: 17px; font-weight: 900;">📖 ${escapeHtml(post.bookTitle || "책 제목 없음")}</span>
 
         ${
           post.imageData
@@ -8815,6 +9009,12 @@ const displayReplies = [
             친구 생각 보기
           </button>
         </div>
+
+        ${
+          post.isMine
+            ? `<button class="idr-card-delete-button" type="button" onclick="event.stopPropagation(); window.deleteMyBookChatPost('${post.id}');">삭제</button>`
+            : ""
+        }
       </article>
     `;
   }).join("");
@@ -8919,6 +9119,13 @@ const displayReplies = [
         </div>
       </div>
 
+      <div class="idr-moderation-legend">
+        <span class="idr-moderation-badge idr-moderation-status-pending">확인 중이에요</span>
+        <span class="idr-moderation-badge idr-moderation-status-approved">게시됐어요</span>
+        <span class="idr-moderation-badge idr-moderation-status-rejected">다시 써볼까요?</span>
+        <span class="idr-moderation-legend-text">← 내 글 상태를 색깔로 알려줘요</span>
+      </div>
+
     </section>
 
     <section class="idr-share-layout idr-book-chat-layout">
@@ -8962,7 +9169,10 @@ const displayReplies = [
       <div class="idr-book-chat-modal-panel">
         <div class="idr-book-chat-modal-head">
           <div class="idr-book-chat-modal-title-row">
-            <h2>${selectedPost.title}</h2>
+            <div>
+              <span style="display: inline-block; margin-bottom: 6px; padding: 4px 12px; border-radius: 999px; background: rgba(181, 117, 37, 0.14); color: #8b5421; font-size: 17px; font-weight: 900;">📖 ${escapeHtml(selectedPost.bookTitle || "책 제목 없음")}</span>
+              <h2>${selectedPost.title}</h2>
+            </div>
             <button type="button" class="idr-main-button idr-book-chat-replies-toggle" onclick="window.toggleBookChatReplies()">
               친구들의 선택과 이유 보기
             </button>
@@ -9008,6 +9218,21 @@ const displayReplies = [
         </div>
       </div>
     </div>
+
+    <div class="idr-book-chat-modal hidden" id="individualRejectReasonModal" aria-hidden="true">
+      <div class="idr-book-chat-modal-panel idr-reject-reason-panel">
+        <div class="idr-book-chat-modal-head">
+          <div class="idr-book-chat-modal-title-row">
+            <h2>다시 써볼까요?</h2>
+          </div>
+          <button type="button" class="idr-book-chat-close" onclick="window.closeIndividualRejectReasonModal()">×</button>
+        </div>
+
+        <div class="idr-book-chat-modal-body">
+          <div class="idr-selected-question" id="individualRejectReasonBody"></div>
+        </div>
+      </div>
+    </div>
   `;
 // 이전에 body로 옮겨둔 오래된 보조창이 남아있으면 지우고, 방금 새로 만든 보조창만 남깁니다.
   document.querySelectorAll("body > .idr-book-chat-modal").forEach(function (oldModal) {
@@ -9017,6 +9242,11 @@ const displayReplies = [
   const bookChatModalEl = document.getElementById("bookChatDetailModal");
   if (bookChatModalEl) {
     document.body.appendChild(bookChatModalEl);
+  }
+
+  const rejectReasonModalEl = document.getElementById("individualRejectReasonModal");
+  if (rejectReasonModalEl) {
+    document.body.appendChild(rejectReasonModalEl);
   }
   // 글을 새로 선택했을 때 이전 A/B 선택 상태를 초기화합니다.
   selectedBookChatChoice = "";
@@ -9054,6 +9284,36 @@ window.openBookChatDetail = function (index, showRepliesOnly = false) {
 
 window.closeBookChatDetail = function () {
   const modal = document.getElementById("bookChatDetailModal");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+};
+
+window.openIndividualRejectReasonModal = function (postId) {
+  const moderationPost = findIndividualModerationPost(postId);
+  const modal = document.getElementById("individualRejectReasonModal");
+  const body = document.getElementById("individualRejectReasonBody");
+  if (!modal || !body) return;
+
+  const reason = moderationPost && moderationPost.rejectReason
+    ? moderationPost.rejectReason
+    : "따로 남긴 이유가 없어요. 내용을 다시 살펴보고 고쳐 써 봐요.";
+
+  body.innerHTML = `
+    <div class="idr-reject-reason-box">
+      <strong>선생님이 남긴 이유</strong>
+      ${escapeHtml(reason)}
+    </div>
+    <button class="idr-main-button primary" type="button" style="margin-top: 16px; width: 100%;" onclick="window.closeIndividualRejectReasonModal(); window.renderBookChatWriteScreen();">다시 쓰기</button>
+  `;
+
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+};
+
+window.closeIndividualRejectReasonModal = function () {
+  const modal = document.getElementById("individualRejectReasonModal");
   if (!modal) return;
 
   modal.classList.add("hidden");

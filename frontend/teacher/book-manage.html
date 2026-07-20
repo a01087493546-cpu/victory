@@ -929,6 +929,7 @@
       display: grid;
       grid-template-columns:
         minmax(0, 1fr)
+        minmax(0, 1fr)
         82px;
 
       gap: 8px;
@@ -1180,7 +1181,12 @@
 
     .wr-criteria-modal,
     .wr-detail-modal {
-      position: fixed;
+      /*
+        position: fixed는 .wr-page의 transform: scale(...)로 인해
+        브라우저마다 컨테이닝 블록 해석이 갈릴 수 있어(오른쪽으로 치우쳐 보이는 원인),
+        스케일된 .wr-page 기준으로 항상 정확히 채워지는 absolute를 씁니다.
+      */
+      position: absolute;
       inset: 0;
       z-index: 99999;
 
@@ -1878,11 +1884,6 @@
       height: 100%;
     }
 
-    .wr-criteria-modal,
-    .wr-detail-modal {
-      width: 1920px;
-      height: 1080px;
-    }
 
     /* 기존 반응형 규칙이 고정 그리드를 바꾸지 않도록 무효화 */
     @media (max-width: 1100px) {
@@ -2173,7 +2174,7 @@
     }
 
     .wr-range-input-row {
-      grid-template-columns: minmax(0, 1fr) 98px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 98px;
       gap: 10px;
     }
 
@@ -2415,18 +2416,20 @@
 
         <div class="wr-top-pills">
           <button
-            class="wr-pill"
-            type="button"
-          >
-            교사 송은정
-          </button>
+  class="wr-pill"
+  id="teacherNamePill"
+  type="button"
+>
+  교사 정보 불러오는 중
+</button>
 
           <button
-            class="wr-pill"
-            type="button"
-          >
-            4학년 1반
-          </button>
+  class="wr-pill"
+  id="classNamePill"
+  type="button"
+>
+  학급 정보 불러오는 중
+</button>
 
           <button
             class="wr-home-button"
@@ -2467,9 +2470,12 @@
                     <span>ⓘ</span>
                   </button>
 
-                  <span class="wr-small-tag">
-                    10명 표시
-                  </span>
+                  <span
+  class="wr-small-tag"
+  id="studentCountTag"
+>
+  0명 표시
+</span>
                 </div>
               </div>
 
@@ -2669,10 +2675,19 @@
               <div class="wr-range-input-row">
 
                 <input
-                  id="readingRangeInput"
+                  id="totalPageInput"
                   class="wr-range-input"
-                  type="text"
-                  placeholder="예: 15쪽 ~ 28쪽"
+                  type="number"
+                  min="1"
+                  placeholder="전체 쪽수 (예: 100)"
+                />
+
+                <input
+                  id="currentPageInput"
+                  class="wr-range-input"
+                  type="number"
+                  min="0"
+                  placeholder="누적 읽은 쪽수 (예: 68)"
                 />
 
                 <button
@@ -2688,7 +2703,7 @@
                 class="wr-current-range"
                 id="currentReadingRange"
               >
-                현재 읽을 범위: 아직 저장된 읽기 범위가 없어요.
+                현재 진행: 아직 저장된 진행 정보가 없어요.
               </div>
             </div>
           </article>
@@ -2926,92 +2941,81 @@
     updateWholeReadingStageScale();
     window.addEventListener("resize", updateWholeReadingStageScale);
 
-    const students = [
-      {
-        name: "김민지",
-        total: 92,
-        participation: 95,
-        understanding: 90,
-        state: "매우 우수",
-        note: "읽기 활동에 적극적으로 참여하고 질문의 내용도 구체적이에요."
-      },
-      {
-        name: "송은정",
-        total: 87,
-        participation: 90,
-        understanding: 84,
-        state: "우수",
-        note: "읽기 활동에 꾸준히 참여하고 질문의 핵심을 잘 이해하고 있어요."
-      },
-      {
-        name: "이재훈",
-        total: 68,
-        participation: 70,
-        understanding: 65,
-        state: "지원 필요",
-        note: "활동 참여를 독려하고 질문이 책의 내용과 연결되는지 확인해 주세요."
-      },
-      {
-        name: "김수현",
-        total: 54,
-        participation: 50,
-        understanding: 58,
-        state: "집중 지원",
-        note: "질문 제출과 읽기 활동 참여를 함께 도와줄 필요가 있어요."
-      },
-      {
-        name: "박서연",
-        total: 47,
-        participation: 52,
-        understanding: 44,
-        state: "지원 필요",
-        note: "읽은 내용을 바탕으로 핵심 생각을 정리하는 연습이 필요해요."
-      },
-      {
-        name: "최지우",
-        total: 36,
-        participation: 42,
-        understanding: 31,
-        state: "지원 필요",
-        note: "질문을 짧게 나누어 작성할 수 있도록 교사의 도움이 필요해요."
-      },
-      {
-        name: "정우진",
-        total: 28,
-        participation: 30,
-        understanding: 25,
-        state: "집중 지원",
-        note: "읽기 진도를 점검하고 활동을 단계별로 안내해 주세요."
-      },
-      {
-        name: "한지민",
-        total: 82,
-        participation: 85,
-        understanding: 80,
-        state: "우수",
-        note: "책의 내용을 잘 파악하고 자신의 생각을 자연스럽게 표현해요."
-      },
-      {
-        name: "윤태호",
-        total: 73,
-        participation: 76,
-        understanding: 70,
-        state: "보통",
-        note: "독후 활동을 끝까지 마무리할 수 있도록 안내가 필요해요."
-      },
-      {
-        name: "이서윤",
-        total: 95,
-        participation: 97,
-        understanding: 93,
-        state: "매우 우수",
-        note: "질문과 답이 구체적이며 친구의 생각에도 적극적으로 반응해요."
-      }
-    ];
+      let students = [];
 
     const readingRangeKey =
       "wholeReadingRange";
+async function loadTeacherDashboardData() {
+  const token = sessionStorage.getItem("token");
+  const teacherId = sessionStorage.getItem("id");
+  const role = sessionStorage.getItem("role");
 
+  if (!token || !teacherId || role !== "teacher") {
+    alert("교사 로그인이 필요합니다.");
+    location.href = "../index.html";
+    return;
+  }
+
+  try {
+    const classResponse = await fetch(
+      `http://localhost:8080/api/teachers/${teacherId}/class`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!classResponse.ok) {
+      throw new Error("교사 학급 정보를 불러오지 못했습니다.");
+    }
+
+    const classData = await classResponse.json();
+
+    document.getElementById("teacherNamePill").textContent =
+      `교사 ${classData.teacherName}`;
+
+    document.getElementById("classNamePill").textContent =
+      `${classData.grade}학년 ${classData.classNumber}반`;
+
+    const studentResponse = await fetch(
+      `http://localhost:8080/api/classes/${classData.classId}/students`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!studentResponse.ok) {
+      throw new Error("학생 명단을 불러오지 못했습니다.");
+    }
+
+    const studentData = await studentResponse.json();
+
+    students = studentData.map(function (student) {
+      return {
+        studentId: student.studentId,
+        loginId: student.loginId,
+        studentNumber: student.studentNumber,
+        name: student.name,
+        total: 0,
+        participation: 0,
+        understanding: 0,
+        state: "미시작",
+        note: "아직 온책읽기 학습 기록이 없어요."
+      };
+    });
+
+    document.getElementById("studentCountTag").textContent =
+      `${students.length}명 표시`;
+
+    renderStudentPreview();
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+}
     function getPreviewStateClass(state) {
       if (state === "매우 우수") {
         return "wr-state-excellent";
@@ -3217,9 +3221,14 @@
     );
 
     function saveReadingRange() {
-      const input =
+      const totalInput =
         document.getElementById(
-          "readingRangeInput"
+          "totalPageInput"
+        );
+
+      const currentInput =
+        document.getElementById(
+          "currentPageInput"
         );
 
       const current =
@@ -3227,21 +3236,45 @@
           "currentReadingRange"
         );
 
-      const range =
-        input.value.trim();
+      const totalPages =
+        Number(totalInput.value);
 
-      if (!range) {
+      const currentPage =
+        Number(currentInput.value);
+
+      if (!totalPages || totalPages < 1) {
         alert(
-          "아이들에게 보여줄 읽기 범위를 먼저 적어 주세요."
+          "전체 쪽수를 먼저 적어 주세요."
         );
 
-        input.focus();
+        totalInput.focus();
+
+        return;
+      }
+
+      if (currentInput.value === "" || currentPage < 0) {
+        alert(
+          "누적 읽은 쪽수를 적어 주세요."
+        );
+
+        currentInput.focus();
+
+        return;
+      }
+
+      if (currentPage > totalPages) {
+        alert(
+          "누적 읽은 쪽수는 전체 쪽수보다 클 수 없어요."
+        );
+
+        currentInput.focus();
 
         return;
       }
 
       const rangeData = {
-        range: range,
+        totalPages: totalPages,
+        currentPage: currentPage,
         savedAt:
           new Date().toISOString()
       };
@@ -3252,15 +3285,20 @@
       );
 
       current.textContent =
-        "현재 읽을 범위: " + range;
+        "현재 진행: " + currentPage + "쪽 / " + totalPages + "쪽";
 
-      alert("읽기 범위를 저장했어요.");
+      alert("읽기 진행 정보를 저장했어요.");
     }
 
     function loadReadingRange() {
-      const input =
+      const totalInput =
         document.getElementById(
-          "readingRangeInput"
+          "totalPageInput"
+        );
+
+      const currentInput =
+        document.getElementById(
+          "currentPageInput"
         );
 
       const current =
@@ -3281,17 +3319,23 @@
         const rangeData =
           JSON.parse(saved);
 
-        if (rangeData.range) {
-          input.value =
-            rangeData.range;
+        if (rangeData.totalPages && rangeData.currentPage !== undefined) {
+          totalInput.value =
+            rangeData.totalPages;
+
+          currentInput.value =
+            rangeData.currentPage;
 
           current.textContent =
-            "현재 읽을 범위: " +
-            rangeData.range;
+            "현재 진행: " +
+            rangeData.currentPage +
+            "쪽 / " +
+            rangeData.totalPages +
+            "쪽";
         }
       } catch (error) {
         current.textContent =
-          "저장된 읽기 범위를 불러오지 못했어요.";
+          "저장된 진행 정보를 불러오지 못했어요.";
       }
     }
 
@@ -3313,8 +3357,8 @@
         "../student/after-read.html?open=share&mode=teacher";
     }
 
-    renderStudentPreview();
-    loadReadingRange();
+    loadTeacherDashboardData();
+loadReadingRange();
   </script>
 </body>
 </html>

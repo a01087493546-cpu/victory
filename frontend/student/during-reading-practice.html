@@ -4308,13 +4308,54 @@ body {
       connect: null
     };
 
-    let progress = JSON.parse(sessionStorage.getItem(progressKey)) || {
-      direct: false,
-      infer: false,
-      opinion: false,
-      connect: false
-    };
+    let progress = {
+  direct: false,
+  infer: false,
+  opinion: false,
+  connect: false,
+  review: false
+};
+async function loadProgress() {
+  const studentId = sessionStorage.getItem("studentId");
+  const token = sessionStorage.getItem("token");
 
+  if (!studentId || !token) {
+    console.error("로그인 정보가 없습니다.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("읽기 중 진행 상태 불러오기에 실패했습니다.");
+    }
+
+    const data = await response.json();
+
+    if (data.duringTypeProgress) {
+      progress = {
+        ...progress,
+        ...data.duringTypeProgress
+      };
+
+      sessionStorage.setItem(
+        progressKey,
+        JSON.stringify(progress)
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
     /*
       =========================================================
       2. 질문 종류 데이터
@@ -5457,12 +5498,17 @@ body {
 }
 
     /*
-      =========================================================
-      13. 시작
-      =========================================================
-    */
+  =========================================================
+  13. 시작
+  =========================================================
+*/
 
-    renderSelectScreen();
+async function initPage() {
+  await loadProgress();
+  renderSelectScreen();
+}
+
+initPage();
   </script>
 
   <script>

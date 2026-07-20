@@ -398,7 +398,7 @@
       </div>
 
       <div class="tr-top-actions">
-        <button class="tr-small-button" type="button" onclick="goLogin()">로그인으로</button>
+        <button class="tr-small-button" type="button" onclick="logoutAndGoLogin()">로그아웃</button>
       </div>
     </header>
 
@@ -470,10 +470,6 @@
     updateTeacherHomeStageScale();
     window.addEventListener("resize", updateTeacherHomeStageScale);
 
-    function goLogin() {
-      location.href = "../index.html";
-    }
-
     function goTeacherRegister() {
       location.href = "teacher-register.html";
     }
@@ -489,6 +485,7 @@ function readyMenu(menuName) {
   alert(menuName + " 화면은 아직 준비 중이에요.");
 }
   </script>
+  <script src="../js/auth.js"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

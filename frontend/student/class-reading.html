@@ -321,6 +321,29 @@
       letter-spacing: -0.7px;
     }
 
+    .panel-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-info-button {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 180, 91, 0.42);
+      background: rgba(11, 8, 5, 0.36);
+      color: #ffe5ad;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .progress-info-button:active {
+      transform: translateY(1px);
+    }
+
     .status-info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -365,6 +388,7 @@
     }
 
     .progress-ring {
+      --percent: 0%;
       width: 90px;
       height: 90px;
       display: grid;
@@ -372,7 +396,7 @@
       border-radius: 50%;
       background:
         radial-gradient(circle, rgba(32, 20, 11, 0.96) 50%, transparent 52%),
-        conic-gradient(#72c05f 0 68%, rgba(236, 205, 130, 0.28) 68% 100%);
+        conic-gradient(#72c05f 0 var(--percent), rgba(236, 205, 130, 0.28) var(--percent) 100%);
       color: #fff2c8;
       font-family: "Noto Serif KR", serif;
       font-size: 27px;
@@ -398,7 +422,7 @@
 
     .progress-fill {
       height: 100%;
-      width: 68%;
+      width: 0%;
       border-radius: 999px;
       background: linear-gradient(90deg, #3a7d33, #81d769);
       box-shadow: 0 0 16px rgba(121, 222, 102, 0.42);
@@ -409,6 +433,114 @@
       color: rgba(255, 229, 176, 0.75);
       font-size: 14px;
       font-weight: 850;
+    }
+
+    /*
+      나의 독서 진행 상황 - 산출 방법 안내 모달
+      .class-reading-page(#fixedStage)에 transform: scale(...)이 걸려 있어
+      position: fixed를 쓰면 브라우저마다 기준이 갈릴 수 있으므로
+      absolute를 써서 항상 이 스테이지 기준으로 정확히 채웁니다.
+    */
+    .progress-info-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 99999;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      padding: 25px;
+
+      background: rgba(20, 12, 6, 0.72);
+      backdrop-filter: blur(5px);
+    }
+
+    .progress-info-modal.show {
+      display: flex;
+    }
+
+    .progress-info-panel {
+      width: min(1180px, calc(100% - 50px));
+      max-height: calc(100% - 50px);
+      overflow-y: auto;
+
+      border: 2px solid rgba(232, 180, 91, 0.42);
+      border-radius: 30px;
+      padding: 36px 42px;
+
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 225, 150, 0.1), transparent 40%),
+        linear-gradient(180deg, #2b1a0c, #1a0f06);
+
+      box-shadow: 0 27px 68px rgba(0, 0, 0, 0.55);
+    }
+
+    .progress-info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(232, 180, 91, 0.28);
+    }
+
+    .progress-info-title {
+      color: #fff1c9;
+      font-family: "Noto Serif KR", serif;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .progress-info-close {
+      flex-shrink: 0;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 180, 91, 0.42);
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffe5ad;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .progress-info-content {
+      display: grid;
+      gap: 18px;
+    }
+
+    .progress-info-item {
+      padding: 22px 25px;
+      border-radius: 18px;
+      border: 1px solid rgba(232, 180, 91, 0.24);
+      background: rgba(255, 238, 191, 0.06);
+    }
+
+    .progress-info-name {
+      color: #ffd98a;
+      font-size: 23px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .progress-info-text {
+      color: rgba(255, 240, 210, 0.88);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .progress-info-footer {
+      margin-top: 24px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: rgba(114, 192, 95, 0.14);
+      border: 1px solid rgba(114, 192, 95, 0.38);
+      color: #d6f5c9;
+      font-size: 20px;
+      font-weight: 900;
+      text-align: center;
     }
 
     /* 하단 활동 카드 */
@@ -590,7 +722,10 @@
         </article>
 
         <article class="status-panel">
-          <h2 class="panel-title">우리반 책 진행 상황 ✦</h2>
+          <div class="panel-title-row">
+            <h2 class="panel-title">나의 독서 진행 상황 ✦</h2>
+            <button class="progress-info-button" type="button" onclick="openProgressInfoModal()">ⓘ 산출 방법</button>
+          </div>
 
           <div class="status-info-grid">
             <div class="status-chip">
@@ -600,19 +735,18 @@
 
             <div class="status-chip">
               <span>현재 읽는 구간</span>
-              <strong>현재 읽는 구간</strong>
+              <strong id="currentReadingRangeDisplay">현재 읽는 구간</strong>
             </div>
           </div>
 
           <div class="progress-box">
-            <div class="progress-ring">68%</div>
+            <div class="progress-ring" id="myProgressRing">0%</div>
 
             <div>
-              <div class="progress-title">우리 반 68% 완료</div>
+              <div class="progress-title" id="myProgressTitle">나의 진행률 0%</div>
               <div class="progress-track">
-                <div class="progress-fill"></div>
+                <div class="progress-fill" id="myProgressFill"></div>
               </div>
-              <div class="progress-caption">총 25명 참여 중</div>
             </div>
           </div>
         </article>
@@ -662,6 +796,31 @@
           다음 읽기 단계로 넘어가기 →
         </button>
       </div>
+
+      <div class="progress-info-modal" id="progressInfoModal" onclick="closeProgressInfoByBackground(event)">
+        <div class="progress-info-panel" role="dialog" aria-modal="true" aria-labelledby="progressInfoTitle">
+          <div class="progress-info-header">
+            <h2 class="progress-info-title" id="progressInfoTitle">📖 나의 독서 진행 상황은 이렇게 계산돼요</h2>
+            <button class="progress-info-close" type="button" onclick="closeProgressInfoModal()">닫기</button>
+          </div>
+
+          <div class="progress-info-content">
+            <article class="progress-info-item">
+              <h3 class="progress-info-name">총 복습 완료 — 20%</h3>
+              <p class="progress-info-text">연습하기에서 읽기중 질문 4가지를 다 풀고, 마지막 총 복습까지 마치면 채워져요.</p>
+            </article>
+
+            <article class="progress-info-item">
+              <h3 class="progress-info-name">책 읽은 쪽수 — 80%</h3>
+              <p class="progress-info-text">지금까지 읽은 쪽수를 전체 쪽수로 나눠서 계산해요.<br>예: 전체 100쪽 중 68쪽을 읽었으면 → 68 ÷ 100 × 100 = 68%</p>
+            </article>
+          </div>
+
+          <div class="progress-info-footer">
+            최종 진행률 = 총 복습 점수(20%) + 쪽수 진행률(80%)
+          </div>
+        </div>
+      </div>
         </div>
       </div>
     </div>
@@ -688,6 +847,102 @@
 
     updateFixedStageScale();
     window.addEventListener("resize", updateFixedStageScale);
+
+    /*
+      교사가 book-manage.html에서 저장한 읽기 진행 정보를 불러와 표시합니다.
+      지금은 프론트에서 같은 localStorage 키를 직접 읽어오는 방식이고,
+      나중에 백엔드가 연결되면 API 조회로 바꾸면 됩니다.
+    */
+    function loadCurrentReadingRange() {
+      const display = document.getElementById("currentReadingRangeDisplay");
+      if (!display) return;
+
+      const saved = localStorage.getItem("wholeReadingRange");
+      if (!saved) {
+        display.textContent = "아직 정해지지 않았어요";
+        return;
+      }
+
+      try {
+        const rangeData = JSON.parse(saved);
+
+        if (rangeData.totalPages && rangeData.currentPage !== undefined) {
+          display.textContent = rangeData.currentPage + "쪽 / " + rangeData.totalPages + "쪽";
+        } else {
+          display.textContent = "아직 정해지지 않았어요";
+        }
+      } catch (error) {
+        display.textContent = "아직 정해지지 않았어요";
+      }
+    }
+
+    loadCurrentReadingRange();
+
+    /*
+      나의 독서 진행 상황을 계산합니다.
+      - 총복습점수: during-reading-practice.html이 sessionStorage에 남긴
+        progress.review 값이 true면 100, 아니면 0
+      - 쪽수진도: book-manage.html에서 교사가 저장한 전체쪽수/누적쪽수(localStorage["wholeReadingRange"])로 계산
+      - 최종 진행률 = 총복습점수 20% + 쪽수진도 80%
+      아직 백엔드 연동 전이라 프론트 저장값 기준으로 우선 계산합니다.
+    */
+    function loadMyReadingProgress() {
+      const ring = document.getElementById("myProgressRing");
+      const title = document.getElementById("myProgressTitle");
+      const fill = document.getElementById("myProgressFill");
+      if (!ring || !title || !fill) return;
+
+      let reviewDone = false;
+
+      try {
+        const practiceProgress = JSON.parse(
+          sessionStorage.getItem("duringReadingPracticeProgress_" + studentId) || "{}"
+        );
+        reviewDone = practiceProgress.review === true;
+      } catch (error) {
+        reviewDone = false;
+      }
+
+      const reviewScore = reviewDone ? 100 : 0;
+
+      let pageScore = 0;
+
+      try {
+        const rangeData = JSON.parse(localStorage.getItem("wholeReadingRange") || "{}");
+
+        if (rangeData.totalPages && rangeData.totalPages > 0) {
+          pageScore = Math.min(
+            100,
+            Math.round((rangeData.currentPage / rangeData.totalPages) * 100)
+          );
+        }
+      } catch (error) {
+        pageScore = 0;
+      }
+
+      const percent = Math.round(reviewScore * 0.2 + pageScore * 0.8);
+
+      ring.style.setProperty("--percent", percent + "%");
+      ring.textContent = percent + "%";
+      title.textContent = "나의 진행률 " + percent + "%";
+      fill.style.width = percent + "%";
+    }
+
+    loadMyReadingProgress();
+
+    function openProgressInfoModal() {
+      document.getElementById("progressInfoModal").classList.add("show");
+    }
+
+    function closeProgressInfoModal() {
+      document.getElementById("progressInfoModal").classList.remove("show");
+    }
+
+    function closeProgressInfoByBackground(event) {
+      if (event.target.id === "progressInfoModal") {
+        closeProgressInfoModal();
+      }
+    }
 
     // 우리반 책읽기 책 속 생각쓰기 화면으로 이동합니다.
     function goQuestionCreate() {

@@ -100,6 +100,13 @@ public class PracticeProgress {
         progress.put("opinion", false);
         progress.put("connect", false);
 
+        /*
+         * "총 복습" 화면(during-reading-practice.html의 finishReview()) 완료 여부.
+         * 4개 질문 유형을 다 풀어야 열리는 마지막 단계이며,
+         * 다른 화면의 잠금 해제 조건에는 쓰이지 않는 완료 기록용 플래그다.
+         */
+        progress.put("review", false);
+
         return progress;
     }
 }
