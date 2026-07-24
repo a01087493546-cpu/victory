@@ -211,9 +211,9 @@
 
     .wr-top-title {
       min-width: 0;
-
       text-align: center;
       white-space: nowrap;
+      transform: translateY(-4px);
     }
 
     .wr-top-title-small {
@@ -1849,7 +1849,7 @@
           1fr;
       }
     }
-  
+
 
     /* =========================================================
        1920 × 1080 고정 화면
@@ -2405,9 +2405,6 @@
         </div>
 
         <div class="wr-top-title">
-          <div class="wr-top-title-small">
-            📖 온책읽기 대시보드
-          </div>
 
           <h1 class="wr-main-title">
             우리 반 온책읽기 한눈에 보기
@@ -3124,7 +3121,7 @@ await loadReadingRange();
   `${students.length}명 표시`;
 
 renderStudentPreview();
-renderTodayStatus();
+renderTodayStatus(practiceAchievementData);
   } catch (error) {
     console.error(error);
     alert(error.message);
@@ -3199,7 +3196,7 @@ renderTodayStatus();
         })
         .join("");
     }
-function renderTodayStatus() {
+function renderTodayStatus(practiceAchievementData) {
   const participationElement =
     document.getElementById("todayParticipationRate");
 
@@ -3213,12 +3210,18 @@ function renderTodayStatus() {
     return student.total > 0;
   });
 
+  /*
+    "오늘 참여율"은 학생이 지금까지 활동을 했는지(student.total > 0)가
+    아니라 오늘(Asia/Seoul 기준) 실제로 활동한 고유 학생 수 / 학급 전체
+    학생 수여야 한다. 이 값은 이미 practice-achievement API가
+    todayParticipationRate로 정확히 계산해 내려주므로 그대로 쓴다 -
+    프론트에서 다시 계산하지 않는다.
+  */
   const participationRate =
-    students.length === 0
-      ? 0
-      : Math.round(
-          (activeStudents.length / students.length) * 100
-        );
+    practiceAchievementData &&
+    typeof practiceAchievementData.todayParticipationRate === "number"
+      ? Math.round(practiceAchievementData.todayParticipationRate)
+      : 0;
 
   const supportStudents = students.filter(function (student) {
     return student.total > 0 && student.total < 60;
