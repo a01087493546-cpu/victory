@@ -229,6 +229,8 @@
       overflow-y: auto;
       overflow-x: hidden;
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: max-content;
       align-content: start;
       gap: 12px;
       padding: 2px 10px 14px 2px;
@@ -243,10 +245,14 @@
     .modal-body::-webkit-scrollbar-thumb { border:3px solid transparent; border-radius:999px; background:rgba(142,91,36,.50); background-clip:padding-box; }
 
     .question-card {
-      position:relative;
-      width:100%;
-      min-height:152px;
-      padding:18px 22px;
+      position: relative;
+      align-self: start;
+      width: 100%;
+      min-width: 0;
+      min-height: 152px;
+      height: auto;
+      padding: 18px 22px 24px;
+      overflow: visible;
       border:1px solid rgba(186,130,58,.26);
       border-radius:24px;
       background:rgba(255,255,255,.68);
@@ -255,17 +261,20 @@
       transition:.15s ease;
     }
 
+    .question-card.rejected-card {
+      min-height: 0;
+      padding-bottom: 22px;
+    }
+
     .card-delete-button {
-      position:absolute;
-      right:16px;
-      bottom:14px;
-      padding:4px 11px;
+      position: static;
+      padding:8px 16px;
       border-radius:999px;
       border:1px solid rgba(186,130,58,.32);
       background:rgba(255,255,255,.82);
       color:#8a5a2f;
-      font-size:12px;
-      font-weight:800;
+      font-size:14px;
+      font-weight:900;
     }
 
     .card-delete-button:hover {
@@ -373,19 +382,24 @@
       background:transparent;
       color:inherit;
       text-align:left;
+      display:block;
     }
 
-    .question-text { font-size:25px; font-weight:900; line-height:1.45; word-break:keep-all; }
+    .question-text {
+      display: block;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
 
     .question-answer-preview {
+      display: block;
       margin-top:12px;
       color:#6f4e2f;
       font-size:18px;
       font-weight:800;
       line-height:1.5;
-      display:-webkit-box;
-      -webkit-box-orient:vertical;
-      -webkit-line-clamp:2;
       overflow:hidden;
     }
 
@@ -436,23 +450,44 @@
       max-height:calc(100vh - 70px);
     }
 
+    .reject-area {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 2px;
+    }
+
     .reject-reason-box {
-      padding:16px 18px;
-      border-radius:16px;
-      border:1px solid rgba(214,68,58,.28);
-      background:rgba(214,68,58,.08);
-      color:#7a281f;
-      font-size:16px;
-      font-weight:700;
-      line-height:1.6;
+      width: 100%;
+      min-width: 0;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(214,68,58,.28);
+      background: rgba(214,68,58,.08);
+      color: #7a281f;
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.6;
+      position: static;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: keep-all;
     }
 
     .reject-reason-box strong {
-      display:block;
-      margin-bottom:8px;
-      color:#b23327;
-      font-size:15px;
-      font-weight:900;
+      display: block;
+      margin-bottom: 10px;
+      color: #b23327;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .reject-action-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 36px;
     }
 
     .reject-rewrite-button {
@@ -737,7 +772,9 @@
   <script>
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     const studentName = sessionStorage.getItem("name") || "나";
+    const API_BASE_URL = "http://localhost:8080";
 
+let classReadingBookId = null;
     const typeInfo = {
       direct: { label:"책 퀴즈", icon:"📖" },
       infer: { label:"생각 나누기", icon:"💬" },
@@ -750,6 +787,9 @@
     let selectedQuestionId = null;
     let activeReplyTarget = null;
     let activeReplyType = null;
+    let thoughtCache = {};
+    let quizAnswerCache = {};
+    let replyCache = {};
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const sortSelect = document.getElementById("sortSelect");
@@ -761,13 +801,84 @@
 
     initPage();
 
-    function initPage() {
-      allQuestions = buildQuestionData();
-      bindEvents();
-      renderAll();
-      showTeacherButtonWhenNeeded();
+    async function initPage() {
+  const bookLoaded = await loadClassReadingBookId();
+
+  if (!bookLoaded) {
+    return;
+  }
+
+  allQuestions = await loadBookChatQuestions();
+  await hydrateBookChatActivity();
+
+  bindEvents();
+  renderAll();
+  showTeacherButtonWhenNeeded();
+}
+async function loadClassReadingBookId() {
+  const token = sessionStorage.getItem("token");
+  const role = sessionStorage.getItem("role");
+
+  if (!token || !studentId || role !== "student") {
+    alert("학생 로그인이 필요합니다.");
+    location.href = "../../index.html";
+    return false;
+  }
+
+  try {
+    const classResponse = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/class`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!classResponse.ok) {
+      throw new Error(
+        `학생 학급 조회 실패: ${classResponse.status}`
+      );
     }
 
+    const classData = await classResponse.json();
+
+    const bookResponse = await fetch(
+      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (bookResponse.status === 404) {
+      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
+      return false;
+    }
+
+    if (!bookResponse.ok) {
+      throw new Error(
+        `온책읽기 책 조회 실패: ${bookResponse.status}`
+      );
+    }
+
+    const bookData = await bookResponse.json();
+
+    classReadingBookId = bookData.id;
+    return true;
+  } catch (error) {
+    console.error(
+      "학급 책 정보를 불러오지 못했습니다.",
+      error
+    );
+
+    alert("책 정보를 불러오지 못했습니다.");
+    return false;
+  }
+}
     function bindEvents() {
       filterButtons.forEach(button => {
         button.addEventListener("click", function() {
@@ -779,79 +890,90 @@
       });
       sortSelect.addEventListener("change", renderAll);
     }
+async function loadBookChatQuestions() {
+  const token = sessionStorage.getItem("token");
 
-    function buildQuestionData() {
-      const myQuestions = loadMySharedQuestions();
-      const mockFriends = [
-        { name:"민지", questions:[
-          { text:"주인공은 왜 무서웠는데도 친구를 도왔을까?", answer:"친구가 혼자 힘들어하는 모습을 보고 그냥 지나칠 수 없었기 때문이라고 생각해.", type:"infer", createdAt:"06.11 09:10" },
-          { text:"나라면 주인공처럼 친구를 도울 수 있었을까?", answer:"나라면 처음에는 무서웠겠지만, 친구가 정말 위험하다면 도와주려고 했을 것 같아.", type:"life", createdAt:"06.11 09:14" }
-        ]},
-        { name:"서준", questions:[
-          { text:"이 장면에서 주인공의 마음은 어떻게 바뀌었을까?", answer:"처음에는 겁이 났지만, 친구를 생각하면서 용기를 낸 것 같아.", type:"feeling", createdAt:"06.11 09:21" },
-          { text:"주인공이 다시 돌아간 장면에서 알 수 있는 것은 무엇일까?", answer:"주인공이 친구를 소중하게 생각한다는 것을 알 수 있어.", type:"direct", createdAt:"06.11 09:25" }
-        ]},
-        { name:"하윤", questions:[
-          { text:"친구를 도와주는 마음은 왜 중요할까?", answer:"친구를 도와주면 서로 믿을 수 있고, 어려운 일을 함께 이겨낼 수 있기 때문이야.", type:"feeling", createdAt:"06.11 09:32" },
-          { text:"주인공이 혼자였다면 다른 선택을 했을까?", answer:"혼자였다면 더 무서워서 도망갔을 수도 있을 것 같아.", type:"infer", createdAt:"06.11 09:37" }
-        ]}
-      ];
+  if (!token || !studentId || !classReadingBookId) {
+    return [];
+  }
 
-      const people = [];
-      if (myQuestions) people.push(myQuestions);
-      mockFriends.forEach(friend => people.push(friend));
-
-      const flattened = [];
-      people.forEach(person => {
-        person.questions.forEach((question,index) => {
-          const type = normalizeType(question.type);
-          const moderationPost = person.isMine
-            ? findModerationPost("mySharedQuestions-" + index + "-" + String(question.text || ""))
-            : null;
-
-          flattened.push({
-            id: person.name + "-" + index + "-" + question.text,
-            name: person.name,
-            isMine: !!person.isMine,
-            myIndex: person.isMine ? index : null,
-            text: question.text,
-            answer: question.answer || "",
-            type,
-            createdAt: question.createdAt || "오늘",
-            baseTalkCount: getBaseTalkCount(type,index),
-            /*
-              교사가 아직 book-chat-manage.html을 한 번도 열지 않았으면 이 글은
-              검수 큐(pending/approved/rejected)에 아직 들어가 있지 않을 수 있음.
-              그런 경우도 "검수 전" 상태이므로 기본값을 pending으로 둠(배지가 항상 뜨도록).
-            */
-            moderationStatus: person.isMine ? (moderationPost ? moderationPost.status : "pending") : null,
-            rejectReason: moderationPost ? moderationPost.rejectReason : ""
-          });
-        });
-      });
-      return flattened;
-    }
-
-    /*
-      교사가 book-chat-manage.html에서 승인/거절한 결과를 조회합니다.
-      아직 백엔드가 없어서 교사 화면과 같은 localStorage 키(대기중/승인됨/거절됨 3개 배열)를
-      그대로 읽어와 sourceId로 내 글을 찾습니다.
-    */
-    function findModerationPost(sourceId) {
-      const keys = ["bookChatPendingPosts", "bookChatApprovedPosts", "bookChatRejectedPosts"];
-
-      for (const key of keys) {
-        try {
-          const list = JSON.parse(localStorage.getItem(key) || "[]");
-          const found = list.find(post => post.sourceId === sourceId);
-          if (found) return found;
-        } catch (error) {
-          console.error(error);
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/book-chat/questions?classReadingBookId=${classReadingBookId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       }
+    );
 
-      return null;
+    if (!response.ok) {
+      throw new Error(
+        `책수다방 질문 조회 실패: ${response.status}`
+      );
     }
+
+    const items = await response.json();
+
+    return items.map(function(item) {
+      const isMine =
+        String(item.studentId) === String(studentId);
+      const moderationStatus = String(
+        item.approvalStatus || "PENDING"
+      ).toLowerCase();
+
+      return {
+        id: String(item.id),
+        name: item.studentName || "학생",
+        studentId: item.studentId,
+        isMine: isMine,
+        myIndex: null,
+        text: item.question || "",
+        answer: item.answer || "",
+        type: normalizeType(item.questionType),
+        createdAt: formatBookChatDate(item.createdAt),
+        moderationStatus: moderationStatus,
+        rejectReason: item.rejectionReason || ""
+      };
+    });
+  } catch (error) {
+    console.error(
+      "책수다방 질문을 불러오지 못했습니다.",
+      error
+    );
+
+    return [];
+  }
+}
+
+function formatBookChatDate(value) {
+  if (!value) return "오늘";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  const hour = String(
+    date.getHours()
+  ).padStart(2, "0");
+
+  const minute = String(
+    date.getMinutes()
+  ).padStart(2, "0");
+
+  return `${month}.${day} ${hour}:${minute}`;
+}
 
     function getModerationBadgeInfo(status) {
       if (status === "approved") return { label:"게시됐어요", className:"status-approved" };
@@ -859,70 +981,69 @@
       return { label:"확인 중이에요", className:"status-pending" };
     }
 
-    /*
-      내가 쓴 질문을 삭제합니다. mySharedQuestions.questions 배열에서 해당 인덱스를 지우고,
-      검수 큐(pending/approved/rejected)에 같은 글이 들어가 있으면 그것도 함께 지웁니다.
-    */
-    function deleteMyQuestion(myIndex) {
-      if (myIndex === null || myIndex === undefined) return;
-      if (!confirm("정말 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+    async function deleteMyQuestion(responseId) {
+  const token = sessionStorage.getItem("token");
 
-      const raw = localStorage.getItem("mySharedQuestions");
-      if (!raw) return;
+  if (!token || !studentId || !responseId) {
+    return;
+  }
 
-      let parsedData = null;
-      try {
-        parsedData = JSON.parse(raw);
-      } catch (error) {
-        return;
-      }
+  const question = allQuestions.find(function(item) {
+    return String(item.id) === String(responseId);
+  });
 
-      if (!parsedData || !Array.isArray(parsedData.questions)) return;
+  if (
+    !question ||
+    !question.isMine ||
+    question.moderationStatus !== "rejected"
+  ) {
+    alert("거절된 내 질문만 삭제할 수 있어요.");
+    return;
+  }
 
-      const deletedQuestion = parsedData.questions[myIndex];
-      const sourceId = "mySharedQuestions-" + myIndex + "-" + String(deletedQuestion ? deletedQuestion.text || "" : "");
+  const ok = confirm(
+    "이 질문을 삭제할까요? 삭제하면 되돌릴 수 없어요."
+  );
 
-      parsedData.questions.splice(myIndex, 1);
-      localStorage.setItem("mySharedQuestions", JSON.stringify(parsedData));
+  if (!ok) {
+    return;
+  }
 
-      ["bookChatPendingPosts","bookChatApprovedPosts","bookChatRejectedPosts"].forEach(key => {
-        try {
-          const list = JSON.parse(localStorage.getItem(key) || "[]");
-          const filtered = list.filter(post => post.sourceId !== sourceId);
-          localStorage.setItem(key, JSON.stringify(filtered));
-        } catch (error) {
-          console.error(error);
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought/${responseId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      });
-
-      allQuestions = buildQuestionData();
-      renderAll();
-    }
-
-    function loadMySharedQuestions() {
-      const raw = localStorage.getItem("mySharedQuestions");
-      if (!raw) return null;
-      try {
-        const parsed = JSON.parse(raw);
-        if (!parsed || !Array.isArray(parsed.questions) || !parsed.questions.length) return null;
-        return { name:parsed.name || studentName, isMine:true, questions:parsed.questions };
-      } catch (error) {
-        console.error(error);
-        return null;
       }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `질문 삭제 실패: ${response.status}`
+      );
     }
+
+    allQuestions = await loadBookChatQuestions();
+    renderAll();
+
+    alert("질문을 삭제했어요.");
+  } catch (error) {
+    console.error(
+      "거절된 질문을 삭제하지 못했습니다.",
+      error
+    );
+
+    alert("질문 삭제에 실패했어요.");
+  }
+}
 
     function normalizeType(type) {
       if (type === "opinion") return "feeling";
       if (type === "connect") return "life";
       return type || "direct";
-    }
-
-    function getBaseTalkCount(type,index) {
-      if (type === "infer") return 5 + index;
-      if (type === "feeling") return 4 + index;
-      if (type === "life") return 3 + index;
-      return 2 + index;
     }
 
     function getFilteredQuestions() {
@@ -968,9 +1089,11 @@
         const badgeClick = question.moderationStatus === "rejected"
           ? `onclick="openRejectReasonModal('${escapeAttribute(question.id)}'); event.stopPropagation();"`
           : "";
+        const isRejectedMine =
+          question.isMine && question.moderationStatus === "rejected";
 
         return `
-          <article class="question-card">
+          <article class="question-card ${isRejectedMine ? "rejected-card" : ""}">
             <div class="question-top">
               <span class="student-name">${escapeHtml(question.isMine ? "나의 질문" : question.name)}</span>
               ${badge ? `<span class="moderation-badge ${badge.className}" ${badgeClick}>${escapeHtml(badge.label)}</span>` : ""}
@@ -981,26 +1104,42 @@
               </div>
             </div>
             <button class="question-main-click" type="button" onclick="${countClick}">
-              <div class="question-text">${escapeHtml(question.text)}</div>
+              <span class="question-text">${escapeHtml(question.text)}</span>
               ${!isQuiz && question.answer
-  ? `<div class="question-answer-preview">
-       <strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong>
-       ${escapeHtml(question.answer)}
-     </div>`
-  : ""}
+                ? `<span class="question-answer-preview">
+                     <strong>${question.isMine ? "내 생각" : "처음 생각"}:</strong>
+                     ${escapeHtml(question.answer)}
+                   </span>`
+                : ""}
             </button>
-            ${question.isMine ? `<button class="card-delete-button" type="button" onclick="deleteMyQuestion(${question.myIndex}); event.stopPropagation();">삭제</button>` : ""}
+            ${isRejectedMine
+              ? `<div class="reject-area">
+                   <div class="reject-reason-box">
+                     <strong>선생님이 남긴 이유</strong>
+                     ${escapeHtml(
+                       question.rejectReason ||
+                       "선생님이 남긴 이유를 불러오지 못했어요."
+                     )}
+                   </div>
+                   <div class="reject-action-row">
+                     <button class="card-delete-button" type="button" onclick="deleteMyQuestion('${escapeAttribute(question.id)}'); event.stopPropagation();">삭제</button>
+                   </div>
+                 </div>`
+              : ""}
           </article>
         `;
       }).join("");
     }
 
-    function openThoughtModal(questionId) {
+    async function openThoughtModal(questionId) {
       selectedQuestionId = questionId;
       const question = allQuestions.find(q => q.id === questionId);
       if (!question) return;
 
       const isQuiz = question.type === "direct";
+
+      await loadQuestionActivity(questionId);
+
       const saved = isQuiz ? getSavedQuizAnswer(questionId) : getSavedThought(questionId);
 
       thoughtModal.querySelector(".modal-title").textContent = isQuiz ? "책 퀴즈 풀기" : "내 생각 쓰기";
@@ -1048,9 +1187,11 @@
       thoughtModal.setAttribute("aria-hidden","true");
     }
 
-    function openCommentsModal(questionId) {
+    async function openCommentsModal(questionId) {
       const question = allQuestions.find(q => q.id === questionId);
       if (!question) return;
+
+      await loadQuestionActivity(questionId);
 
       if (question.type === "direct" && !getSavedQuizAnswer(questionId)) {
         alert("먼저 퀴즈 답을 쓰고 확인해 주세요.");
@@ -1203,34 +1344,56 @@
       return { title:"생각 이어 쓰기", label:"이어 썼어요", placeholder:"내 생각을 이어서 써 보세요." };
     }
 
-    function saveThought(questionId) {
+    async function saveThought(questionId) {
       const main = document.getElementById("thoughtMain").value.trim();
       const reason = document.getElementById("thoughtReason").value.trim();
       if (!main || !reason) {
         alert("두 칸을 모두 써 주세요.");
         return;
       }
-      const data = getThoughtStore();
-      data[questionId] = { main, reason, savedAt:getNowText() };
-      localStorage.setItem("bookChatThoughts_" + studentId,JSON.stringify(data));
-      alert("내 생각을 등록했어요.");
-      closeThoughtModal();
-      renderAll();
+
+      try {
+        await bookChatFetch(
+          `/questions/${encodeURIComponent(questionId)}/thought`,
+          {
+            method: "PUT",
+            body: JSON.stringify({ main, reason })
+          }
+        );
+        await loadQuestionActivity(questionId);
+        alert("내 생각을 등록했어요.");
+        closeThoughtModal();
+        renderAll();
+      } catch (error) {
+        console.error("내 생각을 저장하지 못했습니다.", error);
+        alert("내 생각 저장에 실패했어요.");
+      }
     }
 
-    function saveQuizAnswer(questionId) {
+    async function saveQuizAnswer(questionId) {
       const answer = document.getElementById("quizAnswer")?.value.trim() || "";
       if (!answer) {
         alert("퀴즈 답을 써 주세요.");
         return;
       }
-      const data = getQuizAnswerStore();
-      data[questionId] = { answer, savedAt:getNowText() };
-      localStorage.setItem("bookChatQuizAnswers_" + studentId, JSON.stringify(data));
-      alert("답을 확인했어요. 이제 친구 답을 볼 수 있어요.");
-      closeThoughtModal();
-      renderAll();
-      openCommentsModal(questionId);
+
+      try {
+        await bookChatFetch(
+          `/questions/${encodeURIComponent(questionId)}/quiz-answer`,
+          {
+            method: "PUT",
+            body: JSON.stringify({ answer })
+          }
+        );
+        await loadQuestionActivity(questionId);
+        alert("답을 확인했어요. 이제 친구 답을 볼 수 있어요.");
+        closeThoughtModal();
+        renderAll();
+        openCommentsModal(questionId);
+      } catch (error) {
+        console.error("퀴즈 답을 저장하지 못했습니다.", error);
+        alert("퀴즈 답 저장에 실패했어요.");
+      }
     }
 
     function clearThoughtForm() {
@@ -1245,89 +1408,195 @@
       if (el) el.value = "";
     }
 
-    function saveNestedReply(questionId,commentId,type) {
+    async function saveNestedReply(questionId,commentId,type) {
       const input = document.getElementById("nestedReplyInput");
       const text = input ? input.value.trim() : "";
       if (!text) {
         alert("이어 쓸 내용을 적어 주세요.");
         return;
       }
-      const store = getReplyStore();
-      if (!Array.isArray(store[questionId])) store[questionId] = [];
       const info = getReplyTypeInfo(type);
-      store[questionId].push({ id:Date.now().toString(), commentId, type, label:info.label, text, name:studentName, savedAt:getNowText() });
-      localStorage.setItem("bookChatReplies_" + studentId,JSON.stringify(store));
-      activeReplyTarget = null;
-      activeReplyType = null;
-      renderCommentsModal();
-      renderAll();
+
+      try {
+        await bookChatFetch(
+          `/questions/${encodeURIComponent(questionId)}/thoughts/${encodeURIComponent(commentId)}/replies`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              replyType: type === "different" ? "DIFFERENT" : "SIMILAR",
+              text
+            })
+          }
+        );
+        await loadQuestionActivity(questionId);
+        activeReplyTarget = null;
+        activeReplyType = null;
+        renderCommentsModal();
+        renderAll();
+      } catch (error) {
+        console.error("이어쓰기를 저장하지 못했습니다.", error);
+        alert("이어쓰기 저장에 실패했어요.");
+      }
     }
 
     function getSavedThought(questionId) {
-      return getThoughtStore()[questionId] || null;
-    }
-
-    function getThoughtStore() {
-      try { return JSON.parse(localStorage.getItem("bookChatThoughts_" + studentId) || "{}"); }
-      catch { return {}; }
+      const comments = thoughtCache[String(questionId)] || [];
+      return comments.find(item => item.isMine) || null;
     }
 
     function getSavedQuizAnswer(questionId) {
-      return getQuizAnswerStore()[questionId] || null;
-    }
-
-    function getQuizAnswerStore() {
-      try { return JSON.parse(localStorage.getItem("bookChatQuizAnswers_" + studentId) || "{}"); }
-      catch { return {}; }
-    }
-
-    function getReplyStore() {
-      try { return JSON.parse(localStorage.getItem("bookChatReplies_" + studentId) || "{}"); }
-      catch { return {}; }
+      const answers = quizAnswerCache[String(questionId)] || [];
+      return answers.find(item => item.isMine) || null;
     }
 
     function getCommentsForQuestion(question) {
-      const comments = [
-        { id:"friend-1", name:"민지", isMine:false, main:"주인공은 친구를 혼자 둘 수 없어서 다시 돌아갔다고 생각해.", reason:"친구가 위험한데 혼자 도망가면 계속 마음이 불편했을 것 같기 때문이야.", evidence:"주인공이 멈춰 서서 친구가 있는 곳을 다시 바라본 장면이야.", savedAt:"06.11 09:40" },
-        { id:"friend-2", name:"하윤", isMine:false, main:"주인공이 용기를 냈다는 것을 알 수 있어.", reason:"무서웠지만 친구를 도와야 한다고 생각했기 때문이야.", evidence:"주인공이 다시 길을 되돌아간 장면이야.", savedAt:"06.11 09:45" }
-      ];
-      const mine = getSavedThought(question.id);
-      if (mine) comments.unshift({ id:"mine-" + question.id, name:studentName, isMine:true, ...mine });
-      return comments;
+      return thoughtCache[String(question.id)] || [];
     }
 
     function getQuizAnswersForQuestion(question) {
-      const answers = [
-        { id:"quiz-friend-1", name:"민지", isMine:false, answer:"주인공이 다시 돌아간 장면에서 친구를 소중하게 여긴다는 것을 알 수 있어.", savedAt:"06.11 09:40" },
-        { id:"quiz-friend-2", name:"하윤", isMine:false, answer:"친구가 위험하다는 것을 알고 용기를 내어 도와주려고 했어.", savedAt:"06.11 09:45" }
-      ];
-      const mine = getSavedQuizAnswer(question.id);
-      if (mine) answers.unshift({ id:"quiz-mine-" + question.id, name:studentName, isMine:true, ...mine });
-      return answers;
+      return quizAnswerCache[String(question.id)] || [];
     }
 
     function getQuizAnswerCount(question) {
-      return 2 + (getSavedQuizAnswer(question.id) ? 1 : 0);
+      return getQuizAnswersForQuestion(question).length;
     }
 
     function getNestedReplies(questionId,commentId) {
-      const list = getReplyStore()[questionId];
-      return Array.isArray(list) ? list.filter(item => item.commentId === commentId) : [];
+      const list = replyCache[String(questionId)] || [];
+      return Array.isArray(list)
+        ? list.filter(item => String(item.parentThoughtId) === String(commentId))
+        : [];
     }
 
     function getTalkCount(question) {
-      const replies = getReplyStore()[question.id];
-      const thought = getSavedThought(question.id) ? 1 : 0;
-      return question.baseTalkCount + thought + (Array.isArray(replies) ? replies.length : 0);
+      const comments = getCommentsForQuestion(question);
+      const replies = replyCache[String(question.id)] || [];
+      return comments.length + (Array.isArray(replies) ? replies.length : 0);
     }
 
     function updateCounts(visibleQuestions) {
-      const thoughtCount = Object.keys(getThoughtStore()).length + Object.keys(getQuizAnswerStore()).length;
-      const replyCount = Object.values(getReplyStore()).reduce((sum,list) => sum + (Array.isArray(list) ? list.length : 0),0);
+      const thoughtCount =
+        Object.values(thoughtCache).reduce(
+          (sum,list) => sum + list.filter(item => item.isMine).length,
+          0
+        ) +
+        Object.values(quizAnswerCache).reduce(
+          (sum,list) => sum + list.filter(item => item.isMine).length,
+          0
+        );
+      const replyCount = Object.values(replyCache).reduce(
+        (sum,list) => sum + list.filter(item => item.isMine).length,
+        0
+      );
       document.getElementById("questionCount").textContent = allQuestions.length + "개";
       document.getElementById("myThoughtCount").textContent = thoughtCount + "개";
       document.getElementById("myReplyCount").textContent = replyCount + "개";
       document.getElementById("visibleQuestionCount").textContent = visibleQuestions.length + "개";
+    }
+
+    async function hydrateBookChatActivity() {
+      await Promise.all(
+        allQuestions
+          .filter(question => question.moderationStatus === "approved")
+          .map(question => loadQuestionActivity(question.id))
+      );
+    }
+
+    async function loadQuestionActivity(questionId) {
+      const question = allQuestions.find(item => item.id === String(questionId));
+
+      if (!question || question.moderationStatus !== "approved") {
+        return;
+      }
+
+      try {
+        if (question.type === "direct") {
+          const answers = await bookChatFetch(
+            `/questions/${encodeURIComponent(questionId)}/quiz-answers`
+          );
+          quizAnswerCache[String(questionId)] = answers.map(mapQuizAnswerItem);
+          thoughtCache[String(questionId)] = [];
+        } else {
+          const thoughts = await bookChatFetch(
+            `/questions/${encodeURIComponent(questionId)}/thoughts`
+          );
+          thoughtCache[String(questionId)] = thoughts.map(mapThoughtItem);
+          quizAnswerCache[String(questionId)] = [];
+        }
+
+        const replies = await bookChatFetch(
+          `/questions/${encodeURIComponent(questionId)}/replies`
+        );
+        replyCache[String(questionId)] = replies.map(mapReplyItem);
+      } catch (error) {
+        console.error("책수다방 활동을 불러오지 못했습니다.", error);
+        thoughtCache[String(questionId)] = thoughtCache[String(questionId)] || [];
+        quizAnswerCache[String(questionId)] = quizAnswerCache[String(questionId)] || [];
+        replyCache[String(questionId)] = replyCache[String(questionId)] || [];
+      }
+    }
+
+    async function bookChatFetch(path, options = {}) {
+      const token = sessionStorage.getItem("token");
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/students/${studentId}/book-chat${path}`,
+        {
+          method: options.method || "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ...(options.body ? { "Content-Type": "application/json" } : {})
+          },
+          body: options.body
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`책수다방 API 실패: ${response.status}`);
+      }
+
+      if (response.status === 204) {
+        return null;
+      }
+
+      return response.json();
+    }
+
+    function mapThoughtItem(item) {
+      return {
+        id: String(item.id),
+        name: item.studentName || "학생",
+        isMine: !!item.mine,
+        main: item.main || "",
+        reason: item.reason || "",
+        savedAt: formatBookChatDate(item.createdAt)
+      };
+    }
+
+    function mapQuizAnswerItem(item) {
+      return {
+        id: String(item.id),
+        name: item.studentName || "학생",
+        isMine: !!item.mine,
+        answer: item.answer || "",
+        savedAt: formatBookChatDate(item.createdAt)
+      };
+    }
+
+    function mapReplyItem(item) {
+      const type = String(item.replyType || "").toLowerCase();
+      const info = getReplyTypeInfo(type === "different" ? "different" : "similar");
+
+      return {
+        id: String(item.id),
+        parentThoughtId: String(item.parentThoughtId),
+        name: item.studentName || "학생",
+        isMine: !!item.mine,
+        type,
+        label: info.label,
+        text: item.text || "",
+        savedAt: formatBookChatDate(item.createdAt)
+      };
     }
 
     function getNowText() {

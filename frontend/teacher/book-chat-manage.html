@@ -308,11 +308,18 @@
     }
 
     .list-card,
-    .detail-card {
-      padding: 20px 24px;
-      min-width: 0;
-      min-height: 620px;
-    }
+.detail-card {
+  padding: 20px 24px;
+  min-width: 0;
+  height: 620px;
+  min-height: 620px;
+}
+
+.list-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
     .detail-card {
       padding-top: 18px;
@@ -359,12 +366,16 @@
     }
 
     .post-list {
-      display: grid;
-      gap: 10px;
-      max-height: 540px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 8px 28px 2px;
+  scroll-padding-bottom: 28px;
+}
 
     .post-button {
       width: 100%;
@@ -528,30 +539,32 @@
     }
 
     .line-card {
-      padding: 11px 16px;
-      border-radius: 16px;
-      background: rgba(255, 250, 238, 0.70);
-      border: 1px solid rgba(186, 130, 58, 0.20);
-      color: #4f3219;
-      font-size: 16px;
-      font-weight: 820;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
+  min-height: 118px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: rgba(255, 250, 238, 0.70);
+  border: 1px solid rgba(186, 130, 58, 0.20);
+  color: #3f2615;
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 1.5;
+  word-break: keep-all;
+}
 
-    .line-card strong {
-      display: block;
-      margin-bottom: 4px;
-      color: #4f7130;
-      font-weight: 950;
-    }
+.line-card strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #4f7130;
+  font-size: 23px;
+  font-weight: 950;
+}
 
     .reject-box,
-    .teacher-note-box {
-      padding: 13px 17px;
-      margin-top: 8px;
-      background: rgba(255, 255, 250, 0.74);
-    }
+.teacher-note-box {
+  padding: 16px 18px;
+  margin-top: 18px;
+  background: rgba(255, 255, 250, 0.74);
+}
 
     .box-title {
       margin-bottom: 10px;
@@ -1003,39 +1016,14 @@
         </article>
       </section>
 
-    
+
 
       <p class="bottom-note">
-        책수다방 관리는 친구들과 나누기 좋은 글을 안전하게 공개하기 위한 교사용 화면이에요.
+
       </p>
     </div>
   </main>
 
-
-  <div class="modal-overlay" id="approveModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="approveModalTitle">
-      <div class="modal-head">
-        <h2 class="modal-title" id="approveModalTitle">게시물 승인하기</h2>
-        <button class="modal-close" type="button" onclick="closeApproveModal()" aria-label="닫기">×</button>
-      </div>
-
-      <p class="modal-desc">
-        승인 전에 남길 교사 메모가 있다면 적어 주세요. 메모는 선택 사항입니다.
-      </p>
-
-      <textarea
-        class="text-area"
-        id="approveTeacherNoteInput"
-        maxlength="300"
-        placeholder="예) 친구들과 이야기하기 좋은 질문이에요."
-      ></textarea>
-
-      <div class="modal-button-row">
-        <button class="plain-button" type="button" onclick="closeApproveModal()">취소</button>
-        <button class="main-button" type="button" onclick="confirmApprovePost()">승인 완료</button>
-      </div>
-    </div>
-  </div>
 
   <div class="modal-overlay" id="rejectModal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
@@ -1085,10 +1073,7 @@
   </div>
 
   <script>
-    const PENDING_KEY = "bookChatPendingPosts";
-    const APPROVED_KEY = "bookChatApprovedPosts";
-    const REJECTED_KEY = "bookChatRejectedPosts";
-    const MY_SHARED_KEY = "mySharedQuestions";
+    const API_BASE_URL = "http://localhost:8080";
 
     const statusInfo = {
       pending: { label: "승인 대기", className: "pending" },
@@ -1109,6 +1094,11 @@
     let selectedPostId = null;
     let allPosts = [];
     let modalTargetPostId = null;
+    let reviewPostsByStatus = {
+      pending: [],
+      approved: [],
+      rejected: []
+    };
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const sortSelect = document.getElementById("sortSelect");
@@ -1118,11 +1108,9 @@
     initPage();
 
     function initPage() {
-      ensureSampleData();
-      ensureMySharedQuestionsInPending();
-
       bindEvents();
       renderAll();
+      loadBackendReviewPosts();
     }
 
     function bindEvents() {
@@ -1160,9 +1148,9 @@
 
     function getAllPosts() {
       return []
-        .concat(loadList(PENDING_KEY))
-        .concat(loadList(APPROVED_KEY))
-        .concat(loadList(REJECTED_KEY));
+        .concat(reviewPostsByStatus.pending)
+        .concat(reviewPostsByStatus.approved)
+        .concat(reviewPostsByStatus.rejected);
     }
 
     function getFilteredPosts() {
@@ -1254,10 +1242,13 @@
           <div class="detail-question">${escapeHtml(selectedPost.question || "질문 없음")}</div>
 
           <div class="detail-lines">
-            ${renderLineCard("내 생각은", selectedPost.thought || selectedPost.answer || "내용 없음")}
-            ${renderLineCard("그렇게 생각한 까닭은", selectedPost.reason || "아직 적힌 까닭이 없어요.")}
-            ${renderLineCard("책에서 찾은 부분은", selectedPost.evidence || "아직 적힌 근거가 없어요.")}
-          </div>
+  ${renderLineCard(
+    "학생이 쓴 답",
+    selectedPost.thought ||
+    selectedPost.answer ||
+    "내용 없음"
+  )}
+</div>
         </article>
 
         ${renderTeacherActionArea(selectedPost)}
@@ -1280,12 +1271,12 @@
             <div class="box-title">게시물 처리</div>
 
             <div class="button-row">
-              <button class="main-button" type="button" onclick="openApproveModal('${escapeAttribute(post.id)}')">승인하기</button>
+              <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
               <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
             </div>
 
             <div class="feedback-box good">
-              승인 또는 거절 버튼을 누르면 내용을 적을 수 있는 보조창이 열려요.
+              승인하면 바로 학생 책수다방에 공개돼요. 거절할 때는 이유를 남길 수 있어요.
             </div>
           </div>
         `;
@@ -1325,46 +1316,170 @@
     }
 
     function renderCounts(filteredPosts) {
-      const pending = loadList(PENDING_KEY);
-      const approved = loadList(APPROVED_KEY);
-      const rejected = loadList(REJECTED_KEY);
+      const pending = reviewPostsByStatus.pending;
+      const approved = reviewPostsByStatus.approved;
+      const rejected = reviewPostsByStatus.rejected;
 
       document.getElementById("pendingCount").textContent = pending.length + "개";
       document.getElementById("approvedCount").textContent = approved.length + "개";
       document.getElementById("rejectedCount").textContent = rejected.length + "개";
       document.getElementById("visibleCount").textContent = filteredPosts.length + "개";
-      
+
     }
 
-    
 
 
-    function openApproveModal(id) {
-      modalTargetPostId = id;
-      const modal = document.getElementById("approveModal");
-      const input = document.getElementById("approveTeacherNoteInput");
 
-      if (input) input.value = "";
-      modal.classList.add("show");
-      modal.setAttribute("aria-hidden", "false");
+    function renderHistory() {
+      const historyList = document.getElementById("historyList");
+
+      if (!historyList) return;
+
+      historyList.innerHTML = "";
     }
 
-    function closeApproveModal() {
-      const modal = document.getElementById("approveModal");
-      modal.classList.remove("show");
-      modal.setAttribute("aria-hidden", "true");
-      modalTargetPostId = null;
+    function getTeacherAuthContext() {
+      const token = sessionStorage.getItem("token");
+      const teacherId =
+        sessionStorage.getItem("id") ||
+        sessionStorage.getItem("studentId");
+      const role = sessionStorage.getItem("role");
+
+      if (!token || !teacherId || role !== "teacher") {
+        return null;
+      }
+
+      return { token: token, teacherId: teacherId };
     }
 
-    function confirmApprovePost() {
-      if (!modalTargetPostId) return;
+    async function fetchReviewPostsByStatus(status) {
+      const auth = getTeacherAuthContext();
 
-      const input = document.getElementById("approveTeacherNoteInput");
-      const note = input ? input.value.trim() : "";
-      const id = modalTargetPostId;
+      if (!auth) return null;
 
-      closeApproveModal();
-      approvePost(id, note);
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews?status=${encodeURIComponent(status)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("책수다방 승인 목록을 불러오지 못했습니다.");
+      }
+
+      return response.json();
+    }
+
+    async function loadBackendReviewPosts(options) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) return false;
+
+      try {
+        const results = await Promise.all([
+          fetchReviewPostsByStatus("PENDING"),
+          fetchReviewPostsByStatus("APPROVED"),
+          fetchReviewPostsByStatus("REJECTED")
+        ]);
+
+        reviewPostsByStatus = {
+          pending: results[0].map(function(item) {
+            return mapReviewItemToPost(item, "pending");
+          }),
+          approved: results[1].map(function(item) {
+            return mapReviewItemToPost(item, "approved");
+          }),
+          rejected: results[2].map(function(item) {
+            return mapReviewItemToPost(item, "rejected");
+          })
+        };
+
+        if (options && options.keepSelection) {
+          selectedPostId = String(options.keepSelection);
+        }
+
+        renderAll();
+        return true;
+      } catch (error) {
+        console.warn(error);
+        return false;
+      }
+    }
+
+    function mapReviewItemToPost(item, status) {
+      return {
+        id: String(item.id),
+        sourceId: "book-thought-" + item.id,
+        status: status,
+        studentId: item.studentId,
+        studentName: item.studentName || "학생",
+        type: normalizeType(item.questionType),
+        question: item.question || "",
+        thought: item.answer || "",
+        reason: "",
+        evidence: "",
+        answer: item.answer || "",
+        classReadingBookId: item.classReadingBookId,
+        submittedAt: item.createdAt || "",
+        submittedText: formatSubmittedText(item.createdAt),
+        reviewedAt: item.reviewedAt || "",
+        reviewedText: item.reviewedAt ? formatSubmittedText(item.reviewedAt) : "",
+        rejectReason: item.rejectionReason || ""
+      };
+    }
+
+    async function approvePostWithApi(id) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) return false;
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews/${encodeURIComponent(id)}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        alert("승인 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요.");
+        return null;
+      }
+
+      return true;
+    }
+
+    async function rejectPostWithApi(id, reason) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) return false;
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews/${encodeURIComponent(id)}/reject`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            reason: reason
+          })
+        }
+      );
+
+      if (!response.ok) {
+        alert("거절 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요.");
+        return null;
+      }
+
+      return true;
     }
 
     function openRejectModal(id) {
@@ -1412,10 +1527,6 @@
     document.addEventListener("keydown", function(event) {
       if (event.key !== "Escape") return;
 
-      if (document.getElementById("approveModal").classList.contains("show")) {
-        closeApproveModal();
-      }
-
       if (document.getElementById("rejectModal").classList.contains("show")) {
         closeRejectModal();
       }
@@ -1426,27 +1537,30 @@
       renderAll();
     }
 
-    function approvePost(id, noteValue) {
+    async function approvePost(id) {
       const post = findPostById(id);
 
       if (!post) return;
 
-      const note = String(noteValue || "").trim();
+      const approvedByApi = await approvePostWithApi(id);
 
-      movePost(id, post.status, "approved", {
-        teacherNote: note,
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText(),
-        rejectReason: ""
-      });
+      if (approvedByApi === true) {
+        currentStatus = "approved";
+        setActiveFilter("approved");
+        selectedPostId = id;
+        await loadBackendReviewPosts({ keepSelection: id });
+        alert("승인됐어요.");
+        return;
+      }
 
-      currentStatus = "approved";
-      setActiveFilter("approved");
-      selectedPostId = id;
-      renderAll();
+      if (approvedByApi === null) {
+        return;
+      }
+
+      alert("로그인 정보가 없어 승인할 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
     }
 
-    function rejectPost(id, checkedReasonsValue, directCommentValue) {
+    async function rejectPost(id, checkedReasonsValue, directCommentValue) {
       const post = findPostById(id);
 
       if (!post) return;
@@ -1464,33 +1578,26 @@
         ? reasonParts.join("\n")
         : "고쳐서 다시 올리면 더 좋은 책수다방 글이 될 수 있어요.";
 
-      movePost(id, post.status, "rejected", {
-        rejectReason: rejectReason,
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText()
-      });
+      const rejectedByApi = await rejectPostWithApi(id, rejectReason);
 
-      currentStatus = "rejected";
-      setActiveFilter("rejected");
-      selectedPostId = id;
-      renderAll();
+      if (rejectedByApi === true) {
+        currentStatus = "rejected";
+        setActiveFilter("rejected");
+        selectedPostId = id;
+        await loadBackendReviewPosts({ keepSelection: id });
+        alert("거절됐어요.");
+        return;
+      }
+
+      if (rejectedByApi === null) {
+        return;
+      }
+
+      alert("로그인 정보가 없어 거절할 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
     }
 
     function approveRejectedPost(id) {
-      const post = findPostById(id);
-
-      if (!post) return;
-
-      movePost(id, post.status, "approved", {
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText(),
-        rejectReason: ""
-      });
-
-      currentStatus = "approved";
-      setActiveFilter("approved");
-      selectedPostId = id;
-      renderAll();
+      approvePost(id);
     }
 
     function returnToPending(id) {
@@ -1498,79 +1605,17 @@
 
       if (!post) return;
 
-      movePost(id, post.status, "pending", {
-        reviewedAt: "",
-        reviewedText: "",
-        rejectReason: ""
-      });
-
-      currentStatus = "pending";
-      setActiveFilter("pending");
-      selectedPostId = id;
-      renderAll();
+      alert("대기로 돌리기는 아직 서버 API가 없어 처리할 수 없어요.");
     }
 
     function hideApprovedPost(id) {
-      const ok = confirm("이 글을 학생 책수다방에서 숨기고 거절 목록으로 보낼까요?");
-
-      if (!ok) return;
-
-      const post = findPostById(id);
-
-      if (!post) return;
-
-      movePost(id, post.status, "rejected", {
-        rejectReason: "교사가 다시 확인한 뒤 책수다방에서 숨겼어요.",
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText()
-      });
-
-      currentStatus = "rejected";
-      setActiveFilter("rejected");
-      selectedPostId = id;
-      renderAll();
-    }
-
-    function movePost(id, fromStatus, toStatus, extraFields) {
-      const fromKey = getKeyByStatus(fromStatus);
-      const toKey = getKeyByStatus(toStatus);
-
-      if (!fromKey || !toKey) return;
-
-      const fromList = loadList(fromKey);
-      const postIndex = fromList.findIndex(function(item) {
-        return item.id === id;
-      });
-
-      if (postIndex === -1) return;
-
-      const post = fromList.splice(postIndex, 1)[0];
-
-      const movedPost = Object.assign({}, post, extraFields || {}, {
-        status: toStatus
-      });
-
-      saveList(fromKey, fromList);
-
-      const toList = loadList(toKey).filter(function(item) {
-        return item.id !== id;
-      });
-
-      toList.push(movedPost);
-      saveList(toKey, toList);
+      openRejectModal(id);
     }
 
     function findPostById(id) {
       return getAllPosts().find(function(post) {
         return post.id === id;
       });
-    }
-
-    function getKeyByStatus(status) {
-      if (status === "pending") return PENDING_KEY;
-      if (status === "approved") return APPROVED_KEY;
-      if (status === "rejected") return REJECTED_KEY;
-      return "";
     }
 
     function setActiveFilter(status) {
@@ -1608,139 +1653,6 @@
       return simple.label;
     }
 
-    function loadList(key) {
-      const saved = localStorage.getItem(key);
-
-      if (!saved) return [];
-
-      try {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function saveList(key, list) {
-      localStorage.setItem(key, JSON.stringify(list));
-    }
-
-    function ensureMySharedQuestionsInPending() {
-      const sharedData = localStorage.getItem(MY_SHARED_KEY);
-
-      if (!sharedData) return;
-
-      let parsedData = null;
-
-      try {
-        parsedData = JSON.parse(sharedData);
-      } catch (error) {
-        return;
-      }
-
-      if (!parsedData || !Array.isArray(parsedData.questions)) return;
-
-      const pending = loadList(PENDING_KEY);
-      const approved = loadList(APPROVED_KEY);
-      const rejected = loadList(REJECTED_KEY);
-
-      const existingIds = new Set(
-        pending.concat(approved).concat(rejected).map(function(post) {
-          return post.sourceId || post.id;
-        })
-      );
-
-      parsedData.questions.forEach(function(question, index) {
-        const sourceId = "mySharedQuestions-" + index + "-" + String(question.text || "");
-
-        if (existingIds.has(sourceId)) return;
-
-        pending.push({
-          id: "pending-" + Date.now() + "-" + index,
-          sourceId: sourceId,
-          status: "pending",
-          studentName: parsedData.name || "학생",
-          type: normalizeType(question.type),
-          question: question.text || "",
-          thought: question.answer || "",
-          reason: question.reason || "",
-          evidence: question.evidence || "",
-          answer: question.answer || "",
-          submittedAt: new Date().toISOString(),
-          submittedText: getTodayText(),
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        });
-      });
-
-      saveList(PENDING_KEY, pending);
-    }
-
-    function ensureSampleData() {
-      const hasAnyData =
-        loadList(PENDING_KEY).length > 0 ||
-        loadList(APPROVED_KEY).length > 0 ||
-        loadList(REJECTED_KEY).length > 0;
-
-      if (hasAnyData) return;
-
-      const samplePosts = [
-        {
-          id: "sample-pending-1",
-          sourceId: "sample-pending-1",
-          status: "pending",
-          studentName: "민지",
-          type: "talk",
-          question: "주인공은 왜 무서웠는데도 친구를 도왔을까?",
-          thought: "주인공이 친구를 소중하게 생각했기 때문이라고 생각한다.",
-          reason: "무서웠지만 친구가 혼자 있으면 더 위험할 수 있다고 생각했을 것 같기 때문이다.",
-          evidence: "주인공이 뒤를 돌아보다가 친구에게 다시 가는 장면이다.",
-          submittedAt: "2026-06-11T09:10:00",
-          submittedText: "06.11 09:10",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        },
-        {
-          id: "sample-pending-2",
-          sourceId: "sample-pending-2",
-          status: "pending",
-          studentName: "서준",
-          type: "quiz",
-          question: "주인공이 다시 돌아간 장면에서 알 수 있는 것은 무엇일까?",
-          thought: "주인공이 친구를 걱정했다는 것을 알 수 있다.",
-          reason: "그냥 도망가지 않고 다시 친구 쪽으로 갔기 때문이다.",
-          evidence: "주인공이 친구의 이름을 부르는 장면이다.",
-          submittedAt: "2026-06-11T09:25:00",
-          submittedText: "06.11 09:25",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        },
-        {
-          id: "sample-pending-3",
-          sourceId: "sample-pending-3",
-          status: "pending",
-          studentName: "하윤",
-          type: "talk",
-          question: "나라면 주인공처럼 친구를 도울 수 있었을까?",
-          thought: "나도 친구를 도우려고 했을 것 같다.",
-          reason: "친구가 힘들 때 모른 척하면 마음이 불편할 것 같기 때문이다.",
-          evidence: "주인공이 무서워도 친구를 두고 가지 못하는 장면이다.",
-          submittedAt: "2026-06-11T09:37:00",
-          submittedText: "06.11 09:37",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        }
-      ];
-
-      saveList(PENDING_KEY, samplePosts);
-      saveList(APPROVED_KEY, []);
-      saveList(REJECTED_KEY, []);
-    }
-
     function normalizeType(type) {
       if (type === "direct" || type === "quiz") return "quiz";
       if (type === "infer" || type === "feeling" || type === "life" || type === "opinion" || type === "connect") {
@@ -1758,6 +1670,23 @@
       const minute = String(now.getMinutes()).padStart(2, "0");
 
       return month + "." + date + " " + hour + ":" + minute;
+    }
+
+    function formatSubmittedText(value) {
+      if (!value) return getTodayText();
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return getTodayText();
+      }
+
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+
+      return month + "." + day + " " + hour + ":" + minute;
     }
 
     function goTeacherHome() {

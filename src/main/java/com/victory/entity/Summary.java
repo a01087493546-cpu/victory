@@ -28,6 +28,7 @@ import lombok.Setter;
     name = "summaries",
     indexes = {
         @Index(name = "idx_summaries_student_id", columnList = "student_id"),
+        @Index(name = "idx_summaries_class_reading_book_id", columnList = "class_reading_book_id"),
         @Index(name = "idx_summaries_status", columnList = "status")
     }
 )
@@ -52,6 +53,14 @@ public class Summary {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reading_record_id")
     private ReadingRecord readingRecord;
+
+    /*
+     * 연습읽기(온책읽기) 읽기 후 간추리기는 ClassReadingBook 기준으로 묶는다.
+     * summaries 테이블을 재사용하되, 개별읽기 Summary와 섞이지 않도록
+     * class_reading_book_id만 별도 스냅샷으로 저장한다.
+     */
+    @Column(name = "class_reading_book_id")
+    private Long classReadingBookId;
 
     /*
      * 요약 당시 책 유형 스냅샷(책 유형이 나중에 바뀌어도 이 기록은 그대로 유지).

@@ -39,16 +39,16 @@ public class StudentStats {
     private User student;
 
     @Column(name = "magic", nullable = false)
-    private Integer magic = 8;
+    private Integer magic = 0;
 
     @Column(name = "stamina", nullable = false)
-    private Integer stamina = 8;
+    private Integer stamina = 0;
 
     @Column(name = "wisdom", nullable = false)
-    private Integer wisdom = 8;
+    private Integer wisdom = 0;
 
     @Column(name = "courage", nullable = false)
-    private Integer courage = 8;
+    private Integer courage = 0;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;

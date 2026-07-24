@@ -887,6 +887,8 @@ button {
     </div>
   </main>
 
+  <script src="../js/pre-reading-validation.js"></script>
+<script src="../js/ai-feedback.js"></script>
   <script>
     /* =========================================================
        1920×1080 고정 화면 비율 유지
@@ -921,7 +923,7 @@ button {
 
     const studentId =
       sessionStorage.getItem("studentId") || "student-demo";
-
+      let classReadingBookId = null;
     const typeInfo = {
       direct: {
         label: "바로 찾기",
@@ -1034,7 +1036,69 @@ button {
 
     const todayText =
       document.getElementById("todayText");
+async function loadClassReadingBookId() {
+  const token = sessionStorage.getItem("token");
+  const role = sessionStorage.getItem("role");
 
+  if (!token || !studentId || role !== "student") {
+    alert("학생 로그인이 필요합니다.");
+    location.href = "../../index.html";
+    return false;
+  }
+
+  try {
+    const classResponse = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/class`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!classResponse.ok) {
+      throw new Error(
+        `학생 학급 조회 실패: ${classResponse.status}`
+      );
+    }
+
+    const classData = await classResponse.json();
+
+    const bookResponse = await fetch(
+      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (bookResponse.status === 404) {
+      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
+      return false;
+    }
+
+    if (!bookResponse.ok) {
+      throw new Error(
+        `온책읽기 책 조회 실패: ${bookResponse.status}`
+      );
+    }
+
+    const bookData = await bookResponse.json();
+
+    classReadingBookId = bookData.id;
+    return true;
+  } catch (error) {
+    console.error(
+      "학급 책 정보를 불러오지 못했습니다.",
+      error
+    );
+    alert("책 정보를 불러오지 못했습니다.");
+    return false;
+  }
+}
     initPage();
 
     /*
@@ -1043,11 +1107,17 @@ button {
       =========================================================
     */
 
-    function initPage() {
-      todayText.textContent =
-        "오늘 날짜 " + todayInfo.display;
+    async function initPage() {
+  const bookLoaded = await loadClassReadingBookId();
 
-      loadTodayQuestions();
+  if (!bookLoaded) {
+    return;
+  }
+
+  todayText.textContent =
+    "오늘 날짜 " + todayInfo.display;
+
+      await loadTodayBookThoughtResponses();
       updateCounts();
       renderTodayQuestions();
 
@@ -1088,6 +1158,43 @@ button {
       answerInput.addEventListener(
         "input",
         updateCounts
+      );
+
+      questionInput.addEventListener(
+        "input",
+        resetDuringReadingFeedbackOnEdit
+      );
+
+      answerInput.addEventListener(
+        "input",
+        resetDuringReadingFeedbackOnEdit
+      );
+    }
+
+    /*
+      직전 검사 결과(good/need)가 남아 있는 채로 질문이나 답을 수정하면,
+      아직 검사하지 않은 새 내용이 이미 통과한 것처럼 보일 수 있다.
+      검사 중(로딩)이거나 이미 잠긴 상태(3개 완료)라면 건드리지 않는다.
+    */
+    function resetDuringReadingFeedbackOnEdit() {
+      if (isDuringReadingAiRequestInFlight) {
+        return;
+      }
+
+      if (todayQuestions.length >= 3) {
+        return;
+      }
+
+      if (
+        !feedbackBox.classList.contains("good") &&
+        !feedbackBox.classList.contains("need")
+      ) {
+        return;
+      }
+
+      setFeedback(
+        "",
+        "질문과 내 생각을 쓴 뒤 <strong>루미에게 확인 받기</strong>를 눌러 봐. 3개 이상 통과하면 다음 단계로 갈 수 있어."
       );
     }
 
@@ -1157,10 +1264,18 @@ button {
       =========================================================
     */
 
+    let duringReadingAiRequestId = 0;
+    let isDuringReadingAiRequestInFlight = false;
+
     function checkQuestion() {
       if (todayQuestions.length >= 3) {
         lockQuestionForm();
         setCompletionFeedback();
+        return;
+      }
+
+      /* 요청이 진행 중이면 버튼이 비활성화되어 있지만, 혹시 모를 중복 클릭을 한 번 더 막는다. */
+      if (isDuringReadingAiRequestInFlight) {
         return;
       }
 
@@ -1170,84 +1285,67 @@ button {
       const answer =
         answerInput.value.trim();
 
-      const result =
-        validateQuestion(
-          selectedType,
+      const localResult =
+        validateDuringReadingFormat(
           question,
           answer
         );
 
-      if (!result.ok) {
+      if (!localResult.ok) {
         setFeedback(
           "need",
-          result.message
+          localResult.message
         );
 
         return;
       }
 
-      saveQuestion(
-        question,
-        answer
-      );
-
-      questionInput.value = "";
-      answerInput.value = "";
-      updateCounts();
-
-      if (todayQuestions.length >= 3) {
-        lockQuestionForm();
-        setCompletionFeedback();
-      } else {
-        setFeedback(
-          "good",
-          result.message +
-            "<br><br>좋아! 루미 확인을 통과했어. 현재 " +
-            todayQuestions.length +
-            "개가 통과했어. " +
-            (3 - todayQuestions.length) +
-            "개를 더 쓰면 다음 단계로 갈 수 있어."
-        );
-
-        requestDuringReadingAiFeedback(question, answer);
-      }
+      requestDuringReadingAiFeedback(question, answer);
     }
 
-    let duringReadingAiRequestId = 0;
-
-    function requestDuringReadingAiFeedback(question, answer) {
-      const requestId = ++duringReadingAiRequestId;
-
-      setFeedback("", "루미가 답변을 읽고 있어요...");
-
-      requestAiFeedback("during_reading_question", "", [
-        { question: question, answer: answer }
-      ]).then(function(result) {
-        if (requestId !== duringReadingAiRequestId) {
-          return;
-        }
-        setFeedback(result.status, result.message);
-      }).catch(function() {
-        if (requestId !== duringReadingAiRequestId) {
-          return;
-        }
-        setFeedback(
-          "need",
-          "지금은 루미 피드백을 확인하기 어려워요. 질문은 잘 저장됐어, 잠시 후 다시 확인해봐."
-        );
-      });
-    }
-
-    function validateQuestion(
-      type,
-      question,
-      answer
-    ) {
+    /*
+      로컬 형식 필터. 의미 판정(선택한 질문 유형에 맞는지, 질문과 답이
+      자연스럽게 이어지는지)은 하지 않고, 읽기 전 검증(js/pre-reading-
+      validation.js)과 같은 기준으로 빈 입력·초성/기호만 입력·반복 글자·
+      너무 짧은 입력·질문 형태가 아닌 입력만 걸러낸다. 의미 판정은
+      requestDuringReadingAiFeedback()에서 AI에게 맡긴다.
+    */
+    function validateDuringReadingFormat(question, answer) {
       if (!question) {
         return {
           ok: false,
           message:
             "질문 칸이 비어 있어. 책을 읽으며 궁금했던 점을 먼저 질문으로 써 보자."
+        };
+      }
+
+      if (preReadingIsJamoOrSymbolOnly(question)) {
+        return {
+          ok: false,
+          message: "질문의 뜻이 잘 보이지 않아. 궁금한 점을 문장으로 다시 적어 보자."
+        };
+      }
+
+      if (preReadingHasExcessiveRepetition(question)) {
+        return {
+          ok: false,
+          message: "같은 글자가 너무 많이 반복됐어. 궁금한 내용을 문장으로 적어 보자."
+        };
+      }
+
+      if (preReadingCountWithoutSpaces(question) < 5) {
+        return {
+          ok: false,
+          message:
+            "질문이 너무 짧아. 누가, 무엇을, 왜, 어떻게 같은 말을 떠올리며 조금 더 자세히 써 보자."
+        };
+      }
+
+      if (!preReadingLooksLikeQuestion(question)) {
+        return {
+          ok: false,
+          message:
+            "질문 형식으로 바꿔 보자. 끝을 '나요?', '까요?', '했을까요?'처럼 물어보는 문장으로 쓰면 좋아."
         };
       }
 
@@ -1259,15 +1357,21 @@ button {
         };
       }
 
-      if (question.length < 8) {
+      if (preReadingIsJamoOrSymbolOnly(answer)) {
         return {
           ok: false,
-          message:
-            "질문이 조금 짧아. 누가, 무엇을, 왜, 어떻게 같은 말을 떠올리며 조금 더 자세히 써 보자."
+          message: "답의 뜻이 잘 보이지 않아. 내 생각을 문장으로 다시 적어 보자."
         };
       }
 
-      if (answer.length < 8) {
+      if (preReadingHasExcessiveRepetition(answer)) {
+        return {
+          ok: false,
+          message: "같은 글자가 너무 많이 반복됐어. 내 생각을 문장으로 적어 보자."
+        };
+      }
+
+      if (preReadingCountWithoutSpaces(answer) < 3) {
         return {
           ok: false,
           message:
@@ -1275,180 +1379,305 @@ button {
         };
       }
 
-      if (!isQuestionForm(question)) {
-        return {
-          ok: false,
-          message:
-            "질문 형식으로 바꿔 보자. 끝을 ‘나요?’, ‘까요?’, ‘했을까요?’처럼 물어보는 문장으로 쓰면 좋아."
-        };
-      }
-
-      const normalizedQuestion =
-        normalizeText(question);
-
-      const normalizedAnswer =
-        normalizeText(answer);
-
-      if (
-        !isTypeMatched(
-          type,
-          normalizedQuestion
-        )
-      ) {
-        return {
-          ok: false,
-          message:
-            "'" +
-            typeInfo[type].label +
-            "' 유형과 조금 달라 보여. " +
-            typeInfo[type].guide +
-            " 선택한 유형에 어울리는 말을 넣어 다시 써 보자."
-        };
-      }
-
-      if (
-        !isAnswerRelated(
-          normalizedQuestion,
-          normalizedAnswer
-        )
-      ) {
-        return {
-          ok: false,
-          message:
-            "질문과 내 생각/답의 연결이 약해 보여. 질문에서 묻는 말에 대한 답이 바로 이어지도록 다시 써 보자."
-        };
-      }
-
-      return {
-        ok: true,
-        message:
-          "좋아! 질문 형식으로 잘 썼고, '" +
-          typeInfo[type].label +
-          "' 유형과도 잘 맞아. 답도 질문과 자연스럽게 연결되어 있어."
-      };
+      return { ok: true };
     }
 
-    function isQuestionForm(text) {
-      const trimmed = text.trim();
+    /*
+      =========================================================
+      읽기 중 AI 피드백 요청
+      =========================================================
+      AI가 good을 줘야만 저장·통과 카운트·다음 단계 조건에 반영된다.
+      AbortController + 타임아웃으로 "루미가 답변을 읽고 있어요..."에서
+      무한정 멈추는 문제를 막고, 요청 중에는 checkButton을 잠가 중복
+      요청을 막는다.
+    */
+    async function saveBookThoughtResponse(
+  questionType,
+  question,
+  answer
+) {
+  const token = sessionStorage.getItem("token");
 
-      if (
-        trimmed.includes("?") ||
-        trimmed.includes("？")
-      ) {
-        return true;
+  if (!token || !studentId || !classReadingBookId) {
+    console.error(
+      "책 속 생각 저장에 필요한 정보가 없습니다."
+    );
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          questionType: questionType,
+          question: question,
+          answer: answer,
+          classReadingBookId: classReadingBookId
+        })
       }
+    );
 
-      const normalized =
-        normalizeText(trimmed);
+    if (!response.ok) {
+      const errorText = await response.text();
 
-      const endings = [
-        "나요",
-        "까요",
-        "했나요",
-        "했을까요",
-        "있나요",
-        "없나요",
-        "무엇인가요",
-        "어떤가요",
-        "어떨까요"
-      ];
+      console.error(
+        "책 속 생각 저장 실패:",
+        response.status,
+        errorText
+      );
 
-      return endings.some(
-        function(ending) {
-          return normalized.endsWith(
-            normalizeText(ending)
-          );
+      return null;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(
+      "책 속 생각 저장 중 오류가 발생했습니다.",
+      error
+    );
+
+    return null;
+  }
+}
+async function loadTodayBookThoughtResponses() {
+  const token = sessionStorage.getItem("token");
+
+  if (!token || !studentId || !classReadingBookId) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought?classReadingBookId=${classReadingBookId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
         }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `책 속 생각 조회 실패: ${response.status}`
       );
     }
 
-    function isTypeMatched(
-      type,
-      normalizedQuestion
-    ) {
-      const words =
-        typeInfo[type].words;
+    const items = await response.json();
 
-      if (type === "opinion") {
-        return (
-          words.some(function(word) {
-            return normalizedQuestion.includes(
-              normalizeText(word)
-            );
-          }) ||
-          normalizedQuestion.includes(
-            "어떤생각"
-          ) ||
-          normalizedQuestion.includes(
-            "어떤느낌"
-          )
-        );
-      }
-
-      if (type === "direct") {
-        const inferWords = [
-          "왜",
-          "이유",
-          "마음",
-          "생각"
-        ];
-
-        const hasDirectWord =
-          words.some(function(word) {
-            return normalizedQuestion.includes(
-              normalizeText(word)
-            );
-          });
-
-        const hasInferWord =
-          inferWords.some(function(word) {
-            return normalizedQuestion.includes(
-              normalizeText(word)
-            );
-          });
-
-        return (
-          hasDirectWord &&
-          !hasInferWord
-        );
-      }
-
-      return words.some(
-        function(word) {
-          return normalizedQuestion.includes(
-            normalizeText(word)
-          );
+    todayQuestions = items
+      .filter(function(item) {
+        if (!item.createdAt) {
+          return false;
         }
-      );
-    }
 
-    function isAnswerRelated(
-      normalizedQuestion,
-      normalizedAnswer
-    ) {
-      if (
-        normalizedAnswer.length >= 12
-      ) {
-        return true;
+        const createdDate =
+          String(item.createdAt).slice(0, 10);
+
+        return createdDate === todayInfo.key;
+      })
+      .map(function(item) {
+        return {
+          id: item.id,
+          dateKey: todayInfo.key,
+          dateText: todayInfo.display,
+          shortDateText: todayInfo.shortDisplay,
+          type: item.questionType,
+          typeLabel:
+            typeInfo[item.questionType]?.label ||
+            item.questionType,
+          text: item.question,
+          answer: item.answer,
+          createdAt:
+            String(item.createdAt).slice(11, 16)
+        };
+      });
+
+    return true;
+  } catch (error) {
+    console.error(
+      "오늘의 책 속 생각 기록을 불러오지 못했습니다.",
+      error
+    );
+
+    todayQuestions = [];
+    return false;
+  }
+}
+    function requestDuringReadingAiFeedback(question, answer) {
+      const requestId = ++duringReadingAiRequestId;
+      const timeoutMs = 15000;
+      const failMessage =
+        "지금은 루미 피드백을 확인하기 어려워요. 질문이 저장되지 않았어요, 잠시 후 다시 시도해봐.";
+
+      isDuringReadingAiRequestInFlight = true;
+
+      if (checkButton) {
+        checkButton.disabled = true;
       }
 
-      return normalizedQuestion
-        .split("")
-        .some(function(char) {
-          return normalizedAnswer.includes(
-            char
-          );
+      setFeedback("", "루미가 답변을 읽고 있어요...");
+
+      const abortController = new AbortController();
+
+      const timeoutId = setTimeout(function() {
+        abortController.abort();
+      }, timeoutMs);
+
+      const token = sessionStorage.getItem("token");
+
+if (!token || !studentId || !classReadingBookId) {
+  clearTimeout(timeoutId);
+  isDuringReadingAiRequestInFlight = false;
+
+  if (checkButton) {
+    checkButton.disabled = false;
+  }
+
+  setFeedback(
+    "need",
+    "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
+  );
+
+  return;
+}
+
+/*
+  아직 저장되지 않은 현재 질문의 순번을 사용한다.
+  같은 질문을 수정해서 재검사할 때는 todayQuestions.length가 바뀌지 않으므로
+  동일한 evaluationKey가 유지된다.
+*/
+const questionNumber = todayQuestions.length + 1;
+
+const evaluationKey =
+  "practice-during-" +
+  classReadingBookId +
+  "-" +
+  studentId +
+  "-book-thought-" +
+  todayInfo.key +
+  "-" +
+  questionNumber;
+
+fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + token
+  },
+  signal: abortController.signal,
+  body: JSON.stringify({
+    question: question,
+    answer: answer,
+    activityType: "during_reading_question",
+    questionType: selectedType,
+    evaluationKey: evaluationKey,
+    classReadingBookId: classReadingBookId
+  })
+})
+        .then(function(response) {
+          if (requestId !== duringReadingAiRequestId) {
+            return;
+          }
+
+          if (!response.ok) {
+            return response.text().then(
+              function(bodyText) {
+                console.error(
+                  "읽기 중 AI 피드백 요청 실패 - status:",
+                  response.status,
+                  "body:",
+                  bodyText
+                );
+                setFeedback("need", failMessage);
+              },
+              function() {
+                console.error(
+                  "읽기 중 AI 피드백 요청 실패 - status:",
+                  response.status,
+                  "body: (읽지 못함)"
+                );
+                setFeedback("need", failMessage);
+              }
+            );
+          }
+
+          return response.json().then(async function(result) {
+            if (requestId !== duringReadingAiRequestId) {
+              return;
+            }
+
+            const isGood = result.status === "good";
+
+            setFeedback(isGood ? "good" : "need", result.message);
+
+            if (isGood) {
+  const savedResponse =
+    await saveBookThoughtResponse(
+      selectedType,
+      question,
+      answer
+    );
+
+  if (requestId !== duringReadingAiRequestId) {
+    return;
+  }
+
+  if (!savedResponse) {
+    setFeedback(
+      "need",
+      "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 확인 받아 주세요."
+    );
+    return;
+  }
+
+  saveQuestion(question, answer, savedResponse);
+
+  questionInput.value = "";
+  answerInput.value = "";
+  updateCounts();
+
+  if (todayQuestions.length >= 3) {
+    lockQuestionForm();
+    setCompletionFeedback();
+  }
+}
+          });
+        })
+        .catch(function(error) {
+          if (requestId !== duringReadingAiRequestId) {
+            return;
+          }
+
+          if (error.name === "AbortError") {
+            console.error(
+              "읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
+              error
+            );
+          } else {
+            console.error(
+              "읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
+              error
+            );
+          }
+
+          setFeedback("need", failMessage);
+        })
+        .finally(function() {
+          clearTimeout(timeoutId);
+          isDuringReadingAiRequestInFlight = false;
+
+          /* 질문 3개를 이미 다 통과했으면 lockQuestionForm()이 잠근 상태를 유지해야 한다. */
+          if (checkButton && todayQuestions.length < 3) {
+            checkButton.disabled = false;
+          }
         });
-    }
-
-    function normalizeText(text) {
-      return String(text || "")
-        .replace(/\s/g, "")
-        .replace(
-          /[?？!！.,，。'‘’"“”]/g,
-          ""
-        )
-        .toLowerCase();
     }
 
     function setFeedback(
@@ -1469,31 +1698,44 @@ button {
     */
 
     function saveQuestion(
-      question,
-      answer
-    ) {
-      const newQuestion = {
-        id: Date.now(),
-        dateKey: todayInfo.key,
-        dateText: todayInfo.display,
-        shortDateText:
-          todayInfo.shortDisplay,
-        type: selectedType,
-        typeLabel:
-          typeInfo[selectedType].label,
-        text: question,
-        answer: answer,
-        createdAt:
-          getCurrentTimeText()
-      };
-
-      todayQuestions.push(
-        newQuestion
-      );
-
-      saveTodayQuestions();
-      renderTodayQuestions();
+  question,
+  answer,
+  savedResponse
+) {
+  const alreadyExists = todayQuestions.some(
+    function(item) {
+      return item.id === savedResponse.id;
     }
+  );
+
+  if (alreadyExists) {
+    setFeedback(
+      "need",
+      "이미 통과한 질문과 같은 내용이에요. 다른 질문을 만들어 보세요."
+    );
+    return;
+  }
+
+  const newQuestion = {
+    id: savedResponse.id,
+    dateKey: todayInfo.key,
+    dateText: todayInfo.display,
+    shortDateText: todayInfo.shortDisplay,
+    type: savedResponse.questionType,
+    typeLabel:
+      typeInfo[savedResponse.questionType]?.label ||
+      savedResponse.questionType,
+    text: savedResponse.question,
+    answer: savedResponse.answer,
+    createdAt:
+      String(savedResponse.createdAt || "").slice(11, 16)
+  };
+
+  todayQuestions.push(newQuestion);
+
+  saveTodayQuestions();
+  renderTodayQuestions();
+}
 
     function getCurrentTimeText() {
       const now = new Date();
@@ -1785,7 +2027,7 @@ button {
     function setCompletionFeedback() {
       setFeedback(
         "good",
-        "<div>🎉 질문 3개가 모두 통과했어! 이제 질문은 더 쓸 수 없어.<br>" +
+        "<div>🎉 질문 3개가 모두 통과했어!<br>" +
         "‘바로 찾기’ 유형은 책 퀴즈로, ‘짐작하기·생각과 느낌·삶과 연결’ 유형은 생각나누기로 자동 분류돼.<br>" +
         "오른쪽의 다음 단계 버튼을 눌러 책수다방으로 가 보자.</div>"
       );
@@ -1890,7 +2132,6 @@ function goNextStep() {
     }
   </script>
 
-  <script src="../js/ai-feedback.js"></script>
   <!-- <script src="../js/fixed-stage.js"></script> -->
 </body>
 </html>

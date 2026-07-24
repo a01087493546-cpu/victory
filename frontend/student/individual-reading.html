@@ -873,33 +873,33 @@ html {
 
           <div class="ir-power-body">
             <div class="ir-radar">
-              <span class="radar-top">마법력<br />11</span>
-              <span class="radar-right">체력<br />11</span>
-              <span class="radar-bottom">지혜<br />11</span>
-              <span class="radar-left">용기<br />10</span>
+              <span class="radar-top">마법력<br /><b id="radarMagicValue">0</b></span>
+              <span class="radar-right">체력<br /><b id="radarStaminaValue">0</b></span>
+              <span class="radar-bottom">지혜<br /><b id="radarWisdomValue">0</b></span>
+              <span class="radar-left">용기<br /><b id="radarCourageValue">0</b></span>
               <div class="ir-radar-core"></div>
             </div>
 
             <div class="ir-power-bars">
               <div class="ir-power-row">
                 <span>마법력</span>
-                <div><i style="width: 11%"></i></div>
-                <b>11 / 100</b>
+                <div><i id="magicPowerFill" style="width: 0%"></i></div>
+                <b id="magicPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
                 <span>체력</span>
-                <div><i style="width: 11%"></i></div>
-                <b>11 / 100</b>
+                <div><i id="staminaPowerFill" style="width: 0%"></i></div>
+                <b id="staminaPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
                 <span>지혜</span>
-                <div><i style="width: 11%"></i></div>
-                <b>11 / 100</b>
+                <div><i id="wisdomPowerFill" style="width: 0%"></i></div>
+                <b id="wisdomPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
                 <span>용기</span>
-                <div><i style="width: 10%"></i></div>
-                <b>10 / 100</b>
+                <div><i id="couragePowerFill" style="width: 0%"></i></div>
+                <b id="couragePowerText">0 / 100</b>
               </div>
             </div>
           </div>
@@ -988,29 +988,69 @@ html {
   <script src="../js/fixed-stage.js"></script>
 
   <script>
-    /*
-      연습읽기(온책읽기)의 "읽기 후"까지 모두 마쳐야만
-      하단 3개 버튼(책 추천 받기 / 오늘의 독서 모험 / 던전 입장)을 쓸 수 있게 합니다.
-      연습읽기 읽기 후 완료 여부는 individual-power.js의 givePowerRewardOnce()가
-      "practice_all_complete_<studentId>" 키로 남기는 보상 이력(localStorage)을
-      기준으로 판단합니다. after-read.html에서 "저장하고 공유하기"를 눌러
-      간추리기를 마쳤을 때 이 이력이 저장됩니다.
-    */
     (function () {
-      const studentId = sessionStorage.getItem("studentId") || "student-demo";
+      const API_BASE_URL = "http://localhost:8080";
+      let isHomeDataLoading = false;
 
-      function hasFinishedPracticeReading() {
-        try {
-          const raw = localStorage.getItem("individualRewardHistory_v2_" + studentId);
-          const history = raw ? JSON.parse(raw) : [];
-          return Array.isArray(history) && history.includes("practice_all_complete_" + studentId);
-        } catch (error) {
-          return false;
+      function getAuthContext() {
+        return {
+          studentId: sessionStorage.getItem("studentId"),
+          token: sessionStorage.getItem("token")
+        };
+      }
+
+      function goLogin() {
+        window.location.href = "../index.html";
+      }
+
+      function clampPercent(value) {
+        const number = Number(value) || 0;
+        return Math.max(0, Math.min(100, number));
+      }
+
+      function normalizeStats(stats) {
+        return {
+          magic: Number(stats && stats.magic) || 0,
+          stamina: Number(stats && stats.stamina) || 0,
+          wisdom: Number(stats && stats.wisdom) || 0,
+          courage: Number(stats && stats.courage) || 0
+        };
+      }
+
+      function updateStat(type, value) {
+        const radarIdMap = {
+          magic: "radarMagicValue",
+          stamina: "radarStaminaValue",
+          wisdom: "radarWisdomValue",
+          courage: "radarCourageValue"
+        };
+        const text = document.getElementById(type + "PowerText");
+        const fill = document.getElementById(type + "PowerFill");
+        const radar = document.getElementById(radarIdMap[type]);
+        const numericValue = Number(value) || 0;
+
+        if (radar) {
+          radar.textContent = String(numericValue);
+        }
+
+        if (text) {
+          text.textContent = numericValue + " / 100";
+        }
+
+        if (fill) {
+          fill.style.width = clampPercent(numericValue) + "%";
         }
       }
 
-      function updateFlowButtonsLockState() {
-        const isUnlocked = hasFinishedPracticeReading();
+      function renderStats(stats) {
+        const normalized = normalizeStats(stats);
+        updateStat("magic", normalized.magic);
+        updateStat("stamina", normalized.stamina);
+        updateStat("wisdom", normalized.wisdom);
+        updateStat("courage", normalized.courage);
+      }
+
+      function updateFlowButtonsLockState(isUnlocked) {
         const buttons = [
           document.getElementById("bookRecommendBtn"),
           document.getElementById("todayAdventureBtn"),
@@ -1028,9 +1068,70 @@ html {
         }
       }
 
-      document.addEventListener("DOMContentLoaded", updateFlowButtonsLockState);
-      // 뒤로가기 등으로 캐시된 화면을 다시 보여줄 때도 최신 상태를 반영합니다.
-      window.addEventListener("pageshow", updateFlowButtonsLockState);
+      async function fetchStudentJson(path, context) {
+        const response = await fetch(API_BASE_URL + path, {
+          headers: {
+            Authorization: "Bearer " + context.token
+          }
+        });
+
+        if (response.status === 401) {
+          goLogin();
+          throw new Error("로그인이 필요합니다.");
+        }
+
+        if (!response.ok) {
+          throw new Error("서버 조회 실패: " + response.status);
+        }
+
+        return response.json();
+      }
+
+      async function refreshIndividualHomeFromServer() {
+        if (isHomeDataLoading) {
+          return;
+        }
+
+        const context = getAuthContext();
+
+        if (!context.studentId || !context.token) {
+          renderStats(null);
+          updateFlowButtonsLockState(false);
+          goLogin();
+          return;
+        }
+
+        isHomeDataLoading = true;
+
+        try {
+          const stats = await fetchStudentJson(
+            "/api/students/" + context.studentId + "/stats",
+            context
+          );
+          renderStats(stats);
+
+          const progress = await fetchStudentJson(
+            "/api/students/" + context.studentId + "/practice-progress",
+            context
+          );
+          updateFlowButtonsLockState(progress.practiceCompleted === true);
+        } catch (error) {
+          console.error(error);
+          renderStats(null);
+          updateFlowButtonsLockState(false);
+        } finally {
+          isHomeDataLoading = false;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        checkLogin();
+        renderStats(null);
+        updateFlowButtonsLockState(false);
+        refreshIndividualHomeFromServer();
+      });
+
+      window.addEventListener("pageshow", refreshIndividualHomeFromServer);
     })();
   </script>
 </body>

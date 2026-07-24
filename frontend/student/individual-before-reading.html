@@ -1841,6 +1841,7 @@
 
   <script src="../js/auth.js"></script>
   <script src="../js/ai-feedback.js"></script>
+  <script src="../js/pre-reading-validation.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -2337,29 +2338,32 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
       const expectedAnswer = document.getElementById("answerInput").value.trim();
       const feedbackBox = document.getElementById("feedbackBox");
       const feedbackText = document.getElementById("feedbackText");
-      const result = validateQuestionAndAnswer(question, expectedAnswer);
+      const step = steps[currentStepIndex];
+      const result = validatePreReadingQuestionAndAnswer(
+        question,
+        expectedAnswer,
+        `${step.short}에서 궁금한 점을 한 문장으로 적어봐!`
+      );
+
+      const answerIndex = currentStepIndex - 1;
 
       if (!result.ok) {
         feedbackBox.classList.remove("good", "need");
         feedbackBox.classList.add("need");
         feedbackText.textContent = result.message;
+
+        answers[answerIndex].passed = false;
+
+        const nextStepButton = document.getElementById("nextStepButton");
+        if (nextStepButton) {
+          nextStepButton.disabled = true;
+        }
+
         return;
       }
 
-      const answerIndex = currentStepIndex - 1;
-
-      answers[answerIndex] = {
-        question,
-        expectedAnswer,
-        passed: true
-      };
-
-      sessionStorage.setItem(STORAGE_KEYS.beforeQuestions, JSON.stringify(answers));
-
-      const nextStepButton = document.getElementById("nextStepButton");
-      if (nextStepButton) {
-        nextStepButton.disabled = false;
-      }
+      answers[answerIndex].question = question;
+      answers[answerIndex].expectedAnswer = expectedAnswer;
 
       requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, expectedAnswer);
     }
@@ -2373,87 +2377,56 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
       }
     }
 
-    function getBookTypeLabelForAi() {
-      const bookType = selectedBookType || sessionStorage.getItem(STORAGE_KEYS.bookType) || "";
-      return BOOK_TYPE_LABELS[bookType] || bookType || "";
-    }
+    /*
+      =========================================================
+      읽기 전 AI 피드백 요청
+      =========================================================
+      실제 요청/타임아웃/버튼 잠금 로직은 js/pre-reading-validation.js의
+      requestPreReadingAiFeedback()(연습읽기 읽기 전과 공용)를 그대로 쓰고,
+      여기서는 이 화면의 DOM/상태만 연결한다.
+    */
+    let isIndividualPreReadingAiRequestInFlight = false;
 
     function requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, answer) {
       const requestId = ++individualPreReadingAiRequestId;
+      const mainActionButton = document.getElementById("mainActionButton");
+      const answerIndex = currentStepIndex - 1;
 
-      feedbackBox.classList.remove("good", "need");
-      feedbackText.textContent = "루미가 답변을 읽고 있어요...";
+      requestPreReadingAiFeedback({
+        stepType: steps[currentStepIndex].key,
+        bookTitle: sessionStorage.getItem(STORAGE_KEYS.bookTitle) || "",
+        question: question,
+        answer: answer,
+        requestButton: mainActionButton,
+        guard: {
+          isRequesting: function () {
+            return isIndividualPreReadingAiRequestInFlight;
+          },
+          setRequesting: function (value) {
+            isIndividualPreReadingAiRequestInFlight = value;
+          }
+        },
+        onLoading: function () {
+          feedbackBox.classList.remove("good", "need");
+          feedbackText.textContent = "루미가 답변을 읽고 있어요...";
+        },
+        onResult: function (result) {
+          if (requestId !== individualPreReadingAiRequestId) {
+            return;
+          }
 
-      requestAiFeedback("individual_pre_reading_question", getBookTypeLabelForAi(), [
-        { question: question, answer: answer }
-      ]).then(function(result) {
-        if (requestId !== individualPreReadingAiRequestId) {
-          return;
+          feedbackBox.classList.remove("good", "need");
+          feedbackBox.classList.add(result.isGood ? "good" : "need");
+          feedbackText.textContent = result.message;
+
+          answers[answerIndex].passed = result.isGood;
+
+          const nextStepButton = document.getElementById("nextStepButton");
+          if (nextStepButton) {
+            nextStepButton.disabled = !result.isGood;
+          }
         }
-        feedbackBox.classList.remove("good", "need");
-        feedbackBox.classList.add(result.status === "good" ? "good" : "need");
-        feedbackText.textContent = result.message;
-      }).catch(function() {
-        if (requestId !== individualPreReadingAiRequestId) {
-          return;
-        }
-        feedbackBox.classList.remove("good", "need");
-        feedbackBox.classList.add("need");
-        feedbackText.textContent = "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어.";
       });
-    }
-
-    function validateQuestionAndAnswer(question, expectedAnswer) {
-      const step = steps[currentStepIndex];
-
-      if (!question) {
-        return {
-          ok: false,
-          message: `${step.short}에서 궁금한 점을 한 문장으로 적어봐!`
-        };
-      }
-
-      if (question.length < 8) {
-        return {
-          ok: false,
-          message: "질문이 조금 짧아. 무엇이 궁금한지 조금 더 자세히 적어보자!"
-        };
-      }
-
-      if (!question.includes("?") && !question.includes("까") && !question.includes("왜") && !question.includes("어떤") && !question.includes("무슨")) {
-        return {
-          ok: false,
-          message: "질문처럼 보이도록 바꿔보자. ‘왜 ~일까?’, ‘어떤 일이 생길까?’처럼 적으면 좋아!"
-        };
-      }
-
-      if (!expectedAnswer) {
-        return {
-          ok: false,
-          message: "내가 생각한 답도 적어줘. 아직 읽기 전이니까 상상해서 답해도 괜찮아!"
-        };
-      }
-
-      if (expectedAnswer.length < 8) {
-        return {
-          ok: false,
-          message: "답이 조금 짧아. 왜 그렇게 생각했는지 한 문장만 더 자세히 적어봐!"
-        };
-      }
-
-      const weakAnswers = ["몰라", "모르겠다", "없다", "그냥", "모름"];
-
-      if (weakAnswers.includes(expectedAnswer.replaceAll(" ", ""))) {
-        return {
-          ok: false,
-          message: "조금 더 상상해서 답해보자. 정답이 아니어도 괜찮으니까 ‘~일 것 같다’처럼 써보면 좋아!"
-        };
-      }
-
-      return {
-        ok: true,
-        message: "좋아! 책을 읽기 전에 내용을 짐작해 볼 수 있는 질문이야. 다음 단서도 살펴보자!"
-      };
     }
 
    function completeBeforeReading() {

@@ -4271,8 +4271,9 @@ body {
       1. 기본 상태
       =========================================================
     */
-
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    let classReadingBookId = null;
+
     const progressKey = "duringReadingPracticeProgress_" + studentId;
 
     let currentScreen = "select";
@@ -4661,14 +4662,9 @@ async function loadProgress() {
   const studentId = sessionStorage.getItem("studentId");
   const token = sessionStorage.getItem("token");
 
-  /* 브라우저 임시 저장도 유지합니다. */
-  sessionStorage.setItem(
-    progressKey,
-    JSON.stringify(progress)
-  );
-
   if (!studentId || !token) {
-    console.error("로그인 정보가 없습니다.");
+    alert("로그인 정보가 없어서 진행 상태를 저장하지 못했어요. 다시 로그인해 주세요.");
+    window.location.href = "../index.html";
     return false;
   }
 
@@ -4693,10 +4689,16 @@ async function loadProgress() {
       );
     }
 
+    /* 실제로 저장에 성공했을 때만 브라우저 임시 저장도 갱신합니다. */
+    sessionStorage.setItem(
+      progressKey,
+      JSON.stringify(progress)
+    );
+
     return true;
   } catch (error) {
     console.error(error);
-    alert("읽기 중 진행 상태를 저장하지 못했습니다.");
+    alert("읽기 중 진행 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
     return false;
   }
 }
@@ -4776,7 +4778,8 @@ async function loadProgress() {
     function goDeepPracticeScreen() {
       currentScreen = "deep";
       currentDeepIndex = 0;
-      deepInputValue = "";
+      deepInputValue =
+  savedDuringPracticeQuestions[selectedQuestionType] || "";
       deepChecked = false;
       deepResult = null;
       renderDeepPracticeScreen();
@@ -5093,6 +5096,13 @@ async function loadProgress() {
 
     function updateDeepInput(value) {
       deepInputValue = value;
+
+      /* 검사를 다시 받기 전까지는 이전 통과/재시도 상태를 그대로 믿으면 안 된다. */
+      if (deepChecked) {
+        deepChecked = false;
+        deepResult = null;
+        renderDeepPracticeScreen();
+      }
     }
 
     function checkDeepAnswer() {
@@ -5110,36 +5120,175 @@ async function loadProgress() {
         return;
       }
 
-      deepResult = {
-        ok: true,
-        message: "좋아! 질문의 모양이 잘 되었어. 다음 문제로 넘어가 보자."
-      };
-
       requestDeepAiFeedback(value);
     }
+async function saveDuringPracticeQuestion(question) {
+  const token = sessionStorage.getItem("token");
 
-    function requestDeepAiFeedback(question) {
-      const requestId = ++deepAiRequestId;
-      deepAiLoading = true;
-      renderDeepPracticeScreen();
+  if (!token || !studentId || !classReadingBookId) {
+    console.error("심화 연습 저장에 필요한 로그인 또는 책 정보가 없습니다.");
+    return false;
+  }
 
-      requestAiFeedback("during_reading_practice_deep", "", [
-        { question: question, answer: "" }
-      ]).then(function(result) {
-        if (requestId !== deepAiRequestId) return;
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/during-practice`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          questionType: selectedQuestionType,
+          question: question,
+          classReadingBookId: classReadingBookId
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `심화 연습 질문 저장 실패: ${response.status}`
+      );
+    }
+
+    return true;
+  } catch (error) {
+    console.error("심화 연습 질문을 저장하지 못했습니다.", error);
+    return false;
+  }
+}
+    async function requestDeepAiFeedback(question) {
+  const requestId = ++deepAiRequestId;
+
+  deepAiLoading = true;
+  renderDeepPracticeScreen();
+
+  const token = sessionStorage.getItem("token");
+
+  if (!token || !studentId || !classReadingBookId) {
+    deepAiLoading = false;
+    deepChecked = true;
+    deepResult = {
+      ok: false,
+      message: "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
+    };
+    renderDeepPracticeScreen();
+    return;
+  }
+
+  /*
+    심화 연습은 문제 번호(currentDeepIndex)까지 넣어야 같은 유형의 다른
+    문제와 겹치지 않는다. 기본/심화 연습과 총복습은 evaluationKey의
+    "deep-"/"review-" 구분자로 서로 섞이지 않는다.
+  */
+  const evaluationKey =
+    "practice-during-" +
+    classReadingBookId +
+    "-" +
+    studentId +
+    "-deep-" +
+    selectedQuestionType +
+    "-" +
+    currentDeepIndex;
+
+  try {
+    const response = await fetch(
+      API_BASE_URL + "/api/students/me/feedback/ai-review",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({
+          question: question,
+          answer: "",
+          activityType: "during_reading_practice_deep",
+          questionType: selectedQuestionType,
+          evaluationKey: evaluationKey,
+          classReadingBookId: classReadingBookId
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        "읽기 중 심화 연습 AI 피드백 요청 실패: " +
+        response.status
+      );
+    }
+
+    const result = await response.json();
+
+    /*
+     * 학생이 질문을 수정한 뒤 다시 검사했거나,
+     * 더 최근 요청이 실행됐다면 이전 결과는 적용하지 않습니다.
+     */
+    if (requestId !== deepAiRequestId) {
+      return;
+    }
+
+    const isGood = result.status === "good";
+
+    /*
+     * AI가 통과시킨 질문만 DB에 저장합니다.
+     * 저장에 실패하면 화면에서도 통과 처리하지 않습니다.
+     */
+    if (isGood) {
+      const saved = await saveDuringPracticeQuestion(question);
+
+      if (requestId !== deepAiRequestId) {
+        return;
+      }
+
+      if (!saved) {
         deepAiLoading = false;
-        deepResult = { ok: true, message: result.message };
-        renderDeepPracticeScreen();
-      }).catch(function() {
-        if (requestId !== deepAiRequestId) return;
-        deepAiLoading = false;
+        deepChecked = true;
         deepResult = {
-          ok: true,
-          message: "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어."
+          ok: false,
+          message:
+            "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 검사해 주세요."
         };
         renderDeepPracticeScreen();
-      });
+        return;
+      }
     }
+
+    deepAiLoading = false;
+    deepChecked = true;
+
+    deepResult = {
+      ok: isGood,
+      message:
+        result.message ||
+        (
+          isGood
+            ? "질문이 잘 만들어졌어! 다음 문제로 넘어가 보자."
+            : "질문을 다시 확인해 보자."
+        )
+    };
+
+    renderDeepPracticeScreen();
+  } catch (error) {
+    if (requestId !== deepAiRequestId) {
+      return;
+    }
+
+    console.error(error);
+
+    deepAiLoading = false;
+    deepChecked = true;
+    deepResult = {
+      ok: false,
+      message:
+        "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요."
+    };
+
+    renderDeepPracticeScreen();
+  }
+}
 
     async function nextDeepQuestion() {
   const questions = getCurrentDeepQuestions();
@@ -5153,11 +5302,14 @@ async function loadProgress() {
     return;
   }
 
+  const previousValue = progress[selectedQuestionType];
   progress[selectedQuestionType] = true;
 
   const saved = await saveProgress();
 
   if (!saved) {
+    /* 저장에 실패했으면 DB에 반영되지 않은 완료 상태를 화면에 남기지 않는다. */
+    progress[selectedQuestionType] = previousValue;
     return;
   }
 
@@ -5299,10 +5451,23 @@ async function loadProgress() {
 
     function updateReviewQuestion(value) {
       reviewQuestionInput = value;
+
+      /* 검사를 다시 받기 전까지는 이전 통과/재시도 상태를 그대로 믿으면 안 된다. */
+      if (reviewChecked) {
+        reviewChecked = false;
+        reviewResult = null;
+        renderReviewScreen();
+      }
     }
 
     function updateReviewAnswer(value) {
       reviewAnswerInput = value;
+
+      if (reviewChecked) {
+        reviewChecked = false;
+        reviewResult = null;
+        renderReviewScreen();
+      }
     }
 
     function checkReviewQuestion() {
@@ -5333,46 +5498,159 @@ async function loadProgress() {
           message: "내 답이나 생각도 함께 써 봐야 해."
         };
       } else {
-        reviewCompletedQuestions[reviewSelectedType] = {
-          partIndex: reviewSelectedPartIndex,
-          question: questionValue,
-          answer: answerValue
-        };
-
-        reviewResult = {
-          ok: true,
-          message: "좋아! 이 질문 종류를 잘 만들었어. 남은 질문 종류도 채워 보자."
-        };
-
-        reviewQuestionInput = "";
-        reviewAnswerInput = "";
-        reviewSelectedType = null;
-
-        requestReviewAiFeedback(questionValue, answerValue);
+        /*
+          형식 검사만 통과한 상태. AI가 good을 줄 때까지는 이 질문 종류를
+          완료 처리하지 않는다(질문·답도 그대로 입력칸에 남겨 둔다).
+        */
+        requestReviewAiFeedback(reviewSelectedType, reviewSelectedPartIndex, questionValue, answerValue);
         return;
       }
 
       renderReviewScreen();
     }
+async function saveDuringReviewResponse(questionType, question, answer) {
+  const token = sessionStorage.getItem("token");
 
-    function requestReviewAiFeedback(question, answer) {
+  if (!token || !studentId || !classReadingBookId) {
+    console.error("총복습 저장에 필요한 로그인 또는 책 정보가 없습니다.");
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/during-review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          questionType: questionType,
+          question: question,
+          answer: answer,
+          classReadingBookId: classReadingBookId
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`총복습 질문·답 저장 실패: ${response.status}`);
+    }
+
+    return true;
+  } catch (error) {
+    console.error("총복습 질문·답을 저장하지 못했습니다.", error);
+    return false;
+  }
+}
+    async function requestReviewAiFeedback(type, partIndex, question, answer) {
       const requestId = ++reviewAiRequestId;
       reviewAiLoading = true;
       renderReviewScreen();
 
-      requestAiFeedback("during_reading_practice_review", "", [
-        { question: question, answer: answer }
-      ]).then(function(result) {
+      const passage = reviewStory.title + "\n" +
+        reviewStory.parts.map(function (part) { return part.text; }).join(" ");
+
+     const token = sessionStorage.getItem("token");
+
+if (!token || !studentId || !classReadingBookId) {
+  reviewAiLoading = false;
+  reviewChecked = true;
+  reviewResult = {
+    ok: false,
+    message: "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
+  };
+  renderReviewScreen();
+  return;
+}
+
+const evaluationKey =
+  "practice-during-" +
+  classReadingBookId +
+  "-" +
+  studentId +
+  "-review-" +
+  type;
+
+fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + token
+  },
+  body: JSON.stringify({
+    question: question,
+    answer: answer,
+    activityType: "during_reading_practice_review",
+    questionType: type,
+    evaluationKey: evaluationKey,
+    passage: passage,
+    classReadingBookId: classReadingBookId
+  })
+}).then(function(response) {
+        if (!response.ok) {
+          throw new Error("총복습 AI 피드백 요청 실패: " + response.status);
+        }
+        return response.json();
+      }).then(async function(result) {
         if (requestId !== reviewAiRequestId) return;
         reviewAiLoading = false;
-        reviewResult = { ok: true, message: result.message };
+
+        /* status가 아닌 다른 값으로 통과 여부를 추측하지 않는다. */
+        const isGood = result.status === "good";
+
+        if (isGood) {
+  const saved = await saveDuringReviewResponse(
+    type,
+    question,
+    answer
+  );
+
+  if (requestId !== reviewAiRequestId) {
+    return;
+  }
+
+  if (!saved) {
+    reviewAiLoading = false;
+    reviewChecked = true;
+    reviewResult = {
+      ok: false,
+      message:
+        "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 검사해 주세요."
+    };
+    renderReviewScreen();
+    return;
+  }
+
+  reviewCompletedQuestions[type] = {
+    partIndex: partIndex,
+    question: question,
+    answer: answer
+  };
+
+  reviewQuestionInput = "";
+  reviewAnswerInput = "";
+  reviewSelectedType = null;
+}
+
+        reviewResult = {
+          ok: isGood,
+          message: result.message ||
+            (isGood
+              ? "좋아! 이 질문 종류를 잘 만들었어. 남은 질문 종류도 채워 보자."
+              : "질문이나 답을 다시 확인해 보자.")
+        };
+
         renderReviewScreen();
-      }).catch(function() {
+      }).catch(function(error) {
+        console.error("총복습 AI 피드백 요청에 실패했습니다.", error);
+
         if (requestId !== reviewAiRequestId) return;
         reviewAiLoading = false;
         reviewResult = {
-          ok: true,
-          message: "지금은 루미 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어."
+          ok: false,
+          message: "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요."
         };
         renderReviewScreen();
       });
@@ -5502,9 +5780,180 @@ async function loadProgress() {
   13. 시작
   =========================================================
 */
+const savedDuringPracticeQuestions = {
+  direct: "",
+  infer: "",
+  opinion: "",
+  connect: ""
+};
 
+async function loadDuringPracticeQuestions() {
+  const token = sessionStorage.getItem("token");
+
+  if (!token || !studentId) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/during-practice`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `심화 연습 질문 조회 실패: ${response.status}`
+      );
+    }
+
+    const items = await response.json();
+
+    items.forEach(function(item) {
+      if (
+        item.questionType &&
+        Object.prototype.hasOwnProperty.call(
+          savedDuringPracticeQuestions,
+          item.questionType
+        )
+      ) {
+        savedDuringPracticeQuestions[item.questionType] =
+          item.question || "";
+      }
+    });
+
+    return true;
+  } catch (error) {
+    console.error(
+      "심화 연습 질문을 불러오지 못했습니다.",
+      error
+    );
+    return false;
+  }
+}
+async function loadDuringReviewResponses() {
+  const token = sessionStorage.getItem("token");
+
+  if (!token || !studentId) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/responses/during-review`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `총복습 질문·답 조회 실패: ${response.status}`
+      );
+    }
+
+    const items = await response.json();
+
+    items.forEach(function(item) {
+      if (
+        item.questionType &&
+        Object.prototype.hasOwnProperty.call(
+          reviewCompletedQuestions,
+          item.questionType
+        )
+      ) {
+        reviewCompletedQuestions[item.questionType] = {
+          partIndex: null,
+          question: item.question || "",
+          answer: item.answer || ""
+        };
+      }
+    });
+
+    return true;
+  } catch (error) {
+    console.error(
+      "총복습 질문·답을 불러오지 못했습니다.",
+      error
+    );
+    return false;
+  }
+}
+async function loadClassReadingBookId() {
+  const token = sessionStorage.getItem("token");
+  const role = sessionStorage.getItem("role");
+
+  if (!token || !studentId || role !== "student") {
+    alert("학생 로그인이 필요합니다.");
+    location.href = "../../index.html";
+    return false;
+  }
+
+  try {
+    /* 로그인한 학생의 학급을 먼저 조회합니다. */
+    const classResponse = await fetch(
+      `${API_BASE_URL}/api/students/${studentId}/class`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!classResponse.ok) {
+      throw new Error(`학생 학급 조회 실패: ${classResponse.status}`);
+    }
+
+    const classData = await classResponse.json();
+
+    /* 해당 학급에 등록된 연습읽기 책 정보를 조회합니다. */
+    const bookResponse = await fetch(
+      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (bookResponse.status === 404) {
+      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
+      return false;
+    }
+
+    if (!bookResponse.ok) {
+      throw new Error(`온책읽기 책 조회 실패: ${bookResponse.status}`);
+    }
+
+    const bookData = await bookResponse.json();
+
+    classReadingBookId = bookData.id;
+    return true;
+  } catch (error) {
+    console.error("학급 책 정보를 불러오지 못했습니다.", error);
+    alert("책 정보를 불러오지 못했습니다.");
+    return false;
+  }
+}
 async function initPage() {
+  const bookLoaded = await loadClassReadingBookId();
+
+  if (!bookLoaded) {
+    return;
+  }
+
   await loadProgress();
+  await loadDuringPracticeQuestions();
+  await loadDuringReviewResponses();
   renderSelectScreen();
 }
 

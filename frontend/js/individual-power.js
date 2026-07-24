@@ -12,9 +12,9 @@
   // 1. 기본 설정
   // ==============================
 
-  // 연습읽기 최종 마무리 후 처음 받는 기본 보상값입니다.
-  // ※ 임시 세팅값입니다. 나중에 게임 쪽과 맞춰 바뀔 수 있습니다.
-  const BASE_START_POWER = 8;
+  // 신규 학생의 능력치 기본값입니다.
+  const BASE_START_POWER = 0;
+  const PRACTICE_COMPLETE_REWARD = 8;
 
   // 능력치 최대값입니다.
   const MAX_POWER = 100;
@@ -74,10 +74,10 @@ const POWER_ICON_MAP = {
       subtitle: "수고했어! 이제 개별읽기 모험을 시작할 준비가 되었어.",
       conditionText: "연습읽기에서 읽기 후 간추리기 공유까지 모두 마무리했어요.",
       rewards: {
-        magic: BASE_START_POWER,
-        stamina: BASE_START_POWER,
-        wisdom: BASE_START_POWER,
-        courage: BASE_START_POWER
+        magic: PRACTICE_COMPLETE_REWARD,
+        stamina: PRACTICE_COMPLETE_REWARD,
+        wisdom: PRACTICE_COMPLETE_REWARD,
+        courage: PRACTICE_COMPLETE_REWARD
       }
     },
 

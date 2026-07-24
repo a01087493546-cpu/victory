@@ -2858,10 +2858,35 @@ const readingRangeKey =
   "wholeReadingRange";
 
 /*
+  달성도(0~100) 값을 상태 문구로 변환하는 공통 기준.
+  바깥 학생 목록과 상세 카드의 상태 칩이 모두 이 기준을 그대로 따른다.
+*/
+function deriveAchievementState(total) {
+  if (total === 100) {
+    return "완료";
+  }
+
+  if (total >= 75) {
+    return "우수";
+  }
+
+  if (total >= 50) {
+    return "보통";
+  }
+
+  if (total >= 1) {
+    return "지원 필요";
+  }
+
+  return "미시작";
+}
+
+/*
   practice-progress 응답(또는 조회 실패 시 null)을 받아
-  완료 항목 8개 기준의 달성도(total)와 상태 문구를 계산합니다.
-  progress가 null이면 모든 항목이 falsy로 처리되어
-  자연스럽게 0% · "미시작"이 됩니다.
+  완료 항목 8개(온책읽기 활동 진행 정보 - "n개 완료" 안내 문구용)를 셉니다.
+  달성도(total)/상태 칩은 더 이상 이 8개 완료율을 쓰지 않고 실제 성취도
+  API의 achievementRate를 쓴다(참여도 50% + 질문 이해도 50%) - 아래
+  resolveAchievementRate() 참고.
 */
 function computeAchievement(progress) {
   const duringTypeProgress =
@@ -2884,23 +2909,34 @@ function computeAchievement(progress) {
     (completedCount / items.length) * 100
   );
 
-  let state = "미시작";
-
-  if (total === 100) {
-    state = "완료";
-  } else if (total >= 75) {
-    state = "우수";
-  } else if (total >= 50) {
-    state = "보통";
-  } else if (total >= 1) {
-    state = "지원 필요";
-  }
-
   return {
     completedCount: completedCount,
     total: total,
-    state: state
+    state: deriveAchievementState(total)
   };
+}
+
+/*
+  바깥 학생 목록의 달성도(total)는 practice_progress 8단계 완료율이 아니라
+  실제 성취도 API의 achievementRate를 써야 한다. achievementRate 필드가
+  없을 때만(예: 이전 버전 API 응답) participationRate/comprehensionRate를
+  각각 50%씩 반영해 직접 계산한다 - 백엔드에 이미 있는 값을 중복 계산하지
+  않기 위한 대비용 폴백일 뿐, 정상 응답에서는 항상 achievementRate를
+  그대로 쓴다.
+*/
+function resolveAchievementRate(studentAchievement) {
+  if (!studentAchievement) {
+    return null;
+  }
+
+  if (typeof studentAchievement.achievementRate === "number") {
+    return studentAchievement.achievementRate;
+  }
+
+  const participationRate = studentAchievement.participationRate || 0;
+  const comprehensionRate = studentAchievement.comprehensionRate || 0;
+
+  return participationRate * 0.5 + comprehensionRate * 0.5;
 }
 
 /*
@@ -2933,6 +2969,41 @@ async function fetchStudentPracticeProgress(studentId, token) {
   } catch (error) {
     console.error(
       `학생(${studentId})의 온책읽기 달성도를 불러오지 못했습니다.`,
+      error
+    );
+
+    return null;
+  }
+}
+
+/*
+  학생별 상세 카드의 "참여도"/"질문 이해도"는 practice-achievement API의
+  participationRate(읽기활동 완료율·질문 만들기 참여율·생각 나누기 참여율의
+  평균)와 comprehensionRate(AI 평가 evaluationKey 기준 3회 이내 성공률)를
+  그대로 써야 한다 - computeAchievement()의 8단계 완료율(total)과는 서로
+  다른 값이므로 여기서 같은 값을 재사용하면 안 된다. 조회에 실패해도(예:
+  아직 온책읽기 책이 등록되지 않은 학급) 화면 전체가 깨지지 않도록 null을
+  반환한다.
+*/
+async function fetchClassPracticeAchievement(classId, teacherId, token) {
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/teachers/${teacherId}/classes/${classId}/practice-achievement`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`온책읽기 성취도 조회 실패: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(
+      "온책읽기 성취도(참여도/질문 이해도)를 불러오지 못했습니다.",
       error
     );
 
@@ -3000,6 +3071,20 @@ await loadReadingRange();
       })
     );
 
+    const practiceAchievementData = await fetchClassPracticeAchievement(
+      classData.classId,
+      teacherId,
+      token
+    );
+
+    const achievementByStudentId = new Map();
+
+    if (practiceAchievementData && Array.isArray(practiceAchievementData.students)) {
+      practiceAchievementData.students.forEach(function (item) {
+        achievementByStudentId.set(item.studentId, item);
+      });
+    }
+
     students = studentData.map(function (student, index) {
       const progressResult = progressResults[index];
 
@@ -3009,16 +3094,26 @@ await loadReadingRange();
           : null;
 
       const achievement = computeAchievement(progress);
+      const studentAchievement = achievementByStudentId.get(student.studentId);
+      const resolvedAchievementRate = resolveAchievementRate(studentAchievement);
+      const total =
+        resolvedAchievementRate === null
+          ? 0
+          : Math.round(resolvedAchievementRate);
 
       return {
         studentId: student.studentId,
         loginId: student.loginId,
         studentNumber: student.studentNumber,
         name: student.name,
-        total: achievement.total,
-        participation: achievement.total,
-        understanding: achievement.total,
-        state: achievement.state,
+        total: total,
+        participation: studentAchievement
+          ? Math.round(studentAchievement.participationRate)
+          : 0,
+        understanding: studentAchievement
+          ? Math.round(studentAchievement.comprehensionRate)
+          : 0,
+        state: deriveAchievementState(total),
         note: progress
           ? `온책읽기 활동 8개 중 ${achievement.completedCount}개를 완료했어요.`
           : "아직 온책읽기 학습 기록이 없어요."

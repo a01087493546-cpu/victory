@@ -3515,6 +3515,63 @@ body {
   margin: 24px 0 0 !important;
   align-self: end !important;
 }
+
+/*
+  ===== 루미 피드백 카드 축소 + 안쪽 흰색 박스 제거 + good/need 카드
+  전체 상태색 (연습읽기 after-read.html과 같은 기준) =====
+  질문과 답 쓰기(questionScreen)/스스로 간추리기(summaryScreen) 공용.
+*/
+
+/* 안쪽 흰색 직사각형 메시지 박스 제거 - 배경/테두리/그림자를 없애고
+   좌우 padding도 0으로 맞춰 카드 자체와 자연스럽게 이어지게 한다. */
+#questionScreen #questionFeedback,
+#summaryScreen #summaryFeedback {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 검사 전(기본)에는 기존 베이지색 카드를 그대로 두고,
+   good/need일 때만 바깥 루미 카드 전체 색을 바꾼다. */
+#questionScreen .iar-lumi-feedback:has(#questionFeedback.good),
+#summaryScreen .iar-lumi-feedback:has(#summaryFeedback.good) {
+  background: linear-gradient(180deg, rgba(239, 248, 232, 0.98), rgba(218, 239, 202, 0.96)) !important;
+  border-color: #9fc879 !important;
+}
+
+#questionScreen .iar-lumi-feedback:has(#questionFeedback.need),
+#summaryScreen .iar-lumi-feedback:has(#summaryFeedback.need) {
+  background: linear-gradient(180deg, rgba(255, 238, 235, 0.98), rgba(248, 208, 201, 0.96)) !important;
+  border-color: #dc9389 !important;
+}
+
+#questionFeedback.good, #summaryFeedback.good { color: #315e22 !important; }
+#questionFeedback.need, #summaryFeedback.need { color: #92352c !important; }
+
+/* 루미 이미지·피드백 글자·버튼이 카드 세로 중앙에 오도록 유지 */
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  align-items: center !important;
+}
+
+/* 카드 세로 길이를 줄이고, 글자 크기를 20~22px 범위로 맞춘다. */
+#questionScreen .iar-lumi-feedback {
+  height: 132px !important;
+  min-height: 132px !important;
+}
+
+#questionScreen #questionFeedback,
+#summaryScreen #summaryFeedback {
+  font-size: 21px !important;
+}
+
+/* 피드백 카드에서 줄인 높이만큼 질문·답 작성 카드를 넉넉하게 키운다. */
+#questionScreen .iar-qa-card .iar-textarea {
+  height: 218px !important;
+  min-height: 218px !important;
+}
 </style>
 </head>
 
@@ -3628,7 +3685,7 @@ body {
               질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
             <div class="iar-lumi-feedback-actions">
-              <button type="button" class="iar-lumi-feedback-action" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
+              <button type="button" class="iar-lumi-feedback-action" id="checkQuestionButton" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
               <button type="button" class="iar-lumi-feedback-action" id="nextQuestionButton" onclick="goToNextQuestionCard()" hidden>다음 질문으로</button>
             </div>
           </div>
@@ -3675,7 +3732,7 @@ body {
 
           <div class="iar-bottom-actions">
             <button type="button" class="iar-main-button" onclick="showQuestionScreen()">이전으로</button>
-            <button type="button" class="iar-main-button green" onclick="checkSummaryFeedback()">루미 피드백 받기</button>
+            <button type="button" class="iar-main-button green" id="checkSummaryButton" onclick="checkSummaryFeedback()">루미 피드백 받기</button>
             <button type="button" class="iar-main-button primary" id="finishAfterButton" onclick="finishAfterReading()" disabled>저장하고 완료하기</button>
           </div>
         </article>
@@ -4137,7 +4194,9 @@ function changeShareFilter(filterKey) {
 
     function requestIndividualQuestionAiFeedback(card, item, number) {
       const requestId = ++individualQuestionAiRequestId;
+      const checkButton = document.getElementById("checkQuestionButton");
 
+      if (checkButton) checkButton.disabled = true;
       setFeedback("questionFeedback", "", "루미가 답변을 읽고 있어요...");
 
       requestAiFeedback("individual_question", getBookTypeLabelForAi(), [
@@ -4151,7 +4210,10 @@ function changeShareFilter(filterKey) {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
-        applyIndividualQuestionAiResult(card, "good", "좋아! 질문과 답의 짝이 잘 맞아. 다음 질문으로 넘어가도 돼.");
+        applyIndividualQuestionAiResult(card, "need", "루미가 지금 답을 읽지 못했어. 다시 한 번 눌러줘.");
+      }).finally(function() {
+        if (requestId !== individualQuestionAiRequestId) return;
+        if (checkButton) checkButton.disabled = false;
       });
     }
 
@@ -4245,10 +4307,6 @@ function changeShareFilter(filterKey) {
         problems.push(`질문 ${number}: 답이 너무 짧아. 책에서 찾은 내용을 한 문장 이상으로 적어줘.`);
       }
 
-      if (!isQuestionGoodForBookType(question)) {
-        problems.push(`질문 ${number}: 지금 고른 책 종류에 맞는 간추리기 질문인지 애매해. ${getBookTypeHint()}`);
-      }
-
       return problems;
     }
 
@@ -4299,26 +4357,6 @@ function changeShareFilter(filterKey) {
       prepareQuestionFeedbackCards();
       updateQuestionProgress();
       updateSequentialQuestionLock();
-    }
-
-    function isQuestionGoodForBookType(question) {
-      const text = question.replace(/\s/g, "");
-      const storyWords = ["처음", "가운데", "마지막", "인물", "주인공", "사건", "문제", "해결", "결말", "장면", "왜", "어떻게", "무엇", "어떤"];
-      const infoWords = ["무엇", "어떤", "특징", "방법", "종류", "원인", "결과", "정보", "사실", "차이", "이유", "왜", "어떻게"];
-      const opinionWords = ["주장", "까닭", "이유", "생각", "근거", "동의", "반대", "왜", "어떻게", "의견"];
-
-      if (selectedBookType === "story") return storyWords.some(function (word) { return text.includes(word); });
-      if (selectedBookType === "info") return infoWords.some(function (word) { return text.includes(word); });
-      if (selectedBookType === "opinion") return opinionWords.some(function (word) { return text.includes(word); });
-
-      return true;
-    }
-
-    function getBookTypeHint() {
-      if (selectedBookType === "story") return "이야기 책은 처음·가운데·마지막, 인물, 사건, 문제와 해결을 묻는 질문이 좋아.";
-      if (selectedBookType === "info") return "정보를 담은 책은 중요한 사실, 특징, 원인, 결과, 방법을 묻는 질문이 좋아.";
-      if (selectedBookType === "opinion") return "주장을 담은 책은 주장, 까닭, 근거, 글쓴이의 생각을 묻는 질문이 좋아.";
-      return "책 종류에 맞는 질문인지 다시 살펴봐.";
     }
 
     // 책 유형별 질문 1·2·3 예시. story 배열은 기존에 하드코딩되어 있던
@@ -4386,19 +4424,16 @@ function changeShareFilter(filterKey) {
       document.getElementById("summaryInput").value = savedSummary;
     }
 
+    let summaryAiRequestId = 0;
+
     function checkSummaryFeedback() {
   const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
   const questionAnswers = savedData ? JSON.parse(savedData) : [];
   const summaryText = document.getElementById("summaryInput").value.trim();
   const problems = [];
 
-  if (summaryText.replace(/\s/g, "").length < 35) {
+  if (summaryText.length < 20) {
     problems.push("간추린 내용이 너무 짧아. 질문과 답을 보고 중요한 내용을 조금 더 자세히 이어 써줘.");
-  }
-
-  const overlapCount = countAnswerKeywordOverlap(summaryText, questionAnswers);
-  if (overlapCount < 2) {
-    problems.push("앞에서 쓴 질문과 답의 핵심 말이 충분히 들어가지 않았어. 질문과 답에서 중요한 낱말을 2개 이상 넣어줘.");
   }
 
   if (problems.length > 0) {
@@ -4408,39 +4443,33 @@ function changeShareFilter(filterKey) {
     return;
   }
 
-  summaryFeedbackPassed = true;
-  document.getElementById("finishAfterButton").disabled = false;
-  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+  const requestId = ++summaryAiRequestId;
+  const checkButton = document.getElementById("checkSummaryButton");
+
+  summaryFeedbackPassed = false;
+  document.getElementById("finishAfterButton").disabled = true;
+  if (checkButton) checkButton.disabled = true;
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
 
-  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), null, undefined, summaryText).then(function(result) {
+  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), questionAnswers, undefined, summaryText).then(function(result) {
+    if (requestId !== summaryAiRequestId) return;
+
     setFeedback("summaryFeedback", result.status, result.message);
+
+    if (result.status === "good") {
+      summaryFeedbackPassed = true;
+      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+      document.getElementById("finishAfterButton").disabled = false;
+    }
   }).catch(function() {
-    setFeedback("summaryFeedback", "good", "좋아! 질문과 답을 바탕으로 핵심 내용을 잘 이어 썼어. 이제 저장하고 완료해도 돼.");
+    if (requestId !== summaryAiRequestId) return;
+    setFeedback("summaryFeedback", "need", "루미가 지금 간추린 내용을 읽지 못했어. 다시 한 번 눌러줘.");
+  }).finally(function() {
+    if (requestId !== summaryAiRequestId) return;
+    if (checkButton) checkButton.disabled = false;
   });
 }
-
-    function countAnswerKeywordOverlap(summaryText, questionAnswers) {
-      const sourceText = questionAnswers.map(function (item) {
-        return `${item.question} ${item.answer}`;
-      }).join(" ");
-
-      const words = sourceText
-        .replace(/[!?.,~“”'"()]/g, " ")
-        .split(/\s+/)
-        .map(function (word) { return word.trim(); })
-        .filter(function (word) { return word.length >= 2; });
-
-      const uniqueWords = Array.from(new Set(words));
-      let count = 0;
-
-      uniqueWords.forEach(function (word) {
-        if (summaryText.includes(word)) count += 1;
-      });
-
-      return count;
-    }
 
     function finishAfterReading() {
   if (!summaryFeedbackPassed) {

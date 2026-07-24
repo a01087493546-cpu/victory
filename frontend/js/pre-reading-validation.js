@@ -183,12 +183,21 @@ function requestPreReadingAiFeedback(options) {
   const bookTitle = options.bookTitle || "";
   const question = options.question;
   const answer = options.answer;
+
+  /* 연습읽기에서만 전달되는 성취도 기록용 값 */
+  const activityType = options.activityType;
+  const questionType = options.questionType;
+  const evaluationKey = options.evaluationKey;
+  const classReadingBookId = options.classReadingBookId;
+
   const requestButton = options.requestButton;
   const onLoading = options.onLoading;
   const onResult = options.onResult;
   const guard = options.guard;
   const timeoutMs = options.timeoutMs || 15000;
-  const failMessage = options.failMessage || "피드백을 불러오지 못했어요. 잠시 후 다시 해 보세요.";
+  const failMessage =
+    options.failMessage ||
+    "피드백을 불러오지 못했어요. 잠시 후 다시 해 보세요.";
 
   if (guard.isRequesting()) {
     return Promise.resolve();
@@ -210,73 +219,134 @@ function requestPreReadingAiFeedback(options) {
     abortController.abort();
   }, timeoutMs);
 
-  return fetch(PRE_READING_AI_API_BASE_URL + "/api/feedback/ai-review", {
+  /*
+    evaluationKey가 있으면 연습읽기 인증 API를 사용한다.
+    evaluationKey가 없으면 개별읽기 등 기존 화면이므로 공개 API를 유지한다.
+  */
+  const isAuthenticatedRequest =
+    typeof evaluationKey === "string" &&
+    evaluationKey.trim() !== "";
+
+  const token = sessionStorage.getItem("token");
+
+  if (isAuthenticatedRequest && !token) {
+    clearTimeout(timeoutId);
+    guard.setRequesting(false);
+
+    if (requestButton) {
+      requestButton.disabled = false;
+    }
+
+    if (onResult) {
+      onResult({
+        ok: false,
+        isGood: false,
+        message: "로그인 정보가 없어요. 다시 로그인해 주세요."
+      });
+    }
+
+    return Promise.resolve();
+  }
+
+  const apiPath = isAuthenticatedRequest
+    ? "/api/students/me/feedback/ai-review"
+    : "/api/feedback/ai-review";
+
+  const headers = {
+    "Content-Type": "application/json"
+  };
+
+  if (isAuthenticatedRequest) {
+    headers.Authorization = "Bearer " + token;
+  }
+
+  /*
+    인증 API와 기존 공개 API가 받는 요청 형식이 다르므로
+    화면 종류에 따라 body를 나누어 만든다.
+  */
+  const requestBody = isAuthenticatedRequest
+    ? {
+        question: question,
+        answer: answer,
+        activityType: activityType,
+        questionType: questionType,
+        evaluationKey: evaluationKey,
+        bookTitle: bookTitle,
+        classReadingBookId: classReadingBookId
+      }
+    : {
+        type: "pre_reading_question",
+        stepType: stepType,
+        bookTitle: bookTitle,
+        qaList: [
+          {
+            question: question,
+            answer: answer
+          }
+        ]
+      };
+
+  return fetch(PRE_READING_AI_API_BASE_URL + apiPath, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: headers,
     signal: abortController.signal,
-    body: JSON.stringify({
-      type: "pre_reading_question",
-      stepType: stepType,
-      bookTitle: bookTitle,
-      qaList: [{ question: question, answer: answer }]
-    })
+    body: JSON.stringify(requestBody)
   })
     .then(function (response) {
       if (!response.ok) {
-        return response.text().then(
-          function (bodyText) {
-            console.error(
-              "읽기 전 AI 피드백 요청 실패 - status:",
-              response.status,
-              "body:",
-              bodyText
-            );
+        return response.text().then(function (bodyText) {
+          console.error(
+            "읽기 전 AI 피드백 요청 실패 - status:",
+            response.status,
+            "body:",
+            bodyText
+          );
 
-            if (onResult) {
-              onResult({ ok: false, isGood: false, message: failMessage });
-            }
-          },
-          function () {
-            console.error(
-              "읽기 전 AI 피드백 요청 실패 - status:",
-              response.status,
-              "body: (읽지 못함)"
-            );
-
-            if (onResult) {
-              onResult({ ok: false, isGood: false, message: failMessage });
-            }
-          }
-        );
+          throw new Error("읽기 전 AI 피드백 요청 실패");
+        });
       }
 
-      return response.json().then(function (result) {
-        const isGood = result.result === "good";
+      return response.json();
+    })
+    .then(function (result) {
+      /*
+        기존 응답은 result, 일부 응답은 status를 사용할 수 있으므로
+        두 필드를 모두 확인한다.
+      */
+      const feedbackStatus = result.status || result.result;
+      const isGood = feedbackStatus === "good";
 
-        if (onResult) {
-          onResult({
-            ok: true,
-            isGood: isGood,
-            message:
-              result.message ||
-              (isGood
-                ? "잘했어요! 질문과 예상한 답이 자연스럽게 이어져요."
-                : "질문과 답이 서로 잘 이어지지 않아요. 질문에서 물어본 내용에 맞게 다시 예상해 보세요.")
-          });
-        }
-      });
+      if (onResult) {
+        onResult({
+          ok: true,
+          isGood: isGood,
+          message:
+            result.message ||
+            (isGood
+              ? "잘했어요! 질문과 예상한 답이 자연스럽게 이어져요."
+              : "질문과 답이 서로 잘 이어지지 않아요. 질문에서 물어본 내용에 맞게 다시 예상해 보세요.")
+        });
+      }
     })
     .catch(function (error) {
       if (error.name === "AbortError") {
-        console.error("읽기 전 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.", error);
+        console.error(
+          "읽기 전 AI 피드백 요청이 시간 초과되었습니다.",
+          error
+        );
       } else {
-        console.error("읽기 전 AI 피드백 요청 중 네트워크 오류가 발생했습니다.", error);
+        console.error(
+          "읽기 전 AI 피드백 요청 중 오류가 발생했습니다.",
+          error
+        );
       }
 
       if (onResult) {
-        onResult({ ok: false, isGood: false, message: failMessage });
+        onResult({
+          ok: false,
+          isGood: false,
+          message: failMessage
+        });
       }
     })
     .finally(function () {

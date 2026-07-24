@@ -3,6 +3,13 @@ package com.victory.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.victory.dto.AiFeedbackRequest;
 import com.victory.dto.AiFeedbackResponse;
+import com.victory.entity.AiEvaluationAttempt;
+import com.victory.entity.ClassReadingBook;
+import com.victory.entity.ClassStudent;
+import com.victory.repository.AiEvaluationAttemptRepository;
+import com.victory.repository.ClassReadingBookRepository;
+import com.victory.repository.ClassStudentRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -20,12 +27,21 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FeedbackAiService {
 
     private static final String OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
     private static final String MODEL = "gpt-4o-mini";
 
     private static final String SUMMARY_TYPE_KEYWORD = "summary";
+
+    /*
+     * 읽기 후(after-read.html) "책 질문 3개 만들기" 전용 타입. 별도 프롬프트
+     * 분기가 없어 아래 SYSTEM_PROMPT_QUESTION(기본 분기)을 그대로 쓴다.
+     * StudentFeedbackAiController가 이 값과 DURING_READING_PRACTICE_DEEP_TYPE을
+     * 구분해 question/answer 필수 여부를 판단할 때 이 상수를 참조한다.
+     */
+    public static final String BOOK_QUESTION_TYPE = "book_question";
 
     // 질문/답 평가용 프롬프트. summaryText 기반 요약 평가에는 사용하지 않는다.
     private static final String SYSTEM_PROMPT_QUESTION = """
@@ -99,6 +115,610 @@ public class FeedbackAiService {
               예: '중요한 사건이 빠진 것 같아. 처음, 가운데, 마지막에
               있었던 일을 조금 더 자세히 써볼까?'
             - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 읽기 중(during-read.html) "질문 만들기" 전용 프롬프트.
+     * 다른 활동 유형(읽기 전/읽기 후/일반 질문/간추리기)에는 전혀 쓰이지 않는다.
+     * 1차 형식 검사(빈 입력, 초성, 반복 글자, 너무 짧은 입력 등)는 프론트에서
+     * 이미 걸러낸 뒤에만 이 프롬프트로 넘어오므로, 여기서는 의미 판단만 한다.
+     * 실제 책 본문을 받지 않으므로 사실 정답 여부는 절대 판단하지 않는다.
+     */
+    private static final String DURING_READING_QUESTION_TYPE = "during_reading_question";
+
+    private static final String SYSTEM_PROMPT_DURING_READING_QUESTION = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 책을 읽는 중에 만든 "질문"과 자기 나름대로 적은 "답"을 평가해.
+            질문의 형식(빈 입력, 초성만 입력, 반복 글자, 너무 짧은 입력 등)은
+            이미 다른 곳에서 걸러졌으니 신경 쓰지 마.
+
+            너는 책의 실제 본문을 받지 않으므로 질문이나 답이 책 내용과
+            사실이 일치하는지, 정답인지는 절대 판단하지 마. 오직 아래 두
+            가지만 확인해:
+            1. 질문과 답이 의미 있고 자연스럽게 이어지는가
+            2. 학생이 고른 질문 유형(questionType)에 대체로 맞는가
+
+            questionType은 아래 네 가지 중 하나야:
+            - direct(바로 찾기): 글 속에 직접 나올 수 있는 인물, 장소, 행동,
+              사건, 사실을 묻는 질문. 예: "주인공은 어디에 갔나요?",
+              "강아지똥은 누구를 만났나요?" '왜'가 들어갔다고 무조건
+              infer로 보지 마. 글에 이유가 직접 나올 수도 있으니 인물·
+              사건·사실을 묻는 것으로 볼 여지가 있으면 direct로 인정해.
+            - infer(짐작하기): 인물의 마음, 행동의 이유, 다음에 벌어질 일
+              등을 글의 단서로 짐작하는 질문. 예: "주인공은 왜 아무 말도
+              하지 않았을까요?", "다음에는 어떤 일이 생길까요?", "인물은
+              어떤 기분이었을까요?"
+            - opinion(생각·느낌): 학생 자신의 생각, 느낌, 판단, 의견을 묻는
+              질문. 예: "주인공의 행동이 잘했다고 생각하나요?", "가장
+              기억에 남는 장면은 무엇인가요?", "이 장면이 슬펐나요?" 짧고
+              단순해도 학생의 생각이나 느낌을 묻고 있으면 인정해.
+            - connect(나와 연결): 책의 사건·인물·상황·감정·주제를 학생
+              자신의 경험이나 생활, 가정과 연결하는 질문. 지문의 사건과
+              완전히 같지 않아도 관련된 경험, 상황, 감정, 관계, 주제 중
+              하나만 이어지면 인정해. 아래 형태를 넓게 인정해:
+              - "나도 ~한 경험이 있나요?", "나도 ~한 적이 있나요?"처럼
+                자신의 과거 경험을 묻는 질문
+              - "내가 인물이라면 ~했을까요?"처럼 자신이 그 상황이라면
+                어떻게 할지 가정하는 질문
+              - "인물처럼 ~해 본 적이 있나요?"처럼 인물의 행동·상황을
+                자신의 경험과 연결하는 질문("인물처럼"이라는 표현만으로
+                연결이 불분명하다고 판단하지 마)
+              - "비슷한 일을 겪은 적이 있나요?"처럼 비슷한 경험을 묻는 질문
+              질문에 "나도", "내가", "내 경험", "내 생활", "~한 적"처럼
+              자기 자신을 향한 표현이 있으면 자기 연결성이 이미 분명한
+              것으로 보고, 지문과 똑같은 사건인지는 따지지 마.
+
+            [판정 원칙 - 초등학교 4학년 수준으로 폭넓고 관대하게]
+            - 문장이 조금 서툴러도 뜻이 통하면 통과
+            - 맞춤법, 띄어쓰기, 조사 오류가 조금 있어도 통과
+            - 선택한 유형의 특징이 어느 정도만 드러나도 통과
+            - 두 유형 사이에 조금 겹치더라도 선택한 유형에 충분히 가까우면 통과
+            - 애매하면 항상 good으로 판단
+            - 완벽한 교과서식 질문을 요구하지 마
+            - 질문이나 답이 더 구체적이거나 독창적일 수 있다는 이유만으로
+              need를 주지 마
+            - connect 유형에서 질문이 "나도 ~한 적이 있나요?"처럼 예/
+              아니오로 답할 수 있는 경험 질문이면, 답은 짧아도 된다.
+              "아픈 적이 있다", "해 본 적이 있다", "그런 적이 없다",
+              "그런 경험은 없어요"처럼 질문에 직접 대응하는 짧은 답은
+              완전한 문장이나 이유 설명이 없어도 반드시 good으로 인정해.
+              이런 답을 "질문과 답이 안 이어짐"이나 "내용이 없는 답"으로
+              판정하지 마.
+
+            [need로 판정할 때만 - 아래에 명백히 해당할 때만 좁게 적용]
+            - 질문이 아님(궁금한 점을 묻는 문장으로 보기 어려움)
+            - 질문과 답이 전혀 안 이어짐(주제가 서로 명백히 다름). 단,
+              connect 유형에서 "아픈 적이 있다", "해 본 적이 있다"처럼
+              질문 속 경험을 짧게라도 확인해 주는 답은 이어짐으로 인정해.
+            - 선택한 질문 유형과 명백하게 다름(다른 세 유형에는 뚜렷이
+              맞지만 선택한 유형과는 전혀 안 맞는 경우)
+            - 답이 "몰라", "그냥", "아무거나"처럼 질문과 무관하게 성의
+              없이 회피하는 내용이 없는 답. 단, connect 유형에서 "그런
+              경험은 없어요", "해 본 적은 없다"처럼 질문에서 물어본
+              경험이 실제로 없다고 분명히 답한 경우는 성의 없는 회피가
+              아니라 유효한 답이니 need로 판정하지 마.
+            - 질문 유형 자체의 뜻이나 만드는 방법을 묻고 있음(예: "바로
+              찾기 질문은 뭐야?", "짐작하는 질문을 어떻게 만들어?")
+            - 답이 질문 속 단어를 설명 없이 그대로 반복하기만 함
+
+            [반드시 good으로 판정해야 하는 예시(참고용)]
+            - questionType: direct / 질문 "주인공은 어디에 갔나요?" 답
+              "학교에 갔다." → good
+            - questionType: infer / 질문 "다음에는 어떤 일이 생길까요?" 답
+              "새로운 친구가 나타날 것 같다." → good
+            - questionType: opinion / 질문 "이 장면이 슬펐나요?" 답 "슬펐다.
+              주인공이 힘들어 보였기 때문이다." → good
+            - questionType: connect / 질문 "내가 주인공이라면 어떻게
+              했을까요?" 답 "나라면 친구에게 먼저 사과했을 것 같다." → good
+            - questionType: connect / 질문 "나도 인물처럼 아파본 경험이
+              있나요?" 답 "아픈 적이 있다." → good
+            - questionType: connect / 질문 "나도 혼자 있었던 적이
+              있나요?" 답 "집에 혼자 있었던 적이 있어요." → good
+            - questionType: connect / 질문 "나도 이런 경험이 있나요?" 답
+              "그런 경험은 없어요." → 질문에서 물어본 경험이 실제로
+              없다고 답한 것이므로 good
+
+            [반드시 need로 판정해야 하는 예시(참고용)]
+            - questionType: infer / 질문 "주인공은 어디에 갔나요?" 답
+              "학교에 갔다." → 사실을 그대로 찾는 direct 질문이라 infer와
+              명백히 다름
+            - 질문 "그림 속 아이는 왜 울까?" 답 "사과가 맛있어서" → 질문과
+              답의 주제가 서로 다름
+            - 답 "몰라", "그냥", "아무거나" → 질문과 무관하게 회피하는 답
+            - questionType: connect / 질문 "주인공은 어디에 갔나요?" →
+              자기 경험이나 가정을 묻지 않는 direct 질문이라 connect와
+              명백히 다름
+
+            [판정 우선순위]
+            1. 질문다운 의미가 있는지 확인
+            2. 선택한 questionType에 대체로 맞는지 확인
+            3. 질문과 답이 최소한 의미 있게 이어지는지 확인
+            4. 위를 모두 통과하면 표현이 단순해도 반드시 good으로 판정
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
+            - status가 good이면 한 문장으로 짧게 격려하고 다음 질문을
+              만들어보라고 안내해.
+              예: "질문과 답이 자연스럽게 이어져요! 다음 질문도 만들어봐요."
+            - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
+              알려줘. 실제 questionType에 맞는 낱말을 넣어서 새로 문장을
+              만들어(다른 유형의 문구를 그대로 베끼지 마):
+              direct 예: "바로 찾기 질문은 글에서 직접 찾을 수 있는 내용을
+              물어보면 좋아요."
+              infer 예: "짐작하기 질문은 인물의 마음이나 이유, 다음에
+              생길 일을 짐작해서 물어보면 좋아요."
+              opinion 예: "생각·느낌 질문은 이 장면에 대한 내 생각이나
+              느낌을 물어보면 좋아요."
+              connect 예: "나의 경험이나 생활과 이어지는 질문으로
+              바꿔보세요."
+              질문과 답이 안 이어질 때 예: "질문과 답이 잘 이어지지
+              않아요. 질문에 맞는 답으로 다시 적어보세요."
+              답에 내용이 없을 때 예: "조금 더 생각해서 답을 적어보세요."
+            - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 읽기 중 "심화 연습"(during-reading-practice.html) 전용 프롬프트.
+     * during_reading_question(during-read.html)과 달리 답 없이 질문만
+     * 평가한다 - 답이 없다는 이유로 need를 주면 안 된다.
+     * 다른 활동 유형에는 전혀 쓰이지 않는다.
+     */
+    /*
+     * StudentFeedbackAiController가 "심화 연습만 answer 빈 문자열 허용"을
+     * 판단할 때 이 상수를 그대로 참조한다(문자열을 두 곳에 따로 적어
+     * 오타로 어긋나는 것을 방지).
+     */
+    public static final String DURING_READING_PRACTICE_DEEP_TYPE = "during_reading_practice_deep";
+
+    private static final String SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 책을 읽는 중 심화 연습으로 "질문"만 만들었어(답은 받지
+            않으니 답이 없다는 이유로 need를 주면 절대 안 돼).
+
+            너는 책의 실제 본문을 받지 않으므로 질문이 책 내용과 사실이
+            일치하는지, 정답이 있는지는 절대 판단하지 마. 오직 아래 한
+            가지만 확인해: 학생이 고른 질문 유형(questionType)에 질문이
+            대체로 맞는가.
+
+            questionType은 아래 네 가지 중 하나야:
+            - direct(바로 찾기): 글 속에 직접 나올 수 있는 인물, 장소, 행동,
+              사건, 사실을 묻는 질문. 예: "주인공은 어디에 갔나요?",
+              "유나는 친구 옆에 어떻게 앉았나요?" '왜'가 들어갔다고
+              무조건 infer로 보지 마. 글에 이유가 직접 나올 수도 있으니
+              인물·사건·사실을 묻는 것으로 볼 여지가 있으면 direct로
+              인정해. 반대로 인물의 감정, 마음, 생각, 앞으로 벌어질 일을
+              묻는 질문(예: "~할까?", "~을까?"처럼 글에 안 나온 마음이나
+              결과를 궁금해하는 질문)은 direct가 아니라 짐작(infer)에
+              해당하니 direct로 인정하지 마.
+            - infer(짐작하기): 인물의 마음, 행동의 이유, 다음에 벌어질 일
+              등을 글의 단서로 짐작하는 질문. 예: "주인공은 왜 아무 말도
+              하지 않았을까요?", "다음에는 어떤 일이 생길까요?", "인물은
+              어떤 기분이었을까요?"
+            - opinion(생각·느낌): 학생 자신의 생각, 느낌, 판단, 의견을 묻는
+              질문. 예: "주인공의 행동이 잘했다고 생각하나요?", "가장
+              기억에 남는 장면은 무엇인가요?" 짧고 단순해도 학생의 생각이나
+              느낌을 묻고 있으면 인정해.
+            - connect(나와 연결): 학생 자신의 경험, 감정, 관계, 또는
+              "내가 그 상황이라면 어떻게 했을까"와 같은 가정을 묻는
+              질문. 너는 실제 지문을 받지 않으므로 이 질문이 지문의
+              특정 사건과 정확히 연결되는지는 확인할 수 없고, 확인하려고
+              하지도 마. 지문 내용을 몰라도 질문 자체의 형태만 보고
+              판단해. 아래 형태 중 하나에 해당하면 지문을 몰라도 그
+              자체로 반드시 good이야:
+              - "나도 ~한 적이 있을까/있나?"처럼 자신의 과거 경험을
+                묻는 질문
+              - "~했을 때 나는 어떤 기분이었을까?"처럼 자신의 감정을
+                묻는 질문
+              - "내가 ~라면 어떻게 했을까?"처럼 자신이 그 상황이라면
+                어떻게 할지 가정하는 질문
+              - "비슷한 일이 생기면 나는 어떻게 할까?"처럼 앞으로의
+                행동을 묻는 질문
+              - "우리 가족", "우리 반", "내 생활"처럼 자신의 주변
+                생활과 연결하는 질문
+              예(전부 good): "나도 전학을 가본 경험이 있을까?", "나도
+              새 학교에 처음 갔을 때 긴장했을까?", "나도 새로운 친구를
+              사귀어 본 적이 있나?", "내가 민재라면 먼저 말을 걸었을까?",
+              "낯선 곳에 갔을 때 나는 어떤 기분이었을까?", "누군가 먼저
+              말을 걸어줘서 고마웠던 적이 있나?" — 이 질문들은 지문
+              속 사건과 글자 그대로 같은 단어를 쓰지 않아도 위 형태에
+              해당하므로 지문과의 연결 여부를 따지지 말고 반드시
+              good으로 판정해. "지문의 사건과 완전히 같지 않다",
+              "이야기와 연결이 확인되지 않는다"는 이유로 need를 주는
+              것은 금지야.
+              다만 경험·감정·관계·가정 형태가 전혀 아니고, 순전히
+              개인적인 취향이나 일상 잡담(음식, 게임, 오늘 할 일 등)만
+              묻는 질문일 때만 need로 판정해. 예(need): "오늘 저녁에 뭐
+              먹을까?", "내가 좋아하는 게임은 무엇일까?"
+
+            [판정 원칙 - 초등학교 4학년 수준으로 폭넓고 관대하게]
+            - 문장이 조금 서툴러도 뜻이 통하면 통과
+            - 맞춤법, 띄어쓰기, 조사 오류가 조금 있어도 통과
+            - 선택한 유형의 특징이 어느 정도만 드러나도 통과
+            - 애매하면 항상 good으로 판단
+            - 완벽한 교과서식 질문을 요구하지 마
+            - 질문이 짧다는 이유만으로 need를 주지 마(예: "유나는 친구
+              옆에 어떻게 앉았나요?"처럼 짧아도 글 속 행동을 명확히
+              묻고 있으면 direct로 반드시 good)
+            - connect 유형은 지문의 구체적 사건을 몰라도 판단할 수
+              있어야 한다. 자기 경험·감정·관계·가정을 묻는 질문이면
+              지문과의 연결을 확인하려 하지 말고 그 자체로 good으로
+              판정해.
+
+            [need로 판정할 때만 - 아래에 명백히 해당할 때만 좁게 적용]
+            - 질문이 아님(궁금한 점을 묻는 문장으로 보기 어려움)
+            - 선택한 질문 유형과 명백하게 다름(다른 세 유형에는 뚜렷이
+              맞지만 선택한 유형과는 전혀 안 맞는 경우)
+            - 질문 유형 자체의 뜻이나 만드는 방법을 묻고 있음
+            - connect인데 경험·감정·관계·가정 형태가 전혀 아니고 순전히
+              개인적인 취향이나 일상 잡담일 때(예: "오늘 저녁에 뭐
+              먹을까?", "내가 좋아하는 게임은 무엇일까?")
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            [status와 message는 반드시 서로 일치해야 한다 - 매우 중요]
+            - status를 good으로 정했으면 message는 반드시 순수한 격려문
+              한 문장이어야 하고, 질문을 고치거나 바꿔보라는 말을 절대
+              포함하면 안 돼.
+            - status를 need로 정했으면 message는 반드시 무엇이 문제인지와
+              어떻게 고치면 좋을지를 담아야 하고, 순수 격려만 하면 안 돼.
+            - "바꿔볼까", "고쳐", "다시 써", "수정" 같은 표현이 message에
+              들어간다면 status는 반드시 need여야 한다. status를 good으로
+              적어놓고 message에 수정을 권하는 내용을 넣는 것은 절대
+              금지야.
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
+            - status가 good이면 한 문장으로 짧게 격려만 해줘.
+              예: "질문이 잘 만들어졌어! 다음 문제로 넘어가 보자."
+            - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
+              알려줘. 실제 questionType에 맞는 낱말을 넣어서 새로 문장을
+              만들어(다른 유형의 문구를 그대로 베끼지 마):
+              direct 예: "바로 찾기 질문은 글에서 직접 찾을 수 있는 내용을
+              물어보면 좋아요."
+              infer 예: "짐작하기 질문은 인물의 마음이나 이유, 다음에
+              생길 일을 짐작해서 물어보면 좋아요."
+              opinion 예: "생각·느낌 질문은 이 장면에 대한 내 생각이나
+              느낌을 물어보면 좋아요."
+              connect 예: "나의 경험이나 생활과 이어지는 질문으로
+              바꿔보세요."
+            - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 읽기 중(during-reading-practice.html) "총 복습" 전용 프롬프트.
+     * 같은 화면의 "심화 연습"(during_reading_practice_deep)과 달리, 총
+     * 복습은 학생이 질문뿐 아니라 답까지 쓰고, 화면 왼쪽에 실제 예시 글
+     * (passage)이 함께 표시된다. 그래서 심화 연습과 달리 이 유형은
+     * 질문·답이 그 예시 글의 실제 내용과 맞는지도 확인해야 한다("책
+     * 내용을 모르니 사실 검증 금지" 규칙을 이 유형에는 적용하지 않는다).
+     * questionType(direct/infer/opinion/connect) 용어와 관대한 채점
+     * 원칙은 심화 연습 프롬프트와 같은 기준을 따르되, 답 채점 기준을
+     * 새로 추가한다.
+     */
+    private static final String DURING_READING_PRACTICE_REVIEW_TYPE = "during_reading_practice_review";
+
+    private static final String SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 왼쪽에 나온 예시 글을 읽고, 그 글에 대한 "질문"과
+            "답"을 하나씩 만들었어(총 복습 활동). 이 화면은 실제 예시 글
+            전체를 너에게 주므로, 질문과 답이 그 글의 실제 내용과 맞는지도
+            확인해야 한다.
+
+            questionType은 아래 네 가지 중 하나야:
+            - direct(바로 답 찾기): 예시 글 속에 직접 나오는 인물, 장소,
+              행동, 사건, 사실을 묻는 질문. 예: "서윤이는 무엇을
+              발견했나요?"
+            - infer(답 짐작하기): 예시 글의 단서나 상황을 근거로 인물의
+              마음, 행동의 이유, 다음에 벌어질 일 등을 짐작하는 질문. 예:
+              "민준이는 왜 걱정하고 있었을까요?"
+            - opinion(생각·느낌): 글 속 인물, 사건, 상황에 대한 학생
+              자신의 생각이나 느낌을 묻는 질문. 예: "서윤이의 행동이
+              잘했다고 생각하나요?"
+            - connect(삶과 연결): 글의 내용과 학생 자신의 경험이나 생활을
+              연결하는 질문. 예: "나도 물건을 주인에게 돌려준 적이
+              있나요?"
+
+            [확인할 것 - 순서대로]
+            1. 질문이 선택한 questionType에 대체로 맞는가
+            2. 질문이 예시 글의 내용과 관련되는가(예시 글과 전혀 무관하거나
+               다른 이야기·다른 사건을 묻는 질문이면 need)
+            3. 답이 질문과 자연스럽게 이어지는가(질문과 전혀 다른 답,
+               의미 없는 낱말 나열, 너무 짧거나 불완전해서 뜻을 알 수 없는
+               답은 need)
+            4. questionType별 답 기준:
+               - direct: 답이 예시 글에서 직접 확인할 수 있는 내용이어야
+                 함(예시 글과 다르면 need)
+               - infer: 답이 예시 글의 단서나 상황을 근거로 짐작한
+                 내용이면 됨(예시 글과 완전히 모순되지만 않으면 됨)
+               - opinion: 학생 자신의 생각이나 느낌이 질문과 연결되면 됨
+                 (예시 글 속 사실과 일치하는지는 확인하지 마)
+               - connect: 학생 자신의 경험이나 생활이 글 내용과 연결되면
+                 됨(경험이 실제인지는 확인할 수 없으니 확인하지 마)
+
+            [판정 원칙 - 초등학교 4학년 수준으로 관대하게]
+            - 문장이 조금 서툴러도 뜻이 통하면 통과
+            - 맞춤법, 띄어쓰기가 조금 틀려도 의미가 통하면 통과
+            - 초등학생 수준의 짧은 문장이어도 뜻이 분명하면 good(완벽한
+              문장이나 긴 답을 요구하지 마)
+            - 애매하면 good 쪽으로 판단
+            - opinion/connect는 정답이 없으니 예시 글과 글자 그대로
+              같은지 비교하지 마
+
+            [need로 판정할 때만 - 아래에 명백히 해당할 때만 좁게 적용]
+            - 질문이 예시 글과 전혀 무관함(다른 책이나 다른 사건을 물음)
+            - 질문이 선택한 questionType과 명백히 다름
+            - 답이 질문과 전혀 다르거나 의미 없는 낱말 나열임
+            - 답이 너무 짧거나 불완전해서 뜻을 알 수 없음
+            - direct인데 답이 예시 글의 실제 내용과 다름
+            - infer인데 답이 예시 글의 단서·상황과 명백히 모순됨
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
+            - status가 good이면 한 문장으로 짧게 격려해줘.
+              예: "질문과 답이 예시 글과 잘 어울려! 다음 질문도 만들어보자."
+            - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
+              알려줘.
+              예: "질문이 예시 글과 관련이 없어. 왼쪽 글의 내용으로
+              다시 질문해볼까?"
+              예: "답이 예시 글의 내용과 달라. 글을 다시 읽고 답을
+              고쳐볼까?"
+            - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 읽기 후(after-read.html) 3단계 "질문으로 간추리기" 전용 프롬프트.
+     * 다른 프롬프트와 달리 실제 예시 글(passage)이 함께 주어지므로,
+     * 유일하게 이 유형만 질문·답이 그 글의 실제 내용과 맞는지
+     * 사실 검증을 해야 한다("책 내용을 모르니 사실 검증 금지" 규칙을
+     * 이 유형에는 적용하지 않는다). 다른 활동 유형에는 전혀 쓰이지 않는다.
+     */
+    private static final String EXTRA_PRACTICE_TYPE = "extra_practice";
+
+    private static final String SYSTEM_PROMPT_EXTRA_PRACTICE = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 책 유형별 예시 글(passage)을 읽고, 그 글을 간추리는 데
+            도움이 되는 "질문 2개"와 "답 2개"를 만들었어. 이 화면은 다른
+            화면과 달리 실제 예시 글 전체를 너에게 주므로, 유일하게 이
+            화면에서는 질문과 답이 그 글의 실제 내용과 맞는지 사실 여부를
+            확인해도 돼(오히려 반드시 확인해야 해). "책 내용을 모르니
+            사실 검증을 하지 마라"는 규칙은 이 화면에는 적용하지 않는다.
+
+            아래를 모두 확인해:
+            1. 질문이 실제 질문 형태인가(형식 자체는 이미 프론트에서
+               걸러졌으니 신경 쓰지 않아도 되지만, 명백히 질문이 아니면
+               need)
+            2. 질문이 간추리기에 도움이 되는 질문인가(예시 글의 핵심
+               내용을 묻는가), 아니면 색깔·시간·숫자 같은 사소한 세부
+               정보만 묻는가
+            3. 선택한 책 유형(bookType)의 간추리기 방법에 맞는가
+            4. 답이 질문과 자연스럽게 이어지는가
+            5. 답이 실제 예시 글의 내용과 맞는가(예시 글과 모순되면 need)
+            6. 질문 2개가 서로 거의 같은 내용을 반복하지 않고, 간추리기에
+               필요한 핵심을 나누어 묻는가
+
+            bookType은 아래 세 가지 중 하나야:
+            - story(이야기책): 시간의 흐름, 장소의 변화, 등장인물에게
+              일어난 중요한 사건, 처음-중간-마지막 흐름, 문제와 해결을
+              묻는 질문이 좋아. 좋은 예: "처음에 주인공에게 어떤 일이
+              일어났나요?", "중간에 어떤 문제가 생겼나요?", "마지막에는
+              어떻게 해결되었나요?", "주인공은 처음과 마지막에 어떻게
+              달라졌나요?" 좋지 않은 예(간추리기와 무관한 세부 정보):
+              "가방 색깔은 무엇인가요?", "우산은 무슨 색이었나요?",
+              "주인공의 옷은 어떤 모양이었나요?"
+            - info(정보를 담은 책): 대상이 무엇인지, 중요한 특징, 하는
+              일이나 기능, 과정이나 순서, 원인과 결과, 핵심 정보를 묻는
+              질문이 좋아. 좋은 예: "꿀벌은 무엇을 하는 곤충인가요?",
+              "꿀벌은 어떻게 꿀을 모으나요?", "꿀벌이 식물에 어떤 도움을
+              주나요?", "이 글에서 가장 중요한 특징은 무엇인가요?" 좋지
+              않은 예: "꿀벌은 몇 시에 날아가나요?", "꽃의 색깔은
+              무엇인가요?", "꿀벌의 날개는 몇 개인가요?"
+            - opinion(주장을 담은 책): 글쓴이의 주장, 주장하는 까닭·근거,
+              실천 방법, 주장과 근거의 관계를 묻는 질문이 좋아. 좋은 예:
+              "글쓴이는 무엇을 주장하나요?", "그렇게 주장하는 까닭은
+              무엇인가요?", "우리가 실천할 수 있는 방법은 무엇인가요?"
+              좋지 않은 예: "복도 벽의 색깔은 무엇인가요?", "학교 이름은
+              무엇인가요?", "등장인물은 몇 명인가요?"
+
+            [판정 원칙 - 초등학교 4학년 수준으로 관대하게]
+            - 표현이 조금 서툴러도 핵심을 묻고 답이 맞으면 good
+            - 맞춤법, 띄어쓰기 오류가 조금 있어도 good
+            - 완벽한 교과서식 문장을 요구하지 마
+            - 애매하면 good 쪽으로 판단
+            - 다만 간추리기와 무관한 세부 정보만 묻는 질문은 분명히 need
+            - 질문 2개가 사실상 같은 내용을 두 번 묻고 있으면 need
+
+            [need로 판정할 때만]
+            - 질문이 아님
+            - 질문이 예시 글의 핵심이 아니라 사소한 세부 정보(색깔, 시간,
+              숫자, 외형 등)만 묻고 있음
+            - 선택한 bookType의 간추리기 방법과 명백히 다름
+            - 질문과 답이 자연스럽게 이어지지 않음
+            - 답이 예시 글의 실제 내용과 모순됨
+            - 답이 "몰라", "그냥", "아무거나"처럼 내용이 없음
+            - 답이 질문 속 단어를 설명 없이 그대로 반복하기만 함
+            - 질문 2개가 서로 거의 같은 내용을 반복함
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
+            - status가 good이면 한 문장으로 짧게 격려해줘.
+              예: "간추리기에 도움이 되는 질문과 답이야! 다음으로 가 보자."
+            - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
+              알려줘(어느 질문이 문제인지, 무엇을 어떻게 고치면 좋을지).
+              예: "질문 2는 색깔처럼 사소한 내용을 묻고 있어. 글의 중요한
+              사건을 묻는 질문으로 바꿔볼까?"
+              예: "답이 예시 글의 내용과 달라. 글을 다시 읽고 답을
+              고쳐볼까?"
+            - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 읽기 후(after-read.html) 4단계 "내 간추리기 완성" 전용 프롬프트.
+     * 일반 "summary"(type에 summary가 포함되면 매칭되는 공용 분기, 다른
+     * 화면인 individual-after-reading.html의 individual_summary도 여기
+     * 포함됨)와는 완전히 분리한다 - 저 공용 분기를 건드리면 다른 화면에도
+     * 영향이 가므로, 이 화면 전용으로 새 타입을 만들어 격리한다.
+     * 왼쪽 질문 1~3/답 1~3을 "참고 자료"로 함께 받아, 학생의 최종
+     * 간추리기가 그 핵심을 자기 말로 반영했는지 판단한다(문자열 일치가
+     * 아니라 의미 반영 여부).
+     *
+     * StudentFeedbackAiController가 "final_summary만 summaryText를 필수로,
+     * question/answer는 필수로 요구하지 않음"을 판단할 때 이 상수를 그대로
+     * 참조한다.
+     */
+    public static final String FINAL_SUMMARY_TYPE = "final_summary";
+
+    private static final String SYSTEM_PROMPT_FINAL_SUMMARY = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 책을 읽고, 왼쪽에서 스스로 만든 "질문 1~3"과 "답 1~3"을
+            바탕으로 오른쪽에 책 전체를 간추린 "최종 간추리기" 글을 썼어.
+            학생은 질문·답의 내용 외에 책의 다른 중요한 내용을 자유롭게
+            더할 수 있어. 너의 역할은 질문·답과 완전히 똑같은 문장인지
+            검사하는 게 아니라, 학생이 책의 중요한 내용을 자기 말로
+            간단히 정리했는지를 보는 거야.
+
+            절대 하지 말아야 할 판단(금지):
+            - 최종 간추리기 문장이 질문·답의 문장과 글자 그대로 같은지
+              비교하는 것(단순 문자열 일치 검사)
+            - 질문 1~3의 답을 전부 빠짐없이 포함해야 통과라고 보는 것
+            - 책의 다른 내용을 추가했다는 이유로 need를 주는 것
+            - 맞춤법, 띄어쓰기, 조사, 문장부호가 조금 부족하다는 이유만으로
+              need를 주는 것
+            - 표현이나 문장 순서가 질문·답과 다르다는 이유로 need를 주는 것
+
+            [good 판정 기준 - 아래를 대체로 만족하면 good]
+            - 질문 1~3과 답에서 드러난 핵심 내용 중 일부(3개 중 2개 정도만
+              중심으로 다뤄도 충분함)가 의미상 반영되어 있고, 책의 중심
+              내용이 드러남
+            - 질문·답 문장을 그대로 옮기지 않고 학생 자신의 말로 바꾸거나
+              여러 내용을 합쳐 써도 됨
+            - 질문·답 외에 책의 다른 중요한 내용을 자연스럽게 추가해도 됨
+            - 질문·답의 순서와 다르게 써도 됨, 세부 내용을 일부 생략해도 됨
+            - 전체 글이 책의 핵심을 설명하는 하나의 자연스러운 요약으로
+              이어짐
+            - 각 문장이 끝까지 완성되어 있음(짧은 2~3문장이라도 핵심이
+              드러나고 문장이 완성되어 있으면 충분함)
+            - 조사·어미·문장부호가 조금 부족하거나 표현이 다소 어색해도
+              의미가 통하고 문장이 끝났다면 통과
+            - 초등학교 4학년 수준의 짧고 단순한 문장도 허용(성인 수준의
+              완성도 높은 요약문을 요구하지 마)
+
+            [need로 판정할 때만 - 아래 중 하나에 명백히 해당할 때만 좁게 적용]
+            - 최종 간추리기 내용이 질문·답 또는 책 내용과 거의 또는 전혀
+              관계없음
+            - 질문 1~3의 핵심 내용을 대부분(2~3개 모두) 빠뜨려 책의 중심
+              내용이 전혀 드러나지 않음
+            - 문장이 중간에서 끊김(예: "꽃은 우리 생활에 도움이 되고",
+              "글쓴이가 주장하는 것은", "이 책에서는 환경을")
+            - 단어나 짧은 구절만 나열해서 문장으로 볼 수 없음(예: "꽃,
+              도움, 보호", "환경 중요 쓰레기 줄이기")
+            - 같은 문장이나 내용을 의미 없이 반복해서 책의 핵심을 확인할
+              수 없음
+            - 책 요약이 아니라 개인 감상만 있고 책 내용이 전혀 드러나지
+              않음(예: "재미있었다. 나도 꽃을 좋아한다.")
+            - 지나치게 짧아서 무엇을 간추렸는지 판단할 수 없음
+
+            애매하면 need보다 good 쪽으로 관대하게 판단해. "잘 쓴
+            요약문인가"가 아니라 "책의 중요한 내용을 자기 말로 간단히
+            정리했는가"를 기준으로 판단해.
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
+            - status가 good이면 한 문장으로 짧게 격려해줘.
+              예: "질문과 답의 핵심 내용을 잘 이어서 간추렸어."
+              예: "중요한 내용을 빠뜨리지 않고 자연스럽게 정리했어."
+            - status가 need면 한 번에 한 가지 문제만 구체적으로 알려줘:
+              핵심 누락 예: "질문 2의 답에 나온 중요한 내용을 간추리기에
+              더 넣어 봐."
+              관련 없음 예: "왼쪽 질문과 답의 내용을 중심으로 다시
+              간추려 봐."
+              문장 미완성 예: "마지막 문장이 끝나지 않았어. 문장을
+              끝까지 완성해 봐."
+              단어 나열 예: "단어만 나열하지 말고, 완성된 문장으로 이어서
+              써 봐."
+            - 절대 3문장 이상 쓰지 마.
+            """;
+
+    /*
+     * 개별읽기 읽기 후(individual-after-reading.html) "질문과 답 쓰기"
+     * 전용 프롬프트. 연습읽기 after-read.html의 "내 책에 맞는 질문을
+     * 직접 써요"(book_question, 일반 SYSTEM_PROMPT_QUESTION 사용)와는
+     * 별도로 격리한다 - book_question은 이미 다른 화면들과 공유하는
+     * 프롬프트라 그대로 두고, 개별읽기 전용으로 더 상세한 기준(단어
+     * 나열/문장 미완성/질문 또는 답만 있음 등)을 가진 새 프롬프트를
+     * 만든다. 이 화면은 책 실제 본문을 주지 않으므로(학생이 자유롭게
+     * 고른 개인 도서) 책 유형(bookType)만으로 판단한다.
+     */
+    private static final String INDIVIDUAL_QUESTION_TYPE = "individual_question";
+
+    private static final String SYSTEM_PROMPT_INDIVIDUAL_QUESTION = """
+            너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
+            학생이 자기가 고른 책을 읽고, 그 책을 간추리는 데 도움이 되는
+            "질문"과 "답"을 하나 만들었어. 너는 실제 책 본문을 받지
+            않으므로 질문·답이 책 내용과 사실이 일치하는지는 판단하지 마.
+            대신 아래를 확인해:
+            1. 질문이 선택한 책 유형(bookType)의 간추리기 방법에 대체로
+               맞는가
+            2. 질문이 구체적인가(막연하지 않은가)
+            3. 답이 질문에 적절하게 연결되는가
+            4. 질문과 답이 간추리기에 활용할 수 있는 중요한 내용인가
+
+            bookType은 아래 중 하나야(다른 값이 오면 이야기책 기준을
+            기본으로 참고해):
+            - 이야기 책: 처음/가운데/마지막 사건, 인물의 행동, 문제와
+              해결을 정리할 수 있는 질문이 좋아. 예: "주인공에게 어떤
+              일이 있었나요?", "그 문제는 어떻게 해결되었나요?"
+            - 정보를 담은 책: 무엇을 설명하는지, 중요한 특징이나 내용,
+              새롭게 알게 된 사실, 원인과 결과, 과정을 정리할 수 있는
+              질문이 좋아. 예: "이 책은 무엇을 설명하나요?", "가장 중요한
+              특징은 무엇인가요?"
+            - 주장을 담은 책: 글쓴이의 주장, 주장하는 까닭, 주장을
+              뒷받침하는 근거를 정리할 수 있는 질문이 좋아. 예: "글쓴이는
+              무엇을 주장하나요?", "그렇게 주장하는 까닭은 무엇인가요?"
+
+            [판정 원칙 - 초등학교 4학년 수준으로 관대하게]
+            - 짧은 질문과 답도 허용(막연하지 않고 구체적이면 충분함)
+            - 맞춤법, 띄어쓰기 일부 오류는 허용
+            - 표현이 조금 어색해도 의미가 통하면 허용
+            - 두 책 유형 기준에 조금 겹쳐도 선택한 유형에 충분히 가까우면 통과
+            - 애매하면 need보다 good 쪽으로 판단
+
+            [need로 판정할 때만 - 아래 중 하나에 명백히 해당할 때만 좁게 적용]
+            - 질문이 선택한 책 유형과 전혀 맞지 않음
+            - 질문과 답이 서로 관련 없음
+            - 질문이 너무 막연해서 간추리기에 활용하기 어려움(예: "이
+              책은 어때요?", "무슨 내용이에요?"처럼 구체성이 전혀 없음)
+            - 질문 또는 답이 문장 중간에서 명백히 끊김
+            - 질문 또는 답이 단어나 짧은 구절만 나열되어 문장으로 볼 수 없음
+            - 질문 없이 답만 있거나, 답 없이 질문만 있음
+            - 개인 감상만 있고 책의 중요한 내용이 전혀 드러나지 않음
+              (예: "재미있었다", "좋았다"처럼 책 내용과 무관한 감상뿐)
+
+            반드시 아래 JSON 형식으로만 답해:
+            {"status": "good" 또는 "need", "message": "피드백"}
+
+            message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장,
+            한 번에 가장 중요한 한 가지만 짧고 구체적으로):
+            - status가 good이면 한 문장으로 짧게 격려해줘.
+              예: "책의 중요한 내용을 찾을 수 있는 질문이야."
+              예: "질문과 답이 잘 이어져 있어."
+              예: "간추리기에 활용하기 좋은 질문과 답이야."
+            - status가 need면 예시처럼 구체적으로 알려줘:
+              답 불일치 예: "질문은 좋지만 답이 질문과 잘 맞지 않아. 다시
+              살펴봐."
+              유형 불일치(정보책) 예: "정보를 담은 책에서는 중요한
+              특징을 묻는 질문을 만들어 봐."
+              유형 불일치(주장책) 예: "주장을 담은 책에서는 글쓴이의
+              주장이나 까닭을 물어봐."
+              문장 미완성 예: "문장이 끝나지 않았어. 끝까지 완성해 봐."
+            - 절대 2문장 이상 쓰지 마.
             """;
 
     /*
@@ -295,6 +915,9 @@ public class FeedbackAiService {
 
     private final RestTemplate restTemplate = buildRestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AiEvaluationAttemptRepository aiEvaluationAttemptRepository;
+    private final ClassStudentRepository classStudentRepository;
+    private final ClassReadingBookRepository classReadingBookRepository;
 
     @Value("${openai.api.key}")
     private String openaiApiKey;
@@ -311,50 +934,242 @@ public class FeedbackAiService {
         return new RestTemplate(factory);
     }
 
+    /*
+     * 공개 /api/feedback/ai-review 경로. 기존 화면(연습읽기/개별읽기 전체)이
+     * 그대로 쓰는 원래 동작을 100% 유지한다 - 이 메서드는 더 이상 어떤
+     * 경우에도 ai_evaluation_attempts에 기록을 남기지 않는다(보안 요구사항:
+     * 인증되지 않은 요청의 studentId는 신뢰할 수 없으므로 저장에 쓰지 않음).
+     * 시도 기록이 필요하면 getFeedbackForAuthenticatedStudent()를 쓴다.
+     */
     public AiFeedbackResponse getFeedback(AiFeedbackRequest request) {
-        boolean isPreReading = isPreReadingQuestionType(request);
+        try {
+            return callAndParseAiResponse(request);
+        } catch (Exception e) {
+            return handleAiCallFailure(request, e);
+        }
+    }
+
+    /*
+     * 인증된 학생 전용 AI 평가. JWT에서 확인된 studentId만 받는다(호출하는
+     * 컨트롤러가 Authentication에서 뽑아 넘겨야 하며, 요청 본문의 studentId는
+     * 절대 쓰지 않는다). 정상적으로 파싱된 판정 결과가 나왔을 때만
+     * ai_evaluation_attempts에 한 행을 남긴다 - AI 서버 오류/네트워크 오류/
+     * 파싱 실패는 이 메서드의 catch 블록(=공개 경로와 같은 폴백)으로 빠지고,
+     * 그 경우 attempt_number를 늘리지도, 기록을 남기지도 않는다.
+     *
+     * classReadingBookId 검증은 AI 호출보다 먼저, try 블록 밖에서 한다 -
+     * try 안에 두면 ResponseStatusException(403/404 등)이 handleAiCallFailure의
+     * "need"로 감춰져 버려서, 학생이 다른 학급 책 id를 보내는 것을 사실상
+     * 놓치게 되기 때문이다.
+     */
+    public AiFeedbackResponse getFeedbackForAuthenticatedStudent(
+            Long studentId,
+            AiFeedbackRequest request,
+            String evaluationKey,
+            Long classReadingBookId) {
+
+        validateStudentBelongsToClassReadingBook(studentId, classReadingBookId);
 
         try {
-            Map<String, Object> requestBody = buildRequestBody(request);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(openaiApiKey);
-
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-            Map<?, ?> response = restTemplate.postForObject(OPENAI_CHAT_COMPLETIONS_URL, entity, Map.class);
-
-            String content = extractContent(response);
-            return objectMapper.readValue(content, AiFeedbackResponse.class);
+            AiFeedbackResponse result = callAndParseAiResponse(request);
+            recordAuthenticatedAttempt(studentId, request, result, evaluationKey, classReadingBookId);
+            return result;
         } catch (Exception e) {
-            if (isPreReading) {
-                /*
-                 * 읽기 전 화면은 프론트가 HTTP 상태 코드를 보고 기술적 오류를
-                 * 구분해서 안내해야 하므로, 여기서는 200으로 감추지 않고
-                 * 그대로 500을 내보낸다.
-                 */
-                log.error("읽기 전 AI 피드백 생성 실패", e);
-                throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "AI 피드백을 생성하지 못했습니다."
-                );
+            return handleAiCallFailure(request, e);
+        }
+    }
+
+    /*
+     * 학생이 실제로 그 학급 소속이고, 요청한 classReadingBookId가 그 학급의
+     * 온책읽기 책과 같은지 확인한다(ResponseService.validateClassReadingBookBelongsToClass와
+     * 같은 검증 방식). 다른 학급의 책 id를 보내면 이해도 계산이 엉뚱한
+     * 책과 섞일 수 있으므로 저장 이전에 막는다.
+     */
+    private void validateStudentBelongsToClassReadingBook(Long studentId, Long classReadingBookId) {
+
+        ClassStudent classStudent = classStudentRepository.findByStudentId(studentId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "학생의 학급 정보를 찾을 수 없습니다. studentId=" + studentId
+            ));
+
+        ClassReadingBook classReadingBook = classReadingBookRepository.findById(classReadingBookId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "온책읽기 책을 찾을 수 없습니다. classReadingBookId=" + classReadingBookId
+            ));
+
+        if (!classReadingBook.getSchoolClass().getId().equals(classStudent.getSchoolClass().getId())) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "본인 학급의 온책읽기 책만 사용할 수 있습니다."
+            );
+        }
+    }
+
+    private AiFeedbackResponse callAndParseAiResponse(AiFeedbackRequest request) throws Exception {
+        Map<String, Object> requestBody = buildRequestBody(request);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(openaiApiKey);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        Map<?, ?> response = restTemplate.postForObject(OPENAI_CHAT_COMPLETIONS_URL, entity, Map.class);
+
+        String content = extractContent(response);
+        return objectMapper.readValue(content, AiFeedbackResponse.class);
+    }
+
+    private AiFeedbackResponse handleAiCallFailure(AiFeedbackRequest request, Exception e) {
+        if (isPreReadingQuestionType(request)) {
+            /*
+             * 읽기 전 화면은 프론트가 HTTP 상태 코드를 보고 기술적 오류를
+             * 구분해서 안내해야 하므로, 여기서는 200으로 감추지 않고
+             * 그대로 500을 내보낸다.
+             */
+            log.error("읽기 전 AI 피드백 생성 실패", e);
+            throw new ResponseStatusException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "AI 피드백을 생성하지 못했습니다."
+            );
+        }
+
+        log.error("AI 피드백 생성 실패", e);
+        return new AiFeedbackResponse("need", "지금은 피드백을 확인할 수 없어, 잠시 후 다시 시도해줘", null, null);
+    }
+
+    /*
+     * 연습읽기 AI 검사 유형(pre_reading_question/during_reading_question/
+     * during_reading_practice_deep/during_reading_practice_review/
+     * book_question/final_summary)만 시도 기록을 남긴다.
+     * individual_pre_reading_question/individual_question/individual_summary
+     * 같은 개별읽기 유형이나 extra_practice(읽기 후 "질문으로 간추리기
+     * 연습" - 학생 개인 책이 아니라 책 유형별 고정 예시 글을 검사하는
+     * 연습 단계라 이해도 계산 대상에서 제외하기로 확정함)는 이해도 계산
+     * 대상이 아니므로 기록하지 않는다.
+     */
+    private boolean isPracticeReadingAiCheckType(AiFeedbackRequest request) {
+        String type = request.getType();
+
+        return PRE_READING_QUESTION_TYPE.equals(type)
+            || DURING_READING_QUESTION_TYPE.equals(type)
+            || DURING_READING_PRACTICE_DEEP_TYPE.equals(type)
+            || DURING_READING_PRACTICE_REVIEW_TYPE.equals(type)
+            || BOOK_QUESTION_TYPE.equals(type)
+            || FINAL_SUMMARY_TYPE.equals(type);
+    }
+
+    private void recordAuthenticatedAttempt(
+            Long studentId,
+            AiFeedbackRequest request,
+            AiFeedbackResponse result,
+            String evaluationKey,
+            Long classReadingBookId) {
+
+        if (evaluationKey == null || evaluationKey.isBlank()) {
+            /*
+             * evaluationKey 없이는 "같은 질문의 재시도"인지 "새 질문"인지
+             * 구분할 수 없으므로 임의로 묶지 않고 아예 기록하지 않는다.
+             */
+            return;
+        }
+
+        if (!isPracticeReadingAiCheckType(request)) {
+            return;
+        }
+
+        String normalizedStatus = normalizeAttemptStatus(request, result);
+
+        if (normalizedStatus == null) {
+            return;
+        }
+
+        try {
+            /*
+             * attempt_number는 클라이언트 값을 신뢰하지 않고 여기서 직접
+             * 계산한다: 같은 student_id+evaluation_key의 기존 정상 평가
+             * 기록 수 + 1. uk_ai_eval_attempts_student_key_attempt UNIQUE
+             * 인덱스가 동시 요청으로 같은 attempt_number가 중복 저장되는
+             * 것을 DB 차원에서 막는 최후 방어선이다.
+             */
+            long attemptNumber = aiEvaluationAttemptRepository
+                .countByStudentIdAndEvaluationKey(studentId, evaluationKey) + 1;
+
+            AiEvaluationAttempt attempt = new AiEvaluationAttempt();
+            attempt.setStudentId(studentId);
+            attempt.setActivityType(request.getType());
+            attempt.setQuestionType(request.getStepType());
+            attempt.setEvaluationKey(evaluationKey);
+            attempt.setAttemptNumber((int) attemptNumber);
+            attempt.setClassReadingBookId(classReadingBookId);
+            attempt.setStatus(normalizedStatus);
+            aiEvaluationAttemptRepository.save(attempt);
+        } catch (Exception e) {
+            /*
+             * 시도 기록 저장 실패(동시 요청으로 인한 UNIQUE 충돌 포함)가
+             * 학생에게 보여줄 실제 AI 피드백까지 막으면 안 되므로, 로그만
+             * 남기고 흐름은 계속 진행한다.
+             */
+            log.error("AI 평가 시도 기록 저장 실패", e);
+        }
+    }
+
+    /*
+     * pre_reading_question만 {"result": "good"|"retry", ...} 계약을 쓰고,
+     * 나머지 연습읽기 AI 검사 유형은 {"status": "good"|"need", ...} 계약을
+     * 쓴다(위 프롬프트들의 JSON 형식 참고). 두 계약을 good/need 문자열로
+     * 통일해서 시도 기록에 남긴다.
+     */
+    private String normalizeAttemptStatus(
+            AiFeedbackRequest request,
+            AiFeedbackResponse result) {
+
+        if (result == null) {
+            return null;
+        }
+
+        if (PRE_READING_QUESTION_TYPE.equals(request.getType())) {
+            if (result.getResult() == null) {
+                return null;
             }
 
-            log.error("AI 피드백 생성 실패", e);
-            return new AiFeedbackResponse("need", "지금은 피드백을 확인할 수 없어, 잠시 후 다시 시도해줘", null, null);
+            return "good".equals(result.getResult()) ? "good" : "need";
         }
+
+        return result.getStatus();
     }
 
     private Map<String, Object> buildRequestBody(AiFeedbackRequest request) {
         boolean isPreReading = isPreReadingQuestionType(request);
-        boolean isSummary = !isPreReading && isSummaryType(request);
+        boolean isDuringReading = !isPreReading && isDuringReadingQuestionType(request);
+        boolean isDuringReadingPracticeDeep = !isPreReading && !isDuringReading
+            && isDuringReadingPracticeDeepType(request);
+        boolean isDuringReadingPracticeReview = !isPreReading && !isDuringReading
+            && !isDuringReadingPracticeDeep && isDuringReadingPracticeReviewType(request);
+        boolean isExtraPractice = !isPreReading && !isDuringReading && !isDuringReadingPracticeDeep
+            && !isDuringReadingPracticeReview && isExtraPracticeType(request);
+        boolean isFinalSummary = !isPreReading && !isDuringReading && !isDuringReadingPracticeDeep
+            && !isDuringReadingPracticeReview && !isExtraPractice && isFinalSummaryType(request);
+        boolean isIndividualQuestion = !isPreReading && !isDuringReading && !isDuringReadingPracticeDeep
+            && !isDuringReadingPracticeReview && !isExtraPractice && !isFinalSummary
+            && isIndividualQuestionType(request);
+        boolean isSummary = !isPreReading && !isDuringReading && !isDuringReadingPracticeDeep
+            && !isDuringReadingPracticeReview && !isExtraPractice && !isFinalSummary && !isIndividualQuestion
+            && isSummaryType(request);
 
         Map<String, Object> systemMessage = new LinkedHashMap<>();
         systemMessage.put("role", "system");
         systemMessage.put(
             "content",
             isPreReading ? SYSTEM_PROMPT_PRE_READING_QUESTION
+                : isDuringReading ? SYSTEM_PROMPT_DURING_READING_QUESTION
+                : isDuringReadingPracticeDeep ? SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP
+                : isDuringReadingPracticeReview ? SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW
+                : isExtraPractice ? SYSTEM_PROMPT_EXTRA_PRACTICE
+                : isFinalSummary ? SYSTEM_PROMPT_FINAL_SUMMARY
+                : isIndividualQuestion ? SYSTEM_PROMPT_INDIVIDUAL_QUESTION
                 : isSummary ? SYSTEM_PROMPT_SUMMARY
                 : SYSTEM_PROMPT_QUESTION
         );
@@ -364,6 +1179,12 @@ public class FeedbackAiService {
         userMessage.put(
             "content",
             isPreReading ? buildPreReadingQuestionUserContent(request)
+                : isDuringReading ? buildDuringReadingQuestionUserContent(request)
+                : isDuringReadingPracticeDeep ? buildDuringReadingPracticeDeepUserContent(request)
+                : isDuringReadingPracticeReview ? buildDuringReadingPracticeReviewUserContent(request)
+                : isExtraPractice ? buildExtraPracticeUserContent(request)
+                : isFinalSummary ? buildFinalSummaryUserContent(request)
+                : isIndividualQuestion ? buildIndividualQuestionUserContent(request)
                 : isSummary ? buildSummaryUserContent(request)
                 : buildQuestionUserContent(request)
         );
@@ -383,7 +1204,35 @@ public class FeedbackAiService {
     }
 
     private boolean isPreReadingQuestionType(AiFeedbackRequest request) {
-        return PRE_READING_QUESTION_TYPE.equals(request.getType());
+        String type = request.getType();
+
+        return PRE_READING_QUESTION_TYPE.equals(type)
+            || "individual_pre_reading_question".equals(type);
+    }
+
+    private boolean isDuringReadingQuestionType(AiFeedbackRequest request) {
+        return DURING_READING_QUESTION_TYPE.equals(request.getType());
+    }
+
+    private boolean isDuringReadingPracticeDeepType(AiFeedbackRequest request) {
+        return DURING_READING_PRACTICE_DEEP_TYPE.equals(request.getType());
+    }
+
+    private boolean isDuringReadingPracticeReviewType(AiFeedbackRequest request) {
+        return DURING_READING_PRACTICE_REVIEW_TYPE.equals(request.getType());
+    }
+
+    private boolean isIndividualQuestionType(AiFeedbackRequest request) {
+        return INDIVIDUAL_QUESTION_TYPE.equals(request.getType());
+    }
+
+    private boolean isExtraPracticeType(AiFeedbackRequest request) {
+        return EXTRA_PRACTICE_TYPE.equals(request.getType());
+    }
+
+    private boolean isFinalSummaryType(AiFeedbackRequest request) {
+        String type = request.getType();
+        return FINAL_SUMMARY_TYPE.equals(type) || "individual_summary".equals(type);
     }
 
     private String buildPreReadingQuestionUserContent(AiFeedbackRequest request) {
@@ -403,6 +1252,104 @@ public class FeedbackAiService {
             AiFeedbackRequest.QAItem qa = qaList.get(0);
             sb.append("질문: ").append(qa.getQuestion()).append("\n");
             sb.append("예상한 답: ").append(qa.getAnswer()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String buildDuringReadingQuestionUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String questionType = request.getStepType();
+        sb.append("questionType: ").append(questionType == null || questionType.isBlank() ? "(알 수 없음)" : questionType).append("\n");
+
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null && !qaList.isEmpty()) {
+            AiFeedbackRequest.QAItem qa = qaList.get(0);
+            sb.append("질문: ").append(qa.getQuestion()).append("\n");
+            sb.append("답: ").append(qa.getAnswer()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String buildDuringReadingPracticeDeepUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String questionType = request.getStepType();
+        sb.append("questionType: ").append(questionType == null || questionType.isBlank() ? "(알 수 없음)" : questionType).append("\n");
+
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null && !qaList.isEmpty()) {
+            AiFeedbackRequest.QAItem qa = qaList.get(0);
+            sb.append("질문: ").append(qa.getQuestion()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String buildDuringReadingPracticeReviewUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String questionType = request.getStepType();
+        sb.append("questionType: ").append(questionType == null || questionType.isBlank() ? "(알 수 없음)" : questionType).append("\n");
+
+        String passage = request.getPassage();
+        sb.append("예시 글:\n").append(passage == null || passage.isBlank() ? "(알 수 없음)" : passage).append("\n\n");
+
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null && !qaList.isEmpty()) {
+            AiFeedbackRequest.QAItem qa = qaList.get(0);
+            sb.append("질문: ").append(qa.getQuestion()).append("\n");
+            sb.append("답: ").append(qa.getAnswer()).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String buildExtraPracticeUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String bookType = request.getBookType();
+        sb.append("bookType: ").append(bookType == null || bookType.isBlank() ? "(알 수 없음)" : bookType).append("\n");
+
+        String passage = request.getPassage();
+        sb.append("예시 글:\n").append(passage == null || passage.isBlank() ? "(알 수 없음)" : passage).append("\n\n");
+
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null) {
+            for (int i = 0; i < qaList.size(); i++) {
+                AiFeedbackRequest.QAItem qa = qaList.get(i);
+                sb.append("질문 ").append(i + 1).append(": ").append(qa.getQuestion()).append("\n");
+                sb.append("답 ").append(i + 1).append(": ").append(qa.getAnswer()).append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private String buildIndividualQuestionUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+        String bookType = request.getBookType();
+        String bookTypeDisplay = (bookType == null || bookType.isBlank())
+                ? "(특정되지 않음)" : bookType;
+
+        sb.append("bookType: ").append(bookTypeDisplay).append("\n");
+
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null && !qaList.isEmpty()) {
+            AiFeedbackRequest.QAItem qa = qaList.get(0);
+            String question = qa.getQuestion() == null || qa.getQuestion().isBlank() ? "(비어 있음)" : qa.getQuestion();
+            String answer = qa.getAnswer() == null || qa.getAnswer().isBlank() ? "(비어 있음)" : qa.getAnswer();
+            sb.append("질문: ").append(question).append("\n");
+            sb.append("답: ").append(answer).append("\n");
+        } else {
+            sb.append("질문: (비어 있음)\n답: (비어 있음)\n");
         }
 
         return sb.toString();
@@ -436,6 +1383,35 @@ public class FeedbackAiService {
                 + "[간추리기 내용]\n" + request.getSummaryText() + "\n\n"
                 + "이 요약이 책 유형 기준에 맞게 사건의 흐름, 중심 내용, 또는 주장과 이유를 "
                 + "잘 담고 있는지 평가해 주세요. 이것은 질문이 아니라 완성된 요약 문단입니다.";
+    }
+
+    private String buildFinalSummaryUserContent(AiFeedbackRequest request) {
+        StringBuilder sb = new StringBuilder();
+
+        String bookType = request.getBookType();
+        sb.append("[책 유형]\n").append(bookType == null || bookType.isBlank() ? "(특정되지 않음)" : bookType).append("\n\n");
+
+        sb.append("[참고 자료: 학생이 만든 질문 1~3과 답 1~3]\n");
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+
+        if (qaList != null && !qaList.isEmpty()) {
+            for (int i = 0; i < qaList.size(); i++) {
+                AiFeedbackRequest.QAItem qa = qaList.get(i);
+                String question = qa.getQuestion() == null || qa.getQuestion().isBlank() ? "(비어 있음)" : qa.getQuestion();
+                String answer = qa.getAnswer() == null || qa.getAnswer().isBlank() ? "(비어 있음)" : qa.getAnswer();
+                sb.append("질문 ").append(i + 1).append(": ").append(question).append("\n");
+                sb.append("답 ").append(i + 1).append(": ").append(answer).append("\n");
+            }
+        } else {
+            sb.append("(전달된 질문·답 없음)\n");
+        }
+
+        sb.append("\n[학생의 최종 간추리기]\n").append(request.getSummaryText()).append("\n\n");
+        sb.append("위 질문·답은 참고 자료일 뿐이며, 최종 간추리기 문장이 이 참고 자료와 "
+                + "글자 그대로 같은지 비교하지 마세요. 최종 간추리기가 참고 자료의 핵심 내용을 "
+                + "의미상 반영했는지, 그리고 하나의 자연스러운 요약 글로 완성되어 있는지 평가해 주세요.");
+
+        return sb.toString();
     }
 
     @SuppressWarnings("unchecked")

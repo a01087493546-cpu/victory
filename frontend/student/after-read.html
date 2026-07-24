@@ -4269,6 +4269,28 @@ body.teacher-mode .teacher-top-button {
   transform: translateY(3px) !important;
   box-shadow: 0 2px 0 rgba(45, 22, 7, 0.76) !important;
 }
+#practiceWritePanel .ar-after-feedback-button {
+  position: relative !important;
+  z-index: 30 !important;
+  width: 132px !important;
+  min-width: 132px !important;
+  height: 48px !important;
+  padding: 0 16px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #965d25, #562b0c) !important;
+  color: #fff8e3 !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  box-shadow: 0 5px 0 rgba(45, 22, 7, 0.76) !important;
+  align-self: center !important;
+}
+#practiceWritePanel .ar-after-feedback-button:active {
+  transform: translateY(3px) !important;
+  box-shadow: 0 2px 0 rgba(45, 22, 7, 0.76) !important;
+}
 #sharePanel.is-active {
   display: grid !important;
   grid-template-rows: auto minmax(0, 1fr) auto !important;
@@ -4378,10 +4400,29 @@ body.teacher-mode .teacher-top-button {
   overflow:hidden !important;
 }
 #writePanel .ar-after-feedback-lumi { width:104px !important; height:104px !important; transform:none !important; }
-#writePanel .ar-after-feedback-content { width:100% !important; min-width:0 !important; }
+#writePanel .ar-after-feedback-content {
+  width:100% !important; min-width:0 !important;
+  height:100% !important; display:flex !important; align-items:center !important;
+}
 #writePanel .ar-after-feedback-message {
   width:100% !important; min-height:82px !important; max-height:82px !important;
   padding:14px 18px !important; font-size:19px !important; line-height:1.45 !important;
+  overflow-y:auto !important;
+}
+/*
+  질문 1~3 검사 피드백(#bookQuestionAiFeedback)만 세로 중앙 정렬 +
+  글자 크기를 키운다. 2개 ID를 함께 써서 위 .ar-after-feedback-message
+  규칙보다 항상 더 높은 우선순위를 갖게 하고, extraPracticeAiFeedback/
+  summaryAiFeedback 등 다른 화면 피드백에는 영향이 없게 한다.
+*/
+#writePanel #bookQuestionAiFeedback {
+  display:flex !important; align-items:center !important;
+  width:100% !important; height:100% !important;
+  min-height:100% !important; max-height:none !important;
+  padding-top:14px !important; padding-bottom:14px !important;
+  padding-left:0 !important; padding-right:0 !important;
+  font-size:22px !important; font-weight:900 !important;
+  line-height:1.4 !important; word-break:keep-all !important;
   overflow-y:auto !important;
 }
 #writePanel .ar-after-feedback-button {
@@ -4544,6 +4585,327 @@ body.teacher-mode .teacher-top-button {
   padding: 0 24px !important;
   font-size: 24px !important;
 }
+/* =========================================================
+   읽기 후 > 질문으로 간추리기 AI 피드백 상태색
+   - good: 루미 카드 전체 초록색
+   - need/오류: 루미 카드 전체 빨간색
+   - 안쪽 직사각형 메시지 카드는 제거
+   ========================================================= */
+
+/* 기본 상태 변화가 부드럽게 보이도록 설정 */
+#practiceWritePanel .ar-after-feedback-card {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 올바른 질문과 답일 때: 바깥 카드 전체 초록색 */
+#practiceWritePanel .ar-after-feedback-card:has(#extraPracticeAiFeedback.good) {
+  background: linear-gradient(
+    180deg,
+    rgba(239, 248, 232, 0.98),
+    rgba(218, 239, 202, 0.96)
+  ) !important;
+  border-color: #9fc879 !important;
+  box-shadow:
+    0 12px 24px rgba(64, 112, 42, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 다시 써야 하거나 오류가 났을 때: 바깥 카드 전체 빨간색 */
+#practiceWritePanel .ar-after-feedback-card:has(#extraPracticeAiFeedback.need) {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 238, 235, 0.98),
+    rgba(248, 208, 201, 0.96)
+  ) !important;
+  border-color: #dc9389 !important;
+  box-shadow:
+    0 12px 24px rgba(151, 66, 52, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 안쪽 직사각형 메시지 박스 제거 */
+#practiceWritePanel #extraPracticeAiFeedback {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 통과했을 때 글자색 */
+#practiceWritePanel
+.ar-after-feedback-card:has(#extraPracticeAiFeedback.good)
+.ar-after-feedback-title,
+#practiceWritePanel
+.ar-after-feedback-card:has(#extraPracticeAiFeedback.good)
+#extraPracticeAiFeedback {
+  color: #315e22 !important;
+}
+
+/* 다시 써야 할 때 글자색 */
+#practiceWritePanel
+.ar-after-feedback-card:has(#extraPracticeAiFeedback.need)
+.ar-after-feedback-title,
+#practiceWritePanel
+.ar-after-feedback-card:has(#extraPracticeAiFeedback.need)
+#extraPracticeAiFeedback {
+  color: #92352c !important;
+}
+/* =========================================================
+   읽기 후 > 내 책에 맞는 질문 쓰기 피드백 상태색
+   - good: 루미 카드 전체 초록색
+   - need/오류: 루미 카드 전체 빨간색
+   - 안쪽 직사각형 메시지 박스 제거
+   ========================================================= */
+
+.ar-after-feedback-card.is-question-feedback {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* 통과했을 때 카드 전체 초록색 */
+.ar-after-feedback-card.is-question-feedback:has(#bookQuestionAiFeedback.good) {
+  background: linear-gradient(
+    180deg,
+    rgba(239, 248, 232, 0.98),
+    rgba(218, 239, 202, 0.96)
+  ) !important;
+  border-color: #9fc879 !important;
+  box-shadow:
+    0 12px 24px rgba(64, 112, 42, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 다시 써야 하거나 오류일 때 카드 전체 빨간색 */
+.ar-after-feedback-card.is-question-feedback:has(#bookQuestionAiFeedback.need) {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 238, 235, 0.98),
+    rgba(248, 208, 201, 0.96)
+  ) !important;
+  border-color: #dc9389 !important;
+  box-shadow:
+    0 12px 24px rgba(151, 66, 52, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 카드 안쪽 직사각형 메시지 박스 제거 */
+.ar-after-feedback-card.is-question-feedback #bookQuestionAiFeedback {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 통과 상태 글자색 */
+.ar-after-feedback-card.is-question-feedback:has(#bookQuestionAiFeedback.good)
+#bookQuestionAiFeedback {
+  color: #315e22 !important;
+}
+
+/* 수정 필요 상태 글자색 */
+.ar-after-feedback-card.is-question-feedback:has(#bookQuestionAiFeedback.need)
+#bookQuestionAiFeedback {
+  color: #92352c !important;
+}
+/* =========================================================
+   읽기 후 4단계 > 최종 간추리기 피드백 카드
+   ========================================================= */
+
+/* 결과에 따라 루미 바깥 카드 전체 색 변경 */
+.ar-after-feedback-card:has(#summaryAiFeedback.good) {
+  background: linear-gradient(
+    180deg,
+    rgba(239, 248, 232, 0.98),
+    rgba(218, 239, 202, 0.96)
+  ) !important;
+  border-color: #9fc879 !important;
+  box-shadow:
+    0 12px 24px rgba(64, 112, 42, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+.ar-after-feedback-card:has(#summaryAiFeedback.need) {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 238, 235, 0.98),
+    rgba(248, 208, 201, 0.96)
+  ) !important;
+  border-color: #dc9389 !important;
+  box-shadow:
+    0 12px 24px rgba(151, 66, 52, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.62) !important;
+}
+
+/* 안쪽 직사각형 피드백 박스 제거 */
+#summaryAiFeedback {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 피드백 글자색 */
+.ar-after-feedback-card:has(#summaryAiFeedback.good) #summaryAiFeedback {
+  color: #315e22 !important;
+}
+
+.ar-after-feedback-card:has(#summaryAiFeedback.need) #summaryAiFeedback {
+  color: #92352c !important;
+}
+/* =========================================================
+   내 간추리기 완성 > 루미 피드백 문구 중앙 정렬
+   ========================================================= */
+
+/* 피드백 카드의 루미, 문구, 검사 버튼을 세로 중앙으로 맞춤 */
+#summaryPanel .ar-after-feedback-card.is-summary-feedback {
+  align-items: center !important;
+}
+
+/* 피드백 문구가 들어 있는 가운데 영역 */
+#summaryPanel .ar-after-feedback-content {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 82px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* 실제 피드백 문구 */
+#summaryPanel #summaryAiFeedback {
+  width: 100% !important;
+  min-height: 82px !important;
+  max-height: none !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  line-height: 1.45 !important;
+
+  word-break: keep-all !important;
+  white-space: normal !important;
+  overflow: visible !important;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 검사하기 버튼도 카드 세로 중앙 유지 */
+#summaryPanel .ar-after-feedback-button {
+  align-self: center !important;
+}
+
+/* DB 공유 목록: 3개 제한 없이 목록 영역만 스크롤되도록 최종 재정의 */
+#sharePanel.is-active {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#sharePanel .ar-share-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-content: start !important;
+  align-items: start !important;
+  gap: 18px !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 6px 10px 14px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+#sharePanel .ar-share-item {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#sharePanel .ar-share-item p {
+  flex: 0 0 auto !important;
+  min-height: 150px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  white-space: pre-line !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+}
+
+#sharePanel .ar-share-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin: -2px 0 12px !important;
+  color: #8a6335 !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+
+#sharePanel .ar-share-like-count {
+  min-width: 125px !important;
+  height: 46px !important;
+  padding: 0 18px !important;
+  border-radius: 999px !important;
+  border: 1.5px solid rgba(186, 94, 72, 0.28) !important;
+  background: rgba(255, 246, 236, 0.96) !important;
+  color: #8a3d2a !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#sharePanel .ar-share-empty {
+  grid-column: 1 / -1 !important;
+  min-height: 240px !important;
+  border-radius: 22px !important;
+  border: 2px dashed rgba(150, 95, 35, 0.25) !important;
+  background: rgba(255, 250, 238, 0.82) !important;
+  color: #6b4520 !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+@media (max-width: 1180px) {
+  #sharePanel .ar-share-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* 교사 계정: 간추리기 공유 화면 이동 버튼 숨김 */
+body.teacher-mode .ar-share-panel .ar-panel-actions {
+  display: none !important;
+}
+/* 교사 계정: 책읽기 홈 버튼 숨김 */
+body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
+  display: none !important;
+}
 </style>
 </head>
 
@@ -4704,6 +5066,7 @@ body.teacher-mode .teacher-top-button {
       id="practiceQuestion1"
       type="text"
       placeholder="질문을 써 보세요."
+      oninput="resetExtraPracticeFeedback()"
     />
 
     <label class="ar-input-label" for="practiceAnswer1">답 1</label>
@@ -4712,6 +5075,7 @@ body.teacher-mode .teacher-top-button {
       class="ar-answer-input"
       id="practiceAnswer1"
       placeholder="답을 써 보세요."
+      oninput="resetExtraPracticeFeedback()"
     ></textarea>
   </div>
 
@@ -4723,6 +5087,7 @@ body.teacher-mode .teacher-top-button {
       id="practiceQuestion2"
       type="text"
       placeholder="질문을 써 보세요."
+      oninput="resetExtraPracticeFeedback()"
     />
 
     <label class="ar-input-label" for="practiceAnswer2">답 2</label>
@@ -4731,6 +5096,7 @@ body.teacher-mode .teacher-top-button {
       class="ar-answer-input"
       id="practiceAnswer2"
       placeholder="답을 써 보세요."
+      oninput="resetExtraPracticeFeedback()"
     ></textarea>
   </div>
 
@@ -4738,7 +5104,7 @@ body.teacher-mode .teacher-top-button {
               </article>
             </div>
 
-            <article class="ar-after-feedback-card">
+            <article class="ar-after-feedback-card is-question-feedback">
               <img
                 class="ar-after-feedback-lumi"
                 src="../assets/images/class-reading/class-reading-lumi-feedback.png"
@@ -4750,11 +5116,19 @@ body.teacher-mode .teacher-top-button {
                   질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게.
                 </div>
               </div>
+              <button
+                class="ar-after-feedback-button"
+                type="button"
+                id="extraPracticeCheckButton"
+                onclick="checkExtraPracticeDone()"
+              >
+                검사하기
+              </button>
             </article>
 
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('builder')">이전으로</button>
-              <button class="ar-action-button" type="button" onclick="goWritePanelAfterPractice()">다음으로</button>
+              <button class="ar-action-button" type="button" id="extraPracticeNextButton" onclick="goWritePanelAfterPractice()" disabled>다음으로</button>
             </div>
           </section>
 
@@ -4947,11 +5321,15 @@ body.teacher-mode .teacher-top-button {
   </div>
 
   <script>
-    const STORAGE_KEY = "afterReadSummaries";
-    const LIKE_STORAGE_KEY = "afterReadSummaryLikes";
-
+    const AFTER_READING_API_BASE_URL = "http://localhost:8080";
     let selectedBookType = "";
     let selectedPracticeQuestionIndexes = [];
+    let currentClassId = null;
+    let currentClassReadingBookId = null;
+    let sharedSummaries = [];
+    let isAfterReadingSaving = false;
+    let currentBookQuestionIndex = 0;
+    let restoredAfterReadingData = null;
 
     function getBookTypeLabelForAi() {
       const data = bookTypeData[selectedBookType];
@@ -5104,6 +5482,255 @@ body.teacher-mode .teacher-top-button {
       }
     };
 
+    /*
+      "내 책에 맞는 질문을 직접 써요"(3단계, #writePanel) 질문 1~3
+      입력칸의 placeholder. 책 유형별 간추리기 방법(method/blanks)에
+      맞는 예시로 안내한다. bookTypeData에 없는 값이 selectedBookType에
+      들어와도 이야기책 예시로 대체한다.
+    */
+    const BOOK_QUESTION_EXAMPLES = {
+      story: [
+        "예) 처음에 어떤 일이 있었나요?",
+        "예) 가운데에 어떤 문제가 생겼나요?",
+        "예) 마지막에는 어떻게 되었나요?"
+      ],
+      info: [
+        "예) 이 글은 무엇에 대해 설명하나요?",
+        "예) 중요한 특징은 무엇인가요?",
+        "예) 새롭게 알게 된 내용은 무엇인가요?"
+      ],
+      opinion: [
+        "예) 글쓴이는 무엇을 주장하나요?",
+        "예) 그렇게 주장하는 까닭은 무엇인가요?",
+        "예) 주장을 뒷받침하는 근거는 무엇인가요?"
+      ]
+    };
+
+    function getCurrentUserContext() {
+      return {
+        id:
+          sessionStorage.getItem("studentId") ||
+          sessionStorage.getItem("teacherId") ||
+          sessionStorage.getItem("id"),
+        role: sessionStorage.getItem("role"),
+        token: sessionStorage.getItem("token")
+      };
+    }
+
+    function isTeacherAfterReadingMode() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("mode") === "teacher" || sessionStorage.getItem("role") === "teacher";
+    }
+
+    async function fetchJson(url, options) {
+      const response = await fetch(url, options || {});
+
+      if (!response.ok) {
+        const message = await response.text().catch(function() {
+          return "";
+        });
+        throw new Error(message || "API 요청 실패: " + response.status);
+      }
+
+      if (response.status === 204) {
+        return null;
+      }
+
+      return response.json();
+    }
+
+    async function loadAfterReadingContext() {
+      const context = getCurrentUserContext();
+
+      if (!context.id || !context.token) {
+        throw new Error("로그인 정보가 없습니다.");
+      }
+
+      const headers = {
+        Authorization: "Bearer " + context.token
+      };
+
+      if (isTeacherAfterReadingMode()) {
+        const classData = await fetchJson(
+          AFTER_READING_API_BASE_URL + "/api/teachers/" + context.id + "/class",
+          { headers: headers }
+        );
+
+        currentClassId = classData.classId;
+      } else {
+        const classData = await fetchJson(
+          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/class",
+          { headers: headers }
+        );
+
+        currentClassId = classData.classId;
+      }
+
+      const readingBook = await fetchJson(
+        AFTER_READING_API_BASE_URL + "/api/classes/" + currentClassId + "/reading-range",
+        { headers: headers }
+      );
+
+      currentClassReadingBookId = readingBook.id;
+    }
+
+    async function loadMyAfterReadingData() {
+      const context = getCurrentUserContext();
+
+      if (!context.id || context.role !== "student" || !currentClassReadingBookId) {
+        return null;
+      }
+
+      const data = await fetchJson(
+        AFTER_READING_API_BASE_URL +
+          "/api/students/" +
+          context.id +
+          "/after-reading?classReadingBookId=" +
+          encodeURIComponent(currentClassReadingBookId),
+        {
+          headers: {
+            Authorization: "Bearer " + context.token
+          }
+        }
+      );
+
+      restoreAfterReadingData(data);
+      return data;
+    }
+
+    function restoreAfterReadingData(data) {
+      if (!data) return;
+      restoredAfterReadingData = data;
+
+      if (data.bookType && bookTypeData[data.bookType]) {
+        selectedBookType = data.bookType;
+        renderMethodPanel();
+        updateBookQuestionPlaceholders();
+      }
+
+      if (Array.isArray(data.questions)) {
+        data.questions.forEach(function(item) {
+          const number = Number(item.index);
+          const question = document.getElementById("question" + number);
+          const answer = document.getElementById("answer" + number);
+
+          if (question) question.value = item.question || "";
+          if (answer) answer.value = item.answer || "";
+        });
+
+        restoreQuestionCardProgress(data.questions);
+      }
+
+      const summaryText = document.getElementById("summaryText");
+      if (summaryText && data.summary) {
+        summaryText.value = data.summary;
+      }
+    }
+
+    function restoreQuestionCardProgress(questions) {
+      const cards = getBookQuestionCards();
+
+      cards.forEach(function(card, index) {
+        const number = index + 1;
+        const saved = questions.find(function(item) {
+          return Number(item.index) === number;
+        });
+
+        const passed = !!(saved && saved.question && saved.answer);
+        card.dataset.feedbackPassed = passed ? "true" : "false";
+        card.classList.toggle("passed", passed);
+      });
+
+      syncBookQuestionCompletionState();
+    }
+
+    async function refreshSharedSummaries() {
+      if (!currentClassReadingBookId) {
+        return [];
+      }
+
+      const context = getCurrentUserContext();
+
+      if (!context.id || !context.token) {
+        return [];
+      }
+
+      const headers = {
+        Authorization: "Bearer " + context.token
+      };
+
+      if (isTeacherAfterReadingMode()) {
+        if (!currentClassId) return [];
+
+        sharedSummaries = await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/teachers/" +
+            context.id +
+            "/classes/" +
+            currentClassId +
+            "/after-reading/summaries?classReadingBookId=" +
+            encodeURIComponent(currentClassReadingBookId),
+          { headers: headers }
+        );
+      } else {
+        sharedSummaries = await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/students/" +
+            context.id +
+            "/after-reading/shared?classReadingBookId=" +
+            encodeURIComponent(currentClassReadingBookId),
+          { headers: headers }
+        );
+      }
+
+      return sharedSummaries;
+    }
+
+    async function initializeAfterReadingPage() {
+      try {
+        await loadAfterReadingContext();
+
+        if (isTeacherAfterReadingMode()) {
+          applyTeacherMode();
+          document.getElementById("menuScreen").classList.remove("is-active");
+          document.getElementById("studyScreen").classList.add("is-active");
+          showStudyPanel("share");
+          return;
+        }
+
+        const restoredData = await loadMyAfterReadingData();
+        await renderShareList();
+
+        if (!openAfterReadTargetFromUrl()) {
+          resumeAfterReadingFromData(restoredData);
+        }
+      } catch (error) {
+        console.error("읽기 후 데이터를 불러오지 못했습니다.", error);
+        const shareList = document.getElementById("shareList");
+        if (shareList) {
+          shareList.innerHTML =
+            '<div class="ar-share-empty">읽기 후 데이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요.</div>';
+        }
+      }
+    }
+
+    /*
+      질문·답 입력값은 절대 건드리지 않고 placeholder만 갱신한다.
+      이미 값을 입력한 textarea는 placeholder가 화면에 보이지 않으므로
+      값이 사라지는 것처럼 보이지 않는다.
+    */
+    function updateBookQuestionPlaceholders() {
+      const examples = BOOK_QUESTION_EXAMPLES[selectedBookType] || BOOK_QUESTION_EXAMPLES.story;
+
+      const question1 = document.getElementById("question1");
+      const question2 = document.getElementById("question2");
+      const question3 = document.getElementById("question3");
+
+      if (question1) question1.placeholder = examples[0];
+      if (question2) question2.placeholder = examples[1];
+      if (question3) question3.placeholder = examples[2];
+    }
+
     function selectBookType(type) {
       selectedBookType = type;
       selectedPracticeQuestionIndexes = [];
@@ -5113,7 +5740,41 @@ body.teacher-mode .teacher-top-button {
 
       renderMethodPanel();
       showStudyPanel("method");
-      clearQuestionInputs();
+      updateBookQuestionPlaceholders();
+      saveSelectedBookType().catch(function(error) {
+        console.error("책 유형 저장 실패", error);
+        alert("책 종류를 저장하지 못했어요. 잠시 후 다시 선택해 주세요.");
+      });
+    }
+
+    async function saveSelectedBookType() {
+      const context = getCurrentUserContext();
+
+      if (!selectedBookType || !context.id || context.role !== "student" || !context.token) {
+        return;
+      }
+
+      if (!currentClassReadingBookId) {
+        await loadAfterReadingContext();
+      }
+
+      await fetchJson(
+        AFTER_READING_API_BASE_URL +
+          "/api/students/" +
+          context.id +
+          "/after-reading/book-type",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + context.token
+          },
+          body: JSON.stringify({
+            classReadingBookId: currentClassReadingBookId,
+            bookType: selectedBookType
+          })
+        }
+      );
     }
 
     function goTypeMenu() {
@@ -5443,25 +6104,33 @@ if (selectedBookType === "opinion") {
     }
 
     function goPracticeWritePanel() {
-      const data = bookTypeData[selectedBookType];
+  const data = bookTypeData[selectedBookType];
 
-      if (!data) {
-        console.error("선택된 책 유형 데이터가 없습니다:", selectedBookType);
-        return;
-      }
+  if (!data) {
+    console.error("선택된 책 유형 데이터가 없습니다:", selectedBookType);
+    return;
+  }
 
-      const hasGoodQuestion = selectedPracticeQuestionIndexes.some(function(index) {
-        return data.practiceQuestions[index] && data.practiceQuestions[index].good;
-      });
+  const selectedQuestions = selectedPracticeQuestionIndexes.map(function(index) {
+    return data.practiceQuestions[index];
+  });
 
-      if (!hasGoodQuestion) {
-        alert("먼저 간추리기에 도움이 되는 좋은 질문을 골라 주세요.");
-        return;
-      }
+  const goodCount = selectedQuestions.filter(function(question) {
+    return question && question.good;
+  }).length;
 
-      showStudyPanel("practiceWrite");
-      renderExtraPracticeWrite();
-    }
+  const wrongCount = selectedQuestions.filter(function(question) {
+    return question && !question.good;
+  }).length;
+
+  if (goodCount !== 3 || wrongCount > 0) {
+    alert("간추리기에 도움이 되는 질문 3개를 모두 골라 주세요.");
+    return;
+  }
+
+  showStudyPanel("practiceWrite");
+  renderExtraPracticeWrite();
+}
 
     function renderExtraPracticeWrite() {
       const data = bookTypeData[selectedBookType];
@@ -5498,60 +6167,244 @@ if (selectedBookType === "opinion") {
       }
     }
 
-    function checkExtraPracticeDone() {
-      const question1 = document.getElementById("practiceQuestion1").value.trim();
-      const question2 = document.getElementById("practiceQuestion2").value.trim();
-      const answer1 = document.getElementById("practiceAnswer1").value.trim();
-      const answer2 = document.getElementById("practiceAnswer2").value.trim();
+    let extraPracticeAiRequestId = 0;
+    let isExtraPracticeAiRequestInFlight = false;
+    let extraPracticeCheckPassed = false;
 
-      const feedback = document.getElementById("extraPracticeFeedback");
+    /*
+      로컬 형식 필터. 의미 판정(간추리기 적합성, 책 유형과 맞는지, 예시
+      글과 일치하는지)은 하지 않고, 다른 읽기 중 화면과 같은 기준으로
+      빈 입력·초성/기호만 입력·반복 글자·너무 짧은 입력·질문 형태가 아닌
+      입력만 걸러낸다. 의미 판정은 requestExtraPracticeAiFeedback()에서
+      AI에게 맡긴다.
+    */
+    function validateExtraPracticeFormat(question1, answer1, question2, answer2) {
+      const pairs = [
+        { question: question1, answer: answer1, label: "질문 1" },
+        { question: question2, answer: answer2, label: "질문 2" }
+      ];
 
-      if (question1 && question2 && answer1 && answer2) {
-        if (feedback) feedback.classList.add("is-show");
+      for (const pair of pairs) {
+        if (!pair.question) {
+          return { ok: false, message: pair.label + "이 아직 비어 있어. 질문을 먼저 써 보자." };
+        }
 
-        setAfterAiFeedback(
-          "extraPracticeAiFeedback",
-          "",
-          "루미가 답변을 읽고 있어요..."
-        );
+        if (preReadingIsJamoOrSymbolOnly(pair.question)) {
+          return { ok: false, message: pair.label + "의 뜻이 잘 보이지 않아. 문장으로 다시 적어 보자." };
+        }
 
-        requestAiFeedback("extra_practice", getBookTypeLabelForAi(), [
-          { question: question1, answer: answer1 },
-          { question: question2, answer: answer2 }
-        ]).then(function(result) {
-          setAfterAiFeedback("extraPracticeAiFeedback", result.status, result.message);
-        }).catch(function() {
-          setAfterAiFeedback(
-            "extraPracticeAiFeedback",
-            "need",
-            "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘."
-          );
-        });
+        if (preReadingHasExcessiveRepetition(pair.question)) {
+          return { ok: false, message: pair.label + "에 같은 글자가 너무 많이 반복됐어. 문장으로 적어 보자." };
+        }
+
+        if (preReadingCountWithoutSpaces(pair.question) < 5) {
+          return { ok: false, message: pair.label + "이 너무 짧아. 조금 더 자세히 써 보자." };
+        }
+
+        if (!preReadingLooksLikeQuestion(pair.question)) {
+          return { ok: false, message: pair.label + "을 질문 형식으로 바꿔 보자. '~나요?', '~까요?'처럼 물어보는 문장으로 써 보자." };
+        }
+
+        if (!pair.answer) {
+          return { ok: false, message: pair.label + "에 대한 답도 적어줘." };
+        }
+
+        if (preReadingIsJamoOrSymbolOnly(pair.answer)) {
+          return { ok: false, message: pair.label + "의 답 뜻이 잘 보이지 않아. 문장으로 다시 적어 보자." };
+        }
+
+        if (preReadingHasExcessiveRepetition(pair.answer)) {
+          return { ok: false, message: pair.label + "의 답에 같은 글자가 너무 많이 반복됐어. 문장으로 적어 보자." };
+        }
+
+        if (preReadingCountWithoutSpaces(pair.answer) < 3) {
+          return { ok: false, message: pair.label + "의 답이 조금 짧아. 조금 더 자세히 써 보자." };
+        }
+      }
+
+      return { ok: true };
+    }
+
+    /*
+      질문이나 답을 수정하면 이전 검사 결과(good/need)를 더 이상 믿을 수
+      없으므로 초기화하고, 다음으로 버튼도 다시 잠근다. 검사가 진행 중일
+      때는 건드리지 않는다.
+    */
+    function resetExtraPracticeFeedback() {
+      if (isExtraPracticeAiRequestInFlight) {
         return;
       }
 
-      if (feedback) feedback.classList.remove("is-show");
+      extraPracticeCheckPassed = false;
+      extraPracticeAiRequestId++;
 
       setAfterAiFeedback(
         "extraPracticeAiFeedback",
         "",
         "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
       );
+
+      const nextButton = document.getElementById("extraPracticeNextButton");
+      if (nextButton) nextButton.disabled = true;
     }
 
-    function goWritePanelAfterPractice() {
+    function checkExtraPracticeDone() {
+      if (isExtraPracticeAiRequestInFlight) {
+        return;
+      }
+
       const question1 = document.getElementById("practiceQuestion1").value.trim();
       const question2 = document.getElementById("practiceQuestion2").value.trim();
       const answer1 = document.getElementById("practiceAnswer1").value.trim();
       const answer2 = document.getElementById("practiceAnswer2").value.trim();
 
-      if (!question1 || !question2 || !answer1 || !answer2) {
-        alert("직접 만든 질문 2개와 답 2개를 모두 적어 주세요.");
+      const nextButton = document.getElementById("extraPracticeNextButton");
+      if (nextButton) nextButton.disabled = true;
+      extraPracticeCheckPassed = false;
+
+      const localResult = validateExtraPracticeFormat(question1, answer1, question2, answer2);
+
+      if (!localResult.ok) {
+        setAfterAiFeedback("extraPracticeAiFeedback", "need", localResult.message);
         return;
       }
 
-      showStudyPanel("write");
+      requestExtraPracticeAiFeedback(question1, answer1, question2, answer2);
     }
+
+    /*
+      =========================================================
+      읽기 후 "질문으로 간추리기" AI 피드백 요청
+      =========================================================
+      다른 화면과 달리 실제 예시 글(passage)을 함께 보내 사실 검증까지
+      받는다. AI가 good을 줘야만 "다음으로" 버튼이 열린다.
+    */
+    function requestExtraPracticeAiFeedback(question1, answer1, question2, answer2) {
+      const requestId = ++extraPracticeAiRequestId;
+      const checkButton = document.getElementById("extraPracticeCheckButton");
+      const nextButton = document.getElementById("extraPracticeNextButton");
+      const timeoutMs = 15000;
+      const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요.";
+
+      isExtraPracticeAiRequestInFlight = true;
+
+      if (checkButton) {
+        checkButton.disabled = true;
+      }
+
+      setAfterAiFeedback("extraPracticeAiFeedback", "", "루미가 답변을 읽고 있어요...");
+
+      const abortController = new AbortController();
+
+      const timeoutId = setTimeout(function() {
+        abortController.abort();
+      }, timeoutMs);
+
+      const data = bookTypeData[selectedBookType];
+
+      fetch(API_BASE_URL + "/api/feedback/ai-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: abortController.signal,
+        body: JSON.stringify({
+          type: "extra_practice",
+          bookType: selectedBookType,
+          passage: data ? data.extraPracticeText : "",
+          qaList: [
+            { question: question1, answer: answer1 },
+            { question: question2, answer: answer2 }
+          ]
+        })
+      })
+        .then(function(response) {
+          if (requestId !== extraPracticeAiRequestId) {
+            return;
+          }
+
+          if (!response.ok) {
+            return response.text().then(
+              function(bodyText) {
+                console.error(
+                  "간추리기 질문 AI 피드백 요청 실패 - status:",
+                  response.status,
+                  "body:",
+                  bodyText
+                );
+                setAfterAiFeedback("extraPracticeAiFeedback", "need", failMessage);
+              },
+              function() {
+                console.error(
+                  "간추리기 질문 AI 피드백 요청 실패 - status:",
+                  response.status,
+                  "body: (읽지 못함)"
+                );
+                setAfterAiFeedback("extraPracticeAiFeedback", "need", failMessage);
+              }
+            );
+          }
+
+          return response.json().then(function(result) {
+            if (requestId !== extraPracticeAiRequestId) {
+              return;
+            }
+
+            const isGood = result.status === "good";
+
+            setAfterAiFeedback("extraPracticeAiFeedback", isGood ? "good" : "need", result.message);
+
+            extraPracticeCheckPassed = isGood;
+
+            if (nextButton) {
+              nextButton.disabled = !isGood;
+            }
+          });
+        })
+        .catch(function(error) {
+          if (requestId !== extraPracticeAiRequestId) {
+            return;
+          }
+
+          if (error.name === "AbortError") {
+            console.error(
+              "간추리기 질문 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
+              error
+            );
+          } else {
+            console.error(
+              "간추리기 질문 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
+              error
+            );
+          }
+
+          setAfterAiFeedback("extraPracticeAiFeedback", "need", failMessage);
+        })
+        .finally(function() {
+          clearTimeout(timeoutId);
+          isExtraPracticeAiRequestInFlight = false;
+
+          if (checkButton) {
+            checkButton.disabled = false;
+          }
+        });
+    }
+
+    function goWritePanelAfterPractice() {
+  if (!extraPracticeCheckPassed) {
+    alert("루미에게 검사를 받고 good을 받아야 다음으로 갈 수 있어요.");
+    return;
+  }
+
+  const hasSavedQuestion =
+    document.getElementById("question1")?.value.trim() ||
+    document.getElementById("question2")?.value.trim() ||
+    document.getElementById("question3")?.value.trim();
+
+  if (!hasSavedQuestion) {
+    prepareBookQuestionCards();
+  }
+
+  showStudyPanel("write");
+}
 
     function getQuestionAnswerData() {
       return [
@@ -5688,7 +6541,40 @@ if (selectedBookType === "opinion") {
 
       setAfterAiFeedback("summaryAiFeedback", "", "루미가 답변을 읽고 있어요...");
 
-      requestAiFeedback("summary", getBookTypeLabelForAi(), null, undefined, summaryText)
+      /*
+        연습읽기(after-read.html) 학생만 이해도 기록 대상이다. 교사 미리보기
+        모드 등 학생이 아닌 경우는 기존과 동일하게 공개 API를 쓴다 -
+        individual-after-reading.html에는 전혀 영향이 없다.
+      */
+      const finalSummaryContext = getCurrentUserContext();
+      const useAuthenticatedFinalSummaryAi =
+        finalSummaryContext.role === "student" &&
+        !!finalSummaryContext.token &&
+        !!currentClassReadingBookId;
+
+      const finalSummaryAiPromise = useAuthenticatedFinalSummaryAi
+        ? requestAuthenticatedAiFeedback({
+            activityType: "final_summary",
+            bookType: getBookTypeLabelForAi(),
+            qaList: getQuestionAnswerData(),
+            summaryText: summaryText,
+            evaluationKey:
+              "practice-after-" +
+              currentClassReadingBookId +
+              "-" +
+              finalSummaryContext.id +
+              "-final-summary",
+            classReadingBookId: currentClassReadingBookId
+          })
+        : requestAiFeedback(
+            "final_summary",
+            getBookTypeLabelForAi(),
+            getQuestionAnswerData(),
+            undefined,
+            summaryText
+          );
+
+      finalSummaryAiPromise
         .then(function(result) {
           setAfterAiFeedback("summaryAiFeedback", result.status, result.message);
           if (summaryNextButton) summaryNextButton.disabled = false;
@@ -5703,195 +6589,284 @@ if (selectedBookType === "opinion") {
         });
     }
 
-    async function saveSummary() {
-  const summaryText = document.getElementById("summaryText").value.trim();
+    function getAfterReadingQuestionPayload() {
+      return getQuestionAnswerData().map(function(item, index) {
+        const card = getBookQuestionCards()[index];
 
-  if (!summaryText) {
-    alert("간추리기 내용을 적어 주세요.");
-    return;
-  }
-
-  if (summaryText.includes("________________")) {
-    alert("간추리기 빈칸을 모두 채운 뒤 저장해 주세요.");
-    return;
-  }
-
-  const studentId = sessionStorage.getItem("studentId");
-  const token = sessionStorage.getItem("token");
-
-  if (!studentId || !token) {
-    alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
-    return;
-  }
-
-  const savedList = loadSummaries();
-  const data = bookTypeData[selectedBookType];
-
-  const newSummary = {
-    id: "my-summary-" + Date.now(),
-    name: "나",
-    type: selectedBookType,
-    typeLabel: data.label,
-    icon: data.icon,
-    summary: summaryText,
-    questions: getQuestionAnswerData(),
-    createdAt: getTodayText()
-  };
-
-  try {
-    /* 읽기 후 완료 상태를 백엔드에 저장합니다. */
-    const response = await fetch(
-      `http://localhost:8080/api/students/${studentId}/practice-progress`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          afterDone: true
-        })
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("읽기 후 완료 상태 저장에 실패했습니다.");
-    }
-
-    /* 간추리기 내용을 브라우저에도 저장합니다. */
-    savedList.unshift(newSummary);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedList));
-
-    renderShareList();
-    showStudyPanel("share");
-
-    if (typeof givePowerRewardOnce === "function") {
-      givePowerRewardOnce("practice_all_complete_" + studentId, {
-        presetKey: "practice_all_complete"
+        return {
+          index: index + 1,
+          question: item.question,
+          answer: item.answer,
+          aiPassed: !card || card.dataset.feedbackPassed === "true"
+        };
       });
-    } else {
-      alert("간추리기가 저장되었어요!");
     }
-  } catch (error) {
-    console.error(error);
-    alert("간추리기 완료 상태를 저장하지 못했습니다.");
-  }
-}
 
-    function loadSummaries() {
-      const savedData = localStorage.getItem(STORAGE_KEY);
-
-      if (!savedData) {
-        return [];
+    function validateAfterReadingCompletion(summaryText) {
+      if (!selectedBookType) {
+        return "책 종류를 먼저 골라 주세요.";
       }
+
+      if (!summaryText) {
+        return "간추리기 내용을 적어 주세요.";
+      }
+
+      if (summaryText.includes("________________")) {
+        return "간추리기 빈칸을 모두 채운 뒤 저장해 주세요.";
+      }
+
+      const questions = getAfterReadingQuestionPayload();
+      const hasBlankQuestion = questions.some(function(item) {
+        return !item.question || !item.answer;
+      });
+
+      if (hasBlankQuestion) {
+        return "질문 3개와 답 3개를 모두 적어 주세요.";
+      }
+
+      const hasUnpassedQuestion = questions.some(function(item) {
+        return item.aiPassed === false;
+      });
+
+      if (hasUnpassedQuestion) {
+        return "질문 3개를 모두 루미에게 확인받은 뒤 저장해 주세요.";
+      }
+
+      return "";
+    }
+
+    async function saveSummary() {
+      if (isAfterReadingSaving) {
+        return;
+      }
+
+      const summaryElement = document.getElementById("summaryText");
+      const summaryText = summaryElement ? summaryElement.value.trim() : "";
+      const validationMessage = validateAfterReadingCompletion(summaryText);
+
+      if (validationMessage) {
+        alert(validationMessage);
+        return;
+      }
+
+      const context = getCurrentUserContext();
+
+      if (!context.id || context.role !== "student" || !context.token) {
+        alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+        return;
+      }
+
+      if (!currentClassReadingBookId) {
+        await loadAfterReadingContext();
+      }
+
+      const summaryNextButton = document.getElementById("summaryNextButton");
+      isAfterReadingSaving = true;
+      if (summaryNextButton) summaryNextButton.disabled = true;
 
       try {
-        const parsedData = JSON.parse(savedData);
-        return Array.isArray(parsedData) ? parsedData : [];
+        const savedData = await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/students/" +
+            context.id +
+            "/after-reading",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + context.token
+            },
+            body: JSON.stringify({
+              classReadingBookId: currentClassReadingBookId,
+              bookType: selectedBookType,
+              questions: getAfterReadingQuestionPayload(),
+              summary: summaryText,
+              summaryAiPassed: true
+            })
+          }
+        );
+
+        restoreAfterReadingData(savedData);
+
+        const progress = await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/students/" +
+            context.id +
+            "/practice-progress",
+          {
+            headers: {
+              Authorization: "Bearer " + context.token
+            }
+          }
+        );
+
+        if (!progress || progress.afterDone !== true) {
+          throw new Error("읽기 후 완료 상태가 서버에 반영되지 않았습니다.");
+        }
+
+        await renderShareList();
+        showStudyPanel("share");
+
+        if (savedData.rewardGranted === true) {
+          showPracticeCompleteReward(savedData.stats);
+        } else {
+          alert("간추리기가 저장되었어요!");
+        }
       } catch (error) {
-        return [];
+        console.error(error);
+        alert("간추리기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        isAfterReadingSaving = false;
+        if (summaryNextButton) summaryNextButton.disabled = false;
       }
     }
 
-    function renderShareList() {
+    function showPracticeCompleteReward(stats) {
+      syncPracticeStatsToPowerStorage(stats);
+
+      if (typeof openMiniRewardModal === "function") {
+        openMiniRewardModal({
+          badge: "✨ 나의 힘 성장!",
+          title: "연습읽기 완료!",
+          message: "루미: 연습읽기 모험을 끝까지 해냈어!",
+          rewards: [
+            { type: "magic", name: "마법력", point: "+8" },
+            { type: "stamina", name: "체력", point: "+8" },
+            { type: "wisdom", name: "지혜", point: "+8" },
+            { type: "courage", name: "용기", point: "+8" }
+          ]
+        });
+        return;
+      }
+
+      alert("연습읽기 완료! 마법력 +8, 체력 +8, 지혜 +8, 용기 +8");
+    }
+
+    function syncPracticeStatsToPowerStorage(stats) {
+      const context = getCurrentUserContext();
+
+      if (!stats || !context.id) {
+        return;
+      }
+
+      const normalized = {
+        magic: Number(stats.magic || 0),
+        stamina: Number(stats.stamina || 0),
+        wisdom: Number(stats.wisdom || 0),
+        courage: Number(stats.courage || 0)
+      };
+
+      localStorage.setItem(
+        "individualPower_v2_" + context.id,
+        JSON.stringify(normalized)
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("individualPowerUpdated", { detail: normalized })
+      );
+    }
+
+    function formatAfterReadingDate(value) {
+      if (!value) {
+        return "";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value).slice(0, 10);
+      }
+
+      return (
+        date.getFullYear() +
+        "." +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "." +
+        String(date.getDate()).padStart(2, "0")
+      );
+    }
+
+    async function renderShareList() {
       const shareList = document.getElementById("shareList");
       if (!shareList) return;
 
-      const savedList = loadSummaries();
-      const sampleList = [
-        {
-          id: "sample-minji",
-          name: "민지",
-          typeLabel: "이야기를 담은 책",
-          icon: "📖",
-          summary: "수지는 비 오는 날 우산을 잃어버렸습니다.\n친구 지우가 함께 우산을 쓰자고 도와주었습니다.\n두 친구는 함께 집으로 안전하게 돌아갔습니다.",
-          baseLikes: 2
-        },
-        {
-          id: "sample-seojun",
-          name: "서준",
-          typeLabel: "정보를 담은 책",
-          icon: "🔍",
-          summary: "펭귄은 추운 남극에 사는 새입니다.\n날지는 못하지만 물속에서 헤엄을 잘 칩니다.\n두꺼운 깃털과 기름이 몸을 따뜻하게 지켜 줍니다.",
-          baseLikes: 1
-        },
-        {
-          id: "sample-hayoon",
-          name: "하윤",
-          typeLabel: "주장을 담은 책",
-          icon: "📣",
-          summary: "글쓴이는 쓰레기를 줄여야 한다고 주장합니다.\n그 이유는 쓰레기를 줄이면 환경을 지킬 수 있기 때문입니다.",
-          baseLikes: 3
+      shareList.innerHTML =
+        '<div class="ar-share-empty">우리 반 간추리기를 불러오고 있어요.</div>';
+
+      try {
+        const allList = await refreshSharedSummaries();
+
+        if (!allList.length) {
+          shareList.innerHTML =
+            '<div class="ar-share-empty">아직 공유된 간추리기가 없어요.</div>';
+          return;
         }
-      ];
 
-      const mySavedCards = savedList.map(function(item, index) {
-        return {
-          id: item.id || "my-summary-" + index,
-          name: item.name || "나",
-          typeLabel: item.typeLabel || "내가 읽은 책",
-          icon: item.icon || "📘",
-          summary: item.summary || "",
-          baseLikes: Number(item.baseLikes || 0)
-        };
-      });
-
-      const allList = mySavedCards.concat(sampleList);
-      const likedIds = loadLikedSummaryIds();
-
-      shareList.innerHTML = allList.slice(0, 3).map(function(item, index) {
-        const itemId = item.id || "summary-" + index;
-        const isLiked = likedIds.includes(itemId);
-        const likeCount = Number(item.baseLikes || 0) + (isLiked ? 1 : 0);
-
-        return (
-          '<article class="ar-share-item">' +
-            '<strong>' + escapeHtml(item.name) + '의 간추리기</strong>' +
-            '<span class="ar-share-tag">' + (item.icon || "📘") + ' ' + escapeHtml(item.typeLabel) + '</span>' +
-            '<p>' + escapeHtml(item.summary) + '</p>' +
-            '<div class="ar-share-footer">' +
-              '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
-                'onclick="toggleSummaryLike(\'' + escapeJsString(itemId) + '\')">' +
+        shareList.innerHTML = allList.map(function(item) {
+          const typeData = bookTypeData[item.bookType] || {};
+          const icon = typeData.icon || "📘";
+          const typeLabel = typeData.label || item.bookType || "내가 읽은 책";
+          const dateText = formatAfterReadingDate(item.updatedAt || item.createdAt);
+          const studentNumber = item.studentNumber ? item.studentNumber + "번 · " : "";
+          const authorName = item.studentName || "친구";
+          const likeCount = Number(item.likeCount || 0);
+          const isLiked = item.likedByMe === true;
+          const footerContent = isTeacherAfterReadingMode()
+            ? '<span class="ar-share-like-count">♥ 좋아요 ' + likeCount + '</span>'
+            : '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
+                'onclick="toggleSummaryLike(' + Number(item.id) + ')">' +
                 (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
-              '</button>' +
-            '</div>' +
-          '</article>'
-        );
-      }).join("");
+              '</button>';
+
+          return (
+            '<article class="ar-share-item">' +
+              '<strong>' + escapeHtml(authorName) + '의 간추리기</strong>' +
+              '<div class="ar-share-meta">' +
+                '<span>' + escapeHtml(studentNumber + typeLabel) + '</span>' +
+                '<span>' + escapeHtml(dateText) + '</span>' +
+              '</div>' +
+              '<span class="ar-share-tag">' + icon + ' ' + escapeHtml(typeLabel) + '</span>' +
+              '<p>' + escapeHtml(item.summary || "") + '</p>' +
+              '<div class="ar-share-footer">' + footerContent + '</div>' +
+            '</article>'
+          );
+        }).join("");
+      } catch (error) {
+        console.error("공유 간추리기 조회 실패", error);
+        shareList.innerHTML =
+          '<div class="ar-share-empty">공유 간추리기를 불러오지 못했어요.</div>';
+      }
     }
 
-    function loadLikedSummaryIds() {
-      const savedData = localStorage.getItem(LIKE_STORAGE_KEY);
+    async function toggleSummaryLike(summaryId) {
+      const context = getCurrentUserContext();
 
-      if (!savedData) {
-        return [];
+      if (!context.id || context.role !== "student" || !context.token) {
+        alert("학생 계정으로 로그인한 뒤 좋아요를 누를 수 있어요.");
+        return;
       }
 
       try {
-        const parsedData = JSON.parse(savedData);
-        return Array.isArray(parsedData) ? parsedData : [];
+        await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/students/" +
+            context.id +
+            "/after-reading/summaries/" +
+            encodeURIComponent(summaryId) +
+            "/like",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + context.token
+            }
+          }
+        );
+
+        await renderShareList();
       } catch (error) {
-        return [];
+        console.error("간추리기 좋아요 실패", error);
+        alert("좋아요를 반영하지 못했어요. 잠시 후 다시 눌러 주세요.");
       }
-    }
-
-    function saveLikedSummaryIds(ids) {
-      localStorage.setItem(LIKE_STORAGE_KEY, JSON.stringify(ids));
-    }
-
-    function toggleSummaryLike(summaryId) {
-      let likedIds = loadLikedSummaryIds();
-
-      if (likedIds.includes(summaryId)) {
-        likedIds = likedIds.filter(function(id) {
-          return id !== summaryId;
-        });
-      } else {
-        likedIds.push(summaryId);
-      }
-
-      saveLikedSummaryIds(likedIds);
-      renderShareList();
     }
 
     function clearQuestionInputs() {
@@ -6017,7 +6992,7 @@ if (selectedBookType === "opinion") {
       const target = params.get("open");
 
       if (target !== "share") {
-        return;
+        return false;
       }
 
       document.getElementById("menuScreen").classList.remove("is-active");
@@ -6025,19 +7000,52 @@ if (selectedBookType === "opinion") {
 
       showStudyPanel("share");
       renderShareList();
+      return true;
+    }
+
+    function getRestoredQuestionCount(data) {
+      if (!data || !Array.isArray(data.questions)) {
+        return 0;
+      }
+
+      return data.questions.filter(function(item) {
+        return item && item.question && item.answer;
+      }).length;
+    }
+
+    function hasCompleteRestoredAfterReadingData(data) {
+      const hasBookType = !!(data && data.bookType && bookTypeData[data.bookType]);
+      const hasSummary = !!(data && data.summary && data.summary.trim());
+
+      return hasBookType && getRestoredQuestionCount(data) === 3 && hasSummary && data.afterDone === true;
+    }
+
+    function resumeAfterReadingFromData(data) {
+      if (!data || !data.bookType || !bookTypeData[data.bookType]) {
+        return;
+      }
+
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+
+      const restoredQuestionCount = getRestoredQuestionCount(data);
+
+      if (hasCompleteRestoredAfterReadingData(data) || restoredQuestionCount > 0) {
+        showStudyPanel("write");
+        showBookQuestionCard(0);
+        return;
+      }
+
+      showStudyPanel("method");
     }
 
     function isTeacherMode() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("mode") === "teacher";
+      return isTeacherAfterReadingMode();
     }
 
     function goTeacherPractice() {
       location.href = "../teacher/practice-teacher.html";
     }
-
-    renderShareList();
-    openAfterReadTargetFromUrl();
 
     function applyTeacherMode() {
   const teacherMode = isTeacherMode();
@@ -6065,26 +7073,17 @@ applyTeacherMode();
        ========================================================= */
 
     function prepareBookQuestionCards() {
-      const cards = Array.from(document.querySelectorAll("#writePanel .ar-qa-card"));
+      const cards = getBookQuestionCards();
 
-      cards.forEach(function(card, index) {
-        card.dataset.feedbackPassed = "false";
-        card.classList.remove("passed");
-        card.classList.remove("current-card");
+      cards.forEach(function(card) {
+        const item = getBookQuestionFromCard(card);
+        const passed = card.dataset.feedbackPassed === "true" && item.question && item.answer;
 
-        if (index === 0) {
-          card.classList.remove("is-hidden");
-          card.classList.add("current-card");
-        } else {
-          card.classList.add("is-hidden");
-        }
+        card.dataset.feedbackPassed = passed ? "true" : "false";
+        card.classList.toggle("passed", passed);
       });
 
-      const summaryButton = document.getElementById("bookSummaryButton");
-
-      if (summaryButton) {
-        summaryButton.disabled = true;
-      }
+      showBookQuestionCard(0);
 
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
@@ -6092,6 +7091,7 @@ applyTeacherMode();
         "질문 1과 답을 쓴 뒤 검사하기를 눌러 봐."
       );
 
+      updateBookQuestionPlaceholders();
       updateAddQuestionButton();
     }
 
@@ -6104,6 +7104,47 @@ applyTeacherMode();
 
     function getBookQuestionCards() {
       return Array.from(document.querySelectorAll("#writePanel .ar-qa-card"));
+    }
+
+    function showBookQuestionCard(index) {
+      const cards = getBookQuestionCards();
+
+      if (!cards.length) {
+        return;
+      }
+
+      const numericIndex = Number.isFinite(Number(index)) ? Number(index) : 0;
+      currentBookQuestionIndex = Math.max(0, Math.min(numericIndex, cards.length - 1));
+
+      cards.forEach(function(card, cardIndex) {
+        const active = cardIndex === currentBookQuestionIndex;
+        card.classList.toggle("is-hidden", !active);
+        card.classList.toggle("current-card", active);
+        card.style.display = active ? "" : "none";
+      });
+
+      updateQuestionNavigationButtons();
+    }
+
+    function syncBookQuestionCompletionState() {
+      const cards = getBookQuestionCards();
+      const allThreeReady =
+        cards.length >= 3 &&
+        cards.every(function(card) {
+          const item = getBookQuestionFromCard(card);
+          return item.question && item.answer && card.dataset.feedbackPassed === "true";
+        });
+
+      const summaryButton = document.getElementById("bookSummaryButton");
+
+      if (summaryButton) {
+        summaryButton.disabled = !allThreeReady;
+      }
+    }
+
+    function updateQuestionNavigationButtons() {
+      syncBookQuestionCompletionState();
+      updateAddQuestionButton();
     }
 
     function getBookQuestionNumber(card) {
@@ -6229,81 +7270,168 @@ applyTeacherMode();
     }
 
     function checkBookQuestionFeedback() {
-      const card = getCurrentBookQuestionCard();
-      if (!card) {
-        setAfterAiFeedback("bookQuestionAiFeedback", "need", "검사할 질문 카드를 찾지 못했어. 화면을 다시 열어 줘.");
+  const card = getCurrentBookQuestionCard();
+
+  if (!card) {
+    setAfterAiFeedback(
+      "bookQuestionAiFeedback",
+      "need",
+      "검사할 질문 카드를 찾지 못했어. 화면을 다시 열어 줘."
+    );
+    return;
+  }
+
+  const number = getBookQuestionNumber(card);
+  const item = getBookQuestionFromCard(card);
+  const problems = validateBookQuestionAnswer(item, number);
+
+  /* 다시 검사할 때는 우선 통과 상태를 해제한다. */
+  card.dataset.feedbackPassed = "false";
+  card.classList.remove("passed");
+
+  const summaryButton = document.getElementById("bookSummaryButton");
+
+  if (summaryButton) {
+    summaryButton.disabled = true;
+  }
+
+  updateAddQuestionButton();
+
+  /* 기본 형식 검사에서 걸린 경우 AI 요청을 보내지 않는다. */
+  if (problems.length > 0) {
+    setAfterAiFeedback(
+      "bookQuestionAiFeedback",
+      "need",
+      '<b>고칠 부분이 있어.</b><ul class="ar-feedback-list"><li>' +
+        problems.join("</li><li>") +
+        "</li></ul>"
+    );
+    return;
+  }
+
+  /* 형식이 맞아도 아직 통과가 아니다. AI가 good을 줘야 통과한다. */
+  requestBookQuestionAiFeedback(card, item, number);
+}
+
+let bookQuestionAiRequestId = 0;
+
+function requestBookQuestionAiFeedback(card, item, number) {
+  const requestId = ++bookQuestionAiRequestId;
+  const checkButton = document.querySelector(
+    "#writePanel .ar-after-feedback-button"
+  );
+
+  if (checkButton) {
+    checkButton.disabled = true;
+  }
+
+  setAfterAiFeedback(
+    "bookQuestionAiFeedback",
+    "",
+    "루미가 답변을 읽고 있어요..."
+  );
+
+  /*
+    연습읽기(after-read.html) 학생만 이해도 기록 대상이다. 교사 미리보기
+    모드(mode=teacher) 등 학생이 아닌 경우는 기존과 동일하게 공개 API를
+    쓴다 - individual-after-reading.html에는 전혀 영향이 없다.
+  */
+  const afterReadingContext = getCurrentUserContext();
+  const useAuthenticatedAi =
+    afterReadingContext.role === "student" &&
+    !!afterReadingContext.token &&
+    !!currentClassReadingBookId;
+
+  const bookQuestionAiPromise = useAuthenticatedAi
+    ? requestAuthenticatedAiFeedback({
+        activityType: "book_question",
+        questionType: String(number),
+        bookType: getBookTypeLabelForAi(),
+        question: item.question,
+        answer: item.answer,
+        evaluationKey:
+          "practice-after-" +
+          currentClassReadingBookId +
+          "-" +
+          afterReadingContext.id +
+          "-book-question-" +
+          number,
+        classReadingBookId: currentClassReadingBookId
+      })
+    : requestAiFeedback(
+        "book_question",
+        getBookTypeLabelForAi(),
+        [{ question: item.question, answer: item.answer }],
+        number
+      );
+
+  bookQuestionAiPromise
+    .then(function(result) {
+      if (requestId !== bookQuestionAiRequestId) {
         return;
       }
 
-      const number = getBookQuestionNumber(card);
-      const item = getBookQuestionFromCard(card);
-      const problems = validateBookQuestionAnswer(item, number);
+      const isGood = result.status === "good";
 
-      if (problems.length > 0) {
-        card.dataset.feedbackPassed = "false";
-        card.classList.remove("passed");
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          '<b>고칠 부분이 있어.</b><ul class="ar-feedback-list"><li>' + problems.join("</li><li>") + "</li></ul>"
-        );
-        updateAddQuestionButton();
-        return;
-      }
-
-      card.dataset.feedbackPassed = "true";
-      card.classList.add("passed");
+      /* AI가 good을 준 경우에만 현재 질문을 통과 처리한다. */
+      card.dataset.feedbackPassed = isGood ? "true" : "false";
+      card.classList.toggle("passed", isGood);
 
       const cards = getBookQuestionCards();
-      const visibleCards = cards.filter(function(itemCard) {
-        return !itemCard.classList.contains("is-hidden");
-      });
-      const allThreePassed = cards.length >= 3 && cards.every(function(itemCard) {
-        return itemCard.dataset.feedbackPassed === "true";
-      });
+      const allThreePassed =
+        cards.length >= 3 &&
+        cards.every(function(itemCard) {
+          return itemCard.dataset.feedbackPassed === "true";
+        });
 
       const summaryButton = document.getElementById("bookSummaryButton");
-      if (summaryButton) summaryButton.disabled = !allThreePassed;
+
+      if (summaryButton) {
+        summaryButton.disabled = !allThreePassed;
+      }
 
       updateAddQuestionButton();
-      setAfterAiFeedback(
-        "bookQuestionAiFeedback",
-        "good",
-        number < 3 ? "좋아! 이 질문과 답은 간추리기 재료로 알맞아. 오른쪽 위의 질문 쓰기를 눌러 다음 질문을 적어 보자." : "좋아! 질문 3개가 모두 준비되었어. 이제 다음으로 넘어가 간추리기를 완성해 보자."
-      );
-
-      try { requestBookQuestionAiFeedback(item, number); } catch (error) { console.warn(error); }
-    }
-
-    let bookQuestionAiRequestId = 0;
-
-    function requestBookQuestionAiFeedback(item, number) {
-      const requestId = ++bookQuestionAiRequestId;
 
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
-        "",
-        "루미가 답변을 읽고 있어요..."
+        isGood ? "good" : "need",
+        result.message
       );
+    })
+    .catch(function() {
+      if (requestId !== bookQuestionAiRequestId) {
+        return;
+      }
 
-      requestAiFeedback("book_question", getBookTypeLabelForAi(), [
-        { question: item.question, answer: item.answer }
-      ], number).then(function(result) {
-        if (requestId !== bookQuestionAiRequestId) {
-          return;
-        }
-        setAfterAiFeedback("bookQuestionAiFeedback", result.status, result.message);
-      }).catch(function() {
-        if (requestId !== bookQuestionAiRequestId) {
-          return;
-        }
-        setAfterAiFeedback(
-          "bookQuestionAiFeedback",
-          "need",
-          "지금은 피드백을 확인하기 어려워요, 잠시 후 다시 시도해줘."
-        );
-      });
-    }
+      /* 오류가 나도 통과시키지 않는다. */
+      card.dataset.feedbackPassed = "false";
+      card.classList.remove("passed");
+
+      const summaryButton = document.getElementById("bookSummaryButton");
+
+      if (summaryButton) {
+        summaryButton.disabled = true;
+      }
+
+      updateAddQuestionButton();
+
+      setAfterAiFeedback(
+        "bookQuestionAiFeedback",
+        "need",
+        "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해줘."
+      );
+    })
+    .finally(function() {
+      if (requestId !== bookQuestionAiRequestId) {
+        return;
+      }
+
+      if (checkButton) {
+        checkButton.disabled = false;
+      }
+    });
+}
+
 
     function addBookQuestionCard() {
       const cards = getBookQuestionCards();
@@ -6326,23 +7454,14 @@ applyTeacherMode();
         return;
       }
 
-      cards.forEach(function(card) {
-        card.classList.add("is-hidden");
-        card.classList.remove("current-card");
-      });
-
-      nextCard.classList.remove("is-hidden");
-      nextCard.classList.add("current-card");
-
       const nextNumber = currentIndex + 2;
+      showBookQuestionCard(currentIndex + 1);
 
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "",
         "질문 " + nextNumber + "과 답을 쓴 뒤 검사하기를 눌러 봐."
       );
-
-      updateAddQuestionButton();
     }
 
     function makeSummaryGuide() {
@@ -6388,7 +7507,9 @@ applyTeacherMode();
       const data = bookTypeData[selectedBookType];
 
       if (summaryText) {
-        if (data && data.summaryTemplate) {
+        if (summaryText.value.trim()) {
+          // 이미 저장했거나 직접 작성한 간추리기는 다시 열어도 덮어쓰지 않는다.
+        } else if (data && data.summaryTemplate) {
           summaryText.value = data.summaryTemplate;
         } else {
           summaryText.value = qaData.map(function(item) {
@@ -6413,39 +7534,16 @@ applyTeacherMode();
       originalShowStudyPanelForQuestionWrite(panelName);
 
       if (panelName === "write") {
-        const cards = getBookQuestionCards();
-        const hasCurrent = cards.some(function(card) {
-          return card.classList.contains("current-card") && !card.classList.contains("is-hidden");
-        });
-
-        if (!hasCurrent) {
-          prepareBookQuestionCards();
-        }
-
-        updateAddQuestionButton();
+        showBookQuestionCard(currentBookQuestionIndex);
       }
     };
 
-    const originalGoWritePanelAfterPractice = goWritePanelAfterPractice;
-
-    goWritePanelAfterPractice = function() {
-      const question1 = document.getElementById("practiceQuestion1").value.trim();
-      const question2 = document.getElementById("practiceQuestion2").value.trim();
-      const answer1 = document.getElementById("practiceAnswer1").value.trim();
-      const answer2 = document.getElementById("practiceAnswer2").value.trim();
-
-      if (!question1 || !question2 || !answer1 || !answer2) {
-        alert("직접 만든 질문 2개와 답 2개를 모두 적어 주세요.");
-        return;
-      }
-
-      prepareBookQuestionCards();
-      showStudyPanel("write");
-    };
+    initializeAfterReadingPage();
 
   </script>
 
   <script src="../js/ai-feedback.js"></script>
+  <script src="../js/pre-reading-validation.js"></script>
   <script src="../js/individual-power.js"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>

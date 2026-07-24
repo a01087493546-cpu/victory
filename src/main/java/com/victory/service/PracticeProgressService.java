@@ -7,10 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.victory.dto.PracticeProgressRequest;
 import com.victory.dto.PracticeProgressResponse;
+import com.victory.dto.StudentStatsResponse;
+import com.victory.entity.ClassReadingBook;
+import com.victory.entity.ClassStudent;
 import com.victory.entity.PracticeProgress;
 import com.victory.entity.User;
+import com.victory.repository.ClassReadingBookRepository;
+import com.victory.repository.ClassStudentRepository;
 import com.victory.repository.PracticeProgressRepository;
 import com.victory.repository.UserRepository;
+import com.victory.service.PracticeReadingRewardService.RewardResult;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +28,9 @@ public class PracticeProgressService {
 
     private final PracticeProgressRepository practiceProgressRepository;
     private final UserRepository userRepository;
+    private final ClassStudentRepository classStudentRepository;
+    private final ClassReadingBookRepository classReadingBookRepository;
+    private final PracticeReadingRewardService practiceReadingRewardService;
 
     /*
      * 학생 진행 상태 조회
@@ -35,6 +44,18 @@ public class PracticeProgressService {
         PracticeProgress progress = practiceProgressRepository
             .findByStudent_Id(studentId)
             .orElseGet(() -> createAndSaveProgress(student));
+
+        if (isPracticeCompleted(progress)) {
+            Long classReadingBookId = findCurrentClassReadingBookId(studentId);
+            RewardResult rewardResult =
+                practiceReadingRewardService.getRewardState(student, classReadingBookId);
+
+            return PracticeProgressResponse.from(
+                progress,
+                false,
+                rewardResult.isRewardAlreadyGranted(),
+                StudentStatsResponse.from(rewardResult.getStats()));
+        }
 
         return PracticeProgressResponse.from(progress);
     }
@@ -59,7 +80,15 @@ public class PracticeProgressService {
         PracticeProgress savedProgress =
             practiceProgressRepository.save(progress);
 
-        return PracticeProgressResponse.from(savedProgress);
+        RewardResult rewardResult = maybeGrantPracticeCompleteReward(
+            student,
+            savedProgress);
+
+        return PracticeProgressResponse.from(
+            savedProgress,
+            rewardResult.isRewardGranted(),
+            rewardResult.isRewardAlreadyGranted(),
+            StudentStatsResponse.from(rewardResult.getStats()));
     }
 
     /*
@@ -154,5 +183,47 @@ public class PracticeProgressService {
 
             progress.setDuringTypeProgress(mergedProgress);
         }
+    }
+
+    private RewardResult maybeGrantPracticeCompleteReward(
+            User student,
+            PracticeProgress progress) {
+
+        if (!isPracticeCompleted(progress)) {
+            return new RewardResult(false, false, null);
+        }
+
+        Long classReadingBookId = findCurrentClassReadingBookId(student.getId());
+
+        if (classReadingBookId == null) {
+            return new RewardResult(false, false, null);
+        }
+
+        return practiceReadingRewardService
+            .grantPracticeCompleteRewardOnce(student, classReadingBookId);
+    }
+
+    private boolean isPracticeCompleted(PracticeProgress progress) {
+        Map<String, Boolean> during = progress.getDuringTypeProgress();
+
+        return Boolean.TRUE.equals(progress.getBookSelected())
+            && Boolean.TRUE.equals(progress.getBeforeDone())
+            && Boolean.TRUE.equals(progress.getClassReadDone())
+            && Boolean.TRUE.equals(progress.getAfterDone())
+            && during != null
+            && Boolean.TRUE.equals(during.get("direct"))
+            && Boolean.TRUE.equals(during.get("infer"))
+            && Boolean.TRUE.equals(during.get("opinion"))
+            && Boolean.TRUE.equals(during.get("connect"))
+            && Boolean.TRUE.equals(during.get("review"));
+    }
+
+    private Long findCurrentClassReadingBookId(Long studentId) {
+        return classStudentRepository.findByStudentId(studentId)
+            .map(ClassStudent::getSchoolClass)
+            .flatMap(schoolClass ->
+                classReadingBookRepository.findBySchoolClassId(schoolClass.getId()))
+            .map(ClassReadingBook::getId)
+            .orElse(null);
     }
 }
