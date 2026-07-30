@@ -149,7 +149,36 @@ CREATE TABLE books (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
--- 8. class_reading_books (학급별 온책읽기 현재 책) -- 문서 밖 17번째 테이블,
+-- 8. recommendation_books (AI 맞춤 추천 후보 도서 마스터)
+--    기존 books는 학생 독서 기록용으로 유지하고, AI 추천은 운영자가 검증한
+--    이 마스터 도서 중에서만 후보를 고른다.
+-- ----------------------------------------------------------------------------
+CREATE TABLE recommendation_books (
+    id                       BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title                    VARCHAR(200) NOT NULL,
+    author                   VARCHAR(100) NOT NULL,
+    description              TEXT         NOT NULL,
+    cover_image              LONGTEXT     NULL,
+    thickness                VARCHAR(30)  NOT NULL,
+    mood                     VARCHAR(50)  NOT NULL,
+    genre                    VARCHAR(50)  NOT NULL,
+    illustration_level       VARCHAR(30)  NOT NULL,
+    difficulty               VARCHAR(30)  NOT NULL,
+    purpose_tags             JSON         NOT NULL,
+    recommended_grade_min    INT          NULL,
+    recommended_grade_max    INT          NULL,
+    is_active                TINYINT(1)   NOT NULL DEFAULT 1,
+    created_at               DATETIME     NOT NULL,
+    updated_at               DATETIME     NOT NULL,
+
+    CONSTRAINT uk_recommendation_books_title_author
+        UNIQUE (title, author),
+    KEY idx_recommendation_books_active_title (is_active, title, id),
+    KEY idx_recommendation_books_grade (recommended_grade_min, recommended_grade_max)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------------------------------------------------------
+-- 9. class_reading_books (학급별 온책읽기 현재 책) -- 문서 밖 17번째 테이블,
 --    기존 ClassReadingBook 엔티티/컨트롤러/서비스가 그대로 사용 중이라 유지하기로 확정.
 -- ----------------------------------------------------------------------------
 CREATE TABLE class_reading_books (
@@ -170,7 +199,7 @@ CREATE TABLE class_reading_books (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
--- 9. reading_records (읽기 진행 기록)
+-- 10. reading_records (읽기 진행 기록)
 --    represent_response_id -> responses.id FK는 순환참조 때문에 파일 끝에서 ALTER TABLE로 추가.
 -- ----------------------------------------------------------------------------
 CREATE TABLE reading_records (
@@ -202,7 +231,7 @@ CREATE TABLE reading_records (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------------------------------------------------------
--- 10. responses (질문답변 / 책수다방)
+-- 11. responses (질문답변 / 책수다방)
 -- ----------------------------------------------------------------------------
 CREATE TABLE responses (
     id                  BIGINT AUTO_INCREMENT PRIMARY KEY,

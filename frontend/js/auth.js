@@ -12,6 +12,31 @@
 /* 현재 선택된 역할입니다. 기본값은 학생입니다. */
 let selectedRole = "student";
 
+function getLoginApiBaseUrl() {
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+
+  return "http://localhost:8080";
+}
+
+async function readLoginErrorMessage(response) {
+  const bodyText = await response.text().catch(function () {
+    return "";
+  });
+
+  if (!bodyText) {
+    return "아이디 또는 비밀번호가 올바르지 않습니다.";
+  }
+
+  try {
+    const body = JSON.parse(bodyText);
+    return body.message || "아이디 또는 비밀번호가 올바르지 않습니다.";
+  } catch (error) {
+    return "아이디 또는 비밀번호가 올바르지 않습니다.";
+  }
+}
+
 /*
   함수명: checkLogin
   역할: 보호된 페이지에 로그인하지 않은 사용자가 들어오지 못하게 막습니다.
@@ -110,8 +135,10 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   try {
+    const loginUrl = getLoginApiBaseUrl() + "/api/auth/login";
+
     /* 백엔드 로그인 API를 호출합니다. */
-    const response = await fetch("http://localhost:8080/api/auth/login", {
+    const response = await fetch(loginUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -123,7 +150,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     if (!response.ok) {
-      throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
+      const message = await readLoginErrorMessage(response);
+      console.error("로그인 요청 실패", {
+        url: loginUrl,
+        status: response.status,
+        statusText: response.statusText,
+        message: message
+      });
+      alert(message);
+      return;
     }
 
     /* 백엔드에서 받은 로그인 결과입니다. */
@@ -155,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
       /* 스토리를 본 적 있으면 학생 홈으로 이동합니다. */
       if (hasSeenStoryIntro === "true") {
         window.location.href = "./student/individual-reading.html";
+        return;
       }
 
       /* 첫 로그인이라면 스토리 인트로 화면으로 이동합니다. */
@@ -167,8 +203,11 @@ document.addEventListener("DOMContentLoaded", function () {
       window.location.href = "./teacher/home.html";
     }
   } catch (error) {
-    console.error(error);
-    alert(error.message || "로그인 중 오류가 발생했습니다.");
+    console.error("로그인 요청 중 네트워크 오류", {
+      url: getLoginApiBaseUrl() + "/api/auth/login",
+      error: error
+    });
+    alert("서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.");
   }
 });
 });

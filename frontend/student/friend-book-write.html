@@ -209,10 +209,11 @@
     }
 
     .fw-form {
+      min-width: 0;
       min-height: 0;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 0.9fr) minmax(0, 1fr);
       gap: 16px;
       padding: 18px 0 16px;
       overflow-y: auto;
@@ -263,6 +264,122 @@
     .fw-input {
       height: 66px;
       padding: 0 20px;
+    }
+
+    .fw-book-dropdown {
+      position: relative;
+      min-width: 0;
+      width: 100%;
+      z-index: 20;
+    }
+
+    .fw-book-dropdown.is-open {
+      z-index: 80;
+    }
+
+    .fw-book-dropdown-button {
+      width: 100%;
+      height: 66px;
+      padding: 0 18px 0 20px;
+      border: 1px solid rgba(171, 108, 31, 0.22);
+      border-radius: 22px;
+      background: rgba(255, 250, 237, 0.9);
+      color: #4d2b10;
+      font-size: 18px;
+      font-weight: 850;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      cursor: pointer;
+      box-sizing: border-box;
+      text-align: left;
+    }
+
+    .fw-book-dropdown-button:disabled {
+      opacity: 0.66;
+      cursor: not-allowed;
+    }
+
+    .fw-book-dropdown-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .fw-book-dropdown-arrow {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: rgba(232, 189, 94, 0.26);
+      color: #8a571c;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      line-height: 1;
+      transition: transform 0.18s ease;
+    }
+
+    .fw-book-dropdown.is-open .fw-book-dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .fw-book-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100%;
+      max-height: 238px;
+      padding: 8px;
+      border: 1px solid rgba(171, 108, 31, 0.22);
+      border-radius: 20px;
+      background: rgba(255, 252, 242, 0.98);
+      box-shadow: 0 16px 34px rgba(91, 55, 16, 0.18);
+      box-sizing: border-box;
+      overflow-x: hidden;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .fw-book-dropdown.is-open .fw-book-dropdown-menu {
+      display: grid;
+      gap: 6px;
+    }
+
+    .fw-book-option {
+      width: 100%;
+      min-width: 0;
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: transparent;
+      color: #553316;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: left;
+      cursor: pointer;
+      box-sizing: border-box;
+      overflow-wrap: anywhere;
+    }
+
+    .fw-book-option:hover,
+    .fw-book-option.selected {
+      border-color: rgba(168, 100, 30, 0.28);
+      background: rgba(232, 189, 94, 0.22);
+      color: #7a4618;
+    }
+
+    .fw-input[readonly] {
+      background: rgba(255, 252, 244, 0.72);
+      color: #6b4924;
     }
 
     .fw-textarea {
@@ -329,6 +446,12 @@
       font-weight: 950;
       cursor: pointer;
       box-shadow: 0 10px 18px rgba(128, 76, 18, 0.18);
+    }
+
+    .fw-question-open-button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .fw-selected-question-list {
@@ -541,6 +664,20 @@
       text-align: left;
       cursor: pointer;
       line-height: 1.4;
+    }
+
+    .fw-question-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      color: #9a5d1d;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .fw-question-text {
+      display: block;
     }
 
     .fw-question-item.selected {
@@ -839,6 +976,15 @@
         font-size: 16px;
       }
 
+      .fw-book-dropdown-button {
+        height: 58px;
+        font-size: 16px;
+      }
+
+      .fw-book-dropdown-menu {
+        max-height: 196px;
+      }
+
       .fw-textarea {
         min-height: 110px;
         height: 110px;
@@ -877,7 +1023,7 @@
 
     .fw-form {
       height: 100% !important;
-      grid-template-rows: auto minmax(190px, 0.95fr) minmax(280px, 1.15fr) !important;
+      grid-template-rows: auto auto minmax(160px, 0.9fr) minmax(230px, 1fr) !important;
       align-content: start !important;
       gap: 14px !important;
       overflow: hidden !important;
@@ -924,12 +1070,12 @@
     }
 
     .fw-selected-question-item {
-      min-height: 42px !important;
-      padding: 8px 13px !important;
-      font-size: 14px !important;
-      line-height: 1.3 !important;
-      align-items: center !important;
-    }
+  min-height: 54px !important;
+  padding: 12px 16px !important;
+  font-size: 18px !important;
+  line-height: 1.45 !important;
+  align-items: center !important;
+}
 
     .fw-question-empty {
       min-height: 64px !important;
@@ -994,7 +1140,7 @@
 
     @media (max-height: 760px) {
       .fw-form {
-        grid-template-rows: auto minmax(150px, 0.9fr) minmax(230px, 1.1fr) !important;
+        grid-template-rows: auto auto minmax(140px, 0.9fr) minmax(210px, 1fr) !important;
         align-content: start !important;
         gap: 10px !important;
       }
@@ -1036,6 +1182,59 @@
         height: 52px !important;
       }
     }
+    /* 질문 선택 모달 - 읽기 단계는 항상 펼친 상태 */
+#questionCategoryPanel {
+  overflow: visible !important;
+}
+
+/* 질문 목록 카드 높이를 글 내용에 맞게 자연스럽게 확장 */
+.fw-question-item {
+  height: auto !important;
+  min-height: 78px !important;
+  padding: 18px 22px !important;
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* 읽기 단계·질문 유형 문구도 줄바꿈 허용 */
+.fw-question-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  white-space: normal !important;
+  line-height: 1.35 !important;
+}
+
+/* 실제 질문 문장 */
+.fw-question-text {
+  display: block !important;
+  margin-top: 6px !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.55 !important;
+}
+
+/* 목록 전체가 모달 안에서만 스크롤되도록 */
+.fw-question-list.modal {
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  align-content: start !important;
+}
+.fw-selected-question-item strong {
+  flex: 0 0 auto;
+  font-size: 19px !important;
+  font-weight: 950 !important;
+  color: #9a5d1d;
+}
+
+.fw-selected-question-item span {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
   </style>
 </head>
 
@@ -1078,14 +1277,35 @@
           </div>
 
           <form class="fw-form" id="friendBookForm" onsubmit="submitFriendBook(event)">
+            <div class="fw-field full">
+              <label id="completedBookDropdownTitle">완독한 책 선택</label>
+              <div class="fw-book-dropdown" id="completedBookDropdown">
+                <button
+                  type="button"
+                  class="fw-book-dropdown-button"
+                  id="completedBookDropdownButton"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  aria-labelledby="completedBookDropdownTitle completedBookDropdownLabel"
+                  onclick="toggleCompletedBookDropdown()"
+                  disabled
+                >
+                  <span class="fw-book-dropdown-label" id="completedBookDropdownLabel">완독한 책을 불러오는 중...</span>
+                  <span class="fw-book-dropdown-arrow" aria-hidden="true">▼</span>
+                </button>
+                <div class="fw-book-dropdown-menu" id="completedBookDropdownMenu" role="listbox"></div>
+              </div>
+            </div>
+
             <div class="fw-field">
               <label for="bookTitleInput">책 제목</label>
               <input
                 id="bookTitleInput"
                 class="fw-input"
                 type="text"
-                placeholder="예: 긴긴밤"
+                placeholder="완독한 책을 선택하면 자동으로 표시돼요."
                 autocomplete="off"
+                readonly
               >
             </div>
 
@@ -1095,8 +1315,9 @@
                 id="bookAuthorInput"
                 class="fw-input"
                 type="text"
-                placeholder="예: 루리"
+                placeholder="완독한 책을 선택하면 자동으로 표시돼요."
                 autocomplete="off"
+                readonly
               >
             </div>
 
@@ -1112,10 +1333,10 @@
             <div class="fw-question-box">
               <div class="fw-question-head">
                 <strong>이 책이 궁금해지는 질문</strong>
-                <span class="fw-question-count" id="selectedQuestionCount">선택한 질문 0/3</span>
+                <span class="fw-question-count" id="selectedQuestionCount">질문을 1개 골라 주세요</span>
               </div>
 
-              <button type="button" class="fw-question-open-button" onclick="openQuestionPicker()">
+              <button type="button" class="fw-question-open-button" id="questionPickerOpenButton" onclick="openQuestionPicker()" disabled>
                 질문 선택하기
               </button>
 
@@ -1130,7 +1351,7 @@
 
           <div class="fw-actions">
             <button type="button" class="fw-button" onclick="goFriendBookShelf()">취소하고 돌아가기</button>
-            <button type="button" class="fw-button primary" onclick="submitFriendBook(event)">추천 등록하기</button>
+            <button type="button" class="fw-button primary" id="friendBookSubmitButton" onclick="submitFriendBook(event)">추천 등록하기</button>
           </div>
         </article>
       </section>
@@ -1142,12 +1363,12 @@
       <div class="fw-question-modal-head">
         <div>
           <strong>질문 선택하기</strong>
-          <p>친구들이 이 책을 궁금해할 만한 질문을 최대 3개 골라줘.</p>
+          <p>친구들이 이 책을 궁금해할 만한 질문을 1개 골라줘.</p>
         </div>
         <button type="button" class="fw-question-close-button" onclick="closeQuestionPicker()">×</button>
       </div>
 
-      <details class="fw-question-category" id="questionCategoryPanel">
+      <details class="fw-question-category" id="questionCategoryPanel" open>
         <summary>읽기 단계 고르기</summary>
         <div class="fw-question-category-buttons" id="questionCategoryButtons">
           <button type="button" class="fw-category-button active" data-category="all" onclick="setQuestionCategory('all')">전체</button>
@@ -1175,8 +1396,8 @@
       <div class="fw-modal-icon">📚</div>
       <h2>추천글이 등록됐어!</h2>
       <p>
-        지금은 화면 확인용이라 서버에는 저장되지 않아.<br>
-        다음 단계에서 우리 반 추천 책장과 연결해줄게.
+        우리 반 추천 책장에 바로 올라갔어.<br>
+        친구들이 좋아요를 눌러줄 거야!
       </p>
       <button type="button" class="fw-button primary" onclick="goFriendBookShelf()">책장으로 돌아가기</button>
     </div>
@@ -1194,7 +1415,7 @@
 
       <div class="fw-reward-badge">✨ 나의 힘 성장!</div>
 
-      <h2 class="fw-reward-title">친구에게 책을 추천했어요!</h2>
+      <h2 class="fw-reward-title">책을 친구에게 소개했어요!</h2>
 
       <p class="fw-reward-desc">
         내가 읽은 책의 좋은 점을 나누며<br>
@@ -1230,20 +1451,26 @@
   <script>
     // checkLogin();
 
+    const API_BASE_URL = "http://localhost:8080";
+    const token = sessionStorage.getItem("token");
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
-    const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
     const studentName = sessionStorage.getItem("name") || "나";
 
+    let completedBooks = [];
+    let selectedReadingRecordId = null;
     let selectedTeaserQuestions = [];
+    let serverQuestionCandidates = [];
     let activeQuestionCategory = "all";
+    let submitInFlight = false;
 
-    function getSavedFriendBooks() {
-      try {
-        return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_KEY) || "[]");
-      } catch (error) {
-        return [];
+    /* 교사 계정은 추천 글을 쓸 수 없다 - 프론트에서도 먼저 막고,
+       서버도 /api/students/** 규칙(role=student)으로 동일하게 막는다. */
+    (function blockTeacherAccess() {
+      if (sessionStorage.getItem("role") === "teacher") {
+        alert("교사 계정은 추천 글을 작성할 수 없습니다.");
+        window.location.href = "./friend-book-shelf.html?mode=teacher";
       }
-    }
+    })();
 
     function escapeHtml(text) {
       return String(text || "")
@@ -1254,65 +1481,276 @@
         .replaceAll("'", "&#039;");
     }
 
-    function addStoredQuestions(target, storageKey, category) {
-      try {
-        const savedQuestions = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+    function getQuestionCandidates() {
+      const seenQuestions = new Set();
 
-        savedQuestions.forEach(function (item) {
-          let questionText = "";
-          if (typeof item === "string") {
-            questionText = item;
-          } else if (item && item.question) {
-            questionText = item.question;
-          } else if (item && item.questionText) {
-            questionText = item.questionText;
-          } else if (item && item.text) {
-            questionText = item.text;
-          } else if (item && item.titleQuestion) {
-            questionText = item.titleQuestion;
-          }
+      return serverQuestionCandidates.filter(function (item) {
+        const key = "id:" + item.responseId;
 
-          if (questionText) {
-            target.push({
-              text: questionText,
-              category
-            });
-          }
-        });
-      } catch (error) {
-        console.warn("질문을 불러오지 못했습니다.", error);
+        if (!item.responseId || !item.text || seenQuestions.has(key)) return false;
+
+        seenQuestions.add(key);
+        return true;
+      });
+    }
+
+    function setSubmitDisabled(disabled) {
+      const submitButton = document.getElementById("friendBookSubmitButton");
+
+      if (submitButton) {
+        submitButton.disabled = disabled;
       }
     }
 
-    function getExampleQuestions() {
-      return [
-        { text: "제목을 보고 가장 궁금해진 점은 무엇일까?", category: "before" },
-        { text: "표지를 보고 어떤 이야기가 떠오를까?", category: "before" },
-        { text: "주인공은 왜 그런 선택을 했을까?", category: "during" },
-        { text: "내가 주인공이라면 같은 상황에서 어떻게 했을까?", category: "during" },
-        { text: "이 책에서 가장 궁금했던 장면은 무엇일까?", category: "during" },
-        { text: "이야기의 결말이 달라진다면 어떻게 바뀔 수 있을까?", category: "after" },
-        { text: "이 책이 우리에게 알려주는 생각거리는 무엇일까?", category: "after" }
-      ];
+    function setQuestionPickerDisabled(disabled) {
+      const openButton = document.getElementById("questionPickerOpenButton");
+
+      if (openButton) {
+        openButton.disabled = disabled;
+      }
     }
 
-    function getQuestionCandidates() {
-      const questionList = [];
+    function setSelectedBookFields(book) {
+      const titleInput = document.getElementById("bookTitleInput");
+      const authorInput = document.getElementById("bookAuthorInput");
 
-      addStoredQuestions(questionList, "individualBeforeQuestions_" + studentId, "before");
-      addStoredQuestions(questionList, "beforeReadingQuestions_" + studentId, "before");
-      addStoredQuestions(questionList, "individualDuringQuestions_" + studentId, "during");
-      addStoredQuestions(questionList, "individualAfterQuestionAnswers_" + studentId, "after");
+      if (titleInput) {
+        titleInput.value = book ? book.bookTitle || "" : "";
+      }
 
-      const sourceQuestions = questionList.length > 0 ? questionList : getExampleQuestions();
-      const seenQuestions = new Set();
+      if (authorInput) {
+        authorInput.value = book ? book.author || "" : "";
+      }
+    }
 
-      return sourceQuestions.filter(function (item) {
-        if (!item.text || seenQuestions.has(item.text)) return false;
+    function formatFinishedDate(finishedAt) {
+      if (!finishedAt) return "";
 
-        seenQuestions.add(item.text);
-        return true;
+      const dateText = String(finishedAt).slice(0, 10);
+      const parts = dateText.split("-");
+
+      if (parts.length !== 3) return dateText;
+
+      return parts[0] + "." + parts[1] + "." + parts[2];
+    }
+
+    function setCompletedBookDropdownState(label, disabled) {
+      const button = document.getElementById("completedBookDropdownButton");
+      const labelElement = document.getElementById("completedBookDropdownLabel");
+
+      if (labelElement) {
+        labelElement.textContent = label;
+      }
+
+      if (button) {
+        button.disabled = disabled;
+        button.setAttribute("aria-expanded", "false");
+      }
+
+      closeCompletedBookDropdown();
+    }
+
+    function renderCompletedBookDropdownOptions() {
+      const menu = document.getElementById("completedBookDropdownMenu");
+
+      if (!menu) return;
+
+      menu.innerHTML = completedBooks
+        .map(function (book) {
+          const readingRecordId = Number(book.readingRecordId);
+          const isSelected = readingRecordId === selectedReadingRecordId;
+          const finishedLabel = formatFinishedDate(book.finishedAt);
+          const optionLabel =
+            (book.bookTitle || "제목 없음") + (finishedLabel ? " · " + finishedLabel : "");
+
+          return `
+            <button
+              type="button"
+              class="fw-book-option ${isSelected ? "selected" : ""}"
+              role="option"
+              aria-selected="${isSelected ? "true" : "false"}"
+              onclick="chooseCompletedBook(${readingRecordId})"
+            >
+              ${escapeHtml(optionLabel)}
+            </button>
+          `;
+        })
+        .join("");
+    }
+
+    function openCompletedBookDropdown() {
+      const dropdown = document.getElementById("completedBookDropdown");
+      const button = document.getElementById("completedBookDropdownButton");
+
+      if (!dropdown || !button || button.disabled || completedBooks.length === 0) return;
+
+      renderCompletedBookDropdownOptions();
+      dropdown.classList.add("is-open");
+      button.setAttribute("aria-expanded", "true");
+    }
+
+    function closeCompletedBookDropdown() {
+      const dropdown = document.getElementById("completedBookDropdown");
+      const button = document.getElementById("completedBookDropdownButton");
+
+      if (dropdown) {
+        dropdown.classList.remove("is-open");
+      }
+
+      if (button) {
+        button.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function toggleCompletedBookDropdown() {
+      const dropdown = document.getElementById("completedBookDropdown");
+
+      if (dropdown && dropdown.classList.contains("is-open")) {
+        closeCompletedBookDropdown();
+      } else {
+        openCompletedBookDropdown();
+      }
+    }
+
+    function chooseCompletedBook(readingRecordId) {
+      const selectedBook = completedBooks.find(function (book) {
+        return Number(book.readingRecordId) === Number(readingRecordId);
       });
+
+      if (!selectedBook) return;
+
+      const finishedLabel = formatFinishedDate(selectedBook.finishedAt);
+      setCompletedBookDropdownState(
+        (selectedBook.bookTitle || "제목 없음") + (finishedLabel ? " · " + finishedLabel : ""),
+        false
+      );
+      selectCompletedBook(readingRecordId);
+    }
+
+    function renderQuestionGuide(message) {
+      const questionSelectList = document.getElementById("questionSelectList");
+      const selectedQuestionList = document.getElementById("selectedQuestionList");
+
+      if (questionSelectList) {
+        questionSelectList.innerHTML = `<div class="fw-question-empty">${escapeHtml(message)}</div>`;
+      }
+
+      if (selectedQuestionList) {
+        selectedQuestionList.innerHTML = `<div class="fw-question-empty">${escapeHtml(message)}</div>`;
+      }
+    }
+
+    async function loadCompletedBooks() {
+      setSubmitDisabled(true);
+      setQuestionPickerDisabled(true);
+      selectedReadingRecordId = null;
+      selectedTeaserQuestions = [];
+      serverQuestionCandidates = [];
+      setSelectedBookFields(null);
+      setCompletedBookDropdownState("완독한 책을 불러오는 중...", true);
+      renderQuestionGuide("먼저 추천할 완독 책을 골라 주세요.");
+
+      if (!token) {
+        setCompletedBookDropdownState("로그인이 필요합니다.", true);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          API_BASE_URL + "/api/students/me/book-recommendations/completed-books",
+          { headers: { Authorization: "Bearer " + token } }
+        );
+
+        if (!response.ok) {
+          throw new Error("완독 책 목록 조회 실패: " + response.status);
+        }
+
+        completedBooks = await response.json();
+
+        if (!Array.isArray(completedBooks)) {
+          completedBooks = [];
+        }
+
+        if (completedBooks.length === 0) {
+          setCompletedBookDropdownState("아직 완독한 책이 없어요.", true);
+          renderQuestionGuide("아직 완독한 책이 없어요. 책을 다 읽은 뒤 추천해 주세요.");
+          return;
+        }
+
+        setCompletedBookDropdownState("추천할 완독 책을 골라 주세요.", false);
+        renderCompletedBookDropdownOptions();
+      } catch (error) {
+        console.warn("완독 책 목록을 불러오지 못했습니다.", error);
+        completedBooks = [];
+        setCompletedBookDropdownState("완독 책 목록을 불러오지 못했어요.", true);
+        renderQuestionGuide("완독 책 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+      }
+    }
+
+    async function selectCompletedBook(readingRecordId) {
+      selectedReadingRecordId = readingRecordId ? Number(readingRecordId) : null;
+      selectedTeaserQuestions = [];
+      serverQuestionCandidates = [];
+      activeQuestionCategory = "all";
+      setQuestionCategory("all");
+      renderSelectedQuestionList();
+
+      const selectedBook = completedBooks.find(function (book) {
+        return Number(book.readingRecordId) === selectedReadingRecordId;
+      });
+
+      setSelectedBookFields(selectedBook || null);
+      renderCompletedBookDropdownOptions();
+
+      if (!selectedBook) {
+        setSubmitDisabled(true);
+        setQuestionPickerDisabled(true);
+        renderQuestionGuide("먼저 추천할 완독 책을 골라 주세요.");
+        return;
+      }
+
+      setSubmitDisabled(false);
+      setQuestionPickerDisabled(true);
+      renderQuestionGuide("질문을 불러오는 중이에요.");
+
+      try {
+        const response = await fetch(
+          API_BASE_URL + "/api/students/me/book-recommendations/completed-books/" + selectedReadingRecordId + "/questions",
+          { headers: { Authorization: "Bearer " + token } }
+        );
+
+        if (!response.ok) {
+          throw new Error("책별 질문 조회 실패: " + response.status);
+        }
+
+        serverQuestionCandidates = normalizeServerQuestions(await response.json());
+        setQuestionPickerDisabled(serverQuestionCandidates.length === 0);
+        renderQuestionSelectList();
+        renderSelectedQuestionList();
+      } catch (error) {
+        console.warn("책별 질문 후보를 불러오지 못했습니다.", error);
+        serverQuestionCandidates = [];
+        setQuestionPickerDisabled(true);
+        renderQuestionGuide("이 책의 질문을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+      }
+    }
+
+    function normalizeServerQuestions(items) {
+      if (!Array.isArray(items)) return [];
+
+      return items
+        .filter(function (item) {
+          return item && item.responseId && item.question;
+        })
+        .map(function (item) {
+          return {
+            responseId: Number(item.responseId),
+            text: item.question,
+            category: item.category || "after",
+            categoryLabel: item.categoryLabel || getCategoryName(item.category),
+            detailLabel: item.detailLabel || ""
+          };
+        });
     }
 
     function getCategoryName(category) {
@@ -1352,9 +1790,13 @@
       const questions = getFilteredQuestionCandidates();
 
       if (questions.length === 0) {
+        const message = selectedReadingRecordId
+          ? "이 책에서 추천에 사용할 수 있는 질문이 아직 없어요."
+          : "먼저 추천할 완독 책을 골라 주세요.";
+
         questionSelectList.innerHTML = `
           <div class="fw-question-empty">
-            ${getCategoryName(activeQuestionCategory)} 질문이 아직 없어.
+            ${escapeHtml(message)}
           </div>
         `;
         return;
@@ -1362,38 +1804,48 @@
 
       questionSelectList.innerHTML = questions
         .map(function (question) {
-          const isSelected = selectedTeaserQuestions.includes(question.text);
+          const isSelected = selectedTeaserQuestions.some(function (item) {
+            return item.responseId === question.responseId;
+          });
+          const disabled = !question.responseId;
 
           return `
             <button
               type="button"
               class="fw-question-item ${isSelected ? "selected" : ""}"
-              onclick="toggleTeaserQuestion('${encodeURIComponent(question.text)}')"
+              ${disabled ? "disabled" : ""}
+              onclick="toggleTeaserQuestion(${question.responseId || "null"})"
             >
-              <span class="fw-question-stage">${getCategoryName(question.category)}</span>
-              <span>${escapeHtml(question.text)}</span>
+              <span class="fw-question-meta">
+                <span>${escapeHtml(question.categoryLabel || getCategoryName(question.category))}</span>
+                ${question.detailLabel ? "<span>· " + escapeHtml(question.detailLabel) + "</span>" : ""}
+              </span>
+              <span class="fw-question-text">Q. ${escapeHtml(question.text)}</span>
             </button>
           `;
         })
         .join("");
     }
 
-    function toggleTeaserQuestion(encodedQuestionText) {
-      const questionText = decodeURIComponent(encodedQuestionText);
-      const selectedIndex = selectedTeaserQuestions.indexOf(questionText);
+    function toggleTeaserQuestion(responseId) {
+      const question = getQuestionCandidates().find(function (item) {
+        return item.responseId === responseId;
+      });
+
+      if (!question) return;
+
+      const selectedIndex = selectedTeaserQuestions.findIndex(function (item) {
+        return item.responseId === responseId;
+      });
 
       if (selectedIndex >= 0) {
-        selectedTeaserQuestions.splice(selectedIndex, 1);
+        selectedTeaserQuestions = [];
       } else {
-        if (selectedTeaserQuestions.length >= 3) {
-          alert("질문은 최대 3개까지만 고를 수 있어!");
-          return;
-        }
-
-        selectedTeaserQuestions.push(questionText);
+        selectedTeaserQuestions = [question];
       }
 
       renderQuestionSelectList();
+      renderSelectedQuestionList();
     }
 
     function openQuestionPicker() {
@@ -1423,31 +1875,32 @@
       const selectedQuestionCount = document.getElementById("selectedQuestionCount");
 
       if (selectedQuestionCount) {
-        selectedQuestionCount.textContent = "선택한 질문 " + selectedTeaserQuestions.length + "/3";
+        selectedQuestionCount.textContent =
+          selectedTeaserQuestions.length === 1 ? "질문 선택 완료" : "질문을 1개 골라 주세요";
       }
 
       if (!selectedQuestionList) return;
 
       if (selectedTeaserQuestions.length === 0) {
+        const message = selectedReadingRecordId
+          ? "아직 선택한 질문이 없어.<br>질문 선택하기를 눌러 질문을 골라줘."
+          : "먼저 추천할 완독 책을 골라 주세요.";
+
         selectedQuestionList.innerHTML = `
           <div class="fw-question-empty">
-            아직 선택한 질문이 없어.<br>
-            질문 선택하기를 눌러 질문을 골라줘.
+            ${message}
           </div>
         `;
         return;
       }
 
-      selectedQuestionList.innerHTML = selectedTeaserQuestions
-        .map(function (question, index) {
-          return `
-            <div class="fw-selected-question-item">
-              <strong>${index + 1}.</strong>
-              <span>${escapeHtml(question)}</span>
-            </div>
-          `;
-        })
-        .join("");
+      const question = selectedTeaserQuestions[0];
+      selectedQuestionList.innerHTML = `
+        <div class="fw-selected-question-item">
+          <strong>Q.</strong>
+          <span>${escapeHtml(question.text)}</span>
+        </div>
+      `;
     }
 
     function goIndividualReading() {
@@ -1490,60 +1943,103 @@
       }
     }
 
-    function submitFriendBook(event) {
+    async function submitFriendBook(event) {
       event.preventDefault();
 
-      const title = document.getElementById("bookTitleInput").value.trim();
-      const author = document.getElementById("bookAuthorInput").value.trim();
-      const reason = document.getElementById("bookReasonInput").value.trim();
+      if (submitInFlight) return;
 
-      if (!title || !author || !reason) {
-        alert("책 제목, 지은이, 추천 이유를 모두 적어줘!");
+      const titleInput = document.getElementById("bookTitleInput");
+      const authorInput = document.getElementById("bookAuthorInput");
+      const reasonInput = document.getElementById("bookReasonInput");
+
+      const reason = reasonInput.value.trim();
+
+      if (!selectedReadingRecordId) {
+        alert("먼저 추천할 완독 책을 골라 주세요.");
+        return;
+      }
+
+      if (!reason) {
+        alert("추천 이유를 적어줘!");
         return;
       }
 
       if (selectedTeaserQuestions.length === 0) {
-        alert("친구들이 궁금해할 질문을 1개 이상 골라줘!");
+        alert("친구들이 궁금해할 질문을 1개 골라줘!");
         return;
       }
 
-      const savedBooks = getSavedFriendBooks();
+      if (selectedTeaserQuestions.length !== 1) {
+        alert("궁금해지는 질문은 1개만 선택할 수 있어!");
+        return;
+      }
 
-      const newBook = {
-        id: Date.now(),
-        title,
-        author,
-        reason,
-        teaserQuestions: selectedTeaserQuestions,
-        recommender: studentName,
-        likes: 0,
-        mine: true,
-        createdAt: new Date().toISOString()
-      };
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
 
-      sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify([newBook, ...savedBooks]));
+      submitInFlight = true;
 
-      const rewardResult =
-        typeof givePowerRewardOnce === "function"
-          ? givePowerRewardOnce("friend_book_recommend_" + newBook.id, {
-              presetKey: "individual_friend_book_recommend",
-              showModal: false
+      try {
+        const response = await fetch(
+          API_BASE_URL + "/api/students/me/book-recommendations",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token
+            },
+            body: JSON.stringify({
+              readingRecordId: selectedReadingRecordId,
+              reason,
+              teaserResponseIds: selectedTeaserQuestions.map(function (question) {
+                return question.responseId;
+              })
             })
-          : false;
+          }
+        );
 
-      if (rewardResult && typeof openFriendRewardModal === "function") {
-        openFriendRewardModal();
-      } else {
-        const completeModal = document.getElementById("completeModal");
-
-        if (completeModal) {
-          completeModal.classList.add("show");
+        if (!response.ok) {
+          throw new Error("추천 글 등록 실패: " + response.status);
         }
+
+        const saved = await response.json();
+
+        if (saved.rewardGranted && typeof openFriendRewardModal === "function") {
+          openFriendRewardModal();
+        } else {
+          const completeModal = document.getElementById("completeModal");
+
+          if (completeModal) {
+            completeModal.classList.add("show");
+          }
+        }
+      } catch (error) {
+        console.error("추천 글을 등록하지 못했습니다.", error);
+        alert("추천 글 등록에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        submitInFlight = false;
       }
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", async function () {
+      await loadCompletedBooks();
       renderSelectedQuestionList();
+    });
+
+    document.addEventListener("click", function (event) {
+      const dropdown = document.getElementById("completedBookDropdown");
+
+      if (dropdown && !dropdown.contains(event.target)) {
+        closeCompletedBookDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeCompletedBookDropdown();
+      }
     });
   </script>
 

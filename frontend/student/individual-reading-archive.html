@@ -777,6 +777,33 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
   padding-right: 6px !important;
   margin-top: 4px !important;
 }
+/* =========================================================
+   독서 보관함 상세 화면 상단 정리
+   - 책 제목, 별점, 대표 질문은 상세 화면에서만 숨김
+   - 목록 카드의 제목, 별점, 대표 질문은 그대로 유지
+   ========================================================= */
+
+/* 상세 화면의 책 제목과 설명 영역 제거 */
+#bookDetailView .ira-detail-header > div:nth-child(2) {
+  display: none !important;
+}
+
+/* 상세 화면의 별점과 대표 질문 영역 제거 */
+#bookDetailView .ira-detail-header > .ira-book-meta-line {
+  display: none !important;
+}
+
+/* 책 목록으로 버튼과 완독 날짜 아래의 불필요한 여백 축소 */
+#bookDetailView .ira-detail-header {
+  gap: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* 읽기 전·중·후·간추리기 탭을 위로 이동 */
+#bookDetailView .ira-tab-row {
+  margin-top: 8px !important;
+  margin-bottom: 18px !important;
+}
   </style>
 </head>
 
@@ -835,6 +862,13 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
               <h2 class="ira-detail-title" id="detailBookTitle">책 제목</h2>
               <p class="ira-detail-desc" id="detailBookDescription">읽기 기록을 단계별로 확인해 봐요.</p>
             </div>
+
+            <div class="ira-book-meta-line">
+              <div class="ira-book-finish-info">
+                <span class="ira-book-info-pill ira-book-rating" id="detailRating"></span>
+              </div>
+              <p class="ira-represent-question-box" id="detailRepresentative"></p>
+            </div>
           </div>
 
           <div class="ira-tab-row">
@@ -852,215 +886,92 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
   </main>
 
   <script>
-    // 개발 중 화면 확인을 위해 로그인 정보가 없으면 임시 학생 아이디를 사용합니다.
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
-
-    // 나의 독서 보관함에서 사용하는 저장 키입니다.
-const ARCHIVE_KEY = "individualReadingArchive_" + studentId;
-
-// 읽기 후 활동을 마무리할 때 저장한 별점/대표 질문 기록입니다.
-const FINISH_RECORD_KEY = "individualBookFinishRecord_" + studentId;
-
-// 읽기 후 활동에서 만든 질문과 답, 간추리기 기록입니다.
-// 보관함 상세 보기에서 함께 보여주기 위해 사용합니다.
-const AFTER_QUESTION_KEY = "individualAfterQuestionAnswers_" + studentId;
-const AFTER_SUMMARY_KEY = "individualAfterSummary_" + studentId;
+    const INDIVIDUAL_READING_API_BASE_URL = "http://localhost:8080";
 
     let archiveBooks = [];
-    let selectedBook = null;
+    let selectedBookDetail = null;
     let currentTab = "all";
 
-    document.addEventListener("DOMContentLoaded", function () {
-      archiveBooks = getArchiveBooks();
+    document.addEventListener("DOMContentLoaded", async function () {
+      await loadArchiveBooks();
       renderArchiveSummary();
       renderBookList();
     });
 
-    // sessionStorage에 저장된 책 단위 보관함을 불러옵니다.
-    // 아직 자동 저장 데이터가 없으면 화면 확인용 예시 데이터를 보여줍니다.
-    function getArchiveBooks() {
-  const stored = safeJsonParse(sessionStorage.getItem(ARCHIVE_KEY), []);
-  const finishedBook = getFinishedBookFromAfterReading();
+    /*
+      나의 독서 보관함 목록을 서버(GET .../individual-reading/archive)에서
+      받아온다 - sessionStorage 샘플/임시 데이터는 더 이상 쓰지 않는다.
+      완독한 기록만 서버가 최신순으로 내려준다.
+    */
+    async function loadArchiveBooks() {
+      const token = sessionStorage.getItem("token");
 
-  // 이 책 마무리하기로 저장한 기록이 있으면 보관함 목록 맨 앞에 보여줍니다.
-  if (finishedBook) {
-    const filteredStored = stored.filter(function (book) {
-      return book.id !== finishedBook.id;
-    });
+      if (!token) {
+        archiveBooks = [];
+        return;
+      }
 
-    return [finishedBook, ...filteredStored];
-  }
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/archive",
+          { headers: { Authorization: "Bearer " + token } }
+        );
 
-  if (stored.length > 0) {
-    return stored;
-  }
-
-  return getExampleArchiveBooks();
-}
-// 읽기 후 활동에서 최종 마무리한 책 기록을 보관함 카드용 데이터로 바꿉니다.
-function getFinishedBookFromAfterReading() {
-  const finishRecord = safeJsonParse(sessionStorage.getItem(FINISH_RECORD_KEY), null);
-
-  if (!finishRecord) {
-    return null;
-  }
-
-  const afterQuestions = safeJsonParse(sessionStorage.getItem(AFTER_QUESTION_KEY), []);
-  const summary = sessionStorage.getItem(AFTER_SUMMARY_KEY) || "";
-
-  return {
-    id: "finished-book-" + studentId,
-    title: finishRecord.bookTitle || "내가 읽은 책",
-    author: finishRecord.author || "지은이 없음",
-    completedAt: finishRecord.finishedAt || "완독 날짜 없음",
-    finishedAt: finishRecord.finishedAt || "완독 날짜 없음",
-    rating: finishRecord.rating || 0,
-    representativeQuestion: finishRecord.representativeQuestion || "",
-    beforeQuestions: [],
-    duringQuestions: [],
-    afterQuestions: afterQuestions,
-    summary: summary
-  };
-}
-    // 화면 확인용 예시 데이터입니다.
-    // 학생이 직접 입력하기 어려운 책 설명은 카드에서 보여주지 않습니다.
-    function getExampleArchiveBooks() {
-      return [
-        {
-          id: "book-20260617-001",
-          title: "아몬드",
-          completedAt: "2026.06.17",
-          beforeQuestions: [
-            {
-              source: "제목을 보고 질문 만들기",
-              question: "주인공은 왜 감정을 느끼지 못할까?"
-            },
-            {
-              source: "차례를 보고 질문 만들기",
-              question: "주인공은 어떤 일을 겪으며 달라질까?"
-            }
-          ],
-          duringQuestions: [
-            {
-              date: "2026.06.16",
-              type: "생각·느낌",
-              question: "주인공이 외로웠던 순간은 언제였을까?",
-              answer: "친구들과 마음을 나누지 못했을 때 외로웠을 것 같습니다."
-            },
-            {
-              date: "2026.06.16",
-              type: "삶과 연결",
-              question: "내가 주인공이라면 어떤 말을 듣고 싶었을까?",
-              answer: "괜찮다고 말해 주는 친구의 말을 듣고 싶었을 것 같습니다."
-            }
-          ],
-          afterQuestions: [
-            {
-              question: "처음에는 어떤 일이 있었나요?",
-              answer: "처음에는 주인공이 다른 사람의 감정을 잘 이해하지 못했습니다."
-            },
-            {
-              question: "가운데에는 어떤 문제가 생겼나요?",
-              answer: "주인공이 친구와 갈등을 겪으며 마음을 이해하는 일이 어려웠습니다."
-            },
-            {
-              question: "마지막에는 어떻게 되었나요?",
-              answer: "주인공은 조금씩 다른 사람을 이해하게 되었습니다."
-            }
-          ],
-          summary: "이 책은 감정을 느끼지 못하는 소년이 여러 사람을 만나면서 조금씩 마음을 이해하게 되는 이야기입니다. 처음에는 주인공이 다른 사람의 감정을 잘 알지 못했지만, 가운데에는 친구와 여러 사건을 겪으며 변화합니다. 마지막에는 다른 사람의 마음을 조금씩 받아들이게 됩니다."
-        },
-        {
-          // 카드가 2개 이상일 때 목록/스크롤이 자연스러운지 확인하기 위한
-          // 화면 확인용 예시 데이터입니다. 실제 서비스 로직과는 무관하며,
-          // 확인이 끝나면 이 항목만 지워도 됩니다.
-          id: "book-20260620-002",
-          title: "마당을 나온 암탉",
-          author: "황선미",
-          completedAt: "2026.06.20",
-          rating: 5,
-          representativeQuestion: "잎싹은 왜 양계장을 떠나기로 결심했을까?",
-          beforeQuestions: [
-            {
-              source: "제목을 보고 질문 만들기",
-              question: "마당을 나온 암탉에게는 어떤 일이 생길까?"
-            },
-            {
-              source: "차례를 보고 질문 만들기",
-              question: "암탉은 마당 밖에서 누구를 만나게 될까?"
-            }
-          ],
-          duringQuestions: [
-            {
-              date: "2026.06.19",
-              type: "바로 찾기",
-              question: "잎싹이 가장 하고 싶었던 일은 무엇이었나요?",
-              answer: "알을 품어서 병아리를 키우는 일이었습니다."
-            },
-            {
-              date: "2026.06.19",
-              type: "생각·느낌",
-              question: "잎싹은 위험한 순간에 어떤 마음이었을까?",
-              answer: "무섭지만 자식을 지키겠다는 마음이 더 컸을 것 같습니다."
-            }
-          ],
-          afterQuestions: [
-            {
-              question: "처음에는 어떤 일이 있었나요?",
-              answer: "처음에는 잎싹이 양계장에서 나가고 싶어 했습니다."
-            },
-            {
-              question: "가운데에는 어떤 문제가 생겼나요?",
-              answer: "잎싹이 청둥오리의 알을 품고 키우며 여러 위험을 겪었습니다."
-            },
-            {
-              question: "마지막에는 어떻게 되었나요?",
-              answer: "잎싹은 초록머리를 무사히 키워 하늘로 떠나보냈습니다."
-            }
-          ],
-          summary: "이 책은 양계장을 나온 암탉 잎싹이 청둥오리 초록머리를 키우며 겪는 이야기입니다. 처음에는 잎싹이 알을 품고 싶어 양계장을 나가기로 결심합니다. 가운데에는 초록머리를 지키기 위해 여러 위험을 이겨 냅니다. 마지막에는 초록머리를 훌륭하게 키워 자유롭게 떠나보냅니다."
-        },
-        {
-          // 카드가 3개 이상일 때 배치와 목록 스크롤이 자연스러운지 확인하기
-          // 위한 화면 확인용 예시 데이터입니다. 실제 서비스 로직과는 무관하며,
-          // 확인이 끝나면 이 항목만 지워도 됩니다.
-          id: "book-20260622-003",
-          title: "나무를 심은 사람",
-          author: "장 지오노",
-          completedAt: "2026.06.22",
-          rating: 4,
-          representativeQuestion: "엘제아르 부피에는 왜 혼자 나무를 심기 시작했을까?",
-          beforeQuestions: [
-            {
-              source: "제목을 보고 질문 만들기",
-              question: "나무를 심은 사람에게는 어떤 일이 있었을까?"
-            }
-          ],
-          duringQuestions: [
-            {
-              date: "2026.06.21",
-              type: "삶과 연결",
-              question: "내가 부피에라면 끝까지 나무를 심을 수 있었을까?",
-              answer: "쉽지 않겠지만 숲이 자라는 모습을 보면 계속하고 싶을 것 같습니다."
-            }
-          ],
-          afterQuestions: [
-            {
-              question: "처음에는 어떤 일이 있었나요?",
-              answer: "처음에는 황무지에 부피에 혼자 도토리를 심었습니다."
-            },
-            {
-              question: "가운데에는 어떤 문제가 생겼나요?",
-              answer: "오랜 시간 혼자 나무를 심어도 아무도 알아주지 않았습니다."
-            },
-            {
-              question: "마지막에는 어떻게 되었나요?",
-              answer: "황무지가 푸른 숲으로 바뀌고 많은 사람이 다시 모여 살게 되었습니다."
-            }
-          ],
-          summary: "이 책은 한 사람이 오랜 세월 혼자 나무를 심어 황무지를 숲으로 바꾸는 이야기입니다. 처음에는 부피에가 아무도 없는 땅에 홀로 도토리를 심습니다. 가운데에는 아무도 알아주지 않아도 꾸준히 나무를 심어 갑니다. 마지막에는 숲이 살아나 많은 사람이 다시 그 땅에 모여 삽니다."
+        if (!response.ok) {
+          throw new Error("나의 독서 보관함 목록 조회 실패: " + response.status);
         }
-      ];
+
+        archiveBooks = await response.json();
+      } catch (error) {
+        console.error("나의 독서 보관함 목록을 불러오지 못했습니다.", error);
+        archiveBooks = [];
+
+        const bookGrid = document.getElementById("bookGrid");
+        if (bookGrid) {
+          bookGrid.innerHTML = `
+            <div class="ira-empty" style="grid-column: 1 / -1;">
+              보관함을 불러오지 못했어요.<br>
+              잠시 후 다시 시도해 주세요.
+            </div>
+          `;
+        }
+      }
+    }
+
+    // 서버 ISO 시각(예: 2026-07-28T21:48:14)을 2026.07.28 형식으로 바꾼다.
+    function formatArchiveDate(isoDateTime) {
+      if (!isoDateTime) return "완독 날짜 없음";
+
+      const datePart = String(isoDateTime).slice(0, 10);
+      const parts = datePart.split("-");
+
+      if (parts.length !== 3) return datePart;
+
+      return parts[0] + "." + parts[1] + "." + parts[2];
+    }
+
+    function getRepresentCategoryLabelForArchive(category) {
+      if (category === "before") return "읽기 전";
+      if (category === "during") return "읽기 중";
+      if (category === "after") return "읽기 후";
+      return "";
+    }
+
+    function getBeforeStepLabel(stepType) {
+      if (stepType === "title") return "제목 보고 질문 만들기";
+      if (stepType === "contents") return "차례 보고 질문 만들기";
+      if (stepType === "picture") return "그림 보고 질문 만들기";
+      if (stepType === "skim") return "훑어보고 질문 만들기";
+      return "읽기 전 질문";
+    }
+
+    function getDuringTypeLabel(questionType) {
+      if (questionType === "find") return "바로 찾기";
+      if (questionType === "infer") return "짐작하기";
+      if (questionType === "feel") return "생각·느낌";
+      if (questionType === "connect") return "삶과 연결";
+      return "읽는 중 질문";
     }
 
    // 별점 숫자를 별 모양으로 바꿔 보여줍니다.
@@ -1075,21 +986,6 @@ function getRatingStars(rating) {
   `;
 }
 
-// 대표 질문이 저장되지 않은 예전 데이터는 읽기 후 질문 중 첫 번째 질문을 대신 보여줍니다.
-function getDefaultRepresentativeQuestion(book) {
-  const afterQuestions = book.afterQuestions || [];
-
-  if (book.representativeQuestion) {
-    return book.representativeQuestion;
-  }
-
-  if (afterQuestions.length > 0 && afterQuestions[0].question) {
-    return afterQuestions[0].question;
-  }
-
-  return "아직 대표 질문이 저장되지 않았어요.";
-}
-
 function renderArchiveSummary() {
   const bookCount = archiveBooks.length;
   document.getElementById("archiveBookCount").textContent = bookCount + "권";
@@ -1102,22 +998,21 @@ function renderArchiveSummary() {
         bookGrid.innerHTML = `
           <div class="ira-empty" style="grid-column: 1 / -1;">
             아직 보관된 책이 없어요.<br>
-            오늘의 독서 모험에서 읽기 후 활동을 완료하면 이곳에 자동으로 저장돼요.
+            오늘의 독서 모험에서 책을 완독하면 이곳에 자동으로 저장돼요.
           </div>
         `;
         return;
       }
 
       bookGrid.innerHTML = archiveBooks.map(function (book) {
-  const title = book.title || book.bookTitle || "제목 없는 책";
+  const title = book.bookTitle || "제목 없는 책";
   const author = book.author || "지은이 없음";
-  const completedAt = book.finishedAt || book.completedAt || "완독 날짜 없음";
-  const rating = Number(book.rating || 0);
-  const representativeQuestion = getDefaultRepresentativeQuestion(book);
-  const ratingStars = getRatingStars(rating);
+  const completedAt = formatArchiveDate(book.finishedAt);
+  const ratingDisplay = book.rating ? getRatingStars(book.rating) : "별점 미등록";
+  const representativeQuestion = book.representativeQuestion || "아직 대표 질문이 저장되지 않았어요.";
 
   return `
-    <article class="ira-book-card" onclick="showBookDetail('${escapeHtml(book.id)}')">
+    <article class="ira-book-card" onclick="showBookDetail(${book.readingRecordId})">
       <div class="ira-book-card-head">
         <div>
           <h3 class="ira-book-title">${escapeHtml(title)}</h3>
@@ -1128,7 +1023,7 @@ function renderArchiveSummary() {
 
       <div class="ira-book-meta-line">
         <div class="ira-book-finish-info">
-          <span class="ira-book-info-pill ira-book-rating">${ratingStars}</span>
+          <span class="ira-book-info-pill ira-book-rating">${ratingDisplay}</span>
         </div>
 
         <p class="ira-represent-question-box">
@@ -1141,29 +1036,90 @@ function renderArchiveSummary() {
 }).join("");
     }
 
-    function showBookDetail(bookId) {
-      selectedBook = archiveBooks.find(function (book) {
-        return book.id === bookId;
-      });
+    /*
+      책 카드를 누르면 서버 상세 API(GET .../archive/{readingRecordId})를
+      새로 호출한다 - 목록 카드 데이터(요약용 필드만 있음)를 재사용하지
+      않고, 매번 그 책의 최신 전체 기록을 받아온다. 로딩 중에는 이전 책의
+      내용이 잠깐이라도 남아 있지 않도록 화면을 먼저 비운다.
+    */
+    async function showBookDetail(readingRecordId) {
+      selectedBookDetail = null;
+      currentTab = "all";
 
-      if (!selectedBook) {
-        alert("책 기록을 찾지 못했어.");
+      document.getElementById("bookListView").classList.remove("active");
+      document.getElementById("bookDetailView").classList.add("active");
+      document.getElementById("detailBookTitle").textContent = "불러오는 중...";
+      document.getElementById("detailCompletedAt").textContent = "";
+      document.getElementById("detailRating").innerHTML = "";
+      document.getElementById("detailRepresentative").innerHTML = "";
+      document.getElementById("recordList").innerHTML = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        document.getElementById("recordList").innerHTML = `
+          <div class="ira-empty">로그인 정보가 없어요. 다시 로그인한 뒤 시도해 주세요.</div>
+        `;
         return;
       }
 
-      currentTab = "all";
-      document.getElementById("bookListView").classList.remove("active");
-      document.getElementById("bookDetailView").classList.add("active");
-      document.getElementById("detailBookTitle").textContent = selectedBook.title || "제목 없는 책";
-      document.getElementById("detailBookDescription").textContent = "읽기 전, 읽는 중, 읽은 후, 간추린 내용을 단계별로 확인해 봐요.";
-      document.getElementById("detailCompletedAt").textContent = selectedBook.completedAt || "완료일 없음";
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/archive/" +
+            readingRecordId,
+          { headers: { Authorization: "Bearer " + token } }
+        );
+
+        if (!response.ok) {
+          throw new Error("나의 독서 보관함 상세 조회 실패: " + response.status);
+        }
+
+        selectedBookDetail = await response.json();
+      } catch (error) {
+        console.error("나의 독서 보관함 상세를 불러오지 못했습니다.", error);
+        document.getElementById("recordList").innerHTML = `
+          <div class="ira-empty">
+            기록을 불러오지 못했어요.<br>
+            잠시 후 다시 시도해 주세요.
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById("detailBookTitle").textContent = selectedBookDetail.bookTitle || "제목 없는 책";
+      document.getElementById("detailCompletedAt").textContent = formatArchiveDate(selectedBookDetail.finishedAt);
+      renderDetailRepresentative(selectedBookDetail);
 
       changeArchiveTab("all");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 책 정보 위쪽에 별점과 대표 질문·답을 고정으로 보여준다(탭과 무관).
+    function renderDetailRepresentative(detail) {
+      const ratingEl = document.getElementById("detailRating");
+      const repEl = document.getElementById("detailRepresentative");
+
+      if (ratingEl) {
+        ratingEl.innerHTML = detail.rating ? getRatingStars(detail.rating) : "별점 미등록";
+      }
+
+      if (repEl) {
+        if (detail.representativeQuestion) {
+          const categoryLabel = getRepresentCategoryLabelForArchive(detail.representativeCategory);
+          repEl.innerHTML = `
+            <strong>대표 질문 (${escapeHtml(categoryLabel)})</strong>
+            Q. ${escapeHtml(detail.representativeQuestion)}<br>
+            A. ${escapeHtml(detail.representativeAnswer || "답 없음")}
+          `;
+        } else {
+          repEl.innerHTML = `<strong>대표 질문</strong>대표 질문 미등록`;
+        }
+      }
     }
 
     function showBookList() {
-      selectedBook = null;
+      selectedBookDetail = null;
       document.getElementById("bookDetailView").classList.remove("active");
       document.getElementById("bookListView").classList.add("active");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1182,15 +1138,14 @@ function renderArchiveSummary() {
 
     function renderRecords() {
       const recordList = document.getElementById("recordList");
-      if (!selectedBook) return;
+      if (!selectedBookDetail) return;
 
-      const records = getRecordsByTab(selectedBook, currentTab);
+      const records = getRecordsByTab(selectedBookDetail, currentTab);
 
       if (records.length === 0) {
         recordList.innerHTML = `
           <div class="ira-empty">
-            이 카테고리에 저장된 기록이 없어요.<br>
-            독서 활동을 완료하면 자동으로 기록이 채워져요.
+            이 카테고리에 저장된 기록이 없어요.
           </div>
         `;
         return;
@@ -1202,7 +1157,7 @@ function renderArchiveSummary() {
             <article class="ira-summary-card">
               <div class="ira-record-meta">
                 <span class="ira-badge">간추린 내용</span>
-                <span class="ira-badge brown">${escapeHtml(selectedBook.completedAt || "완료일 없음")}</span>
+                ${record.feedback ? `<span class="ira-badge brown">루미 피드백 통과</span>` : ""}
               </div>
               <h3>내가 쓴 간추리기</h3>
               <p>${escapeHtml(record.summary)}</p>
@@ -1219,44 +1174,52 @@ function renderArchiveSummary() {
             </div>
             <h3>Q. ${escapeHtml(record.question || "질문 없음")}</h3>
             <p>${escapeHtml(record.answer || "아직 답은 없어요.")}</p>
+            ${record.feedback ? `<p style="margin-top:8px;color:#8a5a22;">💬 루미: ${escapeHtml(record.feedback)}</p>` : ""}
           </article>
         `;
       }).join("");
     }
 
-    function getRecordsByTab(book, tab) {
-      const beforeRecords = (book.beforeQuestions || []).map(function (item) {
+    // 실패하거나 아직 루미 통과를 못 받은 임시 응답은 서버가 이미 걸러서
+    // 내려주므로(최종 통과 기록만), 여기서는 필드 이름만 화면용으로 맞춘다.
+    function getRecordsByTab(detail, tab) {
+      const beforeRecords = (detail.beforeResponses || []).map(function (item) {
         return {
           category: "before",
           label: "읽기 전",
-          source: item.source || "읽기 전 질문",
+          source: getBeforeStepLabel(item.stepType),
           question: item.question,
-          answer: "읽기 전에 만든 예상 질문이에요."
+          answer: item.answer,
+          feedback: item.aiFeedback
         };
       });
 
-      const duringRecords = (book.duringQuestions || []).map(function (item) {
+      const duringRecords = (detail.duringResponses || []).map(function (item) {
         return {
           category: "during",
           label: "읽는 중",
-          date: item.date,
-          source: item.type || "읽는 중 질문",
+          date: formatArchiveDate(item.createdAt),
+          source: getDuringTypeLabel(item.questionType),
           question: item.question,
-          answer: item.answer
+          answer: item.answer,
+          feedback: item.aiFeedback
         };
       });
 
-      const afterRecords = (book.afterQuestions || []).map(function (item, index) {
+      const afterRecords = (detail.afterResponses || []).map(function (item) {
         return {
           category: "after",
-          label: "읽은 후 질문 " + (index + 1),
+          label: "읽은 후 질문 " + (item.questionIndex || ""),
           source: "간추리기 질문",
           question: item.question,
-          answer: item.answer
+          answer: item.answer,
+          feedback: item.aiFeedback
         };
       });
 
-      const summaryRecords = book.summary ? [{ category: "summary", summary: book.summary }] : [];
+      const summaryRecords = detail.summaryText
+        ? [{ category: "summary", summary: detail.summaryText, feedback: detail.summaryAiPassed }]
+        : [];
 
       if (tab === "before") return beforeRecords;
       if (tab === "during") return duringRecords;
@@ -1264,14 +1227,6 @@ function renderArchiveSummary() {
       if (tab === "summary") return summaryRecords;
 
       return [...beforeRecords, ...duringRecords, ...afterRecords, ...summaryRecords];
-    }
-
-    function safeJsonParse(value, fallback) {
-      try {
-        return JSON.parse(value || "");
-      } catch (error) {
-        return fallback;
-      }
     }
 
     function escapeHtml(value) {

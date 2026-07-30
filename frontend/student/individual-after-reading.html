@@ -914,6 +914,42 @@
   margin: 0 0 18px;
 }
 
+.iar-share-date-nav {
+  display: grid;
+  grid-template-columns: minmax(130px, auto) minmax(220px, 1fr) minmax(130px, auto);
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.iar-share-date-button {
+  height: 42px;
+  border: 1px solid rgba(174, 109, 27, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 250, 237, 0.95);
+  color: #654018;
+  font-size: 15px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.iar-share-date-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.iar-share-date-label {
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(181, 117, 37, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 252, 244, 0.96);
+  color: #5c3516;
+  font-size: 17px;
+  font-weight: 950;
+}
+
 .iar-share-filter-button {
   height: 44px;
   border: 1px solid rgba(174, 109, 27, 0.22);
@@ -967,6 +1003,10 @@
 }
 
 @media (max-width: 980px) {
+  .iar-share-date-nav {
+    grid-template-columns: 1fr;
+  }
+
   .iar-share-filter-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1732,6 +1772,20 @@ body.iar-teacher-share-mode .iar-bottom-actions {
 
 body.iar-teacher-share-mode .iar-panel {
   margin-top: 18px;
+}
+
+/*
+  .iar-shell은 원래 3개 행(상단바 64px / 순서 카드 auto / 화면 영역 1fr)을
+  가정한다. 교사 모드는 순서 카드(.iar-step-card)를 display:none으로
+  숨기므로 grid 배치에서 완전히 빠지고, 남은 #shareScreen이 대신 2번째
+  행(auto = 내용 크기만큼만)에 들어가 버려서 원래 3번째 행이었던 1fr
+  공간이 아무 것도 없이 화면 아래에 그대로 남는다(흰 패널 아래 배경 여백의
+  실제 원인). 교사 모드에서만 행을 2개(상단바 / 나머지 전부 1fr)로 다시
+  정의해 #shareScreen이 남은 세로 공간을 그대로 채우게 한다 - 카드·필터·
+  버튼의 크기나 위치, 학생 모드 레이아웃은 전혀 바뀌지 않는다.
+*/
+body.iar-teacher-share-mode .iar-shell {
+  grid-template-rows: 64px minmax(0, 1fr) !important;
 }
 
 body.iar-teacher-share-mode .iar-share-guide {
@@ -3168,9 +3222,21 @@ body {
   min-width: 174px !important;
 }
 
+/*
+  #shareScreen .iar-panel의 실제 자식은 5개(제목 / 날짜 상단바 / 책 종류
+  필터 / 카드 목록(.iar-share-grid) / 이 책 마무리하기 버튼)인데 아래
+  grid-template-rows는 4칸(auto auto minmax(0,1fr) auto)만 정의하고
+  있었다. 그 결과 3번째 자식인 필터 줄(.iar-share-filter-row)이 늘어나는
+  1fr 칸을 차지해 버려 세로로 크게 늘어나고, 정작 카드 목록은 그 아래로
+  밀려났다(학생 화면에서 카드가 아래쪽에 떠 있던 원인). 자식 개수에 맞게
+  5칸으로 늘리고 실제 카드 목록 칸에 1fr을 준다 - 필터 줄은 다시 내용
+  높이만큼만 차지하고, 카드 목록이 날짜 상단바/필터 바로 아래에서
+  시작한다. 교사 모드는 이 책 마무리하기 버튼이 없어 5번째 칸이 그냥
+  빈 채로 0에 가깝게 접히므로 함께 자연스럽게 고쳐진다.
+*/
 #shareScreen .iar-panel {
   padding: 22px 30px 22px !important;
-  grid-template-rows: auto auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
   gap: 10px !important;
 }
 
@@ -3685,15 +3751,37 @@ body {
               질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.
             </div>
             <div class="iar-lumi-feedback-actions">
-              <button type="button" class="iar-lumi-feedback-action" id="checkQuestionButton" onclick="checkCurrentQuestionFeedback()">루미에게 확인받기</button>
-              <button type="button" class="iar-lumi-feedback-action" id="nextQuestionButton" onclick="goToNextQuestionCard()" hidden>다음 질문으로</button>
-            </div>
+  <button
+    type="button"
+    class="iar-lumi-feedback-action"
+    id="checkQuestionButton"
+    onclick="checkCurrentQuestionFeedback()"
+  >
+    루미에게 확인받기
+  </button>
+</div>
           </div>
 
           <div class="iar-bottom-actions">
-            <button type="button" class="iar-main-button" onclick="showTypeScreen()">이전으로</button>
-            <button type="button" class="iar-main-button primary" id="goSummaryButton" onclick="saveQuestionAnswers()" disabled>간추리기</button>
-          </div>
+  <button
+    type="button"
+    class="iar-main-button"
+    id="previousQuestionButton"
+    onclick="goToPreviousQuestionCard()"
+  >
+    이전으로
+  </button>
+
+  <button
+    type="button"
+    class="iar-main-button primary"
+    id="goSummaryButton"
+    onclick="goToNextQuestionCard()"
+    disabled
+  >
+    다음으로
+  </button>
+</div>
         </article>
       </section>
 
@@ -3748,6 +3836,12 @@ body {
          
 
 <!-- 책 종류별로 간추리기를 골라 보는 필터입니다. -->
+<div class="iar-share-date-nav">
+  <button type="button" class="iar-share-date-button" onclick="moveSummaryDate(-1)">◀ 이전날</button>
+  <div class="iar-share-date-label" id="summaryDateLabel">오늘</div>
+  <button type="button" class="iar-share-date-button" id="summaryNextDateButton" onclick="moveSummaryDate(1)">다음날 ▶</button>
+</div>
+
 <div class="iar-share-filter-row">
   <button type="button" class="iar-share-filter-button active" data-filter="all" onclick="changeShareFilter('all')">
     전체 보기
@@ -3849,16 +3943,17 @@ body {
   </main>
 
   <script>
-    const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    const studentId = sessionStorage.getItem("studentId") || sessionStorage.getItem("id") || "student-demo";
 
+    /*
+      질문·답 3세트/최종 간추리기/완료 상태/우리 반 간추리기 모음(공유·좋아요)은
+      모두 서버 DB가 원본이라 더 이상 sessionStorage 키가 필요 없다(예전 키:
+      questionAnswers/summary/sharedSummaries/shareComments/shareLikes/
+      myLikedSummaries). afterArchive/afterDone/stage는 이 화면과 다른 화면(홈
+      진행상태, 나의 독서 보관함 미리보기) 사이에서 계속 참조되므로 남겨 둔다.
+    */
     const AFTER_KEYS = {
       bookType: "individualAfterBookType_" + studentId,
-      questionAnswers: "individualAfterQuestionAnswers_" + studentId,
-      summary: "individualAfterSummary_" + studentId,
-      sharedSummaries: "individualAfterSharedSummaries_" + studentId,
-      shareComments: "individualAfterShareComments_" + studentId,
-      shareLikes: "individualAfterShareLikes_" + studentId,
-      myLikedSummaries: "individualAfterMyLikedSummaries_" + studentId,
       afterArchive: "individualAfterArchive_" + studentId,
       afterDone: "individualAfterDone_" + studentId,
       stage: "individualAdventureStage_" + studentId
@@ -3867,59 +3962,246 @@ body {
    let selectedBookType = sessionStorage.getItem(AFTER_KEYS.bookType) || "";
 let questionFeedbackPassed = false;
 let summaryFeedbackPassed = false;
+/*
+  지금 화면에 보여줄 질문 카드의 순서(0=질문1). "통과 안 한 첫 카드"를
+  자동으로 찾는 방식(과거 로직)은 3문항이 전부 서버에서 복원돼 이미
+  통과 상태면 찾을 카드가 없어 마지막 카드로 잘못 떨어졌다(재진입 시
+  질문 3부터 보이던 원인). 이 값은 페이지가 처음 열릴 때 0으로 고정되고,
+  "다음 질문으로"를 눌러야만 한 칸씩 증가한다.
+*/
+let activeQuestionCardIndex = 0;
 // 이 책 마무리 팝업에서 선택하는 별점과 대표 질문입니다.
-// 별점은 1~5점, 대표 질문은 학생이 만든 질문 중 1개만 선택합니다.
+// 별점은 1~5점, 대표 질문은 서버가 내려준 후보(responseId) 중 1개만 선택합니다.
 let selectedBookRating = 0;
-let selectedRepresentQuestion = "";
-let selectedRepresentQuestionIndex = -1;
+let selectedRepresentResponseId = null;
 let selectedRepresentCategory = "before";
 // 우리 반 간추리기 모음에서 선택한 책 종류 필터입니다.
 let currentShareFilter = "all";
+let selectedSummaryDate = getTodayInSeoul();
 
 // 책 종류 필터 버튼을 누르면 선택한 종류의 간추리기만 보여줍니다.
-function changeShareFilter(filterKey) {
+// 필터를 바꿀 때도 최신 DB 상태를 기준으로 다시 불러온다.
+async function changeShareFilter(filterKey) {
   currentShareFilter = filterKey;
 
   document.querySelectorAll(".iar-share-filter-button").forEach(function (button) {
     button.classList.toggle("active", button.dataset.filter === filterKey);
   });
 
-  renderShareSummaries();
+  await refreshShareSummaries();
 }
 
-  document.addEventListener("DOMContentLoaded", function () {
+function getTodayInSeoul() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const byType = {};
+  parts.forEach(function (part) {
+    byType[part.type] = part.value;
+  });
+
+  return byType.year + "-" + byType.month + "-" + byType.day;
+}
+
+function addDays(dateText, dayOffset) {
+  const parts = String(dateText).split("-").map(Number);
+  const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  date.setUTCDate(date.getUTCDate() + dayOffset);
+
+  return date.getUTCFullYear() + "-"
+    + String(date.getUTCMonth() + 1).padStart(2, "0") + "-"
+    + String(date.getUTCDate()).padStart(2, "0");
+}
+
+function compareDateText(a, b) {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
+function formatSummaryDateLabel(dateText) {
+  const parts = String(dateText).split("-").map(Number);
+  const date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  const weekdays = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+
+  return parts[0] + "년 " + parts[1] + "월 " + parts[2] + "일 " + weekdays[date.getUTCDay()];
+}
+
+function renderSummaryDateNav() {
+  const label = document.getElementById("summaryDateLabel");
+  const nextButton = document.getElementById("summaryNextDateButton");
+  const today = getTodayInSeoul();
+
+  if (compareDateText(selectedSummaryDate, today) > 0) {
+    selectedSummaryDate = today;
+  }
+
+  if (label) {
+    label.textContent = formatSummaryDateLabel(selectedSummaryDate);
+  }
+
+  if (nextButton) {
+    nextButton.disabled = selectedSummaryDate === today;
+  }
+}
+
+async function moveSummaryDate(dayOffset) {
+  const nextDate = addDays(selectedSummaryDate, dayOffset);
+  const today = getTodayInSeoul();
+
+  selectedSummaryDate = compareDateText(nextDate, today) > 0 ? today : nextDate;
+  await refreshShareSummaries();
+}
+
+  document.addEventListener("DOMContentLoaded", async function () {
     /*
-      이전 책의 읽기 후 활동을 완료한 뒤 새로 들어온 경우,
-      이전 질문·답과 간추리기 내용을 초기화합니다.
+      질문·답 3세트·최종 간추리기·완료 상태는 이제 서버 DB(reading_records +
+      responses + summaries)가 원본이다. 화면은 항상 빈 상태로 시작해서
+      서버 응답이 오기 전까지 이전 책이나 이전 계정의 값이 잠깐이라도
+      보이지 않게 한다.
     */
-    const previousAfterDone =
-      sessionStorage.getItem(AFTER_KEYS.afterDone) === "true";
-
-    if (previousAfterDone) {
-      sessionStorage.removeItem(AFTER_KEYS.bookType);
-      sessionStorage.removeItem(AFTER_KEYS.questionAnswers);
-      sessionStorage.removeItem(AFTER_KEYS.summary);
-      sessionStorage.setItem(AFTER_KEYS.afterDone, "false");
-
-      selectedBookType = "";
-      questionFeedbackPassed = false;
-      summaryFeedbackPassed = false;
-    }
+    selectedBookType = "";
+    questionFeedbackPassed = false;
+    summaryFeedbackPassed = false;
 
     bindBookTypeButtons();
     bindInputResetEvents();
-    restoreSelectedBookType();
     prepareQuestionFeedbackCards();
-    updateQuestionProgress();
-    updateSequentialQuestionLock();
 
     const params = new URLSearchParams(location.search);
     const teacherView = params.get("teacherView");
 
+    /*
+      교사가 ?teacherView=summaryShare로 들어오면 교사 JWT(role=teacher)라
+      학생 전용 API(/api/students/me/individual-reading/current 등)를 호출할
+      권한이 없다 - 그대로 두면 403이 콘솔에 남으므로 학생용 복원 자체를
+      건너뛴다. 학생으로 로그인했을 때만 평소대로 복원한다.
+    */
     if (teacherView === "summaryShare") {
-      activateTeacherSummaryShareMode();
+      await activateTeacherSummaryShareMode();
+      return;
     }
+
+    await restoreIndividualAfterReadingFromServer();
+
+    /*
+      질문 3개가 서버에 이미 전부 통과 상태로 저장돼 있어도(완료 후 재진입),
+      화면은 항상 책 종류 선택 → 질문 1부터 다시 보여준다 - 완료된 질문을
+      건너뛰거나 마지막 작성 위치로 자동 이동하지 않는다.
+    */
+    activeQuestionCardIndex = 0;
+
+    restoreSelectedBookType();
+    updateQuestionProgress();
+    updateSequentialQuestionLock();
   });
+
+  /*
+    새로고침·재로그인 시 서버(reading_records + responses + summaries)를
+    원본으로 복원한다. 진행 중인 책이 없으면(로그인 정보 없음) 0번 "책
+    종류 고르기" 화면에 그대로 머문다. API 실패 시에는 이미 화면에 입력해
+    둔 값을 임의로 지우지 않는다(네트워크 실패와 "아직 저장된 내용 없음"을
+    구분한다).
+  */
+  async function restoreIndividualAfterReadingFromServer() {
+    const token = sessionStorage.getItem("token");
+    if (!token) return;
+
+    const readingRecordId = await getIndividualReadingRecordId();
+    if (!readingRecordId) return;
+
+    try {
+      const recordResponse = await fetch(
+        INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/current",
+        { headers: { Authorization: "Bearer " + token } }
+      );
+
+      /*
+        GET .../current 는 진행 중인 책이 없으면 204(본문 없음)를 돌려준다.
+        204도 response.ok는 true이므로 status===200으로 정확히 구분해야
+        한다 - 그렇지 않으면 빈 본문에 .json()을 호출해 Safari에서
+        "SyntaxError: The string did not match the expected pattern."가
+        발생한다(책을 완독해 더 이상 진행 중인 책이 없을 때 재현됨).
+      */
+      const record = recordResponse.status === 200 ? await recordResponse.json() : null;
+
+      const [afterResponsesResult, summaryResult] = await Promise.all([
+        fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" + readingRecordId + "/after-responses",
+          { headers: { Authorization: "Bearer " + token } }
+        ),
+        fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" + readingRecordId + "/summary",
+          { headers: { Authorization: "Bearer " + token } }
+        )
+      ]);
+
+      const afterResponses = afterResponsesResult.ok ? await afterResponsesResult.json() : [];
+      const summary = summaryResult.status === 200 ? await summaryResult.json() : null;
+
+      restoreAfterQuestionCards(afterResponses);
+      prepareQuestionFeedbackCards();
+
+      if (summary) {
+        selectedBookType = summary.bookType || selectedBookType;
+
+        const summaryInput = document.getElementById("summaryInput");
+        if (summaryInput) summaryInput.value = summary.summaryText || "";
+
+        summaryFeedbackPassed = summary.aiPassed === true;
+
+        const finishAfterButton = document.getElementById("finishAfterButton");
+        if (finishAfterButton) finishAfterButton.disabled = !summaryFeedbackPassed;
+
+        if (summaryFeedbackPassed) {
+          setFeedback("summaryFeedback", "good", "이전에 저장한 간추리기예요. 그대로 완료할 수 있어요.");
+        }
+      } else if (record && record.bookType) {
+        selectedBookType = record.bookType;
+      }
+
+      if (record && record.afterDone === true) {
+        sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
+      }
+    } catch (error) {
+      console.error("개별읽기 읽기 후 기록을 불러오지 못했습니다.", error);
+    }
+  }
+
+  /*
+    질문 번호(1/2/3) 순서대로 카드에 서버 저장값을 채운다. 다른 책의
+    질문·답이 섞이지 않도록 매번 readingRecordId 기준으로 새로 조회한
+    afterResponses만 사용한다.
+  */
+  function restoreAfterQuestionCards(afterResponses) {
+    if (!Array.isArray(afterResponses) || afterResponses.length === 0) return;
+
+    const byIndex = {};
+    afterResponses.forEach(function (item) {
+      if (item && item.questionIndex) byIndex[item.questionIndex] = item;
+    });
+
+    const cards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+
+    cards.forEach(function (card, index) {
+      const item = byIndex[index + 1];
+      if (!item) return;
+
+      const questionInput = card.querySelector(".qa-question");
+      const answerInput = card.querySelector(".qa-answer");
+
+      if (questionInput) questionInput.value = item.question || "";
+      if (answerInput) answerInput.value = item.answer || "";
+
+      card.dataset.feedbackPassed = item.aiPassed === true ? "true" : "false";
+      card.classList.toggle("passed", item.aiPassed === true);
+    });
+  }
 
     function bindBookTypeButtons() {
       const typeButtons = document.querySelectorAll(".iar-book-type-button");
@@ -4071,11 +4353,19 @@ function changeShareFilter(filterKey) {
       });
     }
 
-    // 질문과 답을 순서대로 열어 줍니다.
-    // 앞 질문이 루미 피드백을 통과해야 다음 질문을 쓸 수 있습니다.
+    /*
+      질문과 답을 순서대로 열어 줍니다. 앞 질문이 루미 피드백을 통과해야
+      다음 질문을 쓸 수 있습니다(잠금 여부는 여전히 통과 상태로 계산).
+
+      다만 "지금 보여줄 카드"는 통과 상태를 보고 추측하지 않고
+      activeQuestionCardIndex를 그대로 따른다 - 서버에서 복원해 3문항이
+      이미 다 통과 상태이면 "통과 안 한 첫 카드를 찾는" 방식은 찾을 카드가
+      없어 항상 마지막 카드로 떨어지기 때문이다(재진입 시 질문 3부터
+      보이던 원인). activeQuestionCardIndex는 페이지가 열릴 때 0으로
+      고정되고 "다음 질문으로"를 눌러야만 증가한다.
+    */
     function updateSequentialQuestionLock() {
       const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
-      let firstLockedIndex = -1;
 
       cards.forEach(function (card, index) {
         const previousPassed = index === 0 || cards[index - 1].dataset.feedbackPassed === "true";
@@ -4088,17 +4378,17 @@ function changeShareFilter(filterKey) {
         inputs.forEach(function (input) {
           input.disabled = !previousPassed;
         });
-
-        if (!previousPassed && firstLockedIndex === -1) {
-          firstLockedIndex = index;
-        }
       });
 
-      const currentCard = cards.find(function (card) {
-        return card.dataset.feedbackPassed !== "true" && !card.classList.contains("locked-next");
-      });
+      // 잠긴 카드를 가리키고 있으면(정상적으로는 발생하지 않지만 방어적으로)
+      // 열람 가능한 범위 안으로 되돌린다.
+      while (activeQuestionCardIndex > 0
+          && cards[activeQuestionCardIndex]
+          && cards[activeQuestionCardIndex].classList.contains("locked-next")) {
+        activeQuestionCardIndex -= 1;
+      }
 
-      const activeCard = currentCard || cards[cards.length - 1];
+      const activeCard = cards[activeQuestionCardIndex] || cards[cards.length - 1];
 
       if (activeCard) {
         activeCard.classList.add("current-card");
@@ -4205,12 +4495,12 @@ function changeShareFilter(filterKey) {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
-        applyIndividualQuestionAiResult(card, result.status, result.message);
+        return applyIndividualQuestionAiResult(card, item, number, result.status, result.message);
       }).catch(function() {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
-        applyIndividualQuestionAiResult(card, "need", "루미가 지금 답을 읽지 못했어. 다시 한 번 눌러줘.");
+        return applyIndividualQuestionAiResult(card, item, number, "need", "루미가 지금 답을 읽지 못했어. 다시 한 번 눌러줘.");
       }).finally(function() {
         if (requestId !== individualQuestionAiRequestId) return;
         if (checkButton) checkButton.disabled = false;
@@ -4221,7 +4511,12 @@ function changeShareFilter(filterKey) {
     // 이 값이 있는 동안에만 다음 질문 버튼이 보인다.
     let cardPendingAdvance = null;
 
-    function applyIndividualQuestionAiResult(card, status, message) {
+    /*
+      AI가 good으로 판정한 직후에만 서버에 저장한다(읽기 전/읽기 중과 같은
+      관례). 저장이 실패하면 통과 처리를 하지 않고 다시 시도하도록 안내해서
+      "화면은 통과했는데 DB에는 없는" 상태가 생기지 않게 한다.
+    */
+    async function applyIndividualQuestionAiResult(card, item, number, status, message) {
       setFeedback("questionFeedback", status, message);
 
       if (status !== "good") {
@@ -4234,8 +4529,20 @@ function changeShareFilter(filterKey) {
         return;
       }
 
-      // AI가 good으로 판정해도 카드만 통과 처리해 두고, 다음 카드로
-      // 넘어가는 것과 보상 지급은 학생이 "다음 질문으로"를 눌러야 실행된다.
+      const saved = await saveAfterResponseToServer(number, item.question, item.answer, true, message);
+
+      if (!saved) {
+        setFeedback("questionFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        card.dataset.feedbackPassed = "false";
+        card.classList.remove("passed");
+        cardPendingAdvance = null;
+        setNextQuestionButtonVisible(false);
+        updateSequentialQuestionLock();
+        return;
+      }
+
+      // 서버 저장이 끝난 뒤에만 카드를 통과 처리해 두고, 다음 카드로
+      // 넘어가는 것은 학생이 "다음 질문으로"를 눌러야 실행된다.
       card.dataset.feedbackPassed = "true";
       card.classList.add("passed");
 
@@ -4253,34 +4560,140 @@ function changeShareFilter(filterKey) {
       setNextQuestionButtonVisible(true);
     }
 
-    function setNextQuestionButtonVisible(visible) {
-      const button = document.getElementById("nextQuestionButton");
-      if (button) button.hidden = !visible;
+    /*
+      읽기 후 간추리기 질문·답 한 세트(질문 번호 1/2/3)를 서버에 저장한다
+      (PUT .../after-responses/{questionIndex}). 읽기 전 저장과 같은 관례로
+      AI가 good을 준 직후에만 호출된다.
+    */
+    async function saveAfterResponseToServer(questionIndex, question, answer, aiPassed, aiFeedback) {
+      const token = sessionStorage.getItem("token");
+      const readingRecordId = await getIndividualReadingRecordId();
+
+      if (!token || !readingRecordId) {
+        console.error("진행 중인 개별읽기 책 정보를 찾을 수 없어 읽기 후 질문·답을 저장하지 못했습니다.");
+        return null;
+      }
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" +
+            readingRecordId +
+            "/after-responses/" +
+            questionIndex,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token
+            },
+            body: JSON.stringify({
+              question: question,
+              answer: answer,
+              aiPassed: aiPassed,
+              aiFeedback: aiFeedback
+            })
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("읽기 후 질문·답 저장 실패: " + response.status);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error("개별읽기 읽기 후 질문·답을 저장하지 못했습니다.", error);
+        return null;
+      }
     }
+
+    function setNextQuestionButtonVisible(visible) {
+  const button = document.getElementById("goSummaryButton");
+
+  if (button) {
+    button.disabled = !visible;
+  }
+}
 
     function goToNextQuestionCard() {
-      if (!cardPendingAdvance) {
-        return;
-      }
+  const cards = Array.from(
+    document.querySelectorAll("#qaList .iar-qa-card")
+  );
 
-      const advancedCard = cardPendingAdvance;
-      cardPendingAdvance = null;
-      setNextQuestionButtonVisible(false);
+  const currentCard = cards[activeQuestionCardIndex];
 
-      // 다음 카드로 넘기는 것, 완료 시 보상/모달 지급, 간추리기 버튼
-      // 활성화까지 전부 여기서 한 번에 처리된다.
-      updateQuestionProgress();
+  if (!currentCard) {
+    return;
+  }
 
-      const activeCard = document.querySelector(".iar-qa-card.current-card");
+  const currentPassed =
+    currentCard.dataset.feedbackPassed === "true";
 
-      // 실제로 다른 카드로 넘어간 경우에만 피드백 박스를 기본 안내
-      // 문구로 되돌린다. 마지막 질문이라 같은 카드에 그대로 머무는
-      // 경우는 방금 받은 good 메시지를 계속 보여준다.
-      if (activeCard && activeCard !== advancedCard) {
-        setFeedback("questionFeedback", "", '질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.');
-      }
-    }
+  if (!currentPassed) {
+    alert("현재 질문과 답을 먼저 루미에게 확인받아 주세요.");
+    return;
+  }
 
+  cardPendingAdvance = null;
+
+  // 질문 1 또는 질문 2에서는 다음 질문으로 이동합니다.
+  if (activeQuestionCardIndex < cards.length - 1) {
+    activeQuestionCardIndex += 1;
+
+    updateSequentialQuestionLock();
+
+    setFeedback(
+      "questionFeedback",
+      "",
+      '질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.'
+    );
+
+    return;
+  }
+
+  // 질문 3에서 다음으로 누르면 간추리기 화면으로 이동합니다.
+  updateQuestionProgress();
+
+  if (!questionFeedbackPassed) {
+    alert("질문 1, 2, 3을 모두 확인해 주세요.");
+    return;
+  }
+
+  showSummaryScreen();
+}
+function goToPreviousQuestionCard() {
+  if (activeQuestionCardIndex <= 0) {
+    showTypeScreen();
+    return;
+  }
+
+  activeQuestionCardIndex -= 1;
+  cardPendingAdvance = null;
+
+  updateSequentialQuestionLock();
+
+  const cards = Array.from(
+    document.querySelectorAll("#qaList .iar-qa-card")
+  );
+
+  const currentCard = cards[activeQuestionCardIndex];
+  const currentPassed =
+    currentCard?.dataset.feedbackPassed === "true";
+
+  if (currentPassed) {
+    setFeedback(
+      "questionFeedback",
+      "good",
+      "이전에 저장한 질문과 답이에요."
+    );
+  } else {
+    setFeedback(
+      "questionFeedback",
+      "",
+      '질문과 답을 쓴 뒤 <b>루미에게 확인받기</b>를 눌러봐.'
+    );
+  }
+}
     function validateQuestionAnswer(item, number, usedQuestionTexts) {
       const problems = [];
       const question = item.question;
@@ -4310,6 +4723,11 @@ function changeShareFilter(filterKey) {
       return problems;
     }
 
+    /*
+      질문 3세트 통과 시 능력치 보상은 지급하지 않는다 - 확정된 보상 기준상
+      읽기 후 보상(체력+3/마법력+1/지혜+1)은 간추리기까지 모두 끝낸
+      완료 시점(finishAfterReading -> after-complete API)에만 한 번 지급된다.
+    */
     function updateQuestionProgress() {
   const cards = Array.from(document.querySelectorAll(".iar-qa-card"));
   const passedCount = cards.filter(function (card) {
@@ -4322,32 +4740,12 @@ function changeShareFilter(filterKey) {
   questionFeedbackPassed = allPassed;
 
   if (goSummaryButton) {
-    goSummaryButton.disabled = !allPassed;
-  }
+  const currentCard = cards[activeQuestionCardIndex];
 
-  if (allPassed) {
-    const rewardKey = "individual_after_questions_pass_" + studentId;
-
-    const rewardResult =
-      typeof givePowerRewardOnce === "function"
-        ? givePowerRewardOnce(rewardKey, {
-            presetKey: "individual_after_questions_pass",
-            showModal: false
-          })
-        : false;
-
-    if (rewardResult && typeof openMiniRewardModal === "function") {
-      openMiniRewardModal({
-        badge: "✨ 지혜 성장!",
-        title: "간추리기 질문을 모두 다듬었어요!",
-        message: "루미: 질문을 잘 다듬었어! 이제 간추리기도 잘할 수 있겠다!",
-       rewards: [
-  { type: "magic", name: "마법력", point: "+1" },
-  { type: "wisdom", name: "지혜", point: "+1" }
-]
-      });
-    }
-  }
+  goSummaryButton.disabled =
+    !currentCard ||
+    currentCard.dataset.feedbackPassed !== "true";
+}
 
   updateSequentialQuestionLock();
 }
@@ -4397,14 +4795,13 @@ function changeShareFilter(filterKey) {
         return;
       }
 
-      sessionStorage.setItem(AFTER_KEYS.questionAnswers, JSON.stringify(getQuestionAnswers()));
+      // 질문·답 3세트는 이미 각 카드가 통과할 때마다 서버에 저장돼 있다.
       showSummaryScreen();
     }
 
     function renderSummaryQuestionAnswers() {
       const summaryQaList = document.getElementById("summaryQaList");
-      const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
-      const questionAnswers = savedData ? JSON.parse(savedData) : [];
+      const questionAnswers = getQuestionAnswers();
 
       summaryQaList.innerHTML = "";
 
@@ -4420,15 +4817,14 @@ function changeShareFilter(filterKey) {
         summaryQaList.appendChild(card);
       });
 
-      const savedSummary = sessionStorage.getItem(AFTER_KEYS.summary) || "";
-      document.getElementById("summaryInput").value = savedSummary;
+      // summaryInput 값은 서버 복원(restoreIndividualAfterReadingFromServer) 또는
+      // 학생이 직접 입력한 값을 그대로 유지한다 - 화면 전환마다 덮어쓰지 않는다.
     }
 
     let summaryAiRequestId = 0;
 
     function checkSummaryFeedback() {
-  const savedData = sessionStorage.getItem(AFTER_KEYS.questionAnswers);
-  const questionAnswers = savedData ? JSON.parse(savedData) : [];
+  const questionAnswers = getQuestionAnswers();
   const summaryText = document.getElementById("summaryInput").value.trim();
   const problems = [];
 
@@ -4452,14 +4848,24 @@ function changeShareFilter(filterKey) {
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
 
-  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), questionAnswers, undefined, summaryText).then(function(result) {
+  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), questionAnswers, undefined, summaryText).then(async function(result) {
     if (requestId !== summaryAiRequestId) return;
 
     setFeedback("summaryFeedback", result.status, result.message);
 
     if (result.status === "good") {
+      const saved = await saveAfterSummaryToServer(selectedBookType, summaryText, true);
+
+      if (requestId !== summaryAiRequestId) return;
+
+      if (!saved) {
+        summaryFeedbackPassed = false;
+        document.getElementById("finishAfterButton").disabled = true;
+        setFeedback("summaryFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+
       summaryFeedbackPassed = true;
-      sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
       document.getElementById("finishAfterButton").disabled = false;
     }
   }).catch(function() {
@@ -4471,99 +4877,248 @@ function changeShareFilter(filterKey) {
   });
 }
 
-    function finishAfterReading() {
+/*
+  최종 간추린 내용을 서버에 저장한다(PUT .../summary). 읽기 후 질문·답과
+  같은 관례로 AI가 good을 준 직후에만 호출된다.
+*/
+async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
+  const token = sessionStorage.getItem("token");
+  const readingRecordId = await getIndividualReadingRecordId();
+
+  if (!token || !readingRecordId) {
+    console.error("진행 중인 개별읽기 책 정보를 찾을 수 없어 최종 간추리기를 저장하지 못했습니다.");
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      INDIVIDUAL_READING_API_BASE_URL +
+        "/api/students/me/individual-reading/" +
+        readingRecordId +
+        "/summary",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({
+          bookType: bookType,
+          summaryText: summaryText,
+          aiPassed: aiPassed
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("최종 간추리기 저장 실패: " + response.status);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("개별읽기 최종 간추리기를 저장하지 못했습니다.", error);
+    return null;
+  }
+}
+
+    /*
+      "저장하고 완료하기" 버튼: 서버에 이미 저장돼 있는 질문·답 3세트 +
+      최종 간추리기를 기준으로 읽기 후 완료 API(POST .../after-complete)를
+      호출한다. 완료 조건 충족 여부와 보상 중복 지급 방지는 모두 서버가
+      판정하므로, 여기서는 응답을 그대로 반영만 한다(클라이언트가 능력치를
+      직접 계산하지 않는다).
+    */
+    async function finishAfterReading() {
   if (!summaryFeedbackPassed) {
     alert("먼저 루미 피드백을 통과해야 해!");
     return;
   }
 
   const summaryText = document.getElementById("summaryInput").value.trim();
-  const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
+  const questionAnswers = getQuestionAnswers();
 
-  /*
-    이미 이 책의 읽기 후 활동을 완료했다면
-    완료 횟수와 체력 보상이 중복으로 올라가지 않게 막습니다.
-  */
-  const alreadyAfterDone = sessionStorage.getItem(AFTER_KEYS.afterDone) === "true";
+  const finishButton = document.getElementById("finishAfterButton");
+  if (finishButton) finishButton.disabled = true;
 
-  sessionStorage.setItem(AFTER_KEYS.summary, summaryText);
+  const result = await completeIndividualAfterReading();
+
+  if (finishButton) finishButton.disabled = false;
+
+  if (!result) {
+    alert("아직 완료 조건을 채우지 못했어요. 질문 3개와 간추리기를 다시 확인한 뒤 눌러줘.");
+    return;
+  }
+
   sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
   sessionStorage.setItem(AFTER_KEYS.stage, "after");
 
-  if (!alreadyAfterDone) {
-    const nextCompletedBookCount = getCompletedBookCount() + 1;
+  if (result.stats) {
+    syncIndividualPowerStats(result.stats);
+  }
 
-    sessionStorage.setItem(
-      "individualCompletedBookCount_" + studentId,
-      String(nextCompletedBookCount)
-    );
-
-    /*
-      읽기 후 완료 보상:
-      individual-power.js의 individual_after_complete preset을 사용합니다.
-      현재 설정은 체력 +3, 지혜 +1입니다.
-    */
-    const rewardResult =
-      typeof givePowerRewardOnce === "function"
-        ? givePowerRewardOnce("individual_after_complete_" + nextCompletedBookCount, {
-            presetKey: "individual_after_complete",
-            showModal: false
-          })
-        : false;
-
-    /*
-  읽기 후 최종 완료 보상:
-  체력 +3, 마법력 +1, 지혜 +1을 보상 화면에 보여줍니다.
-*/
-if (rewardResult && typeof openMiniRewardModal === "function") {
-  openMiniRewardModal({
-    badge: "✨ 읽기 후 완료!",
-    title: "책을 끝까지 마무리했어요!",
-    message: "루미: 끝까지 해낸 힘이 자랐어!",
-    rewards: [
-      { type: "stamina", name: "체력", point: "+3" },
-      { type: "magic", name: "마법력", point: "+1" },
-      { type: "wisdom", name: "지혜", point: "+1" }
-    ]
-  });
-}
+  /*
+    보상 팝업은 rewardGranted=true일 때만 보여준다(서버가 이미 지급한
+    적이 있으면 false를 돌려주므로, 다시 완료 버튼을 눌러도 팝업이 또
+    뜨지 않는다).
+  */
+  if (result.rewardGranted && typeof openMiniRewardModal === "function") {
+    openMiniRewardModal({
+      badge: "✨ 읽기 후 완료!",
+      title: "책을 끝까지 마무리했어요!",
+      message: "루미: 끝까지 해낸 힘이 자랐어!",
+      rewards: [
+        { type: "stamina", name: "체력", point: "+3" },
+        { type: "magic", name: "마법력", point: "+1" },
+        { type: "wisdom", name: "지혜", point: "+1" }
+      ],
+      nextAction: function () {
+        saveAfterArchive(questionAnswers, summaryText);
+        showShareScreen();
+      }
+    });
+    return;
   }
 
   saveAfterArchive(questionAnswers, summaryText);
-  saveMySummaryForShare(summaryText);
   showShareScreen();
 }
 
-    function showShareScreen() {
+    /*
+      읽기 후 완료 API(POST .../after-complete)를 호출한다. 실패(400 등)는
+      "아직 조건을 못 채움"으로 간주해 null을 돌려주고, 화면에 이미 입력한
+      값은 그대로 둔다.
+    */
+    async function completeIndividualAfterReading() {
+      const token = sessionStorage.getItem("token");
+      const readingRecordId = await getIndividualReadingRecordId();
+
+      if (!token || !readingRecordId) {
+        alert("진행 중인 책 정보를 찾을 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
+        return null;
+      }
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" +
+            readingRecordId +
+            "/after-complete",
+          {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          }
+        );
+
+        if (!response.ok) {
+          return null;
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error("개별읽기 읽기 후 완료 처리 중 오류가 발생했습니다.", error);
+        return null;
+      }
+    }
+
+    /*
+      서버가 돌려준 최신 능력치를 공통 나의 힘 저장소(individualPower_v2_<studentId>)에
+      반영하고 individualPowerUpdated 이벤트를 쏜다(individual-during-reading.html과
+      같은 관례) - "나의 힘" 팝업이 곧바로 최신 값을 보여줄 수 있게 한다.
+    */
+    function syncIndividualPowerStats(stats) {
+      const currentStudentId = sessionStorage.getItem("studentId");
+
+      if (!currentStudentId || !stats) {
+        return;
+      }
+
+      const normalized = {
+        magic: Number(stats.magic || 0),
+        stamina: Number(stats.stamina || 0),
+        wisdom: Number(stats.wisdom || 0),
+        courage: Number(stats.courage || 0)
+      };
+
+      localStorage.setItem("individualPower_v2_" + currentStudentId, JSON.stringify(normalized));
+      window.dispatchEvent(new CustomEvent("individualPowerUpdated", { detail: normalized }));
+    }
+
+    async function showShareScreen() {
       switchScreen("shareScreen");
       setActiveStep("stepShare");
-      renderShareSummaries();
+      await refreshShareSummaries();
     }
 // 이 책 마무리 팝업을 엽니다.
-// 팝업을 열 때 별점과 대표 질문 목록을 새로 그립니다.
-function openBookFinishModal() {
+// 팝업을 열 때 별점을 초기화하고, 서버에서 대표 질문 후보를 새로 받아온다.
+async function openBookFinishModal() {
   selectedBookRating = 0;
-selectedRepresentQuestion = "";
-selectedRepresentQuestionIndex = -1;
-selectedRepresentCategory = "before";
+  selectedRepresentResponseId = null;
+  selectedRepresentCategory = "before";
+  finishCandidates = { before: [], during: [], after: [] };
 
-renderRatingStars();
-renderRepresentCategoryButtons();
-renderRepresentQuestionList();
+  renderRatingStars();
+  renderRepresentCategoryButtons();
+
+  const list = document.getElementById("representQuestionList");
+  if (list) {
+    list.innerHTML = `<div class="iar-represent-empty">불러오는 중이에요...</div>`;
+  }
 
   const modal = document.getElementById("bookFinishModal");
 
   if (modal) {
     modal.classList.add("show");
   }
+
+  await loadFinishCandidates();
+  renderRepresentQuestionList();
 }
 
-function activateTeacherSummaryShareMode() {
+/*
+  이 책 마무리하기 팝업의 읽기 전/중/후 탭이 보여줄 대표 질문 후보를
+  서버에서 받아온다(GET .../finish-candidates). 실패해도 팝업 자체는
+  닫지 않고, 빈 목록 안내만 보여준다(입력값이 없으니 사용자가 다시
+  시도할 수 있게).
+*/
+async function loadFinishCandidates() {
+  const token = sessionStorage.getItem("token");
+  const readingRecordId = await getIndividualReadingRecordId();
+
+  if (!token || !readingRecordId) {
+    finishCandidates = { before: [], during: [], after: [] };
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      INDIVIDUAL_READING_API_BASE_URL +
+        "/api/students/me/individual-reading/" +
+        readingRecordId +
+        "/finish-candidates",
+      {
+        headers: { Authorization: "Bearer " + token }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("대표 질문 후보 조회 실패: " + response.status);
+    }
+
+    finishCandidates = await response.json();
+  } catch (error) {
+    console.error("개별읽기 대표 질문 후보를 불러오지 못했습니다.", error);
+    finishCandidates = { before: [], during: [], after: [] };
+  }
+}
+
+async function activateTeacherSummaryShareMode() {
   document.body.classList.add("iar-teacher-share-mode");
 
   switchScreen("shareScreen");
   setActiveStep("stepShare");
-  renderShareSummaries();
+  await refreshShareSummaries();
 
   const title = document.querySelector(
     "#shareScreen .iar-panel-head h2"
@@ -4623,156 +5178,23 @@ function renderRatingStars() {
   });
 }
 
-// 대표 질문 후보를 가져옵니다.
-// 읽기 후 활동에서 학생이 쓴 질문과 답 목록 중 질문만 사용합니다.
+/*
+  이 책 마무리하기 팝업의 대표 질문 후보 캐시(GET .../finish-candidates
+  응답을 그대로 담는다: { before: [...], during: [...], after: [...] },
+  각 항목은 { responseId, question, answer, passed, ... }). 팝업을 열 때
+  한 번만 서버에서 받아오고, 탭을 바꿀 때는 다시 조회하지 않는다(이미
+  받아온 값을 category별로 나눠 보여주기만 하면 되므로).
+*/
+let finishCandidates = { before: [], during: [], after: [] };
+
+// 대표 질문 후보를 가져옵니다(캐시된 서버 응답에서 현재 탭에 해당하는 목록만).
 function getRepresentQuestionCandidates() {
-  if (selectedRepresentCategory === "before") {
-    return getBeforeRepresentQuestions();
-  }
-
-  if (selectedRepresentCategory === "during") {
-    return getDuringRepresentQuestions();
-  }
-
-  return getAfterRepresentQuestions();
+  return finishCandidates[selectedRepresentCategory] || [];
 }
 
-function getBeforeRepresentQuestions() {
-  const candidates = [];
-
-  for (let index = 0; index < sessionStorage.length; index += 1) {
-    const key = sessionStorage.key(index);
-    const value = sessionStorage.getItem(key);
-
-    if (!key || !value) continue;
-
-    const isBeforeKey =
-      key.includes("Before") ||
-      key.includes("before") ||
-      key.includes("ReadingBefore") ||
-      key.includes("individualBefore");
-
-    if (!isBeforeKey) continue;
-
-    collectQuestionsFromStorageValue(value, candidates);
-  }
-
-  return uniqueQuestions(candidates);
-}
-
-function getDuringRepresentQuestions() {
-  const candidates = [];
-
-  for (let index = 0; index < sessionStorage.length; index += 1) {
-    const key = sessionStorage.key(index);
-    const value = sessionStorage.getItem(key);
-
-    if (!key || !value) continue;
-
-    const isDuringKey =
-      key.includes("During") ||
-      key.includes("during") ||
-      key.includes("ReadingDuring") ||
-      key.includes("individualDuring");
-
-    if (!isDuringKey) continue;
-
-    collectQuestionsFromStorageValue(value, candidates);
-  }
-
-  return uniqueQuestions(candidates);
-}
-
-function getAfterRepresentQuestions() {
-  try {
-    const questionAnswers = JSON.parse(sessionStorage.getItem(AFTER_KEYS.questionAnswers) || "[]");
-
-    return questionAnswers
-      .map(function (item) {
-        return item.question || "";
-      })
-      .filter(function (question) {
-        return question.trim().length > 0;
-      });
-  } catch (error) {
-    return [];
-  }
-}
-
-function collectQuestionsFromStorageValue(value, candidates) {
-  try {
-    const parsed = JSON.parse(value);
-
-    if (Array.isArray(parsed)) {
-      parsed.forEach(function (item) {
-        collectQuestionFromItem(item, candidates);
-      });
-      return;
-    }
-
-    if (parsed && typeof parsed === "object") {
-      Object.keys(parsed).forEach(function (key) {
-        collectQuestionFromItem(parsed[key], candidates);
-      });
-    }
-  } catch (error) {
-    if (typeof value === "string" && value.includes("?") && value.length < 160) {
-      candidates.push(value);
-    }
-  }
-}
-
-function collectQuestionFromItem(item, candidates) {
-  if (!item) return;
-
-  if (typeof item === "string") {
-    if (item.includes("?")) {
-      candidates.push(item);
-    }
-    return;
-  }
-
-  if (Array.isArray(item)) {
-    item.forEach(function (child) {
-      collectQuestionFromItem(child, candidates);
-    });
-    return;
-  }
-
-  if (typeof item === "object") {
-    const question =
-      item.question ||
-      item.questionText ||
-      item.text ||
-      item.content ||
-      item.title ||
-      "";
-
-    if (typeof question === "string" && question.includes("?")) {
-      candidates.push(question);
-    }
-  }
-}
-
-function uniqueQuestions(questions) {
-  const seen = new Set();
-
-  return questions
-    .map(function (question) {
-      return String(question).trim();
-    })
-    .filter(function (question) {
-      if (!question || !question.includes("?")) return false;
-      if (seen.has(question)) return false;
-
-      seen.add(question);
-      return true;
-    });
-}
+// 탭을 바꿔도 이미 고른 대표 질문(selectedRepresentResponseId)은 그대로 유지한다.
 function changeRepresentCategory(category) {
   selectedRepresentCategory = category;
-  selectedRepresentQuestion = "";
-  selectedRepresentQuestionIndex = -1;
 
   renderRepresentCategoryButtons();
   renderRepresentQuestionList();
@@ -4793,34 +5215,36 @@ function renderRepresentCategoryButtons() {
   });
 }
 
-// 대표 질문 목록을 팝업 안에 그립니다.
+// 대표 질문 목록을 팝업 안에 그립니다. 질문과 답을 모두 카드 안에 표시합니다.
 function renderRepresentQuestionList() {
   const list = document.getElementById("representQuestionList");
   if (!list) return;
 
-  const questions = getRepresentQuestionCandidates();
+  const candidates = getRepresentQuestionCandidates();
 
-  if (questions.length === 0) {
+  if (candidates.length === 0) {
     list.innerHTML = `
   <div class="iar-represent-empty">
-    이 단계에서 고를 수 있는 질문이 아직 없어요.
+    이 단계에서 루미의 최종 통과를 받은 질문이 없어요.
   </div>
 `;
     return;
   }
 
-  list.innerHTML = questions
-    .map(function (question, index) {
-      const isSelected = selectedRepresentQuestionIndex === index;
-      const categoryLabel = getRepresentCategoryLabel(selectedRepresentCategory);
+  const categoryLabel = getRepresentCategoryLabel(selectedRepresentCategory);
+
+  list.innerHTML = candidates
+    .map(function (item) {
+      const isSelected = selectedRepresentResponseId === item.responseId;
       return `
         <button
           type="button"
           class="iar-represent-question-button ${isSelected ? "selected" : ""}"
-          onclick="selectRepresentQuestion(${index})"
+          onclick="selectRepresentQuestion(${item.responseId})"
         >
-          <small>${categoryLabel} 질문 ${index + 1}</small>
-          ${escapeHtml(question)}
+          <small>${categoryLabel}</small>
+          <div>Q. ${escapeHtml(item.question || "질문 없음")}</div>
+          <div>A. ${escapeHtml(item.answer || "답 없음")}</div>
         </button>
       `;
     })
@@ -4833,38 +5257,159 @@ function getRepresentCategoryLabel(category) {
   return "읽기 후";
 }
 
-// 대표 질문은 하나만 선택합니다.
-function selectRepresentQuestion(questionIndex) {
-  const questions = getRepresentQuestionCandidates();
-
-  selectedRepresentQuestionIndex = questionIndex;
-  selectedRepresentQuestion = questions[questionIndex] || "";
+// 대표 질문은 responseId 기준으로 하나만 선택합니다.
+function selectRepresentQuestion(responseId) {
+  selectedRepresentResponseId = responseId;
 
   renderRepresentQuestionList();
 }
 
-// 별점과 대표 질문을 나의 독서 보관함용 데이터로 저장합니다.
-function saveBookFinishRecord() {
+const INDIVIDUAL_READING_API_BASE_URL = "http://localhost:8080";
+
+/*
+  이 화면 진입 시 sessionStorage에 readingRecordId가 없을 수 있어(다른
+  기기/새 세션) 없으면 서버에서 진행 중인 책을 다시 조회해 채운다.
+*/
+async function getIndividualReadingRecordId() {
+  const cached = sessionStorage.getItem("individualReadingRecordId_" + studentId);
+
+  if (cached) {
+    return cached;
+  }
+
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/current",
+      {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      }
+    );
+
+    if (response.status !== 200) {
+      return null;
+    }
+
+    const record = await response.json();
+    return record.readingRecordId ? String(record.readingRecordId) : null;
+  } catch (error) {
+    console.error("진행 중인 개별읽기 책을 불러오지 못했습니다.", error);
+    return null;
+  }
+}
+
+/*
+  완독 API(POST .../{readingRecordId}/complete)를 호출한다. 이제 별점과
+  대표 질문(responseId)도 함께 보내 서버 DB에 영구 저장한다 - sessionStorage는
+  더 이상 최종 저장소가 아니다. DB가 원본이어야 하므로, 이 호출이 성공했을
+  때만 로컬 진행용 세션값을 정리한다 - 실패한 채로 그대로 진행하면 DB에는
+  여전히 "진행 중"으로 남아 있어 다음 책 등록 시 409가 나는 등 상태가
+  어긋난다. 성공하면 서버가 돌려준 IndividualReadingFinishResponse를
+  그대로 반환한다(question/answer 등은 서버가 조회한 값이라 신뢰할 수 있다).
+*/
+async function completeIndividualReadingBook(rating, representativeResponseId) {
+  const token = sessionStorage.getItem("token");
+  const readingRecordId = await getIndividualReadingRecordId();
+
+  if (!token || !readingRecordId) {
+    alert("진행 중인 책 정보를 찾을 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      INDIVIDUAL_READING_API_BASE_URL +
+        "/api/students/me/individual-reading/" +
+        readingRecordId +
+        "/complete",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({
+          rating: rating,
+          representativeResponseId: representativeResponseId
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("완독 처리 실패: " + response.status);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("개별읽기 완독 처리 중 오류가 발생했습니다.", error);
+    alert("지금은 완독 처리를 하지 못했어요. 잠시 후 다시 시도해 주세요.");
+    return null;
+  }
+}
+
+/*
+  완독 성공 후 "지금 읽던 책"에 한정된 진행용 세션값만 지운다. 로그인 정보
+  (token/studentId/role/name/loginId)와 공통 설정은 절대 지우지 않는다.
+  별점·대표 질문·읽기 전/중/후 기록·최종 간추리기는 이제 전부 서버 DB가
+  원본이라(나의 독서 보관함이 /archive, /archive/{id} API로 직접 조회)
+  sessionStorage에 더 이상 보관하지 않는다.
+*/
+function clearIndividualReadingBookSessionState() {
+  const keysToRemove = [
+    "individualAdventureStage_" + studentId,
+    "individualBeforeDone_" + studentId,
+    "individualDuringDone_" + studentId,
+    "individualAfterDone_" + studentId,
+    "individualAfterUnlocked_" + studentId,
+    "individualCurrentBookTitle_" + studentId,
+    "individualCurrentBookAuthor_" + studentId,
+    "individualCurrentBookType_" + studentId,
+    "individualReadingCurrentBookTitle_" + studentId,
+    "individualReadingCurrentBookAuthor_" + studentId,
+    "individualReadingCurrentBookType_" + studentId,
+    "individualTotalPages_" + studentId,
+    "individualCurrentPage_" + studentId,
+    "individualBeforeQuestions_" + studentId,
+    "individualBeforeReadingPayload_" + studentId,
+    "individualDuringQuestions_" + studentId,
+    "individualDuringReplies_" + studentId,
+    "individualDuringShareSelected_" + studentId,
+    "individualAfterBookType_" + studentId,
+    "individualReadingRecordId_" + studentId,
+    "individualReadingBookId_" + studentId
+  ];
+
+  keysToRemove.forEach(function (key) {
+    sessionStorage.removeItem(key);
+  });
+}
+
+// 별점과 대표 질문을 서버(reading_records.rating/represent_response_id)에 저장합니다.
+async function saveBookFinishRecord() {
   if (selectedBookRating === 0) {
     alert("별점을 골라줘!");
     return;
   }
 
-  if (selectedRepresentQuestionIndex < 0 || !selectedRepresentQuestion) {
-  alert("대표 질문을 하나 골라줘!");
-  return;
-}
+  if (!selectedRepresentResponseId) {
+    alert("대표 질문을 하나 골라줘!");
+    return;
+  }
 
-  const finishRecord = {
-    bookTitle: getCurrentBookTitle(),
-    author: sessionStorage.getItem("individualCurrentBookAuthor_" + studentId) || "지은이 없음",
-    finishedAt: getTodayText(),
-    rating: selectedBookRating,
-    representativeQuestion: selectedRepresentQuestion,
-    representativeQuestionCategory: getRepresentCategoryLabel(selectedRepresentCategory)
-  };
+  const result = await completeIndividualReadingBook(selectedBookRating, selectedRepresentResponseId);
 
-  sessionStorage.setItem("individualBookFinishRecord_" + studentId, JSON.stringify(finishRecord));
+  if (!result) {
+    return;
+  }
+
+  clearIndividualReadingBookSessionState();
 
   closeBookFinishModal();
 
@@ -4926,187 +5471,216 @@ function saveBookFinishRecord() {
       }
     }
 
-    function saveMySummaryForShare(summaryText) {
-  const summaries = getStoredSharedSummaries();
-  const myId = "my-summary-" + studentId;
-  const mySummary = {
-    id: myId,
-    name: "나",
-    bookType: getSelectedBookTypeLabel(),
-    bookTypeKey: selectedBookType,
-    bookTitle: getCurrentBookTitle(),
-    summary: summaryText,
-    createdAt: getTodayText()
-  };
+    /*
+      우리 반 간추리기 모음(학생) / 간추리기 확인(교사) 공용 상태.
+      화면에 진입하거나 필터를 바꾸거나 좋아요를 누를 때마다 서버에서
+      새로 받아온 값으로 이 캐시를 갈아끼운다 - 샘플 데이터나 이전
+      계정의 값을 절대 재사용하지 않는다.
+    */
+    let currentShareSummaries = [];
+    let shareSummariesLoading = false;
 
-  const filtered = summaries.filter(function (item) {
-    return item.id !== myId;
-  });
+    function isTeacherShareMode() {
+      return document.body.classList.contains("iar-teacher-share-mode");
+    }
 
-  filtered.unshift(mySummary);
-  sessionStorage.setItem(AFTER_KEYS.sharedSummaries, JSON.stringify(filtered));
-}
+    /*
+      학생 모드에서는 /api/students/me/individual-reading/summaries/class,
+      교사 모드에서는 /api/teachers/{teacherId}/individual-reading/summaries를
+      부른다. 두 API 모두 같은 content_likes 테이블을 함께 집계하므로
+      likeCount는 학생·교사 좋아요를 합친 값이다.
+    */
+    async function fetchClassSummaries() {
+      const token = sessionStorage.getItem("token");
+      if (!token) return [];
 
-    function getStoredSharedSummaries() {
+      const dateQuery = "?date=" + encodeURIComponent(selectedSummaryDate);
+      const url = isTeacherShareMode()
+        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/summaries"
+        : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/summaries/class";
+
+      const response = await fetch(url + dateQuery, {
+        headers: { Authorization: "Bearer " + token }
+      });
+
+      if (!response.ok) {
+        const error = new Error("간추리기 공유 목록 조회 실패: " + response.status);
+        error.status = response.status;
+        error.body = await response.text().catch(function () { return ""; });
+        throw error;
+      }
+
+      return await response.json();
+    }
+
+    // 서버에서 최신 목록을 다시 받아와 화면을 새로 그린다.
+    async function refreshShareSummaries() {
+      const list = document.getElementById("shareSummaryList");
+      if (!list) return;
+
+      renderSummaryDateNav();
+      shareSummariesLoading = true;
+      list.innerHTML = `<div class="iar-share-empty">불러오는 중이에요...</div>`;
+
       try {
-        return JSON.parse(sessionStorage.getItem(AFTER_KEYS.sharedSummaries) || "[]");
+        currentShareSummaries = await fetchClassSummaries();
       } catch (error) {
-        return [];
+        console.error("개별읽기 간추리기 공유 목록을 불러오지 못했습니다.", error);
+        currentShareSummaries = [];
+
+        if (!isTeacherShareMode() && error.status === 409) {
+          list.innerHTML = `
+            <div class="iar-share-empty">
+              내 간추리기를 완성하면 친구들의 생각을 볼 수 있어요.
+            </div>
+          `;
+          shareSummariesLoading = false;
+          return;
+        }
+
+        list.innerHTML = `
+          <div class="iar-share-empty">
+            간추리기 목록을 불러오지 못했어요.<br>
+            잠시 후 다시 시도해 주세요.
+          </div>
+        `;
+        shareSummariesLoading = false;
+        return;
+      }
+
+      shareSummariesLoading = false;
+      renderShareSummariesFromCache();
+    }
+
+    // 캐시된 목록을 현재 필터 기준으로 화면에 그린다(서버 재조회 없음).
+    function renderShareSummariesFromCache() {
+      const list = document.getElementById("shareSummaryList");
+      if (!list || shareSummariesLoading) return;
+
+      const summaries = currentShareSummaries
+        .filter(function (item) {
+          return currentShareFilter === "all" || item.bookType === currentShareFilter;
+        })
+        .slice()
+        .sort(function (a, b) {
+          if (a.isMine !== b.isMine) return a.isMine ? -1 : 1;
+          if (a.createdAt !== b.createdAt) return a.createdAt < b.createdAt ? 1 : -1;
+          return b.summaryId - a.summaryId;
+        });
+
+      if (summaries.length === 0) {
+        list.innerHTML = `
+          <div class="iar-share-empty">
+            ${isTeacherShareMode()
+              ? "이날에는 우리 반 학생들이 공유한 간추리기가 아직 없습니다."
+              : "이날에는 우리 반이 공유한 간추리기가 아직 없어요."}
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = summaries.map(function (item) {
+        const heading = item.isMine
+          ? "나의 간추리기"
+          : escapeHtml(item.studentName || "친구") + "의 간추리기";
+
+        return `
+          <article class="iar-share-card">
+            <div class="iar-share-card-head">
+              <h3>${heading}</h3>
+              <span class="iar-share-card-date">${escapeHtml(formatShareDate(item.createdAt))}</span>
+            </div>
+
+            <div class="iar-share-type">
+              ${escapeHtml(getBookTypeLabelForKey(item.bookType))} · ${escapeHtml(item.bookTitle || "책 제목 없음")}
+            </div>
+
+            <div class="iar-share-summary">${escapeHtml(item.summaryText)}</div>
+
+            <div class="iar-like-box">
+      <button
+        type="button"
+        class="iar-like-button ${item.likedByMe ? "liked" : ""}"
+        onclick="toggleShareLike(${item.summaryId}, this)"
+      >
+        👍 좋아요 <span>${item.likeCount}</span>
+      </button>
+    </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // 서버가 내려준 ISO 시각(예: 2026-07-28T21:40:10)을 2026.07.28 형식으로 바꾼다.
+    function formatShareDate(isoDateTime) {
+      if (!isoDateTime) return "날짜 없음";
+
+      const datePart = String(isoDateTime).slice(0, 10);
+      const parts = datePart.split("-");
+
+      if (parts.length !== 3) return datePart;
+
+      return parts[0] + "." + parts[1] + "." + parts[2];
+    }
+
+    // 책 종류 키(story/info/opinion)를 화면 표시용 라벨로 바꾼다.
+    function getBookTypeLabelForKey(bookTypeKey) {
+      if (bookTypeKey === "story") return "📖 이야기 책";
+      if (bookTypeKey === "info") return "🔍 정보를 담은 책";
+      if (bookTypeKey === "opinion") return "💬 주장을 담은 책";
+      return bookTypeKey || "책";
+    }
+
+    /*
+      간추리기 카드의 좋아요를 누르거나 취소한다(PUT이 아니라 토글 API 1번
+      호출로 처리). 요청 중에는 버튼을 잠가 중복 클릭을 막고, 성공하면
+      서버 응답의 liked/likeCount로 캐시와 화면을 갱신한다 - 프론트에서
+      임의로 +1/-1 계산하지 않는다. 실패하면 원래 상태를 그대로 둔다.
+    */
+    let shareLikeRequestInFlight = false;
+
+    async function toggleShareLike(summaryId, buttonEl) {
+      if (shareLikeRequestInFlight) return;
+
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
+
+      shareLikeRequestInFlight = true;
+      if (buttonEl) buttonEl.disabled = true;
+
+      const url = isTeacherShareMode()
+        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/summaries/" + summaryId + "/like"
+        : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/summaries/" + summaryId + "/like";
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (!response.ok) {
+          throw new Error("좋아요 저장 실패: " + response.status);
+        }
+
+        const result = await response.json();
+
+        currentShareSummaries = currentShareSummaries.map(function (item) {
+          if (item.summaryId !== result.summaryId) return item;
+
+          return Object.assign({}, item, {
+            likedByMe: result.liked,
+            likeCount: result.likeCount
+          });
+        });
+
+        renderShareSummariesFromCache();
+      } catch (error) {
+        console.error("개별읽기 간추리기 좋아요를 저장하지 못했습니다.", error);
+        alert("좋아요를 저장하지 못했어요. 잠시 후 다시 눌러 주세요.");
+      } finally {
+        shareLikeRequestInFlight = false;
       }
     }
-
-    function getDefaultFriendSummaries() {
-  return [
-    {
-      id: "friend-summary-1",
-      name: "민지",
-      bookType: "📖 이야기 책",
-      bookTypeKey: "story",
-      bookTitle: "긴긴밤",
-      createdAt: "2026.06.16",
-      summary: "처음에는 주인공이 혼자라고 느꼈습니다. 가운데에는 여러 친구를 만나 서로 도왔습니다. 마지막에는 함께 살아가는 힘을 알게 되었습니다."
-    },
-    {
-      id: "friend-summary-2",
-      name: "하윤",
-      bookType: "🔍 정보를 담은 책",
-      bookTypeKey: "info",
-      bookTitle: "동물의 세계",
-      createdAt: "2026.06.15",
-      summary: "이 책은 동물들이 살아가는 방법을 알려줍니다. 동물마다 먹이를 찾는 방법과 몸을 보호하는 방법이 다릅니다. 그래서 동물은 사는 곳에 맞게 몸과 행동이 달라집니다."
-    },
-    {
-      id: "friend-summary-3",
-      name: "서연",
-      bookType: "💬 주장을 담은 책",
-      bookTypeKey: "opinion",
-      bookTitle: "왜 약속을 지켜야 할까",
-      createdAt: "2026.06.14",
-      summary: "이 책은 약속을 지켜야 하는 까닭을 알려줍니다. 글쓴이는 약속이 서로를 믿게 만드는 힘이라고 말합니다. 그래서 작은 약속도 소중히 여겨야 한다고 생각하게 되었습니다."
-    }
-  ];
-}
-
-    function getAllSharedSummaries() {
-      const stored = getStoredSharedSummaries();
-      const friendSummaries = getDefaultFriendSummaries();
-      const storedIds = stored.map(function (item) { return item.id; });
-
-      return [
-        ...stored,
-        ...friendSummaries.filter(function (item) { return !storedIds.includes(item.id); })
-      ];
-    }
-
-    function renderShareSummaries() {
-  const list = document.getElementById("shareSummaryList");
-  if (!list) return;
-
-  const summaries = getAllSharedSummaries().filter(function (item) {
-    if (currentShareFilter === "all") return true;
-    return getSummaryTypeKey(item) === currentShareFilter;
-  });
-
-  const likes = getShareLikes();
-  const myLikedSummaries = getMyLikedSummaries();
-  if (summaries.length === 0) {
-    list.innerHTML = `
-      <div class="iar-share-empty">
-        아직 이 책 종류의 간추리기가 없어요.<br>
-        친구들이 간추리기를 공유하면 여기에서 볼 수 있어요.
-      </div>
-    `;
-    return;
-  }
-
-  list.innerHTML = summaries.map(function (item) {
-    const likeCount = likes[item.id] || 0;
-    const isLiked = myLikedSummaries.includes(item.id);
-
-    return `
-      <article class="iar-share-card">
-        <div class="iar-share-card-head">
-          <h3>${escapeHtml(item.name)}의 간추리기</h3>
-          <span class="iar-share-card-date">${escapeHtml(item.createdAt || "날짜 없음")}</span>
-        </div>
-
-        <div class="iar-share-type">
-          ${escapeHtml(item.bookType)} · ${escapeHtml(item.bookTitle || "책 제목 없음")}
-        </div>
-
-        <div class="iar-share-summary">${escapeHtml(item.summary)}</div>
-
-        <div class="iar-like-box">
-  <button
-    type="button"
-    class="iar-like-button ${isLiked ? "liked" : ""}"
-    onclick="toggleShareLike('${item.id}')"
-  >
-    👍 좋아요 <span>${likeCount}</span>
-  </button>
-</div>
-      </article>
-    `;
-  }).join("");
-}
-// 우리 반 간추리기 모음의 좋아요 정보를 가져옵니다.
-function getShareLikes() {
-  try {
-    return JSON.parse(sessionStorage.getItem(AFTER_KEYS.shareLikes) || "{}");
-  } catch (error) {
-    return {};
-  }
-}
-// 내가 좋아요를 누른 간추리기 카드 목록을 가져옵니다.
-function getMyLikedSummaries() {
-  try {
-    return JSON.parse(sessionStorage.getItem(AFTER_KEYS.myLikedSummaries) || "[]");
-  } catch (error) {
-    return [];
-  }
-}
-// 간추리기 카드의 좋아요를 누르거나 취소합니다.
-// 한 카드에 한 번만 좋아요를 누를 수 있고, 다시 누르면 좋아요가 취소됩니다.
-function toggleShareLike(summaryId) {
-  const likes = getShareLikes();
-  let myLikedSummaries = getMyLikedSummaries();
-
-  if (!likes[summaryId]) {
-    likes[summaryId] = 0;
-  }
-
-  const alreadyLiked = myLikedSummaries.includes(summaryId);
-
-  if (alreadyLiked) {
-    likes[summaryId] = Math.max(0, likes[summaryId] - 1);
-
-    myLikedSummaries = myLikedSummaries.filter(function (id) {
-      return id !== summaryId;
-    });
-  } else {
-    likes[summaryId] += 1;
-    myLikedSummaries.push(summaryId);
-  }
-
-  sessionStorage.setItem(AFTER_KEYS.shareLikes, JSON.stringify(likes));
-  sessionStorage.setItem(AFTER_KEYS.myLikedSummaries, JSON.stringify(myLikedSummaries));
-
-  renderShareSummaries();
-}
-
-// 간추리기 카드의 책 종류 키를 가져옵니다.
-// 예전 저장 데이터에 bookTypeKey가 없을 수 있어서 bookType 글자도 함께 확인합니다.
-function getSummaryTypeKey(item) {
-  if (item.bookTypeKey) return item.bookTypeKey;
-
-  const typeText = item.bookType || "";
-
-  if (typeText.includes("이야기")) return "story";
-  if (typeText.includes("정보")) return "info";
-  if (typeText.includes("생각")) return "opinion";
-
-  return "story";
-}
 
 // 오늘 날짜를 2026.06.17 형식으로 만듭니다.
 function getTodayText() {

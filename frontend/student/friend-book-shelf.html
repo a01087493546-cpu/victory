@@ -314,28 +314,53 @@
     }
 
     .fs-card-reason {
-      margin: 0;
-      color: #6f481d;
-      font-size: 16px;
+  margin: 0;
+  color: #6f481d;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+    .fs-teaser-question-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(181, 117, 37, 0.16);
+      border-radius: 18px;
+      background: rgba(255, 247, 224, 0.72);
+    }
+
+    .fs-teaser-question-title {
+      margin: 0 0 7px;
+      color: #5d3716;
+      font-size: 14px;
+      font-weight: 950;
+      line-height: 1.3;
+    }
+
+    .fs-teaser-question-item {
+      margin: 4px 0 0;
+      color: #71481c;
+      font-size: 15px;
       font-weight: 850;
       line-height: 1.45;
       word-break: keep-all;
     }
 
     .fs-like-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 14px;
-      gap: 8px;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 16px;
+  gap: 12px;
+}
 
     .fs-rec-by {
-      color: #9a681f;
-      font-size: 14px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
+  color: #9a681f;
+  font-size: 18px;
+  font-weight: 950;
+  white-space: nowrap;
+}
 
     .fs-card-actions {
       display: flex;
@@ -344,18 +369,18 @@
     }
 
     .fs-like-button,
-    .fs-detail-button {
-      height: 36px;
-      padding: 0 13px;
-      border: 1px solid rgba(174, 109, 27, 0.22);
-      border-radius: 999px;
-      background: rgba(255, 250, 237, 0.94);
-      color: #8a5519;
-      font-size: 13px;
-      font-weight: 950;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+.fs-detail-button {
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid rgba(174, 109, 27, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 250, 237, 0.94);
+  color: #8a5519;
+  font-size: 16px;
+  font-weight: 950;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
     .fs-detail-button {
       background: rgba(255, 240, 201, 0.96);
@@ -514,10 +539,13 @@
         font-size: 22px;
       }
 
-      .fs-card-author,
-      .fs-card-reason {
-        font-size: 14px;
-      }
+      .fs-card-author {
+  font-size: 14px;
+}
+
+.fs-card-reason {
+  font-size: 17px;
+}
     }
   </style>
 </head>
@@ -624,124 +652,54 @@
   <script>
     // checkLogin();
 
-    const studentId = sessionStorage.getItem("studentId") || "student-demo";
-    const FRIEND_BOOK_KEY = "individualFriendBookRecommendations_" + studentId;
-    const FRIEND_BOOK_LIKED_KEY = "individualFriendBookLikedBooks_" + studentId;
-
-    let classBooks = [
-      {
-        id: 1,
-        title: "긴긴밤",
-        author: "루리",
-        reason: "서로 다른 친구들이 함께 길을 걸어가는 장면이 좋았어.",
-        recommender: "민서",
-        likes: 18,
-        mine: false,
-        teaserQuestions: [
-          "서로 다른 친구들은 왜 함께 길을 떠났을까?",
-          "주인공들이 포기하지 않을 수 있었던 힘은 무엇일까?",
-          "나에게도 긴긴밤 같은 시간이 온다면 누구와 함께하고 싶을까?"
-        ]
-      },
-      {
-        id: 2,
-        title: "만복이네 떡집",
-        author: "김리리",
-        reason: "소원을 들어주는 떡집 이야기가 신기하고 재미있었어.",
-        recommender: "지후",
-        likes: 15,
-        mine: false,
-        teaserQuestions: [
-          "소원을 들어주는 떡이 있다면 어떤 일이 생길까?",
-          "만복이는 왜 달라지게 되었을까?",
-          "진짜 행복은 소원이 이루어지는 것일까?"
-        ]
-      },
-      {
-        id: 3,
-        title: "푸른 사자 와니니",
-        author: "이현",
-        reason: "와니니가 포기하지 않고 자기 길을 찾는 모습이 멋졌어.",
-        recommender: "서아",
-        likes: 13,
-        mine: false,
-        teaserQuestions: [
-          "와니니는 왜 자기 무리를 떠나게 되었을까?",
-          "두려운 상황에서도 용기를 낼 수 있었던 까닭은 무엇일까?",
-          "진짜 강한 사자는 어떤 사자일까?"
-        ]
-      },
-      {
-        id: 4,
-        title: "시간 가게",
-        author: "이나영",
-        reason: "시간을 사고판다는 상상이 재미있었어.",
-        recommender: "도윤",
-        likes: 9,
-        mine: false,
-        teaserQuestions: [
-          "시간을 살 수 있다면 가장 먼저 무엇을 하고 싶을까?",
-          "시간을 사고파는 일은 왜 위험할까?",
-          "주인공의 선택은 옳았을까?"
-        ]
-      },
-      {
-        id: 5,
-        title: "이상한 과자 가게 전천당",
-        author: "히로시마 레이코",
-        reason: "과자마다 다른 일이 생겨서 다음 이야기가 계속 궁금했어.",
-        recommender: "하린",
-        likes: 8,
-        mine: false,
-        teaserQuestions: [
-          "이상한 과자를 먹으면 어떤 일이 벌어질까?",
-          "소원을 쉽게 이루는 것은 항상 좋은 일일까?",
-          "나라면 전천당에서 어떤 과자를 고를까?"
-        ]
-      },
-      {
-        id: 6,
-        title: "불량한 자전거 여행",
-        author: "김남중",
-        reason: "여행하면서 조금씩 달라지는 주인공이 기억에 남았어.",
-        recommender: "준서",
-        likes: 6,
-        mine: false,
-        teaserQuestions: [
-          "주인공은 여행을 하며 무엇을 깨달았을까?",
-          "자전거 여행이 주인공을 어떻게 바꾸었을까?",
-          "나에게도 떠나 보고 싶은 여행이 있을까?"
-        ]
-      }
-    ];
+    const API_BASE_URL = "http://localhost:8080";
+    const token = sessionStorage.getItem("token");
+    /* 로그인 시 학생/교사 구분 없이 sessionStorage "studentId" 키에 숫자 사용자 id가 저장된다(auth.js). */
+    const viewerId = sessionStorage.getItem("studentId") || "";
 
     let currentTab = "all";
+    let classWall = { best: [], recent: [] };
+    let loadError = false;
+    let likeInFlight = false;
 
-    document.addEventListener("DOMContentLoaded", function () {
-  renderShelf();
-  applyTeacherMode();
-});
-function applyTeacherMode() {
-  const params = new URLSearchParams(window.location.search);
-  const isTeacherMode = params.get("mode") === "teacher";
-  const homeButton = document.getElementById("shelfHomeButton");
+    document.addEventListener("DOMContentLoaded", async function () {
+      applyTeacherMode();
+      applyTeacherModeUi();
+      showLoadingState();
+      await loadClassWall();
+      renderShelf();
+    });
 
-  if (isTeacherMode && homeButton) {
-    homeButton.textContent = "← 개별읽기 관리";
-  }
-}
+    function isTeacherMode() {
+      return new URLSearchParams(window.location.search).get("mode") === "teacher";
+    }
+
+    function applyTeacherMode() {
+      const homeButton = document.getElementById("shelfHomeButton");
+
+      if (isTeacherMode() && homeButton) {
+        homeButton.textContent = "← 개별읽기 관리";
+      }
+    }
+
+    /* 교사 모드에서는 추천 글 작성이 불가하므로 작성 버튼과 "내가 한 추천" 탭을 숨긴다. */
+    function applyTeacherModeUi() {
+      if (!isTeacherMode()) return;
+
+      const writeButton = document.querySelector(".fs-write-button");
+      if (writeButton) writeButton.style.display = "none";
+
+      const mineTabButton = document.querySelector('.fs-tab-button[data-tab="mine"]');
+      if (mineTabButton) mineTabButton.style.display = "none";
+    }
+
     function goIndividualReading() {
-  const params = new URLSearchParams(window.location.search);
-  const isTeacherMode = params.get("mode") === "teacher";
-
-  if (isTeacherMode) {
-    window.location.href =
-      "../teacher/individual-reading-manage.html";
-  } else {
-    window.location.href =
-      "./individual-reading.html";
-  }
-}
+      if (isTeacherMode()) {
+        window.location.href = "../teacher/individual-reading-manage.html";
+      } else {
+        window.location.href = "./individual-reading.html";
+      }
+    }
 
     function goBookRecommend() {
       window.location.href = "./book-recommend.html";
@@ -751,28 +709,60 @@ function applyTeacherMode() {
       window.location.href = "./friend-book-write.html";
     }
 
-    function getSavedFriendBooks() {
+    function getClassWallUrl() {
+      if (isTeacherMode()) {
+        return API_BASE_URL + "/api/teachers/" + viewerId + "/book-recommendations/class-wall";
+      }
+      return API_BASE_URL + "/api/students/me/book-recommendations/class-wall";
+    }
+
+    function getLikeUrl(recommendationId) {
+      if (isTeacherMode()) {
+        return API_BASE_URL + "/api/teachers/" + viewerId + "/book-recommendations/" + recommendationId + "/like";
+      }
+      return API_BASE_URL + "/api/students/me/book-recommendations/" + recommendationId + "/like";
+    }
+
+    /*
+      우리 반 추천 책장을 서버(GET .../book-recommendations/class-wall)에서 받아온다.
+      샘플 데이터/sessionStorage는 더 이상 쓰지 않는다 - 학생/교사가 같은 DB 자료를 본다.
+    */
+    async function loadClassWall() {
+      loadError = false;
+
+      if (!token) {
+        classWall = { best: [], recent: [] };
+        loadError = true;
+        return;
+      }
+
       try {
-        return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_KEY) || "[]");
+        const response = await fetch(getClassWallUrl(), {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (!response.ok) {
+          throw new Error("우리 반 추천 책장 조회 실패: " + response.status);
+        }
+
+        classWall = await response.json();
       } catch (error) {
-        return [];
+        console.error("우리 반 추천 책장을 불러오지 못했습니다.", error);
+        classWall = { best: [], recent: [] };
+        loadError = true;
       }
     }
 
-    function getLikedBookIds() {
-      try {
-        return JSON.parse(sessionStorage.getItem(FRIEND_BOOK_LIKED_KEY) || "[]");
-      } catch (error) {
-        return [];
-      }
+    function getMineList() {
+      return [...classWall.best, ...classWall.recent].filter(function (item) {
+        return item.isMine;
+      });
     }
 
-    function saveLikedBookIds(likedBookIds) {
-      sessionStorage.setItem(FRIEND_BOOK_LIKED_KEY, JSON.stringify(likedBookIds));
-    }
-
-    function getAllBooks() {
-      return [...getSavedFriendBooks(), ...classBooks];
+    function getEmptyWallMessage() {
+      return isTeacherMode()
+        ? "아직 이 학급에 등록된 추천 책이 없습니다."
+        : "아직 우리 반 친구들이 추천한 책이 없어요.<br>내가 먼저 좋은 책을 소개해 볼까요?";
     }
 
     function escapeHtml(text) {
@@ -784,7 +774,21 @@ function applyTeacherMode() {
         .replaceAll("'", "&#039;");
     }
 
+    // 서버 ISO 시각(예: 2026-07-30T21:48:14)을 2026.07.30 형식으로 바꾼다.
+    function formatCreatedDate(isoDateTime) {
+      if (!isoDateTime) return "";
+
+      const datePart = String(isoDateTime).slice(0, 10);
+      const parts = datePart.split("-");
+
+      if (parts.length !== 3) return datePart;
+
+      return parts[0] + "." + parts[1] + "." + parts[2];
+    }
+
     function changeTab(tabName) {
+      if (isTeacherMode() && tabName === "mine") return;
+
       currentTab = tabName;
 
       document.querySelectorAll(".fs-tab-button").forEach(function (button) {
@@ -794,11 +798,14 @@ function applyTeacherMode() {
       renderShelf();
     }
 
-    function getSortedBooks() {
-      return getAllBooks().sort(function (a, b) {
-        if (b.likes !== a.likes) return b.likes - a.likes;
-        return b.id - a.id;
-      });
+    function showLoadingState() {
+      const bestBookList = document.getElementById("bestBookList");
+      const friendBookList = document.getElementById("friendBookList");
+      const myBookList = document.getElementById("myBookList");
+
+      if (bestBookList) bestBookList.innerHTML = `<div class="fs-empty">불러오는 중...</div>`;
+      if (friendBookList) friendBookList.innerHTML = "";
+      if (myBookList) myBookList.innerHTML = "";
     }
 
     function renderShelf() {
@@ -811,7 +818,7 @@ function applyTeacherMode() {
         allSection.style.display = "block";
         mineSection.style.display = "none";
         renderBestBooks();
-        renderFriendBooks();
+        renderRecentBooks();
       } else {
         bestSection.style.display = "none";
         allSection.style.display = "none";
@@ -821,55 +828,56 @@ function applyTeacherMode() {
     }
 
     function renderBestBooks() {
+      const bestSection = document.getElementById("bestSection");
       const bestBookList = document.getElementById("bestBookList");
-      const bestBooks = getSortedBooks().slice(0, 3);
+      const hasAny = classWall.best.length > 0 || classWall.recent.length > 0;
 
-      bestBookList.innerHTML = "";
+      if (loadError || !hasAny) {
+        bestSection.style.display = "none";
+        return;
+      }
 
-      bestBooks.forEach(function (book, index) {
-        const likedBookIds = getLikedBookIds();
-        const isLiked = likedBookIds.includes(book.id);
-
-        const card = document.createElement("div");
-        card.className = "fs-best-card";
-        card.innerHTML = `
-          <span class="fs-best-badge">BEST ${index + 1}</span>
-          <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
-          <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
-          <p class="fs-card-reason">“${escapeHtml(book.reason)}”</p>
-          <div class="fs-like-row">
-            <span class="fs-rec-by">👍 ${book.likes}</span>
-            <div class="fs-card-actions">
-              <button type="button" class="fs-detail-button" onclick="openDetailModal(${book.id})">자세히</button>
-              <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
-                ${isLiked ? "취소" : "좋아요"}
-              </button>
-            </div>
-          </div>
-        `;
-
-        bestBookList.appendChild(card);
-      });
+      bestSection.style.display = "block";
+      bestBookList.innerHTML = classWall.best.map(renderBestCardHtml).join("");
     }
 
-    function renderFriendBooks() {
+    function renderRecentBooks() {
       const friendBookList = document.getElementById("friendBookList");
-      const books = getSortedBooks();
 
-      friendBookList.innerHTML = "";
+      if (loadError) {
+        friendBookList.innerHTML = `
+          <div class="fs-empty">
+            추천 책장을 불러오지 못했어요.<br>
+            잠시 후 다시 시도해 주세요.
+          </div>
+        `;
+        return;
+      }
 
-      books.forEach(function (book) {
-        friendBookList.appendChild(createBookCard(book));
-      });
+      const hasAny = classWall.best.length > 0 || classWall.recent.length > 0;
+
+      if (!hasAny) {
+        friendBookList.innerHTML = `<div class="fs-empty">${getEmptyWallMessage()}</div>`;
+        return;
+      }
+
+      friendBookList.innerHTML = classWall.recent.map(renderBookCardHtml).join("");
     }
 
     function renderMyBooks() {
       const myBookList = document.getElementById("myBookList");
-      const myBooks = getSortedBooks().filter(function (book) {
-        return book.mine;
-      });
 
-      myBookList.innerHTML = "";
+      if (loadError) {
+        myBookList.innerHTML = `
+          <div class="fs-empty">
+            불러오지 못했어요.<br>
+            잠시 후 다시 시도해 주세요.
+          </div>
+        `;
+        return;
+      }
+
+      const myBooks = getMineList();
 
       if (myBooks.length === 0) {
         myBookList.innerHTML = `
@@ -881,69 +889,65 @@ function applyTeacherMode() {
         return;
       }
 
-      myBooks.forEach(function (book) {
-        myBookList.appendChild(createBookCard(book));
-      });
+      myBookList.innerHTML = myBooks.map(renderBookCardHtml).join("");
     }
 
-    function createBookCard(book) {
-      const likedBookIds = getLikedBookIds();
-      const isLiked = likedBookIds.includes(book.id);
-
-      const card = document.createElement("div");
-      card.className = "fs-book-card";
-      card.innerHTML = `
-        <div class="fs-book-mark">📖</div>
-        <div>
-          <h3 class="fs-card-title">${escapeHtml(book.title)}</h3>
-          <p class="fs-card-author">${escapeHtml(book.author)} 지음 · ${escapeHtml(book.recommender)} 추천</p>
-          <p class="fs-card-reason">“${escapeHtml(book.reason)}”</p>
+    function renderBestCardHtml(item) {
+      return `
+        <div class="fs-best-card">
+          <span class="fs-best-badge">BEST ${item.rank}</span>
+          <h3 class="fs-card-title">${escapeHtml(item.title)}</h3>
+          <p class="fs-card-author">${escapeHtml(item.author)} 지음 · ${escapeHtml(item.studentName)} 추천</p>
+          <p class="fs-card-reason">“${escapeHtml(item.reason)}”</p>
+          ${renderTeaserQuestionsHtml(item)}
           <div class="fs-like-row">
-            <span class="fs-rec-by">👍 ${book.likes}</span>
+            <span class="fs-rec-by">👍 ${item.likeCount}</span>
             <div class="fs-card-actions">
-              <button type="button" class="fs-detail-button" onclick="openDetailModal(${book.id})">자세히</button>
-              <button type="button" class="fs-like-button" onclick="likeBook(${book.id})">
-                ${isLiked ? "취소" : "좋아요"}
+              <button type="button" class="fs-like-button" onclick="toggleLike(${item.recommendationId})">
+                ${item.likedByMe ? "취소" : "좋아요"}
               </button>
             </div>
           </div>
         </div>
       `;
-
-      return card;
     }
 
-    function findBookById(bookId) {
-      return getAllBooks().find(function (book) {
-        return book.id === bookId;
-      });
+    function renderBookCardHtml(item) {
+      return `
+        <div class="fs-book-card">
+          <div class="fs-book-mark">📖</div>
+          <div>
+            <h3 class="fs-card-title">${escapeHtml(item.title)}</h3>
+            <p class="fs-card-author">${escapeHtml(item.author)} 지음 · ${escapeHtml(item.studentName)} 추천 · ${formatCreatedDate(item.createdAt)}</p>
+            <p class="fs-card-reason">“${escapeHtml(item.reason)}”</p>
+            ${renderTeaserQuestionsHtml(item)}
+            <div class="fs-like-row">
+              <span class="fs-rec-by">👍 ${item.likeCount}</span>
+              <div class="fs-card-actions">
+                <button type="button" class="fs-like-button" onclick="toggleLike(${item.recommendationId})">
+                  ${item.likedByMe ? "취소" : "좋아요"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
-    function openDetailModal(bookId) {
-      const book = findBookById(bookId);
-      if (!book) return;
+    function renderTeaserQuestionsHtml(item) {
+      const questions = Array.isArray(item.teaserQuestions) ? item.teaserQuestions : [];
+      const question = questions.length > 0 ? questions[0] : "";
 
-      document.getElementById("detailTitle").textContent = book.title;
-      document.getElementById("detailAuthor").textContent = book.author + " 지음";
-      document.getElementById("detailRecommender").textContent = book.recommender + " 추천";
-      document.getElementById("detailReason").textContent = book.reason;
-
-      const detailQuestions = document.getElementById("detailQuestions");
-      detailQuestions.innerHTML = "";
-
-      const questions = book.teaserQuestions || [];
-
-      if (questions.length === 0) {
-        detailQuestions.innerHTML = "<li>아직 등록된 질문이 없어.</li>";
-      } else {
-        questions.forEach(function (question) {
-          const li = document.createElement("li");
-          li.textContent = question;
-          detailQuestions.appendChild(li);
-        });
+      if (!question) {
+        return "";
       }
 
-      document.getElementById("detailModal").classList.add("show");
+      return `
+        <div class="fs-teaser-question-box">
+          <p class="fs-teaser-question-title">이 책이 궁금해지는 질문</p>
+          <p class="fs-teaser-question-item">Q. ${escapeHtml(question)}</p>
+        </div>
+      `;
     }
 
     function closeDetailModal() {
@@ -956,49 +960,31 @@ function applyTeacherMode() {
       }
     }
 
-    function likeBook(bookId) {
-  let likedBookIds = getLikedBookIds();
+    /* 좋아요 클릭 성공 후에는 낙관적 갱신 없이 전체 목록을 다시 조회해 서버 값을 그대로 반영한다. */
+    async function toggleLike(recommendationId) {
+      if (likeInFlight || !token) return;
 
-  const alreadyLiked = likedBookIds.includes(bookId);
+      likeInFlight = true;
 
-  if (alreadyLiked) {
-    likedBookIds = likedBookIds.filter(function (id) {
-      return id !== bookId;
-    });
-  } else {
-    likedBookIds.push(bookId);
-  }
+      try {
+        const response = await fetch(getLikeUrl(recommendationId), {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token }
+        });
 
-  saveLikedBookIds(likedBookIds);
+        if (!response.ok) {
+          throw new Error("좋아요 처리 실패: " + response.status);
+        }
 
-  const changeAmount = alreadyLiked ? -1 : 1;
-
-  classBooks = classBooks.map(function (book) {
-    if (book.id === bookId) {
-      return {
-        ...book,
-        likes: Math.max(0, book.likes + changeAmount)
-      };
+        await loadClassWall();
+        renderShelf();
+      } catch (error) {
+        console.error("좋아요 처리 중 오류가 발생했습니다.", error);
+        alert("좋아요 처리에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        likeInFlight = false;
+      }
     }
-
-    return book;
-  });
-
-  const savedBooks = getSavedFriendBooks().map(function (book) {
-    if (book.id === bookId) {
-      return {
-        ...book,
-        likes: Math.max(0, book.likes + changeAmount)
-      };
-    }
-
-    return book;
-  });
-
-  sessionStorage.setItem(FRIEND_BOOK_KEY, JSON.stringify(savedBooks));
-
-  renderShelf();
-}
   </script>
 
   <script src="../js/individual-power.js?v=power-common-2"></script>

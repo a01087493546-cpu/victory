@@ -12,8 +12,6 @@
   // 1. 기본 설정
   // ==============================
 
-  // 신규 학생의 능력치 기본값입니다.
-  const BASE_START_POWER = 0;
   const PRACTICE_COMPLETE_REWARD = 8;
 
   // 능력치 최대값입니다.
@@ -220,67 +218,61 @@ individual_friend_book_recommend: {
     return sessionStorage.getItem("studentId") || "student-demo";
   }
 
- function getPowerStorageKey() {
-  return `individualPower_v2_${getStudentId()}`;
-}
-
 function getRewardHistoryKey() {
   return `individualRewardHistory_v2_${getStudentId()}`;
 }
 
   // ==============================
-  // 4. 능력치 저장/불러오기
+  // 4. 능력치 서버 조회 (student_stats DB가 유일한 원본)
   // ==============================
-  function getDefaultPowerState() {
-  return {
-    magic: BASE_START_POWER,
-    stamina: BASE_START_POWER,
-    wisdom: BASE_START_POWER,
-    courage: BASE_START_POWER
-  };
-}
+  /*
+    나의 힘 모달/위젯을 쓰는 모든 화면은 이 함수 하나로만 능력치를 가져온다.
+    학생 홈(individual-reading.html)이 쓰는 것과 완전히 같은 API
+    (GET /api/students/{studentId}/stats, JWT 인증)를 그대로 재사용해서
+    두 화면이 항상 같은 값을 보여주게 한다. localStorage/sessionStorage는
+    더 이상 능력치 숫자의 원본으로 쓰지 않는다 - 조회 실패 시에도 예전
+    로컬 숫자를 대신 보여주지 않고 오류로 처리한다.
+  */
+  const INDIVIDUAL_POWER_API_BASE_URL = "http://localhost:8080";
 
   function clampPowerValue(value) {
     const number = Number(value) || 0;
     return Math.max(0, Math.min(MAX_POWER, number));
   }
 
-  function getPowerState() {
-  const saved = localStorage.getItem(getPowerStorageKey());
+  async function fetchPowerStateFromServer() {
+    const studentId = sessionStorage.getItem("studentId");
+    const token = sessionStorage.getItem("token");
 
-  if (!saved) {
-    const defaultState = getDefaultPowerState();
-    localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-    return defaultState;
-  }
+    if (!studentId || !token) {
+      throw new Error("로그인 정보가 없습니다.");
+    }
 
-  try {
-    const parsed = JSON.parse(saved);
-    return {
-      magic: clampPowerValue(parsed.magic),
-      stamina: clampPowerValue(parsed.stamina),
-      wisdom: clampPowerValue(parsed.wisdom),
-      courage: clampPowerValue(parsed.courage)
-    };
-  } catch (error) {
-    const defaultState = getDefaultPowerState();
-    localStorage.setItem(getPowerStorageKey(), JSON.stringify(defaultState));
-    return defaultState;
-  }
-}
-  function savePowerState(powerState) {
-    const normalized = {
-      magic: clampPowerValue(powerState.magic),
-      stamina: clampPowerValue(powerState.stamina),
-      wisdom: clampPowerValue(powerState.wisdom),
-      courage: clampPowerValue(powerState.courage)
-    };
-
-    localStorage.setItem(getPowerStorageKey(), JSON.stringify(normalized));
-    window.dispatchEvent(
-      new CustomEvent("individualPowerUpdated", { detail: normalized })
+    const response = await fetch(
+      INDIVIDUAL_POWER_API_BASE_URL + "/api/students/" + studentId + "/stats",
+      {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      }
     );
-    return normalized;
+
+    if (!response.ok) {
+      // 화면에는 짧은 안내만 보여주고, 원인 파악에 필요한 상태 코드/응답
+      // 본문은 개발자 콘솔에 그대로 남긴다.
+      const body = await response.text().catch(function () { return ""; });
+      console.error("나의 힘 능력치 조회 실패:", response.status, body);
+      throw new Error("능력치 조회 실패: " + response.status);
+    }
+
+    const stats = await response.json();
+
+    return {
+      magic: clampPowerValue(stats.magic),
+      stamina: clampPowerValue(stats.stamina),
+      wisdom: clampPowerValue(stats.wisdom),
+      courage: clampPowerValue(stats.courage)
+    };
   }
 
   // ==============================
@@ -321,22 +313,17 @@ function getRewardHistory() {
     }
   }
 
-  // ==============================
-  // 6. 능력치 증가 처리
-  // ==============================
-  function applyRewardValues(rewards) {
-    const current = getPowerState();
-
-    const next = {
-      magic: clampPowerValue(current.magic + (rewards.magic || 0)),
-      stamina: clampPowerValue(current.stamina + (rewards.stamina || 0)),
-      wisdom: clampPowerValue(current.wisdom + (rewards.wisdom || 0)),
-      courage: clampPowerValue(current.courage + (rewards.courage || 0))
-    };
-
-    savePowerState(next);
-    return next;
-  }
+  /*
+    ==============================
+    6. (제거됨) 능력치 증가 처리
+    ==============================
+    예전에는 여기서 localStorage 능력치에 보상값을 직접 더했다(client-side
+    누적). student_stats DB만 유일한 원본으로 쓰기로 하면서 제거했다 -
+    실제로 DB를 올리는 활동(연습읽기 완료 등)은 해당 백엔드 API가 이미
+    student_stats를 갱신하고, 나의 힘 화면은 항상 서버를 다시 조회해서
+    보여준다(fetchPowerStateFromServer). 아직 DB 보상이 구현되지 않은
+    개별읽기 활동은 이 파일에서 새로 구현하지 않는다(범위 밖).
+  */
 
   // ==============================
   // 7. 보상 모달 HTML
@@ -484,8 +471,10 @@ function getRewardHistory() {
     return false;
   }
 
-  // 능력치 반영
-  applyRewardValues(preset.rewards);
+  // 능력치는 여기서 직접 더하지 않는다 - student_stats DB를 실제로 올리는
+  // 백엔드 보상 API가 있는 활동(연습읽기 완료 등)은 그 API가 이미 처리하고,
+  // 프론트는 "이 보상을 이미 안내했는지"만 기록한다. 화면에 보이는 능력치
+  // 총합은 언제나 fetchPowerStateFromServer()로 서버에서 새로 조회한다.
 
   // 보상 이력 기록
   addRewardHistory(rewardKey);
@@ -714,6 +703,32 @@ function ensurePowerBarStyle() {
       background: linear-gradient(90deg, #e8bc55, #a8641e) !important;
       transition: width 0.25s ease !important;
     }
+
+    .individual-power-status {
+      padding: 24px 8px !important;
+      color: #7a5123 !important;
+      font-size: 15px !important;
+      font-weight: 800 !important;
+      text-align: center !important;
+      line-height: 1.5 !important;
+    }
+
+    .individual-power-status-error {
+      color: #b23b2b !important;
+    }
+
+    .individual-power-retry {
+      width: 100% !important;
+      height: 40px !important;
+      margin-bottom: 12px !important;
+      border: none !important;
+      border-radius: 999px !important;
+      background: rgba(126, 77, 20, 0.12) !important;
+      color: #6a3d15 !important;
+      font-size: 14px !important;
+      font-weight: 900 !important;
+      cursor: pointer !important;
+    }
     /* 보상 카드 하나(능력치 1개)입니다. 4개가 한 줄에 들어가도록
        아이콘 위 / 이름·수치 아래 / 그래프 순서로 세로로 압축했습니다. */
     .individual-reward-item {
@@ -805,13 +820,51 @@ function ensurePowerBarStyle() {
 
   document.head.appendChild(style);
 }
+  // 모달의 능력치 영역(#individualPowerListArea)에 로딩/오류/재시도 상태를
+  // 그리고, student_stats DB를 다시 조회해 최신 값으로 채웁니다. 실패하면
+  // 과거 값(로컬 캐시)으로 대체하지 않고 오류 + 재시도 버튼을 보여줍니다.
+  async function loadPowerModalStats() {
+    const listArea = document.getElementById("individualPowerListArea");
+    if (!listArea) return;
+
+    listArea.innerHTML = `
+      <div class="individual-power-status">불러오는 중...</div>
+    `;
+
+    try {
+      const power = await fetchPowerStateFromServer();
+      listArea.innerHTML = `
+        ${buildPowerRowHTML("magic", power.magic)}
+        ${buildPowerRowHTML("stamina", power.stamina)}
+        ${buildPowerRowHTML("wisdom", power.wisdom)}
+        ${buildPowerRowHTML("courage", power.courage)}
+      `;
+    } catch (error) {
+      // 네트워크 자체가 끊긴 경우(예: "Load failed")는 상태 코드가 없으므로
+      // 에러 객체 자체를 콘솔에 남긴다 - fetchPowerStateFromServer 안에서
+      // 이미 상태 코드/응답 본문을 남긴 경우(4xx/5xx)와 합쳐서 두 경우 모두
+      // 개발자 콘솔에서 원인을 확인할 수 있게 한다.
+      console.error("나의 힘 능력치를 불러오지 못했습니다.", error);
+
+      listArea.innerHTML = `
+        <div class="individual-power-status individual-power-status-error">
+          능력치를 불러오지 못했습니다.<br>잠시 후 다시 시도해주세요.
+        </div>
+        <button type="button" class="individual-power-retry" id="individualPowerRetryBtn">다시 시도</button>
+      `;
+
+      const retryBtn = document.getElementById("individualPowerRetryBtn");
+      if (retryBtn) {
+        retryBtn.addEventListener("click", loadPowerModalStats);
+      }
+    }
+  }
+
   function openIndividualPowerModal() {
   removePowerModal();
 
   // 나의 힘 팝업에서 가로 그래프 스타일을 사용할 수 있게 합니다.
   ensurePowerBarStyle();
-
-  const power = getPowerState();
 
   const overlay = document.createElement("div");
   overlay.id = "individualPowerModalOverlay";
@@ -824,12 +877,7 @@ function ensurePowerBarStyle() {
       <div class="individual-power-top-text">현재까지 모은 나의 힘</div>
       <h2 class="individual-power-title">책을 읽고 질문하며<br>네 가지 힘을 길러요</h2>
 
-      <div class="individual-power-list" id="individualPowerListArea">
-        ${buildPowerRowHTML("magic", power.magic)}
-        ${buildPowerRowHTML("stamina", power.stamina)}
-        ${buildPowerRowHTML("wisdom", power.wisdom)}
-        ${buildPowerRowHTML("courage", power.courage)}
-      </div>
+      <div class="individual-power-list" id="individualPowerListArea"></div>
 
       <button type="button" class="individual-power-confirm" id="individualPowerConfirmBtn">
         확인했어
@@ -849,22 +897,17 @@ function ensurePowerBarStyle() {
       closeModal();
     }
   });
+
+  // 모달을 열 때마다 이전에 남아있던 값을 재사용하지 않고 항상 서버에서
+  // 새로 조회합니다.
+  loadPowerModalStats();
 }
 
   function refreshPowerModalIfOpen() {
     const modal = document.getElementById("individualPowerModalOverlay");
     if (!modal) return;
 
-    const listArea = document.getElementById("individualPowerListArea");
-    if (!listArea) return;
-
-    const power = getPowerState();
-    listArea.innerHTML = `
-      ${buildPowerRowHTML("magic", power.magic)}
-      ${buildPowerRowHTML("stamina", power.stamina)}
-      ${buildPowerRowHTML("wisdom", power.wisdom)}
-      ${buildPowerRowHTML("courage", power.courage)}
-    `;
+    loadPowerModalStats();
   }
 
   // ==============================
@@ -974,9 +1017,12 @@ function ensurePowerBarStyle() {
         grid-template-columns: minmax(0, 1fr) !important;
         gap: 14px !important;
         margin-bottom: 20px !important;
-        /* 오른쪽에 루미 캐릭터가 서 있을 자리를 항상 비워 둡니다.
-           카드가 1개~3개 어떤 경우에도 능력치 수치가 캐릭터에 가려지지 않습니다. */
-        padding-right: 148px !important;
+        /* 루미 대사 카드(.mini-reward-message)와 좌우 폭을 맞추려고 여기서는
+           오른쪽 여백을 두지 않는다 - 루미 캐릭터를 피하는 여백은 카드
+           자체(.mini-reward-item)의 padding-right로 옮겨서, 카드 배경/테두리는
+           대사 카드와 똑같이 전체 폭을 쓰고 그 안의 +1 숫자만 안쪽으로 들어온다. */
+        width: 100% !important;
+        box-sizing: border-box !important;
         text-align: left !important;
       }
 
@@ -984,7 +1030,10 @@ function ensurePowerBarStyle() {
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        padding: 14px 18px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        /* 오른쪽만 148px로 넓혀 루미 캐릭터와 겹치지 않게 한다(왼쪽/상하는 기존과 동일). */
+        padding: 14px 148px 14px 18px !important;
         border-radius: 20px !important;
         background: linear-gradient(90deg, rgba(255, 255, 247, 0.92), rgba(255, 246, 222, 0.78)) !important;
         border: 1px solid rgba(180, 116, 34, 0.18) !important;
@@ -1182,17 +1231,16 @@ function ensurePowerBarStyle() {
   // ==============================
   window.openIndividualPowerModal = openIndividualPowerModal;
   window.givePowerRewardOnce = givePowerRewardOnce;
-  window.getIndividualPowerState = getPowerState;
+  window.fetchIndividualPowerState = fetchPowerStateFromServer;
   window.REWARD_PRESETS = REWARD_PRESETS;
   window.openMiniRewardModal = openMiniRewardModal;
   window.closeMiniRewardModal = closeMiniRewardModal;
   window.confirmMiniRewardModal = confirmMiniRewardModal;
 
   // ==============================
-  // 11. 페이지 로드 시 기본 저장값 보장
+  // 11. 페이지 로드 시 초기화
   // ==============================
   document.addEventListener("DOMContentLoaded", function () {
-    getPowerState();
     getRewardHistory();
   });
 })();

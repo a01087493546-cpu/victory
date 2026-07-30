@@ -417,6 +417,31 @@
   line-height: 1.25 !important;
 }
 
+    .br-options.nine-options {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+    }
+
+    .br-options.nine-options .br-option {
+      min-height: 122px !important;
+      padding: 16px 12px 14px !important;
+      border-radius: 22px !important;
+    }
+
+    .br-options.nine-options .br-option-icon {
+      height: 42px !important;
+      margin-bottom: 8px !important;
+      font-size: 32px !important;
+    }
+
+    .br-options.nine-options .br-option strong {
+      font-size: 18px !important;
+      line-height: 1.22 !important;
+    }
+
     .br-options.four-options {
       width: 100%;
       max-width: 760px;
@@ -591,6 +616,44 @@
       color: #9b650f;
       font-size: 22px;
       cursor: pointer;
+    }
+
+    .br-empty-result {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      border: 1px dashed rgba(181, 117, 37, 0.32);
+      border-radius: 24px;
+      background: rgba(255, 252, 244, 0.72);
+      color: #754d23;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.45;
+      text-align: center;
+      word-break: keep-all;
+    }
+
+    .br-book-cover {
+      width: 52px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px 14px 20px 20px;
+      background:
+        linear-gradient(135deg, rgba(255, 234, 168, 0.96), rgba(174, 103, 28, 0.95));
+      color: #fff9e8;
+      font-size: 25px;
+      font-weight: 950;
+      overflow: hidden;
+      box-shadow: 0 8px 14px rgba(129, 76, 18, 0.16);
+    }
+
+    .br-book-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .br-result-actions {
@@ -773,6 +836,31 @@
   line-height: 1.25 !important;
 }
 
+.br-options.nine-options {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.br-options.nine-options .br-option {
+  min-height: 132px !important;
+  padding: 16px 12px 14px !important;
+  border-radius: 22px !important;
+}
+
+.br-options.nine-options .br-option-icon {
+  height: 42px !important;
+  margin-bottom: 8px !important;
+  font-size: 34px !important;
+}
+
+.br-options.nine-options .br-option strong {
+  font-size: 19px !important;
+  line-height: 1.22 !important;
+}
+
 /* 5개 선택지: 가로 폭 넓게 */
 .br-options.many-options {
   width: 100% !important;
@@ -861,6 +949,21 @@
 
   .br-options.six-options .br-option strong {
     font-size: 22px !important;
+  }
+
+  .br-options.nine-options .br-option {
+    min-height: 112px !important;
+    padding: 13px 10px 12px !important;
+  }
+
+  .br-options.nine-options .br-option-icon {
+    height: 34px !important;
+    margin-bottom: 6px !important;
+    font-size: 28px !important;
+  }
+
+  .br-options.nine-options .br-option strong {
+    font-size: 16px !important;
   }
 
   .br-options.many-options .br-option {
@@ -1113,8 +1216,15 @@
   <script src="../js/auth.js"></script>
 
   <script>
-    // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
-    // checkLogin();
+    checkLogin();
+
+    const API_BASE_URL =
+      window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:8080"
+        : "http://localhost:8080";
+
+    const PREFERENCE_STORAGE_KEY = "bookRecommendationPreferences";
+    const CANDIDATE_STORAGE_KEY = "bookRecommendationCandidates";
 
     const questions = [
       {
@@ -1122,7 +1232,7 @@
         title: "읽을 책의 두께는 어느 정도가 좋아?",
         options: [
           { label: "가볍게 읽는\n얇은 책", icon: "🪶", value: "thin" },
-          { label: "적당히 읽는\n보통 책", icon: "📖", value: "normal" },
+          { label: "적당히 읽는\n보통 책", icon: "📖", value: "medium" },
           { label: "오래 읽는\n두꺼운 책", icon: "📚", value: "thick" }
         ]
       },
@@ -1131,33 +1241,35 @@
         title: "어떤 분위기의 책이 끌려?",
         options: [
           { label: "재미있고\n웃긴 이야기", icon: "😄", value: "funny" },
-          { label: "따뜻하고\n감동적인 이야기", icon: "🌷", value: "warm" },
-          { label: "긴장감 있는\n모험 이야기", icon: "🧭", value: "adventure" },
-          { label: "마음이 뭉클한\n성장 이야기", icon: "🌱", value: "growth" },
-          { label: "생각할 거리가\n있는 이야기", icon: "💭", value: "thinking" },
-          { label: "무섭거나\n신비로운 이야기", icon: "🌙", value: "mystic" }
+          { label: "따뜻하고\n감동적인 이야기", icon: "🌷", value: "touching" },
+          { label: "신나고\n흥미진진한 이야기", icon: "🧭", value: "exciting" },
+          { label: "차분하고\n잔잔한 이야기", icon: "🌿", value: "calm" },
+          { label: "상상력이\n커지는 이야기", icon: "💭", value: "imaginative" },
+          { label: "무섭거나\n신비로운 이야기", icon: "🌙", value: "mysterious" }
         ]
       },
       {
         key: "genre",
         title: "어떤 종류의 책을 읽고 싶어?",
         options: [
-          { label: "친구와\n학교 이야기", icon: "🏫", value: "school" },
-          { label: "판타지·\n모험 이야기", icon: "✨", value: "fantasy" },
+          { label: "친구와\n우정 이야기", icon: "🏫", value: "friendship" },
+          { label: "판타지\n이야기", icon: "✨", value: "fantasy" },
+          { label: "신나는\n모험 이야기", icon: "🧭", value: "adventure" },
+          { label: "일상과\n학교 이야기", icon: "☀️", value: "daily_life" },
           { label: "동물·자연\n이야기", icon: "🦁", value: "nature" },
           { label: "역사·위인\n이야기", icon: "🏛️", value: "history" },
-          { label: "과학·정보\n책", icon: "🔎", value: "info" },
-          { label: "추리·미스터리\n이야기", icon: "🕵️", value: "mystery" }
+          { label: "과학·정보\n책", icon: "🔎", value: "science" },
+          { label: "추리·미스터리\n이야기", icon: "🕵️", value: "mystery" },
+          { label: "마음이 자라는\n성장 이야기", icon: "🌱", value: "growth" }
         ]
       },
       {
-        key: "picture",
+        key: "illustrationLevel",
         title: "책에 그림이 어느 정도 있으면 좋아?",
         options: [
           { label: "그림이\n많은 책", icon: "🖼️", value: "many" },
-          { label: "글과 그림이\n반반 있는 책", icon: "📘", value: "half" },
-          { label: "중간중간\n그림이 있는 책", icon: "📖", value: "some" },
-          { label: "글만 있는\n책도 좋아", icon: "📚", value: "text" }
+          { label: "글과 그림이\n반반 있는 책", icon: "📘", value: "medium" },
+          { label: "그림이 조금만\n있어도 좋아", icon: "📚", value: "few" }
         ]
       },
       {
@@ -1166,7 +1278,6 @@
         options: [
           { label: "쉽고 술술\n읽히는 책", icon: "🍃", value: "easy" },
           { label: "생각하면서\n읽는 책", icon: "💭", value: "medium" },
-          { label: "새로운 낱말이\n나와도 괜찮아", icon: "🔤", value: "vocab" },
           { label: "어려워도\n도전할 책", icon: "🏔️", value: "hard" }
         ]
       },
@@ -1174,35 +1285,32 @@
         key: "purpose",
         title: "이번 책을 읽고 어떤 느낌을 얻고 싶어?",
         options: [
-          { label: "재미있게\n웃고 싶어", icon: "🌟", value: "joy" },
+          { label: "재미있게\n웃고 싶어", icon: "🌟", value: "fun" },
           { label: "마음이\n따뜻해지고 싶어", icon: "🌷", value: "comfort" },
-          { label: "용기와 힘을\n얻고 싶어", icon: "🛡️", value: "courage" },
-          { label: "새로운 지식을\n알고 싶어", icon: "🧠", value: "learn" },
-          { label: "깊이 생각해\n보고 싶어", icon: "🕯️", value: "think" },
-          { label: "친구에게\n소개하고 싶어", icon: "🤝", value: "share" }
+          { label: "새로운 지식을\n알고 싶어", icon: "🧠", value: "knowledge" },
+          { label: "상상력을\n키우고 싶어", icon: "✨", value: "imagination" },
+          { label: "어려운 책에\n도전하고 싶어", icon: "🛡️", value: "challenge" }
         ]
       }
     ];
 
-    const bookPool = [
-      { title: "만복이네 떡집", author: "김리리", summary: "소원을 들어주는 신기한 떡집을 만나며 벌어지는 따뜻하고 재미있는 이야기예요.", reason: "재미있고 따뜻한 이야기를 좋아하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "funny", "warm", "fantasy", "many", "easy", "joy", "comfort"] },
-      { title: "긴긴밤", author: "루리", summary: "서로 다른 존재들이 함께 길을 걸으며 용기와 사랑을 배워가는 이야기예요.", reason: "마음이 따뜻해지는 성장 이야기를 원할 때 좋아요.", tags: ["normal", "warm", "growth", "adventure", "some", "half", "medium", "comfort", "courage"] },
-      { title: "아몬드", author: "손원평", summary: "감정을 느끼기 어려운 소년이 사람들과 만나며 성장하는 이야기예요.", reason: "생각할 거리가 있는 성장 이야기를 좋아한다면 추천해요.", tags: ["normal", "thinking", "growth", "school", "few", "text", "medium", "think", "comfort"] },
-      { title: "시간 가게", author: "이나영", summary: "시간을 사고파는 가게를 통해 선택과 후회를 생각하게 하는 이야기예요.", reason: "판타지와 생각할 거리가 함께 있는 책을 찾는 친구에게 어울려요.", tags: ["normal", "adventure", "mystic", "fantasy", "some", "half", "medium", "learn", "think"] },
-      { title: "이상한 과자 가게 전천당", author: "히로시마 레이코", summary: "신비한 과자 가게에서 벌어지는 기묘하고 흥미로운 이야기예요.", reason: "상상력 가득한 판타지 이야기를 좋아한다면 잘 맞아요.", tags: ["thin", "normal", "funny", "mystic", "fantasy", "many", "easy", "joy"] },
-      { title: "푸른 사자 와니니", author: "이현", summary: "초원의 사자 와니니가 자신의 길을 찾아가는 모험 이야기예요.", reason: "모험과 성장, 용기를 함께 느끼고 싶을 때 추천해요.", tags: ["normal", "adventure", "growth", "nature", "some", "half", "medium", "comfort", "courage"] },
-      { title: "수상한 과학실", author: "임시 추천", summary: "생활 속 과학 궁금증을 이야기처럼 재미있게 풀어가는 정보 책이에요.", reason: "새로운 사실을 알고 싶은 친구에게 어울려요.", tags: ["thin", "normal", "info", "some", "half", "easy", "learn"] },
-      { title: "마법의 시간여행", author: "메리 폽 어즈번", summary: "책 속 세계를 넘나들며 역사와 모험을 만나는 흥미진진한 이야기예요.", reason: "모험과 배움을 함께 원하는 친구에게 잘 맞아요.", tags: ["thin", "normal", "adventure", "fantasy", "history", "many", "easy", "learn", "share"] },
-      { title: "불량한 자전거 여행", author: "김남중", summary: "자전거 여행을 떠난 아이가 여러 사람을 만나며 성장하는 이야기예요.", reason: "현실적인 모험과 성장을 함께 느끼고 싶을 때 좋아요.", tags: ["normal", "adventure", "growth", "school", "few", "text", "medium", "comfort", "courage"] }
-    ];
-
     let currentQuestionIndex = 0;
-    let answers = {};
+    let answers = {
+      thickness: null,
+      mood: null,
+      genre: null,
+      illustrationLevel: null,
+      difficulty: null,
+      purpose: null
+    };
     let selectedValue = null;
-    let recommendOffset = 0;
+    let recommendationCandidates = [];
+    let isRequestingRecommendation = false;
 
     document.addEventListener("DOMContentLoaded", () => {
-      renderQuestion();
+      if (!restoreRecommendationSession()) {
+        renderQuestion();
+      }
     });
 
     function goIndividualReading() {
@@ -1217,6 +1325,7 @@
       document.getElementById("questionKicker").textContent = `Q${currentQuestionIndex + 1}`;
       document.getElementById("questionTitle").textContent = question.title;
 
+      showQuestionCard();
       renderProgress();
       renderOptions(question);
       updateButtons();
@@ -1241,6 +1350,7 @@
 
       optionList.classList.toggle("many-options", question.options.length === 5);
       optionList.classList.toggle("six-options", question.options.length === 6);
+      optionList.classList.toggle("nine-options", question.options.length === 9);
       optionList.classList.toggle("four-options", question.options.length === 4);
 
       question.options.forEach((option) => {
@@ -1253,10 +1363,20 @@
           button.classList.add("selected");
         }
 
-        button.innerHTML = `
-          <div class="br-option-icon">${option.icon}</div>
-          <strong>${option.label.replace(/\n/g, "<br>")}</strong>
-        `;
+        const icon = document.createElement("div");
+        icon.className = "br-option-icon";
+        icon.textContent = option.icon;
+
+        const label = document.createElement("strong");
+        option.label.split("\n").forEach((line, index) => {
+          if (index > 0) {
+            label.appendChild(document.createElement("br"));
+          }
+          label.appendChild(document.createTextNode(line));
+        });
+
+        button.appendChild(icon);
+        button.appendChild(label);
 
         button.onclick = function () {
           selectOption(question.key, option.value);
@@ -1269,6 +1389,7 @@
     function selectOption(questionKey, optionValue) {
       selectedValue = optionValue;
       answers[questionKey] = optionValue;
+      savePreferences();
 
       document.querySelectorAll(".br-option").forEach((button) => {
         button.classList.toggle("selected", button.dataset.value === optionValue);
@@ -1282,8 +1403,13 @@
       const nextButton = document.getElementById("nextButton");
 
       prevButton.disabled = currentQuestionIndex === 0;
-      nextButton.disabled = !selectedValue;
-      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "책 추천받기 ›" : "다음으로 ›";
+      nextButton.disabled = !selectedValue || isRequestingRecommendation;
+
+      if (isRequestingRecommendation) {
+        nextButton.textContent = "추천 찾는 중...";
+      } else {
+        nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "책 추천받기 ›" : "다음으로 ›";
+      }
     }
 
     function goPrevQuestion() {
@@ -1292,76 +1418,255 @@
       renderQuestion();
     }
 
-    function goNextQuestion() {
+    async function goNextQuestion() {
       if (!selectedValue) return;
 
       if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex += 1;
         renderQuestion();
       } else {
-        showResult();
+        await requestRecommendationCandidates();
       }
     }
 
-    function getMatchedBooks() {
-      const answerValues = Object.values(answers);
-
-      return [...bookPool]
-        .map((book) => {
-          const score = answerValues.reduce((total, value) => {
-            return total + (book.tags.includes(value) ? 1 : 0);
-          }, 0);
-
-          return { ...book, score };
-        })
-        .sort((a, b) => b.score - a.score);
+    function showQuestionCard() {
+      document.getElementById("bookRecommendPage").classList.remove("result-mode");
     }
 
-    function showResult() {
-  document.getElementById("bookRecommendPage").classList.add("result-mode");
-  recommendOffset = 0;
-  renderRecommendedBooks();
-}
+    function getCurrentStudentKey() {
+      return sessionStorage.getItem("studentId") || sessionStorage.getItem("loginId") || "";
+    }
 
-function renderRecommendedBooks() {
-  const matchedBooks = getMatchedBooks();
-  const start = recommendOffset % matchedBooks.length;
-  const selectedBooks = [];
+    function getStorageEnvelope(payload) {
+      return {
+        studentKey: getCurrentStudentKey(),
+        payload
+      };
+    }
 
-  for (let i = 0; i < 3; i += 1) {
-    selectedBooks.push(matchedBooks[(start + i) % matchedBooks.length]);
-  }
+    function readStorageEnvelope(key) {
+      const raw = sessionStorage.getItem(key);
 
-  const bookList = document.getElementById("bookList");
-  bookList.innerHTML = "";
+      if (!raw) {
+        return null;
+      }
 
-  selectedBooks.forEach((book, index) => {
-    const card = document.createElement("div");
-    card.className = "br-book-card";
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || parsed.studentKey !== getCurrentStudentKey()) {
+          return null;
+        }
 
-    card.innerHTML = `
-      <div class="br-rank">${index + 1}</div>
-      <div class="br-book-info">
-        <h2>${book.title}</h2>
-        <p class="br-book-author">${book.author} 지음</p>
-        <p class="br-book-summary">${book.summary}</p>
-      </div>
-      <button type="button" class="br-book-pick" title="이 책으로 읽기 시작하기">🔖</button>
-    `;
+        return parsed.payload;
+      } catch (error) {
+        sessionStorage.removeItem(key);
+        return null;
+      }
+    }
 
-    bookList.appendChild(card);
-  });
-}
+    function savePreferences() {
+      sessionStorage.setItem(
+        PREFERENCE_STORAGE_KEY,
+        JSON.stringify(getStorageEnvelope(answers))
+      );
+    }
 
-function recommendAnotherBooks() {
-  recommendOffset += 3;
-  renderRecommendedBooks();
-}
+    function saveCandidates(candidates) {
+      sessionStorage.setItem(
+        CANDIDATE_STORAGE_KEY,
+        JSON.stringify(getStorageEnvelope(candidates))
+      );
+    }
+
+    function restoreRecommendationSession() {
+      const savedPreferences = readStorageEnvelope(PREFERENCE_STORAGE_KEY);
+      const savedCandidates = readStorageEnvelope(CANDIDATE_STORAGE_KEY);
+
+      if (savedPreferences && typeof savedPreferences === "object") {
+        questions.forEach((question) => {
+          if (typeof savedPreferences[question.key] === "string") {
+            answers[question.key] = savedPreferences[question.key];
+          }
+        });
+      }
+
+      if (Array.isArray(savedCandidates) && savedCandidates.length > 0) {
+        recommendationCandidates = savedCandidates;
+        document.getElementById("bookRecommendPage").classList.add("result-mode");
+        renderRecommendedBooks();
+        return true;
+      }
+
+      return false;
+    }
+
+    function getFirstMissingQuestionIndex() {
+      return questions.findIndex((question) => !answers[question.key]);
+    }
+
+    function getRecommendationRequestBody() {
+      return {
+        thickness: answers.thickness,
+        mood: answers.mood,
+        genre: answers.genre,
+        illustrationLevel: answers.illustrationLevel,
+        difficulty: answers.difficulty,
+        purpose: answers.purpose
+      };
+    }
+
+    async function requestRecommendationCandidates() {
+      const missingQuestionIndex = getFirstMissingQuestionIndex();
+
+      if (missingQuestionIndex >= 0) {
+        currentQuestionIndex = missingQuestionIndex;
+        renderQuestion();
+        alert("아직 고르지 않은 질문이 있어요.");
+        return;
+      }
+
+      if (isRequestingRecommendation) {
+        return;
+      }
+
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+
+      if (!token || role !== "student") {
+        alert("학생 로그인이 필요해요. 다시 로그인해 주세요.");
+        window.location.href = "../index.html";
+        return;
+      }
+
+      isRequestingRecommendation = true;
+      updateButtons();
+
+      try {
+        const response = await fetch(API_BASE_URL + "/api/students/me/recommendation-books/candidates", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify(getRecommendationRequestBody())
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          alert("로그인이 만료되었어요. 다시 로그인해 주세요.");
+          window.location.href = "../index.html";
+          return;
+        }
+
+        if (response.status === 400) {
+          alert("선택값을 다시 확인해 주세요.");
+          return;
+        }
+
+        if (!response.ok) {
+          alert("추천 책을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+          return;
+        }
+
+        const candidates = await response.json();
+        recommendationCandidates = Array.isArray(candidates) ? candidates : [];
+        savePreferences();
+        saveCandidates(recommendationCandidates);
+
+        document.getElementById("bookRecommendPage").classList.add("result-mode");
+        renderRecommendedBooks();
+      } catch (error) {
+        console.error("추천 후보 API 호출 실패", error);
+        alert("서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        isRequestingRecommendation = false;
+        updateButtons();
+      }
+    }
+
+    function renderRecommendedBooks() {
+      const bookList = document.getElementById("bookList");
+      bookList.innerHTML = "";
+
+      const selectedBooks = recommendationCandidates.slice(0, 3);
+
+      if (selectedBooks.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "br-empty-result";
+        empty.textContent = "아직 조건에 맞는 추천 책을 찾지 못했어요. 다시 질문해 볼까요?";
+        bookList.appendChild(empty);
+        return;
+      }
+
+      selectedBooks.forEach((candidate, index) => {
+        const book = candidate.book || {};
+        const card = document.createElement("div");
+        card.className = "br-book-card";
+
+        const cover = document.createElement("div");
+        cover.className = "br-book-cover";
+
+        if (book.coverImage) {
+          const image = document.createElement("img");
+          image.src = book.coverImage;
+          image.alt = (book.title || "추천 책") + " 표지";
+          cover.appendChild(image);
+        } else {
+          cover.textContent = String(index + 1);
+        }
+
+        const info = document.createElement("div");
+        info.className = "br-book-info";
+
+        const title = document.createElement("h2");
+        title.textContent = book.title || "추천 책";
+
+        const author = document.createElement("p");
+        author.className = "br-book-author";
+        author.textContent = (book.author || "지은이 정보 없음") + " 지음";
+
+        const summary = document.createElement("p");
+        summary.className = "br-book-summary";
+        summary.textContent = book.description || "책 소개를 준비하고 있어요.";
+
+        info.appendChild(title);
+        info.appendChild(author);
+        info.appendChild(summary);
+
+        const pickButton = document.createElement("button");
+        pickButton.type = "button";
+        pickButton.className = "br-book-pick";
+        pickButton.title = "이 책으로 읽기 시작하기";
+        pickButton.textContent = "🔖";
+        pickButton.dataset.bookId = book.id || "";
+
+        card.appendChild(cover);
+        card.appendChild(info);
+        card.appendChild(pickButton);
+
+        bookList.appendChild(card);
+      });
+    }
+
+    function recommendAnotherBooks() {
+      currentQuestionIndex = 0;
+      showQuestionCard();
+      renderQuestion();
+    }
 
     function restartQuestions() {
-      answers = {};
+      answers = {
+        thickness: null,
+        mood: null,
+        genre: null,
+        illustrationLevel: null,
+        difficulty: null,
+        purpose: null
+      };
       selectedValue = null;
+      recommendationCandidates = [];
       currentQuestionIndex = 0;
+      sessionStorage.removeItem(PREFERENCE_STORAGE_KEY);
+      sessionStorage.removeItem(CANDIDATE_STORAGE_KEY);
       document.getElementById("bookRecommendPage").classList.remove("result-mode");
       renderQuestion();
     }

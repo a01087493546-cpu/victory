@@ -925,14 +925,95 @@
       }
     ];
 
-    document.addEventListener("DOMContentLoaded", () => {
+    const INDIVIDUAL_READING_API_BASE_URL = "http://localhost:8080";
+
+    document.addEventListener("DOMContentLoaded", async () => {
       prepareDefaultState();
+      await syncCurrentBookFromServer();
       renderAdventure();
     });
 
     function prepareDefaultState() {
       if (!sessionStorage.getItem(STORAGE_KEYS.stage)) {
         sessionStorage.setItem(STORAGE_KEYS.stage, "before");
+      }
+    }
+
+    /*
+      진행 중인 책은 DB(reading_records, finished_at IS NULL)가 원본이다.
+      진행 중인 책이 없으면(완독했거나 아직 시작 전) 이전 책의 완료
+      플래그가 새 책에 그대로 넘어가지 않도록 초기화한다. 있으면 제목을
+      DB 값으로 채워 다른 기기/새 세션에서도 이어 읽기가 보이게 한다.
+      /*
+  진행 중인 책과 단계 완료 상태는 DB(reading_records)가 원본이다.
+  서버에서 받은 책 제목, 현재 단계, 읽기 전·중·후 완료 상태를
+  sessionStorage에 화면용 캐시로 반영한다.
+  카드 활성화는 서버에서 복원한 완료 상태를 기준으로 처리한다.
+    */
+    async function syncCurrentBookFromServer() {
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/current",
+          {
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          }
+        );
+
+        if (response.status === 204) {
+          sessionStorage.removeItem(STORAGE_KEYS.bookTitle);
+          sessionStorage.setItem(STORAGE_KEYS.stage, "before");
+          sessionStorage.setItem(STORAGE_KEYS.beforeDone, "false");
+          sessionStorage.setItem(STORAGE_KEYS.duringDone, "false");
+          sessionStorage.setItem(STORAGE_KEYS.afterDone, "false");
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("진행 중인 책 조회 실패: " + response.status);
+        }
+
+        const record = await response.json();
+
+sessionStorage.setItem(STORAGE_KEYS.bookTitle, record.title || "");
+
+// DB의 ReadingRecord 완료 상태를 화면 상태에 반영
+sessionStorage.setItem(
+  STORAGE_KEYS.beforeDone,
+  record.beforeDone === true ? "true" : "false"
+);
+
+sessionStorage.setItem(
+  STORAGE_KEYS.duringDone,
+  record.duringDone === true ? "true" : "false"
+);
+
+sessionStorage.setItem(
+  STORAGE_KEYS.afterDone,
+  record.afterDone === true ? "true" : "false"
+);
+
+// 현재 단계도 DB 값을 기준으로 복원
+const serverStage = record.currentStage;
+
+if (
+  serverStage === "before" ||
+  serverStage === "during" ||
+  serverStage === "after"
+) {
+  sessionStorage.setItem(STORAGE_KEYS.stage, serverStage);
+} else if (serverStage === "completed") {
+  sessionStorage.setItem(STORAGE_KEYS.stage, "after");
+}
+      } catch (error) {
+        console.error("진행 중인 개별읽기 책을 불러오지 못했습니다.", error);
       }
     }
 

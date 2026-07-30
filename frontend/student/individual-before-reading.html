@@ -518,6 +518,31 @@
       filter: drop-shadow(0 7px 10px rgba(94, 56, 15, 0.13));
     }
 
+    /*
+      검사하기 버튼을 루미 피드백 카드 오른쪽에 배치하는 가로 정렬 행.
+      왼쪽 .ibr-feedback(루미 이미지+문구)은 남는 공간을 채우고, 오른쪽
+      버튼은 내용 크기만큼만 차지한다. 폭이 좁아지면 flex-wrap으로 버튼이
+      다음 줄로 자연스럽게 내려간다(겹치지 않음).
+    */
+    .ibr-feedback-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ibr-feedback-row .ibr-feedback {
+      flex: 1 1 260px;
+      min-width: 0;
+    }
+
+    .ibr-check-button {
+      flex: 0 0 auto;
+      height: 56px;
+      padding: 0 28px;
+      white-space: nowrap;
+    }
+
     .ibr-actions {
       display: flex;
       gap: 14px;
@@ -1126,6 +1151,28 @@
 */
 .ibr-page.book-step #feedbackBox {
   display: none !important;
+}
+
+/* 검사하기 버튼을 담은 행 전체도 책 정하기 단계에서는 숨긴다(빈 줄 방지). */
+.ibr-page.book-step .ibr-feedback-row {
+  display: none !important;
+}
+
+/*
+  질문 단계(01~04)는 하단에 "이전"/"다음"만 남는다(검사하기는 루미 카드로
+  이동, 돌아가기는 기존처럼 mq-fixed-stage-page에서 숨겨짐). 두 버튼을
+  가운데로 모으고 너비를 적당히 제한해 화면 전체 폭을 차지하던 기존
+  가로 버튼보다 자연스러운 크기로 만든다. 책 정하기 단계는 기존 배치를
+  그대로 둔다.
+*/
+.ibr-page:not(.book-step) .ibr-actions {
+  justify-content: center !important;
+}
+
+.ibr-page:not(.book-step) .ibr-actions .ibr-button {
+  flex: 0 0 auto !important;
+  min-width: 180px !important;
+  max-width: 240px !important;
 }
 
 .ibr-page.book-step .ibr-form-card {
@@ -1791,9 +1838,15 @@
                     ></textarea>
                   </div>
 
-                  <div class="ibr-feedback" id="feedbackBox">
-                    <img src="../assets/images/individual-reading/today-reading-lumi-guide.png" alt="루미">
-                    <span id="feedbackText">책을 정하고 질문을 저장하면 루미가 확인해줄게!</span>
+                  <div class="ibr-feedback-row" id="feedbackRow">
+                    <div class="ibr-feedback" id="feedbackBox">
+                      <img src="../assets/images/individual-reading/today-reading-lumi-guide.png" alt="루미">
+                      <span id="feedbackText">책을 정하고 질문을 저장하면 루미가 확인해줄게!</span>
+                    </div>
+
+                    <button type="button" class="ibr-button primary ibr-check-button" id="checkAnswerButton" onclick="handleMainAction()">
+                      검사하기
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1801,7 +1854,7 @@
           </div>
 
           <div class="ibr-actions">
-            <button type="button" class="ibr-button" onclick="goPreviousStep()">← 이전</button>
+            <button type="button" class="ibr-button" id="prevStepButton" onclick="goPreviousStep()">← 이전</button>
             <button type="button" class="ibr-button" onclick="goTodayAdventure()">돌아가기</button>
             <button type="button" class="ibr-button primary" id="mainActionButton" onclick="handleMainAction()">
               저장하고 다음 →
@@ -1855,7 +1908,6 @@
   bookAuthor: "individualCurrentBookAuthor_" + studentId,
   bookType: "individualCurrentBookType_" + studentId,
   bookTypeHistory: "individualBookTypeHistory_" + studentId,
-  beforeDone: "individualBeforeDone_" + studentId,
   beforeQuestions: "individualBeforeQuestions_" + studentId
 };
 
@@ -1932,11 +1984,24 @@ desc: "",
 
     let currentStepIndex = 0;
     let individualPreReadingAiRequestId = 0;
+    /*
+      읽기 전 질문·답 저장 API 호출에 필요한 진행 중 readingRecordId 캐시.
+      책 등록 직후에는 registerIndividualReadingBook()이 채우고, 새로고침/
+      재접속 시에는 restoreIndividualBeforeReadingFromServer()가 서버
+      조회로 다시 채운다.
+    */
+    let currentReadingRecordId = null;
+    /*
+      savedQuestion/savedAnswer는 서버에 마지막으로 저장에 성공한 값의
+      스냅샷이다. 사용자가 입력칸을 고쳐도 이 스냅샷과 완전히 같은 값으로
+      되돌리면 기존 통과 상태(passed)를 그대로 유지하고, 다르면 다시
+      검사해야 하므로 passed를 false로 되돌린다(resetIndividualPreReadingFeedbackOnEdit 참고).
+    */
     let answers = [
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false }
+      { question: "", expectedAnswer: "", passed: false, savedQuestion: "", savedAnswer: "" },
+      { question: "", expectedAnswer: "", passed: false, savedQuestion: "", savedAnswer: "" },
+      { question: "", expectedAnswer: "", passed: false, savedQuestion: "", savedAnswer: "" },
+      { question: "", expectedAnswer: "", passed: false, savedQuestion: "", savedAnswer: "" }
     ];
 let selectedBookType = sessionStorage.getItem(STORAGE_KEYS.bookType) || "";
 
@@ -1956,9 +2021,10 @@ function selectBookType(type) {
 
   updateBookLabel();
 }
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       loadSavedData();
       bindEvents();
+      await restoreIndividualBeforeReadingFromServer();
       renderAll();
     });
 
@@ -1974,6 +2040,102 @@ function selectBookType(type) {
         } catch (error) {
           console.warn("읽기 전 질문 데이터를 불러오지 못했습니다.", error);
         }
+      }
+    }
+
+    /*
+      새로고침/재접속 시 DB(reading_records + responses)를 원본으로 복원한다.
+      진행 중인 책이 없으면(204) 0번 "책 정하기" 단계에 그대로 머문다.
+      진행 중인 책이 있으면 책 정보는 이미 등록된 것이므로 0번 단계를
+      건너뛰고, 저장된 stepType만큼 answers[]를 채운 뒤 첫 번째 미완료
+      단계로 이어서 진행한다(4개 모두 저장돼 있으면 마지막 단계에서
+      "읽기 전 활동 완료하기" 버튼이 바로 눌릴 수 있는 상태로 둔다).
+    */
+    async function restoreIndividualBeforeReadingFromServer() {
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const currentResponse = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/current",
+          {
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          }
+        );
+
+        if (currentResponse.status === 204) {
+          return;
+        }
+
+        if (!currentResponse.ok) {
+          throw new Error("진행 중인 책 조회 실패: " + currentResponse.status);
+        }
+
+        const record = await currentResponse.json();
+
+        currentReadingRecordId = record.readingRecordId;
+        sessionStorage.setItem("individualReadingRecordId_" + studentId, String(record.readingRecordId));
+        sessionStorage.setItem("individualReadingBookId_" + studentId, String(record.bookId));
+
+        document.getElementById("bookTitleInput").value = record.title || "";
+        document.getElementById("bookAuthorInput").value = record.author || "";
+        sessionStorage.setItem(STORAGE_KEYS.bookTitle, record.title || "");
+        sessionStorage.setItem(STORAGE_KEYS.bookAuthor, record.author || "");
+
+        if (record.bookType) {
+          selectedBookType = record.bookType;
+          sessionStorage.setItem(STORAGE_KEYS.bookType, record.bookType);
+        }
+
+        const beforeResponsesResponse = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" +
+            currentReadingRecordId +
+            "/before-responses",
+          {
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          }
+        );
+
+        if (!beforeResponsesResponse.ok) {
+          throw new Error("읽기 전 저장 기록 조회 실패: " + beforeResponsesResponse.status);
+        }
+
+        const savedResponses = await beforeResponsesResponse.json();
+
+        savedResponses.forEach(function (item) {
+          const stepIndex = steps.findIndex(function (step) {
+            return step.key === item.stepType;
+          });
+
+          if (stepIndex <= 0) {
+            return;
+          }
+
+          answers[stepIndex - 1] = {
+            question: item.question || "",
+            expectedAnswer: item.answer || "",
+            passed: true,
+            savedQuestion: item.question || "",
+            savedAnswer: item.answer || ""
+          };
+        });
+
+        /*
+          완료 상태(answers[].passed)는 방금 복원한 그대로 유지하되,
+          화면은 저장 단계 수와 상관없이 항상 01 제목부터 다시 보여준다
+          (사용자가 저장한 내용을 처음부터 순서대로 다시 확인하고 싶어함).
+        */
+        currentStepIndex = 1;
+      } catch (error) {
+        console.error("개별읽기 읽기 전 기록을 불러오지 못했습니다.", error);
       }
     }
 
@@ -1994,20 +2156,55 @@ function selectBookType(type) {
 
       const answer = answers[currentStepIndex - 1];
 
-      if (!answer || !answer.passed) {
+      if (!answer) {
+        return;
+      }
+
+      const currentQuestion = document.getElementById("questionInput").value;
+      const currentAnswerText = document.getElementById("answerInput").value;
+      const nextStepButton = document.getElementById("nextStepButton");
+      const feedbackBox = document.getElementById("feedbackBox");
+      const feedbackText = document.getElementById("feedbackText");
+
+      /*
+        저장된 값이 있고(한 번이라도 성공적으로 저장된 단계) 지금 입력값이
+        그 저장본과 글자 하나까지 완전히 같으면, 도중에 무엇을 고쳤든 다시
+        검사할 필요 없이 완료 상태를 그대로 쓴다(되돌려 놓은 경우 포함).
+      */
+      const matchesSavedValue =
+        !!answer.savedQuestion &&
+        currentQuestion === answer.savedQuestion &&
+        currentAnswerText === answer.savedAnswer;
+
+      if (matchesSavedValue) {
+        if (!answer.passed) {
+          answer.passed = true;
+          individualPreReadingAiRequestId++;
+
+          if (feedbackBox && feedbackText) {
+            feedbackBox.classList.remove("need");
+            feedbackBox.classList.add("good");
+            feedbackText.textContent = "이미 저장된 내용과 같아요. 다음으로 넘어갈 수 있어요!";
+          }
+        }
+
+        if (nextStepButton) {
+          nextStepButton.disabled = false;
+        }
+
+        return;
+      }
+
+      if (!answer.passed) {
         return;
       }
 
       answer.passed = false;
       individualPreReadingAiRequestId++;
 
-      const nextStepButton = document.getElementById("nextStepButton");
       if (nextStepButton) {
         nextStepButton.disabled = true;
       }
-
-      const feedbackBox = document.getElementById("feedbackBox");
-      const feedbackText = document.getElementById("feedbackText");
 
       if (feedbackBox && feedbackText) {
         feedbackBox.classList.remove("good", "need");
@@ -2072,6 +2269,15 @@ function selectBookType(type) {
         `;
 
         button.onclick = () => {
+          /*
+            이미 책이 등록된 상태(currentReadingRecordId 존재)라면 책 정하기
+            단계로 다시 들어가지 않는다 - 그 화면에서 다시 등록을 시도하면
+            409가 나기 때문이다(goPreviousStep의 제목 단계 제한과 같은 이유).
+          */
+          if (index === 0 && currentReadingRecordId) {
+            return;
+          }
+
           if (index > 1 && !answers[index - 2].passed) {
             alert("앞 질문을 먼저 저장하면 열려요!");
             return;
@@ -2142,11 +2348,25 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
         : "질문과 답을 적고 저장하면 루미가 확인해줄게!";
 
       const mainActionButton = document.getElementById("mainActionButton");
+      const checkAnswerButton = document.getElementById("checkAnswerButton");
       const nextStepButton = document.getElementById("nextStepButton");
+      const prevStepButton = document.getElementById("prevStepButton");
 
-      mainActionButton.textContent = isBookStep
-        ? "책 정하고 질문 만들기 →"
-        : "검사하기";
+      /*
+        책 정하기 단계는 하단 mainActionButton("책 정하고 질문 만들기 →")을
+        그대로 쓰고, 질문 단계(01~04)는 루미 카드 안의 checkAnswerButton
+        ("검사하기")만 쓴다 - 같은 handleMainAction()을 호출하므로 동작은
+        동일하고 위치/노출만 다르다.
+      */
+      if (isBookStep) {
+        mainActionButton.style.display = "";
+        mainActionButton.textContent = "책 정하고 질문 만들기 →";
+        checkAnswerButton.style.display = "none";
+      } else {
+        mainActionButton.style.display = "none";
+        checkAnswerButton.style.display = "";
+        checkAnswerButton.disabled = false;
+      }
 
       if (isBookStep) {
         nextStepButton.style.display = "none";
@@ -2156,6 +2376,16 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
           ? "읽기 전 활동 완료하기"
           : "다음 →";
         nextStepButton.disabled = !(answer && answer.passed);
+      }
+
+      /*
+        제목 단계(currentStepIndex === 1)는 재접속 시 항상 열리는 시작
+        화면이다. 이미 책이 등록된 상태에서 "이전"으로 책 정하기 단계로
+        되돌아가면 다시 등록을 시도해 409가 나므로, 제목 단계에서는
+        "이전"을 비활성화한다(책 정하기 단계 자체의 "이전"은 그대로 둠).
+      */
+      if (prevStepButton) {
+        prevStepButton.disabled = currentStepIndex === 1;
       }
 
       renderLumi(step, isBookStep);
@@ -2213,7 +2443,66 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
       checkAndGoNext();
     }
 
-    function saveBookAndGoFirstQuestion() {
+    /*
+      개별읽기 책 등록 API(POST /api/students/me/individual-reading/books).
+      DB가 원본이어야 하므로 등록이 성공한 뒤에만 다음 단계로 넘어가고,
+      실패하면(특히 409: 진행 중인 책이 이미 있음) 여기서 멈춘다.
+    */
+    const INDIVIDUAL_READING_API_BASE_URL = "http://localhost:8080";
+
+    async function registerIndividualReadingBook(title, author, bookType) {
+      const token = sessionStorage.getItem("token");
+
+      if (!token) {
+        alert("로그인이 필요해요. 다시 로그인한 뒤 시도해 주세요.");
+        return false;
+      }
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/books",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token
+            },
+            body: JSON.stringify({
+              title: title,
+              author: author,
+              bookType: bookType
+            })
+          }
+        );
+
+        if (response.status === 409) {
+          const errorBody = await response.json().catch(function () {
+            return null;
+          });
+
+          alert((errorBody && errorBody.message) || "현재 읽고 있는 책을 먼저 마쳐 주세요.");
+          return false;
+        }
+
+        if (!response.ok) {
+          throw new Error("개별읽기 책 등록 실패: " + response.status);
+        }
+
+        const record = await response.json();
+
+        currentReadingRecordId = record.readingRecordId;
+        sessionStorage.setItem("individualReadingRecordId_" + studentId, String(record.readingRecordId));
+        sessionStorage.setItem("individualReadingBookId_" + studentId, String(record.bookId));
+
+        return true;
+      } catch (error) {
+        console.error("개별읽기 책 등록 중 오류가 발생했습니다.", error);
+        alert("지금은 책 등록을 완료하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return false;
+      }
+    }
+
+    async function saveBookAndGoFirstQuestion() {
   const title = document.getElementById("bookTitleInput").value.trim();
   const author = document.getElementById("bookAuthorInput").value.trim() || "지은이 미입력";
 
@@ -2224,6 +2513,12 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
 
   if (!selectedBookType) {
     alert("책 종류를 하나 골라줘!");
+    return;
+  }
+
+  const registered = await registerIndividualReadingBook(title, author, selectedBookType);
+
+  if (!registered) {
     return;
   }
 
@@ -2389,7 +2684,7 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
 
     function requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, answer) {
       const requestId = ++individualPreReadingAiRequestId;
-      const mainActionButton = document.getElementById("mainActionButton");
+      const checkAnswerButton = document.getElementById("checkAnswerButton");
       const answerIndex = currentStepIndex - 1;
 
       requestPreReadingAiFeedback({
@@ -2397,7 +2692,7 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
         bookTitle: sessionStorage.getItem(STORAGE_KEYS.bookTitle) || "",
         question: question,
         answer: answer,
-        requestButton: mainActionButton,
+        requestButton: checkAnswerButton,
         guard: {
           isRequesting: function () {
             return isIndividualPreReadingAiRequestInFlight;
@@ -2410,42 +2705,128 @@ document.querySelector(".ibr-page").classList.toggle("book-step", isBookStep);
           feedbackBox.classList.remove("good", "need");
           feedbackText.textContent = "루미가 답변을 읽고 있어요...";
         },
-        onResult: function (result) {
+        onResult: async function (result) {
           if (requestId !== individualPreReadingAiRequestId) {
             return;
           }
 
-          feedbackBox.classList.remove("good", "need");
-          feedbackBox.classList.add(result.isGood ? "good" : "need");
-          feedbackText.textContent = result.message;
-
-          answers[answerIndex].passed = result.isGood;
-
           const nextStepButton = document.getElementById("nextStepButton");
+          feedbackBox.classList.remove("good", "need");
+
+          if (!result.isGood) {
+            feedbackBox.classList.add("need");
+            feedbackText.textContent = result.message;
+            answers[answerIndex].passed = false;
+
+            if (nextStepButton) {
+              nextStepButton.disabled = true;
+            }
+            return;
+          }
+
+          /*
+            AI 검사와 DB 저장을 분리한다: AI가 good을 줘도 저장이 실패하면
+            그 단계를 완료 처리하지 않는다(입력한 내용은 화면에 그대로 남김).
+          */
+          const stepType = steps[currentStepIndex].key;
+          const saved = await saveIndividualBeforeResponseToServer(stepType, question, answer);
+
+          if (requestId !== individualPreReadingAiRequestId) {
+            return;
+          }
+
+          if (!saved) {
+            feedbackBox.classList.add("need");
+            feedbackText.textContent = "질문과 답을 저장하지 못했어요. 잠시 후 검사하기를 다시 눌러 줘.";
+            answers[answerIndex].passed = false;
+
+            if (nextStepButton) {
+              nextStepButton.disabled = true;
+            }
+            return;
+          }
+
+          lastBeforeStepSaveResult = saved;
+
+          feedbackBox.classList.add("good");
+          feedbackText.textContent = result.message;
+          answers[answerIndex].passed = true;
+          answers[answerIndex].savedQuestion = question;
+          answers[answerIndex].savedAnswer = answer;
+
           if (nextStepButton) {
-            nextStepButton.disabled = !result.isGood;
+            nextStepButton.disabled = false;
           }
         }
       });
     }
 
+    /*
+      읽기 전 한 단계(title/contents/picture/skim)의 질문·답을 저장한다
+      (PUT .../{readingRecordId}/before-responses/{stepType}). AI가 good을
+      준 직후에만 호출되며, AI 판정 결과 자체는 이 요청에 담지 않는다.
+      응답 body(IndividualBeforeResponseItem)를 그대로 돌려준다 - 마지막
+      단계(skim) 응답에만 rewardGranted/stats가 채워져 있어서, 이 값으로
+      완료 보상 모달을 띄울지 서버 기준으로 판단한다(클라이언트가 임의로
+      "이미 지급했다"고 판단하지 않는다).
+    */
+    async function saveIndividualBeforeResponseToServer(stepType, question, answer) {
+      const token = sessionStorage.getItem("token");
+      const readingRecordId =
+        currentReadingRecordId || sessionStorage.getItem("individualReadingRecordId_" + studentId);
+
+      if (!token || !readingRecordId) {
+        console.error("진행 중인 개별읽기 책 정보를 찾을 수 없어 읽기 전 질문·답을 저장하지 못했습니다.");
+        return null;
+      }
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" +
+            readingRecordId +
+            "/before-responses/" +
+            stepType,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token
+            },
+            body: JSON.stringify({
+              question: question,
+              answer: answer
+            })
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("읽기 전 질문·답 저장 실패: " + response.status);
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error("개별읽기 읽기 전 질문·답을 저장하지 못했습니다.", error);
+        return null;
+      }
+    }
+
+    /*
+      마지막으로 서버에 저장한 읽기 전 단계 응답. 4단계(skim)를 처음 완료한
+      순간에만 rewardGranted:true + stats가 채워져서 오고, 그 외에는
+      rewardGranted:false다 - completeBeforeReading()이 이 값만 보고 보상
+      모달을 띄울지 정한다(sessionStorage의 "이미 봤는지" 플래그를 쓰지 않는다).
+    */
+    let lastBeforeStepSaveResult = null;
+
    function completeBeforeReading() {
   saveBeforeReadingAdventure();
 
-  const alreadyBeforeDone = sessionStorage.getItem(STORAGE_KEYS.beforeDone) === "true";
-
-  sessionStorage.setItem(STORAGE_KEYS.beforeDone, "true");
   sessionStorage.setItem(STORAGE_KEYS.stage, "during");
 
-  const rewardResult =
-    !alreadyBeforeDone && typeof givePowerRewardOnce === "function"
-      ? givePowerRewardOnce("individual_before_complete_" + studentId, {
-          presetKey: "individual_before_complete",
-          showModal: false
-        })
-      : false;
+  const rewardGranted = !!(lastBeforeStepSaveResult && lastBeforeStepSaveResult.rewardGranted);
 
-  if (rewardResult && typeof openMiniRewardModal === "function") {
+  if (rewardGranted && typeof openMiniRewardModal === "function") {
     openMiniRewardModal({
       badge: "✨ 나의 힘 성장!",
       title: "읽기 전 준비 보상!",
@@ -2488,6 +2869,15 @@ bookTypeName: BOOK_TYPE_LABELS[sessionStorage.getItem(STORAGE_KEYS.bookType)] ||
     function goPreviousStep() {
       if (currentStepIndex === 0) {
         goTodayAdventure();
+        return;
+      }
+
+      /*
+        제목 단계(1)에서는 더 이전으로 가지 않는다. 책 정하기(0) 단계로
+        되돌아가면 이미 등록된 책을 다시 등록하려다 409를 받게 되므로,
+        여기서 막는다(같은 이유로 버튼도 renderCurrentStep에서 비활성화한다).
+      */
+      if (currentStepIndex === 1) {
         return;
       }
 

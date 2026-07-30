@@ -1,5 +1,6 @@
 package com.victory.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -90,6 +91,16 @@ public class Response {
      */
     @Column(name = "stage", length = 20)
     private String stage;
+
+    /*
+     * 개별읽기 읽기 중(책속 생각쓰기)처럼 완독 전까지 날짜별로 반복하는
+     * 활동의 "그 활동을 한 날짜"(Asia/Seoul 기준, 서버가 결정). 읽기 전처럼
+     * 한 번만 쓰는 활동에는 null로 둔다. extra_data JSON에 숨기지 않고
+     * 명시 컬럼으로 둬서 날짜 조회·유니크 판단을 DB 레벨에서 안정적으로
+     * 할 수 있게 한다(IndividualReadingSchemaInitializer가 멱등하게 추가).
+     */
+    @Column(name = "activity_date")
+    private LocalDate activityDate;
 
     @Lob
     @Column(name = "content", columnDefinition = "TEXT")

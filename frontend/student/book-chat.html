@@ -43,7 +43,7 @@
       margin: 0 auto;
       display: grid;
       grid-template-rows: auto auto auto auto minmax(0,1fr);
-      gap: 12px;
+      gap: 10px;
       overflow: hidden;
     }
 
@@ -114,6 +114,54 @@
       box-shadow: 0 6px 0 rgba(105,57,5,.50), 0 10px 18px rgba(116,71,20,.16);
     }
 
+    .nav-button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .date-nav-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 74px;
+      padding: 8px 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(193,133,61,.30);
+      background: linear-gradient(180deg,rgba(255,254,249,.90),rgba(255,247,231,.86));
+    }
+
+    .date-nav-info {
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
+    }
+
+    .date-nav-title {
+      color: #4b2a13;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .date-nav-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-nav-label {
+      min-width: 150px;
+      text-align: center;
+      color: #5f3714;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
     .activity-card,
     .filter-card,
     .board-card,
@@ -125,17 +173,17 @@
     }
 
     .activity-card {
-      min-height: 118px;
-      padding: 16px 26px;
+      min-height: 92px;
+      padding: 10px 22px;
       display: grid;
-      grid-template-columns: 340px minmax(0,1fr);
-      gap: 26px;
+      grid-template-columns: 260px minmax(0,1fr);
+      gap: 18px;
       align-items: center;
     }
 
     .activity-title {
       font-family: "Noto Serif KR", serif;
-      font-size: 40px;
+      font-size: 32px;
       font-weight: 900;
       white-space: nowrap;
     }
@@ -143,12 +191,12 @@
     .stat-row {
       display: grid;
       grid-template-columns: repeat(3,minmax(0,1fr));
-      gap: 16px;
+      gap: 12px;
     }
 
     .stat-box {
       min-height: 78px;
-      padding: 14px 20px;
+      padding: 9px 16px;
       border-radius: 18px;
       border: 1px solid rgba(192,130,55,.28);
       background: rgba(255,255,255,.58);
@@ -157,26 +205,26 @@
       justify-content: center;
     }
 
-    .stat-label { color:#8b6a46; font-size:20px; font-weight:900; }
-    .stat-value { margin-top:6px; color:#4a2a10; font-size:42px; font-weight:900; line-height:1; }
+    .stat-label { color:#8b6a46; font-size:16px; font-weight:900; }
+    .stat-value { margin-top:4px; color:#4a2a10; font-size:32px; font-weight:900; line-height:1; }
 
-    .filter-card { padding: 10px 16px; }
+    .filter-card { padding: 7px 14px; }
 
     .filter-row {
       display: grid;
       grid-template-columns: 1fr 1fr 220px;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
     }
 
     .filter-button,
     .sort-select {
-      height: 48px;
-      border-radius: 16px;
+      height: 40px;
+      border-radius: 14px;
       border: 1px solid rgba(192,130,55,.34);
       background: rgba(255,252,245,.84);
       color: #5a3820;
-      font-size: 21px;
+      font-size: 16px;
       font-weight: 900;
     }
 
@@ -192,7 +240,7 @@
     .board-card {
       height: calc(100% - 4px);
       min-height: 0;
-      padding: 20px 26px;
+      padding: 18px 24px 20px;
       display: grid;
       grid-template-rows: auto minmax(0,1fr);
       overflow: hidden;
@@ -224,18 +272,22 @@
       font-weight:900;
     }
 
-    .question-list {
-      min-height: 0;
-      overflow-y: auto;
+	    .question-list {
+	      min-height: 0;
+	      overflow-y: auto;
       overflow-x: hidden;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       grid-auto-rows: max-content;
       align-content: start;
-      gap: 12px;
-      padding: 2px 10px 14px 2px;
-      scrollbar-gutter: stable;
-    }
+	      gap: 12px;
+	      padding: 2px 10px 18px 2px;
+	      scrollbar-gutter: stable;
+	    }
+
+	    .question-list .empty-list {
+	      min-height: 100%;
+	    }
 
     .question-list::-webkit-scrollbar,
     .modal-body::-webkit-scrollbar { width:12px; }
@@ -307,31 +359,31 @@
     .type-badge { background:rgba(222,168,79,.18); color:#8b5a1d; }
     .talk-badge { background:rgba(88,139,62,.14); color:#47722c; }
 
-    .moderation-badge {
-      display:inline-block;
-      margin-bottom:10px;
-      padding:6px 13px;
-      border-radius:999px;
-      border:1px solid transparent;
-      font-size:14px;
-      font-weight:900;
-    }
+	    .moderation-badge {
+	      display:inline-block;
+	      margin-bottom:10px;
+	      padding:5px 11px;
+	      border-radius:999px;
+	      border:1px solid transparent;
+	      font-size:13px;
+	      font-weight:900;
+	    }
 
-    .moderation-legend {
-      display:flex;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:2px;
-    }
+	    .moderation-legend {
+	      display:flex;
+	      align-items:center;
+	      flex-wrap:wrap;
+	      gap:6px;
+	      margin-top:0;
+	    }
 
     .moderation-legend .moderation-badge { margin-bottom:0; }
 
-    .moderation-legend-text {
-      color:#7a5a35;
-      font-size:13px;
-      font-weight:700;
-    }
+	    .moderation-legend-text {
+	      color:#7a5a35;
+	      font-size:12px;
+	      font-weight:700;
+	    }
 
     .moderation-badge.status-pending {
       background:rgba(230,180,40,.22);
@@ -701,11 +753,22 @@
         </div>
       </header>
 
-      <div class="moderation-legend">
-        <span class="moderation-badge status-pending">확인 중이에요</span>
-        <span class="moderation-badge status-approved">게시됐어요</span>
-        <span class="moderation-badge status-rejected">다시 써볼까요?</span>
-        <span class="moderation-legend-text">← 내 글 상태를 색깔로 알려줘요</span>
+      <div class="date-nav-row">
+        <div class="date-nav-info">
+          <span class="date-nav-title">책수다방 활동</span>
+          <div class="moderation-legend">
+            <span class="moderation-badge status-pending">확인 중이에요</span>
+            <span class="moderation-badge status-approved">게시됐어요</span>
+            <span class="moderation-badge status-rejected">다시 써볼까요?</span>
+            <span class="moderation-legend-text">← 내 글 상태를 색깔로 알려줘요</span>
+          </div>
+        </div>
+        <div class="date-nav-actions">
+          <button class="nav-button" type="button" onclick="moveBookChatDate(-1)">이전날</button>
+          <span class="date-nav-label" id="bookChatDateLabel"></span>
+          <button class="nav-button" type="button" onclick="goTodayBookChatDate()">오늘</button>
+          <button class="nav-button" type="button" id="bookChatNextDayButton" onclick="moveBookChatDate(1)">다음날</button>
+        </div>
       </div>
 
       <section class="activity-card">
@@ -784,6 +847,7 @@ let classReadingBookId = null;
 
     let currentType = "quiz";
     let allQuestions = [];
+    let selectedBookChatDate = getTodayDateKey();
     let selectedQuestionId = null;
     let activeReplyTarget = null;
     let activeReplyType = null;
@@ -812,6 +876,7 @@ let classReadingBookId = null;
   await hydrateBookChatActivity();
 
   bindEvents();
+  updateBookChatDateLabel();
   renderAll();
   showTeacherButtonWhenNeeded();
 }
@@ -932,6 +997,8 @@ async function loadBookChatQuestions() {
         text: item.question || "",
         answer: item.answer || "",
         type: normalizeType(item.questionType),
+        // 날짜 이동 필터용 - createdAt은 화면 표시용 문자열로 바뀌므로 원본에서 날짜만 따로 뽑아둔다.
+        dateKey: item.createdAt ? String(item.createdAt).slice(0, 10) : getTodayDateKey(),
         createdAt: formatBookChatDate(item.createdAt),
         moderationStatus: moderationStatus,
         rejectReason: item.rejectionReason || ""
@@ -973,6 +1040,49 @@ function formatBookChatDate(value) {
   ).padStart(2, "0");
 
   return `${month}.${day} ${hour}:${minute}`;
+}
+
+/*
+  책수다방 날짜 이동. 개별읽기 책수다방과 같은 방식(YYYY-MM-DD 키 비교)을
+  그대로 재사용한다 - 새로고침하면 항상 오늘로 돌아간다.
+*/
+function getTodayDateKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function formatBookChatDateLabel(dateKey) {
+  const parts = dateKey.split("-");
+  return `${Number(parts[0])}년 ${Number(parts[1])}월 ${Number(parts[2])}일`;
+}
+
+function updateBookChatDateLabel() {
+  const label = document.getElementById("bookChatDateLabel");
+  const nextButton = document.getElementById("bookChatNextDayButton");
+  if (label) label.textContent = formatBookChatDateLabel(selectedBookChatDate);
+  if (nextButton) nextButton.disabled = selectedBookChatDate >= getTodayDateKey();
+}
+
+function moveBookChatDate(direction) {
+  const currentDate = new Date(selectedBookChatDate);
+  currentDate.setDate(currentDate.getDate() + direction);
+
+  const nextDateKey = currentDate.toISOString().slice(0, 10);
+  const todayKey = getTodayDateKey();
+
+  if (nextDateKey > todayKey) {
+    alert("아직 오지 않은 날짜예요.");
+    return;
+  }
+
+  selectedBookChatDate = nextDateKey;
+  updateBookChatDateLabel();
+  renderAll();
+}
+
+function goTodayBookChatDate() {
+  selectedBookChatDate = getTodayDateKey();
+  updateBookChatDateLabel();
+  renderAll();
 }
 
     function getModerationBadgeInfo(status) {
@@ -1047,7 +1157,7 @@ function formatBookChatDate(value) {
     }
 
     function getFilteredQuestions() {
-      let questions = allQuestions.slice();
+      let questions = allQuestions.filter(q => q.dateKey === selectedBookChatDate);
       questions = currentType === "quiz"
         ? questions.filter(q => q.type === "direct")
         : questions.filter(q => q.type !== "direct");
@@ -1475,20 +1585,24 @@ function formatBookChatDate(value) {
     }
 
     function updateCounts(visibleQuestions) {
+      // 활동 내역 통계는 유형(퀴즈/생각 나누기)과 무관하게 선택한 날짜 전체를 기준으로 계산한다.
+      const dateFilteredQuestions = allQuestions.filter(q => q.dateKey === selectedBookChatDate);
+      const dateFilteredIds = new Set(dateFilteredQuestions.map(q => q.id));
+
       const thoughtCount =
-        Object.values(thoughtCache).reduce(
-          (sum,list) => sum + list.filter(item => item.isMine).length,
+        Object.entries(thoughtCache).reduce(
+          (sum,[qid,list]) => dateFilteredIds.has(qid) ? sum + list.filter(item => item.isMine).length : sum,
           0
         ) +
-        Object.values(quizAnswerCache).reduce(
-          (sum,list) => sum + list.filter(item => item.isMine).length,
+        Object.entries(quizAnswerCache).reduce(
+          (sum,[qid,list]) => dateFilteredIds.has(qid) ? sum + list.filter(item => item.isMine).length : sum,
           0
         );
-      const replyCount = Object.values(replyCache).reduce(
-        (sum,list) => sum + list.filter(item => item.isMine).length,
+      const replyCount = Object.entries(replyCache).reduce(
+        (sum,[qid,list]) => dateFilteredIds.has(qid) ? sum + list.filter(item => item.isMine).length : sum,
         0
       );
-      document.getElementById("questionCount").textContent = allQuestions.length + "개";
+      document.getElementById("questionCount").textContent = dateFilteredQuestions.length + "개";
       document.getElementById("myThoughtCount").textContent = thoughtCount + "개";
       document.getElementById("myReplyCount").textContent = replyCount + "개";
       document.getElementById("visibleQuestionCount").textContent = visibleQuestions.length + "개";

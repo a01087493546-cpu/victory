@@ -66,6 +66,29 @@ CREATE TABLE books (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE recommendation_books (
+    id                       BIGINT       NOT NULL AUTO_INCREMENT,
+    title                    VARCHAR(200) NOT NULL,
+    author                   VARCHAR(100) NOT NULL,
+    description              TEXT         NOT NULL,
+    cover_image              LONGTEXT     NULL,
+    thickness                VARCHAR(30)  NOT NULL,
+    mood                     VARCHAR(50)  NOT NULL,
+    genre                    VARCHAR(50)  NOT NULL,
+    illustration_level       VARCHAR(30)  NOT NULL,
+    difficulty               VARCHAR(30)  NOT NULL,
+    purpose_tags             JSON         NOT NULL,
+    recommended_grade_min    INT          NULL,
+    recommended_grade_max    INT          NULL,
+    is_active                TINYINT(1)   NOT NULL DEFAULT 1,
+    created_at               DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at               DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_recommendation_books_title_author (title, author),
+    KEY idx_recommendation_books_active_title (is_active, title, id),
+    KEY idx_recommendation_books_grade (recommended_grade_min, recommended_grade_max)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE questions (
     id               BIGINT      NOT NULL AUTO_INCREMENT,
     book_id          BIGINT      NULL,

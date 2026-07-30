@@ -558,4 +558,26 @@ class PracticeAchievementServiceTest {
                 eq(studentId), eq("class"), eq("answer"), eq("after")))
             .thenReturn(List.of());
     }
+
+    /*
+     * 개별읽기 읽기 전 저장(IndividualReadingService)은 mode="individual"로
+     * responses에 저장된다. 이 서비스가 참여도·질문 참여율 계산에 쓰는
+     * 조회는 항상 mode="class"만 호출해야 하며, mode="individual"로는
+     * 절대 조회하지 않아야 개별읽기 기록이 연습읽기 참여율에 섞이지 않는다.
+     */
+    @Test
+    void getClassAchievement_neverQueriesResponsesWithIndividualMode() {
+        ClassStudent classStudent = buildClassStudent(STUDENT_ID, 1, "학생1");
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(classStudent));
+        when(practiceProgressRepository.findByStudent_Id(STUDENT_ID)).thenReturn(Optional.empty());
+        stubEmptyResponses(STUDENT_ID);
+        when(aiEvaluationAttemptRepository.findByStudentIdInAndClassReadingBookIdOrderByEvaluatedAtAsc(anyList(), eq(BOOK_ID)))
+            .thenReturn(List.of());
+
+        service.getClassAchievement(TEACHER_ID, CLASS_ID, null);
+
+        verify(responseRepository, never())
+            .findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("individual"), any(), any());
+    }
 }

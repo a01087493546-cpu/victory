@@ -14,14 +14,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /*
- * 학생의 책 단위 읽기 진행 기록(개별읽기 기준). 학생-책 조합마다 한 행.
+ * 학생의 책 단위 읽기 진행 기록(개별읽기 기준). 학생이 책 한 권을 읽는
+ * "독서 세션" 한 건이 한 행이다 - 같은 책을 다시 읽으면 새 행이 또 생긴다
+ * (정상적인 1:N, book 하나에 reading_record가 여러 개 가능). 그래서
+ * (student_id, book_id) UNIQUE 제약을 두지 않는다(IndividualReadingSchemaInitializer가
+ * 기존에 있던 제약을 idempotent하게 제거한다).
+ *
+ * "진행 중" 판단은 finished_at IS NULL. 학생당 진행 중 기록은 항상 1개만
+ * 있어야 하며, 이는 DB 제약이 아니라 IndividualReadingService의 트랜잭션
+ * 검증으로 강제한다(학생마다 진행 중인 책이 여러 권 생기면 안 되지만, 완독한
+ * 기록은 여러 개 계속 쌓여야 하므로 유니크 인덱스로는 표현할 수 없다).
  *
  * 주의(순환 참조): represent_response_id -> responses.id 이고
  * responses.reading_record_id -> reading_records.id 라서 두 테이블이 서로를 참조한다.
@@ -31,11 +39,8 @@ import lombok.Setter;
 @Entity
 @Table(
     name = "reading_records",
-    uniqueConstraints = @UniqueConstraint(
-        name = "uk_reading_records_student_book",
-        columnNames = {"student_id", "book_id"}
-    ),
     indexes = {
+        @Index(name = "idx_reading_records_student_id", columnList = "student_id"),
         @Index(name = "idx_reading_records_book_id", columnList = "book_id"),
         @Index(name = "idx_reading_records_finished_at", columnList = "finished_at")
     }

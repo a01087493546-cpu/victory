@@ -25,6 +25,7 @@
     body {
       min-height: 100vh;
       overflow-x: hidden;
+      overflow-y: auto;
       font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
       color: #3f2615;
       background:
@@ -299,7 +300,8 @@
       display: grid;
       grid-template-columns: 0.88fr 1.12fr;
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
+      min-height: 0;
     }
 
     .list-card,
@@ -307,6 +309,29 @@
       padding: 22px 24px;
       min-width: 0;
       min-height: 650px;
+    }
+
+    .detail-card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #detailArea {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 54px;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    #detailArea:has(> .teacher-note-box) {
+      grid-template-rows: minmax(0, 1fr) minmax(150px, auto);
+    }
+
+    #detailArea:has(> .detail-empty) {
+      grid-template-rows: 1fr;
     }
 
     .section-head {
@@ -476,6 +501,11 @@
       min-height: 560px;
     }
 
+    #detailArea > .detail-empty {
+      min-height: 0;
+      height: 100%;
+    }
+
     .detail-box,
     .reject-box,
     .teacher-note-box {
@@ -485,8 +515,12 @@
     }
 
     .detail-box {
-      padding: 18px 19px;
-      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      padding: 17px 19px;
+      margin-bottom: 0;
     }
 
     .detail-meta {
@@ -494,12 +528,13 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+      flex: 0 0 auto;
       margin-bottom: 10px;
     }
 
     .detail-name {
       color: #4b2a13;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 900;
     }
 
@@ -513,48 +548,69 @@
 
     .detail-lines {
       display: grid;
-      gap: 10px;
-      margin-top: 14px;
+      grid-template-rows: minmax(76px, 0.9fr) minmax(84px, 1fr) minmax(145px, 1.75fr);
+      gap: 9px;
+      flex: 1;
+      min-height: 0;
+      margin-top: 0;
     }
 
     .line-card {
-      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      padding: 15px 17px;
       border-radius: 16px;
       background: rgba(255, 250, 238, 0.70);
       border: 1px solid rgba(186, 130, 58, 0.20);
       color: #4f3219;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 820;
-      line-height: 1.5;
+      line-height: 1.45;
       word-break: keep-all;
+      overflow-wrap: anywhere;
     }
 
     .line-card strong {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       color: #4f7130;
+      font-size: 16px;
       font-weight: 950;
+    }
+
+    .detail-lines .line-card:nth-child(3) {
+      justify-content: flex-start;
+      line-height: 1.5;
     }
 
     .balance-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
+      gap: 9px;
+      flex: 0 0 auto;
+      min-height: 118px;
+      margin-top: 9px;
     }
 
     .balance-card {
-      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 118px;
+      padding: 16px 18px;
       border-radius: 17px;
       border: 1px solid rgba(186, 130, 58, 0.22);
       background: rgba(255, 248, 231, 0.78);
+      overflow-wrap: anywhere;
     }
 
     .balance-card strong {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
       color: #8b5a1d;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 950;
     }
 
@@ -562,7 +618,7 @@
       color: #3f2615;
       font-size: 18px;
       font-weight: 900;
-      line-height: 1.35;
+      line-height: 1.4;
       word-break: keep-all;
     }
 
@@ -606,13 +662,17 @@
 
     .reject-box,
     .teacher-note-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 150px;
       padding: 16px 17px;
-      margin-top: 12px;
+      margin-top: 0;
       background: rgba(255, 255, 250, 0.74);
     }
 
     .box-title {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       color: #4b2a13;
       font-size: 18px;
       font-weight: 900;
@@ -671,8 +731,23 @@
     .button-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 12px;
+      gap: 10px;
+      margin-top: 9px;
+    }
+
+    .pending-action-row {
+      align-self: stretch;
+      min-height: 54px;
+      margin-top: 0;
+      padding: 0 0 4px;
+      background: transparent;
+    }
+
+    .pending-action-row .main-button,
+    .pending-action-row .danger-button {
+      min-height: 48px;
+      height: 48px;
+      font-size: 18px;
     }
 
     .plain-button,
@@ -728,28 +803,134 @@
     }
 
     .feedback-box {
-      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 58px;
+      margin-top: 0;
       padding: 13px 15px;
       border-radius: 15px;
       border: 1px solid rgba(209, 146, 48, 0.42);
       background: rgba(255, 250, 238, 0.78);
       color: #5b3a1f;
-      font-size: 15px;
-      font-weight: 850;
-      line-height: 1.45;
+      font-size: 16px;
+      font-weight: 880;
+      line-height: 1.4;
       word-break: keep-all;
+      user-select: text;
     }
 
     .feedback-box.good {
+      min-height: 62px;
+      padding-top: 13px;
+      padding-bottom: 13px;
       border-color: rgba(97, 155, 72, 0.40);
       background: rgba(250, 255, 245, 0.78);
       color: #355628;
+      font-size: 17px;
+      font-weight: 900;
+      line-height: 1.4;
     }
 
     .feedback-box.bad {
       border-color: rgba(177, 79, 45, 0.36);
       background: rgba(255, 245, 240, 0.78);
       color: #8f3d24;
+    }
+
+    .feedback-box.bad strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: 950;
+      line-height: 1.4;
+    }
+
+    .reject-reason-text {
+      margin: 0;
+      color: #7f351f;
+      font-size: 17px;
+      font-weight: 880;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    .reject-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(55, 35, 18, 0.34);
+      backdrop-filter: blur(2px);
+    }
+
+    .reject-modal.show {
+      display: grid;
+    }
+
+    .reject-modal-panel {
+      width: min(620px, 100%);
+      max-height: min(760px, calc(100vh - 48px));
+      overflow-y: auto;
+      padding: 24px;
+      border-radius: 22px;
+      border: 1px solid rgba(186, 130, 58, 0.34);
+      background: linear-gradient(180deg, rgba(255, 254, 249, 0.98), rgba(255, 247, 231, 0.98));
+      box-shadow: 0 22px 44px rgba(74, 43, 13, 0.22);
+    }
+
+    .reject-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .reject-modal-head h2 {
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .reject-modal-head p {
+      margin-top: 6px;
+      color: #765438;
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .reject-modal-close {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(177, 122, 57, 0.30);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #6a4324;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .reject-modal .reason-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .reject-error {
+      display: none;
+      margin-top: 10px;
+      color: #9b4228;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .reject-error.show {
+      display: block;
     }
 
     .bottom-note {
@@ -759,6 +940,178 @@
       font-size: 16px;
       font-weight: 850;
       word-break: keep-all;
+    }
+
+    @media (min-width: 1081px) {
+      .page {
+        width: 100vw;
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+        padding: 12px 24px 14px;
+      }
+
+      .shell {
+        width: min(1500px, calc(100vw - 48px));
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr);
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .top,
+      .hero,
+      .filter-card,
+      .board-grid {
+        margin: 0;
+      }
+
+      .top {
+        min-height: 54px;
+        grid-template-columns: 210px minmax(0, 1fr) 250px;
+        gap: 12px;
+      }
+
+      .main-title {
+        font-size: 37px;
+        line-height: 1.05;
+      }
+
+      .hero {
+        min-height: 142px;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 14px;
+      }
+
+      .lumi-card {
+        min-height: 142px;
+        height: 142px;
+        grid-template-columns: 122px minmax(0, 1fr);
+        padding: 12px 18px;
+      }
+
+      .lumi-img {
+        width: 118px;
+        max-height: 132px;
+        object-fit: contain;
+      }
+
+      .speech-box {
+        padding: 15px 18px;
+        font-size: 17px;
+        line-height: 1.4;
+      }
+
+      .summary-card {
+        min-height: 142px;
+        height: 142px;
+        padding: 14px 18px;
+      }
+
+      .summary-title {
+        margin-bottom: 10px;
+        font-size: 23px;
+      }
+
+      .stat-box {
+        min-height: 67px;
+        padding: 10px 13px;
+      }
+
+      .stat-value {
+        margin-top: 3px;
+        font-size: 24px;
+      }
+
+      .filter-card {
+        padding: 10px 14px;
+      }
+
+      .filter-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) 145px;
+        gap: 9px;
+      }
+
+      .filter-button,
+      .sort-select {
+        height: 40px;
+      }
+
+      .board-grid {
+        grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+        gap: 14px;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .list-card,
+      .detail-card {
+        height: 100%;
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 16px 18px;
+      }
+
+      .list-card .section-head,
+      .detail-card .section-head {
+        flex: 0 0 auto;
+        margin-bottom: 10px;
+      }
+
+      .section-title {
+        font-size: 23px;
+      }
+
+      .guide-box {
+        flex: 0 0 auto;
+        margin-bottom: 10px;
+        padding: 11px 14px;
+        font-size: 13px;
+      }
+
+      .post-list,
+      #detailArea {
+        flex: 1;
+        max-height: none;
+        min-height: 0;
+        padding-right: 4px;
+      }
+
+      .post-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: max-content;
+        align-content: start;
+        align-items: start;
+        gap: 10px;
+        overflow-y: auto;
+        padding: 2px 6px 8px 2px;
+      }
+
+      .post-button {
+        width: 100%;
+        height: auto;
+        min-height: 118px;
+        max-height: none;
+        align-self: start;
+        padding: 14px 16px;
+      }
+
+      #detailArea {
+        overflow: hidden;
+        padding-right: 0;
+      }
+
+      .detail-empty {
+        min-height: 100%;
+      }
+
+      .bottom-note {
+        display: none;
+      }
     }
 
     @media (max-width: 1080px) {
@@ -828,6 +1181,265 @@
         min-height: auto;
       }
     }
+
+    @media (max-height: 820px) and (min-width: 1081px) {
+      #detailArea:has(> .teacher-note-box) {
+        grid-template-rows: minmax(0, 1fr) minmax(104px, auto);
+      }
+
+      .page {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      .shell {
+        gap: 10px;
+      }
+
+      .top {
+        min-height: 50px;
+      }
+
+      .main-title {
+        font-size: 34px;
+        line-height: 1.05;
+      }
+
+      .hero {
+        min-height: 126px;
+      }
+
+      .lumi-card {
+        min-height: 126px;
+        padding: 12px 16px;
+      }
+
+      .lumi-img {
+        width: 108px;
+        max-height: 118px;
+      }
+
+      .speech-box {
+        padding: 13px 15px;
+        font-size: 15px;
+      }
+
+      .summary-card {
+        padding: 12px 16px;
+      }
+
+      .filter-card {
+        padding: 12px 14px;
+      }
+
+      .filter-button,
+      .sort-select {
+        height: 38px;
+      }
+
+      .list-card,
+      .detail-card {
+        padding: 14px 16px;
+      }
+
+      .detail-box {
+        padding: 9px 12px;
+      }
+
+      .detail-meta {
+        margin-bottom: 5px;
+      }
+
+      .detail-name {
+        font-size: 18px;
+      }
+
+      .detail-lines {
+        grid-template-rows: minmax(42px, 0.75fr) minmax(44px, 0.8fr) minmax(62px, 1fr);
+        gap: 5px;
+      }
+
+      .line-card {
+        padding: 7px 10px;
+        font-size: 13px;
+        line-height: 1.28;
+      }
+
+      .line-card strong,
+      .balance-card strong {
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .detail-lines .line-card:nth-child(3) {
+        line-height: 1.3;
+      }
+
+      .balance-row {
+        min-height: 54px;
+        margin-top: 5px;
+        gap: 6px;
+      }
+
+      .balance-card {
+        min-height: 54px;
+        padding: 7px 10px;
+      }
+
+      .balance-card p {
+        font-size: 14px;
+        line-height: 1.26;
+      }
+
+      .teacher-note-box {
+        min-height: 104px;
+        padding: 9px 12px;
+      }
+
+      .box-title {
+        margin-bottom: 5px;
+        font-size: 15px;
+      }
+
+      .feedback-box {
+        min-height: 38px;
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+
+      .feedback-box.good {
+        min-height: 42px;
+        font-size: 15px;
+      }
+
+      .feedback-box.bad strong {
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .reject-reason-text {
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .plain-button,
+      .main-button,
+      .danger-button,
+      .brown-button {
+        min-height: 36px;
+        font-size: 13px;
+      }
+    }
+    /* 장면 설명과 A/B 선택지 높이 최종 조정 */
+.detail-card #detailArea > .detail-box {
+  display: grid !important;
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    88px !important;
+  gap: 8px !important;
+
+  min-height: 0 !important;
+  overflow: hidden !important;
+  align-content: stretch !important;
+}
+
+/* 책 제목 / 글 제목 / 장면 설명 영역 */
+.detail-card #detailArea .detail-lines {
+  display: grid !important;
+  grid-template-rows:
+    minmax(74px, 0.82fr)
+    minmax(78px, 0.9fr)
+    minmax(120px, 1.35fr) !important;
+
+  gap: 8px !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+/* 카드 공통 */
+.detail-card #detailArea .line-card {
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 7px 14px !important;
+  overflow: hidden !important;
+  line-height: 1.32 !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.detail-card #detailArea .line-card strong {
+  margin-bottom: 3px !important;
+}
+
+/* 장면 설명 카드는 버튼 영역을 밀지 않도록 고정 높이 안에서만 표시 */
+.detail-card #detailArea .detail-lines .line-card:nth-child(3) {
+  min-height: 0 !important;
+  height: 100% !important;
+  justify-content: flex-start !important;
+  padding-top: 10px !important;
+  line-height: 1.42 !important;
+  overflow: hidden !important;
+}
+
+/* A/B 선택지 영역 높이 축소 */
+.detail-card #detailArea .balance-row {
+  height: 88px !important;
+  min-height: 88px !important;
+  margin: 0 !important;
+  gap: 8px !important;
+}
+
+/* A/B 카드도 축소된 영역 안에 맞춤 */
+.detail-card #detailArea .balance-card {
+  height: 88px !important;
+  min-height: 88px !important;
+  padding: 12px 14px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+.detail-card #detailArea .balance-card strong {
+  margin-bottom: 3px !important;
+  font-size: 14px !important;
+}
+
+.detail-card #detailArea .balance-card p {
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+}
+
+/* 화면 높이가 낮을 때 추가 축소 */
+@media (max-height: 820px) {
+  .detail-card #detailArea > .detail-box {
+    grid-template-rows:
+      auto
+      minmax(0, 1fr)
+      68px !important;
+  }
+
+  .detail-card #detailArea .detail-lines {
+    grid-template-rows:
+      minmax(48px, 0.85fr)
+      minmax(50px, 0.9fr)
+      minmax(64px, 1.1fr) !important;
+  }
+
+  .detail-card #detailArea .detail-lines .line-card:nth-child(3) {
+    height: 100% !important;
+  }
+
+  .detail-card #detailArea .balance-row,
+  .detail-card #detailArea .balance-card {
+    height: 68px !important;
+    min-height: 68px !important;
+  }
+}
   </style>
 </head>
 
@@ -844,7 +1456,6 @@
 
         <div class="title-area">
           <h1 class="main-title">개별읽기 책수다방 확인</h1>
-          <p class="main-desc">학생들이 올린 밸런스 게임 글을 확인하고, 승인된 글만 개별읽기 책수다방에 보여요.</p>
         </div>
 
         <div class="top-actions">
@@ -925,17 +1536,60 @@
       </section>
 
       <p class="bottom-note">
-        개별읽기 책수다방 확인은 학생들이 서로 다른 책을 읽어도 장면과 선택 이유를 안전하게 나누기 위한 교사용 화면이에요.
       </p>
     </div>
   </main>
 
+  <div class="reject-modal" id="rejectModal" aria-hidden="true">
+    <section class="reject-modal-panel" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
+      <div class="reject-modal-head">
+        <div>
+          <h2 id="rejectModalTitle">게시물 거절하기</h2>
+          <p>학생에게 알려 줄 이유를 선택하거나 직접 적어 주세요.</p>
+        </div>
+        <button class="reject-modal-close" type="button" onclick="closeRejectModal()" aria-label="닫기">×</button>
+      </div>
+
+      <div class="reason-grid">
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="질문이 책 내용과 잘 이어지지 않아요.">
+          질문이 책 내용과 잘 이어지지 않아요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="친구들과 이야기하기 어려운 질문이에요.">
+          친구들과 이야기하기 어려운 질문이에요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="표현을 조금 더 바르게 고치면 좋아요.">
+          표현을 조금 더 바르게 고치면 좋아요.
+        </label>
+
+        <label class="reason-option">
+          <input type="checkbox" name="modalRejectReason" value="내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.">
+          내 생각이나 까닭을 조금 더 자세히 쓰면 좋아요.
+        </label>
+      </div>
+
+      <textarea
+        class="text-area"
+        id="modalRejectCommentInput"
+        maxlength="300"
+        placeholder="직접 입력할 내용이 있으면 적어 주세요."
+      ></textarea>
+
+      <p class="reject-error" id="rejectError">거절 사유를 하나 이상 선택하거나 직접 적어 주세요.</p>
+
+      <div class="button-row">
+        <button class="plain-button" type="button" onclick="clearRejectForm()">내용 지우기</button>
+        <button class="danger-button" type="button" onclick="confirmRejectPost()">거절 완료</button>
+      </div>
+    </section>
+  </div>
+
   <script>
-    const PENDING_KEY = "individualBookChatPendingPosts";
-    const APPROVED_KEY = "individualBookChatApprovedPosts";
-    const REJECTED_KEY = "individualBookChatRejectedPosts";
-    const STUDENT_POST_PREFIX = "individualBookChatPosts_";
-    const THOUGHT_PREFIX = "individualBookChatThoughts_";
+    const API_BASE_URL = "http://localhost:8080";
 
     const statusInfo = {
       pending: { label: "승인 대기", className: "pending" },
@@ -945,7 +1599,13 @@
 
     let currentStatus = "pending";
     let selectedPostId = null;
+    let modalTargetPostId = null;
     let allPosts = [];
+    let reviewPostsByStatus = {
+      pending: [],
+      approved: [],
+      rejected: []
+    };
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const sortSelect = document.getElementById("sortSelect");
@@ -954,11 +1614,13 @@
 
     initPage();
 
-    function initPage() {
-      ensureSampleData();
-      importStudentBookChatPosts();
+    async function initPage() {
       bindEvents();
-      renderAll();
+      const loaded = await loadBackendReviewPosts();
+
+      if (!loaded) {
+        renderAll();
+      }
     }
 
     function bindEvents() {
@@ -995,9 +1657,9 @@
 
     function getAllPosts() {
       return []
-        .concat(loadList(PENDING_KEY))
-        .concat(loadList(APPROVED_KEY))
-        .concat(loadList(REJECTED_KEY));
+        .concat(reviewPostsByStatus.pending)
+        .concat(reviewPostsByStatus.approved)
+        .concat(reviewPostsByStatus.rejected);
     }
 
     function getFilteredPosts() {
@@ -1075,9 +1737,6 @@
       }
 
       const status = statusInfo[selectedPost.status] || statusInfo.pending;
-      const counts = getChoiceCounts(selectedPost);
-      const replies = getAllReplies(selectedPost);
-
       document.getElementById("detailStatusPill").textContent = status.label;
 
       detailArea.innerHTML = `
@@ -1089,30 +1748,22 @@
             <span class="time-text">${escapeHtml(selectedPost.submittedText || selectedPost.createdDate || "오늘")}</span>
           </div>
 
-          <div class="detail-question">${escapeHtml(selectedPost.title || "밸런스 제목 없음")}</div>
-
-          ${selectedPost.imageData ? `<img class="post-image" src="${selectedPost.imageData}" alt="책수다방 첨부 사진">` : ""}
-
           <div class="detail-lines">
             ${renderLineCard("책 제목", selectedPost.bookTitle || "책 제목 없음")}
+            ${renderLineCard("글 제목", selectedPost.title || "밸런스 제목 없음")}
             ${renderLineCard("장면 설명", selectedPost.scene || "장면 설명이 없어요.")}
           </div>
 
           <div class="balance-row">
             <div class="balance-card">
-              <strong>A 선택 · ${counts.A}명</strong>
+              <strong>A 선택지</strong>
               <p>${escapeHtml(selectedPost.optionA || "A 선택지 없음")}</p>
             </div>
 
             <div class="balance-card">
-              <strong>B 선택 · ${counts.B}명</strong>
+              <strong>B 선택지</strong>
               <p>${escapeHtml(selectedPost.optionB || "B 선택지 없음")}</p>
             </div>
-          </div>
-
-          <div class="line-card" style="margin-top: 12px;">
-            <strong>친구들이 남긴 선택 이유</strong>
-            ${renderReplies(replies)}
           </div>
         </article>
 
@@ -1129,89 +1780,13 @@
       `;
     }
 
-    function renderReplies(replies) {
-      if (!replies || replies.length === 0) {
-        return `
-          <div class="reply-list">
-            <div class="reply-item">
-              아직 친구들이 남긴 선택 이유가 없어요.
-            </div>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="reply-list">
-          ${replies.map(function(reply) {
-            return `
-              <div class="reply-item">
-                <strong>${escapeHtml(reply.writer || "학생")} · ${escapeHtml(reply.choice || "-")} 선택</strong>
-                ${escapeHtml(reply.content || "이유 없음")}
-              </div>
-            `;
-          }).join("")}
-        </div>
-      `;
-    }
-
     function renderTeacherActionArea(post) {
       if (post.status === "pending") {
         return `
-          <div class="teacher-note-box">
-            <div class="box-title">승인 전 교사 메모</div>
-            <textarea class="text-area" id="teacherNoteInput" maxlength="300" placeholder="선택 사항: 승인 전에 참고할 메모를 남길 수 있어요."></textarea>
-
-            <div class="button-row">
+            <div class="button-row pending-action-row">
               <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
-              <button class="danger-button" type="button" onclick="focusRejectBox()">거절 이유 쓰기</button>
+              <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
             </div>
-
-            <div class="feedback-box good">
-              승인하면 이 밸런스 게임 글은 개별읽기 책수다방에 공개돼요.
-            </div>
-          </div>
-
-          <div class="reject-box" id="rejectBox">
-            <div class="box-title">거절할 때 알려줄 점</div>
-
-            <div class="reason-grid">
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="책 속 장면 설명이 부족해서 친구들이 상황을 이해하기 어려워요. 어떤 장면인지 한두 문장 더 자세히 써 봐요.">
-                장면 설명이 부족해요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="A/B 선택지가 서로 비교하기 어렵거나 너무 비슷해요. 친구들이 고민해서 고를 수 있도록 두 선택을 더 분명하게 바꿔 봐요.">
-                A/B 선택지가 애매해요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="밸런스 선택이 책 속 장면과 잘 이어지지 않아요. 장면에서 실제로 고민할 만한 선택으로 다시 만들어 봐요.">
-                책 장면과 잘 안 이어져요.
-              </label>
-
-              <label class="reason-option">
-                <input type="checkbox" name="rejectReason" value="친구들이 읽기 어려운 표현이 있어요. 더 부드럽고 바른 말로 고쳐서 다시 올려 봐요.">
-                표현을 고치면 좋아요.
-              </label>
-            </div>
-
-            <textarea
-              class="text-area"
-              id="rejectCommentInput"
-              maxlength="400"
-              placeholder="선택 사항: 예) 제목은 재미있어요. 다만 친구들이 책을 몰라도 이해할 수 있게 어떤 장면인지 조금 더 설명하고, A/B 선택지를 더 분명하게 고쳐서 다시 올려 봐요."
-            ></textarea>
-
-            <div class="button-row">
-              <button class="plain-button" type="button" onclick="clearRejectForm()">내용 지우기</button>
-              <button class="danger-button" type="button" onclick="rejectPost('${escapeAttribute(post.id)}')">거절하기</button>
-            </div>
-
-            <div class="feedback-box bad" id="rejectGuide">
-              거절 이유는 필수는 아니지만, 장면 설명이나 A/B 선택지를 어떻게 고치면 좋을지 적어 주면 학생이 다시 올리기 좋아요.
-            </div>
-          </div>
         `;
       }
 
@@ -1236,8 +1811,8 @@
           <div class="box-title">거절된 밸런스 게임 글</div>
 
           <div class="feedback-box bad">
-            <strong>학생에게 남긴 말</strong><br>
-            ${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}
+            <strong>학생에게 남긴 말</strong>
+            <p class="reject-reason-text">${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}</p>
           </div>
 
           <div class="button-row">
@@ -1249,9 +1824,9 @@
     }
 
     function renderCounts(filteredPosts) {
-      const pending = loadList(PENDING_KEY);
-      const approved = loadList(APPROVED_KEY);
-      const rejected = loadList(REJECTED_KEY);
+      const pending = reviewPostsByStatus.pending;
+      const approved = reviewPostsByStatus.approved;
+      const rejected = reviewPostsByStatus.rejected;
 
       document.getElementById("pendingCount").textContent = pending.length + "개";
       document.getElementById("approvedCount").textContent = approved.length + "개";
@@ -1264,138 +1839,118 @@
       renderAll();
     }
 
-    function approvePost(id) {
+    async function approvePost(id) {
       const post = findPostById(id);
       if (!post) return;
 
-      const noteInput = document.getElementById("teacherNoteInput");
-      const note = noteInput ? noteInput.value.trim() : "";
-
-      movePost(id, post.status, "approved", {
-        teacherNote: note,
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText(),
-        rejectReason: ""
-      });
+      const approvedByApi = await changePostStatusWithApi(id, "approve");
+      if (!approvedByApi) return;
 
       currentStatus = "approved";
       setActiveFilter("approved");
       selectedPostId = id;
-      renderAll();
+      await loadBackendReviewPosts({ keepSelection: id });
     }
 
-    function rejectPost(id) {
+    async function rejectPost(id, rejectReason) {
       const post = findPostById(id);
       if (!post) return;
 
-      const checkedReasons = Array.from(document.querySelectorAll('input[name="rejectReason"]:checked'))
+      const rejectedByApi = await changePostStatusWithApi(id, "reject", rejectReason);
+      if (!rejectedByApi) return;
+
+      currentStatus = "rejected";
+      setActiveFilter("rejected");
+      selectedPostId = id;
+      await loadBackendReviewPosts({ keepSelection: id });
+    }
+
+    function openRejectModal(id) {
+      modalTargetPostId = id;
+      clearRejectForm();
+
+      const modal = document.getElementById("rejectModal");
+      if (!modal) return;
+
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeRejectModal() {
+      const modal = document.getElementById("rejectModal");
+      if (!modal) return;
+
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modalTargetPostId = null;
+    }
+
+    async function confirmRejectPost() {
+      if (!modalTargetPostId) return;
+
+      const checkedReasons = Array.from(document.querySelectorAll('input[name="modalRejectReason"]:checked'))
         .map(function(input) {
           return input.value;
         });
 
-      const commentInput = document.getElementById("rejectCommentInput");
+      const commentInput = document.getElementById("modalRejectCommentInput");
       const directComment = commentInput ? commentInput.value.trim() : "";
-
       const reasonParts = checkedReasons.slice();
 
       if (directComment) {
         reasonParts.push(directComment);
       }
 
-      const rejectReason = reasonParts.length > 0
-        ? reasonParts.join("\n")
-        : "친구들이 책 장면을 더 잘 이해하고 A/B 선택을 할 수 있도록 장면 설명이나 선택지를 조금 더 고쳐서 다시 올려 봐요.";
+      const error = document.getElementById("rejectError");
 
-      movePost(id, post.status, "rejected", {
-        rejectReason: rejectReason,
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText()
-      });
+      if (reasonParts.length === 0) {
+        if (error) {
+          error.classList.add("show");
+        }
+        return;
+      }
 
-      currentStatus = "rejected";
-      setActiveFilter("rejected");
-      selectedPostId = id;
-      renderAll();
+      const id = modalTargetPostId;
+      const rejectReason = reasonParts.join("\n");
+      closeRejectModal();
+      await rejectPost(id, rejectReason);
     }
 
-    function approveRejectedPost(id) {
+    async function approveRejectedPost(id) {
+      await approvePost(id);
+    }
+
+    async function returnToPending(id) {
       const post = findPostById(id);
       if (!post) return;
 
-      movePost(id, post.status, "approved", {
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText(),
-        rejectReason: ""
-      });
-
-      currentStatus = "approved";
-      setActiveFilter("approved");
-      selectedPostId = id;
-      renderAll();
-    }
-
-    function returnToPending(id) {
-      const post = findPostById(id);
-      if (!post) return;
-
-      movePost(id, post.status, "pending", {
-        reviewedAt: "",
-        reviewedText: "",
-        rejectReason: ""
-      });
+      const returnedByApi = await changePostStatusWithApi(id, "pending");
+      if (!returnedByApi) return;
 
       currentStatus = "pending";
       setActiveFilter("pending");
       selectedPostId = id;
-      renderAll();
+      await loadBackendReviewPosts({ keepSelection: id });
     }
 
-    function hideApprovedPost(id) {
+    async function hideApprovedPost(id) {
       const ok = confirm("이 글을 개별읽기 책수다방에서 숨기고 거절 목록으로 보낼까요?");
       if (!ok) return;
 
       const post = findPostById(id);
       if (!post) return;
 
-      movePost(id, post.status, "rejected", {
-        rejectReason: "교사가 다시 확인한 뒤 개별읽기 책수다방에서 숨겼어요. 장면 설명이나 선택지를 다시 살펴봐요.",
-        reviewedAt: new Date().toISOString(),
-        reviewedText: getTodayText()
-      });
+      const rejectedByApi = await changePostStatusWithApi(
+        id,
+        "reject",
+        "교사가 다시 확인한 뒤 개별읽기 책수다방에서 숨겼어요. 장면 설명이나 선택지를 다시 살펴봐요."
+      );
+      if (!rejectedByApi) return;
 
       currentStatus = "rejected";
       setActiveFilter("rejected");
       selectedPostId = id;
-      renderAll();
-    }
-
-    function movePost(id, fromStatus, toStatus, extraFields) {
-      const fromKey = getKeyByStatus(fromStatus);
-      const toKey = getKeyByStatus(toStatus);
-
-      if (!fromKey || !toKey) return;
-
-      const fromList = loadList(fromKey);
-      const postIndex = fromList.findIndex(function(item) {
-        return item.id === id;
-      });
-
-      if (postIndex === -1) return;
-
-      const post = fromList.splice(postIndex, 1)[0];
-
-      const movedPost = Object.assign({}, post, extraFields || {}, {
-        status: toStatus
-      });
-
-      saveList(fromKey, fromList);
-
-      const toList = loadList(toKey).filter(function(item) {
-        return item.id !== id;
-      });
-
-      toList.push(movedPost);
-      saveList(toKey, toList);
+      await loadBackendReviewPosts({ keepSelection: id });
     }
 
     function findPostById(id) {
@@ -1404,11 +1959,135 @@
       });
     }
 
-    function getKeyByStatus(status) {
-      if (status === "pending") return PENDING_KEY;
-      if (status === "approved") return APPROVED_KEY;
-      if (status === "rejected") return REJECTED_KEY;
-      return "";
+    function getTeacherAuthContext() {
+      const token = sessionStorage.getItem("token");
+      const teacherId = sessionStorage.getItem("id") || sessionStorage.getItem("studentId");
+      const role = sessionStorage.getItem("role");
+
+      if (!token || !teacherId || role !== "teacher") {
+        return null;
+      }
+
+      return { token: token, teacherId: teacherId };
+    }
+
+    async function fetchReviewPostsByStatus(status) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) return null;
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/individual-reading/book-chat/posts?status=${encodeURIComponent(status)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("개별읽기 책수다방 승인 목록을 불러오지 못했습니다.");
+      }
+
+      return response.json();
+    }
+
+    async function loadBackendReviewPosts(options) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) {
+        postList.innerHTML = '<div class="empty-list">교사 로그인 정보가 없어요. 다시 로그인해 주세요.</div>';
+        return false;
+      }
+
+      try {
+        const results = await Promise.all([
+          fetchReviewPostsByStatus("PENDING"),
+          fetchReviewPostsByStatus("APPROVED"),
+          fetchReviewPostsByStatus("REJECTED")
+        ]);
+
+        reviewPostsByStatus = {
+          pending: results[0].map(function(item) {
+            return mapReviewItemToPost(item, "pending");
+          }),
+          approved: results[1].map(function(item) {
+            return mapReviewItemToPost(item, "approved");
+          }),
+          rejected: results[2].map(function(item) {
+            return mapReviewItemToPost(item, "rejected");
+          })
+        };
+
+        if (options && options.keepSelection) {
+          selectedPostId = String(options.keepSelection);
+        }
+
+        renderAll();
+        return true;
+      } catch (error) {
+        console.warn(error);
+        postList.innerHTML = '<div class="empty-list">실제 책수다방 글을 불러오지 못했어요.</div>';
+        return false;
+      }
+    }
+
+    function mapReviewItemToPost(item, status) {
+      return {
+        id: String(item.id),
+        sourceId: String(item.id),
+        status: status,
+        studentId: item.studentId,
+        classId: item.classId,
+        studentName: item.writerName || item.writer || "학생",
+        writer: item.writerName || item.writer || "학생",
+        bookTitle: item.bookTitle || "책 제목 없음",
+        title: item.title || "밸런스 게임 제목 없음",
+        scene: item.scene || "",
+        optionA: item.optionA || "",
+        optionB: item.optionB || "",
+        imageData: "",
+        countA: item.countA || 0,
+        countB: item.countB || 0,
+        commentCount: item.commentCount || 0,
+        replies: [],
+        submittedAt: item.createdAt || "",
+        submittedText: formatDateText(item.createdAt),
+        createdAt: item.createdAt || "",
+        createdDate: item.activityDate || "",
+        reviewedAt: item.reviewedAt || "",
+        reviewedText: item.reviewedAt ? formatDateText(item.reviewedAt) : "",
+        rejectReason: item.rejectReason || ""
+      };
+    }
+
+    async function changePostStatusWithApi(id, action, reason) {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) {
+        alert("로그인 정보가 없어 처리할 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
+        return false;
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/individual-reading/book-chat/posts/${encodeURIComponent(id)}/${action}`,
+        {
+          method: "PATCH",
+          headers: Object.assign(
+            { Authorization: `Bearer ${auth.token}` },
+            action === "reject" ? { "Content-Type": "application/json" } : {}
+          ),
+          body: action === "reject" ? JSON.stringify({ reason: reason }) : undefined
+        }
+      );
+
+      if (!response.ok) {
+        alert("처리에 실패했어요. 잠시 뒤 다시 시도해 주세요.");
+        return false;
+      }
+
+      return true;
     }
 
     function setActiveFilter(status) {
@@ -1417,51 +2096,35 @@
       });
     }
 
-    function focusRejectBox() {
-      const rejectBox = document.getElementById("rejectBox");
-
-      if (rejectBox) {
-        rejectBox.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-
     function clearRejectForm() {
-      document.querySelectorAll('input[name="rejectReason"]').forEach(function(input) {
+      document.querySelectorAll('input[name="modalRejectReason"]').forEach(function(input) {
         input.checked = false;
       });
 
-      const commentInput = document.getElementById("rejectCommentInput");
+      const commentInput = document.getElementById("modalRejectCommentInput");
+      const error = document.getElementById("rejectError");
 
       if (commentInput) {
         commentInput.value = "";
       }
+
+      if (error) {
+        error.classList.remove("show");
+      }
     }
 
     function getAllReplies(post) {
-      const baseReplies = Array.isArray(post.replies) ? post.replies : [];
-      const savedReplies = [];
-
-      Object.keys(localStorage).forEach(function(key) {
-        if (!key.startsWith(THOUGHT_PREFIX)) return;
-
-        try {
-          const data = JSON.parse(localStorage.getItem(key) || "{}");
-          const replies = data[post.id];
-
-          if (Array.isArray(replies)) {
-            replies.forEach(function(reply) {
-              savedReplies.push(reply);
-            });
-          }
-        } catch (error) {
-          console.warn("책수다방 댓글을 불러오지 못했습니다.", error);
-        }
-      });
-
-      return baseReplies.concat(savedReplies);
+      return Array.isArray(post.replies) ? post.replies : [];
     }
 
     function getChoiceCounts(post) {
+      if (typeof post.countA === "number" || typeof post.countB === "number") {
+        return {
+          A: post.countA || 0,
+          B: post.countB || 0
+        };
+      }
+
       const replies = getAllReplies(post);
 
       return {
@@ -1474,193 +2137,21 @@
       };
     }
 
-    function loadList(key) {
-      const saved = localStorage.getItem(key);
+    function formatDateText(value) {
+      if (!value) return "";
 
-      if (!saved) return [];
+      const date = new Date(value);
 
-      try {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        return [];
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
       }
-    }
 
-    function saveList(key, list) {
-      localStorage.setItem(key, JSON.stringify(list));
-    }
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hour = String(date.getHours()).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
 
-    function importStudentBookChatPosts() {
-      const pending = loadList(PENDING_KEY);
-      const approved = loadList(APPROVED_KEY);
-      const rejected = loadList(REJECTED_KEY);
-
-      const existingIds = new Set(
-        pending.concat(approved).concat(rejected).map(function(post) {
-          return post.sourceId || post.id;
-        })
-      );
-
-      Object.keys(localStorage).forEach(function(key) {
-        if (!key.startsWith(STUDENT_POST_PREFIX)) return;
-
-        let studentPosts = [];
-
-        try {
-          studentPosts = JSON.parse(localStorage.getItem(key) || "[]");
-        } catch (error) {
-          studentPosts = [];
-        }
-
-        if (!Array.isArray(studentPosts)) return;
-
-        studentPosts.forEach(function(post, index) {
-          const sourceId = post.id || key + "-" + index;
-
-          if (existingIds.has(sourceId)) return;
-
-          pending.push(normalizeStudentPost(post, sourceId));
-          existingIds.add(sourceId);
-        });
-      });
-
-      saveList(PENDING_KEY, pending);
-    }
-
-    function normalizeStudentPost(post, sourceId) {
-      return {
-        id: "pending-individual-book-chat-" + Date.now() + "-" + Math.random().toString(36).slice(2),
-        sourceId: sourceId,
-        status: "pending",
-        studentName: post.writer || post.studentName || "학생",
-        writer: post.writer || post.studentName || "학생",
-        bookTitle: post.bookTitle || "책 제목 없음",
-        title: post.title || "밸런스 게임 제목 없음",
-        scene: post.scene || "",
-        optionA: post.optionA || "",
-        optionB: post.optionB || "",
-        imageData: post.imageData || "",
-        replies: Array.isArray(post.replies) ? post.replies : [],
-        submittedAt: post.createdAt || new Date().toISOString(),
-        submittedText: post.createdDate || getTodayText(),
-        createdAt: post.createdAt || new Date().toISOString(),
-        createdDate: post.createdDate || "",
-        reviewedAt: "",
-        reviewedText: "",
-        rejectReason: ""
-      };
-    }
-
-    function ensureSampleData() {
-      const hasAnyData =
-        loadList(PENDING_KEY).length > 0 ||
-        loadList(APPROVED_KEY).length > 0 ||
-        loadList(REJECTED_KEY).length > 0;
-
-      if (hasAnyData) return;
-
-      const samplePosts = [
-        {
-          id: "sample-individual-book-chat-1",
-          sourceId: "sample-individual-book-chat-1",
-          status: "pending",
-          studentName: "지민",
-          writer: "지민",
-          bookTitle: "모험 이야기",
-          title: "안전한 길 vs 새로운 도전",
-          scene: "책 속 주인공이 익숙한 마을을 떠나 새로운 숲으로 가야 하는 장면이 나와요. 안전한 길로 돌아갈 수도 있고, 무섭지만 새로운 길로 갈 수도 있어요.",
-          optionA: "안전한 길로 돌아가기",
-          optionB: "새로운 숲으로 도전하기",
-          imageData: "",
-          replies: [
-            {
-              writer: "서준",
-              choice: "B",
-              content: "위험해도 주인공이 원하는 일을 해 보는 게 더 멋지다고 생각해."
-            },
-            {
-              writer: "하은",
-              choice: "A",
-              content: "아직 준비가 안 됐다면 안전한 곳에서 더 힘을 기르는 것도 좋을 것 같아."
-            }
-          ],
-          submittedAt: "2026-06-21T09:10:00",
-          submittedText: "06.21 09:10",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        },
-        {
-          id: "sample-individual-book-chat-2",
-          sourceId: "sample-individual-book-chat-2",
-          status: "pending",
-          studentName: "서준",
-          writer: "서준",
-          bookTitle: "비밀 친구",
-          title: "친구의 비밀 지키기 vs 어른에게 말하기",
-          scene: "주인공의 친구가 혼자 힘든 일을 겪고 있는데 아무에게도 말하지 말라고 부탁했어요. 주인공은 친구와 한 약속을 지킬지, 친구를 돕기 위해 어른에게 말할지 고민해요.",
-          optionA: "친구의 비밀을 지키기",
-          optionB: "어른에게 말해서 도움 받기",
-          imageData: "",
-          replies: [
-            {
-              writer: "민지",
-              choice: "B",
-              content: "친구가 정말 힘들면 어른의 도움이 필요할 수 있기 때문이야."
-            }
-          ],
-          submittedAt: "2026-06-21T09:24:00",
-          submittedText: "06.21 09:24",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        },
-        {
-          id: "sample-individual-book-chat-3",
-          sourceId: "sample-individual-book-chat-3",
-          status: "pending",
-          studentName: "하윤",
-          writer: "하윤",
-          bookTitle: "달빛 도서관",
-          title: "궁금한 문 열기 vs 그냥 지나가기",
-          scene: "주인공이 밤에 도서관에서 빛나는 문을 발견했어요. 문 안에서 이상한 소리가 들리지만, 열어 보면 중요한 비밀을 알 수도 있어요.",
-          optionA: "궁금하니까 문을 열어 보기",
-          optionB: "무서울 수 있으니 그냥 지나가기",
-          imageData: "",
-          replies: [
-            {
-              writer: "도윤",
-              choice: "A",
-              content: "책에서는 모험이 시작되는 장면이라 열어 보는 게 이야기가 더 재미있을 것 같아."
-            },
-            {
-              writer: "소율",
-              choice: "B",
-              content: "밤에 혼자 있으면 위험할 수 있어서 그냥 지나가는 게 안전해."
-            }
-          ],
-          submittedAt: "2026-06-21T09:37:00",
-          submittedText: "06.21 09:37",
-          reviewedAt: "",
-          reviewedText: "",
-          rejectReason: ""
-        }
-      ];
-
-      saveList(PENDING_KEY, samplePosts);
-      saveList(APPROVED_KEY, []);
-      saveList(REJECTED_KEY, []);
-    }
-
-    function getTodayText() {
-      const now = new Date();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const date = String(now.getDate()).padStart(2, "0");
-      const hour = String(now.getHours()).padStart(2, "0");
-      const minute = String(now.getMinutes()).padStart(2, "0");
-
-      return month + "." + date + " " + hour + ":" + minute;
+      return month + "." + day + " " + hour + ":" + minute;
     }
 
     function goTeacherHome() {
