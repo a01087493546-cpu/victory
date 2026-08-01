@@ -793,24 +793,26 @@ const DungeonUI = (() => {
   }
 
   // ── 전투 종료 / 결과 ──
-  function endBattle(result) {
+  async function endBattle(result) {
     const s = GameState.get();
     if (!s || !s.isRunning) return;
     GameState.setRunning(false); clearTimers();
+
     if (result === 'victory') {
       setAnim('enemy-spr','dead'); showTextPopup('enemy','VICTORY','block');
-      addLog('전투 승리: 지식을 되찾았습니다.', 'system'); showResult(true, false);
+      addLog('전투 승리: 지식을 되찾았습니다.', 'system');
     } else if (result === 'defeat') {
       setAnim('hero-spr','dead');
-      addLog('전투 실패: 용사가 쓰러졌습니다.', 'system'); 
-      showResult(false, false);
+      addLog('전투 실패: 용사가 쓰러졌습니다.', 'system');
     } else if (result === 'timeout') {
-      addLog('시간 초과: 전투에 실패했습니다.', 'system'); 
-      showResult(false, true);
+      addLog('시간 초과: 전투에 실패했습니다.', 'system');
     }
+
+    const battleResponse = await GameAPI.submitBattleResult(s.dungeon.apiId, result);
+    showResult(result === 'victory', result === 'timeout', battleResponse);
   }
 
-  function showResult(isWin, isTimeout) {
+  function showResult(isWin, isTimeout, battleResponse) {
   setTimeout(() => {
     const s = GameState.get();
     if (!s) return;
@@ -823,17 +825,25 @@ const DungeonUI = (() => {
     }
 
     if (isWin) {
-      // TODO(백엔드 연동 시): 여기서 GameState.get().player.magic += rewardAmount
-      // 형태로 실제 스탯을 증가시키고, GameState.toSaveData()를
-      // PUT /api/students/{studentId}/game-state 로 전송해야 함.
-      // 현재는 UI 표시만 하고 실제 데이터는 증가하지 않음.
       $('r-emoji').textContent = '🏆';
       $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
-      $('r-sub').innerHTML = '';
-      $('r-rewards').innerHTML =
-        '<div class="reward-chip-result">마법력 +' + s.player.magic + '</div>' +
-        '<div class="reward-chip-result">체력 +' + s.player.stamina + '</div>' +
-        '<div class="reward-chip-result">던전 클리어!</div>';
+
+      if (battleResponse && battleResponse.updatedStats) {
+        const stats = battleResponse.updatedStats;
+        $('r-sub').innerHTML = '';
+        $('r-rewards').innerHTML =
+          '<div class="reward-chip-result">마법력 ' + stats.magic + '</div>' +
+          '<div class="reward-chip-result">체력 ' + stats.stamina + '</div>' +
+          '<div class="reward-chip-result">지혜 ' + stats.wisdom + '</div>' +
+          '<div class="reward-chip-result">용기 ' + stats.courage + '</div>' +
+          '<div class="reward-chip-result">던전 클리어!</div>';
+      } else {
+        $('r-sub').textContent = '능력치 반영에 실패했어요, 다시 시도해주세요.';
+        $('r-rewards').innerHTML =
+          '<div class="reward-chip-result">마법력 +' + s.player.magic + '</div>' +
+          '<div class="reward-chip-result">체력 +' + s.player.stamina + '</div>' +
+          '<div class="reward-chip-result">던전 클리어!</div>';
+      }
     } else {
       // 패배 / 시간 초과 결과 화면
       $('r-emoji').textContent = isTimeout ? '⌛' : '☠';
@@ -853,6 +863,23 @@ const DungeonUI = (() => {
         // 결과 화면에서 현재 던전을 바로 다시 시작합니다.
         startBattle(_currentDungeonIdx);
       };
+    }
+
+    // 결과 화면의 "던전 선택으로 돌아가기" 버튼: 엔딩 대상이면 엔딩 화면으로 분기
+    const secondaryBtn = document.querySelector('#s-result .result-secondary-btn');
+
+    if (secondaryBtn) {
+      if (isWin && battleResponse && battleResponse.showEnding) {
+        secondaryBtn.textContent = '엔딩 보러가기';
+        secondaryBtn.onclick = function () {
+          location.href = '../frontend/student/ending-intro.html';
+        };
+      } else {
+        secondaryBtn.textContent = '던전 선택으로 돌아가기';
+        secondaryBtn.onclick = function () {
+          goToMap();
+        };
+      }
     }
   }, 1200);
 }

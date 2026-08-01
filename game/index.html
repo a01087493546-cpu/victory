@@ -11,6 +11,10 @@
   <!-- 화면1: 던전 선택 -->
   <div class="screen active" id="s-map">
     <div class="map-bg" id="map-bg" style="background-image: url('images/bg_map.png')">
+      <div id="dungeon-loading-overlay" class="dungeon-loading-overlay" style="position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(7,5,3,0.88);color:#fff0be;font-size:28px;font-weight:700;">
+        던전 정보를 불러오는 중...
+      </div>
+
       <div class="map-overlay">
 
         <a class="dungeon-home-button" href="../frontend/student/individual-reading.html">🏠 책읽기 홈</a>
@@ -140,6 +144,8 @@
                 </span>
                 <span>던전 입장하기</span>
               </button>
+
+              <div id="detail-blocked-note" class="detail-blocked-note" style="margin-top:10px;color:#ffb2b2;font-size:15px;line-height:1.5;white-space:pre-line;" hidden></div>
             </div>
           </section>
 
@@ -361,7 +367,7 @@
           다시 도전하기
         </button>
 
-        <button class="result-secondary-btn" type="button" onclick="goToMap()">
+        <button class="result-secondary-btn" type="button">
           던전 선택으로 돌아가기
         </button>
       </div>
@@ -376,95 +382,87 @@
 
   <script>
     let selectedDungeon = 0;
+    let dungeonList = [];
 
-    const DUNGEON_INFO = [
-      {
-        img: 'images/hatchling_idle.png',
-        bg: 'images/bg_hatchling.png',
-        diff: '★ 초급',
-        name: '초급 던전',
-        desc: '어린 용이지만 절대 방심은 금물.<br>이곳에서 살아남아야 진짜 모험이 시작됩니다.',
-        req: '책 10권 이상<br><span class="req-sub">나의 힘 평균 20 이상</span>',
-        time: '3분',
-        diffVal: '쉬움',
-        rewardMain: '나의 힘 +10',
-        rewardNote: '초급 던전 클리어 후, 중급 던전 준비 능력치 평균 10으로 다시 시작합니다.',
-        glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,95,35,0.38), rgba(255,183,74,0.12) 38%, transparent 70%)',
-        locked: false,
-        lockedMessage: ''
-      },
+    const DIFF_STAR_MAP = { '초급': '★ 초급', '중급': '★★ 중급', '고급': '★★★ 고급' };
+    const DIFF_LEVEL_MAP = { '초급': '쉬움', '중급': '보통', '고급': '어려움' };
+    const GLOW_COLOR_MAP = {
+      '초급': 'radial-gradient(circle at 50% 75%, rgba(255,95,35,0.38), rgba(255,183,74,0.12) 38%, transparent 70%)',
+      '중급': 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
+      '고급': 'radial-gradient(circle at 50% 75%, rgba(255,196,76,0.34), rgba(88,55,13,0.2) 40%, transparent 72%)'
+    };
 
-      {
-        img: 'images/dragon_idle.png',
-        bg: 'images/bg_dragon.png',
-        diff: '★★ 중급',
-        name: '중급 던전',
-        desc: '번개를 무기로 삼은 용이 기다리고 있습니다.<br>두려움을 이겨낸 자만이 이 문을 열 수 있습니다.',
-        req: '책 30권 이상<br><span class="req-sub">초급 던전 클리어</span><span class="req-sub">나의 힘 평균 55 이상</span>',
-        time: '5분',
-        diffVal: '보통',
-        rewardMain: '나의 힘 +15',
-        rewardNote: '중급 던전 클리어 후, 고급 던전 준비 능력치 평균 15로 다시 시작합니다.',
-        glowColor: 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
-        locked: true,
-        lockedMessage: '초급 던전 클리어 후 입장 가능'
-      },
-
-      {
-        img: 'images/elder_idle.png',
-        bg: 'images/bg_elder.png',
-        diff: '★★★ 고급',
-        name: '고급 던전',
-        desc: '세상의 모든 지식을 삼킨 자.<br>이 던전에 들어서는 순간, 전설이 시작됩니다.',
-        req: '책 50권 이상<br><span class="req-sub">중급 던전 클리어</span><span class="req-sub">나의 힘 평균 85 이상</span>',
-        time: '7분',
-        diffVal: '어려움',
-        rewardMain: '지식창고 해방 · 문답책 최종 클리어',
-        rewardNote: '고급 던전은 마지막 도전입니다. 클리어하면 지식창고를 되찾고 모험을 마무리합니다.',
-        glowColor: 'radial-gradient(circle at 50% 75%, rgba(255,196,76,0.34), rgba(88,55,13,0.2) 40%, transparent 72%)',
-        locked: true,
-        lockedMessage: '중급 던전 클리어 후 입장 가능'
-      }
-    ];
+    function formatTimeLimit(seconds) {
+      if (!seconds) return '';
+      return Math.round(seconds / 60) + '분';
+    }
 
     function selectDungeon(idx) {
+      const dungeon = dungeonList[idx];
+      if (!dungeon) return;
+
       selectedDungeon = idx;
-      const info = DUNGEON_INFO[idx];
 
       document.querySelectorAll('.dungeon-list-item').forEach((el, i) => {
         el.classList.toggle('active', i === idx);
       });
 
       const mapBg = document.getElementById('map-bg');
-      if (mapBg && info.bg) {
-        mapBg.style.backgroundImage = `url('${info.bg}'), url('images/bg_map.png')`;
+      if (mapBg && dungeon.bg) {
+        mapBg.style.backgroundImage = `url('${dungeon.bg}'), url('images/bg_map.png')`;
       }
 
-      document.getElementById('detail-boss-img').src = info.img;
-      document.getElementById('detail-boss-glow').style.background = info.glowColor;
-      document.getElementById('detail-diff').textContent = info.diff;
-      document.getElementById('detail-name').textContent = info.name;
+      document.getElementById('detail-boss-img').src = dungeon.enemyKey ? 'images/' + dungeon.enemyKey + '_idle.png' : '';
+      document.getElementById('detail-boss-glow').style.background = GLOW_COLOR_MAP[dungeon.difficulty] || '';
+      document.getElementById('detail-diff').textContent = DIFF_STAR_MAP[dungeon.difficulty] || dungeon.difficulty;
+      document.getElementById('detail-name').textContent = dungeon.name;
 
       // 입장 조건은 줄바꿈 태그가 들어가므로 innerHTML 사용
-      document.getElementById('detail-req').innerHTML = info.req;
+      document.getElementById('detail-req').innerHTML =
+        '책 ' + dungeon.requiredBooks + '권 이상<br><span class="req-sub">나의 힘 평균 ' + dungeon.requiredStatAvg + ' 이상</span>';
 
-      document.getElementById('detail-time').textContent = info.time;
-      document.getElementById('detail-diff-val').textContent = info.diffVal;
+      document.getElementById('detail-time').textContent = formatTimeLimit(dungeon.timeLimit);
+      document.getElementById('detail-diff-val').textContent = DIFF_LEVEL_MAP[dungeon.difficulty] || '';
 
-      // 클리어 보상 영역
-      document.getElementById('detail-reward-main').textContent = info.rewardMain;
-      document.getElementById('detail-reward-note').textContent = info.rewardNote;
+      // 클리어 보상 영역: 설명 + 실제 rewardValue 기반 안내 문구
+      document.getElementById('detail-reward-main').textContent = dungeon.description || '';
+      document.getElementById('detail-reward-note').textContent =
+        dungeon.rewardValue > 0
+          ? '능력치 전부 ' + dungeon.rewardValue + '로 리셋 후 지급됩니다'
+          : '모험이 끝나고 능력치가 전부 초기화됩니다';
 
       const enterBtn = document.getElementById('enter-btn');
+      const blockedNote = document.getElementById('detail-blocked-note');
 
-      // 개발 중 테스트용: 중급/고급 던전도 임시로 입장 가능하게 합니다.
-      // 실제 제출 전에는 locked 조건을 기준으로 버튼 비활성화 처리하면 됩니다.
-      enterBtn.disabled = false;
-      enterBtn.innerHTML = '<span class="btn-icon">⚔</span><span>던전 입장하기</span>';
-      enterBtn.classList.remove('locked');
+      enterBtn.disabled = !dungeon.eligible;
+      enterBtn.classList.toggle('locked', !dungeon.eligible);
+
+      if (!dungeon.eligible && dungeon.blockedReasons && dungeon.blockedReasons.length > 0) {
+        blockedNote.textContent = dungeon.blockedReasons.join('\n');
+        blockedNote.hidden = false;
+      } else {
+        blockedNote.textContent = '';
+        blockedNote.hidden = true;
+      }
     }
 
-    selectDungeon(0);
+    async function loadDungeons() {
+      const loadingOverlay = document.getElementById('dungeon-loading-overlay');
+
+      try {
+        dungeonList = await GameAPI.fetchDungeonsFromServer();
+
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
+
+        selectDungeon(0);
+      } catch (error) {
+        console.error('던전 목록을 불러오지 못했습니다.', error);
+
+        if (loadingOverlay) loadingOverlay.textContent = '던전 정보를 불러오지 못했습니다. 새로고침해주세요.';
+      }
+    }
+
+    loadDungeons();
   </script>
 
   <script src="js/fixed-stage.js"></script>

@@ -1,6 +1,5 @@
 // game-api.js
 // 데이터 제공 담당
-// 나중에 Spring Boot 연동 시 fetch 호출로 교체할 부분
 
 const GameAPI = (() => {
 
@@ -32,34 +31,26 @@ const GameAPI = (() => {
     }
   };
 
-  // 던전 데이터
-  // 나중에 GET /api/dungeons 로 교체 예정
-  const DUNGEONS = [
+  // 전투 밸런스 참고용 데이터(서버가 관리하지 않는 값들만).
+  // difficulty 값('초급'/'중급'/'고급')으로 서버 응답(GET /api/dungeons)과 매칭한다.
+  const ENEMY_CONFIG = [
     {
-      id: 'hatchling',
-      name: '헤츨링',
+      difficulty: '초급',
       enemyKey: 'hatchling',
       bg: 'images/bg_hatchling.png',
-      difficulty: '초급',
-      requiredBooks: 10,
-      // 적 스탯
       enemy: {
         maxHp: 300,
-        normalAtk: 8,        // 일반 공격 데미지
-        heavyAtk: 25,        // 강한 공격 데미지
-        normalAtkInterval: 2000,   // 일반 공격 주기 (2초)
-        heavyAtkInterval: 15000,   // 강한 공격 주기 (15초)
+        normalAtk: 8,
+        heavyAtk: 25,
+        normalAtkInterval: 2000,
+        heavyAtkInterval: 15000,
       },
-      // 제한 시간 (초)
       timeLimit: 180,
     },
     {
-      id: 'dragon',
-      name: '용',
+      difficulty: '중급',
       enemyKey: 'dragon',
       bg: 'images/bg_dragon.png',
-      difficulty: '중급',
-      requiredBooks: 30,
       enemy: {
         maxHp: 600,
         normalAtk: 15,
@@ -70,12 +61,9 @@ const GameAPI = (() => {
       timeLimit: 300,
     },
     {
-      id: 'elder',
-      name: '나이많은 용',
+      difficulty: '고급',
       enemyKey: 'elder',
       bg: 'images/bg_elder.png',
-      difficulty: '고급',
-      requiredBooks: 50,
       enemy: {
         maxHp: 1000,
         normalAtk: 25,
@@ -87,9 +75,97 @@ const GameAPI = (() => {
     }
   ];
 
+  // 서버에서 받아온 던전 목록 캐시. fetchDungeonsFromServer()가 채운다.
+  let _cachedDungeons = [];
+
   function getImages() { return IMAGES; }
-  function getDungeons() { return DUNGEONS; }
-  function getDungeon(idx) { return DUNGEONS[idx]; }
+
+  function getApiBaseUrl() {
+    if (window.location.hostname === '127.0.0.1') {
+      return 'http://127.0.0.1:8080';
+    }
+    return 'http://localhost:8080';
+  }
+
+  function authHeaders() {
+    return { Authorization: 'Bearer ' + sessionStorage.getItem('token') };
+  }
+
+  function mergeWithEnemyConfig(serverDungeon) {
+    const config = ENEMY_CONFIG.find(function (c) {
+      return c.difficulty === serverDungeon.difficulty;
+    });
+
+    return {
+      // 서버 응답 필드
+      apiId: serverDungeon.id,
+      name: serverDungeon.name,
+      description: serverDungeon.description,
+      difficulty: serverDungeon.difficulty,
+      requiredBooks: serverDungeon.requiredBooks,
+      requiredStatAvg: serverDungeon.requiredStatAvg,
+      bookCount: serverDungeon.bookCount,
+      statAverage: serverDungeon.statAverage,
+      cleared: serverDungeon.cleared,
+      eligible: serverDungeon.eligible,
+      blockedReasons: serverDungeon.blockedReasons,
+      attemptsLeftToday: serverDungeon.attemptsLeftToday,
+
+      // 전투 밸런스 참고용(클라이언트 전용)
+      enemyKey: config ? config.enemyKey : null,
+      bg: config ? config.bg : null,
+      enemy: config ? config.enemy : null,
+      timeLimit: config ? config.timeLimit : null,
+    };
+  }
+
+  async function fetchDungeonsFromServer() {
+    const response = await fetch(getApiBaseUrl() + '/api/dungeons', {
+      headers: authHeaders()
+    });
+
+    if (response.status === 401) {
+      alert('로그인이 필요합니다.');
+      window.location.href = '../frontend/index.html';
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    if (!response.ok) {
+      throw new Error('던전 목록 조회 실패: ' + response.status);
+    }
+
+    const serverDungeons = await response.json();
+    _cachedDungeons = serverDungeons.map(mergeWithEnemyConfig);
+
+    return _cachedDungeons;
+  }
+
+  function getDungeon(idx) { return _cachedDungeons[idx]; }
+
+  async function submitBattleResult(apiId, result) {
+    try {
+      const response = await fetch(getApiBaseUrl() + '/api/dungeons/' + apiId + '/battle-result', {
+        method: 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()),
+        body: JSON.stringify({ result: result })
+      });
+
+      if (response.status === 409) {
+        alert('오늘 이 던전은 더 도전할 수 없어요.');
+        return null;
+      }
+
+      if (!response.ok) {
+        console.error('전투 결과 제출 실패', response.status);
+        return null;
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('전투 결과 제출 중 오류', error);
+      return null;
+    }
+  }
 
   // 학생 초기 상태 반환
   // 나중에: GET /api/students/{studentId}/game-state
@@ -108,9 +184,10 @@ const GameAPI = (() => {
 
   return {
     getImages,
-    getDungeons,
     getDungeon,
-    getInitialPlayerState
+    getInitialPlayerState,
+    fetchDungeonsFromServer,
+    submitBattleResult
   };
 
 })();
