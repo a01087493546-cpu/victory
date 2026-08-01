@@ -1130,6 +1130,22 @@
     padding: 18px 20px !important;
   }
 }
+
+/* AI 추천 이유 영역 */
+.br-book-reason-text {
+  margin: 8px 0 0 !important;
+  color: #6b421b !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  word-break: keep-all !important;
+}
+
+@media (max-height: 760px) {
+  .br-book-reason-text {
+    font-size: 15px !important;
+  }
+}
   </style>
 </head>
 
@@ -1193,7 +1209,7 @@
               
             </div>
 
-            <button type="button" class="br-refresh-button" onclick="recommendAnotherBooks()">
+            <button type="button" class="br-refresh-button" id="refreshButton" onclick="recommendAnotherBooks()">
               ↻ 다른 책 추천받기
             </button>
           </div>
@@ -1224,7 +1240,7 @@
         : "http://localhost:8080";
 
     const PREFERENCE_STORAGE_KEY = "bookRecommendationPreferences";
-    const CANDIDATE_STORAGE_KEY = "bookRecommendationCandidates";
+    const RESULTS_STORAGE_KEY = "bookRecommendationResults";
 
     const questions = [
       {
@@ -1304,7 +1320,8 @@
       purpose: null
     };
     let selectedValue = null;
-    let recommendationCandidates = [];
+    let recommendationItems = [];
+    let shownBookIds = [];
     let isRequestingRecommendation = false;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1425,7 +1442,7 @@
         currentQuestionIndex += 1;
         renderQuestion();
       } else {
-        await requestRecommendationCandidates();
+        await requestAiRecommendations();
       }
     }
 
@@ -1471,16 +1488,34 @@
       );
     }
 
-    function saveCandidates(candidates) {
+    function saveRecommendationResults(recommendations) {
       sessionStorage.setItem(
-        CANDIDATE_STORAGE_KEY,
-        JSON.stringify(getStorageEnvelope(candidates))
+        RESULTS_STORAGE_KEY,
+        JSON.stringify(getStorageEnvelope({
+          preferences: answers,
+          recommendations,
+          shownBookIds: shownBookIds.slice(),
+          savedAt: new Date().toISOString()
+        }))
       );
+    }
+
+    function isValidBookId(value) {
+      return typeof value === "number" && Number.isFinite(value) && value > 0;
+    }
+
+    function addShownBookIds(items) {
+      (items || []).forEach((item) => {
+        const bookId = item && item.bookId;
+        if (isValidBookId(bookId) && !shownBookIds.includes(bookId)) {
+          shownBookIds.push(bookId);
+        }
+      });
     }
 
     function restoreRecommendationSession() {
       const savedPreferences = readStorageEnvelope(PREFERENCE_STORAGE_KEY);
-      const savedCandidates = readStorageEnvelope(CANDIDATE_STORAGE_KEY);
+      const savedResults = readStorageEnvelope(RESULTS_STORAGE_KEY);
 
       if (savedPreferences && typeof savedPreferences === "object") {
         questions.forEach((question) => {
@@ -1490,14 +1525,37 @@
         });
       }
 
-      if (Array.isArray(savedCandidates) && savedCandidates.length > 0) {
-        recommendationCandidates = savedCandidates;
-        document.getElementById("bookRecommendPage").classList.add("result-mode");
-        renderRecommendedBooks();
-        return true;
+      /*
+       * 이전 후보 API 형식(배열, {book, matchScore})이나 형태가 다른 캐시는
+       * 안전하게 무시한다. 새 형식만 { recommendations: [...] } 객체로 복원한다.
+       */
+      const hasValidShape =
+        savedResults &&
+        typeof savedResults === "object" &&
+        !Array.isArray(savedResults) &&
+        Array.isArray(savedResults.recommendations);
+
+      if (!hasValidShape) {
+        if (savedResults) {
+          sessionStorage.removeItem(RESULTS_STORAGE_KEY);
+        }
+        return false;
       }
 
-      return false;
+      recommendationItems = savedResults.recommendations;
+
+      /*
+       * 오래된 캐시(다른 책 추천받기 기능 이전 형식)에는 shownBookIds가 없을
+       * 수 있다 - 그 경우 현재 recommendations의 bookId로 초기화한다.
+       * 잘못된 값(문자열, 음수, 0 등)은 걸러낸다.
+       */
+      shownBookIds = Array.isArray(savedResults.shownBookIds)
+        ? savedResults.shownBookIds.filter(isValidBookId)
+        : recommendationItems.map((item) => item && item.bookId).filter(isValidBookId);
+
+      document.getElementById("bookRecommendPage").classList.add("result-mode");
+      renderRecommendedBooks();
+      return true;
     }
 
     function getFirstMissingQuestionIndex() {
@@ -1511,11 +1569,12 @@
         genre: answers.genre,
         illustrationLevel: answers.illustrationLevel,
         difficulty: answers.difficulty,
-        purpose: answers.purpose
+        purpose: answers.purpose,
+        excludedBookIds: shownBookIds.slice()
       };
     }
 
-    async function requestRecommendationCandidates() {
+    async function requestAiRecommendations() {
       const missingQuestionIndex = getFirstMissingQuestionIndex();
 
       if (missingQuestionIndex >= 0) {
@@ -1542,7 +1601,7 @@
       updateButtons();
 
       try {
-        const response = await fetch(API_BASE_URL + "/api/students/me/recommendation-books/candidates", {
+        const response = await fetch(API_BASE_URL + "/api/students/me/book-recommendations/ai", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1567,15 +1626,23 @@
           return;
         }
 
-        const candidates = await response.json();
-        recommendationCandidates = Array.isArray(candidates) ? candidates : [];
+        const result = await response.json();
+        /*
+         * aiUsed/fallbackUsed는 개발 확인용 플래그일 뿐이라 학생에게 어떤
+         * 문구도 따로 보여주지 않는다 - fallback이어도 일반 추천처럼 그대로
+         * 자연스럽게 표시한다.
+         */
+        recommendationItems = Array.isArray(result && result.recommendations)
+          ? result.recommendations
+          : [];
+        addShownBookIds(recommendationItems);
         savePreferences();
-        saveCandidates(recommendationCandidates);
+        saveRecommendationResults(recommendationItems);
 
         document.getElementById("bookRecommendPage").classList.add("result-mode");
         renderRecommendedBooks();
       } catch (error) {
-        console.error("추천 후보 API 호출 실패", error);
+        console.error("AI 책 추천 API 호출 실패", error);
         alert("서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.");
       } finally {
         isRequestingRecommendation = false;
@@ -1587,7 +1654,7 @@
       const bookList = document.getElementById("bookList");
       bookList.innerHTML = "";
 
-      const selectedBooks = recommendationCandidates.slice(0, 3);
+      const selectedBooks = recommendationItems.slice(0, 3);
 
       if (selectedBooks.length === 0) {
         const empty = document.createElement("div");
@@ -1597,8 +1664,8 @@
         return;
       }
 
-      selectedBooks.forEach((candidate, index) => {
-        const book = candidate.book || {};
+      selectedBooks.forEach((book, index) => {
+        book = book || {};
         const card = document.createElement("div");
         card.className = "br-book-card";
 
@@ -1628,16 +1695,21 @@
         summary.className = "br-book-summary";
         summary.textContent = book.description || "책 소개를 준비하고 있어요.";
 
+        const reasonText = document.createElement("p");
+        reasonText.className = "br-book-reason-text";
+        reasonText.textContent = book.recommendationReason || "네가 고른 책 취향과 잘 맞는 책이야.";
+
         info.appendChild(title);
         info.appendChild(author);
         info.appendChild(summary);
+        info.appendChild(reasonText);
 
         const pickButton = document.createElement("button");
         pickButton.type = "button";
         pickButton.className = "br-book-pick";
         pickButton.title = "이 책으로 읽기 시작하기";
         pickButton.textContent = "🔖";
-        pickButton.dataset.bookId = book.id || "";
+        pickButton.dataset.bookId = book.bookId || "";
 
         card.appendChild(cover);
         card.appendChild(info);
@@ -1647,10 +1719,80 @@
       });
     }
 
-    function recommendAnotherBooks() {
-      currentQuestionIndex = 0;
-      showQuestionCard();
-      renderQuestion();
+    function updateRefreshButton() {
+      const refreshButton = document.getElementById("refreshButton");
+      if (!refreshButton) {
+        return;
+      }
+
+      refreshButton.disabled = isRequestingRecommendation;
+      refreshButton.textContent = isRequestingRecommendation
+        ? "다른 책을 찾고 있어요..."
+        : "↻ 다른 책 추천받기";
+    }
+
+    /*
+     * "다른 책 추천받기": 질문 화면으로 돌아가지 않고, 같은 취향(answers)을
+     * 유지한 채 지금까지 보여준 책(shownBookIds)을 제외 목록으로 함께 보내
+     * 새 3권을 요청한다. 성공하면 결과 카드만 새 3권으로 교체한다.
+     */
+    async function recommendAnotherBooks() {
+      if (isRequestingRecommendation) {
+        return;
+      }
+
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+
+      if (!token || role !== "student") {
+        alert("학생 로그인이 필요해요. 다시 로그인해 주세요.");
+        window.location.href = "../index.html";
+        return;
+      }
+
+      isRequestingRecommendation = true;
+      updateRefreshButton();
+
+      try {
+        const response = await fetch(API_BASE_URL + "/api/students/me/book-recommendations/ai", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify(getRecommendationRequestBody())
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          alert("로그인이 만료되었어요. 다시 로그인해 주세요.");
+          window.location.href = "../index.html";
+          return;
+        }
+
+        if (response.status === 400) {
+          alert("선택값을 다시 확인해 주세요.");
+          return;
+        }
+
+        if (!response.ok) {
+          alert("추천 책을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+          return;
+        }
+
+        const result = await response.json();
+        recommendationItems = Array.isArray(result && result.recommendations)
+          ? result.recommendations
+          : [];
+        addShownBookIds(recommendationItems);
+        saveRecommendationResults(recommendationItems);
+        renderRecommendedBooks();
+      } catch (error) {
+        console.error("다른 책 추천 API 호출 실패", error);
+        alert("서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        isRequestingRecommendation = false;
+        updateRefreshButton();
+      }
     }
 
     function restartQuestions() {
@@ -1663,10 +1805,11 @@
         purpose: null
       };
       selectedValue = null;
-      recommendationCandidates = [];
+      recommendationItems = [];
+      shownBookIds = [];
       currentQuestionIndex = 0;
       sessionStorage.removeItem(PREFERENCE_STORAGE_KEY);
-      sessionStorage.removeItem(CANDIDATE_STORAGE_KEY);
+      sessionStorage.removeItem(RESULTS_STORAGE_KEY);
       document.getElementById("bookRecommendPage").classList.remove("result-mode");
       renderQuestion();
     }
