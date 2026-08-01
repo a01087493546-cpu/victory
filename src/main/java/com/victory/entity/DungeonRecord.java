@@ -1,6 +1,7 @@
 package com.victory.entity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,6 +60,6 @@ public class DungeonRecord {
 
     @PrePersist
     protected void onCreate() {
-        this.playedAt = LocalDateTime.now();
+        this.playedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 }

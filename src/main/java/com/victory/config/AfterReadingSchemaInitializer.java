@@ -43,19 +43,19 @@ public class AfterReadingSchemaInitializer {
             );
         }
 
-        if (indexExists("student_stat_reward_log", "uk_reward_log_student_reward")) {
-            jdbcTemplate.execute(
-                "ALTER TABLE student_stat_reward_log " +
-                    "DROP INDEX uk_reward_log_student_reward"
-            );
-        }
-
         if (!indexExists(
                 "student_stat_reward_log",
                 "uk_reward_log_student_type_instance")) {
             jdbcTemplate.execute(
                 "CREATE UNIQUE INDEX uk_reward_log_student_type_instance " +
                     "ON student_stat_reward_log (student_id, reward_type, instance_id)"
+            );
+        }
+
+        if (indexExists("student_stat_reward_log", "uk_reward_log_student_reward")) {
+            jdbcTemplate.execute(
+                "ALTER TABLE student_stat_reward_log " +
+                    "DROP INDEX uk_reward_log_student_reward"
             );
         }
     }

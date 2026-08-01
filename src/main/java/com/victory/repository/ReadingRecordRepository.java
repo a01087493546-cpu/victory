@@ -30,4 +30,9 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
      * 반환되어 각각 새로운 완독 1권으로 집계된다.
      */
     List<ReadingRecord> findByStudent_IdAndFinishedAtIsNotNull(Long studentId);
+
+    /*
+     * 던전 입장 조건(requiredBooks) 판정용 완독 권수 카운트.
+     */
+    long countByStudent_IdAndFinishedAtIsNotNull(Long studentId);
 }

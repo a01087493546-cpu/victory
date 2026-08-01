@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.victory.dto.StudentStatsResponse;
+import com.victory.entity.StudentStats;
 import com.victory.entity.User;
 import com.victory.repository.StudentStatsRepository;
 import com.victory.repository.UserRepository;
@@ -31,5 +32,36 @@ public class StudentStatsService {
         return studentStatsRepository.findByStudent_Id(studentId)
             .map(StudentStatsResponse::from)
             .orElseGet(StudentStatsResponse::zero);
+    }
+
+    /*
+     * 던전 승리 보상: magic/stamina/wisdom/courage 4개를 모두 value로 맞춘다.
+     * 호출 측인 DungeonService가 dungeon.rewardStatResetValue를 그대로 넘긴다.
+     */
+    @Transactional
+    public void applyReward(Long studentId, int value) {
+        StudentStats stats = studentStatsRepository.findByStudent_Id(studentId)
+            .orElseGet(() -> {
+                User student = userRepository.findById(studentId)
+                    .orElseThrow(() -> new EntityNotFoundException(
+                        "학생을 찾을 수 없습니다. studentId=" + studentId));
+
+                StudentStats created = new StudentStats();
+                created.setStudent(student);
+                return created;
+            });
+
+        stats.setMagic(value);
+        stats.setStamina(value);
+        stats.setWisdom(value);
+        stats.setCourage(value);
+
+        studentStatsRepository.save(stats);
+    }
+
+    public double getStatAverage(Long studentId) {
+        return studentStatsRepository.findByStudent_Id(studentId)
+            .map(stats -> (stats.getMagic() + stats.getStamina() + stats.getWisdom() + stats.getCourage()) / 4.0)
+            .orElse(0.0);
     }
 }
