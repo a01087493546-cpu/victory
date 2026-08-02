@@ -35,4 +35,10 @@ public interface ReadingRecordRepository extends JpaRepository<ReadingRecord, Lo
      * 던전 입장 조건(requiredBooks) 판정용 완독 권수 카운트.
      */
     long countByStudent_IdAndFinishedAtIsNotNull(Long studentId);
+
+    /*
+     * 교사용 개별읽기 대시보드의 대표 기록 선정용. 진행 중 기록이 없을 때,
+     * finished_at이 가장 최근인 완독 기록 1건을 대표로 쓴다.
+     */
+    Optional<ReadingRecord> findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(Long studentId);
 }

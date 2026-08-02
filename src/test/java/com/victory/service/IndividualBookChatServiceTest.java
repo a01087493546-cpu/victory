@@ -19,12 +19,15 @@ import org.springframework.web.server.ResponseStatusException;
 import com.victory.dto.IndividualBookChatCommentResponse;
 import com.victory.dto.IndividualBookChatFeedResponse;
 import com.victory.dto.IndividualBookChatPostResponse;
+import com.victory.entity.Book;
 import com.victory.entity.ClassStudent;
+import com.victory.entity.ReadingRecord;
 import com.victory.entity.Response;
 import com.victory.entity.SchoolClass;
 import com.victory.entity.StudentStats;
 import com.victory.entity.User;
 import com.victory.repository.ClassStudentRepository;
+import com.victory.repository.ReadingRecordRepository;
 import com.victory.repository.ResponseRepository;
 import com.victory.repository.SchoolClassRepository;
 import com.victory.repository.UserRepository;
@@ -36,15 +39,29 @@ class IndividualBookChatServiceTest {
     private static final Long OTHER_CLASS_STUDENT_ID = 200L;
     private static final Long CLASS_ID = 10L;
     private static final Long OTHER_CLASS_ID = 20L;
+    private static final Long READING_RECORD_ID = 500L;
 
     private final ResponseRepository responseRepository = mock(ResponseRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final ClassStudentRepository classStudentRepository = mock(ClassStudentRepository.class);
     private final SchoolClassRepository schoolClassRepository = mock(SchoolClassRepository.class);
     private final IndividualBookChatRewardService rewardService = mock(IndividualBookChatRewardService.class);
+    private final ReadingRecordRepository readingRecordRepository = mock(ReadingRecordRepository.class);
 
     private final IndividualBookChatService service = new IndividualBookChatService(
-        responseRepository, userRepository, classStudentRepository, schoolClassRepository, rewardService);
+        responseRepository, userRepository, classStudentRepository, schoolClassRepository, rewardService,
+        readingRecordRepository);
+
+    private ReadingRecord buildInProgressReadingRecord(Long id, User student) {
+        ReadingRecord record = new ReadingRecord();
+        record.setId(id);
+        record.setStudent(student);
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("긴긴밤");
+        record.setBook(book);
+        return record;
+    }
 
     private User buildStudent(Long id, String name) {
         User student = new User();
@@ -86,7 +103,7 @@ class IndividualBookChatServiceTest {
     @Test
     void createPost_throwsBadRequestWhenRequiredFieldBlank() {
         assertThatThrownBy(() ->
-            service.createPost(STUDENT_ID, "책제목", "제목", "", "A", "B")
+            service.createPost(STUDENT_ID, READING_RECORD_ID, "책제목", "제목", "", "A", "B")
         )
             .isInstanceOf(ResponseStatusException.class)
             .hasMessageContaining("400");
@@ -100,6 +117,9 @@ class IndividualBookChatServiceTest {
         User student = buildStudent();
         when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(student));
 
+        ReadingRecord readingRecord = buildInProgressReadingRecord(READING_RECORD_ID, student);
+        when(readingRecordRepository.findById(READING_RECORD_ID)).thenReturn(Optional.of(readingRecord));
+
         org.mockito.ArgumentCaptor<Response> captor = org.mockito.ArgumentCaptor.forClass(Response.class);
         when(responseRepository.save(captor.capture())).thenAnswer(invocation -> {
             Response toSave = invocation.getArgument(0);
@@ -110,7 +130,7 @@ class IndividualBookChatServiceTest {
             .thenReturn(new IndividualBookChatRewardService.RewardResult(true, false, new StudentStats()));
 
         IndividualBookChatPostResponse result = service.createPost(
-            STUDENT_ID, "긴긴밤", "밸런스제목", "장면설명", "선택A", "선택B");
+            STUDENT_ID, READING_RECORD_ID, "긴긴밤", "밸런스제목", "장면설명", "선택A", "선택B");
 
         Response saved = captor.getValue();
         assertThat(saved.getMode()).isEqualTo("individual");
@@ -118,6 +138,7 @@ class IndividualBookChatServiceTest {
         assertThat(saved.getContent()).isEqualTo("장면설명");
         assertThat(saved.getStatus()).isEqualTo("pending");
         assertThat(saved.getImageData()).isNull();
+        assertThat(saved.getReadingRecord()).isSameAs(readingRecord);
         assertThat(saved.getExtraData())
             .containsEntry("bookTitle", "긴긴밤")
             .containsEntry("title", "밸런스제목")
@@ -127,6 +148,75 @@ class IndividualBookChatServiceTest {
         assertThat(result.getBookTitle()).isEqualTo("긴긴밤");
         assertThat(result.isMine()).isTrue();
         assertThat(result.isRewardGranted()).isTrue();
+    }
+
+    // =========================================================
+    // 책수다방 글의 readingRecordId 연결 검증
+    // =========================================================
+
+    /* readingRecordId 없이 작성하면 400이고 NULL로 저장되지 않는다 */
+    @Test
+    void createPost_throwsBadRequestWhenReadingRecordIdMissing() {
+        assertThatThrownBy(() ->
+            service.createPost(STUDENT_ID, null, "긴긴밤", "제목", "장면", "A", "B")
+        )
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400");
+
+        verify(responseRepository, never()).save(any(Response.class));
+    }
+
+    /* 존재하지 않는 readingRecordId면 404이고 저장되지 않는다 */
+    @Test
+    void createPost_throwsNotFoundWhenReadingRecordDoesNotExist() {
+        User student = buildStudent();
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(student));
+        when(readingRecordRepository.findById(READING_RECORD_ID)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() ->
+            service.createPost(STUDENT_ID, READING_RECORD_ID, "긴긴밤", "제목", "장면", "A", "B")
+        )
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("404");
+
+        verify(responseRepository, never()).save(any(Response.class));
+    }
+
+    /* 다른 학생의 readingRecordId면 403이고 저장되지 않는다 */
+    @Test
+    void createPost_throwsForbiddenWhenReadingRecordBelongsToAnotherStudent() {
+        User student = buildStudent();
+        User otherStudent = buildStudent(CLASSMATE_ID, "다른학생");
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(student));
+        when(readingRecordRepository.findById(READING_RECORD_ID))
+            .thenReturn(Optional.of(buildInProgressReadingRecord(READING_RECORD_ID, otherStudent)));
+
+        assertThatThrownBy(() ->
+            service.createPost(STUDENT_ID, READING_RECORD_ID, "긴긴밤", "제목", "장면", "A", "B")
+        )
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("403");
+
+        verify(responseRepository, never()).save(any(Response.class));
+    }
+
+    /* 이미 완독한 readingRecordId면 409(진행 중인 책만 허용)이고 저장되지 않는다 */
+    @Test
+    void createPost_throwsConflictWhenReadingRecordAlreadyFinished() {
+        User student = buildStudent();
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(student));
+
+        ReadingRecord finishedRecord = buildInProgressReadingRecord(READING_RECORD_ID, student);
+        finishedRecord.setFinishedAt(java.time.LocalDateTime.now());
+        when(readingRecordRepository.findById(READING_RECORD_ID)).thenReturn(Optional.of(finishedRecord));
+
+        assertThatThrownBy(() ->
+            service.createPost(STUDENT_ID, READING_RECORD_ID, "긴긴밤", "제목", "장면", "A", "B")
+        )
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("409");
+
+        verify(responseRepository, never()).save(any(Response.class));
     }
 
     /* 검증: 학급이 있는 학생은 같은 학급 학생들의 글만(다른 학급 글 제외) 받는다 */

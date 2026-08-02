@@ -419,8 +419,8 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .ir-bar b {
+      display: block;
       width: 24px;
-      min-height: 6px;
       border-radius: 14px 14px 6px 6px;
       background: linear-gradient(180deg, #dda64d, #a45e19);
       box-shadow: 0 8px 14px rgba(123, 73, 20, 0.14);
@@ -923,28 +923,9 @@ html {
         </div>
 
         <div class="ir-chart-body">
-          <div class="ir-chart-y">
-            <span>4</span>
-            <span>3</span>
-            <span>2</span>
-            <span>1</span>
-            <span>0</span>
-          </div>
+          <div class="ir-chart-y" id="monthlyChartY"></div>
 
-          <div class="ir-chart-plot">
-            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>1월</span></div>
-            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>2월</span></div>
-            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>3월</span></div>
-            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>4월</span></div>
-            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>5월</span></div>
-            <div class="ir-bar" style="--h: 112px"><em>3</em><b style="height: 112px"></b><span>6월</span></div>
-            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>7월</span></div>
-            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>8월</span></div>
-            <div class="ir-bar" style="--h: 76px"><em>2</em><b style="height: 76px"></b><span>9월</span></div>
-            <div class="ir-bar" style="--h: 42px"><em>1</em><b style="height: 42px"></b><span>10월</span></div>
-            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>11월</span></div>
-            <div class="ir-bar" style="--h: 4px"><em>0</em><b style="height: 4px"></b><span>12월</span></div>
-          </div>
+          <div class="ir-chart-plot" id="monthlyChartPlot"></div>
         </div>
       </section>
 
@@ -1068,6 +1049,105 @@ html {
         }
       }
 
+      const MONTH_LABELS = [
+        "1월", "2월", "3월", "4월", "5월", "6월",
+        "7월", "8월", "9월", "10월", "11월", "12월"
+      ];
+
+      /*
+       * 월별 최고 완독 권수를 기준으로 세로축 최대값을 계산한다.
+       * - 0~4권이면 항상 0~4
+       * - 4권을 초과하면 데이터가 잘리지 않도록 4의 배수로 자동 확장
+       */
+      function computeMonthlyChartAxisMax(monthlyCounts) {
+        const maxCount = monthlyCounts.reduce(function (max, count) {
+          return count > max ? count : max;
+        }, 0);
+
+        return Math.max(4, Math.ceil(maxCount / 4) * 4);
+      }
+
+      function normalizeMonthlyCounts(monthlyCounts) {
+        if (!Array.isArray(monthlyCounts) || monthlyCounts.length !== 12) {
+          return new Array(12).fill(0);
+        }
+
+        return monthlyCounts.map(function (count) {
+          const numeric = Number(count);
+          return Number.isFinite(numeric) && numeric > 0 ? Math.round(numeric) : 0;
+        });
+      }
+
+      function renderMonthlyChartAxis(axisMax) {
+        const yAxis = document.getElementById("monthlyChartY");
+        if (!yAxis) {
+          return;
+        }
+
+        yAxis.innerHTML = "";
+
+        const step = axisMax / 4;
+        const ticks = [axisMax, step * 3, step * 2, step, 0];
+
+        ticks.forEach(function (tick) {
+          const tickLabel = document.createElement("span");
+          tickLabel.textContent = String(Math.round(tick));
+          yAxis.appendChild(tickLabel);
+        });
+      }
+
+      function renderMonthlyChartBars(monthlyCounts, axisMax) {
+        const plot = document.getElementById("monthlyChartPlot");
+        if (!plot) {
+          return;
+        }
+
+        plot.innerHTML = "";
+
+        monthlyCounts.forEach(function (count, index) {
+          const ratio = axisMax > 0 ? count / axisMax : 0;
+          const heightPercent = Math.max(0, Math.min(100, ratio * 100));
+
+          const bar = document.createElement("div");
+          bar.className = "ir-bar";
+          bar.style.setProperty("--h", heightPercent + "%");
+
+          const numberLabel = document.createElement("em");
+          numberLabel.textContent = String(count);
+
+          const barFill = document.createElement("b");
+          barFill.style.height = heightPercent + "%";
+          /*
+           * 1권처럼 실제 값이 있는 막대가 너무 작아 보이지 않도록 최소
+           * 높이를 조금 준다. 단, count가 0인 막대는 실제로 0권이므로
+           * 최소 높이를 주지 않는다(가짜로 있는 것처럼 보이면 안 됨).
+           */
+          if (count > 0) {
+            barFill.style.minHeight = "6px";
+          }
+
+          const monthLabel = document.createElement("span");
+          monthLabel.textContent = MONTH_LABELS[index] || "";
+
+          bar.appendChild(numberLabel);
+          bar.appendChild(barFill);
+          bar.appendChild(monthLabel);
+          plot.appendChild(bar);
+        });
+      }
+
+      /*
+       * monthlyCounts가 null/형식이 다르면 12개월 모두 0으로 안전하게
+       * 표시한다(로딩 전/오류 상태에서도 그래프가 깨지지 않음).
+       */
+      function renderMonthlyChart(monthlyCounts) {
+        const safeCounts = normalizeMonthlyCounts(monthlyCounts);
+        const axisMax = computeMonthlyChartAxisMax(safeCounts);
+
+        renderMonthlyChartAxis(axisMax);
+        renderMonthlyChartBars(safeCounts, axisMax);
+      }
+
       async function fetchStudentJson(path, context) {
         const response = await fetch(API_BASE_URL + path, {
           headers: {
@@ -1097,6 +1177,7 @@ html {
         if (!context.studentId || !context.token) {
           renderStats(null);
           updateFlowButtonsLockState(false);
+          renderMonthlyChart(null);
           goLogin();
           return;
         }
@@ -1119,6 +1200,22 @@ html {
           console.error(error);
           renderStats(null);
           updateFlowButtonsLockState(false);
+        }
+
+        /*
+         * 월별 완독 그래프는 위 통계 호출과 독립적으로 실패할 수 있다 -
+         * 여기서 실패해도 위 능력치/진행도 상태는 그대로 유지하고, 그래프만
+         * 조용히 0으로 표시한다(가짜 데이터나 알림 없이).
+         */
+        try {
+          const monthlyStats = await fetchStudentJson(
+            "/api/students/me/individual-reading/monthly-completion-stats",
+            context
+          );
+          renderMonthlyChart(monthlyStats && monthlyStats.monthlyCounts);
+        } catch (error) {
+          console.error(error);
+          renderMonthlyChart(null);
         } finally {
           isHomeDataLoading = false;
         }
@@ -1128,6 +1225,7 @@ html {
         checkLogin();
         renderStats(null);
         updateFlowButtonsLockState(false);
+        renderMonthlyChart(null);
         refreshIndividualHomeFromServer();
       });
 

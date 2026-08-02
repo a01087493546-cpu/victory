@@ -8070,7 +8070,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
         </div>
 
        <div class="idr-top-actions">
-  <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
+  <button type="button" class="idr-top-button" id="homeNavButton" style="display:none" onclick="showScreen('home')">읽기 중 홈</button>
   <span class="idr-top-button idr-top-date" id="todayDateTop">오늘 날짜</span>
 
   <!-- 개별읽기 활동 중에도 현재 능력치를 확인할 수 있는 버튼입니다. -->
@@ -8651,6 +8651,18 @@ const bookTypes = [
       }
 
       const today = data.serverDate;
+
+      /*
+        책수다방 "오늘" 판단 기준을 서버(Asia/Seoul) 날짜로 맞춘다.
+        new Date().toISOString()은 브라우저 로컬 시간을 UTC로 바꾼
+        값이라 자정~오전 9시(KST) 사이에는 서버 날짜보다 하루 이르게
+        계산되어, 같은 날 쓴 친구 글의 activity_date와 어긋날 수 있다.
+      */
+      window.serverTodayDateKey = today;
+      if (typeof selectedBookChatDate !== "undefined") {
+        selectedBookChatDate = today;
+      }
+
       document.getElementById("readDateInput").value = today;
 
       const todayDateTop = document.getElementById("todayDateTop");
@@ -9074,6 +9086,16 @@ function showScreen(screenName) {
   document.querySelectorAll(".idr-screen").forEach((screen) => {
     screen.classList.remove("active");
   });
+
+  /*
+    상단 "읽기 중 홈" 버튼은 이미 그 화면(홈)에 있을 때는 눌러도
+    같은 화면으로만 이동하는 중복 버튼이라 그때만 숨긴다. 다른
+    세부 활동 화면에서는 홈으로 돌아가는 용도로 계속 보여준다.
+  */
+  const homeNavButton = document.getElementById("homeNavButton");
+  if (homeNavButton) {
+    homeNavButton.style.display = screenName === "home" ? "none" : "";
+  }
 
   if (screenName === "home") {
     document.getElementById("homeScreen").classList.add("active");
@@ -10069,12 +10091,24 @@ async function saveBookChatPost() {
   책수다 글을 서버(DB)에 텍스트로만 저장한다(사진 첨부 기능은 제거됨).
   등록에 성공했을 때만 화면 목록을 다시 그리고, 실패하면 사용자에게
   오류를 안내한다(조용히 멈추지 않는다).
+
+  readingRecordId는 학생이 화면에 직접 입력한 bookTitle(자유 텍스트)이
+  아니라, 지금 진행 중인 책의 실제 readingRecordId를 그대로 보낸다 -
+  서버가 이 값의 소유권과 진행 상태를 검증한다.
 */
 async function saveBookChatPostToServer(bookTitle, title, scene, optionA, optionB) {
   const token = sessionStorage.getItem("token");
 
   if (!token) {
     alert("로그인 정보가 없어요. 다시 로그인한 뒤 다시 시도해 주세요.");
+    return;
+  }
+
+  const readingRecordId =
+    currentReadingRecordId || sessionStorage.getItem("individualReadingRecordId_" + studentId);
+
+  if (!readingRecordId) {
+    alert("진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.");
     return;
   }
 
@@ -10093,7 +10127,7 @@ async function saveBookChatPostToServer(bookTitle, title, scene, optionA, option
           "Content-Type": "application/json",
           Authorization: "Bearer " + token
         },
-        body: JSON.stringify({ bookTitle, title, scene, optionA, optionB })
+        body: JSON.stringify({ readingRecordId, bookTitle, title, scene, optionA, optionB })
       }
     );
 
@@ -10145,9 +10179,15 @@ let selectedBookChatDate = getTodayDateKey();
 /*
   오늘 날짜를 YYYY-MM-DD 형태로 만듭니다.
   예) 2026-06-21
+
+  서버(Asia/Seoul)에서 받아온 날짜(window.serverTodayDateKey)가 있으면
+  그 값을 우선 쓴다. new Date().toISOString()은 브라우저 로컬 시간을
+  UTC로 바꾼 값이라 자정~오전 9시(KST) 사이에는 서버보다 하루 이르게
+  계산되어, 그 시간대에 쓴 친구 책수다 글의 activity_date와 어긋날 수
+  있다. 서버 날짜를 아직 못 받아온 초기 시점에만 로컬 값으로 대체한다.
 */
 function getTodayDateKey() {
-  return new Date().toISOString().slice(0, 10);
+  return window.serverTodayDateKey || new Date().toISOString().slice(0, 10);
 }
 
 /*
@@ -10646,6 +10686,17 @@ function confirmDuringRewardModal() {
       "루미가 답변을 읽고 있어요..."에서 무한정 멈추는 문제를 막고,
       요청 중에는 버튼을 잠가 중복 요청을 막는다.
     */
+    /*
+      읽기 중 AI 검사 대상 식별자: readingRecordId + 오늘 날짜로 만든다.
+      "책속 생각쓰기"는 하루에 1개만 저장되는 활동이라(saveTodayQuestion
+      참고), 같은 날 안에서 문구를 고쳐 다시 검사받으면 같은 평가 대상의
+      재시도로 누적되고, 날짜가 바뀌면(=새 질문) 자동으로 새 평가 대상이
+      된다.
+    */
+    function buildIndividualDuringQuestionEvaluationKey(readingRecordId) {
+      return "individual_during_" + readingRecordId + "_" + getTodayDateKey();
+    }
+
     function requestIndividualDuringQuestionAiFeedback(question, answer) {
       const requestId = ++individualDuringQuestionAiRequestId;
       const feedbackBox = document.getElementById("questionFeedbackBox");
@@ -10653,6 +10704,16 @@ function confirmDuringRewardModal() {
       const checkButton = document.getElementById("checkQuestionButton");
       const timeoutMs = 15000;
       const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 질문이 저장되지 않았어요, 잠시 후 다시 시도해봐.";
+
+      const readingRecordId =
+        currentReadingRecordId || sessionStorage.getItem("individualReadingRecordId_" + studentId);
+
+      if (!readingRecordId) {
+        feedbackBox.classList.remove("good", "need");
+        feedbackBox.classList.add("need");
+        feedbackText.textContent = "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.";
+        return;
+      }
 
       isIndividualDuringQuestionAiRequestInFlight = true;
 
@@ -10663,104 +10724,75 @@ function confirmDuringRewardModal() {
       feedbackBox.classList.remove("good", "need");
       feedbackText.textContent = "루미가 답변을 읽고 있어요...";
 
-      const abortController = new AbortController();
+      const timeoutPromise = new Promise(function (_resolve, reject) {
+        setTimeout(function () {
+          reject(new Error("개별읽기 읽기 중 AI 피드백 요청이 시간 초과되었습니다."));
+        }, timeoutMs);
+      });
 
-      const timeoutId = setTimeout(function() {
-        abortController.abort();
-      }, timeoutMs);
-
-      fetch(API_BASE_URL + "/api/feedback/ai-review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: abortController.signal,
-        body: JSON.stringify({
-          type: "during_reading_question",
-          stepType: mapQuestionTypeKeyToStepType(selectedType),
-          qaList: [{ question: question, answer: answer }]
-        })
-      })
-        .then(function(response) {
+      Promise.race([
+        requestAuthenticatedAiFeedback({
+          activityType: "during_reading_question",
+          questionType: mapQuestionTypeKeyToStepType(selectedType),
+          evaluationKey: buildIndividualDuringQuestionEvaluationKey(readingRecordId),
+          readingRecordId: readingRecordId,
+          question: question,
+          answer: answer
+        }),
+        timeoutPromise
+      ])
+        .then(function(result) {
           if (requestId !== individualDuringQuestionAiRequestId) {
             return;
           }
 
-          if (!response.ok) {
-            return response.text().then(
-              function(bodyText) {
-                console.error(
-                  "개별읽기 읽기 중 AI 피드백 요청 실패 - status:",
-                  response.status,
-                  "body:",
-                  bodyText
-                );
-                feedbackBox.classList.add("need");
-                feedbackText.textContent = failMessage;
-              },
-              function() {
-                console.error(
-                  "개별읽기 읽기 중 AI 피드백 요청 실패 - status:",
-                  response.status,
-                  "body: (읽지 못함)"
-                );
-                feedbackBox.classList.add("need");
-                feedbackText.textContent = failMessage;
-              }
-            );
+          const isGood = result.status === "good";
+
+          feedbackBox.classList.remove("good", "need");
+          feedbackBox.classList.add(isGood ? "good" : "need");
+          feedbackText.textContent = result.message;
+
+          if (!isGood) {
+            return;
           }
 
-          return response.json().then(function(result) {
+          /*
+            AI 검사와 DB 저장을 분리한다: AI가 good을 줘도 서버 저장이
+            실패하면 오늘의 책속 생각쓰기로 완료 처리하지 않는다(읽기
+            전과 같은 원칙). 저장에 성공했을 때만(rewardGranted=true)
+            보상 모달을 띄우고, 이미 오늘 지급받았으면 다시 띄우지 않는다.
+          */
+          return saveTodayQuestion().then(function (saved) {
             if (requestId !== individualDuringQuestionAiRequestId) {
               return;
             }
 
-            const isGood = result.status === "good";
-
-            feedbackBox.classList.remove("good", "need");
-            feedbackBox.classList.add(isGood ? "good" : "need");
-            feedbackText.textContent = result.message;
-
-            if (!isGood) {
+            if (!saved) {
+              feedbackBox.classList.remove("good", "need");
+              feedbackBox.classList.add("need");
+              feedbackText.textContent = "질문이 저장되지 않았어요. 잠시 후 다시 시도해봐.";
               return;
             }
 
-            /*
-              AI 검사와 DB 저장을 분리한다: AI가 good을 줘도 서버 저장이
-              실패하면 오늘의 책속 생각쓰기로 완료 처리하지 않는다(읽기
-              전과 같은 원칙). 저장에 성공했을 때만(rewardGranted=true)
-              보상 모달을 띄우고, 이미 오늘 지급받았으면 다시 띄우지 않는다.
-            */
-            return saveTodayQuestion().then(function (saved) {
-              if (requestId !== individualDuringQuestionAiRequestId) {
-                return;
-              }
+            resetQuestionForm(false);
 
-              if (!saved) {
-                feedbackBox.classList.remove("good", "need");
-                feedbackBox.classList.add("need");
-                feedbackText.textContent = "질문이 저장되지 않았어요. 잠시 후 다시 시도해봐.";
-                return;
-              }
+            renderTodayQuestionList();
+            renderCollection();
+            renderShareQuestionList();
+            updateShareButtons();
+            updateMadeQuestionCountBadge();
 
-              resetQuestionForm(false);
-
-              renderTodayQuestionList();
-              renderCollection();
-              renderShareQuestionList();
-              updateShareButtons();
-              updateMadeQuestionCountBadge();
-
-              if (saved.rewardGranted && typeof openMiniRewardModal === "function") {
-                openMiniRewardModal({
-                  badge: "✨ 나의 힘 성장!",
-                  title: "책 속 생각쓰기를 완성했어요!",
-                  message: "루미: 오늘도 좋은 질문을 만들었네! 내일 또 새로운 질문을 만들어보자.",
-                  rewards: [
-                    { type: "magic", name: "마법력", point: "+1" },
-                    { type: "wisdom", name: "지혜", point: "+1" }
-                  ]
-                });
-              }
-            });
+            if (saved.rewardGranted && typeof openMiniRewardModal === "function") {
+              openMiniRewardModal({
+                badge: "✨ 나의 힘 성장!",
+                title: "책 속 생각쓰기를 완성했어요!",
+                message: "루미: 오늘도 좋은 질문을 만들었네! 내일 또 새로운 질문을 만들어보자.",
+                rewards: [
+                  { type: "magic", name: "마법력", point: "+1" },
+                  { type: "wisdom", name: "지혜", point: "+1" }
+                ]
+              });
+            }
           });
         })
         .catch(function(error) {
@@ -10768,24 +10800,16 @@ function confirmDuringRewardModal() {
             return;
           }
 
-          if (error.name === "AbortError") {
-            console.error(
-              "개별읽기 읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
-              error
-            );
-          } else {
-            console.error(
-              "개별읽기 읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
-              error
-            );
-          }
+          console.error(
+            "개별읽기 읽기 중 AI 피드백 요청 중 오류가 발생했습니다.",
+            error
+          );
 
           feedbackBox.classList.remove("good", "need");
           feedbackBox.classList.add("need");
           feedbackText.textContent = failMessage;
         })
         .finally(function() {
-          clearTimeout(timeoutId);
           isIndividualDuringQuestionAiRequestInFlight = false;
 
           if (checkButton) {

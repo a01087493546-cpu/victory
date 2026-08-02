@@ -44,6 +44,15 @@ function requestAuthenticatedAiFeedback(options) {
     return Promise.reject(new Error("로그인 정보가 없습니다."));
   }
 
+  /*
+    classReadingBookId(연습읽기)도 readingRecordId(개별읽기)도 없이는
+    서버가 어떤 책에 대한 검사인지 판단할 수 없다 - 엉뚱한 공용 키로
+    시도 이력을 남기지 않도록 여기서 미리 막는다.
+  */
+  if (!options.classReadingBookId && !options.readingRecordId) {
+    return Promise.reject(new Error("classReadingBookId 또는 readingRecordId가 필요합니다."));
+  }
+
   const requestBody = {
     question: options.question || "",
     answer: options.answer || "",
@@ -51,6 +60,7 @@ function requestAuthenticatedAiFeedback(options) {
     questionType: options.questionType,
     evaluationKey: options.evaluationKey,
     classReadingBookId: options.classReadingBookId,
+    readingRecordId: options.readingRecordId,
     bookType: options.bookType,
     bookTitle: options.bookTitle,
     passage: options.passage,

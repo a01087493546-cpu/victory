@@ -38,6 +38,7 @@ import com.victory.dto.IndividualSummaryLikeResponse;
 import com.victory.dto.IndividualSummaryResponse;
 import com.victory.dto.IndividualSummarySaveRequest;
 import com.victory.dto.IndividualSummaryShareItem;
+import com.victory.dto.MonthlyCompletionStatsResponse;
 import com.victory.service.IndividualReadingService;
 import com.victory.service.IndividualSummaryShareService;
 
@@ -359,6 +360,19 @@ public class IndividualReadingController {
         Long studentId = requireStudentId(authentication);
 
         return ResponseEntity.ok(individualReadingService.getBookTypeStats(studentId));
+    }
+
+    /*
+     * 학생 메인 화면 "월별 완독 기록" 그래프용. 현재 연도 1~12월 완독 권수를
+     * 반환한다.
+     */
+    @GetMapping("/monthly-completion-stats")
+    public ResponseEntity<MonthlyCompletionStatsResponse> getMonthlyCompletionStats(
+            Authentication authentication) {
+
+        Long studentId = requireStudentId(authentication);
+
+        return ResponseEntity.ok(individualReadingService.getMonthlyCompletionStats(studentId));
     }
 
     /*

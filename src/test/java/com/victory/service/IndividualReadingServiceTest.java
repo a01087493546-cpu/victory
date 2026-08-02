@@ -26,6 +26,8 @@ import com.victory.dto.BookTypeStatsResponse;
 import com.victory.dto.IndividualAfterCompleteResponse;
 import com.victory.dto.IndividualAfterResponseItem;
 import com.victory.dto.IndividualAfterResponseSaveRequest;
+import com.victory.dto.IndividualAchievementLevel;
+import com.victory.dto.IndividualAchievementResult;
 import com.victory.dto.IndividualBeforeResponseItem;
 import com.victory.dto.IndividualBeforeResponseSaveRequest;
 import com.victory.dto.IndividualBookRegisterRequest;
@@ -41,6 +43,7 @@ import com.victory.dto.IndividualReadingPagesRequest;
 import com.victory.dto.IndividualReadingRecordResponse;
 import com.victory.dto.IndividualSummaryResponse;
 import com.victory.dto.IndividualSummarySaveRequest;
+import com.victory.dto.MonthlyCompletionStatsResponse;
 import com.victory.entity.Book;
 import com.victory.entity.ReadingProgressLog;
 import com.victory.entity.ReadingRecord;
@@ -93,6 +96,9 @@ class IndividualReadingServiceTest {
     @Mock
     private IndividualAfterReadingRewardService afterReadingRewardService;
 
+    @Mock
+    private IndividualAchievementService individualAchievementService;
+
     private IndividualReadingService service;
 
     private User student;
@@ -102,7 +108,8 @@ class IndividualReadingServiceTest {
         service = new IndividualReadingService(
             bookRepository, readingRecordRepository, userRepository, responseRepository,
             readingProgressLogRepository, summaryRepository,
-            beforeReadingRewardService, duringReadingRewardService, afterReadingRewardService);
+            beforeReadingRewardService, duringReadingRewardService, afterReadingRewardService,
+            individualAchievementService);
 
         student = new User();
         student.setId(STUDENT_ID);
@@ -118,6 +125,31 @@ class IndividualReadingServiceTest {
         setField(request, "author", author);
         setField(request, "bookType", "story");
         return request;
+    }
+
+    private IndividualAchievementResult achievementResult(double readingPracticeScore, double recordCompletionScore) {
+        double overall = (readingPracticeScore + recordCompletionScore) / 2.0;
+        return new IndividualAchievementResult(
+            STUDENT_ID,
+            10L,
+            3,
+            60.0,
+            4,
+            80.0,
+            readingPracticeScore,
+            3,
+            100.0,
+            5,
+            4,
+            80.0,
+            recordCompletionScore,
+            overall,
+            (int) Math.round(overall),
+            IndividualAchievementLevel.GOOD,
+            1L,
+            true,
+            1,
+            LocalDate.now());
     }
 
     private void setField(Object target, String fieldName, Object value) {
@@ -366,6 +398,7 @@ class IndividualReadingServiceTest {
 
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
         when(responseRepository.findById(500L)).thenReturn(Optional.of(representative));
+        when(individualAchievementService.calculate(10L)).thenReturn(achievementResult(72.4, 88.6));
         when(readingRecordRepository.save(any(ReadingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         IndividualReadingFinishResponse response =
@@ -379,7 +412,29 @@ class IndividualReadingServiceTest {
         assertThat(response.getRepresentativeCategory()).isEqualTo("after");
         assertThat(record.getRating()).isEqualTo(4);
         assertThat(record.getRepresentResponse()).isEqualTo(representative);
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(72);
+        assertThat(record.getFinalRecordCompletionScore()).isEqualTo(89);
         assertThat(record.getCurrentStage()).isEqualTo("completed");
+    }
+
+    @Test
+    void completeReadingRecord_doesNotSetFinishedAtWhenAchievementCalculationFails() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
+        record.setAfterDone(true);
+        Response representative = buildAfterResponseEntity(500L, student, record, 1, "질문?", "답이에요", true);
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        when(responseRepository.findById(500L)).thenReturn(Optional.of(representative));
+        when(individualAchievementService.calculate(10L)).thenThrow(new IllegalStateException("calculate failed"));
+
+        assertThatThrownBy(() -> service.completeReadingRecord(STUDENT_ID, 10L, buildFinishRequest(4, 500L)))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("calculate failed");
+
+        assertThat(record.getFinishedAt()).isNull();
+        assertThat(record.getFinalReadingPracticeScore()).isNull();
+        assertThat(record.getFinalRecordCompletionScore()).isNull();
+        verify(readingRecordRepository, never()).save(any(ReadingRecord.class));
     }
 
     /* 검증: 읽기 후 완료(afterDone) 전에는 책을 완독 처리할 수 없다(책 완독과 읽기 후 완료 보상을 분리) */
@@ -404,6 +459,8 @@ class IndividualReadingServiceTest {
         record.setAfterDone(true);
         record.setCurrentStage("completed");
         record.setRating(5);
+        record.setFinalReadingPracticeScore(66);
+        record.setFinalRecordCompletionScore(77);
 
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
 
@@ -412,8 +469,11 @@ class IndividualReadingServiceTest {
 
         assertThat(response.getFinishedAt()).isEqualTo(firstFinishedAt);
         assertThat(response.getRating()).isEqualTo(5);
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(66);
+        assertThat(record.getFinalRecordCompletionScore()).isEqualTo(77);
         verify(readingRecordRepository, never()).save(any(ReadingRecord.class));
         verify(responseRepository, never()).findById(any());
+        verify(individualAchievementService, never()).calculate(any());
     }
 
     /* 검증: 다른 학생의 응답을 대표 질문으로 제출하면 403 */
@@ -479,6 +539,7 @@ class IndividualReadingServiceTest {
 
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
         when(responseRepository.findById(500L)).thenReturn(Optional.of(beforeResponse));
+        when(individualAchievementService.calculate(10L)).thenReturn(achievementResult(81.0, 91.0));
         when(readingRecordRepository.save(any(ReadingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         IndividualReadingFinishResponse response =
@@ -486,6 +547,8 @@ class IndividualReadingServiceTest {
 
         assertThat(response.getRepresentativeCategory()).isEqualTo("before");
         assertThat(response.getRepresentativeQuestion()).isEqualTo("제목 질문?");
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(81);
+        assertThat(record.getFinalRecordCompletionScore()).isEqualTo(91);
     }
 
     /* 검증: rating이 1~5 범위를 벗어나면 Bean Validation에서 거부된다 */
@@ -1736,6 +1799,92 @@ class IndividualReadingServiceTest {
         assertThat(otherStats.getTotalCompletedBooks()).isEqualTo(0);
     }
 
+    // =========================================================
+    // 월별 완독 기록 (monthly-completion-stats)
+    // =========================================================
+
+    private static final java.time.ZoneId ZONE_SEOUL_FOR_TEST = java.time.ZoneId.of("Asia/Seoul");
+
+    private ReadingRecord buildCompletedRecord(Long id, User owner, java.time.LocalDateTime finishedAt) {
+        ReadingRecord record = buildRecord(id, owner, buildBook(id, "책" + id, "작가"));
+        record.setFinishedAt(finishedAt);
+        return record;
+    }
+
+    /* 모든 달이 0권이어도 12개 원소가 모두 0으로 채워짐(그래프가 깨지지 않음) */
+    @Test
+    void getMonthlyCompletionStats_returnsAllZerosWhenNoCompletedBooks() {
+        when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID))
+            .thenReturn(List.of());
+
+        MonthlyCompletionStatsResponse stats = service.getMonthlyCompletionStats(STUDENT_ID);
+
+        assertThat(stats.getMonthlyCounts()).hasSize(12);
+        assertThat(stats.getMonthlyCounts()).containsOnly(0);
+        assertThat(stats.getYear()).isEqualTo(LocalDate.now(ZONE_SEOUL_FOR_TEST).getYear());
+    }
+
+    /* 완독한 달의 개수가 정확히 누적되고, 나머지 달은 0으로 남음 */
+    @Test
+    void getMonthlyCompletionStats_groupsCompletedRecordsByMonth() {
+        int year = LocalDate.now(ZONE_SEOUL_FOR_TEST).getYear();
+
+        ReadingRecord marchFirst = buildCompletedRecord(
+            1L, student, java.time.LocalDateTime.of(year, 3, 5, 10, 0));
+        ReadingRecord marchSecond = buildCompletedRecord(
+            2L, student, java.time.LocalDateTime.of(year, 3, 20, 10, 0));
+        ReadingRecord juneRecord = buildCompletedRecord(
+            3L, student, java.time.LocalDateTime.of(year, 6, 1, 10, 0));
+
+        when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID))
+            .thenReturn(List.of(marchFirst, marchSecond, juneRecord));
+
+        MonthlyCompletionStatsResponse stats = service.getMonthlyCompletionStats(STUDENT_ID);
+
+        assertThat(stats.getMonthlyCounts().get(2)).isEqualTo(2); // 3월(index 2)
+        assertThat(stats.getMonthlyCounts().get(5)).isEqualTo(1); // 6월(index 5)
+        assertThat(stats.getMonthlyCounts().get(0)).isEqualTo(0); // 1월은 0권
+        assertThat(stats.getMonthlyCounts()).hasSize(12);
+    }
+
+    /* 다른 연도에 완독한 기록은 현재 연도 집계에서 제외됨 */
+    @Test
+    void getMonthlyCompletionStats_excludesCompletionsFromOtherYears() {
+        int year = LocalDate.now(ZONE_SEOUL_FOR_TEST).getYear();
+
+        ReadingRecord lastYearRecord = buildCompletedRecord(
+            1L, student, java.time.LocalDateTime.of(year - 1, 12, 31, 23, 59));
+        ReadingRecord thisYearRecord = buildCompletedRecord(
+            2L, student, java.time.LocalDateTime.of(year, 1, 1, 0, 0));
+
+        when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID))
+            .thenReturn(List.of(lastYearRecord, thisYearRecord));
+
+        MonthlyCompletionStatsResponse stats = service.getMonthlyCompletionStats(STUDENT_ID);
+
+        int totalCount = stats.getMonthlyCounts().stream().mapToInt(Integer::intValue).sum();
+        assertThat(totalCount).isEqualTo(1);
+        assertThat(stats.getMonthlyCounts().get(0)).isEqualTo(1); // 1월만 집계
+    }
+
+    /* 학생별로 분리되어 집계된다 */
+    @Test
+    void getMonthlyCompletionStats_isIsolatedPerStudent() {
+        int year = LocalDate.now(ZONE_SEOUL_FOR_TEST).getYear();
+
+        when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID))
+            .thenReturn(List.of(buildCompletedRecord(
+                1L, student, java.time.LocalDateTime.of(year, 4, 1, 0, 0))));
+        when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(OTHER_STUDENT_ID))
+            .thenReturn(List.of());
+
+        MonthlyCompletionStatsResponse myStats = service.getMonthlyCompletionStats(STUDENT_ID);
+        MonthlyCompletionStatsResponse otherStats = service.getMonthlyCompletionStats(OTHER_STUDENT_ID);
+
+        assertThat(myStats.getMonthlyCounts().get(3)).isEqualTo(1);
+        assertThat(otherStats.getMonthlyCounts()).containsOnly(0);
+    }
+
     private Book buildBook(Long id, String title, String author, String bookType) {
         Book book = buildBook(id, title, author);
         book.setBookType(bookType);
@@ -2113,6 +2262,7 @@ class IndividualReadingServiceTest {
 
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
         when(responseRepository.findById(500L)).thenReturn(Optional.of(representative));
+        when(individualAchievementService.calculate(10L)).thenReturn(achievementResult(75.0, 85.0));
         when(readingRecordRepository.save(any(ReadingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         service.completeReadingRecord(STUDENT_ID, 10L, buildFinishRequest(4, 500L));

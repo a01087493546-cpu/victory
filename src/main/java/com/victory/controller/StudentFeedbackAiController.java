@@ -50,10 +50,11 @@ public class StudentFeedbackAiController {
         internalRequest.setBookTitle(request.getBookTitle());
         internalRequest.setPassage(request.getPassage());
 
-        if (FeedbackAiService.FINAL_SUMMARY_TYPE.equals(request.getActivityType())) {
+        if (isSummaryStyleActivityType(request.getActivityType())) {
             /*
-             * final_summary는 question/answer 한 쌍이 아니라 참고용
-             * qaList(질문·답 3개)와 summaryText(최종 간추리기)로 평가한다.
+             * final_summary/individual_summary는 question/answer 한 쌍이
+             * 아니라 참고용 qaList(질문·답)와 summaryText(최종 간추리기)로
+             * 평가한다.
              */
             internalRequest.setQaList(request.getQaList());
             internalRequest.setSummaryText(request.getSummaryText());
@@ -63,12 +64,22 @@ public class StudentFeedbackAiController {
         }
 
         return feedbackAiService.getFeedbackForAuthenticatedStudent(
-            studentId, internalRequest, request.getEvaluationKey(), request.getClassReadingBookId());
+            studentId,
+            internalRequest,
+            request.getEvaluationKey(),
+            request.getClassReadingBookId(),
+            request.getReadingRecordId());
+    }
+
+    private boolean isSummaryStyleActivityType(String activityType) {
+        return FeedbackAiService.FINAL_SUMMARY_TYPE.equals(activityType)
+            || FeedbackAiService.INDIVIDUAL_SUMMARY_TYPE.equals(activityType);
     }
 
     /*
      * activityType별로 실제 필요한 필드만 필수로 검증한다.
-     * - final_summary: summaryText만 필수(question/answer는 애초에 안 씀)
+     * - final_summary/individual_summary: summaryText만 필수(question/answer는
+     *   애초에 안 씀)
      * - during_reading_practice_deep: question만 필수(질문만 만들고 답은
      *   안 받는 화면이라 answer는 빈 문자열이어도 됨)
      * - 그 외: question/answer 모두 필수
@@ -77,7 +88,7 @@ public class StudentFeedbackAiController {
      */
     private void validateRequiredFieldsByActivityType(StudentAiFeedbackRequest request) {
 
-        if (FeedbackAiService.FINAL_SUMMARY_TYPE.equals(request.getActivityType())) {
+        if (isSummaryStyleActivityType(request.getActivityType())) {
             if (request.getSummaryText() == null || request.getSummaryText().isBlank()) {
                 throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,

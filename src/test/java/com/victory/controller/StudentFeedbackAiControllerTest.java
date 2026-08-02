@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,7 +77,7 @@ class StudentFeedbackAiControllerTest {
 
         AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
         when(feedbackAiService.getFeedbackForAuthenticatedStudent(
-                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L)))
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L), isNull()))
             .thenReturn(expected);
 
         AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(
@@ -84,7 +85,7 @@ class StudentFeedbackAiControllerTest {
 
         assertThat(result).isEqualTo(expected);
         verify(feedbackAiService).getFeedbackForAuthenticatedStudent(
-            eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L));
+            eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L), isNull());
     }
 
     /* 검증: 심화 연습(during_reading_practice_deep)은 answer가 빈 문자열이어도 400 없이 통과 */
@@ -98,7 +99,7 @@ class StudentFeedbackAiControllerTest {
 
         AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
         when(feedbackAiService.getFeedbackForAuthenticatedStudent(
-                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L)))
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L), isNull()))
             .thenReturn(expected);
 
         AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(request, authentication);
@@ -133,7 +134,7 @@ class StudentFeedbackAiControllerTest {
 
         AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
         when(feedbackAiService.getFeedbackForAuthenticatedStudent(
-                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L)))
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L), isNull()))
             .thenReturn(expected);
 
         AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(request, authentication);
@@ -177,7 +178,7 @@ class StudentFeedbackAiControllerTest {
 
         AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
         when(feedbackAiService.getFeedbackForAuthenticatedStudent(
-                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L)))
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), eq(200L), isNull()))
             .thenReturn(expected);
 
         AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(request, authentication);
@@ -186,7 +187,7 @@ class StudentFeedbackAiControllerTest {
 
         ArgumentCaptor<AiFeedbackRequest> captor = ArgumentCaptor.forClass(AiFeedbackRequest.class);
         verify(feedbackAiService).getFeedbackForAuthenticatedStudent(
-            eq(studentIdFromJwt), captor.capture(), eq("eval-key-1"), eq(200L));
+            eq(studentIdFromJwt), captor.capture(), eq("eval-key-1"), eq(200L), isNull());
 
         AiFeedbackRequest internalRequest = captor.getValue();
         assertThat(internalRequest.getSummaryText()).isEqualTo("최종 간추리기 내용입니다.");
@@ -202,6 +203,85 @@ class StudentFeedbackAiControllerTest {
 
         StudentAiFeedbackRequest request = buildRequest("final_summary", "");
         setField(request, "question", "");
+        setField(request, "summaryText", "");
+
+        assertThatThrownBy(() ->
+            controller.getAiReviewForAuthenticatedStudent(request, authentication)
+        )
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400");
+    }
+
+    /*
+     * 개별읽기: readingRecordId가 채워진 요청은 그대로 서비스에 전달된다
+     * (classReadingBookId는 null).
+     */
+    @Test
+    void getAiReviewForAuthenticatedStudent_passesReadingRecordIdForIndividualReading() {
+        Long studentIdFromJwt = 77L;
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            studentIdFromJwt, null, List.of(new SimpleGrantedAuthority("student")));
+
+        StudentAiFeedbackRequest request = buildRequest();
+        setField(request, "classReadingBookId", null);
+        setField(request, "readingRecordId", 900L);
+
+        AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
+        when(feedbackAiService.getFeedbackForAuthenticatedStudent(
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), isNull(), eq(900L)))
+            .thenReturn(expected);
+
+        AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(request, authentication);
+
+        assertThat(result).isEqualTo(expected);
+        verify(feedbackAiService).getFeedbackForAuthenticatedStudent(
+            eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), isNull(), eq(900L));
+    }
+
+    /*
+     * 개별읽기 간추리기(individual_summary)도 final_summary와 같이
+     * summaryText만 필수이고 qaList/summaryText가 그대로 매핑된다.
+     */
+    @Test
+    void getAiReviewForAuthenticatedStudent_individualSummarySucceedsWithoutQuestionAnswer() {
+        Long studentIdFromJwt = 77L;
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            studentIdFromJwt, null, List.of(new SimpleGrantedAuthority("student")));
+
+        StudentAiFeedbackRequest request = buildRequest("individual_summary", "");
+        setField(request, "question", "");
+        setField(request, "classReadingBookId", null);
+        setField(request, "readingRecordId", 900L);
+        setField(request, "summaryText", "개별읽기 최종 간추리기 내용입니다.");
+        setField(request, "qaList", List.of(new AiFeedbackRequest.QAItem("질문1?", "답1")));
+
+        AiFeedbackResponse expected = new AiFeedbackResponse("good", "잘했어", null, null);
+        when(feedbackAiService.getFeedbackForAuthenticatedStudent(
+                eq(studentIdFromJwt), any(AiFeedbackRequest.class), eq("eval-key-1"), isNull(), eq(900L)))
+            .thenReturn(expected);
+
+        AiFeedbackResponse result = controller.getAiReviewForAuthenticatedStudent(request, authentication);
+
+        assertThat(result).isEqualTo(expected);
+
+        ArgumentCaptor<AiFeedbackRequest> captor = ArgumentCaptor.forClass(AiFeedbackRequest.class);
+        verify(feedbackAiService).getFeedbackForAuthenticatedStudent(
+            eq(studentIdFromJwt), captor.capture(), eq("eval-key-1"), isNull(), eq(900L));
+
+        assertThat(captor.getValue().getSummaryText()).isEqualTo("개별읽기 최종 간추리기 내용입니다.");
+        assertThat(captor.getValue().getQaList()).hasSize(1);
+    }
+
+    /* individual_summary도 summaryText가 비어 있으면 400 */
+    @Test
+    void getAiReviewForAuthenticatedStudent_throws400WhenIndividualSummaryTextBlank() {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            77L, null, List.of(new SimpleGrantedAuthority("student")));
+
+        StudentAiFeedbackRequest request = buildRequest("individual_summary", "");
+        setField(request, "question", "");
+        setField(request, "classReadingBookId", null);
+        setField(request, "readingRecordId", 900L);
         setField(request, "summaryText", "");
 
         assertThatThrownBy(() ->

@@ -654,6 +654,11 @@
         );
     }
 
+    /* 미참여: 점수 등급이 아니라 "아직 개별읽기를 시작하지 않음" 상태라 중립적인 회색으로만 표시한다. */
+    .ir-state-neutral .ir-achieve-fill {
+      background: #cbbfae;
+    }
+
     .ir-student-result {
       text-align: right;
     }
@@ -773,6 +778,25 @@
 
       font-size: 16px;
       font-weight: 900;
+    }
+
+    .ir-today-detail {
+      margin-top: 4px;
+
+      color: #8a6b4f;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ir-support-empty {
+      padding: 18px 6px;
+
+      color: #8a6b4f;
+
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
     }
 
     .ir-support-heading {
@@ -1283,6 +1307,10 @@
       background: #b65b36;
     }
 
+    .chip-neutral {
+      background: #9c9284;
+    }
+
     .ir-detail-bars {
       display: grid;
       gap: 9px;
@@ -1293,7 +1321,7 @@
       grid-template-columns:
         100px
         minmax(0, 1fr)
-        44px;
+        48px;
 
       align-items: center;
       gap: 9px;
@@ -1336,6 +1364,7 @@
       font-weight: 900;
 
       text-align: right;
+      white-space: nowrap;
     }
 
     .ir-teacher-note {
@@ -1821,15 +1850,17 @@
           <button
             class="ir-pill"
             type="button"
+            id="teacherNamePill"
           >
-            교사 송은정
+            교사 확인 중...
           </button>
 
           <button
             class="ir-pill"
             type="button"
+            id="classNamePill"
           >
-            4학년 1반
+            학급 확인 중...
           </button>
 
           <button
@@ -1937,7 +1968,7 @@
                   </p>
                 </div>
 
-                <span class="ir-small-tag">
+                <span class="ir-small-tag" id="todayDateTag">
                   오늘
                 </span>
 
@@ -1946,18 +1977,20 @@
               <div class="ir-today-main">
 
                 <div class="ir-today-box">
-                  <div class="ir-today-value">
-                    76%
+                  <div class="ir-today-value" id="todayParticipationValue">
+                    -
                   </div>
 
                   <div class="ir-today-label">
                     오늘 참여율
                   </div>
+
+                  <div class="ir-today-detail" id="todayParticipationDetail"></div>
                 </div>
 
                 <div class="ir-today-box">
-                  <div class="ir-today-value">
-                    7명
+                  <div class="ir-today-value" id="supportNeededValue">
+                    -
                   </div>
 
                   <div class="ir-today-label">
@@ -1980,134 +2013,10 @@
               <!-- 오늘 현황 내부 스크롤 -->
               <div class="ir-support-scroll">
 
-                <div class="ir-support-list">
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      김수현
-                    </div>
-
-                    <div class="ir-support-reason">
-                      오늘 독서 기록 미작성
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
+                <div class="ir-support-list" id="supportNeededList">
+                  <div class="ir-support-empty">
+                    불러오는 중...
                   </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      이재훈
-                    </div>
-
-                    <div class="ir-support-reason">
-                      읽기 활동 참여 부족
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      정우진
-                    </div>
-
-                    <div class="ir-support-reason">
-                      독서 실천 일수 부족
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      박서연
-                    </div>
-
-                    <div class="ir-support-reason">
-                      기록 내용이 짧고 불완전함
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      최지우
-                    </div>
-
-                    <div class="ir-support-reason">
-                      책 내용과 기록 연결 부족
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      한지민
-                    </div>
-
-                    <div class="ir-support-reason">
-                      간추리기 활동 미완료
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      윤태호
-                    </div>
-
-                    <div class="ir-support-reason">
-                      책수다방 글 미등록
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      이서윤
-                    </div>
-
-                    <div class="ir-support-reason">
-                      추천 책장 활동 미완료
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
-                  <div class="ir-support-item">
-                    <div class="ir-support-name">
-                      김도윤
-                    </div>
-
-                    <div class="ir-support-reason">
-                      최근 3일간 독서 기록 없음
-                    </div>
-
-                    <div class="ir-support-arrow">
-                      ›
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
@@ -2328,105 +2237,28 @@
     </div>
   </div>
 
+  <script src="../js/auth.js"></script>
   <script>
-    const students = [
-      {
-        name: "김민지",
-        total: 92,
-        readingPractice: 95,
-        recordCompletion: 90,
-        state: "매우 우수",
-        note: "꾸준히 책을 읽고 독서 기록도 빠짐없이 충실하게 작성했어요."
-      },
-      {
-        name: "송은정",
-        total: 87,
-        readingPractice: 90,
-        recordCompletion: 84,
-        state: "우수",
-        note: "정해진 독서를 꾸준히 실천하고 기록 내용을 알맞게 완성했어요."
-      },
-      {
-        name: "이재훈",
-        total: 68,
-        readingPractice: 70,
-        recordCompletion: 65,
-        state: "지원 필요",
-        note: "독서 실천을 격려하고 기록에 책의 내용이 충분히 담겼는지 확인해 주세요."
-      },
-      {
-        name: "김수현",
-        total: 54,
-        readingPractice: 50,
-        recordCompletion: 58,
-        state: "집중 지원",
-        note: "꾸준한 독서 실천과 독서 기록 완성을 함께 도와줄 필요가 있어요."
-      },
-      {
-        name: "박서연",
-        total: 47,
-        readingPractice: 52,
-        recordCompletion: 43,
-        state: "지원 필요",
-        note: "읽은 내용을 자신의 말로 정리하여 기록하는 연습이 필요해요."
-      },
-      {
-        name: "최지우",
-        total: 36,
-        readingPractice: 42,
-        recordCompletion: 31,
-        state: "지원 필요",
-        note: "짧은 문장부터 독서 기록을 완성하도록 단계적인 도움이 필요해요."
-      },
-      {
-        name: "정우진",
-        total: 28,
-        readingPractice: 30,
-        recordCompletion: 25,
-        state: "집중 지원",
-        note: "읽을 분량을 나누어 안내하고 독서 실천 여부를 자주 확인해 주세요."
-      },
-      {
-        name: "한지민",
-        total: 82,
-        readingPractice: 85,
-        recordCompletion: 80,
-        state: "우수",
-        note: "책의 내용을 잘 이해하고 자신의 생각을 독서 기록에 자연스럽게 표현해요."
-      },
-      {
-        name: "윤태호",
-        total: 73,
-        readingPractice: 76,
-        recordCompletion: 70,
-        state: "보통",
-        note: "독서 활동에는 참여하고 있으나 기록을 끝까지 마무리하는 연습이 필요해요."
-      },
-      {
-        name: "이서윤",
-        total: 95,
-        readingPractice: 97,
-        recordCompletion: 93,
-        state: "매우 우수",
-        note: "다양한 책을 꾸준히 읽고 독서 기록과 추천 활동에도 적극적으로 참여해요."
-      },
-      {
-        name: "김도윤",
-        total: 61,
-        readingPractice: 58,
-        recordCompletion: 64,
-        state: "지원 필요",
-        note: "독서 활동 사이의 간격이 길어지지 않도록 꾸준한 실천을 격려해 주세요."
-      },
-      {
-        name: "박하린",
-        total: 78,
-        readingPractice: 80,
-        recordCompletion: 76,
-        state: "보통",
-        note: "독서 기록은 잘 완성하고 있으며 자신의 생각을 조금 더 자세히 적으면 좋아요."
+    /*
+      실제 교사용 개별읽기 대시보드 API와 연결한다. 이전에 있던 김민지·
+      송은정 등 샘플 학생 배열은 완전히 제거했다 - API가 실패해도 이
+      배열을 다시 채우지 않는다(하드코딩 대체 금지).
+    */
+    const API_BASE_URL = "http://localhost:8080";
+
+    let students = [];
+
+    function getTeacherAuthContext() {
+      const token = sessionStorage.getItem("token");
+      const teacherId = sessionStorage.getItem("id") || sessionStorage.getItem("studentId");
+      const role = sessionStorage.getItem("role");
+
+      if (!token || !teacherId || role !== "teacher") {
+        return null;
       }
-    ];
+
+      return { token: token, teacherId: teacherId };
+    }
 
     function getPreviewStateClass(state) {
       if (state === "매우 우수") {
@@ -2440,8 +2272,8 @@
         return "ir-state-good";
       }
 
-      if (state === "지원 필요") {
-        return "ir-state-need";
+      if (state === "미참여") {
+        return "ir-state-neutral";
       }
 
       return "ir-state-danger";
@@ -2459,8 +2291,8 @@
         return "chip-good";
       }
 
-      if (state === "지원 필요") {
-        return "chip-need";
+      if (state === "미참여") {
+        return "chip-neutral";
       }
 
       return "chip-danger";
@@ -2472,31 +2304,41 @@
           "studentPreviewList"
         );
 
+      if (students.length === 0) {
+        list.innerHTML = '<div class="ir-support-empty">학급 학생이 없어요.</div>';
+        return;
+      }
+
       list.innerHTML = students
         .map(function (student) {
+          const state = student.achievementLevel;
+          const isNotParticipating = state === "미참여";
+          const barWidth = isNotParticipating ? 0 : student.roundedOverallAchievementScore;
+          const percentText = isNotParticipating ? "-" : `${student.roundedOverallAchievementScore}%`;
+
           return `
             <div
-              class="ir-student-row ${getPreviewStateClass(student.state)}"
+              class="ir-student-row ${getPreviewStateClass(state)}"
             >
               <div class="ir-student-name">
-                ${student.name}
+                ${student.studentName}
               </div>
 
               <div class="ir-achieve-bar">
                 <div
                   class="ir-achieve-fill"
-                  style="width: ${student.total}%;"
+                  style="width: ${barWidth}%;"
                 ></div>
               </div>
 
               <div class="ir-student-result">
 
                 <div class="ir-student-percent">
-                  ${student.total}%
+                  ${percentText}
                 </div>
 
                 <div class="ir-student-state">
-                  ${student.state}
+                  ${state}
                 </div>
 
               </div>
@@ -2506,7 +2348,14 @@
         .join("");
     }
 
+    /*
+      내부 계산값(소수점 포함)은 그대로 두고, 화면에 보여줄 텍스트만
+      Math.round()로 정수 퍼센트로 표시한다(23.33 -> 23%, 66.66 -> 67%).
+      진행바 너비는 원래 값을 그대로 써서 실제 비율을 정확히 반영한다.
+    */
     function makeDetailBar(label, value) {
+      const displayValue = Math.round(value);
+
       return `
         <div class="ir-detail-bar-row">
 
@@ -2522,11 +2371,135 @@
           </div>
 
           <div class="ir-detail-bar-value">
-            ${value}%
+            ${displayValue}%
           </div>
 
         </div>
       `;
+    }
+
+    /*
+      백엔드 supportReasons는 학생 판정용 짧은 문구라("독서실천도가 낮아요"
+      등) 그대로 노출하지 않고, 교사가 바로 실행할 수 있는 안내 문장으로
+      바꿔서 보여준다. 매핑에 없는 새 사유가 오면(백엔드 문구가 바뀐 경우)
+      원문을 그대로 보여줘 조용히 사라지지 않게 한다.
+    */
+    const SUPPORT_REASON_ADVICE = {
+      "읽기 중 활동을 완료해야 해요": "읽기 중 질문 활동을 이어서 완료하도록 도와주세요.",
+      "읽기 후 활동을 완료해야 해요": "읽기 후 질문과 간추리기를 마무리하도록 안내해 주세요.",
+      "독서실천도가 낮아요": "매일 조금씩 읽을 수 있도록 읽기 시간을 정해 주세요.",
+      "질문 만들기 참여가 필요해요": "읽은 내용에서 궁금한 점을 한 가지씩 만들도록 도와주세요.",
+      "생각 나누기 참여가 필요해요": "책수다방에 자신의 생각을 한 문장 이상 남기도록 격려해 주세요.",
+      "기록 내용을 조금 더 다듬어야 해요": "질문과 답이 책 내용과 연결되도록 다시 확인해 주세요."
+    };
+
+    /*
+      메인 화면 "확인이 필요한 학생" 목록 전용 - 상세 팝업의 SUPPORT_REASON_ADVICE(긴 지도
+      문구)와 다르게, 여기서는 무엇이 부족한지만 짧게 진단하는 용도로 쓴다.
+    */
+    const SUPPORT_REASON_LABEL = {
+      "읽기 중 활동을 완료해야 해요": "읽기 중 활동 미완료",
+      "읽기 후 활동을 완료해야 해요": "읽기 후 활동 미완료",
+      "독서실천도가 낮아요": "독서실천도 낮음",
+      "질문 만들기 참여가 필요해요": "질문 만들기 참여 부족",
+      "생각 나누기 참여가 필요해요": "생각 나누기 참여 부족",
+      "기록 내용을 조금 더 다듬어야 해요": "기록내용 확인 필요"
+    };
+
+    /*
+      메인 목록 카드 한 줄에 들어가는 짧은 진단 요약. supportReasons를 최대
+      2개까지만 짧은 라벨로 바꿔 " · "로 이어 붙인다(상세 팝업의 buildTeacherNote()와
+      다른, 메인 목록 전용 문구).
+    */
+    function buildShortSupportSummary(student) {
+      if (!student.supportReasons || student.supportReasons.length === 0) {
+        return "";
+      }
+
+      return student.supportReasons
+        .slice(0, 2)
+        .map(function (reason) {
+          return SUPPORT_REASON_LABEL[reason] || reason;
+        })
+        .join(" · ");
+    }
+
+    /* 집중 지원은 buildNeedSupportNote()가 지표를 직접 비교해 만들므로 여기 없다. */
+    const STATE_TEACHER_NOTE = {
+      "매우 우수": "꾸준한 독서와 충실한 기록 활동을 잘 이어가고 있어요.",
+      "우수": "독서와 기록 활동에 안정적으로 참여하고 있어요.",
+      "보통": "독서와 기록 활동을 조금 더 꾸준히 이어가도록 격려해 주세요."
+    };
+
+    function buildLowStageNote(completedStageCount) {
+      if (completedStageCount === 0) {
+        return "읽기 전 활동부터 차근차근 시작하도록 안내해 주세요.";
+      }
+
+      if (completedStageCount === 1) {
+        return "읽기 중 질문 활동을 이어서 완료하도록 도와주세요.";
+      }
+
+      return "읽기 후 질문과 간추리기를 마무리하도록 안내해 주세요.";
+    }
+
+    /*
+      supportReasons가 비어 있는데도 achievementLevel이 집중 지원인
+      학생을 위한 문구. achievementLevel 하나만 보고 두루뭉술하게
+      말하지 않고, 실제 지표 중 가장 약한 부분을 우선순위대로 확인한다.
+      A. 완료 못한 단계가 있으면 그 단계부터 안내
+      B/C. 독서 실천도와 기록 완성도 중 더 낮은 쪽을 안내
+      D. 기록 내용 적합성이 낮으면 그것을 안내
+      E. 특별히 두드러진 약점이 없으면 포괄적으로 안내
+    */
+    function buildNeedSupportNote(student) {
+      if (student.completedStageCount < 3) {
+        return buildLowStageNote(student.completedStageCount);
+      }
+
+      if (student.readingPracticeScore < student.recordCompletionScore) {
+        return "기록은 잘하고 있으니, 매일 조금씩 읽는 습관을 이어가도록 도와주세요.";
+      }
+
+      if (student.recordCompletionScore < student.readingPracticeScore) {
+        return "읽기 활동은 하고 있으니, 질문과 답을 끝까지 작성하도록 안내해 주세요.";
+      }
+
+      if (student.contentSuitabilityScore < 50) {
+        return "질문과 답이 책의 내용과 맞게 연결되었는지 함께 확인해 주세요.";
+      }
+
+      return "읽기와 기록 활동을 한 단계씩 완료하도록 옆에서 안내해 주세요.";
+    }
+
+    /*
+      교사 참고 문구를 학생 상태에 맞게 만든다.
+      1) 미참여 -> 고정 문구(점수 부족처럼 표현하지 않음)
+      2) 지원 사유가 있음 -> 실제 사유를 안내 문장으로 바꿔 최대 2개만 표시
+      3) 지원 사유는 없지만 집중 지원 -> 지표를 비교해 가장 약한 부분 안내
+      4) 그 외(보통/우수/매우 우수) -> 상태별 짧은 문구
+    */
+    function buildTeacherNote(student) {
+      const state = student.achievementLevel;
+
+      if (state === "미참여") {
+        return "아직 개별읽기를 시작하지 않았어요.";
+      }
+
+      if (student.supportReasons && student.supportReasons.length > 0) {
+        return student.supportReasons
+          .slice(0, 2)
+          .map(function (reason) {
+            return SUPPORT_REASON_ADVICE[reason] || reason;
+          })
+          .join(" ");
+      }
+
+      if (state === "집중 지원") {
+        return buildNeedSupportNote(student);
+      }
+
+      return STATE_TEACHER_NOTE[state] || "";
     }
 
     function renderStudentDetail() {
@@ -2535,48 +2508,228 @@
           "studentDetailGrid"
         );
 
+      if (students.length === 0) {
+        grid.innerHTML = '<div class="ir-support-empty">학급 학생이 없어요.</div>';
+        return;
+      }
+
       grid.innerHTML = students
         .map(function (student) {
+          const state = student.achievementLevel;
+          const isNotParticipating = state === "미참여";
+
+          const scoreSection = isNotParticipating
+            ? `
+              <div class="ir-teacher-note">
+                ${buildTeacherNote(student)}
+              </div>
+            `
+            : `
+              <div class="ir-detail-bars">
+                ${makeDetailBar("독서 실천도", student.readingPracticeScore)}
+                ${makeDetailBar("기록 완성도", student.recordCompletionScore)}
+              </div>
+
+              <div class="ir-teacher-note">
+                ${buildTeacherNote(student)}
+              </div>
+            `;
+
           return `
             <article class="ir-detail-card">
 
               <div class="ir-detail-card-header">
 
                 <div class="ir-detail-name">
-                  ${student.name}
+                  ${student.studentNumber != null ? student.studentNumber + "번 " : ""}${student.studentName}
+                  · 읽은 책 ${student.totalCompletedBookCount}권
                 </div>
 
                 <span
-                  class="ir-state-chip ${getDetailChipClass(student.state)}"
+                  class="ir-state-chip ${getDetailChipClass(state)}"
                 >
-                  ${student.state}
+                  ${state}
                 </span>
 
               </div>
 
-              <div class="ir-detail-bars">
-
-                ${makeDetailBar(
-                  "독서 실천도",
-                  student.readingPractice
-                )}
-
-                ${makeDetailBar(
-                  "기록 완성도",
-                  student.recordCompletion
-                )}
-
-              </div>
-
-              <div class="ir-teacher-note">
-                <strong>교사 참고:</strong>
-                ${student.note}
-              </div>
+              ${scoreSection}
 
             </article>
           `;
         })
         .join("");
+    }
+
+    function renderSupportNeededList() {
+      const list = document.getElementById("supportNeededList");
+      const needingSupport = students.filter(function (student) {
+        return student.supportReasons && student.supportReasons.length > 0;
+      });
+
+      if (needingSupport.length === 0) {
+        list.innerHTML = '<div class="ir-support-empty">현재 추가 확인이 필요한 학생이 없어요.</div>';
+        return;
+      }
+
+      list.innerHTML = needingSupport
+        .map(function (student) {
+          return `
+            <div class="ir-support-item">
+              <div class="ir-support-name">
+                ${student.studentName}
+              </div>
+
+              <div class="ir-support-reason">
+                ${buildShortSupportSummary(student)}
+              </div>
+
+              <div class="ir-support-arrow">
+                ›
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function setTodayStatus(dashboard) {
+      document.getElementById("todayDateTag").textContent = dashboard.todayDate || "오늘";
+
+      const participationValue = document.getElementById("todayParticipationValue");
+      const participationDetail = document.getElementById("todayParticipationDetail");
+
+      if (dashboard.todayParticipationRate === null || dashboard.todayParticipationRate === undefined) {
+        participationValue.textContent = dashboard.todayParticipationMessage || "개별읽기 참여 학생 없음";
+        participationDetail.textContent = "";
+      } else {
+        participationValue.textContent = `${Math.round(dashboard.todayParticipationRate)}%`;
+        participationDetail.textContent =
+          `${dashboard.todayActiveStudentCount}명 참여 / 개별읽기 학생 ${dashboard.individualReadingStudentCount}명`;
+      }
+
+      document.getElementById("supportNeededValue").textContent = `${dashboard.supportNeededStudentCount}명`;
+    }
+
+    /*
+      로그인 만료(401) 시 재사용하는 처리 - auth.js의 logoutAndGoLogin()과
+      같은 방식으로 세션을 지우고 로그인 화면으로 돌려보낸다.
+    */
+    function handleUnauthorized() {
+      alert("로그인이 만료됐어요. 다시 로그인해 주세요.");
+      logoutAndGoLogin();
+    }
+
+    function showLoadError(message) {
+      document.getElementById("studentPreviewList").innerHTML =
+        `<div class="ir-support-empty">${message}</div>`;
+      document.getElementById("supportNeededList").innerHTML =
+        `<div class="ir-support-empty">${message}</div>`;
+      document.getElementById("todayParticipationValue").textContent = "-";
+      document.getElementById("supportNeededValue").textContent = "-";
+    }
+
+    async function fetchTeacherClass(auth) {
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/class`,
+        {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        }
+      );
+
+      if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+      }
+
+      if (response.status === 403) {
+        showLoadError("이 학급을 조회할 권한이 없어요.");
+        return null;
+      }
+
+      if (response.status === 404) {
+        showLoadError("담당 학급 정보를 찾을 수 없어요. 학급 등록 상태를 확인해 주세요.");
+        return null;
+      }
+
+      if (!response.ok) {
+        showLoadError("학급 정보를 불러오지 못했어요.");
+        return null;
+      }
+
+      return response.json();
+    }
+
+    async function fetchDashboard(auth, classId) {
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/classes/${classId}/individual-reading/dashboard`,
+        {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        }
+      );
+
+      if (response.status === 401) {
+        handleUnauthorized();
+        return null;
+      }
+
+      if (response.status === 403) {
+        showLoadError("이 학급의 개별읽기 현황을 조회할 권한이 없어요.");
+        return null;
+      }
+
+      if (response.status === 404) {
+        showLoadError("개별읽기 학급 또는 데이터를 찾을 수 없어요.");
+        return null;
+      }
+
+      if (!response.ok) {
+        showLoadError("개별읽기 현황을 불러오지 못했어요.");
+        return null;
+      }
+
+      return response.json();
+    }
+
+    async function loadDashboard() {
+      const auth = getTeacherAuthContext();
+
+      if (!auth) {
+        alert("교사 로그인이 필요합니다.");
+        window.location.href = "../index.html";
+        return;
+      }
+
+      document.getElementById("studentPreviewList").innerHTML =
+        '<div class="ir-support-empty">불러오는 중...</div>';
+      document.getElementById("supportNeededList").innerHTML =
+        '<div class="ir-support-empty">불러오는 중...</div>';
+
+      try {
+        const classData = await fetchTeacherClass(auth);
+
+        if (!classData) {
+          return;
+        }
+
+        document.getElementById("teacherNamePill").textContent = `교사 ${classData.teacherName}`;
+        document.getElementById("classNamePill").textContent = classData.className;
+
+        const dashboard = await fetchDashboard(auth, classData.classId);
+
+        if (!dashboard) {
+          return;
+        }
+
+        students = dashboard.students || [];
+
+        setTodayStatus(dashboard);
+        renderStudentPreview();
+        renderSupportNeededList();
+      } catch (error) {
+        console.error("개별읽기 대시보드를 불러오지 못했습니다.", error);
+        showLoadError("데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+      }
     }
 
     function openCriteriaModal() {
@@ -2684,7 +2837,8 @@
     window.addEventListener("resize", fitFixedStage);
     window.addEventListener("load", fitFixedStage);
 
-    renderStudentPreview();
+    checkLogin();
+    loadDashboard();
     fitFixedStage();
   </script>
 </body>

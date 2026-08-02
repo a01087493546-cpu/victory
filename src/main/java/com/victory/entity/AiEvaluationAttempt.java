@@ -104,6 +104,16 @@ public class AiEvaluationAttempt {
     @Column(name = "class_reading_book_id")
     private Long classReadingBookId;
 
+    /*
+     * 개별읽기 전용. 이 평가가 어느 ReadingRecord(개별읽기 등록 책)에 대한
+     * 것인지. 개별읽기는 온책읽기와 달리 ClassReadingBook이 없으므로
+     * classReadingBookId 대신 이 컬럼으로 범위를 구분한다. 두 컬럼은
+     * 동시에 값이 들어가지 않는다(온책읽기 요청은 classReadingBookId만,
+     * 개별읽기 요청은 readingRecordId만 채워서 보낸다).
+     */
+    @Column(name = "reading_record_id")
+    private Long readingRecordId;
+
     @Column(name = "evaluated_at", nullable = false, updatable = false)
     private LocalDateTime evaluatedAt;
 

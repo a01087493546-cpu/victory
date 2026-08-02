@@ -62,6 +62,7 @@ class BookRecommendationServiceTest {
     private final ResponseRepository responseRepository = mock(ResponseRepository.class);
     private final SchoolClassRepository schoolClassRepository = mock(SchoolClassRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
+    private final IndividualAchievementService individualAchievementService = mock(IndividualAchievementService.class);
 
     private final BookRecommendationService service = new BookRecommendationService(
         bookRecommendationRepository,
@@ -71,7 +72,8 @@ class BookRecommendationServiceTest {
         readingRecordRepository,
         responseRepository,
         schoolClassRepository,
-        userRepository);
+        userRepository,
+        individualAchievementService);
 
     private User buildUser(Long id, String name, String role) {
         User user = new User();
@@ -236,6 +238,10 @@ class BookRecommendationServiceTest {
                 return saved;
             });
         stubRecommendationReward(me, 800L, true, 9);
+        record.setFinalReadingPracticeScore(50);
+        record.setFinalRecordCompletionScore(70);
+        when(individualAchievementService.calculateLiveReadingPracticeScore(800L))
+            .thenReturn(63.6);
 
         BookRecommendationCreateRequest request = buildCreateRequest("잘못된 제목", "잘못된 지은이", " 감동적이었어요 ");
 
@@ -252,7 +258,13 @@ class BookRecommendationServiceTest {
         assertThat(result.getIsMine()).isTrue();
         assertThat(result.getLikeCount()).isEqualTo(0L);
         assertThat(result.isLikedByMe()).isFalse();
-        verify(bookRecommendationRepository).save(any(BookRecommendation.class));
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(64);
+        assertThat(record.getFinalRecordCompletionScore()).isEqualTo(70);
+
+        org.mockito.ArgumentCaptor<BookRecommendation> captor =
+            org.mockito.ArgumentCaptor.forClass(BookRecommendation.class);
+        verify(bookRecommendationRepository).save(captor.capture());
+        assertThat(captor.getValue().getReadingRecord()).isSameAs(record);
     }
 
     @Test
@@ -274,6 +286,9 @@ class BookRecommendationServiceTest {
                 return saved;
             });
         stubRecommendationReward(me, 800L, true, 9);
+        record.setFinalRecordCompletionScore(70);
+        when(individualAchievementService.calculateLiveReadingPracticeScore(800L))
+            .thenReturn(80.0);
 
         service.createRecommendation(
             STUDENT_1_ID,
@@ -283,6 +298,8 @@ class BookRecommendationServiceTest {
             org.mockito.ArgumentCaptor.forClass(BookRecommendation.class);
         verify(bookRecommendationRepository).save(captor.capture());
         assertThat(captor.getValue().getTeaserResponseIds()).containsExactly(700L);
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(80);
+        assertThat(record.getFinalRecordCompletionScore()).isEqualTo(70);
         verify(rewardService).grantRecommendationRewardOnce(me, 800L);
     }
 
@@ -480,6 +497,50 @@ class BookRecommendationServiceTest {
             .hasMessageContaining("409");
 
         verify(bookRecommendationRepository, never()).save(any(BookRecommendation.class));
+        verify(individualAchievementService, never()).calculate(any(Long.class));
+    }
+
+    /* 다른 학생의 readingRecordId로 추천 글을 쓰려 하면 403이고 저장되지 않는다 */
+    @Test
+    void createRecommendation_rejectsReadingRecordOwnedByAnotherStudent() {
+        User me = buildUser(STUDENT_1_ID, "학생1", "student");
+        User other = buildUser(STUDENT_2_ID, "학생2", "student");
+        SchoolClass classA = buildClass(CLASS_A_ID, buildUser(TEACHER_A_ID, "선생님", "teacher"));
+        ReadingRecord othersRecord = buildReadingRecord(
+            800L, other, buildBook(3000L, "긴긴밤", "루리"), LocalDateTime.of(2026, 7, 28, 20, 0));
+
+        when(userRepository.findById(STUDENT_1_ID)).thenReturn(Optional.of(me));
+        when(classStudentRepository.findByStudentId(STUDENT_1_ID))
+            .thenReturn(Optional.of(buildClassStudent(1L, classA, me)));
+        when(readingRecordRepository.findById(800L)).thenReturn(Optional.of(othersRecord));
+
+        assertThatThrownBy(() -> service.createRecommendation(
+                STUDENT_1_ID,
+                buildCreateRequest("책", "작가", "이유", List.of(700L))))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("403");
+
+        verify(bookRecommendationRepository, never()).save(any(BookRecommendation.class));
+    }
+
+    /* 존재하지 않는 readingRecordId로 추천 글을 쓰려 하면 404이고 저장되지 않는다 */
+    @Test
+    void createRecommendation_rejectsNonExistentReadingRecord() {
+        User me = buildUser(STUDENT_1_ID, "학생1", "student");
+        SchoolClass classA = buildClass(CLASS_A_ID, buildUser(TEACHER_A_ID, "선생님", "teacher"));
+
+        when(userRepository.findById(STUDENT_1_ID)).thenReturn(Optional.of(me));
+        when(classStudentRepository.findByStudentId(STUDENT_1_ID))
+            .thenReturn(Optional.of(buildClassStudent(1L, classA, me)));
+        when(readingRecordRepository.findById(800L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.createRecommendation(
+                STUDENT_1_ID,
+                buildCreateRequest("책", "작가", "이유", List.of(700L))))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("404");
+
+        verify(bookRecommendationRepository, never()).save(any(BookRecommendation.class));
     }
 
     @Test
@@ -499,6 +560,8 @@ class BookRecommendationServiceTest {
                 return saved;
             });
         stubRecommendationReward(me, 800L, true, 9);
+        when(individualAchievementService.calculateLiveReadingPracticeScore(800L))
+            .thenReturn(90.0);
 
         when(responseRepository.findAllById(List.of(700L)))
             .thenReturn(List.of(buildTeaserResponse(700L, me, record, "질문1")));
@@ -524,6 +587,7 @@ class BookRecommendationServiceTest {
             .thenReturn(List.of(buildTeaserResponse(700L, me, record, "질문1")));
         when(bookRecommendationRepository.save(any(BookRecommendation.class)))
             .thenThrow(new IllegalStateException("save failed"));
+        record.setFinalReadingPracticeScore(50);
 
         assertThatThrownBy(() -> service.createRecommendation(
                 STUDENT_1_ID,
@@ -531,7 +595,9 @@ class BookRecommendationServiceTest {
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("save failed");
 
+        assertThat(record.getFinalReadingPracticeScore()).isEqualTo(50);
         verify(rewardService, never()).grantRecommendationRewardOnce(any(User.class), any(Long.class));
+        verify(individualAchievementService, never()).calculateLiveReadingPracticeScore(any(Long.class));
     }
 
     @Test
@@ -560,6 +626,8 @@ class BookRecommendationServiceTest {
                 buildCreateRequest("책", "작가", "이유", List.of(700L))))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("reward failed");
+
+        verify(individualAchievementService, never()).calculateLiveReadingPracticeScore(any(Long.class));
     }
 
     /* 검증 5: 같은 학급 목록 조회 */

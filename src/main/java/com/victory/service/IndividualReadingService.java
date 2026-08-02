@@ -21,6 +21,7 @@ import com.victory.dto.BookTypeStatsResponse;
 import com.victory.dto.IndividualAfterCompleteResponse;
 import com.victory.dto.IndividualAfterResponseItem;
 import com.victory.dto.IndividualAfterResponseSaveRequest;
+import com.victory.dto.IndividualAchievementResult;
 import com.victory.dto.IndividualBeforeResponseItem;
 import com.victory.dto.IndividualBeforeResponseSaveRequest;
 import com.victory.dto.IndividualBookRegisterRequest;
@@ -37,6 +38,7 @@ import com.victory.dto.IndividualReadingPagesRequest;
 import com.victory.dto.IndividualReadingRecordResponse;
 import com.victory.dto.IndividualSummaryResponse;
 import com.victory.dto.IndividualSummarySaveRequest;
+import com.victory.dto.MonthlyCompletionStatsResponse;
 import com.victory.dto.StudentStatsResponse;
 import com.victory.entity.Book;
 import com.victory.entity.ReadingProgressLog;
@@ -114,6 +116,7 @@ public class IndividualReadingService {
     private final IndividualBeforeReadingRewardService beforeReadingRewardService;
     private final IndividualDuringReadingRewardService duringReadingRewardService;
     private final IndividualAfterReadingRewardService afterReadingRewardService;
+    private final IndividualAchievementService individualAchievementService;
 
     /*
      * 학생당 진행 중(finished_at IS NULL) 기록은 항상 1개만 있어야 한다.
@@ -246,15 +249,23 @@ public class IndividualReadingService {
 
             Response representative = requireRepresentativeCandidate(
                 studentId, readingRecordId, request.getRepresentativeResponseId());
+            IndividualAchievementResult finalScores =
+                individualAchievementService.calculate(readingRecordId);
 
             record.setRating(request.getRating());
             record.setRepresentResponse(representative);
+            record.setFinalReadingPracticeScore(roundedScore(finalScores.getReadingPracticeScore()));
+            record.setFinalRecordCompletionScore(roundedScore(finalScores.getRecordCompletionScore()));
             record.setFinishedAt(LocalDateTime.now(ZONE_SEOUL));
             record.setCurrentStage(STAGE_COMPLETED);
             readingRecordRepository.save(record);
         }
 
         return toFinishResponse(record);
+    }
+
+    private int roundedScore(double score) {
+        return (int) Math.round(score);
     }
 
     /*
@@ -1113,6 +1124,39 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
         )
     );
 }
+
+    /*
+     * 학생 메인 화면 "월별 완독 기록" 그래프용. 완독(finished_at IS NOT NULL)한
+     * 기록만 집계 대상이며, 현재 연도(Asia/Seoul 기준)에 완독한 것만 1~12월에
+     * 나눠 센다. 다른 해에 완독한 기록은 포함하지 않는다. 반환되는
+     * monthlyCounts는 항상 12개 원소이고(0권인 달도 0으로 채움), index 0이
+     * 1월이다.
+     */
+    @Transactional(readOnly = true)
+    public MonthlyCompletionStatsResponse getMonthlyCompletionStats(Long studentId) {
+
+        int currentYear = LocalDate.now(ZONE_SEOUL).getYear();
+
+        List<ReadingRecord> completedRecords =
+            readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(studentId);
+
+        int[] monthlyCounts = new int[12];
+
+        for (ReadingRecord record : completedRecords) {
+            LocalDateTime finishedAt = record.getFinishedAt();
+
+            if (finishedAt != null && finishedAt.getYear() == currentYear) {
+                monthlyCounts[finishedAt.getMonthValue() - 1]++;
+            }
+        }
+
+        List<Integer> monthlyCountsList = new ArrayList<>();
+        for (int count : monthlyCounts) {
+            monthlyCountsList.add(count);
+        }
+
+        return new MonthlyCompletionStatsResponse(currentYear, monthlyCountsList);
+    }
 
     private double percentOf(int count, int total) {
         if (total == 0) {

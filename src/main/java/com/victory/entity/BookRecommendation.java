@@ -42,6 +42,15 @@ public class BookRecommendation {
     @JoinColumn(name = "student_id", nullable = false)
     private User student;
 
+    /*
+     * 이 추천 글이 어느 완독 기록(readingRecord)에 대한 것인지. 과거
+     * 데이터는 이 컬럼이 도입되기 전에 저장되어 NULL일 수 있다(무리하게
+     * title로 역추적하지 않음 - BookRecommendationService 참고).
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reading_record_id")
+    private ReadingRecord readingRecord;
+
     @Column(name = "title", nullable = false, length = 200)
     private String title;
 

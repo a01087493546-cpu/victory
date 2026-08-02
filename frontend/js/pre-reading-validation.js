@@ -184,11 +184,13 @@ function requestPreReadingAiFeedback(options) {
   const question = options.question;
   const answer = options.answer;
 
-  /* 연습읽기에서만 전달되는 성취도 기록용 값 */
+  /* 연습읽기/개별읽기 성취도 기록용 값. classReadingBookId는 연습읽기,
+     readingRecordId는 개별읽기 화면만 채워 보낸다(둘 중 하나만 값이 있음). */
   const activityType = options.activityType;
   const questionType = options.questionType;
   const evaluationKey = options.evaluationKey;
   const classReadingBookId = options.classReadingBookId;
+  const readingRecordId = options.readingRecordId;
 
   const requestButton = options.requestButton;
   const onLoading = options.onLoading;
@@ -220,8 +222,8 @@ function requestPreReadingAiFeedback(options) {
   }, timeoutMs);
 
   /*
-    evaluationKey가 있으면 연습읽기 인증 API를 사용한다.
-    evaluationKey가 없으면 개별읽기 등 기존 화면이므로 공개 API를 유지한다.
+    evaluationKey가 있으면 인증 API(연습읽기 또는 개별읽기)를 사용한다.
+    evaluationKey가 없으면 공개 API를 유지한다(아직 전환하지 않은 화면).
   */
   const isAuthenticatedRequest =
     typeof evaluationKey === "string" &&
@@ -242,6 +244,30 @@ function requestPreReadingAiFeedback(options) {
         ok: false,
         isGood: false,
         message: "로그인 정보가 없어요. 다시 로그인해 주세요."
+      });
+    }
+
+    return Promise.resolve();
+  }
+
+  /*
+    classReadingBookId(연습읽기)도 readingRecordId(개별읽기)도 없이는
+    서버가 어떤 책에 대한 검사인지 판단할 수 없다 - 엉뚱한 공용 키로
+    시도 이력을 남기지 않도록 여기서 미리 막는다.
+  */
+  if (isAuthenticatedRequest && !classReadingBookId && !readingRecordId) {
+    clearTimeout(timeoutId);
+    guard.setRequesting(false);
+
+    if (requestButton) {
+      requestButton.disabled = false;
+    }
+
+    if (onResult) {
+      onResult({
+        ok: false,
+        isGood: false,
+        message: "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요."
       });
     }
 
@@ -272,7 +298,8 @@ function requestPreReadingAiFeedback(options) {
         questionType: questionType,
         evaluationKey: evaluationKey,
         bookTitle: bookTitle,
-        classReadingBookId: classReadingBookId
+        classReadingBookId: classReadingBookId,
+        readingRecordId: readingRecordId
       }
     : {
         type: "pre_reading_question",

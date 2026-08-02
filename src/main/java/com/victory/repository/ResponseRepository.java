@@ -75,4 +75,14 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
 
     Optional<Response> findByIdAndStudent_IdAndModeAndContentType(
             Long id, Long studentId, String mode, String contentType);
+
+    /*
+     * 개별읽기 지표 계산 전용. 한 readingRecordId에 연결된 개별읽기 활동
+     * (읽기 전/중/후 answer + 책수다방 chat_post)을 한 번에 모두 가져와서
+     * 자바에서 stage/contentType별로 나눈다 - 활동 종류마다 따로 조회하면
+     * N+1이 되는 것을 막는다. 책수다방 댓글(chat_reply)은 readingRecordId를
+     * 저장하지 않으므로 이 조회에 애초에 섞이지 않는다.
+     */
+    List<Response> findByReadingRecord_IdAndModeAndDeletedAtIsNullOrderByIdAsc(
+            Long readingRecordId, String mode);
 }

@@ -56,6 +56,7 @@ public class IndividualBookChatController {
 
         IndividualBookChatPostResponse response = individualBookChatService.createPost(
             studentId,
+            request.getReadingRecordId(),
             request.getBookTitle(),
             request.getTitle(),
             request.getScene(),

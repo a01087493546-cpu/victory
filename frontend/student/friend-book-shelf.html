@@ -561,8 +561,22 @@
         </div>
 
         <div class="fs-top-actions">
-          <button type="button" class="fs-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          <button type="button" class="fs-top-button" onclick="goBookRecommend()">책 추천 받기</button>
+          <button
+            id="friendShelfPowerButton"
+            type="button"
+            class="fs-top-button"
+            onclick="openIndividualPowerModal()"
+          >
+            ✨ 나의 힘
+          </button>
+          <button
+            id="friendShelfRecommendButton"
+            type="button"
+            class="fs-top-button"
+            onclick="goBookRecommend()"
+          >
+            책 추천 받기
+          </button>
           <button
   type="button"
   class="mq-book-home-button"
@@ -691,6 +705,12 @@
 
       const mineTabButton = document.querySelector('.fs-tab-button[data-tab="mine"]');
       if (mineTabButton) mineTabButton.style.display = "none";
+
+      const powerButton = document.getElementById("friendShelfPowerButton");
+      if (powerButton) powerButton.hidden = true;
+
+      const recommendButton = document.getElementById("friendShelfRecommendButton");
+      if (recommendButton) recommendButton.hidden = true;
     }
 
     function goIndividualReading() {

@@ -3,7 +3,6 @@ package com.victory.dto;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -56,13 +55,21 @@ public class StudentAiFeedbackRequest {
     private String evaluationKey;
 
     /*
-     * 이 평가가 속한 학급의 온책읽기 책 id(ClassReadingBook.id). 서버가
-     * "이 학생이 실제로 그 학급 책에 참여할 수 있는지"를 검증한 뒤에만
-     * 저장을 허용한다 - 그렇지 않으면 학생이 다른 학급의 책 id를 보내
-     * 이해도 계산이 엉뚱한 책과 섞일 수 있다.
+     * 이 평가가 속한 학급의 온책읽기 책 id(ClassReadingBook.id). 온책읽기
+     * 화면만 채워 보낸다. 서버가 "이 학생이 실제로 그 학급 책에 참여할 수
+     * 있는지"를 검증한 뒤에만 저장을 허용한다.
+     *
+     * 개별읽기 화면은 ClassReadingBook이 없으므로 이 값 대신 아래
+     * readingRecordId를 채워 보낸다. 둘 다 없으면 서버가 400으로 거부한다
+     * (FeedbackAiService.validateEvaluationScope).
      */
-    @NotNull
     private Long classReadingBookId;
+
+    /*
+     * 개별읽기 화면 전용(ReadingRecord.id). 서버가 "이 학생이 실제로 그
+     * 개별읽기 기록의 주인인지"를 검증한 뒤에만 저장을 허용한다.
+     */
+    private Long readingRecordId;
 
     /*
      * pre_reading_question(stepType=title일 때)/extra_practice 등 일부

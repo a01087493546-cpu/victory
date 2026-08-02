@@ -67,6 +67,7 @@ public class BookRecommendationService {
     private final ResponseRepository responseRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final UserRepository userRepository;
+    private final IndividualAchievementService individualAchievementService;
 
     @Transactional
     public BookRecommendationItem createRecommendation(Long studentId, BookRecommendationCreateRequest request) {
@@ -78,6 +79,7 @@ public class BookRecommendationService {
 
         BookRecommendation recommendation = new BookRecommendation();
         recommendation.setStudent(student);
+        recommendation.setReadingRecord(readingRecord);
         recommendation.setTitle(readingRecord.getBook().getTitle().trim());
         recommendation.setAuthor(trimToEmpty(readingRecord.getBook().getAuthor()));
         recommendation.setReason(request.getReason().trim());
@@ -86,10 +88,28 @@ public class BookRecommendationService {
         BookRecommendation saved = bookRecommendationRepository.save(recommendation);
         BookRecommendationRewardService.RewardResult rewardResult =
             rewardService.grantRecommendationRewardOnce(student, readingRecord.getId());
+        refreshFinalReadingPracticeScore(readingRecord);
         StudentStats stats = rewardResult.getStats();
 
         return BookRecommendationItem.of(saved, resolveTeaserQuestions(saved), 0L, false, true)
             .withReward(rewardResult.isRewardGranted(), stats == null ? null : stats.getCourage());
+    }
+
+    /*
+     * calculate()는 완독 기록에서 저장된 final_reading_practice_score를
+     * 우선 반환하므로, 방금 저장한 추천을 반영하려면 그 저장값 우선
+     * 정책을 건너뛰는 calculateLiveReadingPracticeScore()를 써야 한다
+     * (원본 활동 데이터만으로 강제 재계산). final_record_completion_score와
+     * finished_at은 여기서 절대 건드리지 않는다.
+     */
+    private void refreshFinalReadingPracticeScore(ReadingRecord readingRecord) {
+        if (readingRecord.getFinishedAt() == null) {
+            return;
+        }
+
+        double liveReadingPracticeScore =
+            individualAchievementService.calculateLiveReadingPracticeScore(readingRecord.getId());
+        readingRecord.setFinalReadingPracticeScore((int) Math.round(liveReadingPracticeScore));
     }
 
     public List<BookRecommendationCompletedBookItem> getCompletedBooks(Long studentId) {

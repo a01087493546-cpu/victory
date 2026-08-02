@@ -4482,16 +4482,43 @@ async function moveSummaryDate(dayOffset) {
 
     let individualQuestionAiRequestId = 0;
 
-    function requestIndividualQuestionAiFeedback(card, item, number) {
+    /*
+      질문 카드(1/2/3번)별로 안정적인 평가 대상 키를 만든다: readingRecordId +
+      카드 번호. 같은 카드를 다시 검사받으면 같은 대상의 재시도로 누적되고,
+      번호가 다른 카드는 항상 별도 평가 대상이 된다.
+    */
+    function buildIndividualQuestionEvaluationKey(readingRecordId, number) {
+      return "individual_after_question_" + readingRecordId + "_" + number;
+    }
+
+    async function requestIndividualQuestionAiFeedback(card, item, number) {
       const requestId = ++individualQuestionAiRequestId;
       const checkButton = document.getElementById("checkQuestionButton");
 
       if (checkButton) checkButton.disabled = true;
       setFeedback("questionFeedback", "", "루미가 답변을 읽고 있어요...");
 
-      requestAiFeedback("individual_question", getBookTypeLabelForAi(), [
-        { question: item.question, answer: item.answer }
-      ], number).then(function(result) {
+      const readingRecordId = await getIndividualReadingRecordId();
+
+      if (requestId !== individualQuestionAiRequestId) {
+        return;
+      }
+
+      if (!readingRecordId) {
+        applyIndividualQuestionAiResult(
+          card, item, number, "need", "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.");
+        if (checkButton) checkButton.disabled = false;
+        return;
+      }
+
+      requestAuthenticatedAiFeedback({
+        activityType: "individual_question",
+        evaluationKey: buildIndividualQuestionEvaluationKey(readingRecordId, number),
+        readingRecordId: readingRecordId,
+        bookType: getBookTypeLabelForAi(),
+        question: item.question,
+        answer: item.answer
+      }).then(function(result) {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
@@ -4823,7 +4850,7 @@ function goToPreviousQuestionCard() {
 
     let summaryAiRequestId = 0;
 
-    function checkSummaryFeedback() {
+    async function checkSummaryFeedback() {
   const questionAnswers = getQuestionAnswers();
   const summaryText = document.getElementById("summaryInput").value.trim();
   const problems = [];
@@ -4848,7 +4875,24 @@ function goToPreviousQuestionCard() {
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
 
-  requestAiFeedback("individual_summary", getBookTypeLabelForAi(), questionAnswers, undefined, summaryText).then(async function(result) {
+  const readingRecordId = await getIndividualReadingRecordId();
+
+  if (requestId !== summaryAiRequestId) return;
+
+  if (!readingRecordId) {
+    setFeedback("summaryFeedback", "need", "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.");
+    if (checkButton) checkButton.disabled = false;
+    return;
+  }
+
+  requestAuthenticatedAiFeedback({
+    activityType: "individual_summary",
+    evaluationKey: "individual_after_summary_" + readingRecordId,
+    readingRecordId: readingRecordId,
+    bookType: getBookTypeLabelForAi(),
+    qaList: questionAnswers,
+    summaryText: summaryText
+  }).then(async function(result) {
     if (requestId !== summaryAiRequestId) return;
 
     setFeedback("summaryFeedback", result.status, result.message);

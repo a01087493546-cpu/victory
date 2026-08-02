@@ -23,7 +23,35 @@ public class PracticeAchievementSchemaInitializer {
         ensureAiEvaluationAttemptsTable();
         ensureAiEvaluationAttemptsEvaluationKeyColumns();
         ensureAiEvaluationAttemptsClassReadingBookIdColumn();
+        ensureAiEvaluationAttemptsReadingRecordIdColumn();
         ensurePracticeAchievementSnapshotsTable();
+    }
+
+    /*
+     * 개별읽기 AI 검사 시도 기록용. 개별읽기는 ClassReadingBook이 없으므로
+     * class_reading_book_id 대신 이 컬럼으로 어느 ReadingRecord에 대한
+     * 평가인지 구분한다(FeedbackAiService.validateEvaluationScope 참고).
+     */
+    private void ensureAiEvaluationAttemptsReadingRecordIdColumn() {
+        if (!tableExists("ai_evaluation_attempts")) {
+            return;
+        }
+
+        if (!columnExists("ai_evaluation_attempts", "reading_record_id")) {
+            jdbcTemplate.execute(
+                "ALTER TABLE ai_evaluation_attempts " +
+                    "ADD COLUMN reading_record_id BIGINT NULL"
+            );
+        }
+
+        if (!indexExists(
+                "ai_evaluation_attempts",
+                "idx_ai_eval_attempts_student_reading_record")) {
+            jdbcTemplate.execute(
+                "CREATE INDEX idx_ai_eval_attempts_student_reading_record " +
+                    "ON ai_evaluation_attempts (student_id, reading_record_id)"
+            );
+        }
     }
 
     /*

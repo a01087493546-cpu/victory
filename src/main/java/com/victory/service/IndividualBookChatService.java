@@ -18,10 +18,12 @@ import com.victory.dto.IndividualBookChatFeedResponse;
 import com.victory.dto.IndividualBookChatPostResponse;
 import com.victory.dto.StudentStatsResponse;
 import com.victory.entity.ClassStudent;
+import com.victory.entity.ReadingRecord;
 import com.victory.entity.Response;
 import com.victory.entity.SchoolClass;
 import com.victory.entity.User;
 import com.victory.repository.ClassStudentRepository;
+import com.victory.repository.ReadingRecordRepository;
 import com.victory.repository.ResponseRepository;
 import com.victory.repository.SchoolClassRepository;
 import com.victory.repository.UserRepository;
@@ -55,6 +57,7 @@ public class IndividualBookChatService {
     private final ClassStudentRepository classStudentRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final IndividualBookChatRewardService rewardService;
+    private final ReadingRecordRepository readingRecordRepository;
 
     @Transactional(readOnly = true)
     public IndividualBookChatFeedResponse getClassFeed(Long viewerStudentId) {
@@ -131,12 +134,17 @@ public class IndividualBookChatService {
      * 필수 텍스트 항목이 비어 있으면 400으로 명확한 사유를 돌려준다 -
      * 프론트가 조용히 실패하지 않고 사용자에게 안내할 수 있게 한다.
      *
+     * readingRecordId는 프론트가 bookTitle(자유 입력)로 되짚어 추측하지
+     * 않고, 학생이 지금 진행 중인 책의 실제 readingRecordId를 그대로
+     * 보내야 한다. 서버는 이 값의 존재·소유권·진행 상태를 직접 검증한다.
+     *
      * 글 저장 → 오늘 첫 등록이면 용기 +1 보상 지급까지 하나의 트랜잭션
      * 안에서 처리한다.
      */
     @Transactional
     public IndividualBookChatPostResponse createPost(
             Long studentId,
+            Long readingRecordId,
             String bookTitle,
             String title,
             String scene,
@@ -150,6 +158,8 @@ public class IndividualBookChatService {
             );
         }
 
+        ReadingRecord readingRecord = requireInProgressOwnedReadingRecord(studentId, readingRecordId);
+
         User student = userRepository.findById(studentId)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND,
@@ -160,6 +170,7 @@ public class IndividualBookChatService {
 
         Response response = new Response();
         response.setStudent(student);
+        response.setReadingRecord(readingRecord);
         response.setMode(MODE_INDIVIDUAL);
         response.setContentType(CONTENT_TYPE_CHAT_POST);
         response.setContent(scene);
@@ -515,5 +526,42 @@ public class IndividualBookChatService {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    /*
+     * 책수다방 글은 반드시 학생이 지금 진행 중인 책(readingRecord)에
+     * 연결되어야 한다. bookTitle(자유 입력 텍스트)로 되짚어 추측하지 않고
+     * 이 값만 신뢰한다 - 존재 여부, 본인 소유 여부, 진행 중 상태(완독 전)를
+     * 순서대로 검증한다.
+     */
+    private ReadingRecord requireInProgressOwnedReadingRecord(Long studentId, Long readingRecordId) {
+        if (readingRecordId == null) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "책수다방 글을 쓸 책 정보를 찾을 수 없습니다. 책읽기 화면에서 다시 시도해 주세요."
+            );
+        }
+
+        ReadingRecord readingRecord = readingRecordRepository.findById(readingRecordId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "개별읽기 기록을 찾을 수 없습니다. readingRecordId=" + readingRecordId
+            ));
+
+        if (readingRecord.getStudent() == null || !readingRecord.getStudent().getId().equals(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "본인의 개별읽기 기록만 사용할 수 있습니다."
+            );
+        }
+
+        if (readingRecord.getFinishedAt() != null) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "완독한 책은 책수다방 글을 새로 쓸 수 없습니다. 진행 중인 책으로 다시 시도해 주세요."
+            );
+        }
+
+        return readingRecord;
     }
 }

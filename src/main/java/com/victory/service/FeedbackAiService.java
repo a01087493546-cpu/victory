@@ -6,9 +6,11 @@ import com.victory.dto.AiFeedbackResponse;
 import com.victory.entity.AiEvaluationAttempt;
 import com.victory.entity.ClassReadingBook;
 import com.victory.entity.ClassStudent;
+import com.victory.entity.ReadingRecord;
 import com.victory.repository.AiEvaluationAttemptRepository;
 import com.victory.repository.ClassReadingBookRepository;
 import com.victory.repository.ClassStudentRepository;
+import com.victory.repository.ReadingRecordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -658,6 +660,15 @@ public class FeedbackAiService {
      */
     private static final String INDIVIDUAL_QUESTION_TYPE = "individual_question";
 
+    /*
+     * 개별읽기 읽기 후 "최종 간추리기" 전용 타입. final_summary와 마찬가지로
+     * qaList(참고용 질문·답)+summaryText 조합으로 평가하므로
+     * isFinalSummaryType()에서 같은 분기를 탄다. StudentFeedbackAiController가
+     * "qaList/summaryText로 평가할지, question/answer로 평가할지"와
+     * "필수 필드가 무엇인지"를 판단할 때 이 상수를 참조한다.
+     */
+    public static final String INDIVIDUAL_SUMMARY_TYPE = "individual_summary";
+
     private static final String SYSTEM_PROMPT_INDIVIDUAL_QUESTION = """
             너는 초등학교 4학년 대상 독서 활동 앱의 캐릭터 '루미'야.
             학생이 자기가 고른 책을 읽고, 그 책을 간추리는 데 도움이 되는
@@ -913,11 +924,19 @@ public class FeedbackAiService {
             - result가 good이면 failedRule은 반드시 null로 해.
             """;
 
-    private final RestTemplate restTemplate = buildRestTemplate();
+    /*
+     * 패키지 접근(빈 default 접근자)으로 열어 두어 같은 패키지의 단위
+     * 테스트가 실제 OpenAI 네트워크 호출 없이 RestTemplate을 모킹해
+     * "AI 검사 성공 → 시도 기록 저장" 경로를 재현할 수 있게 한다
+     * (AiBookRecommendationService.restTemplate과 같은 패턴). 운영
+     * 코드에서는 buildRestTemplate()로만 생성된다.
+     */
+    RestTemplate restTemplate = buildRestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AiEvaluationAttemptRepository aiEvaluationAttemptRepository;
     private final ClassStudentRepository classStudentRepository;
     private final ClassReadingBookRepository classReadingBookRepository;
+    private final ReadingRecordRepository readingRecordRepository;
 
     @Value("${openai.api.key}")
     private String openaiApiKey;
@@ -957,26 +976,52 @@ public class FeedbackAiService {
      * 파싱 실패는 이 메서드의 catch 블록(=공개 경로와 같은 폴백)으로 빠지고,
      * 그 경우 attempt_number를 늘리지도, 기록을 남기지도 않는다.
      *
-     * classReadingBookId 검증은 AI 호출보다 먼저, try 블록 밖에서 한다 -
-     * try 안에 두면 ResponseStatusException(403/404 등)이 handleAiCallFailure의
-     * "need"로 감춰져 버려서, 학생이 다른 학급 책 id를 보내는 것을 사실상
-     * 놓치게 되기 때문이다.
+     * classReadingBookId/readingRecordId 검증은 AI 호출보다 먼저, try 블록
+     * 밖에서 한다 - try 안에 두면 ResponseStatusException(400/403/404 등)이
+     * handleAiCallFailure의 "need"로 감춰져 버려서, 학생이 잘못된 id를
+     * 보내는 것을 사실상 놓치게 되기 때문이다.
+     *
+     * 온책읽기 화면은 classReadingBookId만, 개별읽기 화면은 readingRecordId만
+     * 채워 보낸다(둘 다 없으면 400). 이렇게 "어느 값이 채워졌는지"로
+     * 구분하는 이유는, pre_reading_question/during_reading_question처럼
+     * 온책읽기와 개별읽기가 activityType 문자열 자체는 그대로 공유하기
+     * 때문이다(같은 프롬프트를 재사용) - activityType만으로는 두 맥락을
+     * 구분할 수 없다.
      */
     public AiFeedbackResponse getFeedbackForAuthenticatedStudent(
             Long studentId,
             AiFeedbackRequest request,
             String evaluationKey,
-            Long classReadingBookId) {
+            Long classReadingBookId,
+            Long readingRecordId) {
 
-        validateStudentBelongsToClassReadingBook(studentId, classReadingBookId);
+        validateEvaluationScope(studentId, classReadingBookId, readingRecordId);
 
         try {
             AiFeedbackResponse result = callAndParseAiResponse(request);
-            recordAuthenticatedAttempt(studentId, request, result, evaluationKey, classReadingBookId);
+            recordAuthenticatedAttempt(
+                studentId, request, result, evaluationKey, classReadingBookId, readingRecordId);
             return result;
         } catch (Exception e) {
             return handleAiCallFailure(request, e);
         }
+    }
+
+    private void validateEvaluationScope(Long studentId, Long classReadingBookId, Long readingRecordId) {
+        if (classReadingBookId != null) {
+            validateStudentBelongsToClassReadingBook(studentId, classReadingBookId);
+            return;
+        }
+
+        if (readingRecordId != null) {
+            validateStudentOwnsReadingRecord(studentId, readingRecordId);
+            return;
+        }
+
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "classReadingBookId 또는 readingRecordId 중 하나가 필요합니다."
+        );
     }
 
     /*
@@ -1003,6 +1048,27 @@ public class FeedbackAiService {
             throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN,
                 "본인 학급의 온책읽기 책만 사용할 수 있습니다."
+            );
+        }
+    }
+
+    /*
+     * 개별읽기 전용 검증: 요청한 readingRecordId가 실제로 존재하고, 이
+     * 학생 본인의 개별읽기 기록인지 확인한다. 다른 학생의 readingRecordId를
+     * 보내면 평가 이력이 엉뚱한 학생 책과 섞일 수 있으므로 저장 이전에 막는다.
+     */
+    private void validateStudentOwnsReadingRecord(Long studentId, Long readingRecordId) {
+
+        ReadingRecord readingRecord = readingRecordRepository.findById(readingRecordId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "개별읽기 기록을 찾을 수 없습니다. readingRecordId=" + readingRecordId
+            ));
+
+        if (!readingRecord.getStudent().getId().equals(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "본인의 개별읽기 기록만 사용할 수 있습니다."
             );
         }
     }
@@ -1041,14 +1107,16 @@ public class FeedbackAiService {
     }
 
     /*
-     * 연습읽기 AI 검사 유형(pre_reading_question/during_reading_question/
-     * during_reading_practice_deep/during_reading_practice_review/
-     * book_question/final_summary)만 시도 기록을 남긴다.
-     * individual_pre_reading_question/individual_question/individual_summary
-     * 같은 개별읽기 유형이나 extra_practice(읽기 후 "질문으로 간추리기
-     * 연습" - 학생 개인 책이 아니라 책 유형별 고정 예시 글을 검사하는
-     * 연습 단계라 이해도 계산 대상에서 제외하기로 확정함)는 이해도 계산
-     * 대상이 아니므로 기록하지 않는다.
+     * 시도 기록을 남기는 AI 검사 유형: 연습읽기(pre_reading_question/
+     * during_reading_question/during_reading_practice_deep/
+     * during_reading_practice_review/book_question/final_summary)에 더해
+     * 개별읽기(individual_question/individual_summary)도 포함한다.
+     * 개별읽기는 evaluationKey/classReadingBookId 대신 readingRecordId로
+     * 범위를 구분해서 저장한다(recordAuthenticatedAttempt 참고).
+     *
+     * extra_practice(읽기 후 "질문으로 간추리기 연습" - 학생 개인 책이
+     * 아니라 책 유형별 고정 예시 글을 검사하는 연습 단계)는 여전히
+     * 이해도 계산 대상에서 제외한다.
      */
     private boolean isPracticeReadingAiCheckType(AiFeedbackRequest request) {
         String type = request.getType();
@@ -1058,7 +1126,9 @@ public class FeedbackAiService {
             || DURING_READING_PRACTICE_DEEP_TYPE.equals(type)
             || DURING_READING_PRACTICE_REVIEW_TYPE.equals(type)
             || BOOK_QUESTION_TYPE.equals(type)
-            || FINAL_SUMMARY_TYPE.equals(type);
+            || FINAL_SUMMARY_TYPE.equals(type)
+            || INDIVIDUAL_QUESTION_TYPE.equals(type)
+            || INDIVIDUAL_SUMMARY_TYPE.equals(type);
     }
 
     private void recordAuthenticatedAttempt(
@@ -1066,7 +1136,8 @@ public class FeedbackAiService {
             AiFeedbackRequest request,
             AiFeedbackResponse result,
             String evaluationKey,
-            Long classReadingBookId) {
+            Long classReadingBookId,
+            Long readingRecordId) {
 
         if (evaluationKey == null || evaluationKey.isBlank()) {
             /*
@@ -1104,6 +1175,7 @@ public class FeedbackAiService {
             attempt.setEvaluationKey(evaluationKey);
             attempt.setAttemptNumber((int) attemptNumber);
             attempt.setClassReadingBookId(classReadingBookId);
+            attempt.setReadingRecordId(readingRecordId);
             attempt.setStatus(normalizedStatus);
             aiEvaluationAttemptRepository.save(attempt);
         } catch (Exception e) {
@@ -1232,7 +1304,7 @@ public class FeedbackAiService {
 
     private boolean isFinalSummaryType(AiFeedbackRequest request) {
         String type = request.getType();
-        return FINAL_SUMMARY_TYPE.equals(type) || "individual_summary".equals(type);
+        return FINAL_SUMMARY_TYPE.equals(type) || INDIVIDUAL_SUMMARY_TYPE.equals(type);
     }
 
     private String buildPreReadingQuestionUserContent(AiFeedbackRequest request) {
