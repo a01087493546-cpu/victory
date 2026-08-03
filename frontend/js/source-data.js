@@ -11,16 +11,6 @@ var sourceData = [
   },
   {
     type: "이미지",
-    fileName: "hero-student.png",
-    name: "학생 용사 캐릭터 이미지",
-    description: "책과 검을 들고 모험을 시작하는 학생 용사 캐릭터",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usedIn: "로그인 화면 왼쪽 모험 장면, 학생 화면 예정",
-    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 크기 조정",
-    note: "확보: ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    type: "이미지",
     fileName: "dragon-main.png",
     name: "메인 드래곤 캐릭터 이미지",
     description: "지식창고를 빼앗은 메인 드래곤 캐릭터",
@@ -35,7 +25,7 @@ var sourceData = [
     name: "학생 역할 선택 캐릭터 이미지",
     description: "학생 역할 선택 카드에 들어가는 학생 용사 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
-    usedIn: "로그인 화면 학생 역할 선택 카드",
+    usedIn: "로그인 화면 학생 역할 선택 카드, 로그인 첫 화면 캐릭터 장면(존재하지 않던 hero-student.png 참조를 대체)",
     modified: "파일명 변경, 배경 제거형 이미지로 사용, 카드 크기에 맞게 CSS 조정",
     note: "확보: ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
@@ -104,7 +94,7 @@ var sourceData = [
   file: "ability-magic.png",
   description: "독서 활동에서 마법력 능력치를 나타내는 별빛 마법 아이콘 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "능력치 안내 화면",
+  usage: "능력치 안내 화면, 개별읽기 보상 화면(reward-magic-wand.png로 복사)",
   modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
@@ -114,7 +104,7 @@ var sourceData = [
   file: "ability-health.png",
   description: "독서 활동에서 체력 능력치를 나타내는 하트 아이콘 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "능력치 안내 화면",
+  usage: "능력치 안내 화면, 개별읽기 보상 화면(reward-stamina-heart.png로 복사)",
   modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
@@ -124,7 +114,7 @@ var sourceData = [
   file: "ability-wisdom.png",
   description: "독서 활동에서 지혜 능력치를 나타내는 책 아이콘 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "능력치 안내 화면",
+  usage: "능력치 안내 화면, 개별읽기 보상 화면(reward-wisdom-book.png로 복사)",
   modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
@@ -134,7 +124,7 @@ var sourceData = [
   file: "ability-courage.png",
   description: "독서 활동에서 용기 능력치를 나타내는 방패 아이콘 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "능력치 안내 화면",
+  usage: "능력치 안내 화면, 개별읽기 보상 화면(reward-courage-shield.png로 복사), 책 친구에게 소개 글쓰기 화면",
   modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 
@@ -164,21 +154,11 @@ var sourceData = [
   file: "home-lumi.png",
   description: "학생을 독서 활동으로 안내하는 어린 용사 캐릭터 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 홈 화면 안내 캐릭터",
+  usage: "학생 홈 화면 안내 캐릭터, 읽기후 인트로 화면 1장면 캐릭터(lumi-after-intro-01-smile.png로 복사)",
   modified: "파일명 변경 및 홈 화면 배치에 맞게 크기 조정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 {
-    title: "연습하기 - 책 고르기 단계 이미지",
-    category: "이미지",
-    fileName: "practice-book-select.png",
-    description: "책 고르기 활동을 나타내는 빛나는 책 더미와 열린 책 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 연습하기 화면 책 고르기 카드",
-    modified: "파일명 변경 및 연습하기 카드 화면에 맞게 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
     title: "연습하기 - 읽기 전 단계 이미지",
     category: "이미지",
     fileName: "practice-before-reading.png",
@@ -209,96 +189,6 @@ var sourceData = [
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },    
   {
-    title: "질문 꾸러미 인트로 도서관 배경 이미지",
-    category: "이미지",
-    fileName: "question-intro-library-bg.png",
-    description: "질문하며 읽기의 중요성을 안내하는 인트로 화면에 사용한 신비로운 판타지 도서관 배경 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 인트로 배경",
-    modified: "파일명 변경 및 인트로 화면 비율에 맞게 CSS로 크기와 위치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 인트로 루미 장면 1 이미지",
-    category: "이미지",
-    fileName: "question-intro-lumi-scene1.png",
-    description: "책을 읽으며 궁금함이 생기는 순간을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 인트로 1장면",
-    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 인트로 루미 장면 2 이미지",
-    category: "이미지",
-    fileName: "question-intro-lumi-scene2.png",
-    description: "작은 궁금함이 글을 깊이 읽는 힘이 된다는 내용을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 인트로 2장면",
-    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 인트로 루미 장면 3 이미지",
-    category: "이미지",
-    fileName: "question-intro-lumi-scene3.png",
-    description: "질문의 힘을 깨워 책을 깊이 읽어보자는 메시지를 전달하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 인트로 3장면",
-    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS 및 JavaScript로 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 1단계 루미 안내 이미지",
-    category: "이미지",
-    fileName: "question-bundle-lumi-step1.png",
-    description: "이야기를 먼저 그냥 읽어보는 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 1단계 그냥 읽어보기 안내 영역",
-    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 2단계 루미 안내 이미지",
-    category: "이미지",
-    fileName: "question-bundle-lumi-step2.png",
-    description: "질문과 함께 이야기를 다시 읽어보는 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 2단계 질문과 함께 읽기 안내 영역",
-    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 3단계 루미 안내 이미지",
-    category: "이미지",
-    fileName: "question-bundle-lumi-step3.png",
-    description: "학생이 직접 궁금한 질문을 만들어보는 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 3단계 내가 궁금한 질문 만들기 안내 영역",
-    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 4단계 루미 안내 이미지",
-    category: "이미지",
-    fileName: "question-bundle-lumi-step4.png",
-    description: "친구들의 생각을 살펴보고 내 생각을 나누는 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 4단계 생각 나누기 안내 영역",
-    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    title: "질문 꾸러미 5단계 루미 안내 이미지",
-    category: "이미지",
-    fileName: "question-bundle-lumi-step5.png",
-    description: "질문하며 읽기의 중요성을 정리하는 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 질문 꾸러미 화면 5단계 질문하며 읽기의 중요성 알기 안내 영역",
-    modified: "파일명 변경 및 질문 꾸러미 카드 영역에 맞게 CSS로 크기 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-    {
     title: "읽기 전 인트로 배경 이미지",
     category: "이미지",
     fileName: "pre-reading-bg-magic-greenhouse.png",
@@ -334,21 +224,10 @@ var sourceData = [
     fileName: "pre-reading-lumi-question-note.png",
     description: "읽기 전 질문을 만들어 보도록 안내하는 루미 캐릭터 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
-    usage: "학생 읽기 전 인트로 화면 3단계 루미 안내 영역",
+    usage: "학생 읽기 전 인트로 화면 3단계 루미 안내 영역, 읽기후 인트로 화면 2장면 캐릭터(lumi-after-intro-02-serious.png로 복사)",
     modified: "파일명 변경, 투명 배경 PNG로 정리, 화면 배치에 맞게 CSS로 크기 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
-  ,
-{
-  title: "읽기 중 인트로 배경 이미지",
-  category: "이미지",
-  fileName: "during-reading-intro-bg.png",
-  description: "읽기 중 활동 인트로 화면에 사용되는 신비로운 도서관 배경 이미지",
-  source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 읽기 중 활동 인트로 1~3장면 공통 배경",
-  modified: "파일명 변경 및 인트로 화면 비율에 맞게 CSS로 크기와 위치 조정 예정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},
 {
   title: "읽기 중 인트로 루미 장면 1 이미지",
   category: "이미지",
@@ -375,20 +254,8 @@ var sourceData = [
   fileName: "during-reading-lumi-03-practice.png",
   description: "읽기 중 질문의 종류를 하나씩 연습하고 책읽기에 적용해 보자고 안내하는 루미 캐릭터 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
-  usage: "학생 읽기 중 활동 인트로 3장면",
+  usage: "학생 읽기 중 활동 인트로 3장면, 읽기 중 질문 연습 방법 알기 화면 및 기본 연습 피드백 박스",
   modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 캐릭터 크기와 위치 통일 예정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},
-{
-  category: "이미지",
-  name: "읽기 중 질문 연습 배경 이미지",
-  file: "frontend/assets/images/during-reading/intro/during-reading-practice-bg.png",
-  description: "읽기 중 질문 연습 화면의 마법 도서관 배경 이미지",
-  source: "ChatGPT 생성 이미지",
-  license: "OpenAI 이용약관에 따름",
-  usage: "읽기 중 질문 연습 화면 배경",
-  createdDate: "2026-06-04",
-  modified: "크기 및 파일명 수정",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 {
@@ -440,17 +307,6 @@ var sourceData = [
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 {
-  category: "이미지",
-  name: "읽기 중 질문 연습 루미 이미지",
-  file: "frontend/assets/images/during-reading/intro/during-reading-lumi-03-practice.png",
-  description: "읽기 중 질문 연습에서 학생에게 안내와 피드백을 제공하는 루미 캐릭터 이미지",
-  source: "ChatGPT 생성 이미지",
-  license: "OpenAI 이용약관에 따름",
-  usage: "읽기 중 질문 연습 - 방법 알기 화면, 기본 연습 피드백 박스",
-  createdDate: "2026-06-04",
-  modified: "투명 배경 처리 및 파일명 수정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},{
 title: "우리반 책읽기 배경 이미지",
 category: "이미지",
 fileName: "class-reading-bg.png",
@@ -531,16 +387,6 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
   {
     category: "이미지",
-    title: "개별읽기 메인 루미 이미지",
-    fileName: "home-lumi.png",
-    description: "개별읽기 메인 화면에서 학생을 안내하는 용사 루미 캐릭터 이미지",
-    source: "ChatGPT 생성 이미지",
-    usage: "개별읽기 메인 화면 안내 캐릭터",
-    modified: "투명 배경 처리 및 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    category: "이미지",
     title: "책 추천 받기 배경 이미지",
     fileName: "book-recommend-bg.png",
     description: "책 추천 받기 화면의 따뜻하고 신비로운 도서관 분위기를 나타내는 배경 이미지",
@@ -555,7 +401,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     fileName: "book-recommend-lumi.png",
     description: "책 추천 받기 화면에서 학생에게 질문을 던지고 책 추천을 안내하는 용사 루미 캐릭터 이미지",
     source: "ChatGPT 생성 이미지",
-    usage: "책 추천 받기 화면 안내 캐릭터",
+    usage: "책 추천 받기 화면 안내 캐릭터, 스토리 인트로 5장면 캐릭터(char-lumi-05-confident.png로 복사)",
     modified: "투명 배경 처리 및 화면 배치 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
@@ -615,7 +461,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     fileName: "today-reading-lumi-point.png",
     description: "오늘의 독서 모험 화면에서 특정 활동을 강조하며 안내하는 용사 루미 캐릭터 이미지",
     source: "ChatGPT 생성 이미지",
-    usage: "오늘의 독서 모험 활동 안내 캐릭터",
+    usage: "오늘의 독서 모험 활동 안내 캐릭터, 개별읽기 보상 화면(reward-lumi-cheer.png로 복사)",
     modified: "투명 배경 처리 및 화면 배치 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
@@ -625,18 +471,8 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     fileName: "today-reading-lumi-reading.png",
     description: "책을 들고 독서 활동을 안내하는 용사 루미 캐릭터 이미지",
     source: "ChatGPT 생성 이미지",
-    usage: "읽기 전·읽기 중 활동 안내 및 피드백 캐릭터",
+    usage: "읽기 전·읽기 중 활동 안내 및 피드백 캐릭터, 개별읽기 읽기후 안내 화면(after-read-lumi-guide.png로 복사, during-reading-lumi-02-question-note.png와도 동일 원본)",
     modified: "투명 배경 처리 및 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    category: "이미지",
-    title: "개별읽기 읽기 중 배경 이미지",
-    fileName: "individual-during-bg.png",
-    description: "개별읽기 읽기 중 활동 화면의 따뜻한 독서 공간 분위기를 나타내는 배경 이미지",
-    source: "ChatGPT 생성 이미지",
-    usage: "개별읽기 읽기 중 활동 화면 배경",
-    modified: "크기 및 화면 비율에 맞게 배치 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
   {
@@ -647,16 +483,6 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     source: "ChatGPT 생성 이미지",
     usage: "개별읽기 읽기 중 메인 및 피드백 안내 캐릭터",
     modified: "투명 배경 처리 및 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
-    category: "이미지",
-    title: "읽기 중 질문 만들기 아이콘 이미지",
-    fileName: "individual-during-question-icon.png",
-    description: "읽기 중 질문 만들기 활동을 나타내는 책과 질문 아이콘 이미지",
-    source: "ChatGPT 생성 이미지",
-    usage: "개별읽기 읽기 중 질문 만들기 활동 아이콘",
-    modified: "크기 및 카드 배치에 맞게 조정",
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
   {
@@ -1020,19 +846,9 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
     note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   },
   {
-    title: "개별읽기 메인 루미 이미지",
-    category: "이미지",
-    fileName: "home-lumi.png",
-    description: "개별읽기 메인 화면에서 학생에게 활동을 안내하는 루미 캐릭터 이미지",
-    source: "OpenAI ChatGPT 이미지 생성",
-    location: "학생 개별읽기 메인 화면 안내 캐릭터",
-    modified: "파일명 변경, 배경 제거형 이미지로 사용, CSS로 화면 배치 조정",
-    note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-  },
-  {
     title: "책 추천받기 버튼 이미지",
     category: "이미지",
-    fileName: "마법의_고대_책.png",
+    fileName: "고풍스러운_필기_도구와_책.png",
     description: "개별읽기 메인 화면에서 책 추천받기 버튼에 사용한 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
     location: "학생 개별읽기 메인 화면 책 추천받기 버튼",
@@ -1042,7 +858,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   {
     title: "오늘의 독서모험 버튼 이미지",
     category: "이미지",
-    fileName: "금장색_식이_있는_그림.png",
+    fileName: "마법의_나침반_장식.png",
     description: "개별읽기 메인 화면에서 오늘의 독서모험 버튼에 사용한 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
     location: "학생 개별읽기 메인 화면 오늘의 독서모험 버튼",
@@ -1082,16 +898,6 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 {
   title: "연습읽기 읽기중 배경 이미지",
   type: "이미지",
-  fileName: "mystic-forest-bg.png",
-  description: "연습읽기 읽기중 화면의 신비로운 숲 배경 이미지",
-  source: "OpenAI ChatGPT 이미지 생성",
-  usage: "연습읽기 읽기중 화면",
-  edit: "문답책 화면 분위기와 화면 크기에 맞게 CSS로 조정",
-  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
-},
-{
-  title: "연습읽기 읽기중 배경 이미지",
-  type: "이미지",
   fileName: "during-reading-magic-space-bg.png",
   description: "연습읽기 읽기중 화면에 사용하는 밝은 베이지 톤의 우주 마법 별빛 배경 이미지",
   source: "OpenAI ChatGPT 이미지 생성",
@@ -1117,6 +923,86 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   source: "OpenAI ChatGPT 이미지 생성",
   usage: "개별읽기 읽기후 활동 화면 배경 이미지",
   modified: "읽기후 화면 배경 크기에 맞게 CSS로 cover 적용",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "스토리 인트로 루미 캐릭터 이미지 5종",
+  category: "이미지",
+  fileName: "char-lumi-01-basic.png, char-lumi-02-surprised.png, char-lumi-03-serious.png, char-lumi-04-mysterious.png, char-lumi-06-smile.png",
+  description: "스토리 인트로 6장면(bg-story-01~06 배경)에 등장하는 루미 캐릭터 이미지. 5장면 캐릭터는 book-recommend-lumi.png와 동일 원본이라 별도 항목으로 두지 않음",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "스토리 인트로 화면 1~4, 6장면 캐릭터, char-lumi-01-basic.png는 개별읽기 메인 화면 연습읽기(온책읽기) 카드에도 재사용",
+  modified: "장면별 파일명 부여, 배경 제거형 이미지로 사용, char-lumi-06-smile.png는 읽기후 인트로 화면 3장면에서 lumi-after-intro-03-confident.png로 파일명을 바꿔 재사용(동일 원본)",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "홈 화면 개별읽기 메뉴 아이콘",
+  category: "이미지",
+  fileName: "home-individual-icon.png",
+  description: "학생 홈 화면 메뉴에서 개별읽기 메뉴를 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 메뉴 - 개별읽기 카드",
+  modified: "파일명 변경 및 홈 화면 메뉴 카드 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "홈 화면 연습하기 메뉴 아이콘",
+  category: "이미지",
+  fileName: "home-practice-icon.png",
+  description: "학생 홈 화면 메뉴에서 연습하기 메뉴를 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 홈 화면 메뉴 - 연습하기 카드",
+  modified: "파일명 변경 및 홈 화면 메뉴 카드 크기에 맞게 CSS로 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기후 책 유형 아이콘 이미지 3종",
+  category: "이미지",
+  fileName: "after-read-icon-story.png, after-read-icon-info.png, after-read-icon-opinion.png",
+  description: "읽기후 활동 화면에서 이야기책·정보책·주장책 유형을 구분해 나타내는 아이콘 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기후 활동 화면 - 책 유형 선택 영역",
+  modified: "파일명 변경 및 화면 배치에 맞게 CSS로 크기 조정",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기후 메인 배경 이미지",
+  category: "이미지",
+  fileName: "after-reading-main-bg.png",
+  description: "읽기후 관련 화면에서 사용하는 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "교사 홈 화면 배경, 교사 회원가입 화면 배경",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 cover 적용",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "읽기후 인트로 배경 이미지",
+  category: "이미지",
+  fileName: "bg-after-reading-intro.png",
+  description: "읽기후 인트로 화면에서 사용하는 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "학생 읽기후 인트로 화면 배경",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 cover 적용",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "개별읽기 진행 화면 공통 배경 이미지",
+  category: "이미지",
+  fileName: "individual-during-home-bg.png",
+  description: "개별읽기 읽기중·읽기후·기록보관함 화면에서 공통으로 사용하는 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "개별읽기 읽기중 화면, 개별읽기 읽기후 화면, 개별읽기 기록보관함 화면 배경",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 cover 적용",
+  note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+{
+  title: "로그인 화면 모험 배경 이미지",
+  category: "이미지",
+  fileName: "login-adventure-bg.png",
+  description: "로그인 화면 왼쪽 영역에 사용하는 모험 분위기 배경 이미지",
+  source: "OpenAI ChatGPT 이미지 생성",
+  usage: "로그인 첫 화면 왼쪽 배경",
+  modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정, 어두운 그라디언트 오버레이 적용",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
 ];
