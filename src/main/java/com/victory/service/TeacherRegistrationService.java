@@ -1,7 +1,10 @@
 package com.victory.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -136,13 +139,52 @@ public TeacherClassResponse getTeacherClass(Long teacherId) {
             );
         }
 
-        for (StudentRegisterRequest student : request.getStudents()) {
-            if (userRepository.findByLoginId(student.getLoginId()).isPresent()) {
-                throw new DuplicateLoginIdException(
-                        "이미 사용 중인 학생 아이디가 있습니다: "
-                                + student.getLoginId()
-                );
+        List<StudentRegisterRequest> students = request.getStudents();
+
+        // 같은 요청 안에서 학생 아이디가 중복되면 DB 유니크 제약까지
+        // 가지 않고 먼저 걸러서 400으로 응답한다.
+        Set<String> seenLoginIds = new LinkedHashSet<>();
+        Set<String> duplicateLoginIdsInRequest = new LinkedHashSet<>();
+        for (StudentRegisterRequest student : students) {
+            if (!seenLoginIds.add(student.getLoginId())) {
+                duplicateLoginIdsInRequest.add(student.getLoginId());
             }
+        }
+        if (!duplicateLoginIdsInRequest.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "요청에 중복된 학생 아이디가 있습니다: "
+                            + String.join(", ", duplicateLoginIdsInRequest)
+            );
+        }
+
+        Set<Integer> seenStudentNumbers = new LinkedHashSet<>();
+        Set<Integer> duplicateStudentNumbersInRequest = new LinkedHashSet<>();
+        for (StudentRegisterRequest student : students) {
+            if (!seenStudentNumbers.add(student.getStudentNumber())) {
+                duplicateStudentNumbersInRequest.add(student.getStudentNumber());
+            }
+        }
+        if (!duplicateStudentNumbersInRequest.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "요청에 중복된 학생 번호가 있습니다: "
+                            + duplicateStudentNumbersInRequest.stream()
+                                    .map(String::valueOf)
+                                    .collect(Collectors.joining(", "))
+            );
+        }
+
+        // 이미 DB에 존재하는 학생 아이디는 하나만 찾고 끝내지 않고
+        // 전부 모아서 한 번에 안내한다.
+        List<String> existingLoginIds = students.stream()
+                .map(StudentRegisterRequest::getLoginId)
+                .filter(loginId -> userRepository.findByLoginId(loginId).isPresent())
+                .collect(Collectors.toList());
+
+        if (!existingLoginIds.isEmpty()) {
+            throw new DuplicateLoginIdException(
+                    "이미 사용 중인 학생 아이디가 있습니다: "
+                            + String.join(", ", existingLoginIds)
+            );
         }
     }
 }

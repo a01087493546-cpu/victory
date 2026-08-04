@@ -1394,10 +1394,17 @@ if (!/^(?=.*[A-Za-z])(?=.*\d).{4,}$/.test(teacherPw)) {
     }
 
     if (!response.ok) {
-      const message =
-        responseData.message ||
-        responseData.error ||
-        "계정 등록에 실패했습니다.";
+      let message;
+
+      if (response.status === 409 || response.status === 400) {
+        message = responseData.message || "입력값을 다시 확인해 주세요.";
+      } else if (response.status === 401 || response.status === 403) {
+        message =
+          responseData.message ||
+          "로그인이 필요하거나 이 작업을 수행할 권한이 없습니다.";
+      } else {
+        message = "학생 계정 등록 중 오류가 발생했습니다.";
+      }
 
       throw new Error(message);
     }
