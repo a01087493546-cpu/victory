@@ -847,6 +847,185 @@ body {
   font-size: 15px !important;
   line-height: 1.45 !important;
 }
+
+/* 로그인한 교사가 담당 계정만 확인하는 관리 화면입니다. */
+#managementPanel.is-active {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 16px;
+}
+
+.tr-management-heading {
+  text-align: center;
+}
+
+.tr-management-heading h2 {
+  color: #ffe9a8;
+  font-family: "Noto Serif KR", serif;
+  font-size: 31px;
+  font-weight: 900;
+}
+
+.tr-management-heading p {
+  margin-top: 6px;
+  color: rgba(255, 238, 199, 0.9);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.tr-account-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tr-account-tab {
+  min-width: 150px;
+  height: 44px;
+  border: 1px solid rgba(255, 215, 132, 0.62);
+  border-radius: 15px;
+  background: rgba(255, 249, 226, 0.1);
+  color: #ffe9b0;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.tr-account-tab.is-active {
+  background: linear-gradient(180deg, #d79d3e, #824715);
+  color: #fff8df;
+}
+
+.tr-account-list-card {
+  min-height: 0;
+  padding: 18px 22px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 216, 139, 0.62);
+  border-radius: 25px;
+  background: rgba(255, 248, 224, 0.96);
+  color: #4a2911;
+}
+
+.tr-account-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
+  margin-bottom: 12px;
+  color: #66401e;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.tr-account-table-wrap {
+  height: calc(100% - 46px);
+  overflow: auto;
+  border: 1px solid rgba(153, 98, 30, 0.24);
+  border-radius: 17px;
+  background: rgba(255, 253, 245, 0.94);
+}
+
+.tr-account-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.tr-account-table th,
+.tr-account-table td {
+  padding: 13px 11px;
+  border-bottom: 1px solid rgba(153, 98, 30, 0.16);
+  text-align: center;
+  font-size: 14px;
+  word-break: keep-all;
+}
+
+.tr-account-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #ead09a;
+  color: #4c2b12;
+  font-weight: 900;
+}
+
+.tr-account-table td {
+  color: #5d3a1d;
+  font-weight: 750;
+}
+
+.tr-account-action {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(151, 91, 24, 0.46);
+  border-radius: 12px;
+  background: #fff4d5;
+  color: #673a13;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.tr-account-action:hover {
+  background: #ffe8ad;
+}
+
+.tr-account-empty {
+  padding: 50px 20px !important;
+  color: #846744 !important;
+}
+
+.tr-password-modal[hidden] {
+  display: none !important;
+}
+
+.tr-password-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 4, 2, 0.72);
+}
+
+.tr-password-dialog {
+  width: min(520px, 100%);
+  padding: 30px;
+  border: 2px solid rgba(255, 213, 126, 0.82);
+  border-radius: 25px;
+  background: #fff8e6;
+  color: #4b2a12;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+}
+
+.tr-password-dialog h2 {
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.tr-temporary-password {
+  margin: 20px 0 14px;
+  padding: 16px;
+  border: 1px dashed #b47a2e;
+  border-radius: 15px;
+  background: #fff0c8;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.tr-password-notice {
+  color: #77512d;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.tr-password-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
   </style>
 </head>
 
@@ -866,7 +1045,7 @@ body {
         <h1 class="tr-title" id="topTitle">계정 관리</h1>
 
         <div class="tr-top-actions">
-          <button class="tr-pill-button" type="button" onclick="logoutAndGoLogin()">로그아웃</button>
+          <button class="tr-pill-button" id="topAccountAction" type="button" onclick="handleTopAccountAction()">로그인</button>
         </div>
       </header>
 
@@ -895,6 +1074,28 @@ body {
                 </div>
               </button>
             </div>
+          </section>
+
+          <section class="tr-panel" id="managementPanel">
+            <div class="tr-management-heading">
+              <h2>등록된 계정을 확인하고 관리해요.</h2>
+              <p>현재 담당 학급의 계정만 표시됩니다. 기존 비밀번호는 누구도 확인할 수 없어요.</p>
+            </div>
+
+            <div class="tr-account-tabs" role="tablist" aria-label="계정 역할 선택">
+              <button class="tr-account-tab is-active" id="studentAccountTab" type="button" onclick="showAccountTab('student')">학생 계정</button>
+              <button class="tr-account-tab" id="teacherAccountTab" type="button" onclick="showAccountTab('teacher')">교사 계정</button>
+            </div>
+
+            <article class="tr-account-list-card">
+              <div class="tr-account-summary" id="accountSummary">계정 정보를 불러오는 중이에요.</div>
+              <div class="tr-account-table-wrap">
+                <table class="tr-account-table">
+                  <thead id="accountTableHead"></thead>
+                  <tbody id="accountTableBody"></tbody>
+                </table>
+              </div>
+            </article>
           </section>
 
           <section class="tr-panel" id="teacherPanel">
@@ -1061,6 +1262,18 @@ body {
     </div>
   </div>
 
+  <div class="tr-password-modal" id="temporaryPasswordModal" hidden>
+    <section class="tr-password-dialog" role="dialog" aria-modal="true" aria-labelledby="temporaryPasswordTitle">
+      <h2 id="temporaryPasswordTitle">임시 비밀번호가 발급되었어요.</h2>
+      <div class="tr-temporary-password" id="temporaryPasswordText"></div>
+      <p class="tr-password-notice">이 창을 닫으면 다시 확인할 수 없어요.<br>학생에게 전달하거나 안전한 곳에 적어 주세요.</p>
+      <div class="tr-password-actions">
+        <button class="tr-action-button is-gold" type="button" onclick="copyTemporaryPassword()">복사하기</button>
+        <button class="tr-action-button is-brown" type="button" onclick="closeTemporaryPasswordModal()">닫기</button>
+      </div>
+    </section>
+  </div>
+
   <script>
     function updateTeacherRegisterStageScale() {
   const stage = document.getElementById("teacherRegisterFixedStage");
@@ -1088,6 +1301,10 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
     let teacherData = {};
     let classData = {};
     let studentData = [];
+    let managedAccounts = null;
+    let activeAccountTab = "student";
+
+    const ACCOUNT_API_BASE_URL = "http://localhost:8080";
 
     const panelMap = {
       select: {
@@ -1109,8 +1326,40 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
       complete: {
         panelId: "completePanel",
         title: "등록 완료"
+      },
+      management: {
+        panelId: "managementPanel",
+        title: "계정 관리"
       }
     };
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+      const topAction = document.getElementById("topAccountAction");
+
+      if (token && role === "teacher") {
+        topAction.textContent = "로그아웃";
+        showPanel("management");
+        loadManagedAccounts();
+        return;
+      }
+
+      topAction.textContent = "로그인";
+      showPanel("select");
+    });
+
+    function handleTopAccountAction() {
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+
+      if (token && role === "teacher") {
+        logoutAndGoLogin();
+        return;
+      }
+
+      goLogin();
+    }
 
     function showPanel(name) {
       const data = panelMap[name];
@@ -1137,6 +1386,154 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
 
     function showStudentNotice() {
       alert("학생 계정은 교사 계정과 학급 정보를 등록한 뒤 한 번에 만들 수 있어요.");
+    }
+
+    async function loadManagedAccounts() {
+      const token = sessionStorage.getItem("token");
+
+      try {
+        const response = await fetch(
+          ACCOUNT_API_BASE_URL + "/api/teachers/me/managed-accounts",
+          { headers: { Authorization: "Bearer " + token } }
+        );
+
+        if (!response.ok) {
+          throw new Error(response.status === 403
+            ? "담당 계정을 확인할 권한이 없습니다."
+            : "계정 목록을 불러오지 못했습니다.");
+        }
+
+        managedAccounts = await response.json();
+        renderManagedAccounts();
+      } catch (error) {
+        managedAccounts = null;
+        document.getElementById("accountSummary").textContent = error.message;
+        document.getElementById("accountTableHead").innerHTML = "";
+        document.getElementById("accountTableBody").innerHTML =
+          '<tr><td class="tr-account-empty">잠시 후 다시 시도해 주세요.</td></tr>';
+      }
+    }
+
+    function showAccountTab(role) {
+      activeAccountTab = role === "teacher" ? "teacher" : "student";
+      document.getElementById("studentAccountTab").classList.toggle(
+        "is-active", activeAccountTab === "student");
+      document.getElementById("teacherAccountTab").classList.toggle(
+        "is-active", activeAccountTab === "teacher");
+      renderManagedAccounts();
+    }
+
+    function renderManagedAccounts() {
+      if (!managedAccounts) return;
+
+      const head = document.getElementById("accountTableHead");
+      const body = document.getElementById("accountTableBody");
+      const summary = document.getElementById("accountSummary");
+
+      if (activeAccountTab === "teacher") {
+        summary.textContent = "교사 계정 1개 · 본인 계정은 임시 비밀번호를 발급할 수 없어요.";
+        head.innerHTML = "<tr><th>이름</th><th>아이디</th><th>역할</th><th>소속 학급</th><th>등록일</th><th>관리</th></tr>";
+        body.innerHTML = makeTeacherAccountRow(managedAccounts.teacher);
+        return;
+      }
+
+      const students = Array.isArray(managedAccounts.students) ? managedAccounts.students : [];
+      summary.textContent = "학생 계정 " + students.length + "개 · 기존 비밀번호는 표시되지 않습니다.";
+      head.innerHTML = "<tr><th>번호</th><th>이름</th><th>아이디</th><th>역할</th><th>소속 학급</th><th>등록일</th><th>관리</th></tr>";
+      body.innerHTML = students.length
+        ? students.map(makeStudentAccountRow).join("")
+        : '<tr><td colspan="7" class="tr-account-empty">등록된 학생 계정이 없어요.</td></tr>';
+    }
+
+    function makeStudentAccountRow(account) {
+      return "<tr>" +
+        "<td>" + escapeHtml(account.studentNumber || "-") + "번</td>" +
+        "<td>" + escapeHtml(account.name) + "</td>" +
+        "<td>" + escapeHtml(account.loginId) + "</td>" +
+        "<td>학생</td>" +
+        "<td>" + escapeHtml(formatClassLabel(account)) + "</td>" +
+        "<td>" + escapeHtml(formatAccountDate(account.createdAt)) + "</td>" +
+        '<td><button type="button" class="tr-account-action" onclick="resetStudentPassword(' + Number(account.id) + ')">임시 비밀번호 발급</button></td>' +
+        "</tr>";
+    }
+
+    function makeTeacherAccountRow(account) {
+      return "<tr>" +
+        "<td>" + escapeHtml(account.name) + "</td>" +
+        "<td>" + escapeHtml(account.loginId) + "</td>" +
+        "<td>교사</td>" +
+        "<td>" + escapeHtml(formatClassLabel(account)) + "</td>" +
+        "<td>" + escapeHtml(formatAccountDate(account.createdAt)) + "</td>" +
+        "<td>본인 계정</td>" +
+        "</tr>";
+    }
+
+    function formatClassLabel(account) {
+      const gradeClass = account.grade && account.classNumber
+        ? account.grade + "학년 " + account.classNumber + "반"
+        : "학급 정보 없음";
+      return account.className ? gradeClass + " · " + account.className : gradeClass;
+    }
+
+    function formatAccountDate(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "-";
+      return date.toLocaleDateString("ko-KR");
+    }
+
+    async function resetStudentPassword(studentId) {
+      const account = managedAccounts && managedAccounts.students
+        ? managedAccounts.students.find(function (item) { return Number(item.id) === Number(studentId); })
+        : null;
+
+      if (!account) return;
+
+      const confirmed = confirm(
+        "이 계정의 기존 비밀번호를 사용할 수 없게 되고\n" +
+        "새 임시 비밀번호가 발급됩니다. 계속할까요?"
+      );
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(
+          ACCOUNT_API_BASE_URL + "/api/teachers/me/students/" + studentId + "/reset-password",
+          {
+            method: "POST",
+            headers: { Authorization: "Bearer " + sessionStorage.getItem("token") }
+          }
+        );
+
+        const data = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+          throw new Error(data.message || "임시 비밀번호를 발급하지 못했습니다.");
+        }
+
+        document.getElementById("temporaryPasswordTitle").textContent =
+          account.name + " 학생의 임시 비밀번호가 발급되었어요.";
+        document.getElementById("temporaryPasswordText").textContent = data.temporaryPassword;
+        document.getElementById("temporaryPasswordModal").hidden = false;
+      } catch (error) {
+        alert(error.message || "임시 비밀번호를 발급하지 못했습니다.");
+      }
+    }
+
+    async function copyTemporaryPassword() {
+      const password = document.getElementById("temporaryPasswordText").textContent;
+      if (!password) return;
+
+      try {
+        await navigator.clipboard.writeText(password);
+        alert("임시 비밀번호를 복사했어요.");
+      } catch (error) {
+        alert("복사하지 못했어요. 임시 비밀번호를 직접 적어 주세요.");
+      }
+    }
+
+    function closeTemporaryPasswordModal() {
+      document.getElementById("temporaryPasswordModal").hidden = true;
+      document.getElementById("temporaryPasswordText").textContent = "";
+      document.getElementById("temporaryPasswordTitle").textContent = "임시 비밀번호가 발급되었어요.";
     }
 
     function goClassPanel() {

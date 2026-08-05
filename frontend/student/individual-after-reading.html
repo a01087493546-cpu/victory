@@ -4073,6 +4073,7 @@ async function moveSummaryDate(dayOffset) {
 
     const params = new URLSearchParams(location.search);
     const teacherView = params.get("teacherView");
+    const studentView = params.get("view");
 
     /*
       교사가 ?teacherView=summaryShare로 들어오면 교사 JWT(role=teacher)라
@@ -4086,6 +4087,11 @@ async function moveSummaryDate(dayOffset) {
     }
 
     await restoreIndividualAfterReadingFromServer();
+
+    if (studentView === "summaryShare") {
+      await showShareScreen();
+      return;
+    }
 
     /*
       질문 3개가 서버에 이미 전부 통과 상태로 저장돼 있어도(완료 후 재진입),

@@ -38,6 +38,38 @@ public class FeedbackAiService {
     private static final String SUMMARY_TYPE_KEYWORD = "summary";
 
     /*
+     * 모든 AI 피드백 프롬프트 끝에 공통으로 붙이는 출력 언어 규칙.
+     * 초등학교 4학년 학생에게 영어 단어·영문 질문 유형명(direct/infer/
+     * opinion/connect 등)이 그대로 노출되는 문제를 막기 위한 1차 방어선이다
+     * (2차 방어선은 callAndParseAiResponse 이후의 sanitizeEnglishLeakage()).
+     * 다른 SYSTEM_PROMPT_* 상수보다 먼저 선언해야 한다 - 아래에서
+     * "... + KOREAN_ONLY_OUTPUT_RULE" 형태로 참조하기 때문이다.
+     */
+    private static final String KOREAN_ONLY_OUTPUT_RULE = """
+
+            [출력 언어 규칙 - 반드시 지킬 것]
+            1. 모든 피드백은 한국어로만 작성한다.
+            2. 영어 단어, 영문 질문 유형명, 로마자 표기를 학생에게 보여줄
+               문장에 절대 쓰지 않는다.
+            3. 내부 질문 유형이 direct, infer, opinion, connect로
+               주어지더라도, 학생에게 보여줄 문장에서는 반드시 아래
+               한국어 이름으로 바꿔서 쓴다:
+               - direct → 책에서 바로 답 찾기
+               - infer → 단서로 짐작하기
+               - opinion → 생각이나 느낌 말하기
+               - connect → 나와 연결하기
+            4. 초등학교 4학년이 이해할 수 있는 짧고 쉬운 문장을 쓴다.
+            5. 어려운 교육 용어나 전문 용어를 쓰지 않는다.
+            6. 한 문장은 가능하면 짧게 쓴다.
+            7. 학생을 혼내거나 단정적으로 부정하지 않는다.
+            8. 무엇이 좋은지 또는 무엇을 고치면 되는지 구체적으로 알려준다.
+            9. 영어가 하나라도 섞여 있으면 잘못된 출력이다.
+            10. JSON 키는 지정된 형식을 그대로 쓰되, 문자열 값(message 등)은
+                모두 한국어로만 쓴다. 학생이 직접 입력한 영어 책 제목처럼
+                꼭 필요한 고유명사만 예외로 유지할 수 있다.
+            """;
+
+    /*
      * 읽기 후(after-read.html) "책 질문 3개 만들기" 전용 타입. 별도 프롬프트
      * 분기가 없어 아래 SYSTEM_PROMPT_QUESTION(기본 분기)을 그대로 쓴다.
      * StudentFeedbackAiController가 이 값과 DURING_READING_PRACTICE_DEEP_TYPE을
@@ -89,7 +121,7 @@ public class FeedbackAiService {
               실제 이유에 맞는 문장을 새로 만들어서 써도 되고, 위 예시를
               그대로 따라 하지 않아도 돼.
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     // 요약(간추리기) 평가 전용 프롬프트. "질문"이라는 단어를 아예 쓰지 않는다.
     private static final String SYSTEM_PROMPT_SUMMARY = """
@@ -117,7 +149,7 @@ public class FeedbackAiService {
               예: '중요한 사건이 빠진 것 같아. 처음, 가운데, 마지막에
               있었던 일을 조금 더 자세히 써볼까?'
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 중(during-read.html) "질문 만들기" 전용 프롬프트.
@@ -259,7 +291,7 @@ public class FeedbackAiService {
               않아요. 질문에 맞는 답으로 다시 적어보세요."
               답에 내용이 없을 때 예: "조금 더 생각해서 답을 적어보세요."
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 중 "심화 연습"(during-reading-practice.html) 전용 프롬프트.
@@ -386,7 +418,7 @@ public class FeedbackAiService {
               connect 예: "나의 경험이나 생활과 이어지는 질문으로
               바꿔보세요."
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 중(during-reading-practice.html) "총 복습" 전용 프롬프트.
@@ -469,7 +501,7 @@ public class FeedbackAiService {
               예: "답이 예시 글의 내용과 달라. 글을 다시 읽고 답을
               고쳐볼까?"
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 후(after-read.html) 3단계 "질문으로 간추리기" 전용 프롬프트.
@@ -557,7 +589,7 @@ public class FeedbackAiService {
               예: "답이 예시 글의 내용과 달라. 글을 다시 읽고 답을
               고쳐볼까?"
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 후(after-read.html) 4단계 "내 간추리기 완성" 전용 프롬프트.
@@ -646,7 +678,7 @@ public class FeedbackAiService {
               단어 나열 예: "단어만 나열하지 말고, 완성된 문장으로 이어서
               써 봐."
             - 절대 3문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 개별읽기 읽기 후(individual-after-reading.html) "질문과 답 쓰기"
@@ -730,7 +762,7 @@ public class FeedbackAiService {
               주장이나 까닭을 물어봐."
               문장 미완성 예: "문장이 끝나지 않았어. 끝까지 완성해 봐."
             - 절대 2문장 이상 쓰지 마.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 전(before-reading.html) "질문 만들기" 전용 프롬프트.
@@ -803,6 +835,17 @@ public class FeedbackAiService {
                    넘어가. 대상을 콕 집지 않는 "그렇게"/"그런" 같은
                    대명사를 썼다는 이유만으로도 얕은 질문으로 판단하지 마.
 
+                   주의: SHALLOW_STAGE_QUESTION은 "제목/차례/그림/글" 같은
+                   활동 단계 낱말 자체를 가리키며 "뭐야/뭘까"라고 물을 때만
+                   쓰는 것이지, "제목과 전혀 상관없는 다른 낱말의 뜻"을
+                   묻는 질문에는 절대 쓰면 안 돼. 예를 들어 등록된 책
+                   제목이 "우리 낙원에서"인데 질문이 "안녕하세요는 무슨
+                   뜻일까?"라면, 이 질문은 "제목이 뭘까"를 묻는 게 아니라
+                   제목과 아무 상관 없는 인사말 "안녕하세요"의 뜻을 묻고
+                   있는 것이므로 SHALLOW_STAGE_QUESTION이 아니라 아래
+                   [제목 관련 질문 인정 기준]을 하나도 만족하지 못하는
+                   NOT_RELATED_TO_BOOK이야.
+
                (b) 활동 단계가 "title"이 아닌데(contents/picture/skim), (a)의
                    얕은 질문도 아니고 인물·사건·행동·전개·이유를 묻는 것도
                    아니면서, 이 활동과 아예 상관없는 다른 주제(예: 수학
@@ -822,14 +865,76 @@ public class FeedbackAiService {
                    형식과 의미만 판단해.
 
                활동 단계가 "title"일 때는 NOT_RELATED_TO_STAGE를 쓰지 말고,
-               대신 질문이 실제 책 제목과 관련이 있거나 그 제목을 보고
-               자연스럽게 떠올릴 수 있는 내용인지 확인해. (a)의 얕은 질문이
-               아니면서 책 제목과 전혀 상관없는 다른 주제(예: 책 제목이
-               "강아지똥"인데 "체리는 왜 빨갈까"처럼 무관한 사물·주제를
-               묻는 경우)를 묻고 있으면 failedRule을 NOT_RELATED_TO_BOOK으로
-               해. 즉 title 단계에서 "이 단계와 무관한 질문"은 항상
+               대신 아래 [제목 관련 질문 인정 기준] 중 하나라도 만족하면
+               책 제목과 관련된 질문으로 반드시 인정해. 질문에 "제목"이라는
+               낱말이 있어야만, 또는 "제목은 왜 ~일까" 같은 정해진 문구와
+               같아야만 인정하는 것이 절대 아니야.
+
+               [제목 관련 질문 인정 기준 - 하나라도 만족하면 인정]
+               1. 질문에 "제목"이라는 낱말이 직접 들어 있음
+                  예: "이 책의 제목은 왜 (등록된 책 제목)일까?", "제목을
+                  (등록된 책 제목)이라고 지은 까닭은 무엇일까?"
+               2. 질문에 등록된 책 제목 전체가 그대로 들어 있음("제목"이라는
+                  낱말이 전혀 없어도 인정)
+                  예: 등록된 책 제목이 "책 제목: 백설공주"로 주어졌다면
+                  "백설공주의 의미가 뭘까?", "백설공주는 왜 이런 이름을
+                  가졌을까?", "백설공주라는 말은 무슨 뜻일까?", "백설공주에게
+                  어떤 일이 생길까?", "백설공주는 어떤 사람일까?"는 모두
+                  제목 관련 질문으로 인정해야 해.
+               3. 질문에 등록된 책 제목의 핵심 단어(제목의 뜻을 담고 있는
+                  중심 낱말)가 들어 있음
+                  예: 등록된 책 제목이 "마당을 나온 암탉"이면 "암탉은 왜
+                  마당을 나왔을까?", "마당 밖에는 무엇이 있을까?", "암탉은
+                  어디로 가게 될까?"는 인정해. 단, 너무 짧거나 흔해서
+                  우연히 겹칠 수 있는 단어 하나만 같다는 이유만으로
+                  제목과 관련 있다고 단정하지 말고 제목 전체 의미와의
+                  관련성을 함께 살펴봐. 예를 들어 등록된 책 제목이
+                  "강아지똥"인데 질문이 "강아지는 귀여울까?"라면 "강아지"
+                  라는 낱말만 우연히 겹친 것이라 이 기준을 만족한다고
+                  보지 마(다른 기준에도 해당하지 않으면 아래 5.로 판단).
+                  마찬가지로 등록된 책 제목이 "우리 낙원에서"일 때 "우리"는
+                  그 자체로 아주 흔한 낱말이라 겹친다는 이유만으로 인정하지
+                  말고 질문 전체 의미를 봐: "우리는 어디로 갈까?"처럼 제목의
+                  "낙원"이라는 맥락과 이어질 가능성이 있으면 문맥으로
+                  판단하고, "우리 반 급식은 무엇일까?"처럼 학교 급식이라는
+                  제목과 무관한 다른 주제로 이어지면 이 기준을 만족한다고
+                  보지 마.
+               4. 제목의 뜻·이유·상징·등장인물·예상 내용을 묻는 질문
+                  ("제목"이라는 낱말도, 제목 텍스트 자체도 없더라도
+                  문맥상 지금 등록된 책의 제목을 궁금해하는 것이 분명하면
+                  인정)
+                  예(뜻·이유·상징): "이 말에는 어떤 뜻이 담겨 있을까?",
+                  "왜 이런 이름을 붙였을까?", "이 이름은 주인공과 어떤
+                  관계가 있을까?", "이 말이 이야기에서 중요하게 쓰일까?"
+                  예(예상 내용 - 제목 속 인물·장소·사물을 근거로 앞으로
+                  벌어질 일이나 그 밖의 상황을 궁금해하는 질문도 반드시
+                  포함): 등록된 책 제목이 "마당을 나온 암탉"이면 "마당
+                  밖에는 무엇이 있을까?", "암탉은 어디로 가게 될까?",
+                  "암탉에게 무슨 일이 생길까?"는 모두 "예상 내용을 묻는
+                  질문"으로 인정해야 해. 이런 질문은 "제목이 뭐야/뭘까"
+                  형태가 전혀 아니므로 절대 SHALLOW_STAGE_QUESTION으로
+                  판정하면 안 되고, 자료의 이름·존재만 묻는 것도 아니므로
+                  반드시 정상 질문으로 통과시켜.
+
+               위 1~4 중 하나라도 만족하면서 (a)의 얕은 질문이 아니라면
+               반드시 정상 질문으로 인정하고 NOT_RELATED_TO_BOOK이나
+               SHALLOW_STAGE_QUESTION을 주면 절대 안 돼.
+               SHALLOW_STAGE_QUESTION은 오직 (a)에서 정의한 아주 좁은
+               문구("제목이 뭘까" 등 정확히 그 형태)에만 쓰는 것이고,
+               그 외의 모든 title 관련 질문(위 1~4에 해당하는 질문 포함)에는
+               SHALLOW_STAGE_QUESTION을 쓰면 안 돼.
+
+               5. 위 1~4 중 어느 것도 만족하지 않고, 질문이 등록된 책
+                  제목과 전혀 관련 없는 다른 주제(예: 책 제목이
+                  "강아지똥"인데 "오늘 급식은 무엇일까?", "축구는 누가
+                  잘할까?"처럼 무관한 주제를 묻는 경우)를 묻고 있으면
+                  failedRule을 NOT_RELATED_TO_BOOK으로 해.
+
+               즉 title 단계에서 "이 단계와 무관한 질문"은 항상
                NOT_RELATED_TO_BOOK으로 표시하고 NOT_RELATED_TO_STAGE는 title
-               단계에는 절대 쓰지 마.
+               단계에는 절대 쓰지 마. 문장 표현이 다소 어색하거나 맞춤법·
+               띄어쓰기가 조금 틀려도 질문 의도가 위 1~4 중 하나에 해당하면
+               통과시켜.
 
                아래는 활동에 맞는 질문으로 인정할 수 있는 예시야(참고용):
                - 차례를 보니 주인공에게 어떤 일이 생길까
@@ -837,6 +942,20 @@ public class FeedbackAiService {
                - 그림 속 두 사람은 어디로 가고 있을까
                - 이 글 다음에는 무슨 일이 생길까
                - 이 글에서 주인공은 왜 그런 선택을 했을까
+
+            [매우 중요 - 질문 판정과 답 판정을 절대 섞지 마]
+            질문이 위 2번(활동 단계 적합성 판단)을 통과했다면, 그 뒤에 어떤
+            문제가 있어도 절대 NOT_A_QUESTION, SHALLOW_STAGE_QUESTION,
+            NOT_RELATED_TO_STAGE, NOT_RELATED_TO_BOOK을 다시 쓰면 안 돼.
+            질문은 이미 통과된 것이고 남은 문제는 오직 답에만 있을 수
+            있으므로, 이제부터는 아래 3번(질문과 답의 연결성) 기준으로만
+            판정해(good, ANSWER_NOT_RELATED, KEYWORD_ONLY_ANSWER 중 하나).
+            예를 들어 질문이 등록된 책 제목/차례/그림/글과 명백히 관련
+            있는데 답만 엉뚱하면(예: 질문 "책 제목의 뜻은 무엇일까?" 답
+            "내가 만들었다"), 절대로 "질문을 다시 써 보라"는 취지의
+            NOT_RELATED_TO_BOOK 피드백을 주면 안 되고, 반드시
+            ANSWER_NOT_RELATED로 판정해서 "질문은 좋다, 답을 다시
+            써 보라"고 안내해야 해.
 
             3. 질문과 답의 연결성 (초등학교 4학년 수준에 맞게 관대하게 판단)
                너의 역할은 완성도 높은 질문만 골라내는 것이 아니라, 학생이
@@ -865,6 +984,12 @@ public class FeedbackAiService {
                반면 아래는 여전히 retry로 판정해:
                - 질문과 답의 주제가 서로 명백히 다른 경우(예: 질문 "그림 속
                  아이는 왜 울까?" 답 "사과가 맛있어서") → ANSWER_NOT_RELATED
+               - 질문은 책 제목/차례/그림/글과 명백히 관련 있는데 답이 그
+                 질문에 전혀 대응하지 않는 경우(예: 질문 "제목의 뜻은
+                 무엇일까?" 답 "내가 만들었다.", 질문 "강아지똥은 왜
+                 주인공이 되었을까?" 답 "내가 만들었다.") → 이때도
+                 반드시 ANSWER_NOT_RELATED야. 질문 자체는 이미 통과했으니
+                 NOT_RELATED_TO_BOOK을 절대 다시 쓰지 마
                - 답이 질문 속 핵심 단어나 책 제목을 설명 없이 그대로
                  반복하거나 "~이지", "~이야"처럼 짧게 갖다 붙이기만 한 경우
                  (예: 질문 "제목을 왜 강아지똥이라고 했을까?" 답 "강아지똥",
@@ -890,7 +1015,23 @@ public class FeedbackAiService {
             애매하면 항상 good으로 판단하되, 위 "절대 하면 안 되는 판단"에
             해당하는 얕은 근거만으로는 good을 주지 마. 질문의 교육적 깊이,
             독창성, 구체성을 통과 필수 조건으로 쓰지 말고, 학생이 "더
-            자세히 쓸 수 있다"는 이유만으로 retry를 주지 마.
+            자세히 쓸 수 있다"는 이유만으로 retry를 주지 마. 철자나
+            띄어쓰기 오류만으로 retry를 주지 말고, 문장이 다소 어색해도
+            질문 의도가 분명하면 통과시켜. 이것은 읽기 전 활동이므로
+            학생의 답이 실제 책 내용과 달라도 제목을 근거로 한 자연스러운
+            예상이면 긍정적으로 평가해(정답 여부로 판단하지 마).
+
+            [실패 피드백 작성 시 반드시 지킬 것 - 매우 중요]
+            - retry로 판정할 때는 학생이 실제로 쓴 질문 문장과 지금 등록된
+              책 제목을 직접 비교해서 이유를 판단해. 학생이 쓰지 않은 질문
+              의도를 만들어내지 마(예: 학생이 "제목이 무엇인지"를 묻지
+              않았는데 그렇게 물었다고 말하지 마).
+            - 아직 책을 읽기 전이므로, 제목만으로는 알 수 없는 인물·사건·
+              줄거리·글쓴이의 의도를 마치 알고 있는 것처럼 언급하거나
+              학생에게 그런 내용을 요구하지 마.
+            - 아래 message 작성 규칙의 예시 문장들은 참고용 뼈대일 뿐이야.
+              상황에 안 맞는데도 정형 문구를 기계적으로 그대로 복사하지
+              말고, 이번 요청의 실제 질문·제목·failedRule에 맞게 새로 써.
 
             반드시 아래 JSON 형식으로만 답해. 다른 텍스트는 절대 포함하지 마:
             {"result": "good 또는 retry", "message": "피드백", "failedRule": "NOT_A_QUESTION, SHALLOW_STAGE_QUESTION, NOT_RELATED_TO_STAGE, NOT_RELATED_TO_BOOK, ANSWER_NOT_RELATED, KEYWORD_ONLY_ANSWER 중 하나 또는 null"}
@@ -915,14 +1056,27 @@ public class FeedbackAiService {
               적어 보세요."
             - failedRule이 NOT_RELATED_TO_STAGE이면:
               예: "지금 단계에서 살펴볼 내용과 관련된 궁금한 점을 적어 보세요."
-            - failedRule이 NOT_RELATED_TO_BOOK이면:
-              예: "책 제목과 관련된 궁금한 점을 적어 보세요."
-            - failedRule이 ANSWER_NOT_RELATED이면:
-              예: "질문과 답이 서로 잘 이어지지 않아요. 질문에서 물어본 내용에 맞게 다시 예상해 보세요."
+            - failedRule이 NOT_RELATED_TO_BOOK이면 등록된 책 제목을 message에
+              직접 넣어서 학생의 질문이 그 제목과 관련이 없다는 점을 짧게
+              알려줘("궁금한 인물이나 사건을 적어 보세요"처럼 아직 알 수
+              없는 내용을 요구하는 정형 문구를 그대로 쓰지 마):
+              예(책 제목이 "우리 낙원에서"라면): "지금 질문은 책 제목
+              '우리 낙원에서'와 관련이 없어요. '우리 낙원에서'라는 제목을
+              보고 궁금한 점을 질문으로 적어 보세요."
+            - failedRule이 ANSWER_NOT_RELATED이면 질문 자체는 이미 통과했다는
+              것을 먼저 짧게 인정해 주고(예: "질문은 잘 만들었어요." 또는
+              "질문은 책 제목과 관련이 있어요."), 그다음 답이 그 질문과
+              맞지 않는다는 점을 알려줘. 질문을 고치라는 말은 절대 넣지
+              마 - 문제는 답이지 질문이 아니야:
+              예: "질문은 잘 만들었어요. 그런데 그 답은 질문에 어울리지
+              않아요. 질문에 알맞은 답을 다시 적어 보세요."
+              예(책 제목이 있을 때): "질문은 책 제목과 관련이 있어요.
+              하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을
+              다시 적어 보세요."
             - failedRule이 KEYWORD_ONLY_ANSWER이면:
               예: "답이 질문의 말을 되풀이하고 있어요. 질문에 맞는 생각을 조금 더 자세히 적어 보세요."
             - result가 good이면 failedRule은 반드시 null로 해.
-            """;
+            """ + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 패키지 접근(빈 default 접근자)으로 열어 두어 같은 패키지의 단위
@@ -1085,7 +1239,155 @@ public class FeedbackAiService {
         Map<?, ?> response = restTemplate.postForObject(OPENAI_CHAT_COMPLETIONS_URL, entity, Map.class);
 
         String content = extractContent(response);
-        return objectMapper.readValue(content, AiFeedbackResponse.class);
+        AiFeedbackResponse parsed = objectMapper.readValue(content, AiFeedbackResponse.class);
+        AiFeedbackResponse consistent = enforceResultFailedRuleConsistency(parsed);
+        AiFeedbackResponse withFixedTitleFeedback = applyFixedTitleMismatchFeedback(request, consistent);
+        return sanitizeEnglishLeakage(withFixedTitleFeedback);
+    }
+
+    /*
+     * pre_reading_question 계약("result가 good이면 failedRule은 반드시
+     * null로 해")을 AI가 실제로 어길 때가 있다 - 예를 들어 질문은
+     * 통과했지만 답이 안 맞는 경우를 스스로 ANSWER_NOT_RELATED로 올바르게
+     * 분류하면서도 result는 실수로 "good"으로 남겨 두는 자기모순 응답을
+     * 실제 검증 중 확인했다. failedRule이 채워져 있는데 result가 good이면
+     * 무조건 앞뒤가 안 맞는 것이므로(다른 활동 유형은 이 두 필드를 아예
+     * 안 쓰므로 이 보정은 pre_reading_question에만 사실상 영향을 준다),
+     * 여기서 결정적으로 retry로 바로잡는다. 그대로 두면 프론트가 result만
+     * 보고 통과 처리해 학생이 답을 안 고치고 다음 단계로 넘어가 버린다.
+     */
+    private AiFeedbackResponse enforceResultFailedRuleConsistency(AiFeedbackResponse response) {
+        if (response == null) {
+            return response;
+        }
+
+        if (response.getFailedRule() != null && "good".equals(response.getResult())) {
+            response.setResult("retry");
+        }
+
+        return response;
+    }
+
+    /*
+     * 읽기 전 "제목" 단계에서 failedRule이 NOT_RELATED_TO_BOOK이면, AI가
+     * 매번 다르게 생성하는 message를 그대로 노출하지 않고 등록된 실제
+     * bookTitle을 사용한 고정 문구로 덮어쓴다. 프롬프트 개선만으로는
+     * "제목이 무엇인지 묻기보다..." 같은 다른 failedRule(SHALLOW_STAGE_
+     * QUESTION)용 정형 문구가 엉뚱하게 재사용되는 문제가 다시 생길 수
+     * 있어, 이 실패 사유만큼은 서버에서 문구를 확정한다. result/status는
+     * 건드리지 않으므로 시도 기록(normalizeAttemptStatus)이나 이해도
+     * 계산에는 영향이 없다.
+     *
+     * 안전장치: AI가 NOT_RELATED_TO_BOOK이라고 했어도, 학생 질문에
+     * 등록된 책 제목 전체가 문자 그대로 들어 있으면(프롬프트의 [제목
+     * 관련 질문 인정 기준] 2번과 동일한, 기계적으로 확인 가능한 조건)
+     * 이는 명백한 오분류다 - 실제 문제는 질문이 아니라 답일 가능성이
+     * 높다("밤"처럼 아주 짧은 제목에서 특히 발생). 이 경우 "질문을
+     * 다시 쓰라"는 고정 문구 대신 failedRule을 ANSWER_NOT_RELATED로
+     * 바로잡고 "질문은 괜찮다, 답을 다시 써라"는 문구로 대체한다.
+     * 제목의 핵심 단어 일부만 겹치는 경우(예: "강아지" vs "강아지똥")나
+     * 의미상으로만 관련된 경우는 이 기계적 검사로 판단할 수 없으므로
+     * 건드리지 않고 기존처럼 제목 불일치 고정 문구를 쓴다 - 오탐을
+     * 피하기 위해 "제목 전체가 그대로 포함"이라는 가장 확실한 조건만
+     * 서버에서 결정적으로 보정한다.
+     */
+    private static final String TITLE_MISMATCH_FEEDBACK_FALLBACK =
+            "지금 질문은 책 제목과 관련이 없어요. 책 제목을 다시 보고 궁금한 점을 질문으로 적어 보세요.";
+
+    private static final String ANSWER_NOT_RELATED_RULE = "ANSWER_NOT_RELATED";
+
+    private AiFeedbackResponse applyFixedTitleMismatchFeedback(AiFeedbackRequest request, AiFeedbackResponse response) {
+        if (response == null) {
+            return response;
+        }
+
+        boolean isTitleStep = isPreReadingQuestionType(request) && "title".equals(request.getStepType());
+        boolean isNotRelatedToBook = "NOT_RELATED_TO_BOOK".equals(response.getFailedRule());
+
+        if (!isTitleStep || !isNotRelatedToBook) {
+            return response;
+        }
+
+        /*
+         * failedRule이 null이 아니면 result는 반드시 "retry"여야 한다
+         * (good이면 failedRule을 null로 하라는 프롬프트 계약). 그런데
+         * 실제로 AI가 result:"good"이면서 failedRule:"NOT_RELATED_TO_BOOK"을
+         * 함께 반환하는 자기모순 응답을 보낸 사례가 실제 검증 중 확인돼,
+         * 여기서 강제로 바로잡는다 - 그대로 두면 프론트가 result만 보고
+         * "통과"로 처리해 버려 학생이 계속 넘어가 버릴 수 있다.
+         */
+        response.setResult("retry");
+
+        String bookTitle = request.getBookTitle();
+        String studentQuestion = extractFirstQuestion(request);
+
+        if (containsBookTitle(studentQuestion, bookTitle)) {
+            response.setFailedRule(ANSWER_NOT_RELATED_RULE);
+            response.setMessage(buildAnswerMismatchMessage(bookTitle));
+            return response;
+        }
+
+        response.setMessage(buildTitleMismatchMessage(bookTitle));
+        return response;
+    }
+
+    private String extractFirstQuestion(AiFeedbackRequest request) {
+        List<AiFeedbackRequest.QAItem> qaList = request.getQaList();
+        if (qaList == null || qaList.isEmpty()) {
+            return null;
+        }
+        return qaList.get(0).getQuestion();
+    }
+
+    private boolean containsBookTitle(String question, String bookTitle) {
+        if (question == null || bookTitle == null) {
+            return false;
+        }
+
+        String normalizedQuestion = question.replaceAll("\\s+", "");
+        String normalizedTitle = bookTitle.trim().replaceAll("\\s+", "");
+
+        return !normalizedTitle.isEmpty() && normalizedQuestion.contains(normalizedTitle);
+    }
+
+    private String buildTitleMismatchMessage(String bookTitle) {
+        if (bookTitle == null || bookTitle.isBlank()) {
+            return TITLE_MISMATCH_FEEDBACK_FALLBACK;
+        }
+
+        String trimmedTitle = bookTitle.trim();
+        String waGwa = hasFinalConsonant(trimmedTitle) ? "과" : "와";
+        String iraneun = hasFinalConsonant(trimmedTitle) ? "이라는" : "라는";
+
+        return "지금 질문은 책 제목 '" + trimmedTitle + "'" + waGwa + " 관련이 없어요. '"
+                + trimmedTitle + "'" + iraneun + " 제목을 보고 궁금한 점을 질문으로 적어 보세요.";
+    }
+
+    private String buildAnswerMismatchMessage(String bookTitle) {
+        if (bookTitle == null || bookTitle.isBlank()) {
+            return "질문은 좋아요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.";
+        }
+
+        String trimmedTitle = bookTitle.trim();
+        String waGwa = hasFinalConsonant(trimmedTitle) ? "과" : "와";
+
+        return "질문은 책 제목 '" + trimmedTitle + "'" + waGwa
+                + " 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.";
+    }
+
+    /*
+     * 한글 음절의 마지막 글자에 받침이 있는지로 "은/는", "이/가", "와/과"
+     * 같은 조사를 고른다. 마지막 글자가 한글 음절이 아니면(영문 제목 등)
+     * 받침이 없는 것으로 보고 "와"/"라는"을 기본값으로 쓴다.
+     */
+    private boolean hasFinalConsonant(String text) {
+        char lastChar = text.charAt(text.length() - 1);
+        if (lastChar < 0xAC00 || lastChar > 0xD7A3) {
+            return false;
+        }
+        int offsetFromGa = lastChar - 0xAC00;
+        int jongseongIndex = offsetFromGa % 28;
+        return jongseongIndex != 0;
     }
 
     private AiFeedbackResponse handleAiCallFailure(AiFeedbackRequest request, Exception e) {
@@ -1484,6 +1786,100 @@ public class FeedbackAiService {
                 + "의미상 반영했는지, 그리고 하나의 자연스러운 요약 글로 완성되어 있는지 평가해 주세요.");
 
         return sb.toString();
+    }
+
+    /*
+     * 영어 노출 방지 2차 안전장치(1차는 KOREAN_ONLY_OUTPUT_RULE 프롬프트).
+     * 프롬프트만으로는 LLM이 가끔 영문 질문 유형명이나 영어 문장을 섞어
+     * 낼 수 있어, 학생에게 응답을 내려보내기 직전에 message를 한 번 더
+     * 점검한다. 모든 활동 유형이 이 메서드를 공통으로 거친다.
+     * 1) direct/infer/opinion/connect 등 영문 유형명이 단어 단위로 남아
+     *    있으면 공식 한국어 이름으로 치환한다(흔한 오타 "Opinon" 포함).
+     * 2) 치환 후에도 message 전체가 영어 위주라면 원문을 그대로 보여주지
+     *    않고 한국어 기본 안내 문구로 통째로 대체한다(재요청은 하지
+     *    않는다 - 왕복이 늘어 응답이 느려지고, 실패 시 500으로 이어지는
+     *    pre_reading_question 경로에서는 학생 경험을 더 해칠 수 있다).
+     */
+    private static final Map<String, String> ENGLISH_TYPE_NAME_REPLACEMENTS;
+    static {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("Inference", "단서로 짐작하기");
+        map.put("Infer", "단서로 짐작하기");
+        map.put("Connection", "나와 연결하기");
+        map.put("Connect", "나와 연결하기");
+        map.put("Opinion", "생각이나 느낌 말하기");
+        map.put("Opinon", "생각이나 느낌 말하기");
+        map.put("Direct", "책에서 바로 답 찾기");
+        ENGLISH_TYPE_NAME_REPLACEMENTS = map;
+    }
+
+    private static final String ENGLISH_FALLBACK_GOOD_MESSAGE = "정말 잘했어요! 다음으로 넘어가 볼까요?";
+    private static final String ENGLISH_FALLBACK_NEED_MESSAGE =
+            "질문을 잘 살펴보았어요. 책과 관련된 궁금한 점이 드러나도록 조금 더 구체적으로 적어 보세요.";
+
+    private AiFeedbackResponse sanitizeEnglishLeakage(AiFeedbackResponse response) {
+        if (response == null || response.getMessage() == null) {
+            return response;
+        }
+
+        String sanitized = response.getMessage();
+        for (Map.Entry<String, String> entry : ENGLISH_TYPE_NAME_REPLACEMENTS.entrySet()) {
+            sanitized = sanitized.replaceAll("(?i)\\b" + entry.getKey() + "\\b", entry.getValue());
+        }
+
+        if (isEnglishDominant(sanitized)) {
+            boolean isGood = "good".equals(response.getStatus()) || "good".equals(response.getResult());
+            sanitized = isGood ? ENGLISH_FALLBACK_GOOD_MESSAGE : ENGLISH_FALLBACK_NEED_MESSAGE;
+        }
+
+        response.setMessage(sanitized);
+        return response;
+    }
+
+    /*
+     * 낱말(공백 기준 토큰) 단위로 라틴 문자 낱말의 비율이 높으면 "영어
+     * 위주"로 판단한다. 문자 단위 비율로 판단하면 "Charlotte's Web
+     * 이야기를 잘 이해했어요!"처럼 짧은 영어 책 제목 하나가 섞인 정상
+     * 한국어 문장까지 걸릴 수 있어, 낱말 단위로 세어 오탐을 줄인다.
+     * 라틴 낱말이 최소 3개 이상이면서 전체 낱말의 60% 이상을 차지할
+     * 때만 영어 위주로 본다.
+     */
+    private boolean isEnglishDominant(String text) {
+        if (text == null || text.isBlank()) {
+            return false;
+        }
+
+        String[] tokens = text.trim().split("\\s+");
+        int latinTokenCount = 0;
+        int wordTokenCount = 0;
+
+        for (String token : tokens) {
+            boolean hasLatin = false;
+            boolean hasHangul = false;
+            for (int i = 0; i < token.length(); i++) {
+                char c = token.charAt(i);
+                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                    hasLatin = true;
+                } else if (Character.UnicodeScript.of(c) == Character.UnicodeScript.HANGUL) {
+                    hasHangul = true;
+                }
+            }
+
+            if (!hasLatin && !hasHangul) {
+                continue;
+            }
+
+            wordTokenCount++;
+            if (hasLatin && !hasHangul) {
+                latinTokenCount++;
+            }
+        }
+
+        if (wordTokenCount == 0 || latinTokenCount < 3) {
+            return false;
+        }
+
+        return latinTokenCount >= wordTokenCount * 0.6;
     }
 
     @SuppressWarnings("unchecked")

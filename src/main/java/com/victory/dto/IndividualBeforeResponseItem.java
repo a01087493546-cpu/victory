@@ -26,18 +26,31 @@ public class IndividualBeforeResponseItem {
     private String stepType;
     private String question;
     private String answer;
+
+    /*
+     * 차례가 없는 책이라 학생이 "차례 없음"을 선택해 이 단계를 통과했는지
+     * 여부. true면 question/answer는 실제 학생 작성값이 아니라 빈 값이다.
+     */
+    private boolean skipped;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean rewardGranted;
     private StudentStatsResponse stats;
 
     public static IndividualBeforeResponseItem from(Response response) {
+
+        Object skipped = response.getExtraData() == null
+            ? null
+            : response.getExtraData().get("skipped");
+
         return new IndividualBeforeResponseItem(
             response.getId(),
             response.getReadingRecord().getId(),
             extractFromExtraData(response, "stepType"),
             extractFromExtraData(response, "question"),
             response.getContent(),
+            Boolean.TRUE.equals(skipped),
             response.getCreatedAt(),
             response.getUpdatedAt(),
             false,

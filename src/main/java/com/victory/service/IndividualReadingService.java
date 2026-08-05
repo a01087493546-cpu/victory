@@ -510,6 +510,20 @@ public class IndividualReadingService {
             );
         }
 
+        /*
+         * skipped(차례 없음)가 아닌 일반 저장은 기존과 동일하게 질문·답을
+         * 반드시 요구한다. skipped=true는 "차례 없음" 버튼으로만 오는
+         * 경로라 실제 작성값이 없는 게 정상이므로 여기서는 검증하지 않는다.
+         */
+        if (!request.isSkipped()) {
+            if (request.getQuestion() == null || request.getQuestion().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "question은 비어 있을 수 없습니다.");
+            }
+            if (request.getAnswer() == null || request.getAnswer().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "answer는 비어 있을 수 없습니다.");
+            }
+        }
+
         ReadingRecord record = requireOwnedRecord(studentId, readingRecordId);
 
         if (record.getFinishedAt() != null) {
@@ -534,11 +548,20 @@ public class IndividualReadingService {
                 return newResponse;
             });
 
-        response.setContent(request.getAnswer());
+        /*
+         * skipped=true일 때는 학생이 실제로 쓴 질문·답이 아니므로 절대
+         * question/answer 텍스트를 content/extra_data에 저장하지 않는다
+         * (빈 문자열로 저장). 대신 extra_data.skipped=true로 "차례 없음으로
+         * 통과했다"는 사실만 남긴다. 아래 refreshBeforeDoneState()는 이
+         * stepType이 저장돼 있는지만 보므로(내용은 보지 않음), 차례 없음도
+         * 4단계 완료 판정에 정상적으로 포함된다.
+         */
+        response.setContent(request.isSkipped() ? "" : request.getAnswer());
 
         Map<String, Object> extraData = new HashMap<>();
         extraData.put("stepType", stepType);
-        extraData.put("question", request.getQuestion());
+        extraData.put("question", request.isSkipped() ? "" : request.getQuestion());
+        extraData.put("skipped", request.isSkipped());
         response.setExtraData(extraData);
 
         Response saved = responseRepository.save(response);

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -910,21 +911,23 @@ class IndividualReadingServiceTest {
         assertThat(result.get(0).getQuestion()).isEqualTo("질문");
     }
 
-    /* 검증 10/11: 빈 질문·빈 답 거부(Bean Validation) */
+    /*
+     * 검증 10/11: 빈 질문·빈 답 거부. "차례 없음"(skipped=true) 기능
+     * 추가로 question/answer의 @NotBlank를 DTO에서 빼고(skipped=true일
+     * 때는 비어 있는 게 정상이므로) 서비스 레이어에서 skipped 여부에
+     * 따라 조건부로 검증하도록 옮겼다 - 이 동작은
+     * saveBeforeResponse_notSkipped_blankQuestion_throwsBadRequest /
+     * saveBeforeResponse_notSkipped_blankAnswer_throwsBadRequest에서
+     * 검증한다. Bean Validation 어노테이션이 빠졌으므로 DTO 자체에는
+     * 더 이상 이 제약이 없다는 것만 확인한다.
+     */
     @Test
-    void saveRequest_rejectsBlankQuestionAndAnswer() {
+    void saveRequest_noLongerEnforcesNotBlankAtDtoLevel() {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
 
             IndividualBeforeResponseSaveRequest blankQuestion = buildBeforeSaveRequest("", "답");
-            Set<ConstraintViolation<IndividualBeforeResponseSaveRequest>> questionViolations =
-                validator.validate(blankQuestion);
-            assertThat(questionViolations).isNotEmpty();
-
-            IndividualBeforeResponseSaveRequest blankAnswer = buildBeforeSaveRequest("질문?", "");
-            Set<ConstraintViolation<IndividualBeforeResponseSaveRequest>> answerViolations =
-                validator.validate(blankAnswer);
-            assertThat(answerViolations).isNotEmpty();
+            assertThat(validator.validate(blankQuestion)).isEmpty();
 
             IndividualBeforeResponseSaveRequest valid = buildBeforeSaveRequest("질문?", "답");
             assertThat(validator.validate(valid)).isEmpty();
@@ -1003,7 +1006,7 @@ class IndividualReadingServiceTest {
 
         Response saved = captor.getValue();
         assertThat(saved.getPassed()).isNull();
-        assertThat(saved.getExtraData()).containsOnlyKeys("stepType", "question");
+        assertThat(saved.getExtraData()).containsOnlyKeys("stepType", "question", "skipped");
         assertThat(saved.getExtraData()).doesNotContainKey("evaluationKey");
         assertThat(saved.getExtraData()).doesNotContainKey("status");
         assertThat(saved.getExtraData()).doesNotContainKey("aiFeedback");
@@ -1105,6 +1108,138 @@ class IndividualReadingServiceTest {
         verify(beforeReadingRewardService, never())
             .grantBeforeCompleteRewardOnce(any(User.class), any(Long.class));
         verify(readingRecordRepository, never()).save(any(ReadingRecord.class));
+    }
+
+    // =========================================================
+    // 개별읽기 읽기 전 "차례 없음"(skipped) 처리
+    // =========================================================
+
+    private IndividualBeforeResponseSaveRequest buildBeforeSkipRequest() {
+        IndividualBeforeResponseSaveRequest request = new IndividualBeforeResponseSaveRequest();
+        setField(request, "question", "");
+        setField(request, "answer", "");
+        setField(request, "skipped", true);
+        return request;
+    }
+
+    /* 차례 없음: 질문/답 없이도 저장되고, 실제 텍스트를 가짜로 채우지 않음 */
+    @Test
+    void saveBeforeResponse_skippedContents_storesEmptyQuestionAndAnswer() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "아몬드", "손원평"));
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        when(responseRepository
+                .findByStudent_IdAndReadingRecord_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                    STUDENT_ID, 10L, "individual", "answer", "before"))
+            .thenReturn(List.of());
+        when(responseRepository.save(any(Response.class))).thenAnswer(invocation -> {
+            Response toSave = invocation.getArgument(0);
+            toSave.setId(2000L);
+            return toSave;
+        });
+
+        IndividualBeforeResponseItem result = service.saveBeforeResponse(
+            STUDENT_ID, 10L, "contents", buildBeforeSkipRequest());
+
+        assertThat(result.getQuestion()).isEmpty();
+        assertThat(result.getAnswer()).isEmpty();
+        assertThat(result.isSkipped()).isTrue();
+    }
+
+    /* 차례 없음은 "차례 없음"/"건너뜀" 같은 문자열을 학생의 질문·답으로 저장하지 않음 */
+    @Test
+    void saveBeforeResponse_skippedContents_neverStoresPlaceholderTextAsRealAnswer() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "아몬드", "손원평"));
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        when(responseRepository
+                .findByStudent_IdAndReadingRecord_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                    STUDENT_ID, 10L, "individual", "answer", "before"))
+            .thenReturn(List.of());
+
+        org.mockito.ArgumentCaptor<Response> captor = org.mockito.ArgumentCaptor.forClass(Response.class);
+        when(responseRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        service.saveBeforeResponse(STUDENT_ID, 10L, "contents", buildBeforeSkipRequest());
+
+        Response saved = captor.getValue();
+        assertThat(saved.getContent()).isEmpty();
+        assertThat(saved.getExtraData().get("question")).isEqualTo("");
+        assertThat(saved.getExtraData().get("skipped")).isEqualTo(true);
+    }
+
+    /* 일반 저장(회귀): skipped가 아니면 여전히 질문/답이 비어 있으면 400 */
+    @Test
+    void saveBeforeResponse_notSkipped_blankQuestion_throwsBadRequest() {
+        assertThatThrownBy(() ->
+            service.saveBeforeResponse(STUDENT_ID, 10L, "contents", buildBeforeSaveRequest("", "답만 있음")))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400");
+    }
+
+    @Test
+    void saveBeforeResponse_notSkipped_blankAnswer_throwsBadRequest() {
+        assertThatThrownBy(() ->
+            service.saveBeforeResponse(STUDENT_ID, 10L, "contents", buildBeforeSaveRequest("질문만 있음", "")))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400");
+    }
+
+    /* 차례 없음 취소 후 실제 질문·답으로 다시 저장하면 skipped=false로 완전히 덮어써짐(동일 stepType 행 재사용) */
+    @Test
+    void saveBeforeResponse_realAnswerAfterSkip_overwritesSkippedState() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "아몬드", "손원평"));
+        Response existingSkipped = buildBeforeResponseEntity(2000L, student, record, "contents", "", "");
+        existingSkipped.setExtraData(new java.util.HashMap<>(
+            Map.of("stepType", "contents", "question", "", "skipped", true)));
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        when(responseRepository
+                .findByStudent_IdAndReadingRecord_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                    STUDENT_ID, 10L, "individual", "answer", "before"))
+            .thenReturn(new java.util.ArrayList<>(List.of(existingSkipped)));
+        when(responseRepository.save(any(Response.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        IndividualBeforeResponseItem result = service.saveBeforeResponse(
+            STUDENT_ID, 10L, "contents", buildBeforeSaveRequest("차례를 보니 어떤 일이 생길까?", "모험을 떠날 것 같다."));
+
+        assertThat(result.isSkipped()).isFalse();
+        assertThat(result.getQuestion()).isEqualTo("차례를 보니 어떤 일이 생길까?");
+        assertThat(result.getAnswer()).isEqualTo("모험을 떠날 것 같다.");
+    }
+
+    /* 차례 없음도 4단계 완료 판정에 정상 포함되어 보상이 지급됨(가짜 아님) */
+    @Test
+    void saveBeforeResponse_allFourStepsWithContentsSkipped_grantsRewardOnce() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "아몬드", "손원평"));
+        Response titleR = buildBeforeResponseEntity(1L, student, record, "title", "q1", "a1");
+        Response contentsSkipped = buildBeforeResponseEntity(2L, student, record, "contents", "", "");
+        contentsSkipped.setExtraData(new java.util.HashMap<>(
+            Map.of("stepType", "contents", "question", "", "skipped", true)));
+        Response pictureR = buildBeforeResponseEntity(3L, student, record, "picture", "q3", "a3");
+        Response skimR = buildBeforeResponseEntity(4L, student, record, "skim", "q4", "a4");
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        when(responseRepository
+                .findByStudent_IdAndReadingRecord_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                    eq(STUDENT_ID), eq(10L), eq("individual"), eq("answer"), eq("before")))
+            .thenReturn(List.of(titleR, contentsSkipped, pictureR))
+            .thenReturn(List.of(titleR, contentsSkipped, pictureR, skimR));
+        when(responseRepository.save(any(Response.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(readingRecordRepository.save(any(ReadingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        IndividualBeforeReadingRewardService.RewardResult rewardResult =
+            mock(IndividualBeforeReadingRewardService.RewardResult.class);
+        when(rewardResult.isRewardGranted()).thenReturn(true);
+        when(beforeReadingRewardService.grantBeforeCompleteRewardOnce(any(User.class), eq(10L)))
+            .thenReturn(rewardResult);
+
+        IndividualBeforeResponseItem result = service.saveBeforeResponse(
+            STUDENT_ID, 10L, "skim", buildBeforeSaveRequest("q4", "a4"));
+
+        assertThat(result.isRewardGranted()).isTrue();
+        verify(beforeReadingRewardService, org.mockito.Mockito.times(1))
+            .grantBeforeCompleteRewardOnce(any(User.class), eq(10L));
     }
 
     // =========================================================

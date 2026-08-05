@@ -8612,6 +8612,10 @@ const bookTypes = [
       await prepareDefaults();
       bindEvents();
       renderAll();
+
+      if (new URLSearchParams(location.search).get("view") === "bookChat") {
+        showScreen("bookChat");
+      }
     });
 
     async function prepareDefaults() {

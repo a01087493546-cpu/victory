@@ -2454,6 +2454,27 @@ body {
   line-height: 1.5 !important;
 }
 
+/* 검사하기 버튼을 루미 피드백 카드 오른쪽 끝에 고정(피드백 문구는
+   flex:1이라 이 버튼은 자연히 카드 맨 오른쪽에 붙는다). 화면 폭이
+   줄어도 버튼이 찌그러지거나 줄바꿈되지 않게 flex-shrink만 막는다. */
+#activityCard .feedback-check-button {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+  min-width: auto !important;
+  height: 48px !important;
+  padding: 0 22px !important;
+  font-size: 17px !important;
+}
+
+/* 하단 이동 버튼 줄 가운데 영역(차례 단계의 "차례 없음" 버튼 전용).
+   다른 단계에서는 비어 있어 기존처럼 이전/다음 버튼만 양 끝에 남는다. */
+#activityCard .bottom-row-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
 /* =========================================================
    내가 만든 읽기 전 질문 확인하기(요약) 화면
    - 안내 문구를 뺀 만큼 버튼이 자연스럽게 오른쪽에 정렬됩니다.
@@ -2620,10 +2641,10 @@ const studentName =
 const API_BASE_URL = "http://localhost:8080";
 
     const answers = [
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false },
-      { question: "", expectedAnswer: "", passed: false }
+      { question: "", expectedAnswer: "", passed: false, skipped: false },
+      { question: "", expectedAnswer: "", passed: false, skipped: false },
+      { question: "", expectedAnswer: "", passed: false, skipped: false },
+      { question: "", expectedAnswer: "", passed: false, skipped: false }
     ];
 
     /*
@@ -2796,7 +2817,8 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
       answers[stepIndex] = {
         question: item.question || "",
         expectedAnswer: item.answer || "",
-        passed: !!item.passed
+        passed: !!item.passed,
+        skipped: !!item.skipped
       };
     });
   } catch (error) {
@@ -2808,7 +2830,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
       AI good 판정을 받은 질문·답을 DB에 저장(또는 갱신)한다.
       실패하면 예외를 던져서 호출한 쪽(onResult)이 통과 처리를 하지 않게 한다.
     */
-    async function savePreReadingResponse(stepType, question, answer) {
+    async function savePreReadingResponse(stepType, question, answer, skipped) {
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId) {
@@ -2831,7 +2853,8 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
         stepType: stepType,
         question: question,
         answer: answer,
-        classReadingBookId: selectedBook.bookId
+        classReadingBookId: selectedBook.bookId,
+        skipped: !!skipped
       })
     }
   );
@@ -3138,8 +3161,16 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
   const answer = answers[currentStepIndex];
   const activityCard = document.getElementById("activityCard");
   const isExampleMode = currentMode === "example";
+  const isContentsStep = step.type === "contents";
+  const isContentsSkipped = isContentsStep && answer.skipped;
 
   activityCard.className = "activity-card " + (isExampleMode ? "is-example" : "is-write");
+
+  const questionPlaceholder = isContentsSkipped ? "이 책에는 차례가 없어요." : step.questionPlaceholder;
+  const answerPlaceholder = isContentsSkipped ? "차례 질문은 건너뛰었어요." : step.answerPlaceholder;
+  const questionValue = isContentsSkipped ? "" : answer.question;
+  const answerValue = isContentsSkipped ? "" : answer.expectedAnswer;
+  const inputDisabledAttr = isContentsSkipped ? "disabled" : "";
 
   activityCard.innerHTML =
     '<div class="activity-head">' +
@@ -3188,7 +3219,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
                   '<label class="input-label" for="questionInput">내가 만든 읽기 전 질문</label>' +
                   '<span class="input-help" id="questionLength">0 / 100</span>' +
                 '</div>' +
-                '<textarea id="questionInput" maxlength="100" placeholder="' + step.questionPlaceholder + '">' + answer.question + '</textarea>' +
+                '<textarea id="questionInput" maxlength="100" placeholder="' + questionPlaceholder + '" ' + inputDisabledAttr + '>' + questionValue + '</textarea>' +
               '</div>' +
 
               '<div class="input-block">' +
@@ -3196,29 +3227,41 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
                   '<label class="input-label" for="answerInput">내가 생각한 답</label>' +
                   '<span class="input-help" id="answerLength">0 / 200</span>' +
                 '</div>' +
-                '<textarea id="answerInput" maxlength="200" placeholder="' + step.answerPlaceholder + '">' + answer.expectedAnswer + '</textarea>' +
+                '<textarea id="answerInput" maxlength="200" placeholder="' + answerPlaceholder + '" ' + inputDisabledAttr + '>' + answerValue + '</textarea>' +
               '</div>' +
             '</div>' +
 
             '<div class="feedback-box feedback-box-with-lumi" id="feedbackBox" style="display: flex;">' +
               '<img class="feedback-lumi" src="../assets/images/read-before/intro/pre-reading-lumi-question-note.png" alt="피드백을 주는 루미">' +
-              '<div class="feedback-message">질문과 답을 적고 저장하면 루미가 피드백을 줄게!</div>' +
+              '<div class="feedback-message">' +
+                (isContentsSkipped
+                  ? "이 책에는 차례가 없어 질문 만들기를 건너뛰었어요."
+                  : "질문과 답을 적고 저장하면 루미가 피드백을 줄게!") +
+              '</div>' +
+              (isContentsSkipped
+                ? ""
+                : '<button class="main-button feedback-check-button" type="button" id="checkAnswerButton" onclick="checkAndGoNext()">검사하기</button>') +
             '</div>' +
           '</section>'
-      ) +
+         ) +
     '</div>' +
 
     '<div class="bottom-row">' +
-      '<div></div>' +
-
-      '<div class="action-area">' +
-        (isExampleMode
-          ? '<button class="main-button" type="button" onclick="toggleExample()">질문 만들기</button>'
-          : '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
-            '<button class="main-button" type="button" id="checkAnswerButton" onclick="checkAndGoNext()">검사하기</button>' +
-            '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + (answer.passed ? "" : "disabled") + '>다음 →</button>'
-        ) +
-      '</div>' +
+      (isExampleMode
+        ? '<div></div>' +
+          '<div class="action-area">' +
+            '<button class="main-button" type="button" onclick="toggleExample()">질문 만들기</button>' +
+          '</div>'
+        : '<button class="plain-button" type="button" onclick="goPrevious()">← 이전 단계</button>' +
+          '<div class="bottom-row-right">' +
+            (isContentsStep
+              ? (answer.skipped
+                  ? '<button class="plain-button" type="button" onclick="cancelContentsSkip()">차례 질문 작성하기</button>'
+                  : '<button class="plain-button" type="button" onclick="skipContentsStep()">차례 없음</button>')
+              : "") +
+            '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + (answer.passed ? "" : "disabled") + '>다음 →</button>' +
+          '</div>'
+      ) +
     '</div>';
 
   if (!isExampleMode) {
@@ -3553,6 +3596,107 @@ function goNextAfterFeedback() {
   }
 }
 
+/*
+  =========================================================
+  6-1. 차례 없음(스킵) 처리
+  =========================================================
+  차례가 없는 책을 위한 기능. 실제 질문·답을 작성한 것이 아니므로
+  AI 검사 요청을 보내지 않고(AI 시도 기록/이력도 남기지 않는다),
+  서버에는 question/answer를 빈 값으로, skipped=true로만 저장한다.
+  이 단계는 "정상적으로 완료"된 것으로 취급하므로 passed는 그대로
+  true를 쓴다(진행률·다음 버튼 활성화가 전부 passed 하나만 본다).
+*/
+/*
+  체크를 통과하기 전(=아직 서버에 저장되지 않은) 상태에서 "차례 없음"을
+  누르면 화면에 입력해 둔 초안을 조용히 지우지 않고 여기 잠깐 담아
+  둔다. "차례 질문 작성하기"로 취소하면 그대로 되돌려 준다.
+*/
+let stashedContentsDraft = null;
+
+async function skipContentsStep() {
+  const stepIndex = currentStepIndex;
+  const answer = answers[stepIndex];
+
+  if (isPreReadingAiRequestInFlight || isSavingPreReadingResponse) {
+    return;
+  }
+
+  /*
+    이미 검사를 통과한 정상 질문·답이 저장되어 있다면(차례 없음이
+    아니라 실제로 작성해서 통과한 상태), 되돌릴 수 없다는 것을
+    학생에게 먼저 확인받는다 - 임의로 조용히 지우지 않는다.
+  */
+  if (answer.passed && !answer.skipped) {
+    const confirmed = window.confirm(
+      "작성한 차례 질문과 답이 있어요.\n" +
+      "차례 없음으로 바꾸면 이 단계의 작성 내용은 사용하지 않게 됩니다.\n" +
+      "계속할까요?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    stashedContentsDraft = null;
+  } else if (!answer.passed) {
+    const questionInput = document.getElementById("questionInput");
+    const answerInput = document.getElementById("answerInput");
+    const draftQuestion = questionInput ? questionInput.value.trim() : answer.question;
+    const draftAnswer = answerInput ? answerInput.value.trim() : answer.expectedAnswer;
+
+    stashedContentsDraft = (draftQuestion || draftAnswer)
+      ? { question: draftQuestion, expectedAnswer: draftAnswer }
+      : null;
+  }
+
+  const skipButton = document.querySelector(".bottom-row-right .plain-button");
+  isSavingPreReadingResponse = true;
+  if (skipButton) {
+    skipButton.disabled = true;
+  }
+
+  try {
+    await savePreReadingResponse(steps[stepIndex].type, "", "", true);
+
+    answers[stepIndex] = {
+      question: "",
+      expectedAnswer: "",
+      passed: true,
+      skipped: true
+    };
+
+    renderAll();
+  } catch (error) {
+    console.error("차례 없음 처리에 실패했습니다.", error);
+    alert("차례 없음 처리를 저장하지 못했어. 다시 시도해줘.");
+  } finally {
+    isSavingPreReadingResponse = false;
+  }
+}
+
+/*
+  "차례 없음" 취소(다시 차례 질문 작성하기). 서버에 저장된 skipped
+  상태는 학생이 실제로 새 질문·답을 작성해 검사를 통과할 때(=
+  requestFeedbackForCurrentStep의 저장 경로)만 덮어써진다 - 여기서는
+  화면 상태만 "아직 완료하지 않음"으로 되돌려서 입력칸을 다시 활성화한다.
+  아무것도 지우지 않고 그대로 두면(서버 쪽), 학생이 취소만 하고 새로
+  작성하지 않은 채 새로고침해도 이전 차례 없음 상태가 안전하게 복원된다.
+*/
+function cancelContentsSkip() {
+  const stepIndex = currentStepIndex;
+  const answer = answers[stepIndex];
+
+  answer.skipped = false;
+  answer.passed = false;
+  answer.question = stashedContentsDraft ? stashedContentsDraft.question : "";
+  answer.expectedAnswer = stashedContentsDraft ? stashedContentsDraft.expectedAnswer : "";
+  stashedContentsDraft = null;
+
+  preReadingAiRequestId++;
+
+  renderAll();
+}
+
     /*
       =========================================================
       6-1. 1차 형식 검사 (AI 호출 전, 프론트에서 무의미한 입력을 차단)
@@ -3747,8 +3891,8 @@ function goNextAfterFeedback() {
 
             return '<article class="summary-item">' +
               '<h3 class="summary-title">' + step.number + '. ' + step.title + '</h3>' +
-              '<p class="summary-text"><strong>질문</strong> · ' + (item.question || "아직 작성하지 않았어요.") + '</p>' +
-              '<p class="summary-text"><strong>답</strong> · ' + (item.expectedAnswer || "아직 작성하지 않았어요.") + '</p>' +
+              '<p class="summary-text"><strong>질문</strong> · ' + (item.skipped ? "차례가 없어 건너뛰었어요." : (item.question || "아직 작성하지 않았어요.")) + '</p>' +
+              '<p class="summary-text"><strong>답</strong> · ' + (item.skipped ? "차례가 없어 건너뛰었어요." : (item.expectedAnswer || "아직 작성하지 않았어요.")) + '</p>' +
             '</article>';
           }).join("") +
         '</div>' +

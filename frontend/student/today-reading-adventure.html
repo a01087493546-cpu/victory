@@ -823,6 +823,129 @@
       max-height: 560px !important;
       margin: 0 auto !important;
     }
+
+    .tra-stage-button {
+      grid-template-rows: 46px 140px auto 56px !important;
+      height: 410px !important;
+      padding: 24px 26px 26px !important;
+      gap: 14px !important;
+    }
+
+    .tra-stage-number {
+      width: 46px !important;
+      height: 46px !important;
+    }
+
+    .tra-stage-icon {
+      width: 140px !important;
+      height: 140px !important;
+      border-radius: 28px !important;
+    }
+
+    .tra-stage-icon img {
+      width: 118px !important;
+      height: 118px !important;
+    }
+
+    .tra-stage-button h2 {
+      font-size: 34px !important;
+    }
+
+    .tra-stage-state {
+      height: 56px !important;
+      font-size: 18px !important;
+    }
+
+    .tra-community-shortcut-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+      align-items: center;
+      justify-items: center;
+      margin-top: -10px;
+    }
+
+    .tra-community-guide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #6b4019;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.tra-community-guide strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.tra-community-guide span {
+  display: block;
+  font-size: 20px;
+  font-weight: 850;
+  color: #8a5a27;
+  white-space: nowrap;
+}
+
+    .tra-community-shortcut {
+      width: 82%;
+      min-height: 58px;
+      height: 58px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 24px;
+      border: 1.5px solid rgba(175, 112, 32, 0.58);
+      border-radius: 18px;
+      background: rgba(255, 247, 226, 0.96);
+      color: #633915;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(98, 59, 15, 0.08);
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .tra-community-shortcut:hover {
+      transform: translateY(-2px);
+      background: #fffaf0;
+    }
+
+    .tra-community-shortcut:focus-visible {
+      outline: 3px solid rgba(190, 123, 35, 0.35);
+      outline-offset: 2px;
+    }
+
+    @media (max-height: 760px) {
+      .tra-content-card {
+        padding: 24px 30px !important;
+        row-gap: 14px !important;
+      }
+
+      .tra-adventure-title { font-size: 42px !important; }
+      .tra-stage-grid { gap: 16px !important; }
+      .tra-stage-button {
+        grid-template-rows: 40px 104px auto 48px !important;
+        height: 340px !important;
+        padding: 16px 18px !important;
+        gap: 10px !important;
+      }
+      .tra-stage-number { width: 40px !important; height: 40px !important; }
+      .tra-stage-icon { width: 104px !important; height: 104px !important; }
+      .tra-stage-icon img { width: 88px !important; height: 88px !important; }
+      .tra-stage-button h2 { font-size: 29px !important; }
+      .tra-stage-state { height: 48px !important; font-size: 16px !important; }
+      .tra-community-shortcut-grid { gap: 16px; margin-top: -2px; }
+      .tra-community-guide { font-size: 20px; }
+      .tra-community-shortcut { min-height: 58px; height: 58px; font-size: 20px; }
+    }
   </style>
 </head>
 
@@ -848,6 +971,15 @@
           <h1 class="tra-adventure-title">오늘의 독서 모험을 떠나볼까요?</h1>
 
           <div class="tra-stage-grid" id="stageGrid"></div>
+
+          <div class="tra-community-shortcut-grid" aria-label="친구 활동 바로가기">
+         <div class="tra-community-guide">
+  <strong>✨ 친구들의 생각이 궁금하다면?</strong>
+  <span>바로가기 버튼을 눌러보세요!</span>
+</div>
+            <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('during')"><span aria-hidden="true">💬</span><span>책수다방</span></button>
+            <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('after')"><span aria-hidden="true">📖</span><span>간추리기 공유</span></button>
+          </div>
 
           <!-- 아래 안내 문구 바는 화면을 깔끔하게 보이도록 제거했습니다. -->
 <div class="tra-bottom-note" id="bottomNote" style="display: none;"></div>
@@ -910,7 +1042,12 @@
         activeLabel: "이어서 하기",
         doneLabel: "완료",
         lockedLabel: "읽기 전 완료 필요",
-        url: "./individual-during-reading.html"
+        url: "./individual-during-reading.html",
+        shortcut: {
+          icon: "💬",
+          label: "책수다방",
+          url: "./individual-during-reading.html?view=bookChat"
+        }
       },
       {
         key: "after",
@@ -921,7 +1058,12 @@
         activeLabel: "정리하기",
         doneLabel: "완료",
         lockedLabel: "읽기 중 완료 필요",
-        url: "./individual-after-reading.html"
+        url: "./individual-after-reading.html",
+        shortcut: {
+          icon: "📖",
+          label: "간추리기 공유",
+          url: "./individual-after-reading.html?view=summaryShare"
+        }
       }
     ];
 
@@ -1067,9 +1209,10 @@ if (
         const unlocked = isStageUnlocked(stage.key);
         const active = currentStage === stage.key && !done;
 
-        const button = document.createElement("button");
-        button.type = "button";
+        const button = document.createElement("article");
         button.className = "tra-stage-button";
+        button.setAttribute("role", "button");
+        button.tabIndex = 0;
         button.classList.toggle("active", active);
         button.classList.toggle("done", done);
         button.classList.toggle("locked", !unlocked);
@@ -1088,7 +1231,7 @@ if (
           <div class="tra-stage-state">${stateLabel}</div>
         `;
 
-        button.onclick = () => {
+        const openStage = () => {
           if (!unlocked) {
             alert("앞 단계 활동을 먼저 완료하면 열려요!");
             return;
@@ -1097,8 +1240,24 @@ if (
           location.href = stage.url;
         };
 
+        button.addEventListener("click", openStage);
+        button.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openStage();
+          }
+        });
+
         stageGrid.appendChild(button);
       });
+    }
+
+    function openCommunityShortcut(stageKey) {
+      const stage = stages.find((item) => item.key === stageKey);
+
+      if (stage && stage.shortcut) {
+        location.href = stage.shortcut.url;
+      }
     }
 
     function renderLumiGuide() {

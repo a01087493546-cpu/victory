@@ -444,4 +444,368 @@ class FeedbackAiServiceTest {
 
         verify(aiEvaluationAttemptRepository, times(1)).save(any(AiEvaluationAttempt.class));
     }
+
+    // =========================================================
+    // 영어 노출 방지 후처리(sanitizeEnglishLeakage) - 이번 작업의 핵심 검증
+    // =========================================================
+
+    /* AI가 영문 질문 유형명을 message에 섞어 반환해도 학생에게는 한국어로 치환되어 나감 */
+    @Test
+    void getFeedback_englishTypeNamesInMessage_areSanitizedToKorean() {
+        stubAiResponse("{\"status\":\"need\",\"message\":\"Opinion 질문이에요. Direct 유형으로 바꿔 보세요.\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "opinion"));
+
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("Opinion");
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("Direct");
+        assertThat(result.getMessage()).contains("생각이나 느낌 말하기");
+        assertThat(result.getMessage()).contains("책에서 바로 답 찾기");
+    }
+
+    /* 흔한 오타 "Opinon"도 공식 한국어 이름으로 치환됨 */
+    @Test
+    void getFeedback_misspelledOpinonTypeName_isSanitizedToKorean() {
+        stubAiResponse("{\"status\":\"need\",\"message\":\"Opinon 질문으로 바꿔보세요.\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "opinion"));
+
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("Opinon");
+        assertThat(result.getMessage()).contains("생각이나 느낌 말하기");
+    }
+
+    /* Infer/Inference, Connect/Connection도 모두 치환됨 */
+    @Test
+    void getFeedback_allFourEnglishTypeNames_areSanitizedToKorean() {
+        stubAiResponse(
+            "{\"status\":\"need\",\"message\":\"Infer, Inference, Connect, Connection 모두 확인해 보세요.\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "infer"));
+
+        assertThat(result.getMessage())
+            .doesNotContainIgnoringCase("Infer")
+            .doesNotContainIgnoringCase("Connect")
+            .contains("단서로 짐작하기")
+            .contains("나와 연결하기");
+    }
+
+    /* AI 응답이 통째로 영어 문장이면 원문을 노출하지 않고 한국어 기본 안내로 대체됨(need) */
+    @Test
+    void getFeedback_fullyEnglishNeedMessage_isReplacedWithKoreanFallback() {
+        stubAiResponse(
+            "{\"status\":\"need\",\"message\":\"This question is unclear. Try again with more detail please.\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "direct"));
+
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("Try again");
+        assertThat(result.getMessage())
+            .isEqualTo("질문을 잘 살펴보았어요. 책과 관련된 궁금한 점이 드러나도록 조금 더 구체적으로 적어 보세요.");
+    }
+
+    /* AI 응답이 통째로 영어 문장이면 한국어 기본 안내로 대체됨(good) */
+    @Test
+    void getFeedback_fullyEnglishGoodMessage_isReplacedWithKoreanFallback() {
+        stubAiResponse("{\"status\":\"good\",\"message\":\"Good question! Great job on this one.\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "direct"));
+
+        assertThat(result.getMessage()).isEqualTo("정말 잘했어요! 다음으로 넘어가 볼까요?");
+    }
+
+    /* 짧은 영어 고유명사(영어 책 제목 등)가 섞인 정상 한국어 문장은 통째로 대체되지 않음 */
+    @Test
+    void getFeedback_koreanMessageWithShortEnglishTitle_isNotReplacedEntirely() {
+        stubAiResponse("{\"status\":\"good\",\"message\":\"Charlotte's Web 이야기를 잘 이해했어요!\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "direct"));
+
+        assertThat(result.getMessage()).contains("Charlotte's Web");
+        assertThat(result.getMessage()).contains("이야기를 잘 이해했어요");
+    }
+
+    /* pre_reading_question(result 계약)에서도 영어 유형명 치환이 동일하게 적용됨 */
+    @Test
+    void getFeedback_preReadingQuestion_englishInMessage_isSanitized() {
+        stubAiResponse(
+            "{\"result\":\"good\",\"message\":\"잘했어요! Opinion 관점도 좋아요.\",\"failedRule\":null}");
+
+        AiFeedbackResponse result = service.getFeedback(buildRequest("pre_reading_question", "title"));
+
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("Opinion");
+        assertThat(result.getMessage()).contains("생각이나 느낌 말하기");
+    }
+
+    // =========================================================
+    // 읽기 전 제목 질문 - 등록된 책 제목이 실제로 AI 요청에 전달되는지 검증
+    // =========================================================
+
+    /* stepType이 title이면 등록된 책 제목이 OpenAI 요청 본문(user 메시지)에 포함됨 */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_includesRegisteredBookTitleInAiRequest() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        AiFeedbackRequest request = new AiFeedbackRequest();
+        request.setType("pre_reading_question");
+        request.setStepType("title");
+        request.setBookTitle("백설공주");
+        request.setQaList(List.of(new AiFeedbackRequest.QAItem(
+            "백설공주의 의미가 뭘까?", "얼굴이 하얗다는 뜻일 것 같다.")));
+
+        service.getFeedback(request);
+
+        org.mockito.ArgumentCaptor<org.springframework.http.HttpEntity<Map<String, Object>>> entityCaptor =
+            org.mockito.ArgumentCaptor.forClass(org.springframework.http.HttpEntity.class);
+        verify(mockRestTemplate).postForObject(anyString(), entityCaptor.capture(), eq(Map.class));
+
+        List<Map<String, Object>> messages =
+            (List<Map<String, Object>>) entityCaptor.getValue().getBody().get("messages");
+        String userContent = (String) messages.get(1).get("content");
+
+        assertThat(userContent).contains("책 제목: 백설공주");
+        assertThat(userContent).contains("백설공주의 의미가 뭘까?");
+    }
+
+    // =========================================================
+    // NOT_RELATED_TO_BOOK 고정 피드백(applyFixedTitleMismatchFeedback) 검증
+    // =========================================================
+
+    private AiFeedbackRequest buildTitleRequest(String bookTitle, String question, String answer) {
+        AiFeedbackRequest request = new AiFeedbackRequest();
+        request.setType("pre_reading_question");
+        request.setStepType("title");
+        request.setBookTitle(bookTitle);
+        request.setQaList(List.of(new AiFeedbackRequest.QAItem(question, answer)));
+        return request;
+    }
+
+    /* 테스트 1: AI가 무엇을 반환하든 NOT_RELATED_TO_BOOK이면 서버가 고정 문구로 덮어씀 */
+    @Test
+    void getFeedback_titleStepNotRelatedToBook_overridesMessageWithFixedBookTitleTemplate() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"제목이 무엇인지 묻기보다, 제목을 보고 궁금한 인물이나 사건을 적어 보세요.\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("우리 낙원에서", "안녕하세요는 무슨 뜻일까?", "천국을 의미하는 것 같다."));
+
+        assertThat(result.getResult()).isEqualTo("retry");
+        assertThat(result.getFailedRule()).isEqualTo("NOT_RELATED_TO_BOOK");
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목 '우리 낙원에서'와 관련이 없어요. '우리 낙원에서'라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+        assertThat(result.getMessage()).doesNotContain("제목이 무엇인지 묻기보다");
+        assertThat(result.getMessage()).doesNotContain("인물이나 사건을 적어 보세요");
+    }
+
+    /* 테스트 5: 다른 책 제목("백설공주")에도 동일하게 적용되고 그 제목이 그대로 들어감 */
+    @Test
+    void getFeedback_titleStepNotRelatedToBook_includesActualBookTitleSnowWhite() {
+        stubAiResponse("{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("백설공주", "안녕하세요는 무슨 뜻일까?", "인사하는 말이다."));
+
+        assertThat(result.getMessage()).contains("백설공주");
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목 '백설공주'와 관련이 없어요. '백설공주'라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+    }
+
+    /* 받침 있는 제목("마당을 나온 암탉")은 "과"/"이라는" 조사가 올바르게 붙음 */
+    @Test
+    void getFeedback_titleStepNotRelatedToBook_usesCorrectParticleForTitleWithFinalConsonant() {
+        stubAiResponse("{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("마당을 나온 암탉", "축구를 잘하는 사람은 누구일까?", "손흥민일 것 같다."));
+
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목 '마당을 나온 암탉'과 관련이 없어요. '마당을 나온 암탉'이라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+    }
+
+    /* 테스트 6: bookTitle이 없으면(null) 안전한 일반 문구를 쓰고 "null" 문자열이 노출되지 않음 */
+    @Test
+    void getFeedback_titleStepNotRelatedToBook_nullBookTitle_usesSafeFallbackMessage() {
+        stubAiResponse("{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackRequest request = new AiFeedbackRequest();
+        request.setType("pre_reading_question");
+        request.setStepType("title");
+        request.setQaList(List.of(new AiFeedbackRequest.QAItem("안녕하세요는 무슨 뜻일까?", "천국을 의미하는 것 같다.")));
+
+        AiFeedbackResponse result = service.getFeedback(request);
+
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("null");
+        assertThat(result.getMessage()).doesNotContainIgnoringCase("undefined");
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목과 관련이 없어요. 책 제목을 다시 보고 궁금한 점을 질문으로 적어 보세요.");
+    }
+
+    /* bookTitle이 빈 문자열("")이어도 위와 동일하게 안전한 일반 문구를 씀 */
+    @Test
+    void getFeedback_titleStepNotRelatedToBook_blankBookTitle_usesSafeFallbackMessage() {
+        stubAiResponse("{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildTitleRequest("", "안녕하세요는 무슨 뜻일까?", "잘 모르겠다."));
+
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목과 관련이 없어요. 책 제목을 다시 보고 궁금한 점을 질문으로 적어 보세요.");
+    }
+
+    /* 회귀: NOT_RELATED_TO_BOOK이 아닌 다른 failedRule(예: SHALLOW_STAGE_QUESTION)은 건드리지 않음 */
+    @Test
+    void getFeedback_titleStepOtherFailedRule_doesNotApplyFixedTemplate() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"제목이 무엇인지 묻기보다, 제목을 보고 궁금한 인물이나 사건을 적어 보세요.\",\"failedRule\":\"SHALLOW_STAGE_QUESTION\"}");
+
+        AiFeedbackResponse result = service.getFeedback(buildTitleRequest("우리 낙원에서", "제목이 뭘까", "모르겠다"));
+
+        assertThat(result.getMessage()).isEqualTo(
+            "제목이 무엇인지 묻기보다, 제목을 보고 궁금한 인물이나 사건을 적어 보세요.");
+    }
+
+    /* 회귀: title 단계가 아닌 다른 stepType(contents)에서는 이 고정 문구를 적용하지 않음 */
+    @Test
+    void getFeedback_nonTitleStepNotRelatedRule_doesNotApplyFixedTemplate() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"지금 단계에서 살펴볼 내용과 관련된 궁금한 점을 적어 보세요.\",\"failedRule\":\"NOT_RELATED_TO_STAGE\"}");
+
+        AiFeedbackRequest request = new AiFeedbackRequest();
+        request.setType("pre_reading_question");
+        request.setStepType("contents");
+        request.setBookTitle("우리 낙원에서");
+        request.setQaList(List.of(new AiFeedbackRequest.QAItem("수학 문제는 몇 개일까?", "열 개일 것 같다.")));
+
+        AiFeedbackResponse result = service.getFeedback(request);
+
+        assertThat(result.getMessage()).isEqualTo("지금 단계에서 살펴볼 내용과 관련된 궁금한 점을 적어 보세요.");
+    }
+
+    /* 회귀: good 판정에는 이 후처리가 전혀 영향을 주지 않음 */
+    @Test
+    void getFeedback_titleStepGoodResult_unaffectedByFixedTemplateLogic() {
+        stubGoodResultResponse();
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("우리 낙원에서", "낙원은 어떤 곳일까?", "모두가 행복하게 사는 곳일 것 같다."));
+
+        assertThat(result.getResult()).isEqualTo("good");
+        assertThat(result.getMessage()).isEqualTo("좋아!");
+    }
+
+    // =========================================================
+    // 질문 관련성 vs 답 관련성 오분류 보정("밤" 사례) - 이번 작업의 핵심 검증
+    // =========================================================
+
+    /*
+     * AI가 "답이 질문과 안 맞는" 경우를 잘못 NOT_RELATED_TO_BOOK으로
+     * 반환해도, 학생 질문에 등록된 책 제목("밤")이 문자 그대로 들어 있으면
+     * 서버가 이를 명백한 오분류로 판단해 ANSWER_NOT_RELATED로 바로잡고
+     * "질문은 괜찮다, 답을 다시 써라"는 문구를 내보내야 한다.
+     */
+    @Test
+    void getFeedback_titleContainedInQuestion_reclassifiesNotRelatedToBookAsAnswerNotRelated() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"지금 질문은 책 제목 '밤'과 관련이 없어요. '밤'이라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("밤", "밤의 의미는 무엇일까?", "내가 만들었다."));
+
+        assertThat(result.getResult()).isEqualTo("retry");
+        assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
+        assertThat(result.getMessage()).isEqualTo(
+            "질문은 책 제목 '밤'과 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.");
+        assertThat(result.getMessage()).doesNotContain("제목을 보고 궁금한 점을 질문으로 적어 보세요");
+    }
+
+    /* 받침 있는 제목("우리 낙원에서"는 받침 없음, "강아지똥"은 받침 있음)에도 조사가 올바르게 붙음 */
+    @Test
+    void getFeedback_titleContainedInQuestion_usesCorrectParticleForTitleWithFinalConsonant() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("강아지똥", "강아지똥의 뜻은 무엇일까?", "내가 만들었다."));
+
+        assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
+        assertThat(result.getMessage()).isEqualTo(
+            "질문은 책 제목 '강아지똥'과 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.");
+    }
+
+    /* 질문에 제목이 없으면(진짜 무관) 여전히 기존 고정 문구를 그대로 씀 - 오탐 방지 회귀 */
+    @Test
+    void getFeedback_titleNotContainedInQuestion_stillUsesTitleMismatchTemplate() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("밤", "오늘 급식은 무엇일까?", "김치찌개다."));
+
+        assertThat(result.getFailedRule()).isEqualTo("NOT_RELATED_TO_BOOK");
+        assertThat(result.getMessage()).isEqualTo(
+            "지금 질문은 책 제목 '밤'과 관련이 없어요. '밤'이라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+    }
+
+    /* 제목의 핵심 단어 일부만 겹치는 경우(제목 전체 포함이 아님)는 이 결정적 보정을 적용하지 않음 */
+    @Test
+    void getFeedback_onlyPartialTitleWordOverlap_doesNotTriggerAnswerReclassification() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("강아지똥", "강아지는 귀여울까?", "귀여울 것 같다."));
+
+        assertThat(result.getFailedRule()).isEqualTo("NOT_RELATED_TO_BOOK");
+        assertThat(result.getMessage()).contains("강아지똥");
+    }
+
+    /*
+     * 실제 API 검증 중 AI가 result:"good"이면서 failedRule:"NOT_RELATED_TO_BOOK"을
+     * 함께 반환하는 자기모순 응답을 실제로 확인했다 - 이런 경우에도
+     * 서버가 result를 강제로 "retry"로 바로잡아야 한다(안 그러면 학생이
+     * 검사 실패인데도 통과한 것처럼 다음 단계로 넘어가 버림).
+     */
+    @Test
+    void getFeedback_aiReturnsGoodResultWithNonNullFailedRule_forcesResultToRetry() {
+        stubAiResponse(
+            "{\"result\":\"good\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("밤", "밤의 의미는 무엇일까?", "내가 만들었다."));
+
+        assertThat(result.getResult()).isEqualTo("retry");
+        assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
+    }
+
+    /*
+     * AI가 처음부터 직접 ANSWER_NOT_RELATED로 올바르게 분류했지만(제목
+     * 불일치 재분류 경로를 거치지 않음) result만 실수로 "good"으로 남긴
+     * 경우에도 일반 정합성 보정(enforceResultFailedRuleConsistency)이
+     * retry로 바로잡아야 한다.
+     */
+    @Test
+    void getFeedback_aiDirectlyReturnsAnswerNotRelatedWithGoodResult_forcesResultToRetry() {
+        stubAiResponse(
+            "{\"result\":\"good\",\"message\":\"질문은 책 제목 '밤'과 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요.\",\"failedRule\":\"ANSWER_NOT_RELATED\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("밤", "밤의 의미는 무엇일까?", "내가 만들었다."));
+
+        assertThat(result.getResult()).isEqualTo("retry");
+        assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
+    }
+
+    /* 다른 failedRule(SHALLOW_STAGE_QUESTION 등)에는 이 보정이 전혀 적용되지 않음(회귀) */
+    @Test
+    void getFeedback_answerMismatchReclassification_onlyAppliesToNotRelatedToBookRule() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"원본 메시지\",\"failedRule\":\"ANSWER_NOT_RELATED\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("밤", "밤의 의미는 무엇일까?", "내가 만들었다."));
+
+        // 이미 ANSWER_NOT_RELATED였다면 서버가 메시지를 건드리지 않고 AI 메시지를 그대로 씀
+        assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
+        assertThat(result.getMessage()).isEqualTo("원본 메시지");
+    }
 }

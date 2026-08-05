@@ -100,6 +100,21 @@ public class ResponseService {
 
         User student = findStudent(studentId);
 
+        /*
+         * skipped(차례 없음)가 아닌 일반 저장은 기존과 동일하게 질문·답을
+         * 반드시 요구한다. skipped=true는 "차례 없음" 버튼으로만 오는
+         * 경로라 실제 작성값이 없는 게 정상이므로 여기서는 검증하지 않는다
+         * (question/answer @NotBlank를 DTO에서 뺀 대신 여기서 조건부로 검사).
+         */
+        if (!request.isSkipped()) {
+            if (request.getQuestion() == null || request.getQuestion().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "question은 비어 있을 수 없습니다.");
+            }
+            if (request.getAnswer() == null || request.getAnswer().isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "answer는 비어 있을 수 없습니다.");
+            }
+        }
+
         List<Response> existing = responseRepository
             .findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
                 studentId, MODE_CLASS, CONTENT_TYPE_ANSWER, STAGE_BEFORE);
@@ -109,13 +124,23 @@ public class ResponseService {
             .findFirst()
             .orElseGet(() -> createResponse(student));
 
-        response.setContent(request.getAnswer());
+        /*
+         * skipped=true일 때는 학생이 실제로 쓴 질문·답이 아니므로 절대
+         * question/answer 텍스트를 content/extra_data에 저장하지 않는다
+         * (빈 문자열로 저장). 대신 extra_data.skipped=true로 "차례 없음으로
+         * 통과했다"는 사실만 남긴다. passed는 이 화면이 정상 작성이든
+         * 차례 없음이든 "이 단계를 완료했다"는 같은 의미로 계속 재사용한다
+         * (학생 화면의 진행률·다음 버튼 활성화가 전부 passed 하나만 보므로,
+         * 별도 필드를 추가하면 그 두 곳도 함께 고쳐야 해 범위가 커진다).
+         */
+        response.setContent(request.isSkipped() ? "" : request.getAnswer());
         response.setPassed(true);
 
         Map<String, Object> extraData = new HashMap<>();
         extraData.put("stepType", request.getStepType());
-        extraData.put("question", request.getQuestion());
+        extraData.put("question", request.isSkipped() ? "" : request.getQuestion());
         extraData.put("classReadingBookId", request.getClassReadingBookId());
+        extraData.put("skipped", request.isSkipped());
         response.setExtraData(extraData);
 
         Response saved = responseRepository.save(response);

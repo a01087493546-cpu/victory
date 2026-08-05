@@ -580,4 +580,96 @@ class PracticeAchievementServiceTest {
             .findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
                 eq(STUDENT_ID), eq("individual"), any(), any());
     }
+
+    // =========================================================
+    // "차례 없음"(읽기 전 차례 단계 스킵)이 교사 대시보드 지표에
+    // 불이익을 주지 않는지 검증
+    // =========================================================
+
+    /*
+     * 차례 없음으로 저장된 Response(질문 활동은 아니지만 개수는 1건 존재)만
+     * 있어도 wroteBeforeQuestion이 true로 잡혀 질문 만들기 참여도가 0이 되지
+     * 않아야 하고, NO_QUESTION_SUBMISSION 지원 사유도 발생하면 안 된다.
+     */
+    @Test
+    void getClassAchievement_contentsSkipped_doesNotCountAsMissingQuestionParticipation() {
+        ClassStudent classStudent = buildClassStudent(STUDENT_ID, 1, "학생1");
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(classStudent));
+        when(practiceProgressRepository.findByStudent_Id(STUDENT_ID)).thenReturn(Optional.empty());
+
+        Response skippedContents = new Response();
+        skippedContents.setContent("");
+        skippedContents.setPassed(true);
+        skippedContents.setCreatedAt(LocalDateTime.now());
+        skippedContents.setUpdatedAt(LocalDateTime.now());
+        skippedContents.setExtraData(Map.of("stepType", "contents", "question", "", "skipped", true));
+
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("before")))
+            .thenReturn(List.of(skippedContents));
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("during")))
+            .thenReturn(List.of());
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("after")))
+            .thenReturn(List.of());
+
+        when(aiEvaluationAttemptRepository.findByStudentIdInAndClassReadingBookIdOrderByEvaluatedAtAsc(anyList(), eq(BOOK_ID)))
+            .thenReturn(List.of());
+
+        PracticeAchievementResponse response = service.getClassAchievement(TEACHER_ID, CLASS_ID, null);
+
+        assertThat(response.getStudents().get(0).getQuestionParticipationRate()).isGreaterThan(0.0);
+
+        boolean hasNoQuestionSubmissionReason = response.getStudents().get(0).getSupportReasons().stream()
+            .anyMatch(r -> "NO_QUESTION_SUBMISSION".equals(r.getCode()));
+        assertThat(hasNoQuestionSubmissionReason).isFalse();
+    }
+
+    /*
+     * 차례 없음 스킵은 AI 검사를 받지 않았으므로(ai_evaluation_attempts에
+     * 아무 행도 만들지 않음) AI 적합성 분모/good·retry 카운트 어디에도
+     * 잡히지 않아야 한다.
+     */
+    @Test
+    void getClassAchievement_contentsSkipped_excludedFromAiSuitabilityDenominator() {
+        ClassStudent classStudent = buildClassStudent(STUDENT_ID, 1, "학생1");
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(classStudent));
+        when(practiceProgressRepository.findByStudent_Id(STUDENT_ID)).thenReturn(Optional.empty());
+
+        Response skippedContents = new Response();
+        skippedContents.setContent("");
+        skippedContents.setPassed(true);
+        skippedContents.setCreatedAt(LocalDateTime.now());
+        skippedContents.setUpdatedAt(LocalDateTime.now());
+        skippedContents.setExtraData(Map.of("stepType", "contents", "question", "", "skipped", true));
+
+        Response realTitleAnswer = new Response();
+        realTitleAnswer.setContent("궁금해서 그런 것 같다.");
+        realTitleAnswer.setPassed(true);
+        realTitleAnswer.setCreatedAt(LocalDateTime.now());
+        realTitleAnswer.setUpdatedAt(LocalDateTime.now());
+        realTitleAnswer.setExtraData(Map.of("stepType", "title", "question", "왜 이런 제목일까?"));
+
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("before")))
+            .thenReturn(List.of(skippedContents, realTitleAnswer));
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("during")))
+            .thenReturn(List.of());
+        when(responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                eq(STUDENT_ID), eq("class"), eq("answer"), eq("after")))
+            .thenReturn(List.of());
+
+        /* 제목 단계 질문만 실제 AI 검사를 받았다고 가정(차례 없음은 attempt 자체가 없음) */
+        when(aiEvaluationAttemptRepository.findByStudentIdInAndClassReadingBookIdOrderByEvaluatedAtAsc(anyList(), eq(BOOK_ID)))
+            .thenReturn(List.of(buildAttempt("practice-before-" + BOOK_ID + "-" + STUDENT_ID + "-title", 1, "good")));
+
+        PracticeAchievementResponse response = service.getClassAchievement(TEACHER_ID, CLASS_ID, null);
+
+        // 차례 없음은 검사 대상이 아니므로 분모(aiEvaluatedQuestionCount)에 1건(제목)만 잡혀야 한다
+        assertThat(response.getStudents().get(0).getAiEvaluatedQuestionCount()).isEqualTo(1);
+        assertThat(response.getStudents().get(0).getPassedWithinThreeAttemptsCount()).isEqualTo(1);
+        assertThat(response.getStudents().get(0).getComprehensionRate()).isEqualTo(100.0);
+    }
 }
