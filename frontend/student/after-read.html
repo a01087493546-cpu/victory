@@ -7245,7 +7245,7 @@ applyTeacherMode();
 
       buttons.forEach(function(button) {
         button.disabled = true;
-        button.textContent = "질문 쓰기";
+        button.textContent = "다음 질문 쓰기";
       });
 
       if (!currentCard) {
@@ -7265,7 +7265,7 @@ applyTeacherMode();
         return;
       }
 
-      currentButton.textContent = "질문 쓰기";
+      currentButton.textContent = "다음 질문 쓰기";
       currentButton.disabled = currentCard.dataset.feedbackPassed !== "true";
     }
 
