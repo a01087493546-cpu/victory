@@ -229,6 +229,33 @@
     color: #3f842e;
     border-bottom-color: #3f842e;
   }
+
+  .mq-demo-card {
+    position: absolute;
+    z-index: 30;
+    left: 742px;
+    top: 92px;
+    width: 390px;
+    padding: 22px 24px;
+    border: 2px solid rgba(221, 176, 91, 0.78);
+    border-radius: 22px;
+    background: rgba(255, 247, 224, 0.96);
+    color: #4d2d16;
+    box-shadow: 0 14px 34px rgba(43, 24, 10, 0.2);
+  }
+  .mq-demo-card h2 { margin: 0 0 6px; font-size: 25px; color: #704216; }
+  .mq-demo-card > p { margin: 0 0 14px; font-size: 15px; line-height: 1.45; font-weight: 700; }
+  .mq-demo-account { padding: 12px 0; border-top: 1px solid #dfc89a; }
+  .mq-demo-account:first-of-type { border-top: 0; }
+  .mq-demo-account strong { display: block; margin-bottom: 7px; font-size: 18px; }
+  .mq-demo-credentials { display: flex; gap: 7px; align-items: center; margin-bottom: 8px; font-size: 15px; font-weight: 800; }
+  .mq-demo-copy, .mq-demo-fill {
+    border: 1px solid #b68438; border-radius: 9px; cursor: pointer; font-weight: 800;
+  }
+  .mq-demo-copy { padding: 4px 7px; background: #fffaf0; color: #6b431f; font-size: 12px; }
+  .mq-demo-fill { width: 100%; padding: 9px; background: #efe1bc; color: #573516; font-size: 15px; }
+  .mq-demo-copy:hover, .mq-demo-fill:hover { transform: translateY(-1px); background: #fff4d2; }
+  .mq-demo-toast { min-height: 19px; margin-top: 6px; text-align: center; color: #3d762c; font-size: 13px; font-weight: 800; }
 </style>
 
   <!-- 사용 자료 출처 데이터 -->
@@ -236,6 +263,9 @@
 
   <!-- 로그인/출처 모달 기능 -->
   <script defer src="./js/auth.js"></script>
+
+  <!-- 심사계정 인트로 확인 여부(localStorage) 확인용 -->
+  <script defer src="./js/demo-storage.js"></script>
 </head>
 
 <body>
@@ -304,6 +334,89 @@
         </div>
       </div>
         </section>
+
+        <aside class="mq-demo-card" aria-labelledby="demoAccountTitle">
+  <h2 id="demoAccountTitle">심사위원 체험 계정</h2>
+  <p>아래 계정으로 학생용·교사용 기능을 바로 확인할 수 있습니다.</p>
+
+  <!-- 학생 체험 계정 -->
+  <div class="mq-demo-account">
+    <strong>학생 체험 · 김초롱</strong>
+    <div class="mq-demo-credentials">
+      <span>아이디: ss01</span>
+      <button
+        class="mq-demo-copy"
+        type="button"
+        data-copy="ss01"
+        data-label="아이디"
+      >
+        아이디 복사
+      </button>
+    </div>
+
+    <div class="mq-demo-credentials">
+      <span>비밀번호: ss01</span>
+      <button
+        class="mq-demo-copy"
+        type="button"
+        data-copy="ss01"
+        data-label="비밀번호"
+      >
+        비밀번호 복사
+      </button>
+    </div>
+
+    <button
+      class="mq-demo-fill"
+      type="button"
+      data-demo-role="student"
+    >
+      학생 계정 자동 입력
+    </button>
+  </div>
+
+  <!-- 교사 체험 계정 -->
+  <div class="mq-demo-account">
+    <strong>교사 체험 · 김문답</strong>
+    <div class="mq-demo-credentials">
+      <span>아이디: tt11</span>
+      <button
+        class="mq-demo-copy"
+        type="button"
+        data-copy="tt11"
+        data-label="아이디"
+      >
+        아이디 복사
+      </button>
+    </div>
+
+    <div class="mq-demo-credentials">
+      <span>비밀번호: tt11</span>
+      <button
+        class="mq-demo-copy"
+        type="button"
+        data-copy="tt11"
+        data-label="비밀번호"
+      >
+        비밀번호 복사
+      </button>
+    </div>
+
+    <button
+      class="mq-demo-fill"
+      type="button"
+      data-demo-role="teacher"
+    >
+      교사 계정 자동 입력
+    </button>
+  </div>
+
+  <div
+    class="mq-demo-toast"
+    id="demoCopyMessage"
+    aria-live="polite"
+  ></div>
+</aside>
 
         <!-- 오른쪽 로그인 영역 -->
         <section class="mq-login-area">

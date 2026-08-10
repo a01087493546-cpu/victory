@@ -64,11 +64,15 @@ class FeedbackAiServiceTest {
     @Mock
     private ReadingRecordRepository readingRecordRepository;
 
+    @Mock
+    private DemoAccountService demoAccountService;
+
     private FeedbackAiService service;
 
     @BeforeEach
     void setUp() {
         service = new FeedbackAiService(
+            demoAccountService,
             aiEvaluationAttemptRepository,
             classStudentRepository,
             classReadingBookRepository,

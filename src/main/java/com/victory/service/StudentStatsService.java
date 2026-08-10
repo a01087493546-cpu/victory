@@ -19,6 +19,7 @@ public class StudentStatsService {
 
     private final StudentStatsRepository studentStatsRepository;
     private final UserRepository userRepository;
+    private final DemoAccountService demoAccountService;
 
     public StudentStatsResponse getStats(Long studentId) {
         User student = userRepository.findById(studentId)
@@ -40,6 +41,9 @@ public class StudentStatsService {
      */
     @Transactional
     public void applyReward(Long studentId, int value) {
+        if (demoAccountService.isDemoAccount(studentId)) {
+            return;
+        }
         StudentStats stats = studentStatsRepository.findByStudent_Id(studentId)
             .orElseGet(() -> {
                 User student = userRepository.findById(studentId)

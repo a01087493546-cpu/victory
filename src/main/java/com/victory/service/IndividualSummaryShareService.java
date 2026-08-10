@@ -63,22 +63,37 @@ public class IndividualSummaryShareService {
 
         List<Long> classmateIds = studentIdsInClass(viewerClassStudent.getSchoolClass().getId());
 
-        return buildItems(classmateIds, studentId, studentId, resolveDate(date));
+        return buildItems(classmateIds, studentId, studentId, resolveDate(date),
+            Boolean.TRUE.equals(viewerClassStudent.getStudent().getDemoAccount()));
     }
 
     public List<IndividualSummaryShareItem> getClassSummariesForTeacher(Long teacherId, LocalDate date) {
         SchoolClass teacherClass = findTeacherClass(teacherId);
         List<Long> studentIds = studentIdsInClass(teacherClass.getId());
 
-        return buildItems(studentIds, teacherId, null, resolveDate(date));
+        /*
+         * 심사 교사(tt11)도 심사 학생과 같은 브라우저에서 날짜와 무관하게
+         * seed 예시 + 방금 작성한 direct 간추리기를 함께 봐야 한다
+         * (getClassSummariesForStudent와 같은 원칙). 여기서는 false로
+         * 고정돼 있어서 seed의 실제 생성일이 오늘이 아니면 교사 화면에서
+         * 전부 걸러지고, 프론트가 별도로 병합해 둔 direct 카드만 남아
+         * "seed가 사라진 것처럼" 보였다.
+         */
+        boolean includeAllDatesForDemo = Boolean.TRUE.equals(findTeacher(teacherId).getDemoAccount());
+
+        return buildItems(studentIds, teacherId, null, resolveDate(date), includeAllDatesForDemo);
     }
 
     @Transactional
     public IndividualSummaryLikeResponse toggleLikeAsStudent(Long studentId, Long summaryId) {
         ClassStudent viewerClassStudent = findClassStudent(studentId);
         Summary summary = requireSharedSummaryInClass(summaryId, viewerClassStudent.getSchoolClass().getId());
-
-        return toggleLike(findUser(studentId), summary);
+        User viewer = findUser(studentId);
+        if (Boolean.TRUE.equals(viewer.getDemoAccount())) {
+            return new IndividualSummaryLikeResponse(summaryId, false,
+                contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_INDIVIDUAL_SUMMARY, summaryId));
+        }
+        return toggleLike(viewer, summary);
     }
 
     @Transactional
@@ -86,7 +101,12 @@ public class IndividualSummaryShareService {
         SchoolClass teacherClass = findTeacherClass(teacherId);
         Summary summary = requireSharedSummaryInClass(summaryId, teacherClass.getId());
 
-        return toggleLike(findUser(teacherId), summary);
+        User viewer = findUser(teacherId);
+        if (Boolean.TRUE.equals(viewer.getDemoAccount())) {
+            return new IndividualSummaryLikeResponse(summaryId, false,
+                contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_INDIVIDUAL_SUMMARY, summaryId));
+        }
+        return toggleLike(viewer, summary);
     }
 
     /*
@@ -162,20 +182,22 @@ public class IndividualSummaryShareService {
             List<Long> studentIds,
             Long viewerUserId,
             Long mineStudentId,
-            LocalDate date) {
+            LocalDate date,
+            boolean includeAllDatesForDemo) {
         if (studentIds.isEmpty()) {
             return List.of();
         }
 
-        if (date.isAfter(LocalDate.now(ZONE_SEOUL))) {
+        if (!includeAllDatesForDemo && date.isAfter(LocalDate.now(ZONE_SEOUL))) {
             return List.of();
         }
 
         LocalDateTime startAt = date.atStartOfDay();
         LocalDateTime endAt = date.plusDays(1).atStartOfDay();
 
-        List<Summary> summaries = summaryRepository
-            .findSharedIndividualSummariesByStudentIdsAndCreatedAtBetween(studentIds, startAt, endAt);
+        List<Summary> summaries = includeAllDatesForDemo
+            ? summaryRepository.findAllSharedIndividualSummariesByStudentIds(studentIds)
+            : summaryRepository.findSharedIndividualSummariesByStudentIdsAndCreatedAtBetween(studentIds, startAt, endAt);
 
         Set<Long> likedSummaryIds = viewerUserId == null || summaries.isEmpty()
             ? Set.of()

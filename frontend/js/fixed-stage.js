@@ -175,7 +175,9 @@
       }
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-title {
-        height: 88px !important;
+        height: 150px !important;
+        align-items: flex-start !important;
+        padding-top: 6px !important;
       }
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-title h1 {
@@ -186,7 +188,7 @@
         height: 270px !important;
         grid-template-columns: 560px 1fr !important;
         gap: 28px !important;
-        margin-bottom: 22px !important;
+        margin-bottom: 12px !important;
       }
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-power-body {
@@ -232,7 +234,7 @@
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-chart-card {
         height: 285px !important;
-        margin-bottom: 22px !important;
+        margin-bottom: 12px !important;
       }
 
       .mq-fixed-stage-page.mq-page-individual-reading .ir-flow {

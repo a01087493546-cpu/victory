@@ -131,6 +131,7 @@
     }
 
     .title-area {
+      min-width: 0;
       text-align: center;
     }
 
@@ -145,6 +146,31 @@
         0 2px 0 rgba(255, 255, 255, 0.72),
         0 8px 18px rgba(122, 72, 25, 0.12);
     }
+
+    .mq-demo-banner {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      width: fit-content;
+      max-width: 900px;
+      min-height: 38px;
+      margin-top: 6px;
+      padding: 6px 16px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      color: #6b4b26;
+      box-shadow: 0 4px 10px rgba(90,55,15,.14);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    .mq-demo-banner strong { font-size: 15px; font-weight: 900; }
+
+    .mq-demo-banner[hidden] { display: none !important; }
 
     .main-desc {
       margin-top: 8px;
@@ -691,6 +717,7 @@
 
         <div class="title-area">
           <h1 class="main-title">나의 질문 모음</h1>
+          <div class="mq-demo-banner" id="demoExperienceBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 학생 활동 모습을 확인할 수 있도록 가상 학생들의 예시 데이터를 미리 구성해 두었습니다.</div>
         </div>
 
         <div class="top-actions">
@@ -756,6 +783,7 @@
 
     </div>
   </main>
+<script src="../js/auth.js"></script>
 <script src="../js/ai-feedback.js"></script>
 
   <script>
@@ -787,6 +815,7 @@
     init();
 
 async function init() {
+  showDemoBannerIfDemoAccount("demoExperienceBanner");
   allQuestions = await loadBookThoughtQuestions();
 
   bindEvents();

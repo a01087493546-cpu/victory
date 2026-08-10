@@ -230,6 +230,13 @@ public class IndividualBookChatService {
                 "학생 정보를 찾을 수 없습니다. studentId=" + studentId
             ));
 
+        if (Boolean.TRUE.equals(student.getDemoAccount())) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "심사 체험 댓글은 브라우저 임시 저장소를 사용합니다."
+            );
+        }
+
         Response parentPost = findCommentablePost(studentId, postId);
 
         LocalDate today = LocalDate.now(ZONE_SEOUL);
@@ -343,6 +350,7 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse approvePost(Long teacherId, Long postId) {
         Response post = findTeacherManagedPost(teacherId, postId);
+        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
 
         post.setStatus(toStoredStatus(STATUS_APPROVED));
@@ -356,6 +364,7 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse rejectPost(Long teacherId, Long postId, String reason) {
         Response post = findTeacherManagedPost(teacherId, postId);
+        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
         String rejectReason = isBlank(reason)
             ? "고쳐서 다시 올리면 더 좋은 책수다방 글이 될 수 있어요."
@@ -372,6 +381,7 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse returnPostToPending(Long teacherId, Long postId) {
         Response post = findTeacherManagedPost(teacherId, postId);
+        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
 
         post.setStatus(toStoredStatus(STATUS_PENDING));
@@ -458,6 +468,11 @@ public class IndividualBookChatService {
         return STATUS_APPROVED.equals(normalizeStatus(post.getStatus()));
     }
 
+    private boolean isDemoSeed(Response response) {
+        return response.getExtraData() != null
+            && "review-demo-v1".equals(response.getExtraData().get("demoSeed"));
+    }
+
     private String normalizeStatusOrAll(String status) {
         if (status == null || status.isBlank() || "ALL".equalsIgnoreCase(status)) {
             return "ALL";
@@ -519,6 +534,8 @@ public class IndividualBookChatService {
                 HttpStatus.NOT_FOUND,
                 "책수다방 글을 찾을 수 없습니다. postId=" + postId
             ));
+
+        if (isDemoSeed(response)) return;
 
         response.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
         responseRepository.save(response);

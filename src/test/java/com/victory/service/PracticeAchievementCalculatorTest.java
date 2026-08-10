@@ -111,8 +111,8 @@ class PracticeAchievementCalculatorTest {
     }
 
     @Test
-    void participationRate_average() {
-        assertThat(calculator.participationRate(30.0, 60.0, 90.0)).isEqualTo(60.0);
+    void participationRate_weightedFormula() {
+        assertThat(calculator.participationRate(30.0, 60.0, 90.0)).isEqualTo(57.0);
     }
 
     /* 검증 5: AI 1회 good 성공 */

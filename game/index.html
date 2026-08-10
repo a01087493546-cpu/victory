@@ -149,6 +149,11 @@
             </div>
           </section>
 
+          <aside class="dungeon-demo-banner" id="dungeonDemoBanner" hidden>
+            <strong>🔍 심사 체험 안내</strong>
+            <span>실제 학생은 조건을 달성하면 초급·중급·고급 던전이 순서대로 활성화됩니다. 심사계정에서는 전체 던전을 바로 체험할 수 있도록 모두 활성화했습니다.</span>
+          </aside>
+
         </main>
       </div>
     </div>
@@ -374,6 +379,7 @@
     </div>
   </div>
 
+  <script src="../frontend/js/auth.js"></script>
   <script src="js/player-stats.js"></script>
   <script src="js/battle-engine.js"></script>
   <script src="js/game-api.js"></script>
@@ -391,6 +397,11 @@
       '중급': 'radial-gradient(circle at 50% 75%, rgba(80,120,255,0.36), rgba(156,94,255,0.12) 38%, transparent 70%)',
       '고급': 'radial-gradient(circle at 50% 75%, rgba(255,196,76,0.34), rgba(88,55,13,0.2) 40%, transparent 72%)'
     };
+
+    function renderDungeonDemoBanner() {
+      const banner = document.getElementById('dungeonDemoBanner');
+      if (banner) banner.hidden = !isDemoAccount();
+    }
 
     function formatTimeLimit(seconds) {
       if (!seconds) return '';
@@ -462,6 +473,7 @@
       }
     }
 
+    renderDungeonDemoBanner();
     loadDungeons();
   </script>
 

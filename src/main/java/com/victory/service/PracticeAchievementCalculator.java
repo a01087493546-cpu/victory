@@ -90,7 +90,7 @@ public class PracticeAchievementCalculator {
     }
 
     /*
-     * 참여도 = (읽기활동완료율 + 질문만들기참여율 + 생각나누기참여율) / 3
+     * 참여도 = 읽기활동완료율×0.4 + 질문만들기참여율×0.3 + 생각나누기참여율×0.3
      * 읽기활동완료율은 finalReadingProgress와 같은 값을 그대로 쓴다(1-4).
      */
     public double participationRate(
@@ -98,9 +98,9 @@ public class PracticeAchievementCalculator {
             double questionParticipationRate,
             double thoughtSharingParticipationRate) {
 
-        return (readingActivityCompletionRate
-            + questionParticipationRate
-            + thoughtSharingParticipationRate) / 3.0;
+        return readingActivityCompletionRate * 0.4
+            + questionParticipationRate * 0.3
+            + thoughtSharingParticipationRate * 0.3;
     }
 
     /*

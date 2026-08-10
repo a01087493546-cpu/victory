@@ -240,7 +240,115 @@ function getRewardHistoryKey() {
     return Math.max(0, Math.min(MAX_POWER, number));
   }
 
+  // ==============================
+  // 4-1. 심사계정 browser-local 능력치/보상 이력
+  // ==============================
+  /*
+    심사계정(ss01)은 여러 심사위원이 같은 로그인을 공유하므로 공용 DB
+    student_stats를 절대 올리지 않는다. 대신 이 브라우저의 localStorage에만
+    (demo-storage.js의 mq_demo_ prefix로) 저장한다 - 다른 브라우저/기기는
+    각자 독립된 기본값에서 새로 시작한다.
+
+    심사계정만 초기값을 0으로 둔다(일반계정 기본값 8 및 백엔드
+    NEW_STUDENT_BASE_STAT=8과는 무관 - 그쪽은 절대 건드리지 않는다) -
+    체험 흐름에서 "0에서 시작해 보상만큼 정확히 오른다"는 것을 심사위원이
+    더 직관적으로 볼 수 있게 하기 위함이다.
+  */
+  const DEMO_STUDENT_STATS_KEY = "studentStats";
+  const DEMO_STAT_REWARD_LOG_KEY = "statRewardLog";
+  const DEMO_BASE_STAT_VALUE = 0;
+
+  function getDemoStudentStats() {
+    const saved = typeof loadDemoState === "function" ? loadDemoState(DEMO_STUDENT_STATS_KEY, null) : null;
+
+    if (saved && typeof saved === "object") {
+      return {
+        magic: clampPowerValue(saved.magic),
+        stamina: clampPowerValue(saved.stamina),
+        wisdom: clampPowerValue(saved.wisdom),
+        courage: clampPowerValue(saved.courage)
+      };
+    }
+
+    const initial = {
+      magic: DEMO_BASE_STAT_VALUE,
+      stamina: DEMO_BASE_STAT_VALUE,
+      wisdom: DEMO_BASE_STAT_VALUE,
+      courage: DEMO_BASE_STAT_VALUE
+    };
+
+    if (typeof saveDemoState === "function") {
+      saveDemoState(DEMO_STUDENT_STATS_KEY, initial);
+    }
+
+    return initial;
+  }
+
+  /*
+    student_stat_reward_log(student_id + reward_type + instance_id 조합
+    UNIQUE)를 그대로 브라우저 local 배열로 옮긴 것이다. instanceId는
+    호출부가 readingRecordId(단계 보상) 또는 날짜(책수다방 일일 보상)를
+    넘겨준다 - 같은 책을 다시 읽으면 새 readingRecordId라 다시 지급된다.
+    Date.now()는 지급 식별자로 쓰지 않는다(재진입마다 값이 달라져 중복
+    지급 방지가 무력화되므로).
+  */
+  function grantDemoStatRewardOnce(rewardType, instanceId, rewardAmounts) {
+    /*
+      demo-storage.js(saveDemoState/loadDemoState)가 아직 로드되지 않은
+      상태로 이 함수가 불리면 - 예전에는 저장 없이도 rewardGranted:true를
+      반환해서, 팝업은 뜨는데 localStorage에는 아무것도 안 남는(새로고침
+      하면 사라지는) 상태가 될 수 있었다. 그렇게 "성공한 척"하지 않고
+      실패로 명확히 알린다.
+    */
+    if (typeof saveDemoState !== "function" || typeof loadDemoState !== "function") {
+      console.error("심사 능력치 저장소(demo-storage.js)가 준비되지 않아 보상을 지급하지 못했습니다.", rewardType, instanceId);
+      return { rewardGranted: false, rewardAlreadyGranted: false, stats: getDemoStudentStats() };
+    }
+
+    try {
+      const studentId = getStudentId();
+      const key = studentId + "|" + (instanceId || "unknown") + "|" + rewardType;
+      const log = loadDemoState(DEMO_STAT_REWARD_LOG_KEY, []);
+      const safeLog = Array.isArray(log) ? log : [];
+
+      if (safeLog.indexOf(key) >= 0) {
+        return { rewardGranted: false, rewardAlreadyGranted: true, stats: getDemoStudentStats() };
+      }
+
+      const stats = getDemoStudentStats();
+      const amounts = rewardAmounts || {};
+      const updated = {
+        magic: clampPowerValue(stats.magic + (amounts.magic || 0)),
+        stamina: clampPowerValue(stats.stamina + (amounts.stamina || 0)),
+        wisdom: clampPowerValue(stats.wisdom + (amounts.wisdom || 0)),
+        courage: clampPowerValue(stats.courage + (amounts.courage || 0))
+      };
+
+      /*
+        보상 이력을 먼저 저장해 두면, 만에 하나 이 다음 능력치 저장이
+        실패해도(예: 저장 공간 문제) "지급된 것으로 기록됐는데 능력치는
+        그대로"인 상태를 만들지 않는다 - 능력치 저장까지 확인된 뒤에야
+        진짜로 지급 완료로 본다.
+      */
+      saveDemoState(DEMO_STUDENT_STATS_KEY, updated);
+      saveDemoState(DEMO_STAT_REWARD_LOG_KEY, safeLog.concat([key]));
+
+      return { rewardGranted: true, rewardAlreadyGranted: false, stats: updated };
+    } catch (error) {
+      console.error("심사 능력치 보상 지급 중 오류가 발생했습니다.", rewardType, instanceId, error);
+      return { rewardGranted: false, rewardAlreadyGranted: false, stats: getDemoStudentStats() };
+    }
+  }
+
   async function fetchPowerStateFromServer() {
+    /*
+      심사계정은 공용 DB student_stats를 절대 조회/표시하지 않는다 -
+      "나의 힘" 화면은 항상 이 브라우저의 local 능력치를 보여준다.
+    */
+    if (typeof isDemoAccount === "function" && isDemoAccount()) {
+      return getDemoStudentStats();
+    }
+
     const studentId = sessionStorage.getItem("studentId");
     const token = sessionStorage.getItem("token");
 
@@ -1077,6 +1185,25 @@ function ensurePowerBarStyle() {
         word-break: keep-all !important;
       }
 
+      .mini-reward-demo-notice {
+        margin-bottom: 16px !important;
+        padding: 8px 16px !important;
+        padding-right: 148px !important;
+        border: 1px solid rgba(180, 130, 60, 0.42) !important;
+        border-radius: 14px !important;
+        background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92)) !important;
+        color: #6b4b26 !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        line-height: 1.4 !important;
+        text-align: left !important;
+        word-break: keep-all !important;
+      }
+
+      .mini-reward-demo-notice[hidden] {
+        display: none !important;
+      }
+
       .mini-reward-confirm {
         width: 100% !important;
         height: 58px !important;
@@ -1145,6 +1272,8 @@ function ensurePowerBarStyle() {
 
         <div class="mini-reward-message" id="miniRewardMessage"></div>
 
+        <div class="mini-reward-demo-notice" id="miniRewardDemoNotice" data-demo-banner hidden></div>
+
         <button type="button" class="mini-reward-confirm" id="miniRewardConfirmBtn">확인했어</button>
       </div>
     `;
@@ -1186,6 +1315,19 @@ function ensurePowerBarStyle() {
     document.getElementById("miniRewardBadge").textContent = data.badge || "✨ 나의 힘 성장!";
     document.getElementById("miniRewardTitle").textContent = data.title || "보상을 받았어요!";
     document.getElementById("miniRewardMessage").textContent = data.message || "";
+
+    /*
+      심사계정에서만 보이는 작은 안내다 - 일반계정은 isDemoAccount()가
+      항상 false이므로 이 블록이 절대 실행되지 않는다(hidden 상태 유지).
+    */
+    const demoNotice = document.getElementById("miniRewardDemoNotice");
+    if (demoNotice) {
+      const showDemoNotice = typeof isDemoAccount === "function" && isDemoAccount();
+      demoNotice.hidden = !showDemoNotice;
+      demoNotice.textContent = showDemoNotice
+        ? "🔍 심사 체험 안내 — 심사계정에서는 단계 이동 시 활동을 완료한 것으로 보고 능력치를 지급합니다."
+        : "";
+    }
 
     document.getElementById("miniRewardList").innerHTML = rewards.map(function (reward) {
       const iconSrc = MINI_REWARD_ICON_MAP[reward.type] || MINI_REWARD_ICON_MAP.magic;
@@ -1232,6 +1374,8 @@ function ensurePowerBarStyle() {
   window.openIndividualPowerModal = openIndividualPowerModal;
   window.givePowerRewardOnce = givePowerRewardOnce;
   window.fetchIndividualPowerState = fetchPowerStateFromServer;
+  window.grantDemoStatRewardOnce = grantDemoStatRewardOnce;
+  window.getDemoStudentStats = getDemoStudentStats;
   window.REWARD_PRESETS = REWARD_PRESETS;
   window.openMiniRewardModal = openMiniRewardModal;
   window.closeMiniRewardModal = closeMiniRewardModal;

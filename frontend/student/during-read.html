@@ -124,11 +124,52 @@ button {
       object-fit: contain;
     }
 
-    .title-area,
     .main-title,
     .main-desc {
       display: none;
     }
+
+    /*
+      title-area는 원래 비어 있는 제목(main-title/main-desc)을 담던 자리라
+      화면에서 완전히 숨겨져 있었다. 그 빈 자리(.top 헤더의 가운데 칸)를
+      심사 체험 배지 전용 자리로 재사용한다.
+    */
+    .title-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    /* 심사 체험 계정에서만 보이는 짧은 안내 배지. 연습읽기 질문 작성
+       화면들이 공통으로 사용하는 디자인(베이지/브라운/골드)이다. */
+    .mq-demo-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      height: auto;
+      padding: 6px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(238, 216, 176, 0.92));
+      box-shadow: 0 6px 14px rgba(90, 55, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      color: #6b4b26;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 800;
+      white-space: normal;
+      word-break: keep-all;
+      overflow: visible;
+    }
+
+    .mq-demo-banner strong {
+      color: #7a4a12;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .mq-demo-banner[hidden] { display: none !important; }
 
     .top-actions {
       justify-self: end;
@@ -247,19 +288,45 @@ button {
       overflow: hidden;
     }
 
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 9px;
+   .section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
 
-      color: #4b2a13;
-      font-family: "Noto Serif KR", serif;
-      font-size: 34px;
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.7px;
-    }
+.section-title-row .section-title {
+  flex-shrink: 0;
+  margin: 0;
+}
 
+.section-title-row .mq-demo-banner {
+  flex: 1;
+  min-width: 0;
+  max-width: 900px;
+  min-height: 38px;
+  height: auto;
+  padding: 6px 16px;
+  font-size: 16px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: keep-all;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #4b2a13;
+  font-family: "Noto Serif KR", serif;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.7px;
+}
     .title-line {
       height: 1px;
       margin: 9px 0 10px;
@@ -687,12 +754,12 @@ button {
           <span>우리반 책읽기</span>
         </div>
 
-        <div class="title-area">
-          <h1 class="main-title"></h1>
-          <p class="main-desc">
-            질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
-          </p>
-        </div>
+       <div class="title-area">
+  <h1 class="main-title"></h1>
+  <p class="main-desc">
+    질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
+  </p>
+</div>
 
         <div class="top-actions">
           <button
@@ -720,9 +787,15 @@ button {
       <section class="main-grid">
         <article class="card write-card">
 
-          <h2 class="section-title">
-            ✎ 책 속 생각 쓰기
-          </h2>
+          <div class="section-title-row">
+            <h2 class="section-title">
+              ✎ 책 속 생각 쓰기
+            </h2>
+
+            <div class="mq-demo-banner" id="demoExperienceBanner" hidden>
+              🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.
+            </div>
+          </div>
 
           <div class="title-line"></div>
 
@@ -887,6 +960,8 @@ button {
     </div>
   </main>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
 <script src="../js/ai-feedback.js"></script>
   <script>
@@ -1108,6 +1183,8 @@ async function loadClassReadingBookId() {
     */
 
     async function initPage() {
+  showDemoBannerIfDemoAccount("demoExperienceBanner");
+
   const bookLoaded = await loadClassReadingBookId();
 
   if (!bookLoaded) {
@@ -1122,6 +1199,7 @@ async function loadClassReadingBookId() {
       renderTodayQuestions();
 
       if (todayQuestions.length >= 3) {
+        syncDemoPracticeApprovalRequests();
         setCompletionFeedback();
       }
 
@@ -1383,6 +1461,13 @@ async function loadClassReadingBookId() {
     }
 
     /*
+      심사 체험 계정은 공용 DB 대신 "현재 브라우저" localStorage에만
+      질문·답을 저장한다. 같은 ss01 로그인을 쓰는 다른 심사위원 브라우저와
+      서로 섞이지 않게 하기 위함이다(일반 학생 계정은 이 분기를 타지 않음).
+    */
+    const DEMO_DURING_READ_STORAGE_KEY = "duringRead";
+
+    /*
       =========================================================
       읽기 중 AI 피드백 요청
       =========================================================
@@ -1394,8 +1479,45 @@ async function loadClassReadingBookId() {
     async function saveBookThoughtResponse(
   questionType,
   question,
-  answer
+  answer,
+  demoOptions
 ) {
+  if (isDemoAccount()) {
+    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
+    const options = demoOptions || {};
+    const demoId = options.id ||
+      "demo-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+    const existingIndex = items.findIndex(function(item) {
+      return String(item.id) === String(demoId);
+    });
+    const existingItem = existingIndex >= 0 ? items[existingIndex] : null;
+
+    const newItem = {
+      id: demoId,
+      questionType: questionType,
+      question: question,
+      answer: answer,
+      createdAt: existingItem?.createdAt || new Date().toISOString(),
+      aiPassed: options.aiPassed === true
+    };
+
+    if (existingIndex >= 0) {
+      items[existingIndex] = newItem;
+    } else {
+      items.push(newItem);
+    }
+
+    saveDemoState(DEMO_DURING_READ_STORAGE_KEY, items);
+
+    /* saveDemoState는 저장 예외를 내부에서 처리하므로 실제 재조회로 성공을 확인한다. */
+    const persistedItems = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
+    return persistedItems.find(function(item) {
+      return String(item.id) === String(demoId) &&
+        item.question === question &&
+        item.answer === answer;
+    }) || null;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId || !classReadingBookId) {
@@ -1445,7 +1567,48 @@ async function loadClassReadingBookId() {
     return null;
   }
 }
+function applyTodayBookThoughtItems(items) {
+  todayQuestions = items
+    .filter(function(item) {
+      /* AI 확인 전 저장한 심사 체험 초안은 완료 질문 수에 포함하지 않는다. */
+      if (isDemoAccount() && item.aiPassed === false) {
+        return false;
+      }
+
+      if (!item.createdAt) {
+        return false;
+      }
+
+      const createdDate =
+        String(item.createdAt).slice(0, 10);
+
+      return createdDate === todayInfo.key;
+    })
+    .map(function(item) {
+      return {
+        id: item.id,
+        dateKey: todayInfo.key,
+        dateText: todayInfo.display,
+        shortDateText: todayInfo.shortDisplay,
+        type: item.questionType,
+        typeLabel:
+          typeInfo[item.questionType]?.label ||
+          item.questionType,
+        text: item.question,
+        answer: item.answer,
+        createdAt:
+          String(item.createdAt).slice(11, 16)
+      };
+    });
+}
+
 async function loadTodayBookThoughtResponses() {
+  if (isDemoAccount()) {
+    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
+    applyTodayBookThoughtItems(items);
+    return true;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId || !classReadingBookId) {
@@ -1471,33 +1634,7 @@ async function loadTodayBookThoughtResponses() {
 
     const items = await response.json();
 
-    todayQuestions = items
-      .filter(function(item) {
-        if (!item.createdAt) {
-          return false;
-        }
-
-        const createdDate =
-          String(item.createdAt).slice(0, 10);
-
-        return createdDate === todayInfo.key;
-      })
-      .map(function(item) {
-        return {
-          id: item.id,
-          dateKey: todayInfo.key,
-          dateText: todayInfo.display,
-          shortDateText: todayInfo.shortDisplay,
-          type: item.questionType,
-          typeLabel:
-            typeInfo[item.questionType]?.label ||
-            item.questionType,
-          text: item.question,
-          answer: item.answer,
-          createdAt:
-            String(item.createdAt).slice(11, 16)
-        };
-      });
+    applyTodayBookThoughtItems(items);
 
     return true;
   } catch (error) {
@@ -1510,11 +1647,11 @@ async function loadTodayBookThoughtResponses() {
     return false;
   }
 }
-    function requestDuringReadingAiFeedback(question, answer) {
+    async function requestDuringReadingAiFeedback(question, answer) {
       const requestId = ++duringReadingAiRequestId;
       const timeoutMs = 15000;
-      const failMessage =
-        "지금은 루미 피드백을 확인하기 어려워요. 질문이 저장되지 않았어요, 잠시 후 다시 시도해봐.";
+      const aiFailMessage =
+        "루미 피드백을 불러오지 못했어요. 잠시 후 다시 시도해봐.";
 
       isDuringReadingAiRequestInFlight = true;
 
@@ -1565,92 +1702,115 @@ const evaluationKey =
   "-" +
   questionNumber;
 
-fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + token
-  },
-  signal: abortController.signal,
-  body: JSON.stringify({
-    question: question,
-    answer: answer,
-    activityType: "during_reading_question",
-    questionType: selectedType,
-    evaluationKey: evaluationKey,
-    classReadingBookId: classReadingBookId
-  })
-})
-        .then(function(response) {
+      const isDemo = isDemoAccount();
+      const demoResponseId = "demo-" + evaluationKey;
+
+      try {
+        /* 심사 체험은 공용 DB가 아니라 현재 브라우저에 먼저 초안으로 저장한다. */
+        if (isDemo) {
+          const localDraft = await saveBookThoughtResponse(
+            selectedType,
+            question,
+            answer,
+            { id: demoResponseId, aiPassed: false }
+          );
+
+          if (!localDraft) {
+            setFeedback("need", "질문을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+            return;
+          }
+        }
+
+        const apiPath = isDemo
+          ? "/api/feedback/ai-review"
+          : "/api/students/me/feedback/ai-review";
+        const headers = { "Content-Type": "application/json" };
+
+        if (!isDemo) {
+          headers.Authorization = "Bearer " + token;
+        }
+
+        const requestBody = isDemo
+          ? {
+              type: "during_reading_question",
+              stepType: selectedType,
+              qaList: [{ question: question, answer: answer }]
+            }
+          : {
+              question: question,
+              answer: answer,
+              activityType: "during_reading_question",
+              questionType: selectedType,
+              evaluationKey: evaluationKey,
+              classReadingBookId: classReadingBookId
+            };
+
+        const response = await fetch(API_BASE_URL + apiPath, {
+          method: "POST",
+          headers: headers,
+          signal: abortController.signal,
+          body: JSON.stringify(requestBody)
+        });
+
+        if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+
+        if (!response.ok) {
+          const bodyText = await response.text().catch(function() {
+            return "(읽지 못함)";
+          });
+          console.error(
+            "읽기 중 AI 피드백 요청 실패 - status:",
+            response.status,
+            "body:",
+            bodyText
+          );
+          setFeedback("need", aiFailMessage);
+          return;
+        }
+
+        const result = await response.json();
+
+        if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+
+        const isGood = result.status === "good";
+        setFeedback(isGood ? "good" : "need", result.message);
+
+        if (isGood) {
+          const savedResponse = await saveBookThoughtResponse(
+            selectedType,
+            question,
+            answer,
+            isDemo ? { id: demoResponseId, aiPassed: true } : undefined
+          );
+
           if (requestId !== duringReadingAiRequestId) {
             return;
           }
 
-          if (!response.ok) {
-            return response.text().then(
-              function(bodyText) {
-                console.error(
-                  "읽기 중 AI 피드백 요청 실패 - status:",
-                  response.status,
-                  "body:",
-                  bodyText
-                );
-                setFeedback("need", failMessage);
-              },
-              function() {
-                console.error(
-                  "읽기 중 AI 피드백 요청 실패 - status:",
-                  response.status,
-                  "body: (읽지 못함)"
-                );
-                setFeedback("need", failMessage);
-              }
+          if (!savedResponse) {
+            setFeedback(
+              "need",
+              "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 확인 받아 주세요."
             );
+            return;
           }
 
-          return response.json().then(async function(result) {
-            if (requestId !== duringReadingAiRequestId) {
-              return;
-            }
+          saveQuestion(question, answer, savedResponse);
+          questionInput.value = "";
+          answerInput.value = "";
+          updateCounts();
 
-            const isGood = result.status === "good";
-
-            setFeedback(isGood ? "good" : "need", result.message);
-
-            if (isGood) {
-  const savedResponse =
-    await saveBookThoughtResponse(
-      selectedType,
-      question,
-      answer
-    );
-
-  if (requestId !== duringReadingAiRequestId) {
-    return;
-  }
-
-  if (!savedResponse) {
-    setFeedback(
-      "need",
-      "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 확인 받아 주세요."
-    );
-    return;
-  }
-
-  saveQuestion(question, answer, savedResponse);
-
-  questionInput.value = "";
-  answerInput.value = "";
-  updateCounts();
-
-  if (todayQuestions.length >= 3) {
-    lockQuestionForm();
-    setCompletionFeedback();
-  }
-}
-          });
-        })
-        .catch(function(error) {
+          if (todayQuestions.length >= 3) {
+            syncDemoPracticeApprovalRequests();
+            lockQuestionForm();
+            setCompletionFeedback();
+          }
+        }
+      } catch (error) {
           if (requestId !== duringReadingAiRequestId) {
             return;
           }
@@ -1667,9 +1827,8 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
             );
           }
 
-          setFeedback("need", failMessage);
-        })
-        .finally(function() {
+          setFeedback("need", aiFailMessage);
+      } finally {
           clearTimeout(timeoutId);
           isDuringReadingAiRequestInFlight = false;
 
@@ -1677,7 +1836,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
           if (checkButton && todayQuestions.length < 3) {
             checkButton.disabled = false;
           }
-        });
+      }
     }
 
     function setFeedback(
@@ -1811,7 +1970,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
 
       if (nextButton) {
         nextButton.disabled =
-          passed < 3;
+          !isDemoAccount() && passed < 3;
       }
 
       if (passed >= 3) {
@@ -2056,8 +2215,45 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
   =========================================================
 */
 
+function syncDemoPracticeApprovalRequests() {
+  if (!isDemoAccount() || todayQuestions.length < 3) return [];
+
+  const existingRequests = loadDemoApprovalRequests("practice");
+  return todayQuestions.slice(0, 3).map(function(question, index) {
+    const requestId = "practice-book-thought-" + String(question.id || index);
+    const existing = existingRequests.find(function(item) {
+      return String(item.requestId) === requestId;
+    });
+    const unchanged = existing
+      && existing.question === question.text
+      && existing.answer === question.answer
+      && existing.questionType === question.type;
+
+    return saveDemoApprovalRequest("practice", {
+      requestId: requestId,
+      activityScope: "practiceBookChat",
+      studentId: studentId,
+      studentName: sessionStorage.getItem("name") || "김초롱",
+      classReadingBookId: classReadingBookId,
+      questionId: String(question.id || index),
+      submittedAt: existing && unchanged ? existing.submittedAt : new Date().toISOString(),
+      status: existing && unchanged ? existing.status : "pending",
+      rejectedReason: existing && unchanged ? existing.rejectedReason : "",
+      questionType: question.type,
+      question: question.text,
+      answer: question.answer,
+      questions: [{
+        questionId: String(question.id || index),
+        questionType: question.type,
+        question: question.text,
+        answer: question.answer
+      }]
+    });
+  });
+}
+
 function goNextStep() {
-  if (todayQuestions.length < 3) {
+  if (!isDemoAccount() && todayQuestions.length < 3) {
     setFeedback(
       "need",
       "아직 " +
@@ -2090,6 +2286,8 @@ function goNextStep() {
       };
     })
   };
+
+  syncDemoPracticeApprovalRequests();
 
   localStorage.setItem(
     "classReadingPassedQuestions",

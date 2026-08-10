@@ -51,6 +51,102 @@ function checkLogin() {
   }
 }
 
+function isDemoAccount() {
+  return sessionStorage.getItem("demoAccount") === "true";
+}
+
+/* 학생 인트로 두 단계의 다음 목적지를 한 곳에서 결정한다. */
+function getStudentIntroDestination(status, studentBasePath) {
+  const basePath = studentBasePath || "./student/";
+
+  if (!status.storyIntroSeen) return basePath + "story-intro.html";
+  if (!status.powerIntroSeen) return basePath + "ability-intro.html";
+  return basePath + "individual-reading.html";
+}
+
+function getDemoIntroStatus() {
+  return {
+    storyIntroSeen:
+      typeof loadDemoState === "function" && loadDemoState("storyIntroSeen", false) === true,
+    powerIntroSeen:
+      typeof loadDemoState === "function" && loadDemoState("powerIntroSeen", false) === true
+  };
+}
+
+async function loadCurrentStudentIntroStatus() {
+  if (isDemoAccount()) return getDemoIntroStatus();
+
+  const token = sessionStorage.getItem("token");
+  if (!token) return null;
+
+  const response = await fetch(getLoginApiBaseUrl() + "/api/students/me/intro-status", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  if (!response.ok) throw new Error("인트로 완료 상태 조회 실패: " + response.status);
+
+  const data = await response.json();
+  return {
+    storyIntroSeen: data.hasSeenStoryIntro === true,
+    powerIntroSeen: data.hasSeenPowerIntro === true
+  };
+}
+
+/* 완료한 인트로 URL로 직접 들어온 학생과 교사를 올바른 화면으로 돌려보낸다. */
+async function guardStudentIntroDirectAccess() {
+  const pageName = window.location.pathname.split("/").pop();
+  if (pageName !== "story-intro.html" && pageName !== "ability-intro.html") return;
+
+  const role = sessionStorage.getItem("role");
+  if (role !== "student") {
+    if (role === "teacher") window.location.replace("../teacher/home.html");
+    return;
+  }
+
+  try {
+    const status = await loadCurrentStudentIntroStatus();
+    if (!status) return;
+
+    const destination = getStudentIntroDestination(status, "./");
+    if (destination !== "./" + pageName) window.location.replace(destination);
+  } catch (error) {
+    console.error("학생 인트로 진입 상태를 확인하지 못했습니다.", error);
+  }
+}
+
+/*
+  심사 안내는 HTML에서 hidden을 기본값으로 둔다. 화면별 배너 CSS의
+  display:flex/inline-flex가 브라우저 기본 [hidden] 규칙을 덮더라도 일반
+  계정에 잠깐 노출되지 않도록 공통 안전 규칙을 가장 먼저 설치한다.
+*/
+(function installDemoBannerVisibilityGuard() {
+  if (document.getElementById("demoBannerVisibilityGuard")) return;
+  const style = document.createElement("style");
+  style.id = "demoBannerVisibilityGuard";
+  style.textContent = [
+    ".mq-demo-banner[hidden]",
+    ".mq-demo-guide[hidden]",
+    ".iar-demo-example-banner[hidden]",
+    ".ir-demo-banner[hidden]",
+    "[data-demo-banner][hidden]"
+  ].join(",") + "{display:none!important;}";
+  (document.head || document.documentElement).appendChild(style);
+})();
+
+/*
+  함수명: showDemoBannerIfDemoAccount
+  역할: 연습읽기 질문 작성 화면들이 공통으로 쓰는 "심사 체험 안내" 배지를
+  켠다. 심사계정에서만 배지를 보여주고, 일반 계정에서는 hidden 상태를
+  그대로 유지한다. 화면마다 같은 isDemoAccount() 분기를 반복해서 쓰지
+  않도록 여기 한 곳에 모아 둔다.
+*/
+function showDemoBannerIfDemoAccount(elementId) {
+  const banner = document.getElementById(elementId || "demoExperienceBanner");
+  if (banner) {
+    banner.hidden = !isDemoAccount();
+  }
+}
+
 /*
   함수명: logoutAndGoLogin
   역할: 로그아웃 버튼 공통 처리입니다. sessionStorage에 저장된 로그인 정보를
@@ -58,11 +154,20 @@ function checkLogin() {
   어디서든 이 함수를 그대로 재사용하면 됩니다.
 */
 function logoutAndGoLogin() {
+  /*
+    심사 체험 기록(mq_demo_ prefix, localStorage)은 로그아웃해도 지우지
+    않는다 — 심사위원이 로그아웃 후 다시 로그인해도 같은 브라우저에서는
+    작성했던 내용이 그대로 남아 있어야 한다. 심사 체험 기록을 지우고 싶으면
+    화면에 있는 "심사 체험 기록 초기화" 버튼(clearAllDemoState 호출)을
+    직접 눌러야 한다. 여기서는 로그인 세션 정보만 정리한다.
+  */
+
   sessionStorage.removeItem("token");
   sessionStorage.removeItem("studentId");
   sessionStorage.removeItem("role");
   sessionStorage.removeItem("name");
   sessionStorage.removeItem("loginId");
+  sessionStorage.removeItem("demoAccount");
 
   window.location.href = "../index.html";
 }
@@ -81,6 +186,51 @@ document.addEventListener("DOMContentLoaded", function () {
   /* 학생/교사 역할 버튼을 가져옵니다. */
   const studentRoleButton = document.getElementById("studentRoleButton");
   const teacherRoleButton = document.getElementById("teacherRoleButton");
+
+  document.querySelectorAll("[data-demo-role]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      const role = button.dataset.demoRole;
+      loginIdInput.value = role === "teacher" ? "tt11" : "ss01";
+      loginPasswordInput.value = role === "teacher" ? "tt11" : "ss01";
+      (role === "teacher" ? teacherRoleButton : studentRoleButton).click();
+      loginIdInput.focus();
+    });
+  });
+
+  document.querySelectorAll("[data-copy]").forEach(function (button) {
+    button.addEventListener("click", async function () {
+      const value = button.dataset.copy;
+      const message = document.getElementById("demoCopyMessage");
+      try {
+        let copied = false;
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(value);
+            copied = true;
+          } catch (clipboardError) {
+            copied = false;
+          }
+        }
+        if (!copied) {
+          const temporary = document.createElement("textarea");
+          temporary.value = value;
+          temporary.style.position = "fixed";
+          temporary.style.opacity = "0";
+          document.body.appendChild(temporary);
+          temporary.focus();
+          temporary.select();
+          temporary.setSelectionRange(0, temporary.value.length);
+          copied = document.execCommand("copy");
+          temporary.remove();
+        }
+        if (!copied) throw new Error("copy unavailable");
+        message.textContent = button.dataset.label + "가 복사되었습니다.";
+      } catch (error) {
+        message.textContent = "복사하지 못했습니다. 표시된 값을 직접 입력해 주세요.";
+      }
+      window.setTimeout(function () { message.textContent = ""; }, 1800);
+    });
+  });
 
   /* 학생 역할 버튼 클릭 처리입니다. */
   if (studentRoleButton) {
@@ -180,21 +330,26 @@ document.addEventListener("DOMContentLoaded", function () {
     sessionStorage.setItem("role", data.role);
     sessionStorage.setItem("name", data.name);
     sessionStorage.setItem("loginId", data.loginId);
+    sessionStorage.setItem("demoAccount", String(data.demoAccount === true));
 
     /* 학생 로그인 처리입니다. */
     if (data.role === "student") {
-      const studentId = String(data.id);
-      const hasSeenStoryIntro =
-        sessionStorage.getItem("hasSeenStoryIntro_" + studentId);
+      /*
+        시작 스토리/나의 힘 인트로는 "최초 로그인 때만" 순서대로 보여준다.
+        일반 학생은 계정 기준(DB의 has_seen_story_intro/has_seen_power_intro,
+        로그인 응답에 함께 내려온다)으로 판단하고, 심사계정(ss01)은 여러
+        심사위원이 같은 계정을 같이 쓰므로 DB 값 대신 "이 브라우저"의
+        localStorage(demo-storage.js)로 따로 판단한다.
+      */
+      const isDemo = data.demoAccount === true;
+      const introStatus = isDemo
+        ? getDemoIntroStatus()
+        : {
+            storyIntroSeen: data.hasSeenStoryIntro === true,
+            powerIntroSeen: data.hasSeenPowerIntro === true
+          };
 
-      /* 스토리를 본 적 있으면 학생 홈으로 이동합니다. */
-      if (hasSeenStoryIntro === "true") {
-        window.location.href = "./student/individual-reading.html";
-        return;
-      }
-
-      /* 첫 로그인이라면 스토리 인트로 화면으로 이동합니다. */
-      window.location.href = "./student/story-intro.html";
+      window.location.href = getStudentIntroDestination(introStatus, "./student/");
       return;
     }
 
@@ -211,6 +366,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 });
+
+document.addEventListener("DOMContentLoaded", guardStudentIntroDirectAccess);
 /*
   사용 자료 출처 모달 기능입니다.
   로그인 화면의 '사용 자료 출처' 버튼을 누르면

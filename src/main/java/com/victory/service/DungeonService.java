@@ -44,9 +44,19 @@ public class DungeonService {
     private final ReadingRecordRepository readingRecordRepository;
     private final UserRepository userRepository;
     private final StudentStatsService studentStatsService;
+    private final DemoAccountService demoAccountService;
 
     public List<DungeonResponse> getDungeonsForStudent(Long studentId) {
         List<Dungeon> dungeons = dungeonRepository.findAll();
+
+        if (demoAccountService.isDemoAccount(studentId)) {
+            double statAverage = studentStatsService.getStatAverage(studentId);
+            return dungeons.stream().map(dungeon -> new DungeonResponse(
+                dungeon.getId(), dungeon.getName(), dungeon.getDescription(), dungeon.getDifficulty(),
+                dungeon.getRequiredBooks(), dungeon.getRequiredStatAvg(), 5, statAverage,
+                false, true, List.of(), MAX_ATTEMPTS_PER_DAY,
+                nullSafe(dungeon.getRewardStatResetValue()))).toList();
+        }
 
         long bookCount = readingRecordRepository.countByStudent_IdAndFinishedAtIsNotNull(studentId);
         double statAverage = studentStatsService.getStatAverage(studentId);
@@ -127,6 +137,16 @@ public class DungeonService {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "알 수 없는 전투 결과입니다. result=" + result);
+        }
+
+        if (demoAccountService.isDemoAccount(studentId)) {
+            Dungeon dungeon = dungeonRepository.findById(dungeonId)
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "던전 정보를 찾을 수 없습니다. dungeonId=" + dungeonId));
+            boolean victory = RESULT_VICTORY.equals(result);
+            return new BattleResultResponse(
+                result, victory, MAX_ATTEMPTS_PER_DAY, victory && isLastStage(dungeon),
+                victory ? studentStatsService.getStats(studentId) : null);
         }
 
         LocalDateTime todayStart = LocalDate.now(ZONE_SEOUL).atStartOfDay();

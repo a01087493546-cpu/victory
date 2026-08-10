@@ -12,4 +12,7 @@ public class LoginResponse {
     private String loginId;
     private String name;
     private String role;
+    private Boolean demoAccount;
+    private Boolean hasSeenStoryIntro;
+    private Boolean hasSeenPowerIntro;
 }

@@ -1588,6 +1588,8 @@
     </section>
   </div>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
   <script>
     const API_BASE_URL = "http://localhost:8080";
 
@@ -2001,6 +2003,44 @@
         return false;
       }
 
+      if (isDemoAccount()) {
+        reviewPostsByStatus = { pending: [], approved: [], rejected: [] };
+        loadDemoApprovalRequests("individual").forEach(function(request) {
+          const status = ["pending", "approved", "rejected"].includes(request.status)
+            ? request.status
+            : "pending";
+          reviewPostsByStatus[status].push({
+            id: String(request.requestId),
+            sourceId: String(request.requestId),
+            status: status,
+            studentId: request.studentId,
+            classId: request.classId,
+            studentName: request.studentName || "김초롱",
+            writer: request.studentName || "김초롱",
+            bookTitle: request.bookTitle || "책 제목 없음",
+            title: request.title || "밸런스 게임 제목 없음",
+            scene: request.scene || "",
+            optionA: request.optionA || "",
+            optionB: request.optionB || "",
+            imageData: "",
+            countA: 0,
+            countB: 0,
+            commentCount: 0,
+            replies: [],
+            submittedAt: request.submittedAt || "",
+            submittedText: formatDateText(request.submittedAt),
+            createdAt: request.submittedAt || "",
+            createdDate: request.activityDate || "",
+            reviewedAt: request.reviewedAt || "",
+            reviewedText: request.reviewedAt ? formatDateText(request.reviewedAt) : "",
+            rejectReason: request.rejectedReason || ""
+          });
+        });
+        if (options && options.keepSelection) selectedPostId = String(options.keepSelection);
+        renderAll();
+        return true;
+      }
+
       try {
         const results = await Promise.all([
           fetchReviewPostsByStatus("PENDING"),
@@ -2063,6 +2103,10 @@
     }
 
     async function changePostStatusWithApi(id, action, reason) {
+      if (isDemoAccount()) {
+        const status = action === "approve" ? "approved" : action === "reject" ? "rejected" : "pending";
+        return Boolean(updateDemoApprovalRequest("individual", id, status, reason || ""));
+      }
       const auth = getTeacherAuthContext();
 
       if (!auth) {

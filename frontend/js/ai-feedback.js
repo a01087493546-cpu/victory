@@ -53,6 +53,21 @@ function requestAuthenticatedAiFeedback(options) {
     return Promise.reject(new Error("classReadingBookId 또는 readingRecordId가 필요합니다."));
   }
 
+  /*
+    개별읽기 심사계정은 여러 심사위원이 같은 ss01을 동시에 쓰는 충돌을
+    피하려고 공용 DB에 책을 등록하지 않고 "demo-" + timestamp 같은
+    브라우저 로컬 가짜 id를 쓴다(individual-before-reading.html 참고).
+    서버 DTO의 readingRecordId는 Long이라 이런 문자열을 그대로 보내면
+    JSON 역직렬화 단계에서 400으로 튕겨 나가 AI 판정 자체가 실패한다
+    (실패 메시지: "루미가 지금 답을 읽지 못했어"). 숫자가 아닌 값이면
+    보내지 않는다 - 서버는 심사계정이면 classReadingBookId/readingRecordId
+    없이도 판정을 내려주도록 이미 되어 있다(FeedbackAiService.validateEvaluationScope).
+  */
+  const numericReadingRecordId =
+    options.readingRecordId != null && /^\d+$/.test(String(options.readingRecordId))
+      ? Number(options.readingRecordId)
+      : undefined;
+
   const requestBody = {
     question: options.question || "",
     answer: options.answer || "",
@@ -60,7 +75,7 @@ function requestAuthenticatedAiFeedback(options) {
     questionType: options.questionType,
     evaluationKey: options.evaluationKey,
     classReadingBookId: options.classReadingBookId,
-    readingRecordId: options.readingRecordId,
+    readingRecordId: numericReadingRecordId,
     bookType: options.bookType,
     bookTitle: options.bookTitle,
     passage: options.passage,

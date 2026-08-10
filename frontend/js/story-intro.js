@@ -236,15 +236,55 @@ function skipStory() {
 
 /*
   함수명: finishStoryIntro
-  역할: 스토리를 본 것으로 저장하고 학생 홈으로 이동합니다.
+  역할: 스토리를 본 것으로 저장하고 나의 힘 인트로로 이동합니다.
+
+  일반 학생은 로그아웃 후에도 다시 뜨지 않도록 서버(DB의
+  has_seen_story_intro)에 저장한다. 심사계정(ss01)은 여러 심사위원이 같은
+  계정을 같이 쓰므로 DB에 저장하지 않고, "이 브라우저"의 localStorage에만
+  저장한다(demo-storage.js).
 */
-function finishStoryIntro() {
-  // studentId별로 스토리 인트로를 본 기록을 저장합니다.
-  // 여러 학생이 같은 브라우저를 써도 각자 따로 관리됩니다.
-  const studentId = sessionStorage.getItem("studentId") || "1";
-  sessionStorage.setItem("hasSeenStoryIntro_" + studentId, "true");
+async function finishStoryIntro() {
+  if (typeof isDemoAccount === "function" && isDemoAccount()) {
+    if (typeof saveDemoState === "function") {
+      saveDemoState("storyIntroSeen", true);
+    }
+    if (typeof loadDemoState !== "function" || loadDemoState("storyIntroSeen", false) !== true) {
+      alert("시작 이야기 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+  } else {
+    const saved = await markStoryIntroSeenOnServer();
+    if (!saved) {
+      alert("시작 이야기 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+  }
 
   // 스토리 인트로가 끝나면 바로 학생 홈으로 가지 않고,
-// 먼저 능력치 안내 화면으로 이동합니다.
-window.location.href = "./ability-intro.html";
+  // 먼저 능력치 안내 화면으로 이동합니다.
+  window.location.href = "./ability-intro.html";
+}
+
+/*
+  함수명: markStoryIntroSeenOnServer
+  역할: 일반 학생 계정의 시작 스토리 인트로 완료 상태를 DB에 저장합니다.
+  실패해도 화면 이동은 막지 않습니다(다음 로그인 때 다시 보여주는 정도의
+  가벼운 실패로 처리).
+*/
+async function markStoryIntroSeenOnServer() {
+  const token = sessionStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const response = await fetch(getLoginApiBaseUrl() + "/api/students/me/story-intro-seen", {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    if (!response.ok) throw new Error("시작 스토리 완료 저장 실패: " + response.status);
+    return true;
+  } catch (error) {
+    console.error("시작 스토리 인트로 완료 상태를 저장하지 못했습니다.", error);
+    return false;
+  }
 }

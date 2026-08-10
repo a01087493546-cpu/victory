@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,10 @@ public class IndividualReadingDashboardService {
         List<ClassStudent> roster = sortedRoster(classId);
         LocalDate today = LocalDate.now(ZONE_SEOUL);
 
+        if (isDemoTeacher(teacherId)) {
+            return buildDemoDashboard(schoolClass, roster, today);
+        }
+
         List<TeacherIndividualReadingStudentResponse> students = new ArrayList<>();
         int individualReadingStudentCount = 0;
         int todayActiveStudentCount = 0;
@@ -122,6 +127,74 @@ public class IndividualReadingDashboardService {
         boolean currentlyReading,
         boolean hasStartedIndividualReading
     ) {
+    }
+
+    /*
+     * 심사 학급(생각이자라는우리반)에는 DemoDataInitializer가 만드는
+     * ss01/demo_student_02~08 8명 외에, 과거 개발 중 만들어진 ss02~ss08
+     * 같은 계정이 같은 학급에 남아 있을 수 있다(이름이 demo_student와
+     * 겹쳐 목록에 같은 이름이 두 번 보이고, 8행짜리 scores 배열이
+     * Math.min(i, ...)로 클램프되어 뒤쪽 학생들이 전부 같은 값을 받는
+     * 원인이었다). DB 행을 지우지 않고, 이 데모 전용 화면에서만 원래
+     * 심사 seed 8명으로 로스터를 한정한다.
+     */
+    private static final Set<String> DEMO_SEED_STUDENT_LOGIN_IDS = Set.of(
+        "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
+        "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08");
+
+    private TeacherIndividualReadingDashboardResponse buildDemoDashboard(
+            SchoolClass schoolClass, List<ClassStudent> roster, LocalDate today) {
+        List<ClassStudent> seedRoster = roster.stream()
+            .filter(member -> DEMO_SEED_STUDENT_LOGIN_IDS.contains(member.getStudent().getLoginId()))
+            .toList();
+
+        /*
+         * 학생별 종합달성도가 70% 근처에 몰리지 않도록 서로 다른 값으로
+         * 고정한다(순서: 김초롱/송민정/박하민/이진우/김민지/서희원/김수진/이혜원).
+         * value = {totalCompletedBookCount, readingDays, readingPracticeScore,
+         * recordCompletionScore, contentSuitabilityScore, overallAchievementScore}.
+         */
+        int[][] scores = {
+            {5, 9, 93, 96, 94, 94}, {6, 10, 90, 93, 91, 91},
+            {4, 7, 80, 85, 82, 82}, {3, 6, 75, 79, 78, 77},
+            {3, 5, 65, 71, 68, 68}, {2, 4, 55, 62, 58, 58},
+            {1, 3, 42, 52, 48, 47}, {1, 2, 30, 40, 36, 35}
+        };
+        String[] books = {"마당을 나온 암탉", "긴긴밤", "아낌없이 주는 나무", "수상한 도서관",
+            "우리 몸의 신비", "강아지똥", "책 먹는 여우", "초정리 편지"};
+        List<TeacherIndividualReadingStudentResponse> students = new ArrayList<>();
+        int activeToday = 0;
+        int support = 0;
+        for (int i = 0; i < seedRoster.size(); i++) {
+            ClassStudent member = seedRoster.get(i);
+            int[] value = scores[Math.min(i, scores.length - 1)];
+            boolean active = i != 6 && i != 7;
+            /*
+             * "확인이 필요한 학생" 문구가 반복되지 않도록 학생마다 서로 다른
+             * 사유(질문 만들기/생각 나누기/독서실천도+기록 내용/단계 미완료)를
+             * 준다 - individual-reading-manage.html의 SUPPORT_REASON_ADVICE가
+             * 사유별로 다른 문장을 이미 매핑해 두고 있으므로, 사유 자체를
+             * 다양화하는 것만으로 화면 문구도 함께 다양해진다.
+             */
+            List<String> reasons = i == 4 ? List.of("질문 만들기 참여가 필요해요")
+                : i == 5 ? List.of("생각 나누기 참여가 필요해요")
+                : i == 6 ? List.of("독서실천도가 낮아요", "기록 내용을 조금 더 다듬어야 해요")
+                : i == 7 ? List.of("읽기 중 활동을 완료해야 해요")
+                : List.of();
+            if (active) activeToday++;
+            if (!reasons.isEmpty()) support++;
+            int overall = value[5];
+            students.add(new TeacherIndividualReadingStudentResponse(
+                member.getStudent().getId(), member.getStudent().getName(), member.getStudentNumber(),
+                null, books[Math.min(i, books.length - 1)], 0, value[0], value[1], value[2], 3,
+                value[3], 6, value[4], overall, overall,
+                overall >= 90 ? "매우 우수" : overall >= 75 ? "우수" : overall >= 50 ? "보통" : "집중 지원",
+                today.minusDays(active ? 0 : i == 6 ? 3 : 6), active, reasons));
+        }
+        return new TeacherIndividualReadingDashboardResponse(
+            schoolClass.getId(), schoolClass.getClassName(), today,
+            seedRoster.isEmpty() ? null : round2(activeToday * 100.0 / seedRoster.size()), null,
+            activeToday, seedRoster.size(), support, students);
     }
 
     private StudentComputation computeForStudent(ClassStudent classStudent, LocalDate today) {
@@ -322,5 +395,11 @@ public class IndividualReadingDashboardService {
 
     private double round2(double value) {
         return Math.round(value * 100.0) / 100.0;
+    }
+
+    private boolean isDemoTeacher(Long teacherId) {
+        return userRepository.findById(teacherId)
+            .map(user -> Boolean.TRUE.equals(user.getDemoAccount()))
+            .orElse(false);
     }
 }

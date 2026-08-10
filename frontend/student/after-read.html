@@ -364,7 +364,8 @@ body.teacher-mode .teacher-top-button {
     }
 
     .ar-study-header {
-      height: 112px;
+      min-height: 112px;
+      height: auto;
       padding: 13px 18px 14px;
       border-radius: 26px;
       border: 1.5px solid rgba(186, 130, 58, 0.30);
@@ -372,15 +373,50 @@ body.teacher-mode .teacher-top-button {
       box-shadow:
         0 14px 28px rgba(99, 61, 17, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, 0.55);
-      overflow: hidden;
     }
 
     .ar-study-header-main {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 14px;
       margin-bottom: 10px;
+    }
+
+    /* 심사 체험 계정에서만 보이는 짧은 안내 배지. ar-study-header-main이
+       space-between이라 제목 오른쪽 남는 공간에 얹힌다. 공간이 부족하면
+       최대 2줄까지 자연스럽게 줄바꿈되며, 헤더(ar-study-header)도 그에 맞춰
+       높이가 자동으로 늘어난다(연습읽기 질문 작성 화면 공통 디자인). */
+    .mq-demo-banner {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: min(1000px, 80%);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      height: auto;
+      padding: 4px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(238, 216, 176, 0.92));
+      box-shadow: 0 4px 10px rgba(90, 55, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      color: #6b4b26;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 800;
+      white-space: normal;
+      word-break: keep-all;
+      overflow: visible;
+    }
+    .mq-demo-banner[hidden] {
+  display: none !important;
+}
+
+    .mq-demo-banner strong {
+      color: #7a4a12;
+      font-size: 15px;
+      font-weight: 900;
     }
 
     .ar-study-title {
@@ -1207,16 +1243,16 @@ body.teacher-mode .teacher-top-button {
 @media (min-width: 1181px) {
   .ar-study-screen.is-active {
     height: 100%;
-    grid-template-rows: 104px minmax(0, 1fr);
+    grid-template-rows: minmax(104px, auto) minmax(0, 1fr);
     gap: 10px;
     overflow: hidden;
   }
 
   .ar-study-header {
-    height: 104px;
+    min-height: 104px;
+    height: auto;
     padding: 10px 18px 12px;
     border-radius: 24px;
-    overflow: hidden;
   }
 
   .ar-study-header-main {
@@ -1357,12 +1393,13 @@ body.teacher-mode .teacher-top-button {
 /* 세로가 조금 낮은 화면에서도 스크롤 안 생기게 보정 */
 @media (min-width: 1181px) and (max-height: 820px) {
   .ar-study-screen.is-active {
-    grid-template-rows: 94px minmax(0, 1fr);
+    grid-template-rows: minmax(94px, auto) minmax(0, 1fr);
     gap: 8px;
   }
 
   .ar-study-header {
-    height: 94px;
+    min-height: 94px;
+    height: auto;
     padding: 8px 16px 10px;
   }
 
@@ -4906,6 +4943,76 @@ body.teacher-mode .ar-share-panel .ar-panel-actions {
 body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   display: none !important;
 }
+
+/* =========================================================
+   우리 반 간추리기 모음 최종 레이아웃
+   - 카드 겹침 방지
+   - 카드 높이 내용에 맞춰 자동 계산
+   - 목록 영역만 세로 스크롤
+
+   위쪽에 #sharePanel/.ar-share-list/.ar-share-item 관련 규칙이 여러 번
+   재정의되어 있는데, 그중 CSS Grid로 2열을 만든 규칙(display:grid +
+   grid-auto-rows:auto)이 겹침의 실제 원인이었다. 이 화면처럼 부모
+   컨테이너(.ar-share-list) 높이가 정해져 있는 상태에서, grid의 "auto"
+   행 트랙은 아이템 내용이 더 길어도 정해진 높이 안으로 눌려버리고
+   overflow:visible 때문에 카드가 다음 줄 위로 튀어나와 겹쳐 보인다
+   (실제 브라우저 렌더링으로 확인함). 그래서 .ar-share-list는 grid
+   대신 flex-wrap을 쓴다 - 각 줄 높이가 그 줄의 가장 긴 카드 기준으로
+   자연스럽게 정해지고, 다음 줄은 항상 그 아래에서 시작하므로 절대
+   겹치지 않는다. 카드 폭은 calc(50% - gap/2)로 계산해 2열을 유지한다.
+   ========================================================= */
+#sharePanel.is-active {
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+#sharePanel .ar-share-list {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  align-content: flex-start !important;
+  align-items: flex-start !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  gap: 18px !important;
+  padding: 6px 10px 16px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+#sharePanel .ar-share-item {
+  flex: 0 0 calc(50% - 9px) !important;
+  width: calc(50% - 9px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 22px !important;
+  overflow: visible !important;
+}
+
+#sharePanel .ar-share-item p {
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 18px !important;
+  overflow: visible !important;
+  white-space: pre-line !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
+}
+
+#sharePanel .ar-share-footer {
+  flex: 0 0 auto !important;
+  margin-top: 14px !important;
+}
 </style>
 </head>
 
@@ -4992,6 +5099,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
             <div>
               <h1 class="ar-study-title" id="studyTitle">간추리기 비법</h1>
             </div>
+            <div class="mq-demo-banner" id="demoExperienceBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.</div>
           </div>
 
           <div class="ar-study-stepbar">
@@ -5320,12 +5428,16 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     </div>
   </div>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
+
   <script>
     const AFTER_READING_API_BASE_URL = "http://localhost:8080";
     let selectedBookType = "";
     let selectedPracticeQuestionIndexes = [];
     let currentClassId = null;
     let currentClassReadingBookId = null;
+    let currentClassReadingBookTitle = "";
     let sharedSummaries = [];
     let isAfterReadingSaving = false;
     let currentBookQuestionIndex = 0;
@@ -5572,9 +5684,144 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       );
 
       currentClassReadingBookId = readingBook.id;
+      currentClassReadingBookTitle = readingBook.bookTitle || "우리 반 온책읽기 책";
+    }
+
+    /*
+      심사 체험 계정은 공용 DB 대신 "현재 브라우저" sessionStorage에만
+      책 종류/질문·답/간추리기를 저장한다. 같은 ss01 로그인을 쓰는 다른
+      심사위원 브라우저와 서로 섞이지 않게 하기 위함이다(일반 학생 계정은
+      이 분기를 타지 않고 기존과 동일하게 DB에 저장/복원한다).
+    */
+    const DEMO_AFTER_READING_STORAGE_KEY = "afterReading";
+
+    function loadDemoAfterReadingData() {
+      return loadDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
+        bookType: null,
+        questions: [],
+        summary: ""
+      });
+    }
+
+    /*
+      "우리 반 간추리기 모음"의 좋아요는 심사계정에서 공용 DB에 절대 반영하지
+      않는다. 공용 seed 카드(DemoClassActivityInitializer의 6명 예시)는 모든
+      브라우저가 동일한 기본 좋아요 수로 보되, 심사위원이 직접 누른 좋아요는
+      "현재 브라우저"의 localStorage에만 더해서 보여준다(다른 브라우저와
+      합산되지 않음). individual-after-reading.html의 decorateDemoSummaries와
+      같은 원칙이다.
+    */
+    const DEMO_SHARE_LIKE_SEED_BY_NAME = {
+      "김초롱": 5, "송민정": 3, "박하민": 6, "김민지": 2, "김수진": 4, "이혜원": 3
+    };
+    const DEMO_SHARE_LIKES_KEY = "practiceSummaryLikes";
+
+    function decorateDemoSharedSummaries(items) {
+      if (!isDemoAccount() || !Array.isArray(items)) return items;
+      const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+      return items.map(function (item) {
+        const liked = localLikes[String(item.id)] === true;
+        const seedLikeCount = item.demoLocal
+          ? Number(item.likeCount || 0)
+          : DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName] != null
+          ? DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName]
+          : Number(item.likeCount || 0);
+        return Object.assign({}, item, {
+          likeCount: seedLikeCount + (liked ? 1 : 0),
+          likedByMe: liked
+        });
+      });
+    }
+
+    /*
+     * "실제로 학생이 쓴 간추리기 본문"인지 판단한다. trim 후 빈 값이면
+     * 당연히 아니고, makeSummaryGuide()가 간추리기 화면에 들어갈 때 미리
+     * 채워 두는 빈칸 템플릿("처음에는 ____...")을 한 글자도 안 고치고
+     * 그대로 저장한 경우도 실제 작성이 아니므로 같이 걸러낸다 -
+     * validateAfterReadingCompletion()이 일반계정에서 쓰는 것과 같은
+     * "________________" 표시로 판정한다.
+     */
+    function isRealAfterReadingSummary(text) {
+      if (typeof text !== "string") return false;
+      const trimmed = text.trim();
+      if (!trimmed) return false;
+      return !trimmed.includes("________________");
+    }
+
+    function getDemoLocalSharedSummary() {
+      if (!isDemoAccount()) return null;
+
+      const data = loadDemoAfterReadingData();
+      const summaryText = String(data.summary || "").trim();
+      if (!isRealAfterReadingSummary(summaryText)) return null;
+
+      const context = getCurrentUserContext();
+      const demoBrowserId = getDemoBrowserId();
+      if (data.demoBrowserId && data.demoBrowserId !== demoBrowserId) return null;
+
+      const now = new Date().toISOString();
+      const localId = data.localId || [
+        "practice-summary",
+        demoBrowserId,
+        currentClassReadingBookId || "book"
+      ].join("-");
+      const normalized = Object.assign({}, data, {
+        localId: localId,
+        demoBrowserId: demoBrowserId,
+        studentId: data.studentId || context.id || "",
+        studentName: data.studentName || sessionStorage.getItem("name") || "김초롱",
+        classReadingBookId: data.classReadingBookId || currentClassReadingBookId,
+        bookTitle: data.bookTitle || currentClassReadingBookTitle || "우리 반 온책읽기 책",
+        bookType: data.bookType || selectedBookType || "story",
+        summary: summaryText,
+        summaryText: summaryText,
+        sharedAt: data.sharedAt || now,
+        afterDone: true
+      });
+
+      if (!data.localId || !data.demoBrowserId || !data.sharedAt || !data.summaryText) {
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, normalized);
+      }
+
+      return {
+        id: localId,
+        localId: localId,
+        demoBrowserId: demoBrowserId,
+        demoLocal: true,
+        studentId: normalized.studentId,
+        studentName: normalized.studentName,
+        classReadingBookId: normalized.classReadingBookId,
+        bookTitle: normalized.bookTitle,
+        bookType: normalized.bookType,
+        summary: normalized.summary,
+        summaryText: normalized.summaryText,
+        sharedAt: normalized.sharedAt,
+        createdAt: normalized.sharedAt,
+        updatedAt: normalized.sharedAt,
+        likeCount: 0,
+        likedByMe: false
+      };
+    }
+
+    function mergeDemoLocalSharedSummary(items) {
+      const serverItems = Array.isArray(items) ? items : [];
+      const localSummary = getDemoLocalSharedSummary();
+      /* getDemoLocalSharedSummary()가 이미 blank/템플릿을 걸러내지만,
+         병합 단계에서도 한 번 더 확인해 빈 direct 카드가 새어나가지 않게 한다. */
+      if (!localSummary || !isRealAfterReadingSummary(localSummary.summary)) return serverItems;
+
+      return [localSummary].concat(serverItems.filter(function(item) {
+        return String(item.id) !== String(localSummary.id);
+      }));
     }
 
     async function loadMyAfterReadingData() {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        restoreAfterReadingData(data);
+        return data;
+      }
+
       const context = getCurrentUserContext();
 
       if (!context.id || context.role !== "student" || !currentClassReadingBookId) {
@@ -5748,6 +5995,13 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     }
 
     async function saveSelectedBookType() {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        data.bookType = selectedBookType;
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        return;
+      }
+
       const context = getCurrentUserContext();
 
       if (!selectedBookType || !context.id || context.role !== "student" || !context.token) {
@@ -5813,6 +6067,31 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       if (targetPanel) {
         targetPanel.classList.add("is-active");
       }
+
+     const demoBanner = document.getElementById("demoExperienceBanner");
+
+if (demoBanner) {
+  const showQuestionWriteBanner =
+    panelName === "practiceWrite" ||
+    panelName === "write";
+
+  const showShareExampleBanner =
+    panelName === "share";
+
+  if (!isDemoAccount()) {
+    demoBanner.hidden = true;
+  } else if (showQuestionWriteBanner) {
+    demoBanner.hidden = false;
+    demoBanner.innerHTML =
+      '🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.';
+  } else if (showShareExampleBanner) {
+    demoBanner.hidden = false;
+    demoBanner.innerHTML =
+      '🔍 <strong>심사 체험 안내</strong> — 학생 활동 모습을 확인할 수 있도록 가상 학생들의 예시 데이터를 미리 구성해 두었습니다.';
+  } else {
+    demoBanner.hidden = true;
+  }
+}
 
       updateStepBar(panelName);
 
@@ -6103,6 +6382,25 @@ if (selectedBookType === "opinion") {
       feedback.textContent = "좋아요! 간추리기에 도움이 되는 질문을 골랐어요.";
     }
 
+    /*
+      심사계정에서는 질문·답 작성, 루미 피드백 결과, 저장 성공 여부와
+      관계없이 "다음으로" 버튼이 항상 눌리는 상태여야 한다. 아래 두
+      버튼(practiceWrite/write 패널의 다음 버튼)을 직접 잠그는 코드가
+      여러 곳에 흩어져 있어, 이 두 함수를 거치게 해서 isDemoAccount()
+      분기를 한 곳에만 두고 놓치는 지점이 없게 한다.
+    */
+    function setExtraPracticeNextButtonEnabled(enabled) {
+      const nextButton = document.getElementById("extraPracticeNextButton");
+      if (!nextButton) return;
+      nextButton.disabled = isDemoAccount() ? false : !enabled;
+    }
+
+    function setBookSummaryButtonEnabled(enabled) {
+      const summaryButton = document.getElementById("bookSummaryButton");
+      if (!summaryButton) return;
+      summaryButton.disabled = isDemoAccount() ? false : !enabled;
+    }
+
     function goPracticeWritePanel() {
   const data = bookTypeData[selectedBookType];
 
@@ -6123,13 +6421,14 @@ if (selectedBookType === "opinion") {
     return question && !question.good;
   }).length;
 
-  if (goodCount !== 3 || wrongCount > 0) {
+  if (!isDemoAccount() && (goodCount !== 3 || wrongCount > 0)) {
     alert("간추리기에 도움이 되는 질문 3개를 모두 골라 주세요.");
     return;
   }
 
   showStudyPanel("practiceWrite");
   renderExtraPracticeWrite();
+  setExtraPracticeNextButtonEnabled(extraPracticeCheckPassed);
 }
 
     function renderExtraPracticeWrite() {
@@ -6244,8 +6543,7 @@ if (selectedBookType === "opinion") {
         "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
       );
 
-      const nextButton = document.getElementById("extraPracticeNextButton");
-      if (nextButton) nextButton.disabled = true;
+      setExtraPracticeNextButtonEnabled(false);
     }
 
     function checkExtraPracticeDone() {
@@ -6258,8 +6556,7 @@ if (selectedBookType === "opinion") {
       const answer1 = document.getElementById("practiceAnswer1").value.trim();
       const answer2 = document.getElementById("practiceAnswer2").value.trim();
 
-      const nextButton = document.getElementById("extraPracticeNextButton");
-      if (nextButton) nextButton.disabled = true;
+      setExtraPracticeNextButtonEnabled(false);
       extraPracticeCheckPassed = false;
 
       const localResult = validateExtraPracticeFormat(question1, answer1, question2, answer2);
@@ -6282,7 +6579,6 @@ if (selectedBookType === "opinion") {
     function requestExtraPracticeAiFeedback(question1, answer1, question2, answer2) {
       const requestId = ++extraPracticeAiRequestId;
       const checkButton = document.getElementById("extraPracticeCheckButton");
-      const nextButton = document.getElementById("extraPracticeNextButton");
       const timeoutMs = 15000;
       const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요.";
 
@@ -6354,9 +6650,7 @@ if (selectedBookType === "opinion") {
 
             extraPracticeCheckPassed = isGood;
 
-            if (nextButton) {
-              nextButton.disabled = !isGood;
-            }
+            setExtraPracticeNextButtonEnabled(isGood);
           });
         })
         .catch(function(error) {
@@ -6389,7 +6683,7 @@ if (selectedBookType === "opinion") {
     }
 
     function goWritePanelAfterPractice() {
-  if (!extraPracticeCheckPassed) {
+  if (!isDemoAccount() && !extraPracticeCheckPassed) {
     alert("루미에게 검사를 받고 good을 받아야 다음으로 갈 수 있어요.");
     return;
   }
@@ -6404,6 +6698,7 @@ if (selectedBookType === "opinion") {
   }
 
   showStudyPanel("write");
+  syncBookQuestionCompletionState();
 }
 
     function getQuestionAnswerData() {
@@ -6642,6 +6937,19 @@ if (selectedBookType === "opinion") {
 
       const summaryElement = document.getElementById("summaryText");
       const summaryText = summaryElement ? summaryElement.value.trim() : "";
+
+      /*
+        심사계정은 완성 여부와 관계없이(빈 값이든 실제로 다 작성했든)
+        공용 DB(/after-reading)에는 절대 저장하지 않는다 - 같은 ss01
+        로그인을 쓰는 다른 심사위원 브라우저와 응답이 섞이거나 서로
+        덮어쓰는 것을 막기 위함이다. 대신 현재 브라우저 sessionStorage에
+        저장하고, 진행 상태(afterDone)만 가벼운 API로 표시한다.
+      */
+      if (isDemoAccount()) {
+        await completeAfterReadingForDemo(summaryText);
+        return;
+      }
+
       const validationMessage = validateAfterReadingCompletion(summaryText);
 
       if (validationMessage) {
@@ -6721,6 +7029,129 @@ if (selectedBookType === "opinion") {
       }
     }
 
+    /*
+      심사계정 전용: 완성 여부와 관계없이 질문·답·간추리기를 공용 DB
+      (after_reading_summaries/responses)에는 절대 저장하지 않는다.
+      대신 "현재 브라우저" localStorage에 그대로 저장해서(로그아웃·재로그인과
+      단계 이동·새로고침 후에도 복원되게), 연습읽기 완료(afterDone)
+      상태만 가벼운 API로 표시하고 공유 화면으로 넘어간다.
+    */
+    async function completeAfterReadingForDemo(summaryText) {
+      if (isAfterReadingSaving) {
+        return;
+      }
+
+      const context = getCurrentUserContext();
+
+      if (!context.id || context.role !== "student" || !context.token) {
+        alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+        return;
+      }
+
+      const summaryNextButton = document.getElementById("summaryNextButton");
+      isAfterReadingSaving = true;
+      if (summaryNextButton) summaryNextButton.disabled = true;
+
+      try {
+        const previousData = loadDemoAfterReadingData();
+        const now = new Date().toISOString();
+
+        /*
+         * 이번 저장값이 실제 작성 내용이 아니면(빈 값/공백/미수정
+         * 템플릿) 이미 저장돼 있던 정상 간추리기를 빈 값으로 덮어쓰지
+         * 않는다 - 질문만 다시 손보다가 간추리기 칸을 실수로 비웠다고
+         * 해서 이미 완성해 둔 공유 카드가 사라지면 안 되기 때문이다.
+         */
+        const summaryToStore = isRealAfterReadingSummary(summaryText)
+          ? summaryText
+          : (previousData.summary || "");
+
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
+          localId: previousData.localId || [
+            "practice-summary",
+            getDemoBrowserId(),
+            currentClassReadingBookId || "book"
+          ].join("-"),
+          demoBrowserId: getDemoBrowserId(),
+          studentId: context.id,
+          studentName: sessionStorage.getItem("name") || "김초롱",
+          classReadingBookId: currentClassReadingBookId,
+          bookTitle: currentClassReadingBookTitle || "우리 반 온책읽기 책",
+          bookType: selectedBookType,
+          questions: getAfterReadingQuestionPayload(),
+          summary: summaryToStore,
+          summaryText: summaryToStore,
+          sharedAt: previousData.sharedAt || now,
+          afterDone: true
+        });
+
+        await fetchJson(
+          AFTER_READING_API_BASE_URL +
+            "/api/students/" +
+            context.id +
+            "/practice-progress",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + context.token
+            },
+            body: JSON.stringify({ afterDone: true })
+          }
+        );
+
+        /*
+         * 일반계정의 연습읽기 최종 완료 보상(PracticeReadingRewardService,
+         * REWARD_AMOUNT=8 - 마법력/체력/지혜/용기 전부 +8)과 같은 값을
+         * 심사계정에도 그대로 적용한다. instanceId는 백엔드와 같은 기준
+         * (classReadingBookId)을 쓰고, 읽기 전/읽기 중 완료 여부는 전혀
+         * 확인하지 않는다 - practice.html이 심사계정에는 이미 3단계를
+         * 전부 잠금 해제해 두므로, 읽기 전/중을 건너뛰고 읽기 후만 체험해도
+         * 이 보상은 정상 지급되어야 한다. 질문/간추리기가 비어 있어도
+         * (공유 카드 생성 여부와는 완전히 별개로) 보상은 지급한다.
+         */
+        const rewardInstanceId = currentClassReadingBookId || "unknown";
+        let demoResult = null;
+        if (typeof grantDemoStatRewardOnce === "function") {
+          demoResult = grantDemoStatRewardOnce("practice-after", rewardInstanceId, { magic: 8, stamina: 8, wisdom: 8, courage: 8 });
+        } else {
+          console.error("grantDemoStatRewardOnce를 찾을 수 없어 연습읽기 읽기 후 보상을 지급하지 못했습니다.");
+        }
+
+        if (demoResult && demoResult.rewardGranted) {
+          if (typeof openMiniRewardModal !== "function") {
+            console.error("openMiniRewardModal을 찾을 수 없어 연습읽기 읽기 후 보상 팝업을 표시하지 못했습니다.");
+          } else {
+            openMiniRewardModal({
+              badge: "✨ 나의 힘 성장!",
+              title: "연습읽기 완료!",
+              message: "루미: 연습읽기 모험을 끝까지 해냈어!",
+              rewards: [
+                { type: "magic", name: "마법력", point: "+8" },
+                { type: "stamina", name: "체력", point: "+8" },
+                { type: "wisdom", name: "지혜", point: "+8" },
+                { type: "courage", name: "용기", point: "+8" }
+              ],
+              nextAction: async function () {
+                await renderShareList();
+                showStudyPanel("share");
+              }
+            });
+            return;
+          }
+        }
+
+        await renderShareList();
+        showStudyPanel("share");
+      } catch (error) {
+        console.error(error);
+        alert("진행 상태를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        isAfterReadingSaving = false;
+        if (summaryNextButton) summaryNextButton.disabled = false;
+      }
+    }
+
     function showPracticeCompleteReward(stats) {
       syncPracticeStatsToPowerStorage(stats);
 
@@ -6794,7 +7225,18 @@ if (selectedBookType === "opinion") {
         '<div class="ar-share-empty">우리 반 간추리기를 불러오고 있어요.</div>';
 
       try {
-        const allList = await refreshSharedSummaries();
+        /*
+         * 최종 표시 조건은 "간추리기 본문이 실제로 존재하는가" 하나다
+         * (일반계정 seed/심사 direct 공통) - 저장/병합 단계에서 이미
+         * 걸러도 여기서 한 번 더 확인해 빈 카드가 절대 화면에 보이지
+         * 않게 한다. seed 카드는 항상 실제 문장이라 이 필터로 걸러지지
+         * 않는다.
+         */
+        const allList = decorateDemoSharedSummaries(
+          mergeDemoLocalSharedSummary(await refreshSharedSummaries())
+        ).filter(function (item) {
+          return isRealAfterReadingSummary(item.summary);
+        });
 
         if (!allList.length) {
           shareList.innerHTML =
@@ -6809,18 +7251,21 @@ if (selectedBookType === "opinion") {
           const dateText = formatAfterReadingDate(item.updatedAt || item.createdAt);
           const studentNumber = item.studentNumber ? item.studentNumber + "번 · " : "";
           const authorName = item.studentName || "친구";
+          const summaryTitle = item.demoLocal && !isTeacherAfterReadingMode()
+            ? "나의 간추리기"
+            : authorName + "의 간추리기";
           const likeCount = Number(item.likeCount || 0);
           const isLiked = item.likedByMe === true;
           const footerContent = isTeacherAfterReadingMode()
             ? '<span class="ar-share-like-count">♥ 좋아요 ' + likeCount + '</span>'
             : '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
-                'onclick="toggleSummaryLike(' + Number(item.id) + ')">' +
+                'onclick=\'toggleSummaryLike(' + JSON.stringify(String(item.id)) + ')\'>' +
                 (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
               '</button>';
 
           return (
             '<article class="ar-share-item">' +
-              '<strong>' + escapeHtml(authorName) + '의 간추리기</strong>' +
+              '<strong>' + escapeHtml(summaryTitle) + '</strong>' +
               '<div class="ar-share-meta">' +
                 '<span>' + escapeHtml(studentNumber + typeLabel) + '</span>' +
                 '<span>' + escapeHtml(dateText) + '</span>' +
@@ -6843,6 +7288,20 @@ if (selectedBookType === "opinion") {
 
       if (!context.id || context.role !== "student" || !context.token) {
         alert("학생 계정으로 로그인한 뒤 좋아요를 누를 수 있어요.");
+        return;
+      }
+
+      /*
+       * 심사계정은 공용 DB에 좋아요를 남기지 않는다 - 현재 브라우저의
+       * localStorage만 바꾸고 곧바로 다시 그린다.
+       */
+      if (isDemoAccount()) {
+        const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+        const key = String(summaryId);
+        if (localLikes[key]) delete localLikes[key];
+        else localLikes[key] = true;
+        saveDemoState(DEMO_SHARE_LIKES_KEY, localLikes);
+        await renderShareList();
         return;
       }
 
@@ -7135,11 +7594,7 @@ applyTeacherMode();
           return item.question && item.answer && card.dataset.feedbackPassed === "true";
         });
 
-      const summaryButton = document.getElementById("bookSummaryButton");
-
-      if (summaryButton) {
-        summaryButton.disabled = !allThreeReady;
-      }
+      setBookSummaryButtonEnabled(allThreeReady);
     }
 
     function updateQuestionNavigationButtons() {
@@ -7204,11 +7659,7 @@ applyTeacherMode();
         "질문 " + number + "과 답을 쓴 뒤 검사하기를 눌러 봐."
       );
 
-      const summaryButton = document.getElementById("bookSummaryButton");
-
-      if (summaryButton) {
-        summaryButton.disabled = true;
-      }
+      setBookSummaryButtonEnabled(false);
 
       updateAddQuestionButton();
     }
@@ -7289,11 +7740,7 @@ applyTeacherMode();
   card.dataset.feedbackPassed = "false";
   card.classList.remove("passed");
 
-  const summaryButton = document.getElementById("bookSummaryButton");
-
-  if (summaryButton) {
-    summaryButton.disabled = true;
-  }
+  setBookSummaryButtonEnabled(false);
 
   updateAddQuestionButton();
 
@@ -7384,11 +7831,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
           return itemCard.dataset.feedbackPassed === "true";
         });
 
-      const summaryButton = document.getElementById("bookSummaryButton");
-
-      if (summaryButton) {
-        summaryButton.disabled = !allThreePassed;
-      }
+      setBookSummaryButtonEnabled(allThreePassed);
 
       updateAddQuestionButton();
 
@@ -7407,11 +7850,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
       card.dataset.feedbackPassed = "false";
       card.classList.remove("passed");
 
-      const summaryButton = document.getElementById("bookSummaryButton");
-
-      if (summaryButton) {
-        summaryButton.disabled = true;
-      }
+      setBookSummaryButtonEnabled(false);
 
       updateAddQuestionButton();
 
@@ -7471,7 +7910,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
         return item.question && item.answer;
       });
 
-      if (!isFilled) {
+      if (!isFilled && !isDemoAccount()) {
         alert("질문 3개와 답 3개를 모두 적어 주세요.");
         return;
       }
@@ -7481,7 +7920,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
         return card.dataset.feedbackPassed === "true";
       });
 
-      if (!allPassed) {
+      if (!allPassed && !isDemoAccount()) {
         alert("질문 3개를 모두 검사한 뒤 간추리기로 넘어갈 수 있어요.");
         return;
       }
@@ -7544,7 +7983,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
 
   <script src="../js/ai-feedback.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
-  <script src="../js/individual-power.js"></script>
+  <script src="../js/individual-power.js?v=power-common-5"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

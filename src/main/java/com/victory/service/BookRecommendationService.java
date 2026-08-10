@@ -169,7 +169,11 @@ public class BookRecommendationService {
         BookRecommendation recommendation =
             requireRecommendationInClass(recommendationId, viewerClassStudent.getSchoolClass().getId());
 
-        return toggleLike(findUser(studentId), recommendation);
+        User viewer = findUser(studentId);
+        if (Boolean.TRUE.equals(viewer.getDemoAccount())) {
+            return unchangedDemoLike(recommendationId);
+        }
+        return toggleLike(viewer, recommendation);
     }
 
     @Transactional
@@ -177,7 +181,17 @@ public class BookRecommendationService {
         SchoolClass teacherClass = findTeacherClass(teacherId);
         BookRecommendation recommendation = requireRecommendationInClass(recommendationId, teacherClass.getId());
 
-        return toggleLike(findUser(teacherId), recommendation);
+        User viewer = findUser(teacherId);
+        if (Boolean.TRUE.equals(viewer.getDemoAccount())) {
+            return unchangedDemoLike(recommendationId);
+        }
+        return toggleLike(viewer, recommendation);
+    }
+
+    private BookRecommendationLikeResponse unchangedDemoLike(Long recommendationId) {
+        long likeCount = contentLikeRepository.countByContentTypeAndContentId(
+            CONTENT_TYPE_BOOK_RECOMMENDATION, recommendationId);
+        return new BookRecommendationLikeResponse(recommendationId, false, likeCount);
     }
 
     /*

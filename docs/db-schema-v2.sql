@@ -22,6 +22,7 @@ CREATE TABLE users (
     name                   VARCHAR(50)  NOT NULL,
     role                   VARCHAR(20)  NOT NULL,
     has_seen_story_intro   BOOLEAN      NOT NULL DEFAULT FALSE,
+    has_seen_power_intro   BOOLEAN      NOT NULL DEFAULT FALSE,
     has_seen_ending        BOOLEAN      NOT NULL DEFAULT FALSE,
     school                 VARCHAR(100) NULL,
     created_at             DATETIME     NOT NULL,

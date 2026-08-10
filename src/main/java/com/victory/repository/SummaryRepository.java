@@ -50,6 +50,17 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
 
+    @Query("""
+        SELECT s FROM Summary s
+        WHERE s.student.id IN :studentIds
+          AND s.readingRecord IS NOT NULL
+          AND s.aiPassed = true
+          AND s.status = 'approved'
+        ORDER BY s.createdAt DESC, s.id DESC
+        """)
+    List<Summary> findAllSharedIndividualSummariesByStudentIds(
+            @Param("studentIds") List<Long> studentIds);
+
     List<Summary> findByStudent_IdAndReadingRecordIsNotNullAndAiPassedTrueAndStatusOrderByCreatedAtDesc(
             Long studentId,
             String status);

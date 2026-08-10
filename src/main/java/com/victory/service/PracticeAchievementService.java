@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -96,6 +97,10 @@ public class PracticeAchievementService {
         List<ClassStudent> roster = sortedRoster(classId);
         LocalDate today = LocalDate.now(ZONE_SEOUL);
 
+        if (isDemoTeacher(teacherId)) {
+            return buildDemoClassAchievement(classId, classReadingBook.getId(), roster);
+        }
+
         List<StudentAchievementItem> items = new ArrayList<>();
         int todayParticipatingCount = 0;
         int supportNeededCount = 0;
@@ -156,6 +161,10 @@ public class PracticeAchievementService {
                 HttpStatus.FORBIDDEN,
                 "담당 학급 학생만 조회할 수 있습니다."
             );
+        }
+
+        if (isDemoTeacher(teacherId)) {
+            return buildDemoHistory(classStudent, from, to);
         }
 
         List<PracticeAchievementSnapshot> snapshots = snapshotRepository
@@ -292,6 +301,83 @@ public class PracticeAchievementService {
         boolean participatedToday = metrics.participatedToday(today);
 
         return new StudentComputation(item, participatedToday, needsSupport);
+    }
+
+    /*
+     * IndividualReadingDashboardService의 같은 이름 상수와 동일한 이유다:
+     * 심사 학급에 남아 있는 ss02~ss08(demo_student_02~08와 이름이 겹치는
+     * 예전 계정) 때문에 로스터가 8명보다 커져서, 이름이 중복 표시되고
+     * rates 배열이 Math.min(i, ...)로 클램프되어 뒤쪽 학생들이 전부 같은
+     * 달성도(70% 근처)로 보이던 문제를 여기서도 심사 seed 8명으로
+     * 한정해서 막는다. DB 행은 건드리지 않는다.
+     */
+    private static final Set<String> DEMO_SEED_STUDENT_LOGIN_IDS = Set.of(
+        "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
+        "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08");
+
+    private PracticeAchievementResponse buildDemoClassAchievement(
+            Long classId, Long classReadingBookId, List<ClassStudent> roster) {
+        List<ClassStudent> seedRoster = roster.stream()
+            .filter(member -> DEMO_SEED_STUDENT_LOGIN_IDS.contains(member.getStudent().getLoginId()))
+            .toList();
+
+        /*
+         * 개별읽기 대시보드와 값이 완전히 겹치지 않도록 학생별로 다른
+         * 달성도를 쓴다(순서: 김초롱/송민정/박하민/이진우/김민지/서희원/김수진/이혜원).
+         * value = {pageProgress, questionParticipationRate, thoughtSharingParticipationRate,
+         * participationRate, comprehensionRate}. achievement = (participationRate + comprehensionRate) / 2.
+         */
+        double[][] rates = {
+            {95, 95, 90, 92, 90}, {90, 85, 80, 88, 82},
+            {82, 78, 72, 80, 78}, {75, 70, 65, 74, 68},
+            {78, 72, 68, 76, 70}, {58, 50, 45, 55, 49},
+            {50, 42, 35, 48, 40}, {44, 38, 30, 42, 36}
+        };
+        List<StudentAchievementItem> students = new ArrayList<>();
+        int supportCount = 0;
+        for (int i = 0; i < seedRoster.size(); i++) {
+            ClassStudent member = seedRoster.get(i);
+            double[] value = rates[Math.min(i, rates.length - 1)];
+            /*
+             * 사유가 학생마다 다르도록 구성한다(이해도/읽기 참여+질문 미제출/
+             * 생각 나누기 부족을 서로 다른 학생에게 분산).
+             */
+            List<SupportReasonItem> reasons = i == 5 ? List.of(SupportReasonItem.NO_THOUGHT_SHARING)
+                : i == 6 ? List.of(SupportReasonItem.LOW_READING_PARTICIPATION, SupportReasonItem.NO_QUESTION_SUBMISSION)
+                : i == 7 ? List.of(SupportReasonItem.LOW_COMPREHENSION) : List.of();
+            if (!reasons.isEmpty()) supportCount++;
+            double achievement = calculator.round2(value[3] * 0.5 + value[4] * 0.5);
+            students.add(new StudentAchievementItem(
+                member.getStudent().getId(), member.getStudentNumber(), member.getStudent().getName(),
+                value[0], value[0], value[0], value[0], value[1], value[2], value[3],
+                true, 5, (int) Math.round(value[4] / 20), value[4], achievement,
+                !reasons.isEmpty(), reasons));
+        }
+        int todayCount = Math.max(0, seedRoster.size() - 2);
+        return new PracticeAchievementResponse(classId, classReadingBookId, seedRoster.size(), todayCount,
+            seedRoster.isEmpty() ? 0.0 : calculator.round2(todayCount * 100.0 / seedRoster.size()), supportCount, students);
+    }
+
+    private PracticeAchievementHistoryResponse buildDemoHistory(
+            ClassStudent classStudent, LocalDate from, LocalDate to) {
+        LocalDate end = to == null ? LocalDate.now(ZONE_SEOUL) : to;
+        LocalDate start = from == null ? end.minusDays(6) : from;
+        if (start.isBefore(end.minusDays(13))) start = end.minusDays(13);
+        int studentIndex = classStudent.getStudentNumber() == null ? 0 : classStudent.getStudentNumber() - 1;
+        double base = Math.max(24, 88 - studentIndex * 7);
+        List<PracticeAchievementHistoryItem> history = new ArrayList<>();
+        int day = 0;
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            double participation = Math.min(100, base - 14 + day * 2.6);
+            double comprehension = Math.min(100, base - 8 + day * 1.8 + (day % 2 == 0 ? 2 : -1));
+            history.add(new PracticeAchievementHistoryItem(date,
+                calculator.round2(participation), calculator.round2(comprehension),
+                calculator.round2((participation + comprehension) * 0.5),
+                calculator.round2(Math.min(100, participation + 3))));
+            day++;
+        }
+        return new PracticeAchievementHistoryResponse(
+            classStudent.getStudent().getId(), classStudent.getStudent().getName(), history);
     }
 
     /*
@@ -511,6 +597,12 @@ public class PracticeAchievementService {
                 HttpStatus.NOT_FOUND,
                 "교사의 담당 학급을 찾을 수 없습니다. teacherId=" + teacherId
             ));
+    }
+
+    private boolean isDemoTeacher(Long teacherId) {
+        return userRepository.findById(teacherId)
+            .map(user -> Boolean.TRUE.equals(user.getDemoAccount()))
+            .orElse(false);
     }
 
     private void validateRequestedClass(SchoolClass teacherClass, Long classId) {

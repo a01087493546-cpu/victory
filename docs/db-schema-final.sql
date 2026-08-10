@@ -28,6 +28,7 @@ CREATE TABLE users (
     name                  VARCHAR(50)  NOT NULL,
     role                  VARCHAR(20)  NOT NULL,
     has_seen_story_intro  BOOLEAN      NOT NULL DEFAULT FALSE,
+    has_seen_power_intro  BOOLEAN      NOT NULL DEFAULT FALSE,
     created_at            DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY uk_users_login_id (login_id)

@@ -769,6 +769,7 @@
     </main>
   </div>
 
+  <script src="../js/auth.js"></script>
   <script>
     /*
       현재는 프론트 화면 확인용 임시 진행 상태입니다.
@@ -859,6 +860,19 @@ function goAfterReadingPage() {
       const afterButton = document.getElementById("afterButton");
 
       const guideText = document.getElementById("guideText");
+
+      if (isDemoAccount()) {
+        [stepBefore, stepDuring, stepAfter].forEach(function (card) {
+          card.classList.remove("locked", "done");
+          card.classList.add("active");
+        });
+        [beforeButton, duringButton, afterButton].forEach(function (button) {
+          button.disabled = false;
+          button.textContent = "체험하기";
+        });
+        guideText.textContent = "원하는 연습읽기 단계를 선택해 체험해 보세요.";
+        return;
+      }
 
       stepBefore.classList.remove("locked", "done");
       stepBefore.classList.add("active");

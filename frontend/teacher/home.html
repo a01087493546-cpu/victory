@@ -94,6 +94,48 @@
       filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.35));
     }
 
+    /*
+      심사 교사계정(tt11) 전용 안내다. "문답책" 로고 자리(.tr-brand)와
+      "로그아웃" 버튼(.tr-top-actions)을 그대로 두고, 그 사이에만 들어갈
+      새 래퍼(.tr-brand-row)로 감싸서 로고 바로 옆에 붙이되 로그아웃과는
+      절대 겹치지 않게 한다.
+    */
+    .tr-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .tr-demo-banner {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      max-width: 900px;
+      padding: 8px 18px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      box-shadow: 0 4px 10px rgba(90,55,15,.18);
+      color: #6b4b26;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    .tr-demo-banner strong {
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .tr-demo-banner[hidden] {
+      display: none !important;
+    }
+
     .tr-top-actions {
       display: flex;
       align-items: center;
@@ -392,9 +434,13 @@
     <div class="tr-stage-frame" id="teacherHomeStageFrame">
   <main class="tr-page" id="teacherHomeFixedStage">
     <header class="tr-topbar">
-      <div class="tr-brand">
-        <img src="../assets/images/logo-book.png" alt="문답책 로고">
-        <span>문답책</span>
+      <div class="tr-brand-row">
+        <div class="tr-brand">
+          <img src="../assets/images/logo-book.png" alt="문답책 로고">
+          <span>문답책</span>
+        </div>
+
+        <div class="tr-demo-banner" id="teacherHomeDemoBanner" data-demo-banner hidden>🔍 <strong>심사 체험 안내</strong> — 계정관리·온책읽기·개별읽기에 표시되는 학생 데이터는 심사를 위해 미리 구성한 가상 예시 데이터입니다. 실제 계정에서는 학생 정보와 활동 기록이 자동으로 연계됩니다.</div>
       </div>
 
       <div class="tr-top-actions">
@@ -406,8 +452,6 @@
       <div class="tr-panel-header">
         <h1 class="tr-panel-title">교사 관리 화면</h1>
         <p class="tr-panel-subtitle">
-          관리할 영역을 선택하세요.<br>
-          계정관리에서 교사 계정과 학급, 학생 계정을 먼저 등록할 수 있어요.
         </p>
       </div>
 
@@ -422,8 +466,8 @@
           <div class="tr-card-icon">📚</div>
           <h2 class="tr-menu-title">계정관리</h2>
           <p class="tr-menu-desc">
-            교사 계정, 학급 정보,<br>
-            학생 계정을 등록해요.
+            등록된 교사·학생 계정을 확인하고<br>
+            비밀번호를 잊은 계정을 관리해요.
           </p>
           <button
   class="tr-action-button"
@@ -431,7 +475,7 @@
   type="button"
   onclick="goTeacherRegister()"
 >
-  계정 관리하기
+  계정 확인 및 관리
 </button>
         </article>
 
@@ -510,17 +554,17 @@ async function loadAccountStatus() {
 
     if (!response.ok) {
       badge.textContent = "먼저 설정";
-      button.textContent = "계정 관리하기";
+      button.textContent = "계정 확인 및 관리";
       return;
     }
 
     badge.textContent = "생성 완료";
-    button.textContent = "계정 추가 등록";
+    button.textContent = "계정 확인 및 관리";
   } catch (error) {
     console.error("계정 상태 조회 오류:", error);
 
     badge.textContent = "먼저 설정";
-    button.textContent = "계정 관리하기";
+    button.textContent = "계정 확인 및 관리";
   }
 }
 
@@ -548,5 +592,13 @@ function readyMenu(menuName) {
   </script>
   <script src="../js/auth.js"></script>
   <script src="../js/fixed-stage.js"></script>
+  <script>
+    (function () {
+      var banner = document.getElementById("teacherHomeDemoBanner");
+      if (banner) {
+        banner.hidden = !(typeof isDemoAccount === "function" && isDemoAccount());
+      }
+    })();
+  </script>
 </body>
 </html>

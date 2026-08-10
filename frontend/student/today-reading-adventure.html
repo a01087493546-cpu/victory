@@ -1006,6 +1006,7 @@
   </main>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -1093,6 +1094,10 @@
   카드 활성화는 서버에서 복원한 완료 상태를 기준으로 처리한다.
     */
     async function syncCurrentBookFromServer() {
+      if (isDemoAccount()) {
+        return;
+      }
+
       const token = sessionStorage.getItem("token");
 
       if (!token) {
@@ -1160,6 +1165,9 @@ if (
     }
 
     function getCurrentStage() {
+      if (isDemoAccount()) {
+        return loadDemoState("individualAdventureProgress", {}).stage || "before";
+      }
       return sessionStorage.getItem(STORAGE_KEYS.stage) || "before";
     }
 
@@ -1168,6 +1176,10 @@ if (
     }
 
     function isStageDone(stageKey) {
+      if (isDemoAccount()) {
+        const progress = loadDemoState("individualAdventureProgress", {});
+        return progress[stageKey + "Done"] === true;
+      }
       if (stageKey === "before") return sessionStorage.getItem(STORAGE_KEYS.beforeDone) === "true";
       if (stageKey === "during") return sessionStorage.getItem(STORAGE_KEYS.duringDone) === "true";
       if (stageKey === "after") return sessionStorage.getItem(STORAGE_KEYS.afterDone) === "true";
@@ -1293,7 +1305,7 @@ if (
     }
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 기능 -->
-<script src="../js/individual-power.js?v=power-common-2"></script>
+<script src="../js/individual-power.js?v=power-common-5"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

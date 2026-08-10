@@ -121,6 +121,45 @@
       margin-bottom: 24px;
     }
 
+    .screen-title-row > div:first-child,
+    .screen-title-row .progress-pill {
+      flex: 0 0 auto;
+    }
+
+    /* 심사 체험 계정에서만 보이는 짧은 안내 배지. 연습읽기 질문 작성
+       화면들이 공통으로 사용하는 디자인(베이지/브라운/골드)이다. */
+    .mq-demo-banner {
+      display: inline-flex;
+      align-items: center;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      gap: 8px;
+      min-height: 40px;
+      height: auto;
+      padding: 6px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(238, 216, 176, 0.92));
+      box-shadow: 0 6px 14px rgba(90, 55, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      color: #6b4b26;
+      font-size: 17px;
+      line-height: 1.4;
+      font-weight: 800;
+      white-space: normal;
+      word-break: keep-all;
+      overflow: visible;
+      align-self: center;
+    }
+
+    .mq-demo-banner strong {
+      color: #7a4a12;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .mq-demo-banner[hidden] { display: none !important; }
+
     .title-badge {
       display: inline-block;
       margin-bottom: 14px;
@@ -3882,8 +3921,10 @@ body {
   height: 158px !important;
 }
 
+/* 기본: 왼쪽 카드의 연습 버튼 */
 .cell-state {
   left: 36px !important;
+  right: auto !important;
   bottom: 24px !important;
 
   width: 290px !important;
@@ -3892,6 +3933,13 @@ body {
   padding: 14px 20px !important;
 
   font-size: 22px !important;
+}
+
+/* 오른쪽 카드의 버튼은 오른쪽으로 이동하여 질문 꾸러미와 겹치지 않게 함 */
+.question-cell:nth-child(2) .cell-state,
+.question-cell:nth-child(4) .cell-state {
+  left: auto !important;
+  right: 36px !important;
 }
 
 .question-core {
@@ -4238,6 +4286,33 @@ body {
   line-height: 1.2 !important;
   letter-spacing: -1.5px;
 }
+.top-left-area {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  flex: 1;
+}
+
+.top-review-demo-banner {
+  width: auto !important;
+  max-width: 760px !important;
+  flex: 0 1 auto !important;
+  padding: 7px 16px !important;
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.top-review-demo-banner strong {
+  font-size: 15px !important;
+}
+
+.top-review-demo-banner[hidden] {
+  display: none !important;
+}
 </style>
 </head>
 
@@ -4245,24 +4320,32 @@ body {
   <main class="page">
     <div class="page-inner">
       <header class="top-bar">
-        <div class="logo-area">
-          <img src="../assets/images/logo-book.png" alt="문답책 로고" />
-          <span>문답책</span>
-        </div>
+  <div class="top-left-area">
+    <div class="logo-area">
+      <img src="../assets/images/logo-book.png" alt="문답책 로고" />
+      <span>문답책</span>
+    </div>
 
-        <div class="top-nav-area">
-          <button class="nav-button home-button" type="button" onclick="goIndividualHome()">
-            <span class="nav-button-icon">←</span>
-            <span>홈으로</span>
-          </button>
-          <button class="nav-button class-reading-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
-        </div>
-      </header>
+    <div class="mq-demo-banner top-review-demo-banner" id="topReviewDemoBanner" hidden>
+      🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.
+    </div>
+  </div>
+
+  <div class="top-nav-area">
+    <button class="nav-button home-button" type="button" onclick="goIndividualHome()">
+      <span class="nav-button-icon">←</span>
+      <span>홈으로</span>
+    </button>
+    <button class="nav-button class-reading-button" type="button" onclick="goClassReading()">우리반 책읽기</button>
+  </div>
+</header>
 
       <section class="hero-card" id="app"></section>
     </div>
   </main>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
   <script src="../js/ai-feedback.js"></script>
 
   <script>
@@ -4285,6 +4368,15 @@ body {
 
     let selectedBasicChoice = null;
     let currentBasicIndex = 0;
+
+    /*
+      기본 연습 선택지 순서를 문제(유형+번호)당 한 번만 섞어서 기억해 둔다.
+      renderBasicPracticeScreen()은 선택지를 클릭할 때마다 다시 호출되는데,
+      매번 새로 섞으면 고른 선택지의 인덱스가 화면이 다시 그려질 때
+      엉뚱한 선택지를 가리키게 되고 버튼 순서도 눈에 보이게 흔들린다.
+      그래서 같은 문제를 보는 동안은 항상 같은 순서를 쓰도록 캐시한다.
+    */
+    const basicChoicesShuffleCache = {};
 
     let currentDeepIndex = 0;
     let deepInputValue = "";
@@ -4710,6 +4802,7 @@ async function loadProgress() {
     }
 
     function isTypeOpen(typeId) {
+      if (isDemoAccount()) return true;
       if (typeId === "direct") return true;
       if (typeId === "infer") return progress.direct;
       if (typeId === "opinion") return progress.infer;
@@ -4718,7 +4811,8 @@ async function loadProgress() {
     }
 
     function canStartReview() {
-      return progress.direct && progress.infer && progress.opinion && progress.connect;
+      return isDemoAccount()
+        || (progress.direct && progress.infer && progress.opinion && progress.connect);
     }
 
     function goIndividualHome() {
@@ -4805,7 +4899,26 @@ async function loadProgress() {
       =========================================================
     */
 
+    /*
+      심사 체험 계정에서만 보이는 안내 배지. 질문·답을 직접 작성하고
+      루미 피드백을 받는 심화 연습과 총복습 화면에서만 호출한다.
+    */
+    function demoBannerHtml() {
+      return '<div class="mq-demo-banner"' + (isDemoAccount() ? "" : " hidden") + '>🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.</div>';
+    }
+
+    function hideTopReviewDemoBanner() {
+      const topReviewDemoBanner = document.getElementById("topReviewDemoBanner");
+      if (topReviewDemoBanner) topReviewDemoBanner.hidden = true;
+    }
+
+    function showTopReviewDemoBannerForReview() {
+      const topReviewDemoBanner = document.getElementById("topReviewDemoBanner");
+      if (topReviewDemoBanner) topReviewDemoBanner.hidden = !isDemoAccount();
+    }
+
     function renderSelectScreen() {
+  hideTopReviewDemoBanner();
   const app = document.getElementById("app");
   const doneCount =
     (progress.direct ? 1 : 0) +
@@ -4909,7 +5022,8 @@ async function loadProgress() {
     }
 
     function renderMethodScreen() {
-  const app = document.getElementById("app");
+      hideTopReviewDemoBanner();
+      const app = document.getElementById("app");
   const item = getSelectedQuestionType();
   const currentExampleText = item.exampleTexts[methodExampleIndex];
   const currentExampleQuestion = item.exampleQuestions[methodExampleIndex];
@@ -4990,6 +5104,34 @@ async function loadProgress() {
   return questions.slice(0, 1);
 }
 
+/*
+  Fisher-Yates 셔플. 문제·정답 내용은 전혀 바꾸지 않고 배열 순서만 섞는다.
+*/
+function shuffleArray(items) {
+  const shuffled = items.slice();
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = shuffled[i];
+    shuffled[i] = shuffled[j];
+    shuffled[j] = temp;
+  }
+
+  return shuffled;
+}
+
+/*
+  이 문제(유형+번호)를 이번에 처음 보여줄 때만 선택지를 섞고, 그 뒤로는
+  같은 순서를 그대로 재사용한다(캐시 키: "유형-문제번호").
+*/
+function getShuffledBasicChoices(question, cacheKey) {
+  if (!basicChoicesShuffleCache[cacheKey]) {
+    basicChoicesShuffleCache[cacheKey] = shuffleArray(question.choices);
+  }
+
+  return basicChoicesShuffleCache[cacheKey];
+}
+
     function selectBasicChoice(choiceIndex) {
       selectedBasicChoice = choiceIndex;
       renderBasicPracticeScreen();
@@ -5009,11 +5151,14 @@ async function loadProgress() {
     }
 
     function renderBasicPracticeScreen() {
+      hideTopReviewDemoBanner();
       const app = document.getElementById("app");
       const item = getSelectedQuestionType();
       const questions = getCurrentBasicQuestions();
       const question = questions[currentBasicIndex];
-      const selectedChoice = selectedBasicChoice !== null ? question.choices[selectedBasicChoice] : null;
+      const shuffledChoices = getShuffledBasicChoices(
+        question, selectedQuestionType + "-" + currentBasicIndex);
+      const selectedChoice = selectedBasicChoice !== null ? shuffledChoices[selectedBasicChoice] : null;
       const isCorrect = selectedChoice && selectedChoice.id === "correct";
 
       app.innerHTML =
@@ -5046,7 +5191,7 @@ async function loadProgress() {
             '<article class="dark-card">' +
               '<div class="choice-guide-title">' + question.guideText + '</div>' +
               '<div class="choice-list">' +
-                question.choices.map(function(choice, index) {
+                shuffledChoices.map(function(choice, index) {
                   return (
                     '<button class="choice-button ' + (selectedBasicChoice === index ? "selected" : "") + '" type="button" onclick="selectBasicChoice(' + index + ')">' +
                       choice.text +
@@ -5069,7 +5214,7 @@ async function loadProgress() {
 
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goMethodScreen()">← 방법 알기</button>' +
-                '<button class="main-button" type="button" ' + (isCorrect ? "" : "disabled") + ' onclick="nextBasicQuestion()">' +
+                '<button class="main-button" type="button" ' + (isCorrect || isDemoAccount() ? "" : "disabled") + ' onclick="nextBasicQuestion()">' +
                   (currentBasicIndex < questions.length - 1 ? "다음 문제 →" : "심화 연습으로 →") +
                 '</button>' +
               '</div>' +
@@ -5122,7 +5267,21 @@ async function loadProgress() {
 
       requestDeepAiFeedback(value);
     }
+/*
+  심사 체험 계정은 공용 DB 대신 "현재 브라우저" sessionStorage에만
+  심화 연습 질문/총복습 질문·답을 저장한다. 같은 ss01 로그인을 쓰는 다른
+  심사위원 브라우저와 서로 섞이지 않게 하기 위함이다.
+*/
+const DEMO_DEEP_PRACTICE_STORAGE_KEY = "duringPractice";
+const DEMO_REVIEW_STORAGE_KEY = "duringReview";
+
 async function saveDuringPracticeQuestion(question) {
+  if (isDemoAccount()) {
+    savedDuringPracticeQuestions[selectedQuestionType] = question;
+    saveDemoState(DEMO_DEEP_PRACTICE_STORAGE_KEY, savedDuringPracticeQuestions);
+    return true;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId || !classReadingBookId) {
@@ -5305,7 +5464,7 @@ async function saveDuringPracticeQuestion(question) {
   const previousValue = progress[selectedQuestionType];
   progress[selectedQuestionType] = true;
 
-  const saved = await saveProgress();
+  const saved = isDemoAccount() ? true : await saveProgress();
 
   if (!saved) {
     /* 저장에 실패했으면 DB에 반영되지 않은 완료 상태를 화면에 남기지 않는다. */
@@ -5317,6 +5476,7 @@ async function saveDuringPracticeQuestion(question) {
 }
 
     function renderDeepPracticeScreen() {
+      hideTopReviewDemoBanner();
       const app = document.getElementById("app");
       const item = getSelectedQuestionType();
       const questions = getCurrentDeepQuestions();
@@ -5325,12 +5485,11 @@ async function saveDuringPracticeQuestion(question) {
       app.innerHTML =
         '<section class="screen">' +
           '<div class="screen-title-row">' +
-            '<div>' +
-              '<span class="title-badge">심화 연습 ' + (currentDeepIndex + 1) + ' / ' + questions.length + '</span>' +
-              '<h1 class="main-title">직접 질문을 만들어 봐요</h1>' +
-            '</div>' +
-            '<div class="progress-pill">' + item.number + ' 질문</div>' +
-          '</div>' +
+  '<div>' +
+    '<span class="title-badge">총 복습</span>' +
+    '<h1 class="main-title review-main-title">한 편의 글에서 4가지 질문을 만들어 봐요</h1>' +
+  '</div>' +
+'</div>' +
 
           '<div class="two-column-layout">' +
             '<article class="dark-card">' +
@@ -5376,7 +5535,7 @@ async function saveDuringPracticeQuestion(question) {
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goBasicPracticeScreen()">← 기본 연습</button>' +
                 '<button class="main-button" type="button" onclick="checkDeepAnswer()">검사하기</button>' +
-                '<button class="main-button" type="button" ' + (deepChecked && deepResult && deepResult.ok ? "" : "disabled") + ' onclick="nextDeepQuestion()">' +
+                '<button class="main-button" type="button" ' + (isDemoAccount() || deepChecked && deepResult && deepResult.ok ? "" : "disabled") + ' onclick="nextDeepQuestion()">' +
                   (currentDeepIndex < questions.length - 1 ? "다음 문제 →" : "연습 완료 →") +
                 '</button>' +
               '</div>' +
@@ -5400,6 +5559,7 @@ async function saveDuringPracticeQuestion(question) {
     */
 
     function renderCompleteScreen() {
+      hideTopReviewDemoBanner();
       const app = document.getElementById("app");
       const item = getSelectedQuestionType();
 
@@ -5509,6 +5669,22 @@ async function saveDuringPracticeQuestion(question) {
       renderReviewScreen();
     }
 async function saveDuringReviewResponse(questionType, question, answer) {
+  if (isDemoAccount()) {
+    const items = loadDemoState(DEMO_REVIEW_STORAGE_KEY, []);
+    const filtered = items.filter(function(item) {
+      return item.questionType !== questionType;
+    });
+
+    filtered.push({
+      questionType: questionType,
+      question: question,
+      answer: answer
+    });
+
+    saveDemoState(DEMO_REVIEW_STORAGE_KEY, filtered);
+    return true;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId || !classReadingBookId) {
@@ -5663,7 +5839,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
     reviewCompletedQuestions.opinion &&
     reviewCompletedQuestions.connect;
 
-  if (!complete) {
+  if (!complete && !isDemoAccount()) {
     return;
   }
 
@@ -5671,7 +5847,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
   progress.review = true;
 
   /* 백엔드 저장이 끝날 때까지 기다립니다. */
-  const saved = await saveProgress();
+  const saved = isDemoAccount() ? true : await saveProgress();
 
   if (!saved) {
     return;
@@ -5682,6 +5858,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
 }
 
     function renderReviewScreen() {
+      showTopReviewDemoBannerForReview();
       const app = document.getElementById("app");
 
       const selectedPart =
@@ -5753,7 +5930,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
                 '<button class="main-button" type="button" onclick="checkReviewQuestion()">검사하기</button>' +
-                '<button class="main-button" type="button" ' + (allReviewDone ? "" : "disabled") + ' onclick="finishReview()">총 복습 완료 →</button>' +
+                '<button class="main-button" type="button" ' + (allReviewDone || isDemoAccount() ? "" : "disabled") + ' onclick="finishReview()">총 복습 완료 →</button>' +
               '</div>' +
             '</article>' +
           '</div>' +
@@ -5788,6 +5965,20 @@ const savedDuringPracticeQuestions = {
 };
 
 async function loadDuringPracticeQuestions() {
+  if (isDemoAccount()) {
+    const saved = loadDemoState(DEMO_DEEP_PRACTICE_STORAGE_KEY, null);
+
+    if (saved) {
+      Object.keys(savedDuringPracticeQuestions).forEach(function(type) {
+        if (Object.prototype.hasOwnProperty.call(saved, type)) {
+          savedDuringPracticeQuestions[type] = saved[type] || "";
+        }
+      });
+    }
+
+    return true;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId) {
@@ -5836,6 +6027,28 @@ async function loadDuringPracticeQuestions() {
   }
 }
 async function loadDuringReviewResponses() {
+  if (isDemoAccount()) {
+    const items = loadDemoState(DEMO_REVIEW_STORAGE_KEY, []);
+
+    items.forEach(function(item) {
+      if (
+        item.questionType &&
+        Object.prototype.hasOwnProperty.call(
+          reviewCompletedQuestions,
+          item.questionType
+        )
+      ) {
+        reviewCompletedQuestions[item.questionType] = {
+          partIndex: null,
+          question: item.question || "",
+          answer: item.answer || ""
+        };
+      }
+    });
+
+    return true;
+  }
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId) {

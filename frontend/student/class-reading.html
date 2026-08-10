@@ -156,6 +156,25 @@
         0 0 20px rgba(237, 183, 88, 0.22);
     }
 
+    .mq-demo-banner {
+      display: inline-flex;
+      align-items: center;
+      max-width: 900px;
+      min-height: 38px;
+      padding: 6px 16px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      color: #6b4b26;
+      box-shadow: 0 4px 10px rgba(90,55,15,.14);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    .mq-demo-banner strong { font-size: 15px; font-weight: 900; }
+
     .top-actions {
       display: flex;
       justify-content: flex-end;
@@ -703,7 +722,9 @@
           <span>문답책</span>
         </div>
 
-        <h1 class="page-title">우리반 책읽기</h1>
+        <div>
+          <h1 class="page-title">우리반 책읽기</h1>
+        </div>
 
         <div class="top-actions">
           <button class="top-pill" type="button" onclick="goStepSelect()">단계 선택</button>
@@ -836,6 +857,7 @@
     </div>
   </div>
 
+  <script src="../js/auth.js"></script>
   <script>
     /*
       =========================================================
@@ -844,6 +866,7 @@
     */
 
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
+    showDemoBannerIfDemoAccount("demoExperienceBanner");
     let classReadDone = false;
     let completeClassReadingSaving = false;
 
@@ -1068,7 +1091,7 @@
           100,
           Math.max(
             0,
-            Math.round(reviewScore * 0.2 + pageScore * 0.8)
+            Math.round(isDemoAccount() ? pageScore : reviewScore * 0.2 + pageScore * 0.8)
           )
         );
 

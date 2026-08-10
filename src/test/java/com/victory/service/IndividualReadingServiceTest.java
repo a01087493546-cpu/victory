@@ -2306,10 +2306,67 @@ class IndividualReadingServiceTest {
             .grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
     }
 
+    /*
+     * "간추리기 공유" 바로가기(?view=summaryShare)는 읽기 중을 건너뛰고도
+     * 읽기 후 화면에 직접 진입할 수 있는 경로였다. 프론트 버튼을
+     * 숨기더라도 API를 직접 호출하면 우회될 수 있으므로, 서버가
+     * beforeDone/duringDone을 다시 확인해 거부해야 한다(서버 우회 차단
+     * 필수 테스트).
+     */
+    @Test
+    void completeAfterReading_failsWhenDuringNotDone() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
+        record.setBeforeDone(true);
+        record.setDuringDone(false);
+        Response r1 = buildAfterResponseEntity(1L, student, record, 1, "q1?", "a1", true);
+        Response r2 = buildAfterResponseEntity(2L, student, record, 2, "q2?", "a2", true);
+        Response r3 = buildAfterResponseEntity(3L, student, record, 3, "q3?", "a3", true);
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        mockAfterResponses(10L, List.of(r1, r2, r3));
+        when(summaryRepository.findByStudent_IdAndReadingRecord_Id(STUDENT_ID, 10L))
+            .thenReturn(Optional.of(buildSummary(500L, student, record, "story", "간추린 내용", true)));
+
+        assertThatThrownBy(() -> service.completeAfterReading(STUDENT_ID, 10L))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400")
+            .hasMessageContaining("읽기 중 활동을 먼저 완료해야 해요");
+
+        verify(readingRecordRepository, never()).save(any(ReadingRecord.class));
+        verify(afterReadingRewardService, never())
+            .grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
+    }
+
+    /* 읽기 전조차 안 끝난 상태에서도 동일하게 거부되는지 확인(위 테스트와 별도 조건 조합) */
+    @Test
+    void completeAfterReading_failsWhenBeforeNotDone() {
+        ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
+        record.setBeforeDone(false);
+        record.setDuringDone(true);
+        Response r1 = buildAfterResponseEntity(1L, student, record, 1, "q1?", "a1", true);
+        Response r2 = buildAfterResponseEntity(2L, student, record, 2, "q2?", "a2", true);
+        Response r3 = buildAfterResponseEntity(3L, student, record, 3, "q3?", "a3", true);
+
+        when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        mockAfterResponses(10L, List.of(r1, r2, r3));
+        when(summaryRepository.findByStudent_IdAndReadingRecord_Id(STUDENT_ID, 10L))
+            .thenReturn(Optional.of(buildSummary(500L, student, record, "story", "간추린 내용", true)));
+
+        assertThatThrownBy(() -> service.completeAfterReading(STUDENT_ID, 10L))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("400")
+            .hasMessageContaining("읽기 전 활동을 먼저 완료해야 해요");
+
+        verify(afterReadingRewardService, never())
+            .grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
+    }
+
     /* 검증: 조건을 모두 만족하면 afterDone=true가 되고 보상 서비스가 정확히 1번 호출된다(체력+3/마법력+1/지혜+1은 보상 서비스 단위테스트에서 검증) */
     @Test
     void completeAfterReading_setsAfterDoneTrueAndGrantsRewardWhenAllConditionsMet() {
         ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
+        record.setBeforeDone(true);
+        record.setDuringDone(true);
         Response r1 = buildAfterResponseEntity(1L, student, record, 1, "q1?", "a1", true);
         Response r2 = buildAfterResponseEntity(2L, student, record, 2, "q2?", "a2", true);
         Response r3 = buildAfterResponseEntity(3L, student, record, 3, "q3?", "a3", true);

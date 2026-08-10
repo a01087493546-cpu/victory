@@ -87,6 +87,30 @@
       text-shadow: 0 2px 0 rgba(255,255,255,.72), 0 8px 18px rgba(122,72,25,.12);
     }
 
+    .mq-demo-banner {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 1 900px;
+      min-width: 0;
+      max-width: 900px;
+      min-height: 38px;
+      padding: 6px 16px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      color: #6b4b26;
+      box-shadow: 0 4px 10px rgba(90,55,15,.14);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 700;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    .mq-demo-banner strong { font-size: 15px; font-weight: 900; }
+
+    .mq-demo-banner[hidden] { display: none !important; }
+
     .top-actions {
       display: flex;
       justify-content: flex-end;
@@ -613,6 +637,15 @@
     .text-area:focus { border-color:rgba(203,139,44,.72); box-shadow:0 0 0 3px rgba(216,162,68,.13); }
 
     .button-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .demo-action-guide {
+      margin-top: 8px;
+      color: #79552c;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 800;
+      text-align: right;
+      word-break: keep-all;
+    }
 
     .plain-button,
     .main-button {
@@ -737,6 +770,41 @@
     .text-area {
       width: 100%;
     }
+    /* 심사계정 체험 안내 카드 */
+.mq-demo-guide {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+
+  border: 1px solid rgba(180, 130, 60, 0.42);
+  border-radius: 14px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 247, 225, 0.96),
+    rgba(238, 216, 176, 0.92)
+  );
+
+  color: #6b4b26;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  word-break: keep-all;
+
+  box-shadow:
+    0 4px 10px rgba(90, 55, 15, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.mq-demo-guide strong {
+  color: #7a4a12;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.mq-demo-guide[hidden] {
+  display: none !important;
+}
   </style>
 </head>
 <body>
@@ -755,7 +823,8 @@
 
       <div class="date-nav-row">
         <div class="date-nav-info">
-          <span class="date-nav-title">책수다방 활동</span>
+          <div class="date-nav-title">책수다방 활동</div>
+          <div class="mq-demo-banner" id="demoExperienceBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 학생 활동 모습을 확인할 수 있도록 가상 학생들의 예시 데이터를 미리 구성해 두었습니다.</div>
           <div class="moderation-legend">
             <span class="moderation-badge status-pending">확인 중이에요</span>
             <span class="moderation-badge status-approved">게시됐어요</span>
@@ -832,6 +901,8 @@
     </article>
   </div>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
   <script>
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     const studentName = sessionStorage.getItem("name") || "나";
@@ -866,6 +937,7 @@ let classReadingBookId = null;
     initPage();
 
     async function initPage() {
+  showDemoBannerIfDemoAccount("demoExperienceBanner");
   const bookLoaded = await loadClassReadingBookId();
 
   if (!bookLoaded) {
@@ -873,7 +945,9 @@ let classReadingBookId = null;
   }
 
   allQuestions = await loadBookChatQuestions();
-  await hydrateBookChatActivity();
+  if (!isDemoAccount()) await hydrateBookChatActivity();
+  restoreDemoBookChatActivity();
+  allQuestions.forEach(question => ensureDemoActivityExamples(question.id));
 
   bindEvents();
   updateBookChatDateLabel();
@@ -981,7 +1055,7 @@ async function loadBookChatQuestions() {
 
     const items = await response.json();
 
-    return items.map(function(item) {
+    const serverQuestions = items.map(function(item) {
       const isMine =
         String(item.studentId) === String(studentId);
       const moderationStatus = String(
@@ -992,7 +1066,9 @@ async function loadBookChatQuestions() {
         id: String(item.id),
         name: item.studentName || "학생",
         studentId: item.studentId,
-        isMine: isMine,
+        // 심사계정의 서버 응답은 공용 demo seed다. ss01과 studentId가 같아도
+        // 현재 브라우저에서 직접 쓴 질문으로 취급하지 않는다.
+        isMine: isDemoAccount() ? false : isMine,
         myIndex: null,
         text: item.question || "",
         answer: item.answer || "",
@@ -1001,9 +1077,32 @@ async function loadBookChatQuestions() {
         dateKey: item.createdAt ? String(item.createdAt).slice(0, 10) : getTodayDateKey(),
         createdAt: formatBookChatDate(item.createdAt),
         moderationStatus: moderationStatus,
-        rejectReason: item.rejectionReason || ""
+        rejectReason: item.rejectionReason || "",
+        demoSeed: isDemoAccount()
       };
     });
+
+    if (!isDemoAccount()) return serverQuestions;
+
+    const demoQuestions = loadDemoApprovalRequests("practice").map(function(request) {
+      return {
+        id: String(request.requestId),
+        name: request.studentName || "김초롱",
+        studentId: request.studentId || studentId,
+        isMine: true,
+        myIndex: null,
+        text: request.question || "",
+        answer: request.answer || "",
+        type: normalizeType(request.questionType),
+        dateKey: request.submittedAt ? String(request.submittedAt).slice(0, 10) : getTodayDateKey(),
+        createdAt: formatBookChatDate(request.submittedAt),
+        moderationStatus: request.status || "pending",
+        rejectReason: request.rejectedReason || "",
+        demoApproval: true
+      };
+    });
+
+    return serverQuestions.concat(demoQuestions);
   } catch (error) {
     console.error(
       "책수다방 질문을 불러오지 못했습니다.",
@@ -1042,6 +1141,18 @@ function formatBookChatDate(value) {
   return `${month}.${day} ${hour}:${minute}`;
 }
 
+function getBookChatDisplayDate(value) {
+  const original = String(value || "");
+  if (!isDemoAccount() || !original) return original || "오늘";
+
+  const selectedParts = String(selectedBookChatDate).split("-");
+  const timeMatch = original.match(/\b\d{2}:\d{2}\b/);
+
+  if (selectedParts.length !== 3 || !timeMatch) return original;
+
+  return `${selectedParts[1]}.${selectedParts[2]} ${timeMatch[0]}`;
+}
+
 /*
   책수다방 날짜 이동. 개별읽기 책수다방과 같은 방식(YYYY-MM-DD 키 비교)을
   그대로 재사용한다 - 새로고침하면 항상 오늘로 돌아간다.
@@ -1059,7 +1170,7 @@ function updateBookChatDateLabel() {
   const label = document.getElementById("bookChatDateLabel");
   const nextButton = document.getElementById("bookChatNextDayButton");
   if (label) label.textContent = formatBookChatDateLabel(selectedBookChatDate);
-  if (nextButton) nextButton.disabled = selectedBookChatDate >= getTodayDateKey();
+  if (nextButton) nextButton.disabled = !isDemoAccount() && selectedBookChatDate >= getTodayDateKey();
 }
 
 function moveBookChatDate(direction) {
@@ -1069,7 +1180,7 @@ function moveBookChatDate(direction) {
   const nextDateKey = currentDate.toISOString().slice(0, 10);
   const todayKey = getTodayDateKey();
 
-  if (nextDateKey > todayKey) {
+  if (!isDemoAccount() && nextDateKey > todayKey) {
     alert("아직 오지 않은 날짜예요.");
     return;
   }
@@ -1089,6 +1200,13 @@ function goTodayBookChatDate() {
       if (status === "approved") return { label:"게시됐어요", className:"status-approved" };
       if (status === "rejected") return { label:"다시 써볼까요?", className:"status-rejected" };
       return { label:"확인 중이에요", className:"status-pending" };
+    }
+
+    function getQuestionModerationBadgeInfo(question) {
+      if (question && question.demoApproval && question.moderationStatus === "pending") {
+        return { label:"승인 대기", className:"status-pending" };
+      }
+      return getModerationBadgeInfo(question && question.moderationStatus);
     }
 
     async function deleteMyQuestion(responseId) {
@@ -1116,6 +1234,19 @@ function goTodayBookChatDate() {
   );
 
   if (!ok) {
+    return;
+  }
+
+  if (isDemoAccount() && question.demoApproval) {
+    const remaining = loadDemoApprovalRequests("practice").filter(function(item) {
+      return String(item.requestId) !== String(responseId);
+    });
+    saveDemoState("practiceBookChatApprovals", remaining);
+    allQuestions = allQuestions.filter(function(item) {
+      return String(item.id) !== String(responseId);
+    });
+    renderAll();
+    alert("질문을 삭제했어요.");
     return;
   }
 
@@ -1157,7 +1288,9 @@ function goTodayBookChatDate() {
     }
 
     function getFilteredQuestions() {
-      let questions = allQuestions.filter(q => q.dateKey === selectedBookChatDate);
+      let questions = isDemoAccount()
+        ? allQuestions.slice()
+        : allQuestions.filter(q => q.dateKey === selectedBookChatDate);
       questions = currentType === "quiz"
         ? questions.filter(q => q.type === "direct")
         : questions.filter(q => q.type !== "direct");
@@ -1194,7 +1327,7 @@ function goTodayBookChatDate() {
           : `openCommentsModal('${escapeAttribute(question.id)}')`;
 
         const badge = question.isMine && question.moderationStatus
-          ? getModerationBadgeInfo(question.moderationStatus)
+          ? getQuestionModerationBadgeInfo(question)
           : null;
         const badgeClick = question.moderationStatus === "rejected"
           ? `onclick="openRejectReasonModal('${escapeAttribute(question.id)}'); event.stopPropagation();"`
@@ -1210,7 +1343,7 @@ function goTodayBookChatDate() {
               <button class="talk-badge" type="button" onclick="${countClick}; event.stopPropagation();">${countLabel}</button>
               <div class="card-actions">
                 <button class="thought-write-button" type="button" onclick="${actionClick}; event.stopPropagation();">${actionLabel}</button>
-                <span class="time-text">${escapeHtml(question.createdAt)}</span>
+                <span class="time-text">${escapeHtml(getBookChatDisplayDate(question.createdAt))}</span>
               </div>
             </div>
             <button class="question-main-click" type="button" onclick="${countClick}">
@@ -1248,35 +1381,84 @@ function goTodayBookChatDate() {
 
       const isQuiz = question.type === "direct";
 
-      await loadQuestionActivity(questionId);
+      if (!isDemoAccount()) await loadQuestionActivity(questionId);
+      ensureDemoActivityExamples(questionId);
 
       const saved = isQuiz ? getSavedQuizAnswer(questionId) : getSavedThought(questionId);
 
       thoughtModal.querySelector(".modal-title").textContent = isQuiz ? "책 퀴즈 풀기" : "내 생각 쓰기";
 
       thoughtModalBody.innerHTML = isQuiz ? `
-        ${renderSelectedQuestion(question)}
-        <div class="form-grid">
-          <div class="field">
-            <label class="field-label" for="quizAnswer">내 답:</label>
-            <textarea class="text-area" id="quizAnswer" maxlength="300" placeholder="질문에 대한 내 답을 써 보세요."></textarea>
-          </div>
-          <div class="button-row">
-            <button class="plain-button" type="button" onclick="clearQuizForm()">지우기</button>
-            <button class="main-button" type="button" onclick="saveQuizAnswer('${escapeAttribute(questionId)}')">확인</button>
-          </div>
-        </div>
-      ` : `
-        ${renderSelectedQuestion(question)}
-        <div class="form-grid">
-          <div class="field"><label class="field-label" for="thoughtMain">내 생각은:</label><textarea class="text-area" id="thoughtMain" maxlength="300"></textarea></div>
-          <div class="field"><label class="field-label" for="thoughtReason">그렇게 생각한 까닭은:</label><textarea class="text-area" id="thoughtReason" maxlength="300"></textarea></div>
-          <div class="button-row">
-            <button class="plain-button" type="button" onclick="clearThoughtForm()">지우기</button>
-            <button class="main-button" type="button" onclick="saveThought('${escapeAttribute(questionId)}')">등록하기</button>
-          </div>
-        </div>
-      `;
+  ${renderSelectedQuestion(question)}
+
+  <div class="form-grid">
+    <div class="field">
+      <label class="field-label" for="quizAnswer">내 답:</label>
+      <textarea
+        class="text-area"
+        id="quizAnswer"
+        maxlength="300"
+        placeholder="질문에 대한 내 답을 써 보세요."
+      ></textarea>
+    </div>
+
+    ${isDemoAccount() ? `
+      <div class="mq-demo-guide">
+        🔍 <strong>심사 체험 안내</strong> — 심사계정에서는 답 작성 여부와 관계없이
+        ‘확인’ 버튼을 눌러 친구들의 답 예시를 확인할 수 있습니다.
+      </div>
+    ` : ""}
+
+    <div class="button-row">
+      <button class="plain-button" type="button" onclick="clearQuizForm()">
+        지우기
+      </button>
+
+      <button
+        class="main-button"
+        type="button"
+        onclick="saveQuizAnswer('${escapeAttribute(questionId)}')"
+      >
+        확인
+      </button>
+    </div>
+  </div>
+` : `
+  ${renderSelectedQuestion(question)}
+
+  <div class="form-grid">
+    <div class="field">
+      <label class="field-label" for="thoughtMain">내 생각은:</label>
+      <textarea class="text-area" id="thoughtMain" maxlength="300"></textarea>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="thoughtReason">그렇게 생각한 까닭은:</label>
+      <textarea class="text-area" id="thoughtReason" maxlength="300"></textarea>
+    </div>
+
+    ${isDemoAccount() ? `
+      <div class="mq-demo-guide">
+        🔍 <strong>심사 체험 안내</strong> — 심사계정에서는 글 작성 여부와 관계없이
+        ‘등록하기’ 버튼을 눌러 학생들의 활동 예시를 확인할 수 있습니다.
+      </div>
+    ` : ""}
+
+    <div class="button-row">
+      <button class="plain-button" type="button" onclick="clearThoughtForm()">
+        지우기
+      </button>
+
+      <button
+        class="main-button"
+        type="button"
+        onclick="saveThought('${escapeAttribute(questionId)}')"
+      >
+        등록하기
+      </button>
+    </div>
+  </div>
+`;
 
       if (saved) {
         if (isQuiz) {
@@ -1301,9 +1483,10 @@ function goTodayBookChatDate() {
       const question = allQuestions.find(q => q.id === questionId);
       if (!question) return;
 
-      await loadQuestionActivity(questionId);
+      if (!isDemoAccount()) await loadQuestionActivity(questionId);
+      ensureDemoActivityExamples(questionId);
 
-      if (question.type === "direct" && !getSavedQuizAnswer(questionId)) {
+      if (question.type === "direct" && !isDemoAccount() && !getSavedQuizAnswer(questionId)) {
         alert("먼저 퀴즈 답을 쓰고 확인해 주세요.");
         openThoughtModal(questionId);
         return;
@@ -1364,7 +1547,7 @@ function goTodayBookChatDate() {
                 <div class="comment-head">
                   <span class="comment-name">${escapeHtml(answer.name)}</span>
                   ${answer.isMine ? '<span class="talk-badge">내 답</span>' : '<span class="type-badge">친구 답</span>'}
-                  <span class="comment-time">${escapeHtml(answer.savedAt || "오늘")}</span>
+                  <span class="comment-time">${escapeHtml(getBookChatDisplayDate(answer.savedAt || "오늘"))}</span>
                 </div>
                 <div class="thought-lines">
                   <p><strong>답</strong> ${escapeHtml(answer.answer)}</p>
@@ -1390,7 +1573,7 @@ function goTodayBookChatDate() {
           <div class="selected-meta">
             <span class="selected-name">${escapeHtml(question.isMine ? "나의 질문" : question.name + "의 질문")}</span>
             <span class="type-badge">${type.icon} ${escapeHtml(type.label)}</span>
-            <span class="time-text">${escapeHtml(question.createdAt)}</span>
+            <span class="time-text">${escapeHtml(getBookChatDisplayDate(question.createdAt))}</span>
           </div>
           <div class="selected-question">${escapeHtml(question.text)}</div>
           ${question.type !== "direct" && question.answer ? `<div class="selected-answer"><strong>${question.isMine ? "내가 처음 쓴 생각" : "친구가 처음 쓴 생각"}</strong><br>${escapeHtml(question.answer)}</div>` : ""}
@@ -1405,7 +1588,7 @@ function goTodayBookChatDate() {
           <div class="comment-head">
             <span class="comment-name">${escapeHtml(comment.name)}</span>
             ${comment.isMine ? '<span class="talk-badge">내 생각</span>' : '<span class="type-badge">친구 생각</span>'}
-            <span class="comment-time">${escapeHtml(comment.savedAt || "오늘")}</span>
+            <span class="comment-time">${escapeHtml(getBookChatDisplayDate(comment.savedAt || "오늘"))}</span>
           </div>
           <div class="thought-lines">
             <p><strong>내 생각은</strong> ${escapeHtml(comment.main)}</p>
@@ -1457,8 +1640,22 @@ function goTodayBookChatDate() {
     async function saveThought(questionId) {
       const main = document.getElementById("thoughtMain").value.trim();
       const reason = document.getElementById("thoughtReason").value.trim();
-      if (!main || !reason) {
+      if (!isDemoAccount() && (!main || !reason)) {
         alert("두 칸을 모두 써 주세요.");
+        return;
+      }
+
+      if (isDemoAccount()) {
+        const key = String(questionId);
+        const others = (thoughtCache[key] || []).filter(item => !item.isMine);
+        thoughtCache[key] = main || reason
+          ? others.concat({ id: "demo-thought-" + Date.now(), name: "김초롱", isMine: true, main, reason, savedAt: getNowText() })
+          : others;
+        ensureDemoActivityExamples(questionId);
+        persistDemoBookChatActivity();
+        closeThoughtModal();
+        renderAll();
+        await openCommentsModal(questionId);
         return;
       }
 
@@ -1482,8 +1679,22 @@ function goTodayBookChatDate() {
 
     async function saveQuizAnswer(questionId) {
       const answer = document.getElementById("quizAnswer")?.value.trim() || "";
-      if (!answer) {
+      if (!isDemoAccount() && !answer) {
         alert("퀴즈 답을 써 주세요.");
+        return;
+      }
+
+      if (isDemoAccount()) {
+        const key = String(questionId);
+        const others = (quizAnswerCache[key] || []).filter(item => !item.isMine);
+        quizAnswerCache[key] = answer
+          ? others.concat({ id: "demo-quiz-" + Date.now(), name: "김초롱", isMine: true, answer, savedAt: getNowText() })
+          : others;
+        ensureDemoActivityExamples(questionId);
+        persistDemoBookChatActivity();
+        closeThoughtModal();
+        renderAll();
+        await openCommentsModal(questionId);
         return;
       }
 
@@ -1526,6 +1737,26 @@ function goTodayBookChatDate() {
         return;
       }
       const info = getReplyTypeInfo(type);
+
+      if (isDemoAccount()) {
+        const key = String(questionId);
+        replyCache[key] = (replyCache[key] || []).concat({
+          id: "demo-reply-" + Date.now(),
+          parentThoughtId: String(commentId),
+          name: "김초롱",
+          isMine: true,
+          type: type === "different" ? "different" : "similar",
+          label: info.label,
+          text,
+          savedAt: getNowText()
+        });
+        persistDemoBookChatActivity();
+        activeReplyTarget = null;
+        activeReplyType = null;
+        renderCommentsModal();
+        renderAll();
+        return;
+      }
 
       try {
         await bookChatFetch(
@@ -1586,7 +1817,9 @@ function goTodayBookChatDate() {
 
     function updateCounts(visibleQuestions) {
       // 활동 내역 통계는 유형(퀴즈/생각 나누기)과 무관하게 선택한 날짜 전체를 기준으로 계산한다.
-      const dateFilteredQuestions = allQuestions.filter(q => q.dateKey === selectedBookChatDate);
+      const dateFilteredQuestions = isDemoAccount()
+        ? allQuestions.slice()
+        : allQuestions.filter(q => q.dateKey === selectedBookChatDate);
       const dateFilteredIds = new Set(dateFilteredQuestions.map(q => q.id));
 
       const thoughtCount =
@@ -1616,12 +1849,71 @@ function goTodayBookChatDate() {
       );
     }
 
+    function persistDemoBookChatActivity() {
+      if (!isDemoAccount()) return;
+      saveDemoState("classBookChat", { thoughtCache, quizAnswerCache, replyCache });
+    }
+
+    function ensureDemoActivityExamples(questionId) {
+      if (!isDemoAccount()) return;
+      const question = allQuestions.find(item => item.id === String(questionId));
+      if (!question) return;
+      const key = String(questionId);
+
+      if (question.type === "direct") {
+        const mine = (quizAnswerCache[key] || []).filter(item => item.isMine);
+        const firstPreparation = question.text.includes("가장 먼저") || question.text.includes("준비");
+        const examples = firstPreparation
+          ? [
+              ["송민정", "보물을 찾을 때 필요한 물건을 먼저 준비했다고 생각해."],
+              ["박하민", "필요한 물건을 챙기고 어디로 갈지 생각했어."],
+              ["이진우", "보물을 찾으러 갈 준비를 먼저 했어."],
+              ["김민지", "찾으러 갈 때 쓸 물건을 준비했어."]
+            ]
+          : [
+              ["송민정", "친구의 도움과 응원이 있어서 끝까지 갈 수 있었어."],
+              ["박하민", "나에게 소중한 것을 찾는 게 중요하다고 생각해."],
+              ["김수진", "비싼 물건보다 소중한 사람과 기억이 진짜 보물 같아."],
+              ["이혜원", "포기하지 않는 용기와 친구의 도움이 답인 것 같아."]
+            ];
+        quizAnswerCache[key] = examples.map((item, index) => ({
+          id: "demo-friend-quiz-" + key + "-" + index,
+          name: item[0], isMine: false, answer: item[1], savedAt: "오늘"
+        })).concat(mine);
+        return;
+      }
+
+      const mine = (thoughtCache[key] || []).filter(item => item.isMine);
+      const examples = [
+        ["김민지", "보물이 꼭 비싼 물건일 필요는 없다고 생각해.", "오래 기억하고 싶은 것도 보물이 될 수 있어."],
+        ["서희원", "친구가 도와주는 장면이 기억에 남았어.", "나도 친구가 어려울 때 도와주고 싶어."],
+        ["김수진", "내 보물은 가족과 같이 여행 갔던 사진이야.", "가족과 함께한 좋은 기억이 담겨 있기 때문이야."],
+        ["이혜원", "주인공이 포기하지 않은 점이 멋있었어.", "나라면 중간에 힘들어서 고민했을 것 같아."],
+        ["송민정", "사람이나 기억도 보물이 될 수 있다고 생각해.", "책을 읽고 보물이 꼭 물건만은 아니라는 생각이 들었어."]
+      ];
+      thoughtCache[key] = examples.map((item, index) => ({
+        id: "demo-friend-thought-" + key + "-" + index,
+        name: item[0], isMine: false, main: item[1], reason: item[2], savedAt: "오늘"
+      })).concat(mine);
+    }
+
+    function restoreDemoBookChatActivity() {
+      if (!isDemoAccount()) return;
+      const saved = loadDemoState("classBookChat", null);
+      if (!saved) return;
+      thoughtCache = Object.assign({}, thoughtCache, saved.thoughtCache || {});
+      quizAnswerCache = Object.assign({}, quizAnswerCache, saved.quizAnswerCache || {});
+      replyCache = Object.assign({}, replyCache, saved.replyCache || {});
+    }
+
     async function loadQuestionActivity(questionId) {
       const question = allQuestions.find(item => item.id === String(questionId));
 
       if (!question || question.moderationStatus !== "approved") {
         return;
       }
+
+      if (question.demoApproval) return;
 
       try {
         if (question.type === "direct") {

@@ -1786,12 +1786,33 @@
        확인이 필요한 학생 영역 최종 글씨 확대
        기존 !important 선언보다 아래에서 다시 덮어써 확실히 적용
     ========================================================= */
+    /*
+      "확인이 필요한 학생"(제목)과 "최근 활동 기준"(보조 문구)이 세션
+      내내 누적된 !important 폰트 크기 상향(21px -> 25px -> 27px) 때문에
+      한 줄에 다 들어가지 못해 서로 겹치거나 카드 폭을 넘어가던 문제를
+      막는다. flex-wrap을 허용해서, 공간이 부족하면 줄바꿈만 되고
+      절대 겹치지 않게 한다(둘 다 말줄임 금지, 그대로 전체 문구 유지).
+    */
     .ir-status-card .ir-support-heading {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 6px 12px !important;
+      row-gap: 6px !important;
       font-size: 27px !important;
       line-height: 1.25 !important;
     }
 
+    .ir-status-card .ir-support-heading > span:first-child {
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+      word-break: keep-all !important;
+    }
+
     .ir-status-card .ir-support-count {
+      flex: 0 0 auto !important;
+      white-space: nowrap !important;
       font-size: 19px !important;
       line-height: 1.25 !important;
     }

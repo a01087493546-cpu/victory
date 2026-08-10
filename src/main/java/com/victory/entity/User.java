@@ -42,6 +42,14 @@ public class User {
     private Boolean hasSeenStoryIntro = false;
 
     /*
+     * 나의 힘(능력치 설명) 인트로를 봤는지 여부. hasSeenStoryIntro와 별도로
+     * 관리해서, 시작 스토리만 보고 중간에 나간 학생은 재로그인 시 시작
+     * 스토리는 건너뛰고 나의 힘 인트로부터 이어서 볼 수 있게 한다.
+     */
+    @Column(name = "has_seen_power_intro", nullable = false)
+    private Boolean hasSeenPowerIntro = false;
+
+    /*
      * 던전(고급) 클리어 후 엔딩을 봤는지 여부.
      * 학생 전용 플래그이며 교사 계정은 항상 false로 둔다.
      */
@@ -54,6 +62,9 @@ public class User {
      */
     @Column(name = "school", length = 100)
     private String school;
+
+    @Column(name = "is_demo_account", nullable = false)
+    private Boolean demoAccount = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

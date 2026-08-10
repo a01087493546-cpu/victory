@@ -147,6 +147,27 @@
       gap: 16px;
     }
 
+    .fs-demo-banner {
+      flex: 0 1 auto;
+      min-width: 0;
+      width: fit-content;
+      max-width: 700px;
+      padding: 5px 14px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      box-shadow: 0 4px 10px rgba(90,55,15,.12);
+      color: #6b4b26;
+      font-size: 15px;
+      line-height: 1.4;
+      font-weight: 800;
+      white-space: normal;
+      word-break: keep-all;
+    }
+
+    .fs-demo-banner strong { font-size: 15px; font-weight: 900; }
+    .fs-demo-banner[hidden] { display: none !important; }
+
     .fs-content-header h1 {
       margin: 0;
       font-family: "Noto Serif KR", "Noto Sans KR", serif;
@@ -546,6 +567,7 @@
 .fs-card-reason {
   font-size: 17px;
 }
+
     }
   </style>
 </head>
@@ -594,6 +616,7 @@
           <div class="fs-content-header">
             <div class="fs-title-row">
               <h1>우리 반 추천 책장</h1>
+              <div class="fs-demo-banner" id="friendShelfDemoBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 학생 활동 모습을 확인할 수 있도록 가상 학생들의 예시 데이터를 미리 구성해 두었습니다.</div>
               <button type="button" class="fs-write-button" onclick="goFriendBookWrite()">
                 나도 책 추천하기
               </button>
@@ -662,6 +685,7 @@
   </div>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
 
   <script>
     // checkLogin();
@@ -675,10 +699,13 @@
     let classWall = { best: [], recent: [] };
     let loadError = false;
     let likeInFlight = false;
+    const DEMO_RECOMMENDATION_LIKES_KEY = "bookRecommendationLikes";
 
     document.addEventListener("DOMContentLoaded", async function () {
       applyTeacherMode();
       applyTeacherModeUi();
+      const demoBanner = document.getElementById("friendShelfDemoBanner");
+      if (demoBanner) demoBanner.hidden = !(isDemoAccount() && !isTeacherMode());
       showLoadingState();
       await loadClassWall();
       renderShelf();
@@ -766,11 +793,58 @@
         }
 
         classWall = await response.json();
+        applyDemoRecommendationLikes();
+        mergeDemoWrittenRecommendations();
       } catch (error) {
         console.error("우리 반 추천 책장을 불러오지 못했습니다.", error);
         classWall = { best: [], recent: [] };
         loadError = true;
       }
+    }
+
+    function applyDemoRecommendationLikes() {
+      if (!isDemoAccount()) return;
+      const likedById = loadDemoState(DEMO_RECOMMENDATION_LIKES_KEY, {});
+      [classWall.best, classWall.recent].forEach(function (items) {
+        items.forEach(function (item) {
+          const key = String(item.recommendationId);
+          const seedLikeCount = Number(item.likeCount) || 0;
+          item.likeCount = seedLikeCount + (likedById[key] ? 1 : 0);
+          item.likedByMe = !!likedById[key];
+        });
+      });
+    }
+
+    /*
+      심사계정이 친구에게 책 추천하기 화면에서 직접 쓴 글은 공용 DB가 아니라
+      현재 브라우저의 mq_demo_individualBookRecommendations에만 저장된다.
+      서버에서 새로 받은 공용 seed 목록에 이 브라우저의 글만 한 번 병합한다.
+      학생 ss01과 교사 tt11은 같은 브라우저 localStorage를 공유하므로,
+      같은 브라우저에서 tt11로 봐도(교사 모드) 이 브라우저에서 ss01이 쓴
+      글이 그대로 보여야 한다 - 그래서 isTeacherMode() 여부와 무관하게
+      isDemoAccount()이기만 하면 병합한다.
+    */
+    function mergeDemoWrittenRecommendations() {
+      if (!isDemoAccount()) return;
+
+      const saved = loadDemoState("individualBookRecommendations", []);
+      if (!Array.isArray(saved) || saved.length === 0) return;
+
+      const existingIds = new Set(
+        [...classWall.best, ...classWall.recent].map(function(item) {
+          return String(item.recommendationId);
+        })
+      );
+      const localIds = new Set();
+      const localRecommendations = saved.filter(function(item) {
+        if (!item || !item.recommendationId) return false;
+        const id = String(item.recommendationId);
+        if (existingIds.has(id) || localIds.has(id)) return false;
+        localIds.add(id);
+        return true;
+      });
+
+      classWall.recent = localRecommendations.concat(classWall.recent);
     }
 
     function getMineList() {
@@ -923,7 +997,7 @@
           <div class="fs-like-row">
             <span class="fs-rec-by">👍 ${item.likeCount}</span>
             <div class="fs-card-actions">
-              <button type="button" class="fs-like-button" onclick="toggleLike(${item.recommendationId})">
+              <button type="button" class="fs-like-button" onclick='toggleLike(${JSON.stringify(String(item.recommendationId))})'>
                 ${item.likedByMe ? "취소" : "좋아요"}
               </button>
             </div>
@@ -944,7 +1018,7 @@
             <div class="fs-like-row">
               <span class="fs-rec-by">👍 ${item.likeCount}</span>
               <div class="fs-card-actions">
-                <button type="button" class="fs-like-button" onclick="toggleLike(${item.recommendationId})">
+                <button type="button" class="fs-like-button" onclick='toggleLike(${JSON.stringify(String(item.recommendationId))})'>
                   ${item.likedByMe ? "취소" : "좋아요"}
                 </button>
               </div>
@@ -984,6 +1058,36 @@
     async function toggleLike(recommendationId) {
       if (likeInFlight || !token) return;
 
+      if (isDemoAccount()) {
+        const localRecommendations = loadDemoState("individualBookRecommendations", []);
+        const localIndex = Array.isArray(localRecommendations)
+          ? localRecommendations.findIndex(function(item) {
+              return String(item.recommendationId) === String(recommendationId);
+            })
+          : -1;
+
+        if (localIndex >= 0) {
+          const item = localRecommendations[localIndex];
+          const wasLiked = item.likedByMe === true;
+          localRecommendations[localIndex] = Object.assign({}, item, {
+            likedByMe: !wasLiked,
+            likeCount: Math.max(0, (Number(item.likeCount) || 0) + (wasLiked ? -1 : 1))
+          });
+          saveDemoState("individualBookRecommendations", localRecommendations);
+          await loadClassWall();
+          renderShelf();
+          return;
+        }
+
+        const likedById = loadDemoState(DEMO_RECOMMENDATION_LIKES_KEY, {});
+        const key = String(recommendationId);
+        likedById[key] = !likedById[key];
+        saveDemoState(DEMO_RECOMMENDATION_LIKES_KEY, likedById);
+        await loadClassWall();
+        renderShelf();
+        return;
+      }
+
       likeInFlight = true;
 
       try {
@@ -1007,7 +1111,7 @@
     }
   </script>
 
-  <script src="../js/individual-power.js?v=power-common-2"></script>
+  <script src="../js/individual-power.js?v=power-common-5"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

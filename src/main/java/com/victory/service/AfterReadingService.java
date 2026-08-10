@@ -59,6 +59,7 @@ public class AfterReadingService {
     private final SchoolClassRepository schoolClassRepository;
     private final PracticeProgressRepository practiceProgressRepository;
     private final PracticeProgressService practiceProgressService;
+    private final DemoAccountService demoAccountService;
 
     public AfterReadingDataResponse getMyAfterReadingData(
             Long studentId,
@@ -260,6 +261,17 @@ public class AfterReadingService {
         validateClassReadingBookBelongsToClass(
             summary.getClassReadingBookId(),
             classStudent.getSchoolClass().getId());
+
+        if (demoAccountService.isDemoAccount(studentId)) {
+            ClassStudent writerClassStudent = findClassStudent(summary.getStudent().getId());
+            long fixedLikeCount = contentLikeRepository.countByContentTypeAndContentId(
+                CONTENT_TYPE_SUMMARY, summaryId);
+            boolean likedByMe = contentLikeRepository
+                .findByStudent_IdAndContentTypeAndContentId(studentId, CONTENT_TYPE_SUMMARY, summaryId)
+                .isPresent();
+            return AfterReadingSummaryItem.from(
+                summary, writerClassStudent, fixedLikeCount, likedByMe, studentId);
+        }
 
         contentLikeRepository
             .findByStudent_IdAndContentTypeAndContentId(

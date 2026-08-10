@@ -1005,4 +1005,15 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   modified: "파일명 변경 및 화면 크기에 맞게 CSS로 조정, 어두운 그라디언트 오버레이 적용",
   note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
 },
+{
+title: "심사계정 연습읽기 책표지 이미지",
+category: "이미지",
+fileName: "demo_class_book_cover.png",
+description: "심사계정 연습읽기에서 사용하는 가상 도서 ‘나만의 보물 찾기’의 책표지 이미지",
+source: "OpenAI ChatGPT 이미지 생성",
+usage: "심사계정 연습읽기 책 선택 및 연습읽기 관련 화면의 도서 표지",
+modified: "파일명 변경 및 화면 크기에 맞게 CSS로 크기 조정",
+note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
+},
+
 ];

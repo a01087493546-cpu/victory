@@ -54,6 +54,10 @@ public class ClassReadingBookService {
             .findBySchoolClassId(classId)
             .orElseGet(() -> createReadingBook(schoolClass));
 
+        if (isDemoClass(schoolClass) && book.getId() != null) {
+            return ClassReadingBookResponse.from(book);
+        }
+
         book.setBookTitle(request.getBookTitle());
         book.setAuthor(request.getAuthor());
         book.setCoverImage(request.getCoverImage());
@@ -82,6 +86,10 @@ public class ClassReadingBookService {
                 HttpStatus.NOT_FOUND,
                 "등록된 온책읽기 책 정보가 없습니다. classId=" + classId
             ));
+
+        if (isDemoClass(book.getSchoolClass())) {
+            return ClassReadingBookResponse.from(book);
+        }
 
         if (request.getCurrentPage() > request.getTotalPages()) {
             throw new ResponseStatusException(
@@ -113,5 +121,11 @@ public class ClassReadingBookService {
         book.setSchoolClass(schoolClass);
 
         return book;
+    }
+
+    private boolean isDemoClass(SchoolClass schoolClass) {
+        return schoolClass != null
+            && schoolClass.getTeacher() != null
+            && Boolean.TRUE.equals(schoolClass.getTeacher().getDemoAccount());
     }
 }

@@ -41,6 +41,7 @@ public class IndividualBookChatPostResponse {
     private String scene;
     private String optionA;
     private String optionB;
+    private String authorChoice;
     private LocalDate activityDate;
     private LocalDateTime createdAt;
     private boolean mine;
@@ -76,6 +77,7 @@ public class IndividualBookChatPostResponse {
             response.getContent(),
             extractFromExtraData(response, "optionA"),
             extractFromExtraData(response, "optionB"),
+            extractFromExtraData(response, "authorChoice"),
             response.getActivityDate(),
             response.getCreatedAt(),
             isMine,

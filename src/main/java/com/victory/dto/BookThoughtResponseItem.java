@@ -1,6 +1,7 @@
 package com.victory.dto;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import com.victory.entity.Response;
 
@@ -32,6 +33,14 @@ public class BookThoughtResponseItem {
         Object rejectionReason = extraData == null ? null : extraData.get("rejectionReason");
         Object classReadingBookId = extraData == null ? null : extraData.get("classReadingBookId");
 
+        LocalDateTime displayedCreatedAt = response.getCreatedAt();
+        Object demoSeed = extraData == null ? null : extraData.get("demoSeed");
+        Object demoDayOffset = extraData == null ? null : extraData.get("demoDayOffset");
+        if ("review-class-activity-v1".equals(demoSeed) && demoDayOffset instanceof Number offset) {
+            int minute = (int) (response.getId() == null ? 0 : response.getId() % 45);
+            displayedCreatedAt = java.time.LocalDate.now().plusDays(offset.longValue()).atTime(LocalTime.of(15, minute));
+        }
+
         return new BookThoughtResponseItem(
             response.getId(),
             questionType == null ? null : questionType.toString(),
@@ -42,7 +51,7 @@ public class BookThoughtResponseItem {
             response.getStudent() == null ? null : response.getStudent().getId(),
             response.getStudent() == null ? null : response.getStudent().getName(),
             toLong(classReadingBookId),
-            response.getCreatedAt()
+            displayedCreatedAt
         );
     }
 

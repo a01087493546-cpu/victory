@@ -1035,7 +1035,7 @@ public class IndividualReadingService {
         }
 
         if (!Boolean.TRUE.equals(record.getAfterDone())) {
-            validateAfterReadingComplete(studentId, readingRecordId);
+            validateAfterReadingComplete(record);
             record.setAfterDone(true);
             readingRecordRepository.save(record);
         }
@@ -1052,7 +1052,29 @@ public class IndividualReadingService {
         );
     }
 
-    private void validateAfterReadingComplete(Long studentId, Long readingRecordId) {
+    private void validateAfterReadingComplete(ReadingRecord record) {
+
+        Long studentId = record.getStudent().getId();
+        Long readingRecordId = record.getId();
+
+        List<String> problems = new ArrayList<>();
+
+        /*
+         * "오늘의 독서 모험"의 정상 흐름은 읽기 전 → 읽기 중 → 읽기 후
+         * 순서로만 진행되지만, 이 흐름을 강제하는 것은 화면 이동/버튼
+         * 노출 같은 프론트 로직뿐이었다 - 간추리기 공유 바로가기
+         * (?view=summaryShare)처럼 읽기 후 화면에 직접 진입할 수 있는
+         * 경로가 있고, API를 브라우저 콘솔 등에서 직접 호출하면 읽기
+         * 중을 건너뛴 채로도 이 지점에 도달할 수 있었다. 여기서 서버가
+         * beforeDone/duringDone을 직접 재확인해 막는다.
+         */
+        if (!Boolean.TRUE.equals(record.getBeforeDone())) {
+            problems.add("읽기 전 활동을 먼저 완료해야 해요.");
+        }
+
+        if (!Boolean.TRUE.equals(record.getDuringDone())) {
+            problems.add("읽기 중 활동을 먼저 완료해야 해요.");
+        }
 
         List<Response> afterResponses = findAfterResponses(studentId, readingRecordId);
 
@@ -1063,8 +1085,6 @@ public class IndividualReadingService {
                 byIndex.put(index, response);
             }
         }
-
-        List<String> problems = new ArrayList<>();
 
         for (Integer index : AFTER_QUESTION_INDEXES) {
             Response response = byIndex.get(index);
@@ -1149,6 +1169,15 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
 }
 
     /*
+     * 심사 화면에서 그래프가 빈약해 보이지 않도록 보여줄 고정 가상 월별 완독
+     * 권수. 대표 심사 학생(demoAccount=true && loginId="ss01") 한 명에게만
+     * 적용되며, 이 상수 하나가 코드 전체에서 유일한 "ss01" 참조 지점이다.
+     */
+    private static final List<Integer> DEMO_MONTHLY_COMPLETION_COUNTS =
+        List.of(5, 8, 4, 7, 11, 6, 9, 10, 5, 8, 6, 7);
+    private static final String DEMO_REPRESENTATIVE_LOGIN_ID = "ss01";
+
+    /*
      * 학생 메인 화면 "월별 완독 기록" 그래프용. 완독(finished_at IS NOT NULL)한
      * 기록만 집계 대상이며, 현재 연도(Asia/Seoul 기준)에 완독한 것만 1~12월에
      * 나눠 센다. 다른 해에 완독한 기록은 포함하지 않는다. 반환되는
@@ -1159,6 +1188,10 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
     public MonthlyCompletionStatsResponse getMonthlyCompletionStats(Long studentId) {
 
         int currentYear = LocalDate.now(ZONE_SEOUL).getYear();
+
+        if (isDemoRepresentativeStudent(studentId)) {
+            return new MonthlyCompletionStatsResponse(currentYear, DEMO_MONTHLY_COMPLETION_COUNTS);
+        }
 
         List<ReadingRecord> completedRecords =
             readingRecordRepository.findByStudent_IdAndFinishedAtIsNotNull(studentId);
@@ -1179,6 +1212,13 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
         }
 
         return new MonthlyCompletionStatsResponse(currentYear, monthlyCountsList);
+    }
+
+    private boolean isDemoRepresentativeStudent(Long studentId) {
+        return userRepository.findById(studentId)
+            .filter(user -> Boolean.TRUE.equals(user.getDemoAccount()))
+            .map(user -> DEMO_REPRESENTATIVE_LOGIN_ID.equals(user.getLoginId()))
+            .orElse(false);
     }
 
     private double percentOf(int count, int total) {

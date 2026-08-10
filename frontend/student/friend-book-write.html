@@ -915,6 +915,24 @@
       line-height: 1.35;
     }
 
+    .fw-reward-demo-notice {
+      margin: -4px 0 16px;
+      padding: 8px 14px;
+      border: 1px solid rgba(180, 130, 60, 0.42);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+      color: #6b4b26;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+      text-align: left;
+      word-break: keep-all;
+    }
+
+    .fw-reward-demo-notice[hidden] {
+      display: none !important;
+    }
+
     .fw-reward-confirm {
       width: 100%;
       height: 50px;
@@ -1440,6 +1458,8 @@
         루미: 네 생각을 나눈 용기가 멋져!
       </div>
 
+      <div class="fw-reward-demo-notice" id="fwRewardDemoNotice" data-demo-banner hidden></div>
+
       <button class="fw-reward-confirm" type="button" onclick="confirmFriendRewardModal()">
         확인했어
       </button>
@@ -1447,6 +1467,7 @@
   </div>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
 
   <script>
     // checkLogin();
@@ -1918,6 +1939,21 @@
         return;
       }
 
+      /*
+       * 심사계정에서만 보이는 작은 안내다 - individual-power.js의
+       * openMiniRewardModal이 쓰는 것과 같은 문구를 그대로 재사용한다
+       * (이 화면 전용 보상 팝업은 개별 UI라 그 함수를 직접 호출할 수는
+       * 없지만, 문구 체계는 하나로 유지한다).
+       */
+      const demoNotice = document.getElementById("fwRewardDemoNotice");
+      if (demoNotice) {
+        const showDemoNotice = typeof isDemoAccount === "function" && isDemoAccount();
+        demoNotice.hidden = !showDemoNotice;
+        demoNotice.textContent = showDemoNotice
+          ? "🔍 심사 체험 안내 — 심사계정에서는 단계 이동 시 활동을 완료한 것으로 보고 능력치를 지급합니다."
+          : "";
+      }
+
       rewardOverlay.classList.add("is-open");
       rewardOverlay.setAttribute("aria-hidden", "false");
     }
@@ -1981,6 +2017,70 @@
 
       submitInFlight = true;
 
+      /*
+       * 심사계정은 추천 글을 공용 DB에 절대 저장하지 않는다 - 현재
+       * 브라우저의 localStorage에만 저장하고, friend-book-shelf.html이
+       * 이 목록을 같은 브라우저에서만 우리 반 추천 책장에 함께 보여준다.
+       */
+      if (isDemoAccount()) {
+        try {
+          const selectedBook = completedBooks.find(function (book) {
+            return Number(book.readingRecordId) === selectedReadingRecordId;
+          });
+          const list = loadDemoState("individualBookRecommendations", []);
+          list.push({
+            recommendationId: "local-" + Date.now(),
+            title: (selectedBook && selectedBook.bookTitle) || titleInput.value.trim(),
+            author: (selectedBook && selectedBook.author) || authorInput.value.trim(),
+            studentName: studentName,
+            reason: reason,
+            teaserQuestions: selectedTeaserQuestions.map(function (question) {
+              return question.text;
+            }),
+            likeCount: 0,
+            likedByMe: false,
+            isMine: true,
+            createdAt: new Date().toISOString()
+          });
+          saveDemoState("individualBookRecommendations", list);
+
+          /*
+           * 일반계정 BookRecommendationRewardService.grantRecommendationRewardOnce와
+           * 같은 정책이다: reward_type은 "완독 기록(readingRecordId)당
+           * 최초 1회"이며 "하루 1회"가 아니다 - 같은 완독 책으로 다시
+           * 추천해도 1회만, 다른 완독 책을 추천하면 같은 날에도 다시
+           * 지급된다.
+           */
+          let demoResult = null;
+          if (typeof grantDemoStatRewardOnce === "function") {
+            demoResult = grantDemoStatRewardOnce(
+              "individual-book-recommendation",
+              String(selectedReadingRecordId),
+              { courage: 1 }
+            );
+          } else {
+            console.error("grantDemoStatRewardOnce를 찾을 수 없어 책 추천 보상을 지급하지 못했습니다.");
+          }
+
+          if (demoResult && demoResult.rewardGranted) {
+            if (typeof openFriendRewardModal !== "function") {
+              console.error("openFriendRewardModal을 찾을 수 없어 책 추천 보상 팝업을 표시하지 못했습니다.");
+            } else {
+              openFriendRewardModal();
+              return;
+            }
+          }
+
+          const completeModal = document.getElementById("completeModal");
+          if (completeModal) {
+            completeModal.classList.add("show");
+          }
+        } finally {
+          submitInFlight = false;
+        }
+        return;
+      }
+
       try {
         const response = await fetch(
           API_BASE_URL + "/api/students/me/book-recommendations",
@@ -2043,7 +2143,7 @@
     });
   </script>
 
-  <script src="../js/individual-power.js?v=power-common-2"></script>
+  <script src="../js/individual-power.js?v=power-common-5"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

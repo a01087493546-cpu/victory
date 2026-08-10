@@ -129,6 +129,7 @@
       display: flex;
       justify-content: flex-end;
       align-items: center;
+      gap: 10px;
     }
 
     .tr-pill-button {
@@ -1045,6 +1046,7 @@ body {
         <h1 class="tr-title" id="topTitle">계정 관리</h1>
 
         <div class="tr-top-actions">
+          <button class="tr-pill-button" id="topTeacherHomeButton" type="button" onclick="goTeacherHomeFromRegister()" style="display: none;">교사 홈</button>
           <button class="tr-pill-button" id="topAccountAction" type="button" onclick="handleTopAccountAction()">로그인</button>
         </div>
       </header>
@@ -1079,7 +1081,6 @@ body {
           <section class="tr-panel" id="managementPanel">
             <div class="tr-management-heading">
               <h2>등록된 계정을 확인하고 관리해요.</h2>
-              <p>현재 담당 학급의 계정만 표시됩니다. 기존 비밀번호는 누구도 확인할 수 없어요.</p>
             </div>
 
             <div class="tr-account-tabs" role="tablist" aria-label="계정 역할 선택">
@@ -1337,15 +1338,22 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
       const token = sessionStorage.getItem("token");
       const role = sessionStorage.getItem("role");
       const topAction = document.getElementById("topAccountAction");
+      const topTeacherHomeButton = document.getElementById("topTeacherHomeButton");
 
       if (token && role === "teacher") {
         topAction.textContent = "로그아웃";
+        if (topTeacherHomeButton) {
+          topTeacherHomeButton.style.display = "";
+        }
         showPanel("management");
         loadManagedAccounts();
         return;
       }
 
       topAction.textContent = "로그인";
+      if (topTeacherHomeButton) {
+        topTeacherHomeButton.style.display = "none";
+      }
       showPanel("select");
     });
 
@@ -1359,6 +1367,17 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
       }
 
       goLogin();
+    }
+
+    /*
+      계정 관리(management 패널) 화면에서 교사 홈("교사 관리 화면",
+      home.html)으로 돌아가는 버튼. home.html과 이 파일은
+      frontend/teacher/ 아래 같은 위치에 있는 형제 파일이라 상대 경로
+      없이 파일명만으로 이동한다(home.html의 goTeacherRegister()가
+      "teacher-register.html"로 이동하는 것과 같은 방식).
+    */
+    function goTeacherHomeFromRegister() {
+      location.href = "home.html";
     }
 
     function showPanel(name) {
@@ -1438,7 +1457,6 @@ window.addEventListener("resize", updateTeacherRegisterStageScale);
       }
 
       const students = Array.isArray(managedAccounts.students) ? managedAccounts.students : [];
-      summary.textContent = "학생 계정 " + students.length + "개 · 기존 비밀번호는 표시되지 않습니다.";
       head.innerHTML = "<tr><th>번호</th><th>이름</th><th>아이디</th><th>역할</th><th>소속 학급</th><th>등록일</th><th>관리</th></tr>";
       body.innerHTML = students.length
         ? students.map(makeStudentAccountRow).join("")

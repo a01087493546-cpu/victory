@@ -2937,6 +2937,33 @@ function resolveAchievementRate(studentAchievement) {
 }
 
 /*
+  "확인이 필요한 학생" 목록에서 모든 학생에게 같은 문구("온책읽기 활동
+  진행 확인 필요")가 반복되던 것을, 백엔드가 이미 학생마다 다르게
+  내려주는 supportReasons(SupportReasonItem.code)에 맞춰 서로 다른
+  안내 문장으로 바꾼다. individual-reading-manage.html의
+  SUPPORT_REASON_ADVICE와 같은 톤의 문구를 재사용한다.
+*/
+const PRACTICE_SUPPORT_ADVICE = {
+  LOW_READING_PARTICIPATION: "매일 조금씩 읽을 수 있도록 읽기 시간을 정해 주세요.",
+  NO_QUESTION_SUBMISSION: "읽은 내용에서 궁금한 점을 한 가지씩 만들도록 도와주세요.",
+  NO_THOUGHT_SHARING: "책수다방에 자신의 생각을 한 문장 이상 남기도록 격려해 주세요.",
+  LOW_COMPREHENSION: "질문과 답이 책 내용과 연결되도록 다시 확인해 주세요."
+};
+
+function buildPracticeSupportReasonText(student) {
+  if (!student.reasons || student.reasons.length === 0) {
+    return "온책읽기 활동 진행 확인 필요";
+  }
+
+  return student.reasons
+    .slice(0, 2)
+    .map(function (reason) {
+      return PRACTICE_SUPPORT_ADVICE[reason.code] || reason.label || "온책읽기 활동 진행 확인 필요";
+    })
+    .join(" ");
+}
+
+/*
   학생 한 명의 practice-progress를 조회합니다.
   404이거나 조회에 실패하면 null을 반환해
   화면 전체가 깨지지 않고 해당 학생만 0%/미시작으로 처리되게 합니다.
@@ -3057,7 +3084,27 @@ await loadReadingRange();
       throw new Error("학생 명단을 불러오지 못했습니다.");
     }
 
-    const studentData = await studentResponse.json();
+    let studentData = await studentResponse.json();
+
+    /*
+     * 심사 학급(생각이자라는우리반)에는 DemoDataInitializer가 만드는
+     * ss01/demo_student_02~08 8명 외에, 과거 개발 중 만들어진 ss02~ss08
+     * 계정이 같은 이름(송민정/박하민/...)으로 같은 학급에 남아 있다.
+     * 이 화면은 auth.js 없이 sessionStorage를 직접 읽으므로 같은 기준
+     * (demoAccount==="true")으로 직접 확인한다. DB 행은 지우지 않고, 이
+     * 화면 표시에서만 원래 심사 seed 8명으로 한정해서 이름 중복과
+     * "0%/미시작" 학생이 섞여 보이는 문제를 막는다. 일반 학급은 실제
+     * 등록된 학생 명단을 그대로 보여줘야 하므로 이 필터를 적용하지 않는다.
+     */
+    if (sessionStorage.getItem("demoAccount") === "true") {
+      const demoSeedLoginIds = new Set([
+        "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
+        "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08"
+      ]);
+      studentData = studentData.filter(function (student) {
+        return demoSeedLoginIds.has(student.loginId);
+      });
+    }
 
     const progressResults = await Promise.allSettled(
       studentData.map(function (student) {
@@ -3111,6 +3158,9 @@ await loadReadingRange();
           ? Math.round(studentAchievement.comprehensionRate)
           : 0,
         state: deriveAchievementState(total),
+        reasons: studentAchievement && Array.isArray(studentAchievement.supportReasons)
+          ? studentAchievement.supportReasons
+          : [],
         note: progress
           ? `온책읽기 활동 8개 중 ${achievement.completedCount}개를 완료했어요.`
           : "아직 온책읽기 학습 기록이 없어요."
@@ -3280,7 +3330,7 @@ function renderTodayStatus(practiceAchievementData) {
           </div>
 
           <div class="wr-support-reason">
-            온책읽기 활동 진행 확인 필요
+            ${buildPracticeSupportReasonText(student)}
           </div>
 
           <div class="wr-support-arrow">

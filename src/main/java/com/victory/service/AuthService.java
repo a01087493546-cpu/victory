@@ -53,6 +53,14 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(user.getId(), user.getLoginId(), user.getRole());
 
-        return new LoginResponse(token, user.getId(), user.getLoginId(), user.getName(), user.getRole());
+        return new LoginResponse(
+                token,
+                user.getId(),
+                user.getLoginId(),
+                user.getName(),
+                user.getRole(),
+                Boolean.TRUE.equals(user.getDemoAccount()),
+                Boolean.TRUE.equals(user.getHasSeenStoryIntro()),
+                Boolean.TRUE.equals(user.getHasSeenPowerIntro()));
     }
 }
