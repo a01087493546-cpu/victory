@@ -30,9 +30,11 @@ public class StudentStatsService {
             throw new IllegalArgumentException("학생 계정만 능력치를 조회할 수 있습니다.");
         }
 
+        boolean hasSeenEnding = Boolean.TRUE.equals(student.getHasSeenEnding());
+
         return studentStatsRepository.findByStudent_Id(studentId)
-            .map(StudentStatsResponse::from)
-            .orElseGet(StudentStatsResponse::zero);
+            .map(stats -> StudentStatsResponse.from(stats, hasSeenEnding))
+            .orElseGet(() -> StudentStatsResponse.from(null, hasSeenEnding));
     }
 
     /*

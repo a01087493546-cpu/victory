@@ -130,10 +130,8 @@
 
               <div class="reward-box-content">
                 <div class="reward-box-title">클리어 보상</div>
-                <div class="reward-main" id="detail-reward-main">나의 힘 +10</div>
-                <div class="reward-note" id="detail-reward-note">
-                  초급 던전 클리어 후, 중급 던전 준비 능력치 평균 10으로 다시 시작합니다.
-                </div>
+                <div class="reward-main" id="detail-reward-main">게임에서 승리하면 기존 능력치는 모두 사라지고, 각 능력치를 10씩 얻습니다.</div>
+                <div class="reward-note" id="detail-reward-note"></div>
               </div>
             </div>
 
@@ -151,7 +149,12 @@
 
           <aside class="dungeon-demo-banner" id="dungeonDemoBanner" hidden>
             <strong>🔍 심사 체험 안내</strong>
-            <span>실제 학생은 조건을 달성하면 초급·중급·고급 던전이 순서대로 활성화됩니다. 심사계정에서는 전체 던전을 바로 체험할 수 있도록 모두 활성화했습니다.</span>
+            <div class="dungeon-demo-banner-lines">
+              <div>- 실제 학생은 조건을 달성하면 던전이 순서대로 활성화됩니다.</div>
+              <div>- 심사계정은 모든 던전을 바로 체험할 수 있습니다.</div>
+              <div>- 게임 체험을 위해 실제 ‘나의 힘’과 별도로 던전별 전투 능력치가 임시 설정됩니다.</div>
+              <div>- 전투 능력치: 초급 20 / 중급 55 / 고급 85</div>
+            </div>
           </aside>
 
         </main>
@@ -182,28 +185,31 @@
         </div>
       </div>
 
-      <div class="topbar-right">
-        <div class="top-stat-chip magic-chip">
-          <span class="top-stat-icon magic-symbol">✦</span>
-          <small>마법력</small>
-          <strong id="stat-magic">10</strong>
-        </div>
-        <div class="top-stat-chip hp-chip">
-          <span class="top-stat-icon hp-symbol">♥</span>
-          <small>체력</small>
-          <strong id="stat-stamina">10</strong>
-        </div>
-        <div class="top-stat-chip courage-chip">
-          <span class="top-stat-icon courage-symbol">◆</span>
-          <small>용기</small>
-          <strong id="stat-courage">0%</strong>
-        </div>
-        <div class="top-stat-chip wisdom-chip">
-          <span class="top-stat-icon wisdom-symbol">📚</span>
-          <small>지혜</small>
-          <strong id="stat-wisdom">10</strong>
+      <div class="battle-top-right">
+        <div class="battle-stat-hud">
+          <div class="battle-stat-item stat-magic">
+            <span class="battle-stat-icon" aria-hidden="true">✨</span>
+            <span class="battle-stat-label">마법력</span>
+            <span class="battle-stat-value" id="battleMagicValue">0</span>
+          </div>
+          <div class="battle-stat-item stat-stamina">
+            <span class="battle-stat-icon" aria-hidden="true">❤️</span>
+            <span class="battle-stat-label">체력</span>
+            <span class="battle-stat-value" id="battleStaminaValue">0</span>
+          </div>
+          <div class="battle-stat-item stat-wisdom">
+            <span class="battle-stat-icon" aria-hidden="true">🧠</span>
+            <span class="battle-stat-label">지혜</span>
+            <span class="battle-stat-value" id="battleWisdomValue">0</span>
+          </div>
+          <div class="battle-stat-item stat-courage">
+            <span class="battle-stat-icon" aria-hidden="true">🛡️</span>
+            <span class="battle-stat-label">용기</span>
+            <span class="battle-stat-value" id="battleCourageValue">0</span>
+          </div>
         </div>
       </div>
+
     </div>
 
     <!-- 전투 배경 -->
@@ -219,7 +225,7 @@
             <div class="hp-bar-bg">
               <div class="hp-fill hp-hero" id="hero-bar" style="width:100%"></div>
             </div>
-            <div class="hp-num" id="hero-num">150 / 150</div>
+            <div class="hp-num" id="hero-num">HP 150 / 150</div>
           </div>
           <img class="sprite idle" id="hero-spr" src="images/hero_idle.png" alt="용사">
           <div class="fighter-floor hero-floor"></div>
@@ -295,6 +301,7 @@
                 </span>
                 <span class="skill-text">
                   <strong>기본 막기</strong>
+                  <small></small>
                 </span>
               </button>
 
@@ -380,11 +387,12 @@
   </div>
 
   <script src="../frontend/js/auth.js"></script>
+  <script src="../frontend/js/demo-storage.js"></script>
   <script src="js/player-stats.js"></script>
   <script src="js/battle-engine.js"></script>
   <script src="js/game-api.js"></script>
-  <script src="js/game-state.js"></script>
-  <script src="js/dungeon-ui.js"></script>
+  <script src="js/game-state.js?v=20260811-stamina-sync"></script>
+  <script src="js/dungeon-ui.js?v=20260811-stamina-sync"></script>
 
   <script>
     let selectedDungeon = 0;
@@ -435,12 +443,20 @@
       document.getElementById('detail-time').textContent = formatTimeLimit(dungeon.timeLimit);
       document.getElementById('detail-diff-val').textContent = DIFF_LEVEL_MAP[dungeon.difficulty] || '';
 
-      // 클리어 보상 영역: 설명 + 실제 rewardValue 기반 안내 문구
-      document.getElementById('detail-reward-main').textContent = dungeon.description || '';
-      document.getElementById('detail-reward-note').textContent =
-        dungeon.rewardValue > 0
-          ? '능력치 전부 ' + dungeon.rewardValue + '로 리셋 후 지급됩니다'
-          : '모험이 끝나고 능력치가 전부 초기화됩니다';
+      /*
+       * 클리어 보상 영역: rewardValue(10=초급/15=중급/그 외=고급) 기준 안내
+       * 문구. 이미 엔딩을 끝까지 본 학생(hasEnded)은 능력치 시스템이
+       * 종료됐으므로, 재도전해도 능력치/엔딩 보상이 없다는 것을 분명히
+       * 알린다 - 재도전 자체는 계속 가능하다.
+       */
+      document.getElementById('detail-reward-main').textContent = dungeon.hasEnded
+        ? '게임은 계속 즐길 수 있지만, 능력치 보상은 더 이상 지급되지 않아요.'
+        : dungeon.rewardValue === 10
+          ? '게임에서 승리하면 기존 능력치는 모두 사라지고, 각 능력치를 10씩 얻습니다.'
+          : dungeon.rewardValue === 15
+            ? '게임에서 승리하면 기존 능력치는 모두 사라지고, 각 능력치를 15씩 얻습니다.'
+            : '게임에서 승리하면 루미 모험의 마지막 이야기를 확인할 수 있습니다.';
+      document.getElementById('detail-reward-note').textContent = '';
 
       const enterBtn = document.getElementById('enter-btn');
       const blockedNote = document.getElementById('detail-blocked-note');
@@ -462,6 +478,16 @@
 
       try {
         dungeonList = await GameAPI.fetchDungeonsFromServer();
+
+        /*
+         * 심사계정은 공용 DB has_seen_ending을 절대 갖지 않으므로 서버가
+         * 내려주는 hasEnded는 항상 false다 - 이 브라우저의 로컬 엔딩 완료
+         * 상태를 알고 있는 쪽(프론트)이 여기서 덮어쓴다.
+         */
+        if (typeof isDemoAccount === 'function' && isDemoAccount()
+            && typeof loadDemoState === 'function' && loadDemoState('hasSeenEnding', false)) {
+          dungeonList.forEach(function (dungeon) { dungeon.hasEnded = true; });
+        }
 
         if (loadingOverlay) loadingOverlay.style.display = 'none';
 

@@ -82,6 +82,7 @@ public class ResponseService {
     private final ClassStudentRepository classStudentRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final ClassReadingBookRepository classReadingBookRepository;
+    private final DemoAccountService demoAccountService;
 
     public List<PreReadingResponseItem> getPreReadingResponses(Long studentId) {
 
@@ -261,6 +262,21 @@ public class ResponseService {
             Long studentId,
             BookThoughtResponseRequest request) {
 
+        /*
+         * 심사계정은 여러 심사위원이 같은 ss01/tt11을 동시에 쓰므로, 책수다방
+         * 글(책 속 생각 쓰기)을 실제 DB에 남기면 한 브라우저의 작성 결과가
+         * 다른 브라우저에도 그대로 보이게 된다. 프론트(book-chat.html 등)는
+         * 이미 심사계정이면 이 API를 호출하지 않고 mq_demo_* 로컬 저장소만
+         * 쓰지만, 백엔드에도 동일한 가드를 둬 우회 호출로 공유 DB가
+         * 오염되는 것을 막는다.
+         */
+        if (demoAccountService.isDemoAccount(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "심사계정의 책수다방 글은 브라우저에만 저장됩니다."
+            );
+        }
+
         User student = findStudent(studentId);
 
         List<Response> existing = findBookThoughtResponses(
@@ -346,6 +362,13 @@ public class ResponseService {
             Long questionResponseId,
             BookChatThoughtRequest request) {
 
+        if (demoAccountService.isDemoAccount(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "심사계정의 책수다방 생각은 브라우저에만 저장됩니다."
+            );
+        }
+
         User student = findStudent(studentId);
         Response question = findApprovedBookChatQuestionForStudent(
             studentId, questionResponseId);
@@ -405,6 +428,13 @@ public class ResponseService {
             Long studentId,
             Long questionResponseId,
             BookChatQuizAnswerRequest request) {
+
+        if (demoAccountService.isDemoAccount(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "심사계정의 책수다방 퀴즈 답은 브라우저에만 저장됩니다."
+            );
+        }
 
         User student = findStudent(studentId);
         Response question = findApprovedBookChatQuestionForStudent(
@@ -489,6 +519,13 @@ public class ResponseService {
             Long questionResponseId,
             Long thoughtId,
             BookChatReplyRequest request) {
+
+        if (demoAccountService.isDemoAccount(studentId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "심사계정의 책수다방 답글은 브라우저에만 저장됩니다."
+            );
+        }
 
         User student = findStudent(studentId);
         Response question = findApprovedBookChatQuestionForStudent(
@@ -581,6 +618,18 @@ public class ResponseService {
             Long responseId) {
 
         Response response = findTeacherManagedBookThought(teacherId, responseId);
+
+        /*
+         * 승인/거절/보류 되돌리기는 "심사위원이 직접 조작한 결과"이므로
+         * 같은 tt11을 쓰는 다른 브라우저에 영향을 주면 안 된다. 프론트
+         * (book-chat-manage.html)는 이미 심사계정이면 이 API를 호출하지
+         * 않고 mq_demo_* 로컬 오버라이드만 쓰지만, 우회 호출에 대비해
+         * 백엔드에서도 저장 없이 현재 상태만 그대로 돌려준다.
+         */
+        if (demoAccountService.isDemoAccount(teacherId)) {
+            return BookThoughtResponseItem.from(response);
+        }
+
         User teacher = findTeacher(teacherId);
         Map<String, Object> extraData = mutableExtraData(response);
 
@@ -611,6 +660,11 @@ public class ResponseService {
         }
 
         Response response = findTeacherManagedBookThought(teacherId, responseId);
+
+        if (demoAccountService.isDemoAccount(teacherId)) {
+            return BookThoughtResponseItem.from(response);
+        }
+
         User teacher = findTeacher(teacherId);
         LocalDateTime reviewedAt = LocalDateTime.now();
         Map<String, Object> extraData = mutableExtraData(response);
@@ -624,6 +678,37 @@ public class ResponseService {
         response.setRejectReason(reason.trim());
         response.setReviewedBy(teacher);
         response.setReviewedAt(reviewedAt);
+
+        return BookThoughtResponseItem.from(responseRepository.save(response));
+    }
+
+    /*
+     * "승인 취소" - 거절이 아니라 단순히 다시 검토 대기 상태로 되돌리는 것이므로
+     * 거절 사유/검수 이력을 남기지 않는다(rejectBookThoughtResponse와 달리
+     * reason 파라미터가 없다).
+     */
+    @Transactional
+    public BookThoughtResponseItem returnBookThoughtResponseToPending(
+            Long teacherId,
+            Long responseId) {
+
+        Response response = findTeacherManagedBookThought(teacherId, responseId);
+
+        if (demoAccountService.isDemoAccount(teacherId)) {
+            return BookThoughtResponseItem.from(response);
+        }
+
+        Map<String, Object> extraData = mutableExtraData(response);
+
+        extraData.put("approvalStatus", APPROVAL_STATUS_PENDING);
+        extraData.remove("rejectionReason");
+        extraData.remove("reviewedByTeacherId");
+        extraData.remove("reviewedAt");
+        response.setExtraData(extraData);
+        response.setStatus("pending");
+        response.setRejectReason(null);
+        response.setReviewedBy(null);
+        response.setReviewedAt(null);
 
         return BookThoughtResponseItem.from(responseRepository.save(response));
     }

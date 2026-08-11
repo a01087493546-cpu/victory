@@ -23,8 +23,9 @@ class IndividualDuringReadingRewardServiceTest {
 
     private final StudentStatsRepository studentStatsRepository = mock(StudentStatsRepository.class);
     private final StudentStatRewardLogRepository rewardLogRepository = mock(StudentStatRewardLogRepository.class);
+    private final StudentEndingService studentEndingService = mock(StudentEndingService.class);
     private final IndividualDuringReadingRewardService service =
-        new IndividualDuringReadingRewardService(studentStatsRepository, rewardLogRepository);
+        new IndividualDuringReadingRewardService(studentStatsRepository, rewardLogRepository, studentEndingService);
 
     private static final LocalDate DAY1 = LocalDate.of(2026, 7, 27);
     private static final LocalDate DAY2 = LocalDate.of(2026, 7, 28);
@@ -208,5 +209,23 @@ class IndividualDuringReadingRewardServiceTest {
         assertThat(IndividualDuringReadingRewardService.REWARD_TYPE)
             .isNotEqualTo(PracticeReadingRewardService.REWARD_TYPE)
             .isNotEqualTo(IndividualBeforeReadingRewardService.REWARD_TYPE);
+    }
+
+    /* 엔딩을 이미 본 학생은 능력치가 더 이상 오르지 않고 보상 로그도 남지 않는다 */
+    @Test
+    void grantDuringDailyRewardOnce_doesNotGrantAfterStudentHasSeenEnding() {
+        User student = buildStudent(1L);
+        StudentStats existing = buildStats(student, 0, 0, 0, 0);
+
+        when(studentEndingService.hasEnded(1L)).thenReturn(true);
+        when(studentStatsRepository.findByStudent_Id(1L)).thenReturn(Optional.of(existing));
+
+        IndividualDuringReadingRewardService.RewardResult result =
+            service.grantDuringDailyRewardOnce(student, 10L, DAY1);
+
+        assertThat(result.isRewardGranted()).isFalse();
+        assertThat(result.getStats().getMagic()).isEqualTo(0);
+        Mockito.verify(studentStatsRepository, never()).save(any(StudentStats.class));
+        Mockito.verify(rewardLogRepository, never()).save(any(StudentStatRewardLog.class));
     }
 }

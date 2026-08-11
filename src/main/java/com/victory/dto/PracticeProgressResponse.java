@@ -21,6 +21,7 @@ public class PracticeProgressResponse {
     private Boolean afterDone;
 
     private Map<String, Boolean> duringTypeProgress;
+    private Map<String, Boolean> afterTypeProgress;
 
     private Boolean practiceCompleted;
     private Boolean rewardGranted;
@@ -40,6 +41,7 @@ public class PracticeProgressResponse {
             practiceProgress.getClassReadDone(),
             practiceProgress.getAfterDone(),
             practiceProgress.getDuringTypeProgress(),
+            resolveAfterTypeProgress(practiceProgress),
             isPracticeCompleted(practiceProgress),
             false,
             false,
@@ -62,12 +64,22 @@ public class PracticeProgressResponse {
             practiceProgress.getClassReadDone(),
             practiceProgress.getAfterDone(),
             practiceProgress.getDuringTypeProgress(),
+            resolveAfterTypeProgress(practiceProgress),
             isPracticeCompleted(practiceProgress),
             rewardGranted,
             rewardAlreadyGranted,
             stats,
             practiceProgress.getUpdatedAt()
         );
+    }
+
+    /*
+     * after_type_progress 컬럼은 기존 행에는(추가 직후) NULL이므로
+     * 기본값(전부 false)으로 대체해서 내려준다.
+     */
+    private static Map<String, Boolean> resolveAfterTypeProgress(PracticeProgress practiceProgress) {
+        Map<String, Boolean> progress = practiceProgress.getAfterTypeProgress();
+        return progress != null ? progress : PracticeProgress.createDefaultAfterProgress();
     }
 
     private static boolean isPracticeCompleted(PracticeProgress practiceProgress) {

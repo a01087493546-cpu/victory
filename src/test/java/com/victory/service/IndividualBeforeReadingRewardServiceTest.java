@@ -22,8 +22,9 @@ class IndividualBeforeReadingRewardServiceTest {
 
     private final StudentStatsRepository studentStatsRepository = mock(StudentStatsRepository.class);
     private final StudentStatRewardLogRepository rewardLogRepository = mock(StudentStatRewardLogRepository.class);
+    private final StudentEndingService studentEndingService = mock(StudentEndingService.class);
     private final IndividualBeforeReadingRewardService service =
-        new IndividualBeforeReadingRewardService(studentStatsRepository, rewardLogRepository);
+        new IndividualBeforeReadingRewardService(studentStatsRepository, rewardLogRepository, studentEndingService);
 
     private User buildStudent(Long id) {
         User student = new User();
@@ -195,5 +196,24 @@ class IndividualBeforeReadingRewardServiceTest {
     void rewardType_doesNotConflictWithPracticeReadingReward() {
         assertThat(IndividualBeforeReadingRewardService.REWARD_TYPE)
             .isNotEqualTo(PracticeReadingRewardService.REWARD_TYPE);
+    }
+
+    /* 엔딩을 이미 본 학생은 능력치가 더 이상 오르지 않고 보상 로그도 남지 않는다 */
+    @Test
+    void grantBeforeCompleteRewardOnce_doesNotGrantAfterStudentHasSeenEnding() {
+        User student = buildStudent(1L);
+        StudentStats existing = buildStats(student, 0, 0, 0, 0);
+
+        when(studentEndingService.hasEnded(1L)).thenReturn(true);
+        when(studentStatsRepository.findByStudent_Id(1L)).thenReturn(Optional.of(existing));
+
+        IndividualBeforeReadingRewardService.RewardResult result =
+            service.grantBeforeCompleteRewardOnce(student, 10L);
+
+        assertThat(result.isRewardGranted()).isFalse();
+        assertThat(result.getStats().getMagic()).isEqualTo(0);
+        assertThat(result.getStats().getWisdom()).isEqualTo(0);
+        verify(studentStatsRepository, never()).save(any(StudentStats.class));
+        verify(rewardLogRepository, never()).save(any(StudentStatRewardLog.class));
     }
 }

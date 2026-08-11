@@ -243,7 +243,7 @@ public class AfterReadingService {
 
         validateClassReadingBookBelongsToClass(classReadingBookId, classId);
 
-        return buildSummaryItems(classReadingBookId, null, classId);
+        return buildSummaryItems(classReadingBookId, teacherId, classId);
     }
 
     @Transactional
@@ -304,6 +304,72 @@ public class AfterReadingService {
             likeCount,
             likedByMe,
             studentId);
+    }
+
+    @Transactional
+    public AfterReadingSummaryItem toggleSummaryLikeAsTeacher(
+            Long teacherId,
+            Long classId,
+            Long summaryId) {
+
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        if (!teacherClass.getId().equals(classId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "담당 학급의 간추리기에만 좋아요를 누를 수 있습니다."
+            );
+        }
+
+        Summary summary = summaryRepository.findById(summaryId)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "간추리기를 찾을 수 없습니다. summaryId=" + summaryId
+            ));
+        validateClassReadingBookBelongsToClass(summary.getClassReadingBookId(), classId);
+
+        // 학생용 toggleSummaryLike와 동일한 이유로 교사(심사계정)도 공용 DB에 좋아요를 남기지 않는다.
+        if (demoAccountService.isDemoAccount(teacherId)) {
+            ClassStudent writerClassStudent = findClassStudent(summary.getStudent().getId());
+            long fixedLikeCount = contentLikeRepository.countByContentTypeAndContentId(
+                CONTENT_TYPE_SUMMARY, summaryId);
+            boolean likedByMe = contentLikeRepository
+                .findByStudent_IdAndContentTypeAndContentId(teacherId, CONTENT_TYPE_SUMMARY, summaryId)
+                .isPresent();
+            return AfterReadingSummaryItem.from(
+                summary, writerClassStudent, fixedLikeCount, likedByMe, teacherId);
+        }
+
+        contentLikeRepository
+            .findByStudent_IdAndContentTypeAndContentId(
+                teacherId,
+                CONTENT_TYPE_SUMMARY,
+                summaryId)
+            .ifPresentOrElse(
+                contentLikeRepository::delete,
+                () -> {
+                    ContentLike like = new ContentLike();
+                    like.setStudent(findTeacher(teacherId));
+                    like.setContentType(CONTENT_TYPE_SUMMARY);
+                    like.setContentId(summaryId);
+                    contentLikeRepository.save(like);
+                });
+
+        ClassStudent writerClassStudent = findClassStudent(summary.getStudent().getId());
+        long likeCount = contentLikeRepository
+            .countByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, summaryId);
+        boolean likedByMe = contentLikeRepository
+            .findByStudent_IdAndContentTypeAndContentId(
+                teacherId,
+                CONTENT_TYPE_SUMMARY,
+                summaryId)
+            .isPresent();
+
+        return AfterReadingSummaryItem.from(
+            summary,
+            writerClassStudent,
+            likeCount,
+            likedByMe,
+            teacherId);
     }
 
     private List<AfterReadingSummaryItem> buildSummaryItems(

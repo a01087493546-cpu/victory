@@ -198,7 +198,7 @@ body.teacher-mode .teacher-top-button {
       min-width: 0;
       min-height: 0;
       display: grid;
-      grid-template-rows: 150px minmax(0, 1fr);
+      grid-template-rows: 150px minmax(0, 1fr) auto;
       gap: 24px;
       padding: 34px 36px 38px;
       border-radius: 32px;
@@ -252,6 +252,7 @@ body.teacher-mode .teacher-top-button {
     }
 
     .ar-type-card {
+      position: relative;
       width: 100%;
       min-width: 0;
       min-height: 360px;
@@ -269,6 +270,76 @@ body.teacher-mode .teacher-top-button {
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
       overflow: hidden;
       transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .ar-type-card.is-locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .ar-type-card .ar-type-badge {
+      display: none;
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      z-index: 1;
+    }
+
+    .ar-type-card.is-done .ar-type-badge.ar-type-badge-done {
+      display: inline-block;
+      background: #3f8f4f;
+      color: #fff;
+    }
+
+    .ar-type-card.is-locked .ar-type-badge.ar-type-badge-locked {
+      display: inline-block;
+      background: rgba(63, 38, 21, 0.78);
+      color: #fff;
+    }
+
+    .ar-my-book-start-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ar-my-book-start-hint {
+      margin: 0;
+      color: #8a5a24;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .ar-my-book-start-button {
+      padding: 16px 36px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #d99a3f 0%, #b9711f 100%);
+      color: #fff8ea;
+      font-size: 19px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(140, 84, 22, 0.32);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .ar-my-book-start-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .ar-my-book-start-button:disabled {
+      background: rgba(150, 111, 63, 0.35);
+      color: rgba(255, 255, 255, 0.75);
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .ar-type-card:nth-child(2) {
@@ -5013,6 +5084,104 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   flex: 0 0 auto !important;
   margin-top: 14px !important;
 }
+
+/* 읽기 후 유형 선택/질문 연습 가독성 보정 */
+[hidden] {
+  display: none !important;
+}
+
+.ar-type-board {
+  grid-template-rows: auto auto auto !important;
+  align-content: center;
+  gap: 16px !important;
+  padding: 26px 36px 28px !important;
+}
+
+.ar-board-title {
+  height: auto !important;
+  min-height: 0;
+}
+
+.ar-type-grid {
+  height: auto !important;
+  margin-top: 0 !important;
+  gap: 24px !important;
+}
+
+.ar-type-card {
+  min-height: 340px !important;
+}
+
+.ar-type-card.is-done .ar-type-badge.ar-type-badge-done {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 13px;
+  border: 1px solid rgba(176, 116, 31, 0.56);
+  background: linear-gradient(180deg, #fff8df 0%, #f4dfad 100%);
+  color: #8a5718;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ar-my-book-start-row {
+  min-height: 82px;
+  justify-content: center;
+  gap: 9px;
+}
+
+.ar-my-book-start-hint {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+}
+
+.ar-my-book-start-button {
+  min-width: 370px;
+  min-height: 58px;
+  padding: 0 44px !important;
+  font-size: 20px !important;
+  font-weight: 900;
+}
+
+.ar-type-board.is-my-book-mode {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 240, 0.84), rgba(250, 232, 194, 0.72)),
+    url("../assets/images/practice/after-reading-space-bg.png?v=space-1") center / cover no-repeat !important;
+}
+
+.ar-type-board.is-my-book-mode .ar-type-card {
+  border: 2px solid rgba(190, 132, 47, 0.56) !important;
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.97), rgba(247, 228, 188, 0.9)) !important;
+}
+
+.ar-type-board.is-my-book-mode .ar-type-card:hover {
+  border-color: rgba(190, 132, 47, 0.85) !important;
+}
+
+.ar-my-book-back-row {
+  width: 100%;
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#methodSentence {
+  font-size: 48px !important;
+  line-height: 1.48 !important;
+}
+
+@media (max-width: 900px) {
+  .ar-my-book-start-button {
+    width: min(100%, 370px);
+    min-width: 0;
+  }
+
+  #methodSentence {
+    font-size: 32px !important;
+  }
+}
 </style>
 </head>
 
@@ -5054,13 +5223,15 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       </header>
 
       <main class="ar-screen ar-menu-screen is-active" id="menuScreen">
-        <section class="ar-type-board">
+        <section class="ar-type-board" id="typeBoard">
           <div class="ar-board-title">
-            <h2>✦ 책의 종류를 골라요 ✦</h2>
+            <h2 id="typeMenuHeading">✦ 세 가지 책의 질문 만드는 법을 연습해요 ✦</h2>
           </div>
 
           <div class="ar-type-grid">
-            <button class="ar-type-card" type="button" onclick="selectBookType('story')">
+            <button class="ar-type-card" type="button" id="typeCard-story" onclick="handleTypeCardClick('story')">
+              <span class="ar-type-badge ar-type-badge-done">✓ 연습 완료</span>
+              <span class="ar-type-badge ar-type-badge-locked">🔒 잠김</span>
               <div>
                 <div class="ar-type-icon">
                   <img src="../assets/images/after-read/after-read-icon-story.png" alt="이야기 책 아이콘">
@@ -5070,7 +5241,9 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
               </div>
             </button>
 
-            <button class="ar-type-card" type="button" onclick="selectBookType('info')">
+            <button class="ar-type-card" type="button" id="typeCard-info" onclick="handleTypeCardClick('info')">
+              <span class="ar-type-badge ar-type-badge-done">✓ 연습 완료</span>
+              <span class="ar-type-badge ar-type-badge-locked">🔒 잠김</span>
               <div>
                 <div class="ar-type-icon">
                   <img src="../assets/images/after-read/after-read-icon-info.png" alt="정보를 담은 책 아이콘">
@@ -5080,7 +5253,9 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
               </div>
             </button>
 
-            <button class="ar-type-card" type="button" onclick="selectBookType('opinion')">
+            <button class="ar-type-card" type="button" id="typeCard-opinion" onclick="handleTypeCardClick('opinion')">
+              <span class="ar-type-badge ar-type-badge-done">✓ 연습 완료</span>
+              <span class="ar-type-badge ar-type-badge-locked">🔒 잠김</span>
               <div>
                 <div class="ar-type-icon">
                   <img src="../assets/images/after-read/after-read-icon-opinion.png" alt="주장을 담은 책 아이콘">
@@ -5089,6 +5264,15 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
                 <p>글쓴이의 주장과 이유를 찾아<br>생각을 정리하는 책</p>
               </div>
             </button>
+          </div>
+
+          <div class="ar-my-book-start-row" id="myBookStartRow">
+            <p class="ar-my-book-start-hint" id="myBookStartHint">세 가지 책을 모두 연습하면 내가 읽은 책으로 간추리기를 시작할 수 있어요.</p>
+            <button class="ar-my-book-start-button" type="button" id="myBookStartButton" onclick="startMyBookSelection()" disabled>내가 읽은 책 간추리기 시작</button>
+          </div>
+
+          <div class="ar-my-book-back-row" id="myBookBackRow" hidden>
+            <button class="ar-action-button is-brown" type="button" onclick="returnToPracticeMenu()">이전으로</button>
           </div>
         </section>
       </main>
@@ -5103,9 +5287,9 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
           </div>
 
           <div class="ar-study-stepbar">
-            <div class="ar-study-step" id="stepBar1"><span>1</span> 책 유형 고르기</div>
-            <div class="ar-study-step" id="stepBar2"><span>2</span> 간추리기 비법</div>
-            <div class="ar-study-step" id="stepBar3"><span>3</span> 질문으로 간추리기</div>
+            <div class="ar-study-step" id="stepBar1"><span>1</span> 질문 연습</div>
+            <div class="ar-study-step" id="stepBar2"><span>2</span> 내 책 질문 만들기</div>
+            <div class="ar-study-step" id="stepBar3"><span>3</span> 간추리기</div>
             <div class="ar-study-step" id="stepBar4"><span>4</span> 간추리기 공유</div>
           </div>
         </section>
@@ -5358,7 +5542,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
             </article>
 
             <div class="ar-panel-actions">
-              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('practiceWrite')">이전으로</button>
+              <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">이전으로</button>
               <button class="ar-action-button" type="button" id="bookSummaryButton" onclick="makeSummaryGuide()" disabled>다음으로</button>
             </div>
           </section>
@@ -5442,6 +5626,21 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     let isAfterReadingSaving = false;
     let currentBookQuestionIndex = 0;
     let restoredAfterReadingData = null;
+
+    /*
+     * 읽기 후 새 구조: 이야기/정보/주장 3종류 간추리기 질문 연습을 모두
+     * 마친 뒤에야 "내가 읽은 책" 적용 단계로 넘어간다.
+     * - afterReadingTypeProgress: 종류별 연습 완료 여부(체크 표시/잠금 해제용).
+     * - afterReadingMenuMode: "practice"(3종류 연습 선택) | "myBook"(내 책 종류 선택).
+     *   menuScreen(3개 카드)을 두 모드에서 그대로 재사용하고, 클릭 시 동작만 다르게 한다.
+     * - isPracticingBookType: 지금 studyScreen에 있는 이유가 "종류 연습 중"인지
+     *   "내 책 적용 중"인지 구분한다 - goWritePanelAfterPractice()가 이 값으로
+     *   "연습 완료 후 선택 화면 복귀"와 "내 책 질문 쓰기로 진행"을 나눈다.
+     */
+    const AFTER_READING_TYPE_ORDER = ["story", "info", "opinion"];
+    let afterReadingTypeProgress = { story: false, info: false, opinion: false };
+    let afterReadingMenuMode = "practice";
+    let isPracticingBookType = false;
 
     function getBookTypeLabelForAi() {
       const data = bookTypeData[selectedBookType];
@@ -5699,7 +5898,8 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       return loadDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
         bookType: null,
         questions: [],
-        summary: ""
+        summary: "",
+        typeProgress: { story: false, info: false, opinion: false }
       });
     }
 
@@ -5716,19 +5916,40 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     };
     const DEMO_SHARE_LIKES_KEY = "practiceSummaryLikes";
 
+    function normalizeDemoSummaryLikeState(value) {
+      if (value === true) {
+        // 예전에는 학생 화면만 좋아요가 가능했으므로 legacy boolean은 학생 값이다.
+        return { studentLiked: true, teacherLiked: false };
+      }
+      if (!value || typeof value !== "object" || Array.isArray(value)) {
+        return { studentLiked: false, teacherLiked: false };
+      }
+      return {
+        studentLiked: value.studentLiked === true,
+        teacherLiked: value.teacherLiked === true
+      };
+    }
+
+    function getDemoSummaryLikeActor() {
+      return isTeacherAfterReadingMode() ? "teacherLiked" : "studentLiked";
+    }
+
     function decorateDemoSharedSummaries(items) {
       if (!isDemoAccount() || !Array.isArray(items)) return items;
       const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+      const actor = getDemoSummaryLikeActor();
       return items.map(function (item) {
-        const liked = localLikes[String(item.id)] === true;
+        const likeState = normalizeDemoSummaryLikeState(localLikes[String(item.id)]);
         const seedLikeCount = item.demoLocal
           ? Number(item.likeCount || 0)
           : DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName] != null
           ? DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName]
           : Number(item.likeCount || 0);
         return Object.assign({}, item, {
-          likeCount: seedLikeCount + (liked ? 1 : 0),
-          likedByMe: liked
+          likeCount: seedLikeCount
+            + (likeState.studentLiked ? 1 : 0)
+            + (likeState.teacherLiked ? 1 : 0),
+          likedByMe: likeState[actor] === true
         });
       });
     }
@@ -5945,12 +6166,22 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
           return;
         }
 
-        const restoredData = await loadMyAfterReadingData();
+        /*
+         * loadMyAfterReadingData()가 restoreAfterReadingData()를 통해
+         * selectedBookType/질문·답 textarea/간추리기 값을 이미 채워
+         * 둔다 - 예전에는 여기서 곧바로 method/write 패널로 화면을 넘겨
+         * "허브"인 menuScreen을 건너뛰었다(읽기 후 진입 시 항상 질문유형
+         * 선택 화면부터 시작해야 한다는 정책과 충돌). 이제는 화면 전환을
+         * 하지 않고 menuScreen(기본 is-active)에 그대로 머문다 - 이미
+         * 채워진 값은 학생이 "내가 읽은 책 간추리기 시작"으로 같은 책
+         * 종류를 다시 선택하면 자연스럽게 이어서 보인다.
+         */
+        await loadMyAfterReadingData();
+        await loadAfterReadingTypeProgress();
+        renderTypeMenu();
         await renderShareList();
 
-        if (!openAfterReadTargetFromUrl()) {
-          resumeAfterReadingFromData(restoredData);
-        }
+        openAfterReadTargetFromUrl();
       } catch (error) {
         console.error("읽기 후 데이터를 불러오지 못했습니다.", error);
         const shareList = document.getElementById("shareList");
@@ -5978,9 +6209,52 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       if (question3) question3.placeholder = examples[2];
     }
 
+    /*
+     * "내가 읽은 책" 종류 선택 - 3종류 연습을 이미 마친 뒤에 하는 선택이므로
+     * method/builder/practiceWrite(연습 화면)를 다시 거치지 않고 곧바로
+     * 내 책 질문 쓰기(write)로 간다.
+     */
     function selectBookType(type) {
       selectedBookType = type;
       selectedPracticeQuestionIndexes = [];
+      isPracticingBookType = false;
+
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+
+      updateBookQuestionPlaceholders();
+
+      const hasSavedQuestion =
+        document.getElementById("question1")?.value.trim() ||
+        document.getElementById("question2")?.value.trim() ||
+        document.getElementById("question3")?.value.trim();
+
+      if (!hasSavedQuestion) {
+        prepareBookQuestionCards();
+      }
+
+      showStudyPanel("write");
+      syncBookQuestionCompletionState();
+
+      saveSelectedBookType().catch(function(error) {
+        console.error("책 유형 저장 실패", error);
+        alert("책 종류를 저장하지 못했어요. 잠시 후 다시 선택해 주세요.");
+      });
+    }
+
+    /*
+     * 책 종류별 간추리기 질문 "연습" 시작 - method(비법) → builder(고르기
+     * 연습) → practiceWrite(예시글로 직접 쓰기) 순서. selectedBookType은
+     * 기존 렌더 함수들이 그대로 참조하므로 재사용하되, 여기서는
+     * saveSelectedBookType()을 호출하지 않는다(연습 중인 종류가 곧
+     * "내가 읽은 책 종류"로 저장되면 안 되기 때문).
+     */
+    function startTypePractice(type) {
+      if (!isAfterReadingTypeOpen(type)) return;
+
+      selectedBookType = type;
+      selectedPracticeQuestionIndexes = [];
+      isPracticingBookType = true;
 
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
@@ -5988,10 +6262,171 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       renderMethodPanel();
       showStudyPanel("method");
       updateBookQuestionPlaceholders();
-      saveSelectedBookType().catch(function(error) {
-        console.error("책 유형 저장 실패", error);
-        alert("책 종류를 저장하지 못했어요. 잠시 후 다시 선택해 주세요.");
+    }
+
+    /*
+     * 3종류 카드 클릭 시 실제 동작 분기 - practice 모드면 그 종류를
+     * 연습하고, myBook 모드면 그 종류를 "내가 읽은 책"으로 확정한다.
+     */
+    function handleTypeCardClick(type) {
+      if (afterReadingMenuMode === "myBook") {
+        selectBookType(type);
+        return;
+      }
+      startTypePractice(type);
+    }
+
+    function isAfterReadingTypeOpen(type) {
+      if (isDemoAccount()) return true;
+
+      const index = AFTER_READING_TYPE_ORDER.indexOf(type);
+      if (index <= 0) return true;
+
+      const previousType = AFTER_READING_TYPE_ORDER[index - 1];
+      return afterReadingTypeProgress[previousType] === true;
+    }
+
+    function canStartMyBookSummary() {
+      if (isDemoAccount()) return true;
+
+      return AFTER_READING_TYPE_ORDER.every(function (type) {
+        return afterReadingTypeProgress[type] === true;
       });
+    }
+
+    /*
+     * "내가 읽은 책 간추리기 시작" 클릭 - 화면 이동 없이 menuScreen에
+     * 그대로 머물면서 모드만 "myBook"으로 바꾼다(카드 3개를 그대로
+     * 재사용). 완료 표시(✓ 연습 완료)는 참고용으로 남기되, myBook
+     * 모드에서는 카드 잠금 조건으로 쓰지 않는다.
+     */
+    function startMyBookSelection() {
+      if (!canStartMyBookSummary()) return;
+      afterReadingMenuMode = "myBook";
+      renderTypeMenu();
+    }
+
+    function returnToPracticeMenu() {
+      afterReadingMenuMode = "practice";
+      renderTypeMenu();
+    }
+
+    function renderTypeMenu() {
+      const board = document.getElementById("typeBoard");
+      const heading = document.getElementById("typeMenuHeading");
+      const hint = document.getElementById("myBookStartHint");
+      const startButton = document.getElementById("myBookStartButton");
+      const startRow = document.getElementById("myBookStartRow");
+      const backRow = document.getElementById("myBookBackRow");
+      const ready = canStartMyBookSummary();
+      const inMyBookMode = afterReadingMenuMode === "myBook";
+
+      if (board) board.classList.toggle("is-my-book-mode", inMyBookMode);
+
+      if (heading) {
+        heading.textContent = inMyBookMode
+          ? "✦ 이제 내가 읽은 책의 종류를 골라 간추려 봐요 ✦"
+          : "✦ 세 가지 책의 질문 만드는 법을 연습해요 ✦";
+      }
+
+      if (startRow) {
+        startRow.hidden = inMyBookMode;
+      }
+      if (backRow) backRow.hidden = !inMyBookMode;
+
+      if (hint) {
+        hint.textContent = ready
+          ? "이제 내가 읽은 책으로 간추리기를 시작할 수 있어요."
+          : "세 가지 책을 모두 연습하면 내가 읽은 책으로 간추리기를 시작할 수 있어요.";
+      }
+
+      if (startButton) {
+        startButton.disabled = !ready;
+      }
+
+      AFTER_READING_TYPE_ORDER.forEach(function (type) {
+        const card = document.getElementById("typeCard-" + type);
+        if (!card) return;
+
+        const done = afterReadingTypeProgress[type] === true;
+        const open = inMyBookMode ? true : isAfterReadingTypeOpen(type);
+
+        card.classList.toggle("is-done", done && !inMyBookMode);
+        card.classList.toggle("is-locked", !open);
+      });
+    }
+
+    async function loadAfterReadingTypeProgress() {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        afterReadingTypeProgress = Object.assign(
+          { story: false, info: false, opinion: false },
+          data.typeProgress || {}
+        );
+        return;
+      }
+
+      const context = getCurrentUserContext();
+      if (!context.id || !context.token) return;
+
+      try {
+        const progress = await fetchJson(
+          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/practice-progress",
+          { headers: { Authorization: "Bearer " + context.token } }
+        );
+
+        if (progress && progress.afterTypeProgress) {
+          afterReadingTypeProgress = Object.assign(
+            { story: false, info: false, opinion: false },
+            progress.afterTypeProgress
+          );
+        }
+      } catch (error) {
+        console.error("책 종류별 연습 완료 상태를 불러오지 못했습니다.", error);
+      }
+    }
+
+    async function saveAfterReadingTypeProgress() {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        data.typeProgress = Object.assign({}, afterReadingTypeProgress);
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        return;
+      }
+
+      const context = getCurrentUserContext();
+      if (!context.id || context.role !== "student" || !context.token) return;
+
+      await fetchJson(
+        AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/practice-progress",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + context.token
+          },
+          body: JSON.stringify({ afterTypeProgress: afterReadingTypeProgress })
+        }
+      );
+    }
+
+    /*
+     * 종류 연습(method → builder → practiceWrite) 완료 - 간추리기로
+     * 이어가지 않고 선택 화면으로 돌아온다. 다음 종류가 있으면 잠금이
+     * 풀린 상태로 보인다(isAfterReadingTypeOpen이 afterReadingTypeProgress를
+     * 참조하므로 별도 처리 불필요).
+     */
+    function completeTypePractice(type) {
+      afterReadingTypeProgress[type] = true;
+      isPracticingBookType = false;
+
+      saveAfterReadingTypeProgress().catch(function (error) {
+        console.error("책 종류별 연습 완료 상태를 저장하지 못했습니다.", error);
+      });
+
+      document.getElementById("studyScreen").classList.remove("is-active");
+      document.getElementById("menuScreen").classList.add("is-active");
+      renderTypeMenu();
     }
 
     async function saveSelectedBookType() {
@@ -6034,6 +6469,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     function goTypeMenu() {
       document.getElementById("studyScreen").classList.remove("is-active");
       document.getElementById("menuScreen").classList.add("is-active");
+      renderTypeMenu();
     }
 
     function showStudyPanel(panelName) {
@@ -6110,11 +6546,11 @@ if (demoBanner) {
 
     function updateStepBar(panelName) {
       const stepMap = {
-        method: 2,
-        builder: 3,
-        practiceWrite: 3,
-        write: 3,
-        summary: 4,
+        method: 1,
+        builder: 1,
+        practiceWrite: 1,
+        write: 2,
+        summary: 3,
         share: 4
       };
 
@@ -6688,6 +7124,17 @@ if (selectedBookType === "opinion") {
     return;
   }
 
+  /*
+   * 지금 이 화면이 "3종류 중 하나 연습"이었다면 내 책 질문 쓰기로
+   * 넘어가지 않고 선택 화면으로 돌아가 완료 표시만 남긴다. 이미 3종류를
+   * 마치고 "내가 읽은 책" 단계에 들어와 있을 때만(isPracticingBookType
+   * === false) 그대로 write 패널로 진행한다.
+   */
+  if (isPracticingBookType) {
+    completeTypePractice(selectedBookType);
+    return;
+  }
+
   const hasSavedQuestion =
     document.getElementById("question1")?.value.trim() ||
     document.getElementById("question2")?.value.trim() ||
@@ -7082,7 +7529,14 @@ if (selectedBookType === "opinion") {
           summary: summaryToStore,
           summaryText: summaryToStore,
           sharedAt: previousData.sharedAt || now,
-          afterDone: true
+          afterDone: true,
+          /*
+           * 3종류 연습 완료 상태는 이 저장(간추리기 완료)과 무관한 값이라
+           * 새로 만들지 않고 이전 값을 그대로 옮긴다 - 여기서 새 객체를
+           * 통째로 만들면서 typeProgress를 빠뜨리면 방금 완료한 연습
+           * 기록이 사라진다.
+           */
+          typeProgress: previousData.typeProgress || { story: false, info: false, opinion: false }
         });
 
         await fetchJson(
@@ -7256,12 +7710,11 @@ if (selectedBookType === "opinion") {
             : authorName + "의 간추리기";
           const likeCount = Number(item.likeCount || 0);
           const isLiked = item.likedByMe === true;
-          const footerContent = isTeacherAfterReadingMode()
-            ? '<span class="ar-share-like-count">♥ 좋아요 ' + likeCount + '</span>'
-            : '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
-                'onclick=\'toggleSummaryLike(' + JSON.stringify(String(item.id)) + ')\'>' +
-                (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
-              '</button>';
+          const footerContent =
+            '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
+              'onclick=\'toggleSummaryLike(' + JSON.stringify(String(item.id)) + ')\'>' +
+              (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
+            '</button>';
 
           return (
             '<article class="ar-share-item">' +
@@ -7286,8 +7739,8 @@ if (selectedBookType === "opinion") {
     async function toggleSummaryLike(summaryId) {
       const context = getCurrentUserContext();
 
-      if (!context.id || context.role !== "student" || !context.token) {
-        alert("학생 계정으로 로그인한 뒤 좋아요를 누를 수 있어요.");
+      if (!context.id || !context.token || (context.role !== "student" && context.role !== "teacher")) {
+        alert("로그인한 뒤 좋아요를 누를 수 있어요.");
         return;
       }
 
@@ -7298,21 +7751,28 @@ if (selectedBookType === "opinion") {
       if (isDemoAccount()) {
         const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
         const key = String(summaryId);
-        if (localLikes[key]) delete localLikes[key];
-        else localLikes[key] = true;
+        const actor = getDemoSummaryLikeActor();
+        const likeState = normalizeDemoSummaryLikeState(localLikes[key]);
+        likeState[actor] = likeState[actor] !== true;
+        if (!likeState.studentLiked && !likeState.teacherLiked) delete localLikes[key];
+        else localLikes[key] = likeState;
         saveDemoState(DEMO_SHARE_LIKES_KEY, localLikes);
         await renderShareList();
         return;
       }
 
       try {
+        const likeUrl = context.role === "teacher"
+          ? AFTER_READING_API_BASE_URL +
+              "/api/teachers/" + context.id +
+              "/classes/" + currentClassId +
+              "/after-reading/summaries/" + encodeURIComponent(summaryId) + "/like"
+          : AFTER_READING_API_BASE_URL +
+              "/api/students/" + context.id +
+              "/after-reading/summaries/" + encodeURIComponent(summaryId) + "/like";
+
         await fetchJson(
-          AFTER_READING_API_BASE_URL +
-            "/api/students/" +
-            context.id +
-            "/after-reading/summaries/" +
-            encodeURIComponent(summaryId) +
-            "/like",
+          likeUrl,
           {
             method: "POST",
             headers: {
@@ -7460,42 +7920,6 @@ if (selectedBookType === "opinion") {
       showStudyPanel("share");
       renderShareList();
       return true;
-    }
-
-    function getRestoredQuestionCount(data) {
-      if (!data || !Array.isArray(data.questions)) {
-        return 0;
-      }
-
-      return data.questions.filter(function(item) {
-        return item && item.question && item.answer;
-      }).length;
-    }
-
-    function hasCompleteRestoredAfterReadingData(data) {
-      const hasBookType = !!(data && data.bookType && bookTypeData[data.bookType]);
-      const hasSummary = !!(data && data.summary && data.summary.trim());
-
-      return hasBookType && getRestoredQuestionCount(data) === 3 && hasSummary && data.afterDone === true;
-    }
-
-    function resumeAfterReadingFromData(data) {
-      if (!data || !data.bookType || !bookTypeData[data.bookType]) {
-        return;
-      }
-
-      document.getElementById("menuScreen").classList.remove("is-active");
-      document.getElementById("studyScreen").classList.add("is-active");
-
-      const restoredQuestionCount = getRestoredQuestionCount(data);
-
-      if (hasCompleteRestoredAfterReadingData(data) || restoredQuestionCount > 0) {
-        showStudyPanel("write");
-        showBookQuestionCard(0);
-        return;
-      }
-
-      showStudyPanel("method");
     }
 
     function isTeacherMode() {

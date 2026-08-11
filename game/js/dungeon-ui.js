@@ -10,14 +10,42 @@ const DungeonUI = (() => {
   let _defenseTimer = null;
   let _currentDungeonIdx = 0;
 
+  /*
+   * 던전 전투 능력치 연계 시스템 도입 후 재조정한 쿨타임이다(기존 대비
+   * 약 3배). 능력치를 매 공격마다 소모하는 자원형으로 바꾸면서 쿨타임이
+   * 너무 짧으면 몇 초 만에 자원을 전부 써버려 전투가 자원 총량만으로
+   * 즉시 결정돼 버린다 - 쿨타임을 늘려 전투 시간을 실제 제한시간에 더
+   * 가깝게 늘림으로써 적의 공격도 여러 번 맞으며 진짜 자원 관리/방어
+   * 타이밍 싸움이 되도록 자동 전투 시뮬레이션으로 다시 산출했다.
+   */
   const SKILL_COOLDOWNS = {
-    ilgyeok:    800,
-    yeonsoek:   1200,
+    ilgyeok:    2400,
+    yeonsoek:   3600,
     bangeo:     0,
-    cheolbyeok: 3000,
-    bulkkot:    1000,
-    hwayeom:    5000,
+    cheolbyeok: 9000,
+    bulkkot:    3000,
+    hwayeom:    15000,
   };
+
+  // 기술 → 소모 능력치 매핑 (마법력=공격, 지혜=필살, 용기=방어)
+  const SKILL_STAT_MAP = {
+    ilgyeok:    'magic',
+    yeonsoek:   'magic',
+    bangeo:     'courage',
+    cheolbyeok: 'courage',
+    bulkkot:    'wisdom',
+    hwayeom:    'wisdom',
+  };
+
+  const STAT_LABEL = { magic: '마법력', stamina: '체력', wisdom: '지혜', courage: '용기' };
+
+  function getDungeonT(s) {
+    return Math.round((s && s.dungeon && s.dungeon.requiredStatAvg) || 20);
+  }
+
+  function getSkillCost(skillName, s) {
+    return PlayerStats.calcSkillCost(skillName, getDungeonT(s));
+  }
 
   // 방어/철벽 실제 유지 시간
   // SKILL_COOLDOWNS는 다시 사용 가능해지는 시간이고,
@@ -60,8 +88,26 @@ const DungeonUI = (() => {
     const enemyBar = $('enemy-bar');
     if (heroBar)  { heroBar.style.width  = heroP  + '%'; heroBar.classList.toggle('hp-low',  heroP  <= 25); }
     if (enemyBar) { enemyBar.style.width = enemyP + '%'; enemyBar.classList.toggle('hp-low', enemyP <= 25); }
-    if ($('hero-num'))  $('hero-num').textContent  = heroHp  + ' / ' + s.player.maxHp;
+    if ($('hero-num'))  $('hero-num').textContent  = 'HP ' + heroHp  + ' / ' + s.player.maxHp;
     if ($('enemy-num')) $('enemy-num').textContent = enemyHp + ' / ' + s.enemy.maxHp;
+
+    // damagePlayer()가 HP와 battleStamina를 함께 확정한 뒤 같은 렌더
+    // 주기에서 두 표시를 갱신한다.
+    updateStatHud();
+  }
+
+  /*
+   * 상단 HUD는 전투 시작 시 복사한 4개 능력치 자원을 그대로
+   * 보여준다. 체력에서 계산된 전투 생명력은 별도 HP 바에서만
+   * 'HP 현재/최대'로 표시해 두 개념을 섞지 않는다.
+   */
+  function updateStatHud() {
+    const s = GameState.get();
+    if (!s) return;
+    if ($('battleMagicValue'))   $('battleMagicValue').textContent   = Math.max(0, s.player.magic);
+    if ($('battleStaminaValue')) $('battleStaminaValue').textContent = Math.max(0, s.player.battleStamina);
+    if ($('battleWisdomValue'))  $('battleWisdomValue').textContent  = Math.max(0, s.player.wisdom);
+    if ($('battleCourageValue')) $('battleCourageValue').textContent = Math.max(0, s.player.courage);
   }
 
   function updateTimer() {
@@ -79,20 +125,33 @@ const DungeonUI = (() => {
     const s = GameState.get();
     if (!s) return;
 
-    ['ilgyeok','yeonsoek','cheolbyeok','bulkkot','hwayeom'].forEach(id => {
+    /*
+     * 능력치가 기술 소모량보다 적으면 쿨타임이 없어도 버튼을 비활성화
+     * 한다. 우선순위: 쿨타임 표시 > 능력치 부족 안내 > 평소 소모량 안내.
+     */
+    ['ilgyeok','yeonsoek','bangeo','cheolbyeok','bulkkot','hwayeom'].forEach(id => {
       const btn = $('btn-' + id);
       if (!btn) return;
+
       const cd = s.cooldowns[id] || 0;
+      const statKey = SKILL_STAT_MAP[id];
+      const cost = getSkillCost(id, s);
+      const have = s.player[statKey] || 0;
+      const insufficient = have < cost;
+      const small = btn.querySelector('.skill-text small');
+
       if (cd > 0) {
         btn.disabled = true;
         btn.classList.add('disabled');
-        const small = btn.querySelector('.skill-text small');
         if (small) small.textContent = Math.ceil(cd / 1000) + '초 후 사용 가능';
+      } else if (insufficient) {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+        if (small) small.textContent = STAT_LABEL[statKey] + ' 부족';
       } else {
         btn.disabled = false;
         btn.classList.remove('disabled');
-        const small = btn.querySelector('.skill-text small');
-        if (small) small.textContent = '';
+        if (small) small.textContent = STAT_LABEL[statKey] + ' ' + cost;
       }
     });
 
@@ -103,6 +162,8 @@ const DungeonUI = (() => {
       btn.classList.toggle('defending', isDefending);
     });
     setFighterClass('hero', 'defense-stance', isDefending);
+
+    updateStatHud();
   }
 
   function addLog(msg, type) {
@@ -390,12 +451,17 @@ const DungeonUI = (() => {
     addLog('적이 강한 공격을 준비하고 있습니다.', 'warning');
   }
 
-  function startBattle(dungeonIdx) {
+  async function startBattle(dungeonIdx) {
     // 다시 도전하기 버튼에서 사용할 수 있도록 현재 던전 번호를 저장합니다.
     _currentDungeonIdx = dungeonIdx;
 
     clearTimers();
-    GameState.init(dungeonIdx);
+    /*
+     * 일반계정은 GameState.init()이 실제 student_stats를 서버에서
+     * 새로 조회한 뒤 전투 자원을 만든다(비동기) - 조회가 끝나기 전에
+     * 화면이 바뀌면 안 되므로 여기서 await한다.
+     */
+    await GameState.init(dungeonIdx);
     const s = GameState.get();
     if (!s) return;
     GameState.setRunning(true);
@@ -405,14 +471,10 @@ const DungeonUI = (() => {
     const titleMap = ['초급 던전','중급 던전','고급 던전'];
     if ($('enemy-lbl'))    $('enemy-lbl').textContent    = titleMap[dungeonIdx] || s.dungeon.name;
     if ($('enemy-lbl2'))   $('enemy-lbl2').textContent   = s.dungeon.name;
-    if ($('stat-magic'))   $('stat-magic').textContent   = s.player.magic;
-    if ($('stat-stamina')) $('stat-stamina').textContent = s.player.stamina;
-    if ($('stat-wisdom'))  $('stat-wisdom').textContent  = s.player.wisdom;
-    if ($('stat-courage')) $('stat-courage').textContent = s.player.courage;
 
     setAnim('hero-spr', 'idle');
     setAnim('enemy-spr', 'idle');
-    updateBars(); updateTimer();
+    updateBars(); updateTimer(); updateButtons();
     switchSkillTabInternal('atk');
 
     if ($('battle-log')) $('battle-log').innerHTML = '';
@@ -451,7 +513,7 @@ const DungeonUI = (() => {
           dungeon.enemy.normalAtk,
           s.player.isDefending,
           s.player.defenseMode,
-          s.player.wisdom
+          s.player.courage
         );
         GameState.damagePlayer(result.damage);
         if (result.blocked) {
@@ -482,7 +544,7 @@ const DungeonUI = (() => {
             dungeon.enemy.heavyAtk,
             s.player.isDefending,
             s.player.defenseMode,
-            s.player.wisdom
+            s.player.courage
           );
           GameState.damagePlayer(result.damage);
           if (result.blocked) {
@@ -516,10 +578,35 @@ const DungeonUI = (() => {
 
   // ── 스킬 사용 ──
 
+  // 목적격 조사(을/를)까지 미리 붙여 문장을 그대로 이어 붙일 수 있게 한다.
+  const SKILL_LABEL_OBJ = {
+    ilgyeok: '기본 베기를', yeonsoek: '연속 공격을',
+    bangeo: '기본 막기를', cheolbyeok: '완전 방어를',
+    bulkkot: '강한 공격을', hwayeom: '초강력 필살기를',
+  };
+
+  // 능력치별 "이/가 부족해" 조사가 다르므로(마법력이/지혜가/용기가)
+  // 능력치 이름에 조사를 미리 붙여둔다.
+  const STAT_LACK_PREFIX = { magic: '마법력이', wisdom: '지혜가', courage: '용기가' };
+
   function useSkill(skillName) {
     const s = GameState.get();
     if (!s || !s.isRunning) return;
     if ((s.cooldowns[skillName] || 0) > 0) return;
+
+    const statKey = SKILL_STAT_MAP[skillName];
+    const cost = getSkillCost(skillName, s);
+
+    if (statKey && (s.player[statKey] || 0) < cost) {
+      addLog(STAT_LACK_PREFIX[statKey] + ' 부족해 ' + SKILL_LABEL_OBJ[skillName] + ' 사용할 수 없어요.', 'warning');
+      updateButtons();
+      return;
+    }
+
+    if (statKey) {
+      s.player[statKey] -= cost;
+      updateStatHud();
+    }
 
     if (skillName === 'bangeo' || skillName === 'cheolbyeok') {
       _doDefendSkill(skillName, s); return;
@@ -541,19 +628,21 @@ const DungeonUI = (() => {
     GameState.setDefending(true, mode);
     updateButtons();
 
+    const defendCost = getSkillCost(skillName, s);
+
     if (skillName === 'cheolbyeok') {
       // 철벽은 더 강한 방어막 효과
       showImpact('hero','shield');
       showImpact('hero','shield');
       showTextPopup('hero','완전 방어','block');
       playFighterMotion('hero', 'ironwall-burst', 900);
-      addLog('완전 방어: 0 피해', 'defend');
+      addLog('완전 방어! 용기 ' + defendCost + '를 사용해 피해를 크게 줄였습니다.', 'defend');
     } else {
       // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
       showTextPopup('hero','GUARD','block');
       playFighterMotion('hero', 'guard-burst', 650);
-      addLog('방어 자세', 'defend');
+      addLog('기본 막기! 용기 ' + defendCost + '를 사용해 피해를 줄였습니다.', 'defend');
     }
 
     // 버튼을 떼도 바로 풀리지 않고, 정해진 시간 동안 방어 유지
@@ -581,6 +670,8 @@ const DungeonUI = (() => {
       playFighterMotion('hero','hero-lunge',470);
     }
 
+    const atkCost = getSkillCost(skillName, s);
+
     setTimeout(() => {
       if (!s.isRunning) return;
       const result = skillName === 'ilgyeok'
@@ -589,6 +680,7 @@ const DungeonUI = (() => {
 
       // 연속 베기는 실제 2타로 나눠서 보여줌
       if (skillName === 'yeonsoek' && result.hits) {
+        addLog('연속 공격! 마법력 ' + atkCost + '를 사용했습니다.', 'player');
         result.hits.forEach((hit, index) => {
           setTimeout(() => {
             if (!s.isRunning) return;
@@ -643,8 +735,7 @@ const DungeonUI = (() => {
         playHitEffect('enemy');
         shakeScreen(result.isCrit);
 
-        // 로그는 나중에 다시 다듬을 예정이라 지금은 최소만 표시
-        addLog('기본 베기: ' + result.damage + ' 피해', result.isCrit ? 'crit' : 'player');
+        addLog('기본 베기! 마법력 ' + atkCost + '를 사용해 ' + result.damage + '의 피해를 주었습니다.', result.isCrit ? 'crit' : 'player');
 
         updateBars();
 
@@ -658,7 +749,8 @@ const DungeonUI = (() => {
   }
 
   function _doBulkkot(s) {
-    const result = BattleEngine.skillBulkkot(s.player.magic);
+    const result = BattleEngine.skillBulkkot(s.player.wisdom);
+    const bulkkotCost = getSkillCost('bulkkot', s);
 
     const slots = ['불꽃 베기'];
     const heroFighter = getFighter('hero');
@@ -704,8 +796,7 @@ const DungeonUI = (() => {
         playHitEffect('enemy');
         shakeScreen(true);
 
-        // 로그는 나중에 다시 다듬을 예정
-        addLog('강한 공격: ' + result.damage + ' 피해', 'crit');
+        addLog('강한 공격! 지혜 ' + bulkkotCost + '을 사용해 ' + result.damage + '의 피해를 주었습니다.', 'crit');
 
         updateBars();
 
@@ -718,7 +809,8 @@ const DungeonUI = (() => {
   }
 
   function _doHwayeom(s) {
-    const result = BattleEngine.skillHwayeom(s.player.magic);
+    const result = BattleEngine.skillHwayeom(s.player.wisdom);
+    const hwayeomCost = getSkillCost('hwayeom', s);
 
     const slots = ['화염 폭발'];
     const heroFighter = getFighter('hero');
@@ -765,7 +857,7 @@ const DungeonUI = (() => {
         playHitEffect('enemy');
         shakeScreen(true);
 
-        addLog('초강력 필살기: ' + result.damage + ' 피해', 'crit');
+        addLog('초강력 필살기! 지혜 ' + hwayeomCost + '을 사용해 ' + result.damage + '의 피해를 주었습니다.', 'crit');
 
         updateBars();
 
@@ -809,7 +901,55 @@ const DungeonUI = (() => {
     }
 
     const battleResponse = await GameAPI.submitBattleResult(s.dungeon.apiId, result);
+
+    if (result === 'victory' && battleResponse) {
+      applyDemoStatResetIfNeeded(s.dungeon.rewardValue, battleResponse);
+
+      /*
+       * 심사계정은 공용 DB에 has_seen_ending을 남기지 않으므로 백엔드가
+       * 현재 브라우저의 엔딩 완료 여부를 알 수 없다. 예전 보정은 "이미
+       * 봤으면 false"만 덮어써서, 서버 응답에 showEnding이 없거나 false인
+       * 경우 최초 고급 클리어까지 엔딩이 막힐 수 있었다. 고급 여부와
+       * mq_demo_hasSeenEnding을 함께 사용해 최초(true)/재도전(false)을 모두
+       * 여기서 확정한다. 일반계정 응답은 전혀 덮어쓰지 않는다.
+       */
+      if (typeof isDemoAccount === 'function' && isDemoAccount()) {
+        const hasDemoSeenEnding = typeof loadDemoState === 'function'
+          && loadDemoState('hasSeenEnding', false) === true;
+        const isAdvancedDungeon = s.dungeon && s.dungeon.difficulty === '고급';
+        battleResponse.showEnding = isAdvancedDungeon && !hasDemoSeenEnding;
+      }
+    }
+
     showResult(result === 'victory', result === 'timeout', battleResponse);
+  }
+
+  /*
+   * 일반계정은 백엔드(DungeonService.submitBattleResult)가 이미 student_stats를
+   * rewardStatResetValue로 덮어쓰고 그 결과를 battleResponse.updatedStats로
+   * 돌려준다. 하지만 심사계정은 공용 DB student_stats를 절대 건드리지
+   * 않으므로(StudentStatsService.applyReward가 심사계정에서 조용히 no-op)
+   * 백엔드가 돌려주는 updatedStats는 "리셋 전" 값 그대로다 - 여기서 이
+   * 브라우저의 mq_demo_studentStats에 직접 반영하고, 팝업/나의 힘 화면이
+   * 볼 값도 그 자리에서 새 값으로 바꿔치기한다. rewardValue가 없으면(고급/
+   * 최종 단계) 리셋하지 않는다. 이 브라우저에서 이미 엔딩을 봤다면(능력치
+   * 시스템 종료) 초급/중급을 재클리어해도 더 이상 리셋하지 않는다.
+   */
+  function applyDemoStatResetIfNeeded(rewardValue, battleResponse) {
+    if (!rewardValue) return;
+    if (typeof isDemoAccount !== 'function' || !isDemoAccount()) return;
+    if (typeof saveDemoState !== 'function') return;
+    if (typeof loadDemoState === 'function' && loadDemoState('hasSeenEnding', false)) return;
+
+    const resetStats = {
+      magic: rewardValue,
+      stamina: rewardValue,
+      wisdom: rewardValue,
+      courage: rewardValue
+    };
+
+    saveDemoState('studentStats', resetStats);
+    battleResponse.updatedStats = resetStats;
   }
 
   function showResult(isWin, isTimeout, battleResponse) {
@@ -827,29 +967,35 @@ const DungeonUI = (() => {
     if (isWin) {
       $('r-emoji').textContent = '🏆';
       $('r-title').textContent = s.dungeon.name + ' 처치 성공!';
+      $('r-rewards').innerHTML = '';
 
       if (battleResponse && battleResponse.updatedStats) {
-        const stats = battleResponse.updatedStats;
-        $('r-sub').innerHTML = '';
-        $('r-rewards').innerHTML =
-          '<div class="reward-chip-result">마법력 ' + stats.magic + '</div>' +
-          '<div class="reward-chip-result">체력 ' + stats.stamina + '</div>' +
-          '<div class="reward-chip-result">지혜 ' + stats.wisdom + '</div>' +
-          '<div class="reward-chip-result">용기 ' + stats.courage + '</div>' +
-          '<div class="reward-chip-result">던전 클리어!</div>';
+        const rewardValue = s.dungeon.rewardValue;
+
+        /*
+         * CSS 자동 줄바꿈에 맡기면 팝업 폭(390px)에서 문장이 애매한
+         * 지점에서 끊기므로, <br>로 의미 단위 2줄을 직접 고정한다 -
+         * "기존 능력치 소진"과 "새 기준값으로 시작"을 분리해서 학생이
+         * oldStat+N이 아니라 리셋임을 오해 없이 읽도록 한다.
+         */
+        if (rewardValue === 10) {
+          $('r-sub').innerHTML = '모험에 사용한 기존 능력치는 모두 사라집니다.<br>새로운 시작을 위해 각 능력치를 10씩 얻었습니다.';
+        } else if (rewardValue === 15) {
+          $('r-sub').innerHTML = '모험에 사용한 기존 능력치는 모두 사라집니다.<br>새로운 시작을 위해 각 능력치를 15씩 얻었습니다.';
+        } else {
+          $('r-sub').textContent = '루미 모험의 마지막 이야기를 확인할 수 있어요.';
+        }
       } else {
         $('r-sub').textContent = '능력치 반영에 실패했어요, 다시 시도해주세요.';
-        $('r-rewards').innerHTML =
-          '<div class="reward-chip-result">마법력 +' + s.player.magic + '</div>' +
-          '<div class="reward-chip-result">체력 +' + s.player.stamina + '</div>' +
-          '<div class="reward-chip-result">던전 클리어!</div>';
       }
     } else {
       // 패배 / 시간 초과 결과 화면
       $('r-emoji').textContent = isTimeout ? '⌛' : '☠';
       $('r-title').textContent = isTimeout ? '시간이 모두 지났습니다' : '전투에 실패했습니다';
 
-      $('r-sub').innerHTML = '';
+      $('r-sub').textContent = isTimeout
+        ? ''
+        : "책을 읽고 '나의 힘'을 더 모아서 도전해보세요!";
       $('r-rewards').innerHTML = '';
     }
 
@@ -870,7 +1016,7 @@ const DungeonUI = (() => {
 
     if (secondaryBtn) {
       if (isWin && battleResponse && battleResponse.showEnding) {
-        secondaryBtn.textContent = '엔딩 보러가기';
+        secondaryBtn.textContent = '마지막 이야기 보기';
         secondaryBtn.onclick = function () {
           location.href = '../frontend/student/ending-intro.html';
         };
@@ -937,4 +1083,3 @@ function restartCurrentDungeon() {
   // 현재 던전으로 다시 전투를 시작합니다.
   startBattle(s.dungeon.id);
 }
-

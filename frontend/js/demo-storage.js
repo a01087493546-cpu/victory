@@ -95,6 +95,52 @@ function updateDemoApprovalRequest(scope, requestId, status, rejectedReason) {
   }));
 }
 
+/*
+  심사 교사(tt11)가 "이미 공용 DB에 승인 상태로 심어진 책수다방 글"
+  (DemoExperienceDataInitializer/DemoClassActivityInitializer가 만든 진짜
+  Response 행, 학생 화면에 이미 공개돼 있음) 또는 화면에서만 존재하는
+  "가상 승인대기 예시"의 상태를 이 브라우저에서만 뒤집어 보여줄 때 쓴다.
+  loadDemoApprovalRequests/updateDemoApprovalRequest(ss01이 이 브라우저에서
+  직접 쓴 글 전용)와는 완전히 다른 대상이라 별도 key를 쓴다 - 공용 DB
+  행 자체는 절대 건드리지 않고, "이 postId는 이 브라우저에서 이 상태로
+  보여준다"는 override만 로컬에 남긴다.
+*/
+const DEMO_BOOK_CHAT_OVERRIDE_STORAGE_KEYS = {
+  practice: "practiceBookChatSeedOverrides",
+  individual: "individualBookChatSeedOverrides"
+};
+
+function getDemoBookChatOverrideStorageKey(scope) {
+  return DEMO_BOOK_CHAT_OVERRIDE_STORAGE_KEYS[scope] || null;
+}
+
+function loadDemoBookChatStatusOverrides(scope) {
+  const storageKey = getDemoBookChatOverrideStorageKey(scope);
+  if (!storageKey) return {};
+  const overrides = loadDemoState(storageKey, {});
+  return overrides && typeof overrides === "object" && !Array.isArray(overrides) ? overrides : {};
+}
+
+function getDemoBookChatStatusOverride(scope, postId) {
+  const overrides = loadDemoBookChatStatusOverrides(scope);
+  return overrides[String(postId)] || null;
+}
+
+function saveDemoBookChatStatusOverride(scope, postId, status, reason) {
+  const storageKey = getDemoBookChatOverrideStorageKey(scope);
+  if (!storageKey || !postId) return null;
+
+  const overrides = loadDemoBookChatStatusOverrides(scope);
+  const saved = {
+    status: status,
+    reason: status === "rejected" ? String(reason || "") : "",
+    updatedAt: new Date().toISOString()
+  };
+  overrides[String(postId)] = saved;
+  saveDemoState(storageKey, overrides);
+  return saved;
+}
+
 function saveDemoState(key, value) {
   try {
     localStorage.setItem(MQ_DEMO_STORAGE_PREFIX + key, JSON.stringify(value));

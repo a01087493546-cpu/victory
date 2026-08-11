@@ -72,6 +72,15 @@ public class BookRecommendationService {
     @Transactional
     public BookRecommendationItem createRecommendation(Long studentId, BookRecommendationCreateRequest request) {
         User student = findUser(studentId);
+
+        // toggleLikeAsStudent/AsTeacher와 동일한 이유로 추천 글 작성도 심사계정은 서버에 남기지 않는다.
+        if (Boolean.TRUE.equals(student.getDemoAccount())) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "심사계정의 책추천 글은 브라우저에만 저장됩니다."
+            );
+        }
+
         findClassStudent(studentId);
         ReadingRecord readingRecord = requireCompletedOwnedReadingRecord(studentId, request.getReadingRecordId());
         List<Long> teaserResponseIds =

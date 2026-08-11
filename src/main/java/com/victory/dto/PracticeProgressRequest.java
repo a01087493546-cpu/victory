@@ -17,4 +17,5 @@ public class PracticeProgressRequest {
     private Boolean afterDone;
 
     private Map<String, Boolean> duringTypeProgress;
+    private Map<String, Boolean> afterTypeProgress;
 }

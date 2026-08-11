@@ -23,8 +23,9 @@ class IndividualBookChatRewardServiceTest {
 
     private final StudentStatsRepository studentStatsRepository = mock(StudentStatsRepository.class);
     private final StudentStatRewardLogRepository rewardLogRepository = mock(StudentStatRewardLogRepository.class);
+    private final StudentEndingService studentEndingService = mock(StudentEndingService.class);
     private final IndividualBookChatRewardService service =
-        new IndividualBookChatRewardService(studentStatsRepository, rewardLogRepository);
+        new IndividualBookChatRewardService(studentStatsRepository, rewardLogRepository, studentEndingService);
 
     private static final LocalDate DAY1 = LocalDate.of(2026, 7, 27);
     private static final LocalDate DAY2 = LocalDate.of(2026, 7, 28);
@@ -253,5 +254,22 @@ class IndividualBookChatRewardServiceTest {
         assertThat(postResult.getStats().getCourage()).isEqualTo(9);
         assertThat(commentResult.isRewardGranted()).isTrue();
         assertThat(commentResult.getStats().getCourage()).isEqualTo(10);
+    }
+
+    /* 엔딩을 이미 본 학생은 글쓰기/댓글 어느 쪽으로도 용기가 더 이상 오르지 않는다 */
+    @Test
+    void grantPostDailyRewardOnce_doesNotGrantAfterStudentHasSeenEnding() {
+        User student = buildStudent(1L);
+        StudentStats existing = buildStats(student, 0, 0, 0, 0);
+
+        when(studentEndingService.hasEnded(1L)).thenReturn(true);
+        when(studentStatsRepository.findByStudent_Id(1L)).thenReturn(Optional.of(existing));
+
+        IndividualBookChatRewardService.RewardResult result = service.grantPostDailyRewardOnce(student, DAY1);
+
+        assertThat(result.isRewardGranted()).isFalse();
+        assertThat(result.getStats().getCourage()).isEqualTo(0);
+        verify(studentStatsRepository, never()).save(any(StudentStats.class));
+        verify(rewardLogRepository, never()).save(any(StudentStatRewardLog.class));
     }
 }

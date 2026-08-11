@@ -42,6 +42,7 @@ public class IndividualBookChatRewardService {
 
     private final StudentStatsRepository studentStatsRepository;
     private final StudentStatRewardLogRepository rewardLogRepository;
+    private final StudentEndingService studentEndingService;
 
     @Transactional
     public RewardResult grantPostDailyRewardOnce(User student, LocalDate activityDate) {
@@ -54,6 +55,10 @@ public class IndividualBookChatRewardService {
     }
 
     private RewardResult grantDailyRewardOnce(User student, LocalDate activityDate, String rewardType) {
+
+        if (studentEndingService.hasEnded(student.getId())) {
+            return RewardResult.alreadyGranted(getOrCreateStats(student));
+        }
 
         String instanceId = activityDate.toString();
 

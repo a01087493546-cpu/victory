@@ -305,6 +305,17 @@ function getRewardHistoryKey() {
       return { rewardGranted: false, rewardAlreadyGranted: false, stats: getDemoStudentStats() };
     }
 
+    /*
+      이 브라우저에서 이미 고급 던전 엔딩을 끝까지 봤다면(mq_demo_hasSeenEnding)
+      능력치 시스템은 종료된 상태다 - 이후 어떤 독서 활동을 완료해도 능력치를
+      더 올리지 않고 보상 로그도 남기지 않는다. rewardGranted:false를 돌려주면
+      호출부(openMiniRewardModal 직전의 result.rewardGranted 체크)가 자동으로
+      팝업도 띄우지 않는다.
+    */
+    if (loadDemoState("hasSeenEnding", false)) {
+      return { rewardGranted: false, rewardAlreadyGranted: true, stats: getDemoStudentStats() };
+    }
+
     try {
       const studentId = getStudentId();
       const key = studentId + "|" + (instanceId || "unknown") + "|" + rewardType;

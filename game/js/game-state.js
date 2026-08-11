@@ -5,21 +5,27 @@ const GameState = (() => {
 
   let _state = null;
 
-  function init(dungeonIdx) {
+  async function init(dungeonIdx) {
     const studentId = sessionStorage.getItem('studentId') || '1';
-    const playerData = GameAPI.getInitialPlayerState(studentId);
     const dungeon = GameAPI.getDungeon(dungeonIdx);
+    const playerData = await GameAPI.getInitialPlayerState(studentId, dungeon);
+    const T = Math.round((dungeon && dungeon.requiredStatAvg) || 20);
+    const maxHp = PlayerStats.calcMaxHp(playerData.stamina, T);
 
     _state = {
       studentId:   playerData.studentId,
       dungeon:     dungeon,
 
-      // 플레이어 상태
+      // 플레이어 상태. magic/stamina/wisdom/courage는 전투 시작 시
+      // 1회 복사된 소모형 자원이다 - 여기서 깎여도 실제 계정 능력치
+      // (DB student_stats / mq_demo_studentStats)는 전혀 바뀌지 않는다.
       player: {
-        hp:       PlayerStats.calcMaxHp(playerData.stamina),
-        maxHp:    PlayerStats.calcMaxHp(playerData.stamina),
+        hp:       maxHp,
+        maxHp:    maxHp,
         magic:    playerData.magic,
         stamina:  playerData.stamina,
+        initialStamina: playerData.stamina,
+        battleStamina:  playerData.stamina,
         courage:  playerData.courage,
         wisdom:   playerData.wisdom,
         isDefending: false,
@@ -58,6 +64,10 @@ const GameState = (() => {
   function damagePlayer(amount) {
     if (!_state) return;
     _state.player.hp = Math.max(0, _state.player.hp - amount);
+    _state.player.battleStamina = Math.max(0, Math.min(
+      _state.player.initialStamina,
+      Math.round(_state.player.initialStamina * _state.player.hp / _state.player.maxHp)
+    ));
   }
 
   // 적 HP 변경

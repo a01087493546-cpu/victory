@@ -45,6 +45,7 @@ public class DungeonService {
     private final UserRepository userRepository;
     private final StudentStatsService studentStatsService;
     private final DemoAccountService demoAccountService;
+    private final StudentEndingService studentEndingService;
 
     public List<DungeonResponse> getDungeonsForStudent(Long studentId) {
         List<Dungeon> dungeons = dungeonRepository.findAll();
@@ -55,17 +56,18 @@ public class DungeonService {
                 dungeon.getId(), dungeon.getName(), dungeon.getDescription(), dungeon.getDifficulty(),
                 dungeon.getRequiredBooks(), dungeon.getRequiredStatAvg(), 5, statAverage,
                 false, true, List.of(), MAX_ATTEMPTS_PER_DAY,
-                nullSafe(dungeon.getRewardStatResetValue()))).toList();
+                nullSafe(dungeon.getRewardStatResetValue()), false)).toList();
         }
 
         long bookCount = readingRecordRepository.countByStudent_IdAndFinishedAtIsNotNull(studentId);
         double statAverage = studentStatsService.getStatAverage(studentId);
         LocalDateTime todayStart = LocalDate.now(ZONE_SEOUL).atStartOfDay();
+        boolean hasEnded = studentEndingService.hasEnded(studentId);
 
         List<DungeonResponse> responses = new ArrayList<>();
 
         for (Dungeon dungeon : dungeons) {
-            responses.add(buildDungeonResponse(studentId, dungeon, bookCount, statAverage, todayStart));
+            responses.add(buildDungeonResponse(studentId, dungeon, bookCount, statAverage, todayStart, hasEnded));
         }
 
         return responses;
@@ -76,7 +78,8 @@ public class DungeonService {
             Dungeon dungeon,
             long bookCount,
             double statAverage,
-            LocalDateTime todayStart) {
+            LocalDateTime todayStart,
+            boolean hasEnded) {
 
         int requiredBooks = nullSafe(dungeon.getRequiredBooks());
         int requiredStatAvg = nullSafe(dungeon.getRequiredStatAvg());
@@ -94,7 +97,12 @@ public class DungeonService {
         long attemptsLeftToday = Math.max(0, MAX_ATTEMPTS_PER_DAY - attemptsToday);
 
         boolean enoughBooks = bookCount >= requiredBooks;
-        boolean enoughStats = statAverage >= requiredStatAvg;
+        /*
+         * 고급(최종) 엔딩을 끝까지 본 학생은 능력치가 0으로 고정되므로
+         * 능력치 평균 조건으로 다시 잠그면 안 된다 - 이미 모든 던전을
+         * 클리어한 성취를 우선한다.
+         */
+        boolean enoughStats = hasEnded || statAverage >= requiredStatAvg;
         boolean eligible = enoughBooks && enoughStats && prerequisiteCleared && attemptsLeftToday > 0;
 
         List<String> blockedReasons = new ArrayList<>();
@@ -127,7 +135,8 @@ public class DungeonService {
             eligible,
             blockedReasons,
             (int) attemptsLeftToday,
-            nullSafe(dungeon.getRewardStatResetValue())
+            nullSafe(dungeon.getRewardStatResetValue()),
+            hasEnded
         );
     }
 
@@ -183,10 +192,28 @@ public class DungeonService {
         StudentStatsResponse updatedStats = null;
 
         if (RESULT_VICTORY.equals(result)) {
-            studentStatsService.applyReward(studentId, nullSafe(dungeon.getRewardStatResetValue()));
+            /*
+             * rewardStatResetValue가 없는 던전(고급/최종 단계)은 클리어해도
+             * 능력치를 리셋하지 않는다 - nullSafe()로 0을 넘기면 능력치가
+             * 전부 0으로 덮어써지므로, null일 때는 applyReward 자체를
+             * 호출하지 않는다.
+             *
+             * 이미 엔딩을 끝까지 본 학생(능력치 시스템 종료 상태)은 초급/중급을
+             * 재클리어해도 능력치를 다시 리셋하지 않는다 - 던전 재도전은
+             * 자유롭게 가능하지만 능력치 변화는 없다.
+             */
+            boolean hasEnded = studentEndingService.hasEnded(studentId);
+            Integer resetValue = dungeon.getRewardStatResetValue();
+            if (resetValue != null && !hasEnded) {
+                studentStatsService.applyReward(studentId, resetValue);
+            }
             rewardApplied = true;
             updatedStats = studentStatsService.getStats(studentId);
-            showEnding = isLastStage(dungeon);
+            /*
+             * 고급을 다시 이겨도(이미 엔딩을 본 뒤 재도전) 엔딩을 또
+             * 강제로 보여주지 않는다 - 최초 클리어 때만 엔딩으로 안내한다.
+             */
+            showEnding = isLastStage(dungeon) && !hasEnded;
         }
 
         return new BattleResultResponse(result, rewardApplied, (int) attemptsLeftToday, showEnding, updatedStats);

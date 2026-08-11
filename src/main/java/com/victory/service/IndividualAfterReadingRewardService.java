@@ -40,9 +40,14 @@ public class IndividualAfterReadingRewardService {
 
     private final StudentStatsRepository studentStatsRepository;
     private final StudentStatRewardLogRepository rewardLogRepository;
+    private final StudentEndingService studentEndingService;
 
     @Transactional
     public RewardResult grantAfterCompleteRewardOnce(User student, Long readingRecordId) {
+
+        if (studentEndingService.hasEnded(student.getId())) {
+            return RewardResult.alreadyGranted(getOrCreateStats(student));
+        }
 
         String instanceId = buildInstanceId(readingRecordId);
 

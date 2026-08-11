@@ -166,6 +166,14 @@ public class IndividualBookChatService {
                 "학생 정보를 찾을 수 없습니다. studentId=" + studentId
             ));
 
+        // 댓글(createComment)과 동일한 이유로 글쓰기도 심사계정은 서버에 남기지 않는다.
+        if (Boolean.TRUE.equals(student.getDemoAccount())) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "심사 체험 글은 브라우저 임시 저장소를 사용합니다."
+            );
+        }
+
         LocalDate today = LocalDate.now(ZONE_SEOUL);
 
         Response response = new Response();
@@ -350,8 +358,17 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse approvePost(Long teacherId, Long postId) {
         Response post = findTeacherManagedPost(teacherId, postId);
-        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
+        /*
+         * isDemoSeed(post)는 "미리 준비된 심사용 글"이 훼손되지 않게
+         * 막는 것이고, 아래 심사교사 체크는 그것과 별개로 "심사위원의
+         * 승인/거절 행위 자체"가 다른 브라우저에 보이지 않게 막는다 -
+         * 두 조건 중 하나만 있으면 실제 학생 글을 심사교사가 승인했을 때
+         * 공유 DB가 바뀔 수 있으므로 둘 다 필요하다.
+         */
+        if (isDemoSeed(post) || Boolean.TRUE.equals(teacher.getDemoAccount())) {
+            return toTeacherPostResponse(post, teacherId);
+        }
 
         post.setStatus(toStoredStatus(STATUS_APPROVED));
         post.setRejectReason(null);
@@ -364,8 +381,10 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse rejectPost(Long teacherId, Long postId, String reason) {
         Response post = findTeacherManagedPost(teacherId, postId);
-        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
+        if (isDemoSeed(post) || Boolean.TRUE.equals(teacher.getDemoAccount())) {
+            return toTeacherPostResponse(post, teacherId);
+        }
         String rejectReason = isBlank(reason)
             ? "고쳐서 다시 올리면 더 좋은 책수다방 글이 될 수 있어요."
             : reason.trim();
@@ -381,8 +400,10 @@ public class IndividualBookChatService {
     @Transactional
     public IndividualBookChatPostResponse returnPostToPending(Long teacherId, Long postId) {
         Response post = findTeacherManagedPost(teacherId, postId);
-        if (isDemoSeed(post)) return toTeacherPostResponse(post, teacherId);
         User teacher = findTeacher(teacherId);
+        if (isDemoSeed(post) || Boolean.TRUE.equals(teacher.getDemoAccount())) {
+            return toTeacherPostResponse(post, teacherId);
+        }
 
         post.setStatus(toStoredStatus(STATUS_PENDING));
         post.setRejectReason(null);

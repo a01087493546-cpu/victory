@@ -22,8 +22,9 @@ class IndividualAfterReadingRewardServiceTest {
 
     private final StudentStatsRepository studentStatsRepository = mock(StudentStatsRepository.class);
     private final StudentStatRewardLogRepository rewardLogRepository = mock(StudentStatRewardLogRepository.class);
+    private final StudentEndingService studentEndingService = mock(StudentEndingService.class);
     private final IndividualAfterReadingRewardService service =
-        new IndividualAfterReadingRewardService(studentStatsRepository, rewardLogRepository);
+        new IndividualAfterReadingRewardService(studentStatsRepository, rewardLogRepository, studentEndingService);
 
     private User buildStudent(Long id) {
         User student = new User();
@@ -176,5 +177,23 @@ class IndividualAfterReadingRewardServiceTest {
             .isNotEqualTo(IndividualBeforeReadingRewardService.REWARD_TYPE);
         assertThat(IndividualAfterReadingRewardService.REWARD_TYPE)
             .isNotEqualTo(IndividualDuringReadingRewardService.REWARD_TYPE);
+    }
+
+    /* 엔딩을 이미 본 학생은 능력치가 더 이상 오르지 않고 보상 로그도 남지 않는다 */
+    @Test
+    void grantAfterCompleteRewardOnce_doesNotGrantAfterStudentHasSeenEnding() {
+        User student = buildStudent(1L);
+        StudentStats existing = buildStats(student, 0, 0, 0, 0);
+
+        when(studentEndingService.hasEnded(1L)).thenReturn(true);
+        when(studentStatsRepository.findByStudent_Id(1L)).thenReturn(Optional.of(existing));
+
+        IndividualAfterReadingRewardService.RewardResult result =
+            service.grantAfterCompleteRewardOnce(student, 10L);
+
+        assertThat(result.isRewardGranted()).isFalse();
+        assertThat(result.getStats().getStamina()).isEqualTo(0);
+        verify(studentStatsRepository, never()).save(any(StudentStats.class));
+        verify(rewardLogRepository, never()).save(any(StudentStatRewardLog.class));
     }
 }

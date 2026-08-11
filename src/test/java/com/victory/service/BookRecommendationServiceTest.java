@@ -267,6 +267,25 @@ class BookRecommendationServiceTest {
         assertThat(captor.getValue().getReadingRecord()).isSameAs(record);
     }
 
+    /*
+     * 심사계정 브라우저 격리: 같은 ss01을 여러 심사위원이 동시에 쓸 수
+     * 있으므로 책추천 글쓰기는 공용 DB에 저장되면 안 된다(좋아요
+     * toggleLikeAsStudent/AsTeacher는 이미 같은 가드가 있음).
+     */
+    @Test
+    void createRecommendation_demoAccount_neverPersistsToSharedDb() {
+        User demoMe = buildUser(STUDENT_1_ID, "학생1", "student");
+        demoMe.setDemoAccount(true);
+        when(userRepository.findById(STUDENT_1_ID)).thenReturn(Optional.of(demoMe));
+
+        BookRecommendationCreateRequest request = buildCreateRequest("잘못된 제목", "잘못된 지은이", "감동적이었어요");
+
+        assertThatThrownBy(() -> service.createRecommendation(STUDENT_1_ID, request))
+            .isInstanceOf(ResponseStatusException.class);
+
+        verify(bookRecommendationRepository, never()).save(any(BookRecommendation.class));
+    }
+
     @Test
     void createRecommendation_deduplicatesAndStoresSingleTeaserResponseId() {
         User me = buildUser(STUDENT_1_ID, "학생1", "student");

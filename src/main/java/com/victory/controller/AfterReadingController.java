@@ -109,6 +109,22 @@ public class AfterReadingController {
                 classReadingBookId));
     }
 
+    @PostMapping("/api/teachers/{teacherId}/classes/{classId}/after-reading/summaries/{summaryId}/like")
+    public ResponseEntity<AfterReadingSummaryItem> toggleTeacherSummaryLike(
+            @PathVariable Long teacherId,
+            @PathVariable Long classId,
+            @PathVariable Long summaryId,
+            Authentication authentication) {
+
+        requireSelf(teacherId, authentication);
+
+        return ResponseEntity.ok(
+            afterReadingService.toggleSummaryLikeAsTeacher(
+                teacherId,
+                classId,
+                summaryId));
+    }
+
     private void requireSelf(Long userId, Authentication authentication) {
 
         Object principal =

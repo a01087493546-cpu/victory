@@ -148,6 +148,20 @@
   .ability-top-button:active {
     transform: translateY(1px);
   }
+
+  .ability-ended-banner {
+    margin: 0 auto 12px;
+    max-width: 560px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: rgba(255, 214, 120, 0.4) !important;
+    border: 1px solid rgba(172, 111, 31, 0.32) !important;
+    color: #5a3516 !important;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+  }
 </style>
 </head>
 
@@ -184,6 +198,11 @@
       <p class="ability-step-label" id="abilityStepLabel">
         1 / 4
       </p>
+
+      <!-- 고급 던전 엔딩을 이미 본 학생에게만 보이는 안내입니다. -->
+      <div class="ability-ended-banner" id="abilityEndedBanner" hidden>
+        🏆 모든 던전을 클리어해 능력 모으기 모험을 완료했어요. 이제 능력치 보상 없이 자유롭게 독서 활동을 이어갈 수 있어요.
+      </div>
 
       <!-- 능력치 목록입니다. -->
       <div class="ability-grid ability-slider">
@@ -315,9 +334,14 @@
     </section>
   </main>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/demo-storage.js"></script>
+  <script src="../js/demo-storage.js?v=20260811-intro-once"></script>
+  <script src="../js/auth.js?v=20260811-intro-once"></script>
   <script>
+    /*
+     * 임시 진단 로그: 이 화면이 실제로 어떤 경로로 들어왔는지, 그 순간
+     * mq_demo_powerIntroSeen이 무엇이었는지 Safari 콘솔에서 바로 확인한다.
+     * 원인이 확정되면 제거하거나 최소화한다.
+     */
     const abilityCards = Array.from(document.querySelectorAll(".ability-card"));
     const abilityDots = Array.from(document.querySelectorAll(".ability-progress-dot"));
     const abilityStepLabel = document.getElementById("abilityStepLabel");
@@ -347,56 +371,61 @@
       }
     });
 
-    abilityNextButton.addEventListener("click", async () => {
+    /*
+      powerIntroSeen 저장은 이제 이 버튼이 아니라 auth.js의
+      guardStudentIntroDirectAccess()가 이 화면에 처음 진입한 순간(끝까지
+      보든 중간에 돌아가기를 누르든 상관없이) 이미 끝냈다 - "최초 로그인
+      흐름에서 한 번 보였는가"가 기준이지 "끝까지 완료했는가"가 기준이
+      아니기 때문이다. 그래서 여기서는 중복 저장 없이 화면 이동만 한다.
+    */
+    abilityNextButton.addEventListener("click", () => {
       if (abilityIndex < abilityCards.length - 1) {
         abilityIndex += 1;
         renderAbilityStep();
         return;
       }
 
-      /*
-        나의 힘 인트로를 끝까지 봤을 때만 완료 상태를 저장한다. 일반
-        학생은 DB(has_seen_power_intro)에, 심사계정은 이 브라우저의
-        localStorage에 저장해서 다음 로그인부터 이 화면을 건너뛴다.
-      */
-      if (typeof isDemoAccount === "function" && isDemoAccount()) {
-        if (typeof saveDemoState === "function") {
-          saveDemoState("powerIntroSeen", true);
-        }
-        if (typeof loadDemoState !== "function" || loadDemoState("powerIntroSeen", false) !== true) {
-          alert("나의 힘 안내 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-          return;
-        }
-      } else {
-        const saved = await markPowerIntroSeenOnServer();
-        if (!saved) {
-          alert("나의 힘 안내 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-          return;
-        }
-      }
-
       location.href = "./individual-reading.html";
     });
 
-    async function markPowerIntroSeenOnServer() {
-      const token = sessionStorage.getItem("token");
-      if (!token) return false;
+    /*
+      고급 던전 엔딩을 이미 본 학생(능력치 시스템 종료 상태)이 "나의 힘
+      쌓는 법"을 다시 보러 왔을 때, 여전히 능력치를 모을 수 있는 것처럼
+      보이지 않도록 작은 안내를 띄운다. 일반계정은 stats 응답의
+      hasSeenEnding을, 심사계정은 이 브라우저의 mq_demo_hasSeenEnding을
+      그대로 읽는다 - 새 상태를 만들지 않는다.
+    */
+    async function checkEndingStatusAndShowBanner() {
+      const banner = document.getElementById("abilityEndedBanner");
+      if (!banner) return;
 
       try {
-        const response = await fetch(getLoginApiBaseUrl() + "/api/students/me/power-intro-seen", {
-          method: "PATCH",
-          headers: { Authorization: "Bearer " + token }
-        });
+        let hasSeenEnding = false;
 
-        if (!response.ok) throw new Error("나의 힘 인트로 완료 저장 실패: " + response.status);
-        return true;
+        if (typeof isDemoAccount === "function" && isDemoAccount()) {
+          hasSeenEnding = typeof loadDemoState === "function" && loadDemoState("hasSeenEnding", false);
+        } else {
+          const studentId = sessionStorage.getItem("studentId");
+          const token = sessionStorage.getItem("token");
+          if (studentId && token) {
+            const response = await fetch(getLoginApiBaseUrl() + "/api/students/" + studentId + "/stats", {
+              headers: { Authorization: "Bearer " + token }
+            });
+            if (response.ok) {
+              const stats = await response.json();
+              hasSeenEnding = Boolean(stats.hasSeenEnding);
+            }
+          }
+        }
+
+        banner.hidden = !hasSeenEnding;
       } catch (error) {
-        console.error("나의 힘 인트로 완료 상태를 저장하지 못했습니다.", error);
-        return false;
+        console.error("엔딩 완료 상태를 확인하지 못했습니다.", error);
       }
     }
 
     renderAbilityStep();
+    checkEndingStatusAndShowBanner();
   </script>
   <script src="../js/fixed-stage.js"></script>
 </body>

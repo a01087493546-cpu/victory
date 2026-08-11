@@ -74,6 +74,18 @@ public class BookThoughtReviewController {
                 request.getReason()));
     }
 
+    @PatchMapping("/{responseId}/pending")
+    public ResponseEntity<BookThoughtResponseItem> returnBookThoughtToPending(
+            @PathVariable Long teacherId,
+            @PathVariable Long responseId,
+            Authentication authentication) {
+
+        requireSelf(teacherId, authentication);
+
+        return ResponseEntity.ok(
+            responseService.returnBookThoughtResponseToPending(teacherId, responseId));
+    }
+
     private void requireSelf(Long teacherId, Authentication authentication) {
 
         Object principal =

@@ -141,6 +141,51 @@ class FeedbackAiServiceTest {
         stubAiResponse("{\"result\":\"good\",\"message\":\"좋아!\",\"failedRule\":null}");
     }
 
+    @Test
+    void inferPrompts_acceptContextBasedEmotionAndReasonQuestions() throws Exception {
+        String during = privatePrompt("SYSTEM_PROMPT_DURING_READING_QUESTION");
+        String deep = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP");
+        String review = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW");
+
+        assertThat(during)
+            .contains("정답이 글에 그대로 써 있지 않은 것이 정상")
+            .contains("어떤 마음이었을까요?")
+            .contains("애매하면 good");
+        assertThat(deep)
+            .contains("정답이 글에 직접 써 있어야 하는 유형이 아니야")
+            .contains("어떤 마음으로 ~했을까요?");
+        assertThat(review)
+            .contains("어떤 마음으로 친구 옆에 앉았을까요?")
+            .contains("친구는 왜 미소를")
+            .contains("무슨 색을 좋아할까요?");
+    }
+
+    @Test
+    void opinionPrompts_acceptElementaryAmbiguousOwnThoughtQuestions() throws Exception {
+        String during = privatePrompt("SYSTEM_PROMPT_DURING_READING_QUESTION");
+        String deep = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP");
+        String review = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW");
+
+        assertThat(during)
+            .contains("주인공이 다시 고치려고 했을 때")
+            .contains("그 모습을 보고 나는")
+            .contains("opinion에서 good으로 우선 판정");
+        assertThat(deep)
+            .contains("이 글을 읽고 어떤 생각이 들었나요?")
+            .contains("누구의 생각인지 애매하면")
+            .contains("인물의 마음·이유만을 명백히 묻는 질문일 때만 infer");
+        assertThat(review)
+            .contains("주인공이 실수를 다시 고치려고 했을 때 어떤")
+            .contains("그 모습을 보고 나는")
+            .contains("주인공은 왜 다시 고치려고 했을까요?");
+    }
+
+    private String privatePrompt(String fieldName) throws Exception {
+        java.lang.reflect.Field field = FeedbackAiService.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (String) field.get(null);
+    }
+
     /* 검증 6: AI 오류 요청은 기록되지 않고 attempt_number도 증가하지 않음 */
     @Test
     void getFeedbackForAuthenticatedStudent_doesNotRecordAttemptWhenAiCallFails() {

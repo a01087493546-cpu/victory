@@ -236,55 +236,36 @@ function skipStory() {
 
 /*
   함수명: finishStoryIntro
-  역할: 스토리를 본 것으로 저장하고 나의 힘 인트로로 이동합니다.
+  역할: 다음 화면(나의 힘 안내 또는 학생 홈)으로 이동합니다.
 
-  일반 학생은 로그아웃 후에도 다시 뜨지 않도록 서버(DB의
-  has_seen_story_intro)에 저장한다. 심사계정(ss01)은 여러 심사위원이 같은
-  계정을 같이 쓰므로 DB에 저장하지 않고, "이 브라우저"의 localStorage에만
-  저장한다(demo-storage.js).
+  storyIntroSeen 저장은 이제 이 함수가 아니라 auth.js의
+  guardStudentIntroDirectAccess()가 이 화면에 처음 진입한 순간(끝까지
+  보든 중간에 나가든 상관없이) 이미 끝냈다 - "최초 로그인 흐름에서 한 번
+  보였는가"가 기준이지 "끝까지 완료했는가"가 기준이 아니기 때문이다.
+  그래서 여기서는 중복 저장 없이 다음 목적지만 결정한다.
 */
 async function finishStoryIntro() {
-  if (typeof isDemoAccount === "function" && isDemoAccount()) {
-    if (typeof saveDemoState === "function") {
-      saveDemoState("storyIntroSeen", true);
-    }
-    if (typeof loadDemoState !== "function" || loadDemoState("storyIntroSeen", false) !== true) {
-      alert("시작 이야기 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      return;
-    }
+  const isDemo = typeof isDemoAccount === "function" && isDemoAccount();
+
+  /*
+   * story=false/power=true처럼 두 상태가 어긋나 있던 학생(정상 흐름에서는
+   * 나오지 않지만 실제로 관측된 조합)이 스토리만 다시 보게 됐을 때, 이미
+   * 끝낸 능력치 안내를 또 보여주면 안 되므로 여기서 최신 power 상태를
+   * 다시 확인한다. auth.js의 getStudentIntroDestination()을 그대로
+   * 재사용해서 로그인 흐름과 완전히 같은 기준으로 판정한다 - 화면마다
+   * 서로 다른 규칙을 쓰면 이런 어긋남이 다시 생긴다.
+   */
+  let introStatus;
+  if (isDemo) {
+    introStatus = getDemoIntroStatus();
   } else {
-    const saved = await markStoryIntroSeenOnServer();
-    if (!saved) {
-      alert("시작 이야기 완료 상태를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      return;
+    try {
+      introStatus = await loadCurrentStudentIntroStatus();
+    } catch (error) {
+      console.error("스토리 완료 후 인트로 상태를 다시 확인하지 못했습니다.", error);
+      introStatus = { storyIntroSeen: true, powerIntroSeen: false };
     }
   }
 
-  // 스토리 인트로가 끝나면 바로 학생 홈으로 가지 않고,
-  // 먼저 능력치 안내 화면으로 이동합니다.
-  window.location.href = "./ability-intro.html";
-}
-
-/*
-  함수명: markStoryIntroSeenOnServer
-  역할: 일반 학생 계정의 시작 스토리 인트로 완료 상태를 DB에 저장합니다.
-  실패해도 화면 이동은 막지 않습니다(다음 로그인 때 다시 보여주는 정도의
-  가벼운 실패로 처리).
-*/
-async function markStoryIntroSeenOnServer() {
-  const token = sessionStorage.getItem("token");
-  if (!token) return false;
-
-  try {
-    const response = await fetch(getLoginApiBaseUrl() + "/api/students/me/story-intro-seen", {
-      method: "PATCH",
-      headers: { Authorization: "Bearer " + token }
-    });
-
-    if (!response.ok) throw new Error("시작 스토리 완료 저장 실패: " + response.status);
-    return true;
-  } catch (error) {
-    console.error("시작 스토리 인트로 완료 상태를 저장하지 못했습니다.", error);
-    return false;
-  }
+  window.location.href = getStudentIntroDestination(introStatus, "./");
 }

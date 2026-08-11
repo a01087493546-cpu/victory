@@ -9322,23 +9322,113 @@ async function fetchClassBookChatFeed() {
 
     const feed = await response.json();
 
-    const serverPosts = feed.posts.map(mapBookChatPostFromServer);
+    let serverPosts = feed.posts.map(mapBookChatPostFromServer);
+    let seedPosts = [];
+    if (isDemoAccount()) {
+      /*
+       * 심사계정은 실제 DB 승인 예시(공용, 모든 심사 브라우저 공통) 위에
+       * 이 브라우저의 override(teacher 화면에서 거절/재승인한 결과)만
+       * 얹어서 보여준다 - DB 값 자체는 절대 바꾸지 않는다. isMine/
+       * moderationStatus 필터링은 아래 렌더 로직이 이미 하고 있으므로
+       * (내 글은 상태와 무관하게 항상 보이고, 남의 글은 approved일
+       * 때만 보임) 여기서는 override 반영값만 정확히 채워 넣으면 된다.
+       */
+      serverPosts = serverPosts.map(function (post) {
+        const override = getDemoBookChatStatusOverride("individual", post.id);
+        if (!override) return post;
+        return Object.assign({}, post, {
+          moderationStatus: override.status,
+          rejectReason: override.status === "rejected" ? override.reason : ""
+        });
+      });
+      seedPosts = INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost);
+    }
     const demoPosts = isDemoAccount()
       ? loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost)
       : [];
     return {
       hasClass: feed.hasClass,
-      posts: serverPosts.concat(demoPosts)
+      posts: serverPosts.concat(seedPosts).concat(demoPosts)
     };
   } catch (error) {
     console.error("책수다방 글 목록을 불러오지 못했습니다.", error);
     return {
       hasClass: true,
       posts: isDemoAccount()
-        ? loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost)
+        ? INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost)
+            .concat(loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost))
         : []
     };
   }
+}
+
+/*
+ * 학생이 아무것도 안 써도 심사 교사 승인/거절 체험을 볼 수 있게 넣어 둔
+ * 가상 승인대기 예시 - teacher/individual-book-chat-manage.html의 같은
+ * 이름 상수와 id가 반드시 같아야 승인 결과가 이 화면에도 반영된다.
+ * 기본 상태는 "pending"이라 teacher 화면에서 승인하기 전에는 이
+ * 목록(친구 글)에 보이지 않는다(isMine이 항상 false이므로 approved일
+ * 때만 노출되는 기존 필터를 그대로 탄다).
+ */
+const INDIVIDUAL_BOOK_CHAT_PENDING_SEED = [
+  {
+    id: "individual-seed-pending-01",
+    studentName: "송민정",
+    bookTitle: "긴긴밤",
+    title: "노든의 선택",
+    scene: "노든은 위험한 길을 지나야 어린 펭귄을 지킬 수 있습니다.\n하지만 그 길은 아주 위험합니다.",
+    optionA: "안전한 길로 돌아간다.",
+    optionB: "위험해도 가장 빠른 길로 간다.",
+    authorChoice: "B",
+    submittedAt: "2026-08-05T10:20:00"
+  },
+  {
+    id: "individual-seed-pending-02",
+    studentName: "김민지",
+    bookTitle: "우리 몸의 신비",
+    title: "건강 습관 하나만 고르기",
+    scene: "몸을 건강하게 만들기 위해 매일 한 가지 습관만 지킬 수 있다면 어떤 것을 고를까요?",
+    optionA: "매일 운동하기",
+    optionB: "매일 충분히 잠자기",
+    authorChoice: "B",
+    submittedAt: "2026-08-06T14:10:00"
+  },
+  {
+    id: "individual-seed-pending-03",
+    studentName: "이혜원",
+    bookTitle: "초정리 편지",
+    title: "글을 배울 기회",
+    scene: "글을 배우는 것이 쉽지 않지만, 글을 알게 되면 내 생각을 다른 사람에게 전할 수 있습니다.",
+    optionA: "어렵더라도 끝까지 글을 배운다.",
+    optionB: "너무 어려우면 다른 사람이 대신 읽고 써 주게 한다.",
+    authorChoice: "A",
+    submittedAt: "2026-08-07T09:40:00"
+  }
+];
+
+function mapIndividualPendingSeedToPost(seed) {
+  const override = getDemoBookChatStatusOverride("individual", seed.id);
+  const status = override ? override.status : "pending";
+  return {
+    id: seed.id,
+    writer: seed.studentName,
+    writerName: seed.studentName,
+    studentId: null,
+    classId: null,
+    bookTitle: seed.bookTitle,
+    title: seed.title,
+    scene: seed.scene,
+    optionA: seed.optionA,
+    optionB: seed.optionB,
+    authorChoice: seed.authorChoice,
+    isMine: false,
+    moderationStatus: status,
+    rejectReason: status === "rejected" ? (override ? override.reason : "") : "",
+    aCount: 0,
+    bCount: 0,
+    createdAt: seed.submittedAt,
+    createdDate: seed.submittedAt.slice(0, 10)
+  };
 }
 
 function mapDemoIndividualApprovalToPost(request) {
@@ -9642,13 +9732,21 @@ async function renderBookChatRoom(selectedIndex = 0) {
 
   const popularIds = new Set(popularPool.map(function (post) { return post.id; }));
 
+  /*
+    공개 여부(isPublic)와 작성자 판별(isMine)은 서로 다른 조건이다 - 공개
+    피드에는 작성자가 누구든 승인된 글이 모두 보여야 하고, isMine은 오직
+    "내 글" 묶음/배지/거절 사유 표시에만 쓴다. 두 조건을 한 필터에서
+    섞으면 다른 학생(가상 학생 포함)의 승인 글이 공개 피드에서 빠질 수
+    있으므로 명시적으로 분리해 둔다.
+  */
   const myRemainingPosts = dateFilteredPosts
     .filter(function (post) { return post.isMine && !popularIds.has(post.id); })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 
   const friendRemainingPosts = dateFilteredPosts
     .filter(function (post) {
-      return !post.isMine && post.moderationStatus === "approved" && !popularIds.has(post.id);
+      const isPublic = post.moderationStatus === "approved";
+      return !post.isMine && isPublic && !popularIds.has(post.id);
     })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 

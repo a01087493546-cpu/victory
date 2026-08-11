@@ -1055,7 +1055,7 @@ async function loadBookChatQuestions() {
 
     const items = await response.json();
 
-    const serverQuestions = items.map(function(item) {
+    let serverQuestions = items.map(function(item) {
       const isMine =
         String(item.studentId) === String(studentId);
       const moderationStatus = String(
@@ -1066,9 +1066,11 @@ async function loadBookChatQuestions() {
         id: String(item.id),
         name: item.studentName || "학생",
         studentId: item.studentId,
-        // 심사계정의 서버 응답은 공용 demo seed다. ss01과 studentId가 같아도
-        // 현재 브라우저에서 직접 쓴 질문으로 취급하지 않는다.
-        isMine: isDemoAccount() ? false : isMine,
+        // 심사계정도 studentId가 같으면(=김초롱/ss01 본인이 쓴 실제 seed
+        // 글) isMine을 그대로 true로 둔다 - 그래야 교사가 이 글을 거절했을
+        // 때 ss01 화면에 기존 "다시 써볼까요?" UI가 뜬다. 다른 가상
+        // 학생의 seed는 studentId가 달라 자연히 isMine=false로 남는다.
+        isMine: isMine,
         myIndex: null,
         text: item.question || "",
         answer: item.answer || "",
@@ -1083,6 +1085,22 @@ async function loadBookChatQuestions() {
     });
 
     if (!isDemoAccount()) return serverQuestions;
+
+    /*
+     * 실제 DB 승인 예시(공용, 모든 심사 브라우저 공통) 위에 이 브라우저의
+     * override(teacher 화면에서 거절/재승인한 결과)만 얹는다. DB 값
+     * 자체는 절대 바꾸지 않는다.
+     */
+    serverQuestions = serverQuestions.map(function (question) {
+      const override = getDemoBookChatStatusOverride("practice", question.id);
+      if (!override) return question;
+      return Object.assign({}, question, {
+        moderationStatus: override.status,
+        rejectReason: override.status === "rejected" ? override.reason : ""
+      });
+    });
+
+    const seedQuestions = PRACTICE_BOOK_CHAT_PENDING_SEED.map(mapPracticePendingSeedToQuestion);
 
     const demoQuestions = loadDemoApprovalRequests("practice").map(function(request) {
       return {
@@ -1102,7 +1120,7 @@ async function loadBookChatQuestions() {
       };
     });
 
-    return serverQuestions.concat(demoQuestions);
+    return serverQuestions.concat(seedQuestions).concat(demoQuestions);
   } catch (error) {
     console.error(
       "책수다방 질문을 불러오지 못했습니다.",
@@ -1250,6 +1268,15 @@ function goTodayBookChatDate() {
     return;
   }
 
+  if (isDemoAccount()) {
+    // 김초롱(ss01) 이름으로 된 실제 공용 seed 글은 isMine=true라도
+    // 직접 쓴 글(demoApproval)이 아니므로 실제 DELETE API를 타면 안 된다 -
+    // 모든 심사 브라우저가 공유하는 DB 행이라 삭제하면 다른 브라우저에도
+    // 영향을 준다.
+    alert("심사용 공용 예시 글은 삭제되지 않아요.");
+    return;
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/students/${studentId}/responses/book-thought/${responseId}`,
@@ -1287,10 +1314,81 @@ function goTodayBookChatDate() {
       return type || "direct";
     }
 
+    /*
+     * 학생이 아무것도 안 써도 심사 교사 승인/거절 체험을 볼 수 있게 넣어 둔
+     * 가상 승인대기 예시 - teacher/book-chat-manage.html의 같은 이름
+     * 상수와 id가 반드시 같아야 승인 결과가 이 화면에도 반영된다.
+     */
+    const PRACTICE_BOOK_CHAT_PENDING_SEED = [
+      {
+        id: "practice-seed-pending-01",
+        studentName: "박하민",
+        questionType: "direct",
+        question: "주인공이 길을 잃었을 때 도와준 것은 누구였나요?",
+        answer: "A. 우연히 만난 친구 / B. 혼자 힘으로 찾았다 (정답 A)",
+        submittedAt: "2026-08-05T10:20:00"
+      },
+      {
+        id: "practice-seed-pending-02",
+        studentName: "서희원",
+        questionType: "opinion",
+        question: "내가 주인공이라면 끝까지 보물을 찾으러 갔을까요?",
+        answer: "나는 무서워도 끝까지 가 봤을 것 같아. 궁금한 걸 그냥 두면 계속 생각날 것 같거든.",
+        submittedAt: "2026-08-06T14:10:00"
+      },
+      {
+        id: "practice-seed-pending-03",
+        studentName: "김수진",
+        questionType: "connect",
+        question: "나도 친구와 함께 어려운 일을 해결한 적이 있나요?",
+        answer: "체육 시간에 줄넘기를 못했는데 친구가 같이 연습해 줘서 성공한 적이 있어.",
+        submittedAt: "2026-08-07T09:40:00"
+      }
+    ];
+
+    function mapPracticePendingSeedToQuestion(seed) {
+      const override = getDemoBookChatStatusOverride("practice", seed.id);
+      const status = override ? override.status : "pending";
+      return {
+        id: seed.id,
+        name: seed.studentName,
+        studentId: null,
+        isMine: false,
+        myIndex: null,
+        text: seed.question,
+        answer: seed.answer,
+        type: normalizeType(seed.questionType),
+        dateKey: seed.submittedAt.slice(0, 10),
+        createdAt: formatBookChatDate(seed.submittedAt),
+        moderationStatus: status,
+        rejectReason: status === "rejected" ? (override ? override.reason : "") : ""
+      };
+    }
+
     function getFilteredQuestions() {
       let questions = isDemoAccount()
         ? allQuestions.slice()
         : allQuestions.filter(q => q.dateKey === selectedBookChatDate);
+
+      /*
+       * 심사계정에서만: 내 글이 아니면서 승인 상태가 아닌 질문(교사 화면에서
+       * 거절 override를 남긴 글, 아직 승인 안 된 가상 승인대기 예시)은
+       * 학생 공개 목록에서 제외한다 - 일반계정은 서버가 이미 "내 글(모든
+       * 상태) + 남의 approved 글"만 내려주므로 이 필터가 필요 없다.
+       *
+       * isPublic(공개 여부)과 isMine(작성자 판별)은 서로 다른 조건이다 -
+       * 작성자가 누구든(김초롱이든 다른 가상 학생이든) 승인된 글은 공개
+       * 피드에 보여야 하고, isMine은 "내 글" 예외 노출(상태 무관 표시)에만
+       * 쓴다. 두 조건을 섞으면 특정 학생 이름을 조건에 넣는 실수로 이어질
+       * 수 있으므로 명시적으로 분리해 둔다.
+       */
+      if (isDemoAccount()) {
+        questions = questions.filter(function (q) {
+          const isPublic = q.moderationStatus === "approved";
+          return q.isMine || isPublic;
+        });
+      }
+
       questions = currentType === "quiz"
         ? questions.filter(q => q.type === "direct")
         : questions.filter(q => q.type !== "direct");

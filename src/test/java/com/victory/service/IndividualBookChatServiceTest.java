@@ -150,6 +150,27 @@ class IndividualBookChatServiceTest {
         assertThat(result.isRewardGranted()).isTrue();
     }
 
+    /*
+     * 심사계정 브라우저 격리: 같은 ss01을 여러 심사위원이 동시에 쓸 수
+     * 있으므로 책수다방 글쓰기는 공용 DB에 저장되면 안 된다(댓글
+     * createComment는 이미 같은 가드가 있음 - 글쓰기도 동일하게 막는다).
+     */
+    @Test
+    void createPost_demoAccount_neverPersistsToSharedDb() {
+        User demoStudent = buildStudent();
+        demoStudent.setDemoAccount(true);
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(demoStudent));
+
+        ReadingRecord readingRecord = buildInProgressReadingRecord(READING_RECORD_ID, demoStudent);
+        when(readingRecordRepository.findById(READING_RECORD_ID)).thenReturn(Optional.of(readingRecord));
+
+        assertThatThrownBy(() ->
+            service.createPost(STUDENT_ID, READING_RECORD_ID, "긴긴밤", "밸런스제목", "장면설명", "선택A", "선택B")
+        ).isInstanceOf(ResponseStatusException.class);
+
+        verify(responseRepository, never()).save(any(Response.class));
+    }
+
     // =========================================================
     // 책수다방 글의 readingRecordId 연결 검증
     // =========================================================

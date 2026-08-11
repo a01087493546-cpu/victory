@@ -38,9 +38,19 @@ public class IndividualBeforeReadingRewardService {
 
     private final StudentStatsRepository studentStatsRepository;
     private final StudentStatRewardLogRepository rewardLogRepository;
+    private final StudentEndingService studentEndingService;
 
     @Transactional
     public RewardResult grantBeforeCompleteRewardOnce(User student, Long readingRecordId) {
+
+        /*
+         * 고급 던전 엔딩을 끝까지 본 학생은 능력치 시스템이 종료됐으므로
+         * 이후 독서활동은 정상 저장되지만 능력치는 더 이상 지급하지 않는다
+         * (student_stat_reward_log에도 새 행을 남기지 않는다).
+         */
+        if (studentEndingService.hasEnded(student.getId())) {
+            return RewardResult.alreadyGranted(getOrCreateStats(student));
+        }
 
         String instanceId = buildInstanceId(readingRecordId);
 

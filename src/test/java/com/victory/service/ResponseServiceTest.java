@@ -42,6 +42,7 @@ class ResponseServiceTest {
     @Mock private ClassStudentRepository classStudentRepository;
     @Mock private SchoolClassRepository schoolClassRepository;
     @Mock private ClassReadingBookRepository classReadingBookRepository;
+    @Mock private DemoAccountService demoAccountService;
 
     private ResponseService service;
 
@@ -49,12 +50,14 @@ class ResponseServiceTest {
     void setUp() {
         service = new ResponseService(
             responseRepository, userRepository, classStudentRepository,
-            schoolClassRepository, classReadingBookRepository);
+            schoolClassRepository, classReadingBookRepository, demoAccountService);
 
         User student = new User();
         student.setId(STUDENT_ID);
         student.setRole("student");
         org.mockito.Mockito.lenient().when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(student));
+        org.mockito.Mockito.lenient().when(demoAccountService.isDemoAccount(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(false);
     }
 
     private PreReadingResponseRequest normalRequest(String stepType, String question, String answer) {
@@ -223,5 +226,27 @@ class ResponseServiceTest {
         assertThatThrownBy(() -> service.savePreReadingResponse(999L, skipRequest("contents")))
             .isInstanceOf(ResponseStatusException.class)
             .hasMessageContaining("404");
+    }
+
+    /*
+     * 심사계정 브라우저 격리: 책수다방 글(책 속 생각 쓰기)은 여러 심사위원이
+     * 같은 ss01을 동시에 쓸 수 있으므로 공용 DB에 저장되면 안 된다.
+     * 프론트가 이미 이 API를 호출하지 않지만, 우회 호출 시에도 저장이
+     * 막히는지 백엔드에서 직접 검증한다.
+     */
+    @Test
+    void saveBookThoughtResponse_demoAccount_neverPersistsToSharedDb() {
+        when(demoAccountService.isDemoAccount(STUDENT_ID)).thenReturn(true);
+
+        com.victory.dto.BookThoughtResponseRequest request = new com.victory.dto.BookThoughtResponseRequest();
+        setField(request, "questionType", "direct");
+        setField(request, "question", "왜 그랬을까?");
+        setField(request, "answer", "그런 것 같다.");
+        setField(request, "classReadingBookId", BOOK_ID);
+
+        assertThatThrownBy(() -> service.saveBookThoughtResponse(STUDENT_ID, request))
+            .isInstanceOf(ResponseStatusException.class);
+
+        org.mockito.Mockito.verify(responseRepository, org.mockito.Mockito.never()).save(any(Response.class));
     }
 }

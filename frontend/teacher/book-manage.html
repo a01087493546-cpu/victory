@@ -2824,6 +2824,9 @@
     </div>
   </div>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
+  <script src="../js/teacher-demo-guide.js"></script>
   <script>
     function updateWholeReadingStageScale() {
       const stage = document.getElementById("wholeReadingFixedStage");
@@ -2847,6 +2850,8 @@
 
     updateWholeReadingStageScale();
     window.addEventListener("resize", updateWholeReadingStageScale);
+    checkLogin();
+    showTeacherDemoGuide("teacherPracticeGuideSeen");
 
      let students = [];
 let currentClassId = null;
@@ -2961,6 +2966,32 @@ function buildPracticeSupportReasonText(student) {
       return PRACTICE_SUPPORT_ADVICE[reason.code] || reason.label || "온책읽기 활동 진행 확인 필요";
     })
     .join(" ");
+}
+
+/*
+  "오늘의 학습 현황" 목록 전용 - 위 PRACTICE_SUPPORT_ADVICE(상세 지도 문구)를
+  그대로 붙여 넣으면 카드 폭에서 잘리므로, 무엇이 부족한지만 짧게 진단하는
+  라벨로 따로 둔다. individual-reading-manage.html의
+  SUPPORT_REASON_LABEL/buildShortSupportSummary와 같은 역할 분리다.
+*/
+const PRACTICE_SUPPORT_LABEL = {
+  LOW_READING_PARTICIPATION: "독서실천도 낮음",
+  NO_QUESTION_SUBMISSION: "질문 만들기 참여 부족",
+  NO_THOUGHT_SHARING: "책수다방 참여 부족",
+  LOW_COMPREHENSION: "질문·답 내용 확인 필요"
+};
+
+function buildPracticeShortSupportSummary(student) {
+  if (!student.reasons || student.reasons.length === 0) {
+    return "온책읽기 진행 부족";
+  }
+
+  return student.reasons
+    .slice(0, 2)
+    .map(function (reason) {
+      return PRACTICE_SUPPORT_LABEL[reason.code] || reason.label || "온책읽기 진행 부족";
+    })
+    .join(" · ");
 }
 
 /*
@@ -3330,7 +3361,7 @@ function renderTodayStatus(practiceAchievementData) {
           </div>
 
           <div class="wr-support-reason">
-            ${buildPracticeSupportReasonText(student)}
+            ${buildPracticeShortSupportSummary(student)}
           </div>
 
           <div class="wr-support-arrow">
@@ -3403,6 +3434,13 @@ function renderTodayStatus(practiceAchievementData) {
                 <strong>교사 참고:</strong>
                 ${student.note}
               </div>
+
+              ${student.reasons && student.reasons.length > 0 ? `
+                <div class="wr-teacher-note">
+                  <strong>지도 포인트:</strong>
+                  ${buildPracticeSupportReasonText(student)}
+                </div>
+              ` : ""}
             </article>
           `;
         })

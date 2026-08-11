@@ -28,9 +28,14 @@ public class BookRecommendationRewardService {
 
     private final StudentStatsRepository studentStatsRepository;
     private final StudentStatRewardLogRepository rewardLogRepository;
+    private final StudentEndingService studentEndingService;
 
     @Transactional
     public RewardResult grantRecommendationRewardOnce(User student, Long readingRecordId) {
+        if (studentEndingService.hasEnded(student.getId())) {
+            return RewardResult.alreadyGranted(getOrCreateStats(student));
+        }
+
         String instanceId = buildInstanceId(readingRecordId);
 
         if (rewardLogRepository

@@ -956,7 +956,7 @@ html {
   📚 나의 독서 보관함
 </button>
 
-  <button class="ir-top-power" type="button" onclick="location.href='ability-intro.html'">
+  <button class="ir-top-power" type="button" onclick="location.href='ability-intro.html?revisit=1'">
     ✨ 나의 힘 쌓는 법
   </button>
 </div>
@@ -1309,7 +1309,8 @@ html {
             그대로 보여준다 - 나의 힘 팝업(individual-power.js)이 쓰는 값과
             항상 같다.
           */
-          const stats = typeof isDemoAccount === "function" && isDemoAccount() && typeof getDemoStudentStats === "function"
+          const isDemo = typeof isDemoAccount === "function" && isDemoAccount();
+          const stats = isDemo && typeof getDemoStudentStats === "function"
             ? getDemoStudentStats()
             : await fetchStudentJson(
                 "/api/students/" + context.studentId + "/stats",

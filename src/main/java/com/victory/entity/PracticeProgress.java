@@ -67,6 +67,17 @@ public class PracticeProgress {
     private Map<String, Boolean> duringTypeProgress
         = createDefaultDuringProgress();
 
+    /*
+     * 읽기 후(연습읽기) 3종류(이야기/정보/주장) 간추리기 질문 연습 완료 상태.
+     * during_type_progress와 같은 방식 - MySQL JSON 컬럼, 부분 갱신.
+     * 기존 행은 컬럼 추가 직후 NULL이므로 읽는 쪽(Service/Response)에서
+     * null이면 기본값으로 취급한다.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "after_type_progress", columnDefinition = "json")
+    private Map<String, Boolean> afterTypeProgress
+        = createDefaultAfterProgress();
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -80,6 +91,10 @@ public class PracticeProgress {
 
         if (this.duringTypeProgress == null) {
             this.duringTypeProgress = createDefaultDuringProgress();
+        }
+
+        if (this.afterTypeProgress == null) {
+            this.afterTypeProgress = createDefaultAfterProgress();
         }
     }
 
@@ -106,6 +121,16 @@ public class PracticeProgress {
          * 다른 화면의 잠금 해제 조건에는 쓰이지 않는 완료 기록용 플래그다.
          */
         progress.put("review", false);
+
+        return progress;
+    }
+
+    public static Map<String, Boolean> createDefaultAfterProgress() {
+        Map<String, Boolean> progress = new HashMap<>();
+
+        progress.put("story", false);
+        progress.put("info", false);
+        progress.put("opinion", false);
 
         return progress;
     }

@@ -1839,6 +1839,11 @@
       line-height: 1 !important;
     }
 
+    /* 지원 목록 제목 행을 제거했으므로 목록이 통계 바로 아래 남은 공간을 채운다. */
+    .ir-status-card .ir-card-inner {
+      grid-template-rows: auto minmax(76px, 94px) minmax(0, 1fr) !important;
+    }
+
   </style>
 </head>
 
@@ -2019,16 +2024,6 @@
                   </div>
                 </div>
 
-              </div>
-
-              <div class="ir-support-heading">
-                <span>
-                  확인이 필요한 학생
-                </span>
-
-                <span class="ir-support-count">
-                  최근 활동 기준
-                </span>
               </div>
 
               <!-- 오늘 현황 내부 스크롤 -->
@@ -2259,6 +2254,8 @@
   </div>
 
   <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
+  <script src="../js/teacher-demo-guide.js"></script>
   <script>
     /*
       실제 교사용 개별읽기 대시보드 API와 연결한다. 이전에 있던 김민지·
@@ -2859,6 +2856,7 @@
     window.addEventListener("load", fitFixedStage);
 
     checkLogin();
+    showTeacherDemoGuide("teacherIndividualGuideSeen");
     loadDashboard();
     fitFixedStage();
   </script>

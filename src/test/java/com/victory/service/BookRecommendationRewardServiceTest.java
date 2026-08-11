@@ -24,8 +24,9 @@ class BookRecommendationRewardServiceTest {
     private final StudentStatsRepository studentStatsRepository = Mockito.mock(StudentStatsRepository.class);
     private final StudentStatRewardLogRepository rewardLogRepository =
         Mockito.mock(StudentStatRewardLogRepository.class);
+    private final StudentEndingService studentEndingService = Mockito.mock(StudentEndingService.class);
     private final BookRecommendationRewardService service =
-        new BookRecommendationRewardService(studentStatsRepository, rewardLogRepository);
+        new BookRecommendationRewardService(studentStatsRepository, rewardLogRepository, studentEndingService);
 
     private User buildStudent(Long id) {
         User student = new User();
@@ -156,5 +157,23 @@ class BookRecommendationRewardServiceTest {
         assertThatThrownBy(() -> service.grantRecommendationRewardOnce(student, 10L))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("duplicate reward");
+    }
+
+    /* 엔딩을 이미 본 학생은 용기가 더 이상 오르지 않고 보상 로그도 남지 않는다 */
+    @Test
+    void grantRecommendationRewardOnce_doesNotGrantAfterStudentHasSeenEnding() {
+        User student = buildStudent(1L);
+        StudentStats existing = buildStats(student, 0);
+
+        when(studentEndingService.hasEnded(1L)).thenReturn(true);
+        when(studentStatsRepository.findByStudent_Id(1L)).thenReturn(Optional.of(existing));
+
+        BookRecommendationRewardService.RewardResult result =
+            service.grantRecommendationRewardOnce(student, 10L);
+
+        assertThat(result.isRewardGranted()).isFalse();
+        assertThat(result.getStats().getCourage()).isEqualTo(0);
+        verify(studentStatsRepository, never()).save(any(StudentStats.class));
+        verify(rewardLogRepository, never()).save(any(StudentStatRewardLog.class));
     }
 }

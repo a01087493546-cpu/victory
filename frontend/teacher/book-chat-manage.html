@@ -295,6 +295,39 @@
       box-shadow: 0 7px 13px rgba(176, 112, 25, 0.16);
     }
 
+    .post-type-filter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: -2px 0 12px;
+    }
+
+    .post-type-filter-button {
+      min-width: 86px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid rgba(192, 130, 55, 0.38);
+      border-radius: 999px;
+      background: rgba(255, 252, 245, 0.86);
+      color: #684322;
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .post-type-filter-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(190, 125, 32, 0.7);
+    }
+
+    .post-type-filter-button.active {
+      border-color: rgba(174, 107, 22, 0.78);
+      background: linear-gradient(180deg, #f5d58f, #d7a044);
+      color: #4a2a10;
+      box-shadow: 0 5px 10px rgba(176, 112, 25, 0.14);
+    }
+
     .sort-select {
       padding: 0 12px;
       outline: none;
@@ -998,6 +1031,12 @@
             <span class="count-pill" id="visibleCount">0개</span>
           </div>
 
+          <div class="post-type-filter-row" role="group" aria-label="게시물 종류 필터">
+            <button class="post-type-filter-button active" type="button" data-post-type="all">전체</button>
+            <button class="post-type-filter-button" type="button" data-post-type="quiz">책퀴즈</button>
+            <button class="post-type-filter-button" type="button" data-post-type="talk">생각 나누기</button>
+          </div>
+
           <div class="guide-box">
             왼쪽 목록에서 글을 선택해요.<br>
             승인하면 학생 책수다방에 보이고, 거절하면 고칠 점을 남길 수 있어요.
@@ -1093,6 +1132,7 @@
     };
 
     let currentStatus = "pending";
+    let currentPostType = "all";
     let selectedPostId = null;
     let allPosts = [];
     let modalTargetPostId = null;
@@ -1102,7 +1142,42 @@
       rejected: []
     };
 
+    /*
+     * 학생이 아무것도 안 써도 심사 교사가 "승인대기" 체험을 바로 할 수
+     * 있도록 추가한 가상 예시다. 실제 DB에는 없는 화면 전용 데이터라
+     * saveDemoBookChatStatusOverride("practice", id, ...)로 상태를
+     * 뒤집으면 그 상태가 이 브라우저에서만 유지된다. book-chat.html의
+     * 같은 이름 상수와 id가 반드시 같아야 학생 화면과 승인 결과가 연동된다.
+     */
+    const PRACTICE_BOOK_CHAT_PENDING_SEED = [
+      {
+        id: "practice-seed-pending-01",
+        studentName: "박하민",
+        questionType: "direct",
+        question: "주인공이 길을 잃었을 때 도와준 것은 누구였나요?",
+        answer: "A. 우연히 만난 친구 / B. 혼자 힘으로 찾았다 (정답 A)",
+        submittedAt: "2026-08-05T10:20:00"
+      },
+      {
+        id: "practice-seed-pending-02",
+        studentName: "서희원",
+        questionType: "opinion",
+        question: "내가 주인공이라면 끝까지 보물을 찾으러 갔을까요?",
+        answer: "나는 무서워도 끝까지 가 봤을 것 같아. 궁금한 걸 그냥 두면 계속 생각날 것 같거든.",
+        submittedAt: "2026-08-06T14:10:00"
+      },
+      {
+        id: "practice-seed-pending-03",
+        studentName: "김수진",
+        questionType: "connect",
+        question: "나도 친구와 함께 어려운 일을 해결한 적이 있나요?",
+        answer: "체육 시간에 줄넘기를 못했는데 친구가 같이 연습해 줘서 성공한 적이 있어.",
+        submittedAt: "2026-08-07T09:40:00"
+      }
+    ];
+
     const filterButtons = document.querySelectorAll(".filter-button");
+    const postTypeFilterButtons = document.querySelectorAll(".post-type-filter-button");
     const sortSelect = document.getElementById("sortSelect");
     const postList = document.getElementById("postList");
     const detailArea = document.getElementById("detailArea");
@@ -1129,6 +1204,19 @@
         });
       });
 
+      postTypeFilterButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          postTypeFilterButtons.forEach(function(btn) {
+            btn.classList.remove("active");
+          });
+
+          button.classList.add("active");
+          currentPostType = button.dataset.postType;
+          selectedPostId = null;
+          renderAll();
+        });
+      });
+
       sortSelect.addEventListener("change", function() {
         renderAll();
       });
@@ -1138,8 +1226,12 @@
       allPosts = getAllPosts();
       const filteredPosts = getFilteredPosts();
 
-      if (!selectedPostId && filteredPosts.length > 0) {
-        selectedPostId = filteredPosts[0].id;
+      const selectedPostIsVisible = filteredPosts.some(function(post) {
+        return post.id === selectedPostId;
+      });
+
+      if (!selectedPostIsVisible) {
+        selectedPostId = filteredPosts.length > 0 ? filteredPosts[0].id : null;
       }
 
       renderPostList(filteredPosts);
@@ -1164,6 +1256,12 @@
         });
       }
 
+      if (currentPostType !== "all") {
+        posts = posts.filter(function(post) {
+          return normalizeType(post.type) === currentPostType;
+        });
+      }
+
       if (sortSelect.value === "name") {
         posts.sort(function(a, b) {
           return String(a.studentName).localeCompare(String(b.studentName), "ko");
@@ -1183,7 +1281,7 @@
 
     function renderPostList(posts) {
       if (posts.length === 0) {
-        postList.innerHTML = '<div class="empty-list">이 목록에 표시할 게시물이 없어요.</div>';
+        postList.innerHTML = '<div class="empty-list">해당 조건의 게시물이 없습니다.</div>';
         return;
       }
 
@@ -1212,7 +1310,7 @@
     }
 
     function renderDetail(posts) {
-      const selectedPost = allPosts.find(function(post) {
+      const selectedPost = posts.find(function(post) {
         return post.id === selectedPostId;
       });
 
@@ -1382,12 +1480,79 @@
       if (!auth) return false;
 
       if (isDemoAccount()) {
-        reviewPostsByStatus = { pending: [], approved: [], rejected: [] };
+        /*
+         * reviewPostsByStatus를 곧바로 비우면, 이 함수가 네트워크 응답을
+         * 기다리는 동안(await) 다른 승인/거절 액션이 findPostById()로 글을
+         * 찾다가 "일시적으로 빈 목록"만 보고 조용히 실패할 수 있다(교사가
+         * 짧은 시간 안에 서로 다른 글 두 개를 연달아 승인하면 두 번째
+         * 승인이 사라지는 원인이었다). 그래서 로컬 변수에 다 채운 뒤
+         * 마지막에 한 번에 교체한다 - 일반계정 분기와 같은 방식이다.
+         */
+        const nextReviewPostsByStatus = { pending: [], approved: [], rejected: [] };
+
+        /*
+         * 1) 학생 화면에 이미 공개돼 있는 진짜 승인 예시(DemoClassActivityInitializer가
+         * 만든 DB 행)를 일반계정과 같은 GET API로 읽어 온다 - 쓰기(승인/거절)만
+         * 심사계정에서 가로채고, 읽기는 실제 데이터를 신뢰한다. 그 위에 이 브라우저의
+         * override(saveDemoBookChatStatusOverride)가 있으면 표시 상태만 덮어쓴다.
+         */
+        try {
+          const results = await Promise.all([
+            fetchReviewPostsByStatus("PENDING"),
+            fetchReviewPostsByStatus("APPROVED"),
+            fetchReviewPostsByStatus("REJECTED")
+          ]);
+          const backendItems = results[0].concat(results[1]).concat(results[2]);
+
+          backendItems.forEach(function (item) {
+            const basePost = mapReviewItemToPost(item, "approved");
+            const override = getDemoBookChatStatusOverride("practice", basePost.id);
+            const status = override ? override.status : basePost.status;
+            nextReviewPostsByStatus[status].push(Object.assign({}, basePost, {
+              status: status,
+              rejectReason: override ? override.reason : basePost.rejectReason
+            }));
+          });
+        } catch (error) {
+          console.warn("심사 학급의 실제 책수다방 글을 불러오지 못했습니다.", error);
+        }
+
+        /*
+         * 2) 학생이 아무 글도 안 써도 승인대기 체험이 바로 되도록 넣어 둔
+         * 가상 예시. 역시 override가 있으면 그 상태를 따른다(기본값은 pending).
+         */
+        PRACTICE_BOOK_CHAT_PENDING_SEED.forEach(function (seed) {
+          const override = getDemoBookChatStatusOverride("practice", seed.id);
+          const status = override ? override.status : "pending";
+          nextReviewPostsByStatus[status].push({
+            id: seed.id,
+            sourceId: seed.id,
+            status: status,
+            studentId: null,
+            studentName: seed.studentName,
+            type: normalizeType(seed.questionType),
+            question: seed.question,
+            thought: seed.answer,
+            reason: "",
+            evidence: "",
+            answer: seed.answer,
+            classReadingBookId: null,
+            submittedAt: seed.submittedAt,
+            submittedText: formatSubmittedText(seed.submittedAt),
+            reviewedAt: override ? override.updatedAt : "",
+            reviewedText: override ? formatSubmittedText(override.updatedAt) : "",
+            rejectReason: override ? override.reason : ""
+          });
+        });
+
+        /*
+         * 3) ss01이 이 브라우저에서 직접 쓴 글(기존 방식 그대로).
+         */
         loadDemoApprovalRequests("practice").forEach(function(request) {
           const status = ["pending", "approved", "rejected"].includes(request.status)
             ? request.status
             : "pending";
-          reviewPostsByStatus[status].push({
+          nextReviewPostsByStatus[status].push({
             id: String(request.requestId),
             sourceId: String(request.requestId),
             status: status,
@@ -1407,6 +1572,8 @@
             rejectReason: request.rejectedReason || ""
           });
         });
+
+        reviewPostsByStatus = nextReviewPostsByStatus;
         if (options && options.keepSelection) selectedPostId = String(options.keepSelection);
         renderAll();
         return true;
@@ -1467,7 +1634,13 @@
 
     async function approvePostWithApi(id) {
       if (isDemoAccount()) {
-        return Boolean(updateDemoApprovalRequest("practice", id, "approved", ""));
+        const directRequest = loadDemoApprovalRequests("practice").find(function (item) {
+          return String(item.requestId) === String(id);
+        });
+        if (directRequest) {
+          return Boolean(updateDemoApprovalRequest("practice", id, "approved", ""));
+        }
+        return Boolean(saveDemoBookChatStatusOverride("practice", id, "approved", ""));
       }
       const auth = getTeacherAuthContext();
 
@@ -1493,7 +1666,13 @@
 
     async function rejectPostWithApi(id, reason) {
       if (isDemoAccount()) {
-        return Boolean(updateDemoApprovalRequest("practice", id, "rejected", reason));
+        const directRequest = loadDemoApprovalRequests("practice").find(function (item) {
+          return String(item.requestId) === String(id);
+        });
+        if (directRequest) {
+          return Boolean(updateDemoApprovalRequest("practice", id, "rejected", reason));
+        }
+        return Boolean(saveDemoBookChatStatusOverride("practice", id, "rejected", reason));
       }
       const auth = getTeacherAuthContext();
 
@@ -1515,6 +1694,45 @@
 
       if (!response.ok) {
         alert("거절 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요.");
+        return null;
+      }
+
+      return true;
+    }
+
+    /*
+     * "승인 취소" - 거절이 아니라 다시 검토 대기 상태로 되돌리는 것이라
+     * 거절 사유를 남기지 않는다. approvePostWithApi/rejectPostWithApi와
+     * 같은 패턴: 심사계정은 ss01이 이 브라우저에서 직접 쓴 글이면 기존
+     * 방식(요청 자체 status) 그대로, 그게 아니면(실제 DB 승인 예시 또는
+     * 가상 승인대기 예시) DB는 그대로 두고 browser-local override만 남긴다.
+     */
+    async function returnToPendingWithApi(id) {
+      if (isDemoAccount()) {
+        const directRequest = loadDemoApprovalRequests("practice").find(function (item) {
+          return String(item.requestId) === String(id);
+        });
+        if (directRequest) {
+          return Boolean(updateDemoApprovalRequest("practice", id, "pending", ""));
+        }
+        return Boolean(saveDemoBookChatStatusOverride("practice", id, "pending", ""));
+      }
+      const auth = getTeacherAuthContext();
+
+      if (!auth) return false;
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews/${encodeURIComponent(id)}/pending`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${auth.token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        alert("승인 취소 처리에 실패했어요. 잠시 뒤 다시 시도해 주세요.");
         return null;
       }
 
@@ -1584,8 +1802,6 @@
       const approvedByApi = await approvePostWithApi(id);
 
       if (approvedByApi === true) {
-        currentStatus = "approved";
-        setActiveFilter("approved");
         selectedPostId = id;
         await loadBackendReviewPosts({ keepSelection: id });
         alert("승인됐어요.");
@@ -1620,8 +1836,6 @@
       const rejectedByApi = await rejectPostWithApi(id, rejectReason);
 
       if (rejectedByApi === true) {
-        currentStatus = "rejected";
-        setActiveFilter("rejected");
         selectedPostId = id;
         await loadBackendReviewPosts({ keepSelection: id });
         alert("거절됐어요.");
@@ -1644,16 +1858,20 @@
 
       if (!post) return;
 
-      if (isDemoAccount()) {
-        if (!updateDemoApprovalRequest("practice", id, "pending", "")) return;
-        currentStatus = "pending";
-        setActiveFilter("pending");
+      const returnedByApi = await returnToPendingWithApi(id);
+
+      if (returnedByApi === true) {
         selectedPostId = id;
         await loadBackendReviewPosts({ keepSelection: id });
+        alert("승인 대기 상태로 되돌렸어요.");
         return;
       }
 
-      alert("대기로 돌리기는 아직 서버 API가 없어 처리할 수 없어요.");
+      if (returnedByApi === null) {
+        return;
+      }
+
+      alert("로그인 정보가 없어 처리할 수 없어요. 다시 로그인한 뒤 시도해 주세요.");
     }
 
     function hideApprovedPost(id) {

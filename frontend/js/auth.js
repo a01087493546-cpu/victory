@@ -9,6 +9,28 @@
   4. 스토리를 본 학생은 바로 학생 홈으로 이동합니다.
 */
 
+/*
+  심사계정(mq_demo_*)은 localStorage가 source of truth인데, localStorage는
+  브라우저 origin(프로토콜+호스트+포트) 단위로 완전히 분리된다.
+  "http://localhost:PORT/..."와 "http://127.0.0.1:PORT/..."는 같은 컴퓨터의
+  같은 서버를 가리켜도 서로 다른 origin이라 localStorage가 전혀 공유되지
+  않는다 - story-intro.js/ability-intro.html에서 storyIntroSeen/
+  powerIntroSeen을 아무리 정확히 저장해도, 다음에 "localhost"로 들어오면
+  그 값이 전부 비어 있는 것처럼 보여 인트로가 처음부터 다시 뜬다(반대
+  방향도 동일). 배포 도메인(hwani-dot.github.io 등)은 "localhost"라는
+  문자열과 절대 일치하지 않으므로 이 리다이렉트는 로컬 개발 환경에만
+  적용되고 실제 배포에는 영향이 없다. 로그인 폼이 뜨기도 전에, 가능한 한
+  가장 이른 시점에 127.0.0.1로 통일해서 심사계정 상태가 항상 같은
+  localStorage를 가리키게 만든다.
+*/
+(function normalizeLocalDevOrigin() {
+  if (window.location.hostname !== "localhost") return;
+
+  const canonical = new URL(window.location.href);
+  canonical.hostname = "127.0.0.1";
+  window.location.replace(canonical.toString());
+})();
+
 /* 현재 선택된 역할입니다. 기본값은 학생입니다. */
 let selectedRole = "student";
 
@@ -64,12 +86,32 @@ function getStudentIntroDestination(status, studentBasePath) {
   return basePath + "individual-reading.html";
 }
 
+function normalizeIntroSeen(value) {
+  return value === true || value === "true" || value === 1 || value === "1";
+}
+
+function readDemoIntroSeen(key) {
+  if (typeof loadDemoState === "function") {
+    return normalizeIntroSeen(loadDemoState(key, false));
+  }
+
+  /*
+    로그인 화면의 스크립트가 비정상적인 캐시/로드 순서로 실행되더라도
+    이미 저장된 브라우저별 인트로 완료값을 false로 오판하지 않는다.
+    demo-storage.js와 같은 raw key 규칙을 사용하며 값을 변경하지는 않는다.
+  */
+  try {
+    return normalizeIntroSeen(JSON.parse(localStorage.getItem("mq_demo_" + key) || "false"));
+  } catch (error) {
+    console.error("심사계정 인트로 완료 상태를 읽지 못했습니다.", error);
+    return false;
+  }
+}
+
 function getDemoIntroStatus() {
   return {
-    storyIntroSeen:
-      typeof loadDemoState === "function" && loadDemoState("storyIntroSeen", false) === true,
-    powerIntroSeen:
-      typeof loadDemoState === "function" && loadDemoState("powerIntroSeen", false) === true
+    storyIntroSeen: readDemoIntroSeen("storyIntroSeen"),
+    powerIntroSeen: readDemoIntroSeen("powerIntroSeen")
   };
 }
 
@@ -87,15 +129,75 @@ async function loadCurrentStudentIntroStatus() {
 
   const data = await response.json();
   return {
-    storyIntroSeen: data.hasSeenStoryIntro === true,
-    powerIntroSeen: data.hasSeenPowerIntro === true
+    storyIntroSeen: normalizeIntroSeen(data.hasSeenStoryIntro),
+    powerIntroSeen: normalizeIntroSeen(data.hasSeenPowerIntro)
   };
+}
+
+/*
+  일반 학생 계정의 인트로 완료 상태를 DB에 저장한다. field는
+  "story-intro-seen" 또는 "power-intro-seen"(컨트롤러 경로 그대로) - 두
+  화면이 같은 모양의 PATCH를 각자 따로 구현하던 것을 여기 하나로 모았다.
+  실패해도 화면 이동은 막지 않는다(다음 로그인 때 다시 보여주는 정도의
+  가벼운 실패로 처리).
+*/
+async function markIntroSeenOnServer(field) {
+  const token = sessionStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const response = await fetch(getLoginApiBaseUrl() + "/api/students/me/" + field, {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    if (!response.ok) throw new Error(field + " 저장 실패: " + response.status);
+    return true;
+  } catch (error) {
+    console.error("학생 인트로 완료 상태를 저장하지 못했습니다.", field, error);
+    return false;
+  }
+}
+
+/*
+  "끝까지 완료했는가"가 아니라 "이 화면이 최초 자동 흐름으로 한 번
+  보였는가"를 기준으로 seen을 저장한다. guardStudentIntroDirectAccess가
+  "지금 이 페이지가 정확히 보여줘야 할 화면"이라고 확정한 직후에만
+  호출하므로, 직접 재보기(?revisit=1)나 잘못된 화면 진입에서는 절대
+  호출되지 않는다. 이미 true면 아무것도 하지 않는다(중복 저장 방지).
+*/
+async function markCurrentIntroPageSeen(pageName, status) {
+  const isDemo = isDemoAccount();
+
+  if (pageName === "story-intro.html" && !status.storyIntroSeen) {
+    if (isDemo) {
+      if (typeof saveDemoState === "function") saveDemoState("storyIntroSeen", true);
+    } else {
+      await markIntroSeenOnServer("story-intro-seen");
+    }
+  } else if (pageName === "ability-intro.html" && !status.powerIntroSeen) {
+    if (isDemo) {
+      if (typeof saveDemoState === "function") saveDemoState("powerIntroSeen", true);
+    } else {
+      await markIntroSeenOnServer("power-intro-seen");
+    }
+  }
 }
 
 /* 완료한 인트로 URL로 직접 들어온 학생과 교사를 올바른 화면으로 돌려보낸다. */
 async function guardStudentIntroDirectAccess() {
   const pageName = window.location.pathname.split("/").pop();
   if (pageName !== "story-intro.html" && pageName !== "ability-intro.html") return;
+
+  /*
+    "나의 힘 쌓는 법" 버튼처럼, 이미 완료한 인트로를 학생이 스스로 다시
+    보고 싶어서 들어온 경우(?revisit=1)에는 이 가드가 곧바로
+    individual-reading.html로 되돌려 보내면 안 된다. 원래 이 가드는
+    "완료한 인트로 URL을 직접 쳐서 들어온 경우"만 막으려던 것이라,
+    다시보기 진입은 별도로 구분한다. revisit=1은 이미 seen=true인
+    상태에서만 쓰는 진입이므로 markCurrentIntroPageSeen도 호출하지 않는다.
+  */
+  if (new URLSearchParams(window.location.search).get("revisit") === "1") return;
 
   const role = sessionStorage.getItem("role");
   if (role !== "student") {
@@ -108,7 +210,18 @@ async function guardStudentIntroDirectAccess() {
     if (!status) return;
 
     const destination = getStudentIntroDestination(status, "./");
-    if (destination !== "./" + pageName) window.location.replace(destination);
+    if (destination !== "./" + pageName) {
+      window.location.replace(destination);
+      return;
+    }
+
+    /*
+     * 여기 도달했다는 것은 "지금 이 화면이 최초 자동 흐름에서 정확히
+     * 보여줘야 하는 화면"이라는 뜻이다 - 이 순간 seen=true로 저장해서,
+     * 학생이 끝까지 보지 않고 중간에 돌아가기를 눌러도 다음 로그인부터
+     * 다시 뜨지 않게 한다.
+     */
+    await markCurrentIntroPageSeen(pageName, status);
   } catch (error) {
     console.error("학생 인트로 진입 상태를 확인하지 못했습니다.", error);
   }
@@ -313,7 +426,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* 백엔드에서 받은 로그인 결과입니다. */
     const data = await response.json();
-
     /* 로그인 화면에서 선택한 역할과 실제 계정 역할이 같은지 확인합니다. */
     if (data.role !== selectedRole) {
       alert(
@@ -331,7 +443,6 @@ document.addEventListener("DOMContentLoaded", function () {
     sessionStorage.setItem("name", data.name);
     sessionStorage.setItem("loginId", data.loginId);
     sessionStorage.setItem("demoAccount", String(data.demoAccount === true));
-
     /* 학생 로그인 처리입니다. */
     if (data.role === "student") {
       /*
@@ -342,14 +453,29 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage(demo-storage.js)로 따로 판단한다.
       */
       const isDemo = data.demoAccount === true;
-      const introStatus = isDemo
-        ? getDemoIntroStatus()
-        : {
-            storyIntroSeen: data.hasSeenStoryIntro === true,
-            powerIntroSeen: data.hasSeenPowerIntro === true
-          };
+      let introStatus;
 
-      window.location.href = getStudentIntroDestination(introStatus, "./student/");
+      if (isDemo) {
+        introStatus = getDemoIntroStatus();
+      } else {
+        try {
+          introStatus = await loadCurrentStudentIntroStatus();
+        } catch (error) {
+          console.error("로그인 후 인트로 완료 상태를 다시 확인하지 못했습니다.", error);
+          introStatus = {
+            storyIntroSeen: normalizeIntroSeen(data.hasSeenStoryIntro),
+            powerIntroSeen: normalizeIntroSeen(data.hasSeenPowerIntro)
+          };
+        }
+      }
+      const introDestination = getStudentIntroDestination(introStatus, "./student/");
+      /*
+       * 인트로 리다이렉트가 다시 문제되면 이 한 줄이 "그 순간 실제로
+       * 읽은 storySeen/powerSeen 값과 최종 목적지"를 곧바로 보여준다 -
+       * origin 불일치(localhost/127.0.0.1) 같은 문제를 다시 추측하지
+       * 않도록 남겨 둔다.
+       */
+      window.location.href = introDestination;
       return;
     }
 

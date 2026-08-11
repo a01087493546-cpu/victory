@@ -216,6 +216,10 @@ class IndividualSummaryShareServiceTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).isMine()).isFalse();
         assertThat(result.get(0).getLikeCount()).isEqualTo(2L);
+        // 다른 사용자의 좋아요 2개는 총수에만 반영되고 교사 자신의 활성 상태는 false다.
+        assertThat(result.get(0).isLikedByMe()).isFalse();
+        verify(contentLikeRepository).findByStudent_IdAndContentTypeAndContentIdIn(
+            eq(TEACHER_A_ID), eq("individual_summary"), anyList());
         verify(summaryRepository).findSharedIndividualSummariesByStudentIdsAndCreatedAtBetween(
             eq(List.of(STUDENT_1_ID, STUDENT_2_ID)), any(LocalDateTime.class), any(LocalDateTime.class));
     }
@@ -283,6 +287,9 @@ class IndividualSummaryShareServiceTest {
 
         assertThat(result.isLiked()).isTrue();
         assertThat(result.getLikeCount()).isEqualTo(1L);
+        verify(contentLikeRepository).findByStudent_IdAndContentTypeAndContentId(
+            TEACHER_A_ID, "individual_summary", 500L);
+        verify(contentLikeRepository, never()).delete(any(ContentLike.class));
 
         org.mockito.ArgumentCaptor<ContentLike> captor = org.mockito.ArgumentCaptor.forClass(ContentLike.class);
         verify(contentLikeRepository).save(captor.capture());

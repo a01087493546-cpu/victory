@@ -22,4 +22,5 @@ public class DungeonResponse {
     private List<String> blockedReasons;
     private int attemptsLeftToday;
     private int rewardValue;
+    private boolean hasEnded;
 }

@@ -290,6 +290,8 @@
     </section>
   </main>
 
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
   <script>
     const endingImagePath = "../assets/story/ending/";
 
@@ -311,7 +313,7 @@
       },
       {
         speaker: "루미",
-        text: "모험은 끝났지만, 책 속에는 아직 많은 이야기가 남아 있어.\n앞으로도 책을 읽으며\n새로운 생각과 힘을 계속 키워 가자.",
+        text: "첫 번째 모험은 끝났지만, 루미의 독서 모험은 계속돼!\n새로운 책을 읽으며\n너만의 독서 기록을 계속 만들어 가자!",
         character: endingImagePath + "char-ending-lumi-guide.png"
       }
     ];
@@ -349,7 +351,7 @@
       prevEndingButton.disabled = currentEndingIndex === 0;
 
       if (currentEndingIndex === endingSlides.length - 1) {
-        nextEndingButton.textContent = "모험 마치기";
+        nextEndingButton.textContent = "끝내기";
       } else {
         nextEndingButton.textContent = "다음";
       }
@@ -378,8 +380,40 @@
       }
     }
 
-    function goNextEnding() {
+    /*
+     * 엔딩을 마지막 장면까지 다 보고 "끝내기"를 눌렀을
+     * 때만 능력치 시스템을 종료한다(전투 승리 시점이 아님 - 중간에 나가면
+     * 절대 호출되지 않는다). 일반계정은 has_seen_ending을 DB에 영구히
+     * 남기고 능력치 4종을 정확히 0으로 SET하는 PATCH를 한 번 부른다.
+     * 심사계정은 여러 심사위원이 같은 ss01을 쓰므로 이 브라우저의
+     * localStorage에만 남긴다(mq_demo_studentStats를 관리하는 기존 키를
+     * 그대로 재사용 - 새 key를 만들지 않는다).
+     */
+    async function completeEndingIfNeeded() {
+      if (typeof isDemoAccount === "function" && isDemoAccount()) {
+        if (typeof saveDemoState === "function") {
+          saveDemoState("hasSeenEnding", true);
+          saveDemoState("studentStats", { magic: 0, stamina: 0, wisdom: 0, courage: 0 });
+        }
+        return;
+      }
+
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        await fetch(getLoginApiBaseUrl() + "/api/students/me/ending-seen", {
+          method: "PATCH",
+          headers: { Authorization: "Bearer " + token }
+        });
+      } catch (error) {
+        console.error("엔딩 완료 상태를 저장하지 못했습니다.", error);
+      }
+    }
+
+    async function goNextEnding() {
       if (currentEndingIndex === endingSlides.length - 1) {
+        await completeEndingIfNeeded();
         window.location.href = "./individual-reading.html";
         return;
       }

@@ -241,6 +241,19 @@ body {
   display: none !important;
 }
 
+.dungeon-demo-banner-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dungeon-demo-banner-lines div {
+  color: #f1e4c6;
+  font-size: 17px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
 /* 왼쪽 던전 목록 */
 .dungeon-list {
   grid-column: 1;
@@ -1022,6 +1035,77 @@ body {
     transform: scale(1.08);
     text-shadow: 0 0 22px rgba(255, 70, 70, 0.78);
   }
+}
+
+/*
+ * 던전 전투 능력치 연계 시스템 - 상단 HUD의 4능력치 표시.
+ * 오른쪽 그리드 칸(battle-topbar의 3번째 1fr)에 timer-wrap과 대칭되도록
+ * 배치한다. 1920x1080에서도 잘리지 않도록 min-width만 잡고 폭은
+ * 그리드가 알아서 맞추게 둔다.
+ */
+.battle-top-right {
+  justify-self: end;
+  min-width: 560px;
+}
+
+.battle-stat-hud {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(128px, 1fr));
+  gap: 8px;
+}
+
+.battle-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 6px 11px;
+  background:
+    radial-gradient(circle at 15% 30%, rgba(255, 216, 117, 0.1), transparent 48%),
+    linear-gradient(180deg, rgba(34, 22, 7, 0.94), rgba(8, 5, 2, 0.96));
+  border: 1px solid rgba(214, 168, 74, 0.5);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.28),
+    inset 0 0 12px rgba(255, 216, 117, 0.04);
+  white-space: nowrap;
+}
+
+.battle-stat-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+}
+
+.battle-stat-label {
+  color: #b9a77a;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.battle-stat-value {
+  margin-left: auto;
+  color: #f7dc8a;
+  font-size: 19px;
+  font-weight: 900;
+  font-family: monospace;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.stat-magic .battle-stat-value  { color: #8fc7ff; }
+.stat-stamina .battle-stat-value { color: #8fe0a0; }
+.stat-wisdom .battle-stat-value  { color: #e0a0ff; }
+.stat-courage .battle-stat-value { color: #ff9d6b; }
+
+@media (max-width: 1280px) {
+  .battle-top-right { min-width: 480px; }
+  .battle-stat-hud { grid-template-columns: repeat(4, minmax(108px, 1fr)); gap: 5px; }
+  .battle-stat-item { padding: 5px 8px; gap: 5px; }
+  .battle-stat-label { font-size: 13px; }
+  .battle-stat-value { font-size: 16px; }
 }
 
 .topbar-right {
@@ -3814,6 +3898,17 @@ body {
 }
 
 #s-result .result-sub:empty { display: none; }
+
+/* 전투 패배 안내는 제목과 버튼 사이에서 한 줄로 또렷하게 보여준다. */
+#s-result .result-wrap.defeat-result .result-sub {
+  margin-top: 2px;
+  margin-bottom: 22px;
+  color: #f0d7a5;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 700;
+  white-space: nowrap;
+}
 
 /* 힌트/보상 영역 */
 #s-result .reward-row {

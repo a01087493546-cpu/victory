@@ -6222,6 +6222,7 @@ async function saveBookFinishRecord() {
         "김민지": 5, "서희원": 2, "김수진": 8, "이혜원": 4
       };
       const localLikes = loadDemoState("individualSummaryLikes", {});
+      const actor = isTeacherShareMode() ? "teacherLiked" : "studentLiked";
       const seenNames = new Set();
       return items.filter(function (item) {
         /*
@@ -6247,16 +6248,32 @@ async function saveBookFinishRecord() {
          * 0에서 시작해 이 브라우저의 로컬 좋아요만 더한다.
          */
         const isLocalWritten = typeof item.summaryId === "string" && item.summaryId.indexOf("local-") === 0;
-        const liked = localLikes[String(item.summaryId)] === true;
+        const likeState = normalizeIndividualDemoLikeState(localLikes[String(item.summaryId)]);
         const baseLikeCount = isLocalWritten
           ? 0
           : Number(likeByName[item.studentName] || item.likeCount || 0);
         return Object.assign({}, item, {
           bookType: isLocalWritten ? item.bookType : (typeByName[item.studentName] || item.bookType || "other"),
-          likeCount: baseLikeCount + (liked ? 1 : 0),
-          likedByMe: liked
+          likeCount: baseLikeCount
+            + (likeState.studentLiked ? 1 : 0)
+            + (likeState.teacherLiked ? 1 : 0),
+          likedByMe: likeState[actor] === true
         });
       });
+    }
+
+    function normalizeIndividualDemoLikeState(value) {
+      if (value === true) {
+        // legacy boolean은 교사 좋아요 도입 전 학생이 저장한 값으로 호환한다.
+        return { studentLiked: true, teacherLiked: false };
+      }
+      if (!value || typeof value !== "object" || Array.isArray(value)) {
+        return { studentLiked: false, teacherLiked: false };
+      }
+      return {
+        studentLiked: value.studentLiked === true,
+        teacherLiked: value.teacherLiked === true
+      };
     }
 
     // 서버에서 최신 목록을 다시 받아와 화면을 새로 그린다.
@@ -6409,7 +6426,12 @@ async function saveBookFinishRecord() {
 
       if (isDemoAccount()) {
         const localLikes = loadDemoState("individualSummaryLikes", {});
-        localLikes[String(summaryId)] = localLikes[String(summaryId)] !== true;
+        const key = String(summaryId);
+        const actor = isTeacherShareMode() ? "teacherLiked" : "studentLiked";
+        const likeState = normalizeIndividualDemoLikeState(localLikes[key]);
+        likeState[actor] = likeState[actor] !== true;
+        if (!likeState.studentLiked && !likeState.teacherLiked) delete localLikes[key];
+        else localLikes[key] = likeState;
         saveDemoState("individualSummaryLikes", localLikes);
         currentShareSummaries = decorateDemoSummaries(currentShareSummaries.map(function (item) {
           return Object.assign({}, item, { likeCount: 0, likedByMe: false });

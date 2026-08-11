@@ -49,7 +49,7 @@ class StudentStatsControllerTest {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             studentId, null, List.of(new SimpleGrantedAuthority("student")));
 
-        StudentStatsResponse expected = new StudentStatsResponse(8, 8, 8, 8);
+        StudentStatsResponse expected = new StudentStatsResponse(8, 8, 8, 8, false);
         when(studentStatsService.getStats(studentId)).thenReturn(expected);
 
         StudentStatsResponse result = controller.getStats(studentId, authentication).getBody();

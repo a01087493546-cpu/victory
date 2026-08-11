@@ -31,15 +31,26 @@ const GameAPI = (() => {
     }
   };
 
-  // 전투 밸런스 참고용 데이터(서버가 관리하지 않는 값들만).
-  // difficulty 값('초급'/'중급'/'고급')으로 서버 응답(GET /api/dungeons)과 매칭한다.
+  /*
+   * 전투 밸런스 참고용 데이터(서버가 관리하지 않는 값들만).
+   * difficulty 값('초급'/'중급'/'고급')으로 서버 응답(GET /api/dungeons)과 매칭한다.
+   *
+   * maxHp는 던전 전투 능력치 연계 시스템(소모형 자원 + 강화된 쿨타임)을
+   * 도입하면서 함께 재조정한 값이다 - 기존 300/600/1000은 새 자원
+   * 시스템에서 몬스터가 사실상 즉사하는 수준이라, 던전 기준 능력치(T)로
+   * 산출 가능한 최대 피해량 대비 몬스터가 견디는 시간이 늘어나도록
+   * 자동 전투 시뮬레이션(스크립트 기반, 실제 UI 조작이 아님)으로
+   * 초급 T=20/중급 T=55/고급 T=85 기준 "정상적으로 플레이하면 승리하되
+   * 여유가 크지 않고, 기준보다 1.5배 모으면 확실히 유리해지는" 목표에
+   * 맞춰 다시 산출했다.
+   */
   const ENEMY_CONFIG = [
     {
       difficulty: '초급',
       enemyKey: 'hatchling',
       bg: 'images/bg_hatchling.png',
       enemy: {
-        maxHp: 300,
+        maxHp: 440,
         normalAtk: 8,
         heavyAtk: 25,
         normalAtkInterval: 2000,
@@ -52,7 +63,7 @@ const GameAPI = (() => {
       enemyKey: 'dragon',
       bg: 'images/bg_dragon.png',
       enemy: {
-        maxHp: 600,
+        maxHp: 825,
         normalAtk: 15,
         heavyAtk: 45,
         normalAtkInterval: 2000,
@@ -65,7 +76,7 @@ const GameAPI = (() => {
       enemyKey: 'elder',
       bg: 'images/bg_elder.png',
       enemy: {
-        maxHp: 1000,
+        maxHp: 1240,
         normalAtk: 25,
         heavyAtk: 80,
         normalAtkInterval: 2000,
@@ -110,6 +121,13 @@ const GameAPI = (() => {
       eligible: serverDungeon.eligible,
       blockedReasons: serverDungeon.blockedReasons,
       attemptsLeftToday: serverDungeon.attemptsLeftToday,
+      rewardValue: serverDungeon.rewardValue,
+      /*
+       * 심사계정은 공용 DB has_seen_ending을 절대 갖지 않으므로 서버는
+       * 항상 hasEnded:false를 내려준다 - 이 브라우저의 로컬 엔딩 완료
+       * 상태(mq_demo_hasSeenEnding)를 아는 쪽(호출부)에서 덮어써야 한다.
+       */
+      hasEnded: Boolean(serverDungeon.hasEnded),
 
       // 전투 밸런스 참고용(클라이언트 전용)
       enemyKey: config ? config.enemyKey : null,
@@ -167,19 +185,48 @@ const GameAPI = (() => {
     }
   }
 
-  // 학생 초기 상태 반환
-  // 나중에: GET /api/students/{studentId}/game-state
-  function getInitialPlayerState(studentId) {
-    return {
-      studentId: studentId,
-      maxHp:  100,
-      hp:     100,
-      magic:  10,   // 마법력 → 공격력, 크리티컬 확률
-      stamina: 10,  // 체력   → 최대 HP
-      courage: 0,   // 용기   → 강공격 쿨타임 감소
-      wisdom:  10,  // 지혜   → 방어 시 데미지 감소율 보너스
-      books:  0,    // 등록한 책 수 → 던전 입장 조건
-    };
+  /*
+   * 전투 시작 자원(능력치)을 반환한다. 던전 입장 조건 평균과는 별개로,
+   * 여기서 반환하는 4개 값이 전투 중 실제로 소모되는 자원이 된다.
+   *
+   * - 일반계정: 학생이 실제 독서활동으로 모은 student_stats를 그대로
+   *   사용한다(GET /api/students/{id}/stats, 나의 힘 화면과 같은
+   *   엔드포인트 재사용). 이 값을 전투 중에 깎아도 원본 DB 값은
+   *   전혀 건드리지 않는다 - 여기서 반환하는 객체는 매 전투 시작마다
+   *   새로 만들어지는 사본이다.
+   * - 심사계정: 모든 던전을 바로 체험해야 하므로 mq_demo_studentStats를
+   *   쓰지 않고, 선택한 던전의 입장 기준 능력치(requiredStatAvg = T)를
+   *   그대로 전투 시작값으로 임시 제공한다. 이 값은 mq_demo_studentStats에
+   *   저장하지 않으며, 클리어 보상(10/15/0 SET)은 기존 로직 그대로
+   *   mq_demo_studentStats에만 반영된다.
+   */
+  async function getInitialPlayerState(studentId, dungeon) {
+    if (typeof isDemoAccount === 'function' && isDemoAccount()) {
+      const T = Math.round((dungeon && dungeon.requiredStatAvg) || 20);
+      return { studentId, magic: T, stamina: T, wisdom: T, courage: T };
+    }
+
+    try {
+      const response = await fetch(getApiBaseUrl() + '/api/students/' + studentId + '/stats', {
+        headers: authHeaders()
+      });
+
+      if (!response.ok) throw new Error('능력치 조회 실패: ' + response.status);
+
+      const stats = await response.json();
+
+      return {
+        studentId,
+        magic: Number(stats.magic) || 0,
+        stamina: Number(stats.stamina) || 0,
+        wisdom: Number(stats.wisdom) || 0,
+        courage: Number(stats.courage) || 0,
+      };
+    } catch (error) {
+      console.error('전투 시작 능력치 조회 실패, 던전 입장 조건 평균으로 대체합니다.', error);
+      const fallback = Math.round((dungeon && dungeon.statAverage) || 10);
+      return { studentId, magic: fallback, stamina: fallback, wisdom: fallback, courage: fallback };
+    }
   }
 
   return {

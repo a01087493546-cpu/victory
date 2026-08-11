@@ -111,25 +111,33 @@
     .tr-demo-banner {
       display: inline-flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
       min-width: 0;
-      max-width: 900px;
-      padding: 8px 18px;
+      max-width: 1050px;
+      padding: 10px 20px;
       border: 1px solid rgba(180, 130, 60, 0.42);
       border-radius: 16px;
       background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
       box-shadow: 0 4px 10px rgba(90,55,15,.18);
       color: #6b4b26;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 700;
-      line-height: 1.4;
+      line-height: 1.35;
       white-space: normal;
       word-break: keep-all;
     }
 
     .tr-demo-banner strong {
-      font-size: 15px;
+      display: block;
+      font-size: 18px;
       font-weight: 900;
+    }
+
+    .tr-demo-banner p {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.35;
     }
 
     .tr-demo-banner[hidden] {
@@ -440,7 +448,11 @@
           <span>문답책</span>
         </div>
 
-        <div class="tr-demo-banner" id="teacherHomeDemoBanner" data-demo-banner hidden>🔍 <strong>심사 체험 안내</strong> — 계정관리·온책읽기·개별읽기에 표시되는 학생 데이터는 심사를 위해 미리 구성한 가상 예시 데이터입니다. 실제 계정에서는 학생 정보와 활동 기록이 자동으로 연계됩니다.</div>
+        <div class="tr-demo-banner" id="teacherHomeDemoBanner" data-demo-banner hidden>
+          <strong>🔍 심사 체험 안내</strong>
+          <p>계정관리·온책읽기·개별읽기에 표시되는 학생 데이터는 심사를 위해 구성한 가상 예시 데이터입니다.</p>
+          <p>실제 계정에서는 학생 정보와 활동 기록이 자동으로 연계됩니다.</p>
+        </div>
       </div>
 
       <div class="tr-top-actions">

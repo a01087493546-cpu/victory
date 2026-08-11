@@ -133,6 +133,7 @@ public class PracticeProgressService {
         progress.setClassReadDone(false);
         progress.setAfterDone(false);
         progress.setDuringTypeProgress(PracticeProgress.createDefaultDuringProgress());
+        progress.setAfterTypeProgress(PracticeProgress.createDefaultAfterProgress());
 
         return progress;
     }
@@ -182,6 +183,29 @@ public class PracticeProgressService {
             );
 
             progress.setDuringTypeProgress(mergedProgress);
+        }
+
+        if (request.getAfterTypeProgress() != null) {
+
+            Map<String, Boolean> mergedAfterProgress =
+                PracticeProgress.createDefaultAfterProgress();
+
+            if (progress.getAfterTypeProgress() != null) {
+                mergedAfterProgress.putAll(
+                    progress.getAfterTypeProgress()
+                );
+            }
+
+            request.getAfterTypeProgress().forEach(
+                (type, done) -> {
+                    if (mergedAfterProgress.containsKey(type)
+                            && done != null) {
+                        mergedAfterProgress.put(type, done);
+                    }
+                }
+            );
+
+            progress.setAfterTypeProgress(mergedAfterProgress);
         }
     }
 
