@@ -19,6 +19,7 @@ public class PracticeReadingRewardService {
 
     public static final String REWARD_TYPE = "PRACTICE_READING_COMPLETE";
     public static final String SOURCE_TYPE = "practice_reading";
+    private static final String COMPLETE_INSTANCE_ID = SOURCE_TYPE + ":complete";
     private static final int REWARD_AMOUNT = 8;
 
     private final StudentStatsRepository studentStatsRepository;
@@ -36,12 +37,7 @@ public class PracticeReadingRewardService {
 
         String instanceId = buildInstanceId(classReadingBookId);
 
-        if (rewardLogRepository
-                .findByStudent_IdAndRewardTypeAndInstanceId(
-                    student.getId(),
-                    REWARD_TYPE,
-                    instanceId)
-                .isPresent()) {
+        if (hasPracticeCompletionReward(student.getId())) {
 
             StudentStats stats = getOrCreateStats(student);
             return RewardResult.alreadyGranted(stats);
@@ -67,17 +63,11 @@ public class PracticeReadingRewardService {
 
     @Transactional(readOnly = true)
     public RewardResult getRewardState(User student, Long classReadingBookId) {
-        String instanceId = buildInstanceId(classReadingBookId);
         StudentStats stats = studentStatsRepository
             .findByStudent_Id(student.getId())
             .orElse(null);
 
-        boolean alreadyGranted = rewardLogRepository
-            .findByStudent_IdAndRewardTypeAndInstanceId(
-                student.getId(),
-                REWARD_TYPE,
-                instanceId)
-            .isPresent();
+        boolean alreadyGranted = hasPracticeCompletionReward(student.getId());
 
         return new RewardResult(false, alreadyGranted, stats);
     }
@@ -93,7 +83,17 @@ public class PracticeReadingRewardService {
     }
 
     private String buildInstanceId(Long classReadingBookId) {
-        return SOURCE_TYPE + ":" + (classReadingBookId == null ? "unknown" : classReadingBookId);
+        return COMPLETE_INSTANCE_ID;
+    }
+
+    private boolean hasPracticeCompletionReward(Long studentId) {
+        /*
+         * 현재 정책은 책/학급과 무관하게 학생별 최초 1회다. 예전 버전이
+         * practice_reading:{classReadingBookId}로 남긴 로그도 같은 보상으로
+         * 인정해야 배포 후 기존 학생에게 +8이 다시 지급되지 않는다.
+         */
+        return rewardLogRepository.findByStudent_Id(studentId).stream()
+            .anyMatch(log -> REWARD_TYPE.equals(log.getRewardType()));
     }
 
     @Getter

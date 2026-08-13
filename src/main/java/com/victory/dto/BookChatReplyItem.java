@@ -21,6 +21,7 @@ public class BookChatReplyItem {
     private String replyType;
     private String text;
     private LocalDateTime createdAt;
+    private String authorRole;
 
     public static BookChatReplyItem from(Response response, Long viewerStudentId) {
 
@@ -40,7 +41,8 @@ public class BookChatReplyItem {
                 ? ""
                 : extraData.get("replyType").toString(),
             response.getContent(),
-            response.getCreatedAt()
+            response.getCreatedAt(),
+            response.getStudent() == null ? null : response.getStudent().getRole()
         );
     }
 }

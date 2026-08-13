@@ -793,8 +793,8 @@
         }
 
         classWall = await response.json();
-        applyDemoRecommendationLikes();
         mergeDemoWrittenRecommendations();
+        applyDemoRecommendationLikes();
       } catch (error) {
         console.error("우리 반 추천 책장을 불러오지 못했습니다.", error);
         classWall = { best: [], recent: [] };
@@ -805,14 +805,93 @@
     function applyDemoRecommendationLikes() {
       if (!isDemoAccount()) return;
       const likedById = loadDemoState(DEMO_RECOMMENDATION_LIKES_KEY, {});
+      const localRecommendations = loadDemoState("individualBookRecommendations", []);
+      let migratedLocalRecommendation = false;
+
+      /*
+       * 예전 browser-local 직접 작성 추천은 좋아요를 카드 자체의
+       * likedByMe/likeCount에 저장했다. 그 1개를 대표 교사 actor 상태로
+       * 옮기고 카드의 baseline에서 빼서 총합이 두 번 더해지지 않게 한다.
+       */
+      if (Array.isArray(localRecommendations)) {
+        localRecommendations.forEach(function(item) {
+          if (!item || item.likedByMe !== true || !item.recommendationId) return;
+          const key = String(item.recommendationId);
+          if (likedById[key] == null) {
+            likedById[key] = { actors: { "teacher:tt11": true } };
+            item.likeCount = Math.max(0, (Number(item.likeCount) || 0) - 1);
+          }
+          item.likedByMe = false;
+          [classWall.best, classWall.recent].forEach(function(items) {
+            items.forEach(function(wallItem) {
+              if (String(wallItem.recommendationId) !== key) return;
+              wallItem.likeCount = item.likeCount;
+              wallItem.likedByMe = false;
+            });
+          });
+          migratedLocalRecommendation = true;
+        });
+      }
+
+      if (migratedLocalRecommendation) {
+        saveDemoState("individualBookRecommendations", localRecommendations);
+        saveDemoState(DEMO_RECOMMENDATION_LIKES_KEY, likedById);
+      }
+
+      const actorKey = getDemoRecommendationLikeActorKey();
       [classWall.best, classWall.recent].forEach(function (items) {
         items.forEach(function (item) {
           const key = String(item.recommendationId);
           const seedLikeCount = Number(item.likeCount) || 0;
-          item.likeCount = seedLikeCount + (likedById[key] ? 1 : 0);
-          item.likedByMe = !!likedById[key];
+          const likeState = normalizeDemoRecommendationLikeState(likedById[key]);
+          const actorLikeCount = Object.keys(likeState.actors).filter(function(actor) {
+            return likeState.actors[actor] === true;
+          }).length;
+          item.likeCount = seedLikeCount + actorLikeCount;
+          item.likedByMe = likeState.actors[actorKey] === true;
         });
       });
+    }
+
+    function getDemoRecommendationLikeActorKey() {
+      const role = isTeacherMode() ? "teacher" : "student";
+      const loginId = sessionStorage.getItem("loginId") || viewerId || "demo";
+      return role + ":" + String(loginId);
+    }
+
+    function normalizeDemoRecommendationLikeState(value) {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        if (value.actors && typeof value.actors === "object" && !Array.isArray(value.actors)) {
+          return { actors: Object.assign({}, value.actors) };
+        }
+
+        /* 요약 공유 화면에서 먼저 사용하던 과도기 형식도 안전하게 읽는다. */
+        const actors = {};
+        if (value.studentLiked === true) actors["student:ss01"] = true;
+        if (value.teacherLiked === true) actors["teacher:tt11"] = true;
+        return { actors: actors };
+      }
+
+      /*
+       * 예전 단일 boolean은 교사 클릭 뒤 학생까지 취소로 보이게 만든 바로
+       * 그 형식이다. 기존 화면에서 확인된 교사 좋아요를 잃지 않도록 대표
+       * 교사 actor로 한 번만 해석하고, 다음 클릭부터 actors 형식으로 저장한다.
+       */
+      return { actors: value === true ? { "teacher:tt11": true } : {} };
+    }
+
+    function toggleDemoRecommendationLike(recommendationId) {
+      const likedById = loadDemoState(DEMO_RECOMMENDATION_LIKES_KEY, {});
+      const key = String(recommendationId);
+      const actorKey = getDemoRecommendationLikeActorKey();
+      const likeState = normalizeDemoRecommendationLikeState(likedById[key]);
+
+      if (likeState.actors[actorKey] === true) delete likeState.actors[actorKey];
+      else likeState.actors[actorKey] = true;
+
+      if (Object.keys(likeState.actors).length === 0) delete likedById[key];
+      else likedById[key] = likeState;
+      saveDemoState(DEMO_RECOMMENDATION_LIKES_KEY, likedById);
     }
 
     /*
@@ -1059,30 +1138,8 @@
       if (likeInFlight || !token) return;
 
       if (isDemoAccount()) {
-        const localRecommendations = loadDemoState("individualBookRecommendations", []);
-        const localIndex = Array.isArray(localRecommendations)
-          ? localRecommendations.findIndex(function(item) {
-              return String(item.recommendationId) === String(recommendationId);
-            })
-          : -1;
-
-        if (localIndex >= 0) {
-          const item = localRecommendations[localIndex];
-          const wasLiked = item.likedByMe === true;
-          localRecommendations[localIndex] = Object.assign({}, item, {
-            likedByMe: !wasLiked,
-            likeCount: Math.max(0, (Number(item.likeCount) || 0) + (wasLiked ? -1 : 1))
-          });
-          saveDemoState("individualBookRecommendations", localRecommendations);
-          await loadClassWall();
-          renderShelf();
-          return;
-        }
-
-        const likedById = loadDemoState(DEMO_RECOMMENDATION_LIKES_KEY, {});
-        const key = String(recommendationId);
-        likedById[key] = !likedById[key];
-        saveDemoState(DEMO_RECOMMENDATION_LIKES_KEY, likedById);
+        /* 공용 seed와 browser-local 직접 작성 추천 모두 같은 actor 저장소 사용. */
+        toggleDemoRecommendationLike(recommendationId);
         await loadClassWall();
         renderShelf();
         return;

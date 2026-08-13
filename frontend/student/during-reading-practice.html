@@ -5846,6 +5846,12 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
   /* 총 복습 완료 상태를 추가합니다. */
   progress.review = true;
 
+  if (isDemoAccount()) {
+    const demoProgress = loadDemoState("practiceProgress", {});
+    demoProgress.classReadDone = true;
+    saveDemoState("practiceProgress", demoProgress);
+  }
+
   /* 백엔드 저장이 끝날 때까지 기다립니다. */
   const saved = isDemoAccount() ? true : await saveProgress();
 

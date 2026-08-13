@@ -224,6 +224,62 @@ class IndividualSummaryShareServiceTest {
             eq(List.of(STUDENT_1_ID, STUDENT_2_ID)), any(LocalDateTime.class), any(LocalDateTime.class));
     }
 
+    /* 교사가 승인된 간추리기를 다시 대기(PENDING)로 되돌린다 - 좋아요는 건드리지 않는다 */
+    @Test
+    void returnToPending_fromApproved_clearsReasonAndPreservesLikes() {
+        User teacher = buildUser(TEACHER_A_ID, "선생님", "teacher");
+        User owner = buildUser(STUDENT_1_ID, "학생1", "student");
+        SchoolClass classA = buildClass(CLASS_A_ID, teacher);
+
+        when(userRepository.findById(TEACHER_A_ID)).thenReturn(Optional.of(teacher));
+        when(schoolClassRepository.findByTeacherId(TEACHER_A_ID)).thenReturn(Optional.of(classA));
+        when(classStudentRepository.findByStudentId(STUDENT_1_ID))
+            .thenReturn(Optional.of(buildClassStudent(1L, classA, owner)));
+
+        Summary summary = buildSharedSummary(500L, owner, 8L, "story", "간추리기", LocalDateTime.now());
+        summary.setStatus("approved");
+        when(summaryRepository.findById(500L)).thenReturn(Optional.of(summary));
+        when(summaryRepository.save(any(Summary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(contentLikeRepository.countByContentTypeAndContentId(eq("individual_summary"), any())).thenReturn(2L);
+        when(contentLikeRepository.findByStudent_IdAndContentTypeAndContentId(eq(TEACHER_A_ID), eq("individual_summary"), any()))
+            .thenReturn(Optional.empty());
+
+        IndividualSummaryShareItem result = service.returnToPending(TEACHER_A_ID, 500L);
+
+        assertThat(result.getStatus()).isEqualTo("pending");
+        assertThat(summary.getStatus()).isEqualTo("pending");
+        assertThat(summary.getRejectionReason()).isNull();
+        assertThat(result.getLikeCount()).isEqualTo(2L);
+        verify(contentLikeRepository, never()).delete(any());
+    }
+
+    /* 교사가 거절된 간추리기를 대기(PENDING)로 되돌리면 거절 사유가 지워진다 */
+    @Test
+    void returnToPending_fromRejected_clearsRejectionReason() {
+        User teacher = buildUser(TEACHER_A_ID, "선생님", "teacher");
+        User owner = buildUser(STUDENT_1_ID, "학생1", "student");
+        SchoolClass classA = buildClass(CLASS_A_ID, teacher);
+
+        when(userRepository.findById(TEACHER_A_ID)).thenReturn(Optional.of(teacher));
+        when(schoolClassRepository.findByTeacherId(TEACHER_A_ID)).thenReturn(Optional.of(classA));
+        when(classStudentRepository.findByStudentId(STUDENT_1_ID))
+            .thenReturn(Optional.of(buildClassStudent(1L, classA, owner)));
+
+        Summary summary = buildSharedSummary(500L, owner, 8L, "story", "간추리기", LocalDateTime.now());
+        summary.setStatus("rejected");
+        summary.setRejectionReason("이전 거절 사유");
+        when(summaryRepository.findById(500L)).thenReturn(Optional.of(summary));
+        when(summaryRepository.save(any(Summary.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(contentLikeRepository.countByContentTypeAndContentId(eq("individual_summary"), any())).thenReturn(0L);
+        when(contentLikeRepository.findByStudent_IdAndContentTypeAndContentId(eq(TEACHER_A_ID), eq("individual_summary"), any()))
+            .thenReturn(Optional.empty());
+
+        IndividualSummaryShareItem result = service.returnToPending(TEACHER_A_ID, 500L);
+
+        assertThat(result.getStatus()).isEqualTo("pending");
+        assertThat(summary.getRejectionReason()).isNull();
+    }
+
     /* 검증 5/6/7: 좋아요 생성 -> 같은 사용자가 다시 누르면 취소 */
     @Test
     void toggleLikeAsStudent_createsThenCancelsOnSecondCall() {

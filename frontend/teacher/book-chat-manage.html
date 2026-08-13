@@ -194,6 +194,21 @@
         drop-shadow(0 0 15px rgba(255, 198, 94, 0.14));
     }
 
+    .student-book-chat-entry {
+      width:100%; min-height:154px; display:flex; align-items:center; gap:18px;
+      padding:22px 26px; border:1px solid rgba(151,91,18,.48); border-radius:24px;
+      background:linear-gradient(135deg,rgba(255,248,226,.98),rgba(226,181,91,.88));
+      color:#573310; text-align:left; cursor:pointer;
+      box-shadow:0 8px 0 rgba(105,57,5,.28),0 12px 22px rgba(100,57,12,.14);
+      transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+    }
+    .student-book-chat-entry:hover { transform:translateY(-2px); filter:saturate(1.04); box-shadow:0 10px 0 rgba(105,57,5,.30),0 15px 25px rgba(100,57,12,.17); }
+    .student-book-chat-entry:active { transform:translateY(2px); box-shadow:0 4px 0 rgba(105,57,5,.28),0 8px 16px rgba(100,57,12,.13); }
+    .student-book-chat-entry-icon { flex:0 0 auto; width:64px; height:64px; display:grid; place-items:center; border:1px solid rgba(139,81,14,.30); border-radius:20px; background:rgba(255,253,244,.78); font-size:34px; }
+    .student-book-chat-entry-copy { min-width:0; display:grid; gap:6px; }
+    .student-book-chat-entry-title { font-size:25px; font-weight:900; line-height:1.2; word-break:keep-all; }
+    .student-book-chat-entry-description { color:#77522d; font-size:15px; font-weight:750; line-height:1.45; word-break:keep-all; }
+
     .speech-box {
       position: relative;
       padding: 18px 22px;
@@ -979,13 +994,13 @@
       </header>
 
       <section class="hero">
-        <article class="lumi-card">
-          <img class="lumi-img" src="../assets/images/class-reading/class-reading-lumi-feedback.png" alt="루미">
-          <div class="speech-box">
-            친구들이 나누기에 좋은 글인지 살펴봐요.<br>
-            승인하면 책수다방에 글이 보여요!
-          </div>
-        </article>
+        <button class="student-book-chat-entry" type="button" onclick="openStudentBookChat()">
+          <span class="student-book-chat-entry-icon" aria-hidden="true">💬</span>
+          <span class="student-book-chat-entry-copy">
+            <span class="student-book-chat-entry-title">학생 책수다방 보러가기</span>
+            <span class="student-book-chat-entry-description">학생들이 나누는 글과 답을 직접 확인하고 함께 참여할 수 있어요.</span>
+          </span>
+        </button>
 
         <article class="summary-card">
           <h2 class="summary-title">승인 현황</h2>
@@ -1149,32 +1164,7 @@
      * 뒤집으면 그 상태가 이 브라우저에서만 유지된다. book-chat.html의
      * 같은 이름 상수와 id가 반드시 같아야 학생 화면과 승인 결과가 연동된다.
      */
-    const PRACTICE_BOOK_CHAT_PENDING_SEED = [
-      {
-        id: "practice-seed-pending-01",
-        studentName: "박하민",
-        questionType: "direct",
-        question: "주인공이 길을 잃었을 때 도와준 것은 누구였나요?",
-        answer: "A. 우연히 만난 친구 / B. 혼자 힘으로 찾았다 (정답 A)",
-        submittedAt: "2026-08-05T10:20:00"
-      },
-      {
-        id: "practice-seed-pending-02",
-        studentName: "서희원",
-        questionType: "opinion",
-        question: "내가 주인공이라면 끝까지 보물을 찾으러 갔을까요?",
-        answer: "나는 무서워도 끝까지 가 봤을 것 같아. 궁금한 걸 그냥 두면 계속 생각날 것 같거든.",
-        submittedAt: "2026-08-06T14:10:00"
-      },
-      {
-        id: "practice-seed-pending-03",
-        studentName: "김수진",
-        questionType: "connect",
-        question: "나도 친구와 함께 어려운 일을 해결한 적이 있나요?",
-        answer: "체육 시간에 줄넘기를 못했는데 친구가 같이 연습해 줘서 성공한 적이 있어.",
-        submittedAt: "2026-08-07T09:40:00"
-      }
-    ];
+    const PRACTICE_BOOK_CHAT_PENDING_SEED = getDemoBookChatPendingSeeds("practice");
 
     const filterButtons = document.querySelectorAll(".filter-button");
     const postTypeFilterButtons = document.querySelectorAll(".post-type-filter-button");
@@ -1302,7 +1292,11 @@
             <div class="post-question">${escapeHtml(post.question || "질문 없음")}</div>
 
             <div class="post-preview">
-              ${escapeHtml(post.thought || post.reason || post.answer || "아직 내용이 없어요.")}
+              ${escapeHtml(
+                post.type === "quiz" && post.answer
+                  ? getQuizAuthorAnswerText(post.answer)
+                  : (post.thought || post.reason || post.answer || "아직 내용이 없어요.")
+              )}
             </div>
           </button>
         `;
@@ -1344,8 +1338,17 @@
           <div class="detail-lines">
   ${renderLineCard(
     "학생이 쓴 답",
-    selectedPost.thought ||
-    selectedPost.answer ||
+    /*
+     * thought 필드는 이 화면의 데이터 매핑 전 구간(실제 DB/seed/ss01
+     * 직접작성)에서 항상 answer와 완전히 같은 값으로 채워진다(별도의
+     * "생각" 텍스트가 아니라 answer의 별칭). 그래서 quiz 타입일 때는
+     * thought를 먼저 보면 안 되고, answer를 정답 추출 함수에 먼저
+     * 통과시켜야 한다 - 순서를 바꾸지 않으면 thought가 항상 먼저
+     * 걸려서 "A. .../B. ... (정답 A)" 원문이 그대로 노출된다.
+     */
+    (selectedPost.type === "quiz" && selectedPost.answer
+      ? getQuizAuthorAnswerText(selectedPost.answer)
+      : (selectedPost.thought || selectedPost.answer)) ||
     "내용 없음"
   )}
 </div>
@@ -1353,6 +1356,25 @@
 
         ${renderTeacherActionArea(selectedPost)}
       `;
+    }
+
+    /*
+     * 책퀴즈 정답은 answer 문자열에 "A. .../B. ... (정답 A)" 형식으로
+     * 저장된다(학생 화면 book-chat.html의 getQuizAuthorAnswerText와
+     * 완전히 같은 로직 - 저장 구조는 그대로 두고 표시할 때만 선택된
+     * 실제 문장 하나를 꺼낸다). 이 패턴에 맞지 않는 문자열(생각 나누기
+     * 답 등)이 들어와도 원본을 그대로 돌려주므로 다른 유형에는 영향이
+     * 없다.
+     */
+    function getQuizAuthorAnswerText(answer) {
+      const original = String(answer || "").trim();
+      const choiceMatch = original.match(/\((?:정답|선택)\s*[:：]?\s*([AB])\s*\)/i);
+      const optionsMatch = original
+        .replace(/\s*\((?:정답|선택)\s*[:：]?\s*[AB]\s*\)\s*$/i, "")
+        .match(/^\s*A[.)]\s*([\s\S]*?)\s*\/\s*B[.)]\s*([\s\S]*?)\s*$/i);
+
+      if (!choiceMatch || !optionsMatch) return original;
+      return (choiceMatch[1].toUpperCase() === "B" ? optionsMatch[2] : optionsMatch[1]).trim();
     }
 
     function renderLineCard(title, text) {
@@ -1504,13 +1526,26 @@
           ]);
           const backendItems = results[0].concat(results[1]).concat(results[2]);
 
+          const seenBackendIds = new Set();
           backendItems.forEach(function (item) {
             const basePost = mapReviewItemToPost(item, "approved");
+            if (seenBackendIds.has(basePost.id)) return;
+            seenBackendIds.add(basePost.id);
             const override = getDemoBookChatStatusOverride("practice", basePost.id);
+            if (override && override.deleted === true) return;
             const status = override ? override.status : basePost.status;
+            if (status === "approved" && !isDemoBookChatItemOnDate(
+              item,
+              getDemoTodayDateKey(),
+              override ? override.updatedAt : ""
+            )) return;
             nextReviewPostsByStatus[status].push(Object.assign({}, basePost, {
               status: status,
-              rejectReason: override ? override.reason : basePost.rejectReason
+              rejectReason: override ? override.reason : basePost.rejectReason,
+              question: override && override.question != null ? override.question : basePost.question,
+              thought: override && override.answer != null ? override.answer : basePost.thought,
+              answer: override && override.answer != null ? override.answer : basePost.answer,
+              type: override && override.questionType != null ? normalizeType(override.questionType) : basePost.type
             }));
           });
         } catch (error) {
@@ -1523,7 +1558,13 @@
          */
         PRACTICE_BOOK_CHAT_PENDING_SEED.forEach(function (seed) {
           const override = getDemoBookChatStatusOverride("practice", seed.id);
+          if (override && override.deleted === true) return;
           const status = override ? override.status : "pending";
+          if (status === "approved" && !isDemoBookChatItemOnDate(
+            seed,
+            getDemoTodayDateKey(),
+            override ? override.updatedAt : ""
+          )) return;
           nextReviewPostsByStatus[status].push({
             id: seed.id,
             sourceId: seed.id,
@@ -1531,11 +1572,11 @@
             studentId: null,
             studentName: seed.studentName,
             type: normalizeType(seed.questionType),
-            question: seed.question,
-            thought: seed.answer,
+            question: override && override.question != null ? override.question : seed.question,
+            thought: override && override.answer != null ? override.answer : seed.answer,
             reason: "",
             evidence: "",
-            answer: seed.answer,
+            answer: override && override.answer != null ? override.answer : seed.answer,
             classReadingBookId: null,
             submittedAt: seed.submittedAt,
             submittedText: formatSubmittedText(seed.submittedAt),
@@ -1552,6 +1593,11 @@
           const status = ["pending", "approved", "rejected"].includes(request.status)
             ? request.status
             : "pending";
+          if (status === "approved" && !isDemoBookChatItemOnDate(
+            request,
+            getDemoTodayDateKey(),
+            request.reviewedAt || ""
+          )) return;
           nextReviewPostsByStatus[status].push({
             id: String(request.requestId),
             sourceId: String(request.requestId),
@@ -1957,6 +2003,12 @@
 
     function goTeacherHome() {
       location.href = "./home.html";
+    }
+
+    function openStudentBookChat() {
+      sessionStorage.setItem("teacherMode", "true");
+      sessionStorage.setItem("teacherBookChatReturn", "book-chat-manage.html");
+      location.href = "../student/book-chat.html?teacher=1";
     }
 
    function goBookManage() {

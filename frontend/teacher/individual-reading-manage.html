@@ -1057,6 +1057,37 @@
       text-align: right;
     }
 
+    /* 교사가 지금 처리할 일이 몇 개인지 바로 보이도록, 승인이 필요한
+       메뉴(책수다방 관리/간추리기)에만 label과 화살표 사이에 작은
+       배지를 끼워 넣는다. 이 클래스가 없는 버튼(추천 책장)은 기존
+       3칸 그리드 그대로다. */
+    .ir-big-button.has-badge {
+      grid-template-columns:
+        50px
+        minmax(0, 1fr)
+        auto
+        22px;
+    }
+
+    .ir-big-button-badge {
+      justify-self: end;
+      padding: 9px 20px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--brown);
+      border: 1px solid rgba(176, 111, 25, 0.35);
+    }
+
+    .ir-big-button.green .ir-big-button-badge {
+      background: rgba(255, 255, 255, 0.24);
+      color: #fffaf0;
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
     /* =========================================================
        공통 보조창
     ========================================================= */
@@ -1839,6 +1870,26 @@
       line-height: 1 !important;
     }
 
+    /* 참여율 숫자(39px)는 유지하고, 빈 상태 문장만 카드 폭에 맞게 낮춘다. */
+    #todayParticipationValue.ir-empty-state {
+      max-width: 100%;
+      font-size: 28px !important;
+      font-weight: 900;
+      line-height: 1.25;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+      word-break: keep-all;
+      overflow-wrap: normal;
+    }
+
+    /* 대시보드의 다른 빈 상태 문구도 한글 음절 단위로 쪼개지지 않게 한다. */
+    .ir-support-empty {
+      line-height: 1.45;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: normal;
+    }
+
     /* 지원 목록 제목 행을 제거했으므로 목록이 통계 바로 아래 남은 공간을 채운다. */
     .ir-status-card .ir-card-inner {
       grid-template-rows: auto minmax(76px, 94px) minmax(0, 1fr) !important;
@@ -2061,7 +2112,7 @@
           <div class="ir-main-buttons">
 
             <button
-              class="ir-big-button"
+              class="ir-big-button has-badge"
               type="button"
               onclick="goBookChatManage()"
             >
@@ -2071,6 +2122,10 @@
 
               <span class="ir-big-button-label">
                 책수다방 관리
+              </span>
+
+              <span class="ir-big-button-badge" id="bookChatPendingBadge">
+                승인대기 -개
               </span>
 
               <span class="ir-big-button-arrow">
@@ -2097,7 +2152,7 @@
             </button>
 
             <button
-              class="ir-big-button green"
+              class="ir-big-button green has-badge"
               type="button"
               onclick="goSummaryActivity()"
             >
@@ -2107,6 +2162,10 @@
 
               <span class="ir-big-button-label">
                 간추리기
+              </span>
+
+              <span class="ir-big-button-badge" id="summaryPendingBadge">
+                승인대기 -개
               </span>
 
               <span class="ir-big-button-arrow">
@@ -2616,8 +2675,13 @@
 
       const participationValue = document.getElementById("todayParticipationValue");
       const participationDetail = document.getElementById("todayParticipationDetail");
+      const hasNoParticipation =
+        dashboard.todayParticipationRate === null ||
+        dashboard.todayParticipationRate === undefined;
 
-      if (dashboard.todayParticipationRate === null || dashboard.todayParticipationRate === undefined) {
+      participationValue.classList.toggle("ir-empty-state", hasNoParticipation);
+
+      if (hasNoParticipation) {
         participationValue.textContent = dashboard.todayParticipationMessage || "개별읽기 참여 학생 없음";
         participationDetail.textContent = "";
       } else {
@@ -2709,6 +2773,35 @@
       return response.json();
     }
 
+    /*
+     * 하단 관리 메뉴의 "책수다방 관리"/"간추리기" 버튼에 현재 승인대기
+     * 개수를 배지로 보여준다. demo-storage.js의
+     * getIndividualBookChatPendingCount/getIndividualSummaryPendingCount가
+     * 각 관리 화면(individual-book-chat-manage.html/
+     * individual-summary-manage.html)과 완전히 같은 계산으로 개수를
+     * 돌려주므로, 여기서는 그 값을 배지 텍스트에 반영하기만 한다. 페이지를
+     * 새로 열 때마다(교사가 관리 화면에서 승인/거절하고 돌아와도 이
+     * 화면은 매번 새로 로드되므로) 항상 다시 계산한다.
+     */
+    async function loadTeacherMenuBadges() {
+      const bookChatBadge = document.getElementById("bookChatPendingBadge");
+      const summaryBadge = document.getElementById("summaryPendingBadge");
+
+      try {
+        const count = await getIndividualBookChatPendingCount(API_BASE_URL);
+        if (bookChatBadge) bookChatBadge.textContent = "승인대기 " + count + "개";
+      } catch (error) {
+        console.warn("책수다방 승인대기 배지를 갱신하지 못했습니다.", error);
+      }
+
+      try {
+        const count = await getIndividualSummaryPendingCount(API_BASE_URL);
+        if (summaryBadge) summaryBadge.textContent = "승인대기 " + count + "개";
+      } catch (error) {
+        console.warn("간추리기 승인대기 배지를 갱신하지 못했습니다.", error);
+      }
+    }
+
     async function loadDashboard() {
       const auth = getTeacherAuthContext();
 
@@ -2717,6 +2810,8 @@
         window.location.href = "../index.html";
         return;
       }
+
+      loadTeacherMenuBadges();
 
       document.getElementById("studentPreviewList").innerHTML =
         '<div class="ir-support-empty">불러오는 중...</div>';
@@ -2835,7 +2930,7 @@
 
     function goSummaryActivity() {
       location.href =
-        "../student/individual-after-reading.html?teacherView=summaryShare";
+        "individual-summary-manage.html";
     }
 
 

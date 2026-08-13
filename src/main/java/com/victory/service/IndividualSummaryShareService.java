@@ -48,6 +48,8 @@ public class IndividualSummaryShareService {
     private static final String CONTENT_TYPE_ANSWER = "answer";
     private static final String STAGE_AFTER = "after";
     private static final String STATUS_APPROVED = "approved";
+    private static final String STATUS_PENDING = "pending";
+    private static final String STATUS_REJECTED = "rejected";
     private static final List<Integer> AFTER_QUESTION_INDEXES = List.of(1, 2, 3);
 
     private final SummaryRepository summaryRepository;
@@ -63,8 +65,89 @@ public class IndividualSummaryShareService {
 
         List<Long> classmateIds = studentIdsInClass(viewerClassStudent.getSchoolClass().getId());
 
-        return buildItems(classmateIds, studentId, studentId, resolveDate(date),
+        List<IndividualSummaryShareItem> approved = buildItems(classmateIds, studentId, studentId, resolveDate(date),
             Boolean.TRUE.equals(viewerClassStudent.getStudent().getDemoAccount()));
+        List<IndividualSummaryShareItem> mine = summaryRepository
+            .findAllReviewableIndividualSummariesByStudentIds(List.of(studentId)).stream()
+            .filter(summary -> !STATUS_APPROVED.equals(normalizeStatus(summary.getStatus())))
+            .map(summary -> toItem(summary, studentId, studentId))
+            .toList();
+        return java.util.stream.Stream.concat(mine.stream(), approved.stream())
+            .distinct().toList();
+    }
+
+    public List<IndividualSummaryShareItem> getReviewSummariesForTeacher(Long teacherId, String status) {
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        String normalized = status == null || status.isBlank() ? null : normalizeStatus(status);
+        return summaryRepository.findAllReviewableIndividualSummariesByStudentIds(
+                studentIdsInClass(teacherClass.getId())).stream()
+            .filter(summary -> normalized == null || normalized.equals(normalizeStatus(summary.getStatus())))
+            .map(summary -> toItem(summary, teacherId, null))
+            .toList();
+    }
+
+    @Transactional
+    public IndividualSummaryShareItem approve(Long teacherId, Long summaryId) {
+        Summary summary = requireTeacherOwnedSummary(teacherId, summaryId);
+        summary.setStatus(STATUS_APPROVED);
+        summary.setRejectionReason(null);
+        return toItem(summaryRepository.save(summary), teacherId, null);
+    }
+
+    @Transactional
+    public IndividualSummaryShareItem reject(Long teacherId, Long summaryId, String reason) {
+        if (reason == null || reason.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거절 사유를 입력해야 합니다.");
+        }
+        Summary summary = requireTeacherOwnedSummary(teacherId, summaryId);
+        summary.setStatus(STATUS_REJECTED);
+        summary.setRejectionReason(reason.trim());
+        return toItem(summaryRepository.save(summary), teacherId, null);
+    }
+
+    /*
+     * 교사가 APPROVED/REJECTED 상태를 다시 PENDING(대기)으로 되돌린다
+     * ("승인 취소"/"대기로 돌리기"). approve/reject와 마찬가지로 현재 상태를
+     * 검사하지 않고 같은 Summary 행을 UPDATE만 하므로, 좋아요(ContentLike)는
+     * 전혀 건드리지 않아 그대로 보존된다.
+     */
+    @Transactional
+    public IndividualSummaryShareItem returnToPending(Long teacherId, Long summaryId) {
+        Summary summary = requireTeacherOwnedSummary(teacherId, summaryId);
+        summary.setStatus(STATUS_PENDING);
+        summary.setRejectionReason(null);
+        return toItem(summaryRepository.save(summary), teacherId, null);
+    }
+
+    /*
+     * requireOwnedRejectedSummary가 이미 REJECTED 상태만 통과시키므로
+     * 여기 도달한 시점의 이전 status는 항상 rejected다 - 남은 조건은
+     * "본문이 실제로 바뀌었는가"뿐이다. 본문이 바뀐 재제출일 때만 기존
+     * 좋아요를 전부 지운다(수정 전 글에 대한 반응이므로 수정본에 그대로
+     * 이어지면 안 됨) - approve/reject/returnToPending처럼 상태만 바뀌는
+     * 경로는 이 메서드를 타지 않으므로 좋아요가 그대로 보존된다.
+     */
+    @Transactional
+    public IndividualSummaryShareItem resubmit(Long studentId, Long summaryId, String summaryText) {
+        Summary summary = requireOwnedRejectedSummary(studentId, summaryId);
+        if (summaryText == null || summaryText.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "간추리기 내용을 입력해야 합니다.");
+        }
+        String trimmed = summaryText.trim();
+        boolean textChanged = !trimmed.equals(summary.getSummaryText());
+        summary.setSummaryText(trimmed);
+        summary.setStatus(STATUS_PENDING);
+        summary.setRejectionReason(null);
+        Summary saved = summaryRepository.save(summary);
+        if (textChanged) {
+            contentLikeRepository.deleteByContentTypeAndContentId(CONTENT_TYPE_INDIVIDUAL_SUMMARY, saved.getId());
+        }
+        return toItem(saved, studentId, studentId);
+    }
+
+    @Transactional
+    public void deleteRejected(Long studentId, Long summaryId) {
+        summaryRepository.delete(requireOwnedRejectedSummary(studentId, summaryId));
     }
 
     public List<IndividualSummaryShareItem> getClassSummariesForTeacher(Long teacherId, LocalDate date) {
@@ -225,6 +308,42 @@ public class IndividualSummaryShareService {
             .toList();
     }
 
+    private IndividualSummaryShareItem toItem(Summary summary, Long viewerUserId, Long mineStudentId) {
+        boolean liked = viewerUserId != null && contentLikeRepository
+            .findByStudent_IdAndContentTypeAndContentId(viewerUserId, CONTENT_TYPE_INDIVIDUAL_SUMMARY, summary.getId())
+            .isPresent();
+        return IndividualSummaryShareItem.of(summary, summary.getStudent().getName(),
+            contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_INDIVIDUAL_SUMMARY, summary.getId()),
+            liked, mineStudentId != null && mineStudentId.equals(summary.getStudent().getId()));
+    }
+
+    private Summary requireTeacherOwnedSummary(Long teacherId, Long summaryId) {
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        Summary summary = summaryRepository.findById(summaryId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "간추리기를 찾을 수 없습니다."));
+        if (summary.getReadingRecord() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "개별읽기 간추리기가 아닙니다.");
+        }
+        ClassStudent owner = findClassStudent(summary.getStudent().getId());
+        if (!teacherClass.getId().equals(owner.getSchoolClass().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "담당 학급의 간추리기만 관리할 수 있습니다.");
+        }
+        return summary;
+    }
+
+    private Summary requireOwnedRejectedSummary(Long studentId, Long summaryId) {
+        Summary summary = summaryRepository.findById(summaryId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "간추리기를 찾을 수 없습니다."));
+        if (!studentId.equals(summary.getStudent().getId()) || !STATUS_REJECTED.equals(normalizeStatus(summary.getStatus()))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "거절된 내 간추리기만 수정하거나 삭제할 수 있습니다.");
+        }
+        return summary;
+    }
+
+    private String normalizeStatus(String status) {
+        return status == null ? STATUS_PENDING : status.trim().toLowerCase();
+    }
+
     private LocalDate resolveDate(LocalDate date) {
         return date == null ? LocalDate.now(ZONE_SEOUL) : date;
     }
@@ -238,6 +357,9 @@ public class IndividualSummaryShareService {
         List<Summary> mySummaries = summaryRepository
             .findByStudent_IdAndReadingRecordIsNotNullAndAiPassedTrueAndStatusOrderByCreatedAtDesc(
                 studentId, STATUS_APPROVED);
+        if (mySummaries.isEmpty()) {
+            mySummaries = summaryRepository.findAllReviewableIndividualSummariesByStudentIds(List.of(studentId));
+        }
 
         boolean ready = mySummaries.stream()
             .anyMatch(this::hasThreePassedAfterResponses);

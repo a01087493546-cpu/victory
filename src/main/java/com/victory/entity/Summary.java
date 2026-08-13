@@ -81,6 +81,10 @@ public class Summary {
     @Column(name = "status", nullable = false, length = 20)
     private String status = "approved";
 
+    @Lob
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     /*
      * FeedbackAiController(SYSTEM_PROMPT_SUMMARY)의 good/need 판정 결과.
      * good이면 true, need면 false, 아직 판정 전이면 NULL.

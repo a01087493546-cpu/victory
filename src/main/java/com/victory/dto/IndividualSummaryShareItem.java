@@ -37,6 +37,8 @@ public class IndividualSummaryShareItem {
 
     @JsonProperty("isMine")
     private boolean isMine;
+    private String status;
+    private String rejectionReason;
 
     public static IndividualSummaryShareItem of(
             Summary summary,
@@ -57,7 +59,9 @@ public class IndividualSummaryShareItem {
             summary.getCreatedAt(),
             likeCount,
             likedByMe,
-            isMine
+            isMine,
+            summary.getStatus(),
+            summary.getRejectionReason()
         );
     }
 }

@@ -23,6 +23,8 @@ public class AfterReadingSummaryItem {
     private long likeCount;
     private boolean likedByMe;
     private boolean mine;
+    private String status;
+    private String rejectionReason;
 
     public static AfterReadingSummaryItem from(
             Summary summary,
@@ -44,7 +46,9 @@ public class AfterReadingSummaryItem {
             summary.getUpdatedAt(),
             likeCount,
             likedByMe,
-            viewerStudentId != null && viewerStudentId.equals(writerId)
+            viewerStudentId != null && viewerStudentId.equals(writerId),
+            summary.getStatus(),
+            summary.getRejectionReason()
         );
     }
 }

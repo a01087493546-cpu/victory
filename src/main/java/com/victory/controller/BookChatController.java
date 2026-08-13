@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -121,6 +122,60 @@ public class BookChatController {
         return ResponseEntity.ok(
             responseService.saveBookChatReply(
                 studentId, questionId, thoughtId, request));
+    }
+
+    @PutMapping("/questions/{questionId}/thoughts/{thoughtId}")
+    public ResponseEntity<BookChatThoughtItem> updateThought(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long thoughtId, @Valid @RequestBody BookChatThoughtRequest request,
+            Authentication authentication) {
+        requireSelf(studentId, authentication);
+        return ResponseEntity.ok(responseService.updateBookChatThought(studentId, questionId, thoughtId, request));
+    }
+
+    @DeleteMapping("/questions/{questionId}/thoughts/{thoughtId}")
+    public ResponseEntity<Void> deleteThought(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long thoughtId, Authentication authentication) {
+        requireSelf(studentId, authentication);
+        responseService.deleteBookChatThought(studentId, questionId, thoughtId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/questions/{questionId}/replies/{replyId}")
+    public ResponseEntity<BookChatReplyItem> updateReply(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long replyId, @Valid @RequestBody BookChatReplyRequest request,
+            Authentication authentication) {
+        requireSelf(studentId, authentication);
+        return ResponseEntity.ok(responseService.updateBookChatReply(studentId, questionId, replyId, request));
+    }
+
+    @DeleteMapping("/questions/{questionId}/replies/{replyId}")
+    public ResponseEntity<Void> deleteReply(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long replyId, Authentication authentication) {
+        requireSelf(studentId, authentication);
+        responseService.deleteBookChatReply(studentId, questionId, replyId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/questions/{questionId}/quiz-answers/{answerId}")
+    public ResponseEntity<BookChatQuizAnswerItem> updateQuizAnswer(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long answerId, @Valid @RequestBody BookChatQuizAnswerRequest request,
+            Authentication authentication) {
+        requireSelf(studentId, authentication);
+        return ResponseEntity.ok(responseService.updateBookChatQuizAnswer(studentId, questionId, answerId, request));
+    }
+
+    @DeleteMapping("/questions/{questionId}/quiz-answers/{answerId}")
+    public ResponseEntity<Void> deleteQuizAnswer(
+            @PathVariable Long studentId, @PathVariable Long questionId,
+            @PathVariable Long answerId, Authentication authentication) {
+        requireSelf(studentId, authentication);
+        responseService.deleteBookChatQuizAnswer(studentId, questionId, answerId);
+        return ResponseEntity.noContent().build();
     }
 
     private void requireSelf(Long studentId, Authentication authentication) {

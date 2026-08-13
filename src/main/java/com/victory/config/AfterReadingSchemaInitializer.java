@@ -28,6 +28,12 @@ public class AfterReadingSchemaInitializer {
             );
         }
 
+        if (!columnExists("summaries", "rejection_reason")) {
+            jdbcTemplate.execute(
+                "ALTER TABLE summaries ADD COLUMN rejection_reason TEXT NULL"
+            );
+        }
+
         ensureRewardLogInstanceColumn();
     }
 

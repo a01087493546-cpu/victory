@@ -249,4 +249,173 @@ class ResponseServiceTest {
 
         org.mockito.Mockito.verify(responseRepository, org.mockito.Mockito.never()).save(any(Response.class));
     }
+
+    // =========================================================
+    // 교사용 책수다방 직접 참여 (생각 나누기/답글)
+    // =========================================================
+
+    private static final Long TEACHER_ID = 500L;
+    private static final Long WRITER_STUDENT_ID = 2L;
+    private static final Long CLASS_ID = 20L;
+    private static final Long QUESTION_ID = 900L;
+
+    private com.victory.entity.SchoolClass buildSchoolClass(Long id) {
+        com.victory.entity.SchoolClass schoolClass = new com.victory.entity.SchoolClass();
+        schoolClass.setId(id);
+        return schoolClass;
+    }
+
+    private com.victory.entity.ClassStudent buildClassStudent(Long classId, Long studentId) {
+        com.victory.entity.ClassStudent classStudent = new com.victory.entity.ClassStudent();
+        classStudent.setSchoolClass(buildSchoolClass(classId));
+        User writer = new User();
+        writer.setId(studentId);
+        writer.setRole("student");
+        classStudent.setStudent(writer);
+        return classStudent;
+    }
+
+    private Response buildApprovedQuestion(Long id, Long writerId, Long classReadingBookId) {
+        Response question = new Response();
+        question.setId(id);
+        User writer = new User();
+        writer.setId(writerId);
+        question.setStudent(writer);
+        java.util.Map<String, Object> extraData = new java.util.HashMap<>();
+        extraData.put("activityType", "book_thought");
+        extraData.put("approvalStatus", "APPROVED");
+        extraData.put("classReadingBookId", classReadingBookId);
+        question.setExtraData(extraData);
+        return question;
+    }
+
+    private void stubTeacherClassSetup(Long classReadingBookId) {
+        User teacher = new User();
+        teacher.setId(TEACHER_ID);
+        teacher.setRole("teacher");
+        when(userRepository.findById(TEACHER_ID)).thenReturn(Optional.of(teacher));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID))
+            .thenReturn(Optional.of(buildSchoolClass(CLASS_ID)));
+        when(classStudentRepository.findByStudentId(WRITER_STUDENT_ID))
+            .thenReturn(Optional.of(buildClassStudent(CLASS_ID, WRITER_STUDENT_ID)));
+
+        com.victory.entity.ClassReadingBook classReadingBook = new com.victory.entity.ClassReadingBook();
+        classReadingBook.setId(classReadingBookId);
+        classReadingBook.setSchoolClass(buildSchoolClass(CLASS_ID));
+        when(classReadingBookRepository.findById(classReadingBookId))
+            .thenReturn(Optional.of(classReadingBook));
+    }
+
+    /* 교사가 담당 학급의 승인된 질문에 생각을 남기면 즉시 approved로 저장되고(승인 대기 없음) authorRole=teacher로 표시된다 */
+    @Test
+    void saveBookChatThoughtAsTeacher_savesImmediatelyApprovedWithTeacherAuthorRole() {
+        Long bookId = 30L;
+        stubTeacherClassSetup(bookId);
+        Response question = buildApprovedQuestion(QUESTION_ID, WRITER_STUDENT_ID, bookId);
+        when(responseRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndStudent_IdAndDeletedAtIsNullOrderByIdAsc(
+                QUESTION_ID, "class", "thought", TEACHER_ID))
+            .thenReturn(new ArrayList<>());
+        when(responseRepository.save(any(Response.class))).thenAnswer(inv -> {
+            Response saved = inv.getArgument(0);
+            saved.setId(999L);
+            return saved;
+        });
+
+        com.victory.dto.BookChatThoughtRequest request = new com.victory.dto.BookChatThoughtRequest();
+        setField(request, "main", "선생님은 이 장면이 인상 깊었어요.");
+        setField(request, "reason", "친구를 배려한 점이 좋았기 때문이에요.");
+
+        com.victory.dto.BookChatThoughtItem result =
+            service.saveBookChatThoughtAsTeacher(TEACHER_ID, QUESTION_ID, request);
+
+        assertThat(result.getAuthorRole()).isEqualTo("teacher");
+
+        org.mockito.ArgumentCaptor<Response> captor = org.mockito.ArgumentCaptor.forClass(Response.class);
+        org.mockito.Mockito.verify(responseRepository).save(captor.capture());
+        assertThat(captor.getValue().getStatus()).isEqualTo("approved");
+    }
+
+    /* 교사가 담당하지 않는(다른 학급) 질문에는 접근할 수 없다 */
+    @Test
+    void saveBookChatThoughtAsTeacher_rejectsQuestionFromDifferentClass() {
+        Long bookId = 31L;
+        User teacher = new User();
+        teacher.setId(TEACHER_ID);
+        teacher.setRole("teacher");
+        when(userRepository.findById(TEACHER_ID)).thenReturn(Optional.of(teacher));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID))
+            .thenReturn(Optional.of(buildSchoolClass(CLASS_ID)));
+        // 질문 작성자는 다른 학급(CLASS_ID + 1) 소속
+        when(classStudentRepository.findByStudentId(WRITER_STUDENT_ID))
+            .thenReturn(Optional.of(buildClassStudent(CLASS_ID + 1, WRITER_STUDENT_ID)));
+
+        Response question = buildApprovedQuestion(QUESTION_ID, WRITER_STUDENT_ID, bookId);
+        when(responseRepository.findById(QUESTION_ID)).thenReturn(Optional.of(question));
+
+        com.victory.dto.BookChatThoughtRequest request = new com.victory.dto.BookChatThoughtRequest();
+        setField(request, "main", "생각");
+        setField(request, "reason", "이유");
+
+        assertThatThrownBy(() -> service.saveBookChatThoughtAsTeacher(TEACHER_ID, QUESTION_ID, request))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("403");
+
+        org.mockito.Mockito.verify(responseRepository, org.mockito.Mockito.never()).save(any(Response.class));
+    }
+
+    /*
+     * 재발 버그 회귀 테스트: REJECTED 질문을 작성자가 수정해 재제출하면,
+     * 그 질문이 예전에 APPROVED였을 때 친구들이 남긴 퀴즈 답/생각/
+     * 답글(생각에 달린 답글 + 질문 자체에 바로 달린 답글 모두)이 실제로
+     * 소프트 삭제되어야 한다 - 작성자 화면에서만 숨기는 방식은 실패다.
+     */
+    @Test
+    void reviseRejectedBookThoughtResponse_softDeletesAllExistingParticipation() {
+        Response rejectedQuestion = new Response();
+        rejectedQuestion.setId(QUESTION_ID);
+        User writer = new User();
+        writer.setId(WRITER_STUDENT_ID);
+        writer.setRole("student");
+        rejectedQuestion.setStudent(writer);
+        java.util.Map<String, Object> questionExtra = new java.util.HashMap<>();
+        questionExtra.put("activityType", "book_thought");
+        questionExtra.put("approvalStatus", "REJECTED");
+        rejectedQuestion.setExtraData(questionExtra);
+
+        when(responseRepository.findById(QUESTION_ID)).thenReturn(Optional.of(rejectedQuestion));
+        org.mockito.Mockito.lenient().when(demoAccountService.isDemoAccount(WRITER_STUDENT_ID)).thenReturn(false);
+
+        Response quizAnswer = new Response();
+        quizAnswer.setId(501L);
+        Response friendThought = new Response();
+        friendThought.setId(502L);
+        Response replyUnderThought = new Response();
+        replyUnderThought.setId(503L);
+        Response replyUnderQuestion = new Response();
+        replyUnderQuestion.setId(504L);
+
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            QUESTION_ID, "class", "quiz_answer")).thenReturn(List.of(quizAnswer));
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            QUESTION_ID, "class", "thought")).thenReturn(List.of(friendThought));
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            friendThought.getId(), "class", "reply")).thenReturn(List.of(replyUnderThought));
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            QUESTION_ID, "class", "reply")).thenReturn(List.of(replyUnderQuestion));
+        when(responseRepository.save(any(Response.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        com.victory.dto.BookThoughtResponseRequest request = new com.victory.dto.BookThoughtResponseRequest();
+        setField(request, "questionType", "direct");
+        setField(request, "question", "고친 질문");
+        setField(request, "answer", "고친 답");
+        setField(request, "classReadingBookId", 10L);
+
+        service.reviseRejectedBookThoughtResponse(WRITER_STUDENT_ID, QUESTION_ID, request);
+
+        assertThat(quizAnswer.getDeletedAt()).isNotNull();
+        assertThat(friendThought.getDeletedAt()).isNotNull();
+        assertThat(replyUnderThought.getDeletedAt()).isNotNull();
+        assertThat(replyUnderQuestion.getDeletedAt()).isNotNull();
+    }
 }

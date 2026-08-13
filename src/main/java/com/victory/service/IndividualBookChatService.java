@@ -208,6 +208,54 @@ public class IndividualBookChatService {
         return result;
     }
 
+    @Transactional
+    public IndividualBookChatPostResponse reviseRejectedPost(
+            Long studentId, Long postId, String bookTitle, String title,
+            String scene, String optionA, String optionB) {
+        if (isBlank(bookTitle) || isBlank(title) || isBlank(scene) || isBlank(optionA) || isBlank(optionB)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "책 제목, 밸런스 제목, 장면 설명, A/B 선택지를 모두 적어 주세요.");
+        }
+        Response post = responseRepository
+            .findByIdAndStudent_IdAndModeAndContentType(postId, studentId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_POST)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "책수다방 글을 찾을 수 없습니다."));
+        if (!STATUS_REJECTED.equals(normalizeStatus(post.getStatus()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거절된 글만 다시 제출할 수 있습니다.");
+        }
+        User student = post.getStudent();
+        if (Boolean.TRUE.equals(student.getDemoAccount()) || isDemoSeed(post)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "심사 체험 글은 브라우저 임시 저장소를 사용합니다.");
+        }
+        /*
+         * 글이 예전에 승인되어 친구들이 이미 댓글을 남긴 뒤 다시 거절된
+         * 경우, 그 댓글이 DB에 그대로 남아있다. 게시글 내용을 통째로
+         * 바꾸는 재제출이므로 옛 댓글을 실제로 소프트 삭제한다(작성자
+         * 화면에서만 숨기면 다른 학생 GET에는 계속 보이므로 안 된다).
+         */
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            postId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_REPLY).forEach(comment -> {
+                comment.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
+                responseRepository.save(comment);
+            });
+
+        Map<String, Object> extraData = post.getExtraData() == null
+            ? new HashMap<>() : new HashMap<>(post.getExtraData());
+        extraData.put("bookTitle", bookTitle.trim());
+        extraData.put("title", title.trim());
+        extraData.put("optionA", optionA.trim());
+        extraData.put("optionB", optionB.trim());
+        post.setExtraData(extraData);
+        post.setContent(scene.trim());
+        post.setStatus(toStoredStatus(STATUS_PENDING));
+        post.setRejectReason(null);
+        post.setReviewedBy(null);
+        post.setReviewedAt(null);
+        Response saved = responseRepository.save(post);
+        Long classId = classStudentRepository.findByStudentId(studentId)
+            .map(item -> item.getSchoolClass().getId()).orElse(null);
+        return IndividualBookChatPostResponse.fromPost(saved, true, classId, 0, 0);
+    }
+
     /*
      * 친구 책수다 글에 남기는 A/B 선택 + 이유(댓글). postId는 실제 chat_post
      * Response id이고, 댓글은 그 글을 parent로 하는 별도 Response 행으로
@@ -264,7 +312,7 @@ public class IndividualBookChatService {
             rewardService.grantCommentDailyRewardOnce(student, today);
 
         IndividualBookChatCommentResponse result =
-            IndividualBookChatCommentResponse.fromComment(saved, normalizedChoice);
+            IndividualBookChatCommentResponse.fromComment(saved, normalizedChoice, studentId);
         result.setRewardGranted(rewardResult.isRewardGranted());
         result.setStats(StudentStatsResponse.from(rewardResult.getStats()));
 
@@ -279,7 +327,7 @@ public class IndividualBookChatService {
             .findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
                 postId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_REPLY)
             .stream()
-            .map(reply -> IndividualBookChatCommentResponse.fromComment(reply, extractChoice(reply)))
+            .map(reply -> IndividualBookChatCommentResponse.fromComment(reply, extractChoice(reply), viewerStudentId))
             .toList();
     }
 
@@ -321,6 +369,165 @@ public class IndividualBookChatService {
         }
 
         return post;
+    }
+
+    /*
+     * =========================================================
+     * 교사용 책수다방 직접 참여 (댓글 읽기/쓰기).
+     * =========================================================
+     * 학생용 findAccessiblePost는 "본인 글이거나 같은 학급의 승인 글"을
+     * 기준으로 하므로 교사에게는 그대로 못 쓴다(교사는 글쓴이가 될 수
+     * 없으므로 항상 "같은 학급의 승인 글"만 허용). 담당 학급 여부는
+     * ClassStudent가 아니라 findTeacherClass로 판정한다.
+     */
+    private Response findCommentablePostForTeacher(Long teacherId, Long postId) {
+        Response post = responseRepository
+            .findByIdAndModeAndContentTypeAndDeletedAtIsNull(postId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_POST)
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "책수다 글을 찾을 수 없습니다. postId=" + postId
+            ));
+
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        boolean authorInClass = classmateStudentIdsForClass(teacherClass.getId())
+            .contains(post.getStudent().getId());
+
+        if (!authorInClass || !isApproved(post)) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "책수다 글을 찾을 수 없습니다. postId=" + postId
+            );
+        }
+
+        return post;
+    }
+
+    @Transactional(readOnly = true)
+    public List<IndividualBookChatCommentResponse> getCommentsForTeacher(Long teacherId, Long postId) {
+        findCommentablePostForTeacher(teacherId, postId);
+
+        return responseRepository
+            .findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+                postId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_REPLY)
+            .stream()
+            .map(reply -> IndividualBookChatCommentResponse.fromComment(reply, extractChoice(reply), teacherId))
+            .toList();
+    }
+
+    /*
+     * 교사 댓글은 학생 댓글과 같은 방식(A/B + 이유)으로 저장하되, 보상은
+     * 절대 지급하지 않는다(grantCommentDailyRewardOnce를 아예 호출하지
+     * 않음 - 학생 보상 정책과 완전히 분리). 승인 절차도 학생 댓글과
+     * 마찬가지로 원래 없다(승인 대상은 밸런스 글쓰기 뿐).
+     */
+    @Transactional
+    public IndividualBookChatCommentResponse createCommentAsTeacher(
+            Long teacherId,
+            Long postId,
+            String choice,
+            String content) {
+
+        if (postId == null || isBlank(content)) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "왜 그렇게 생각했는지 이유를 적어 주세요."
+            );
+        }
+
+        String normalizedChoice = normalizeChoice(choice);
+        User teacher = findTeacher(teacherId);
+        Response parentPost = findCommentablePostForTeacher(teacherId, postId);
+
+        LocalDate today = LocalDate.now(ZONE_SEOUL);
+
+        Response response = new Response();
+        response.setStudent(teacher);
+        response.setParent(parentPost);
+        response.setMode(MODE_INDIVIDUAL);
+        response.setContentType(CONTENT_TYPE_CHAT_REPLY);
+        response.setContent(content);
+        response.setActivityDate(today);
+        response.setExtraData(Map.of("choice", normalizedChoice));
+
+        Response saved = responseRepository.save(response);
+
+        return IndividualBookChatCommentResponse.fromComment(saved, normalizedChoice, teacherId);
+    }
+
+    @Transactional
+    public IndividualBookChatCommentResponse updateComment(Long studentId, Long commentId, String choice, String content) {
+        Response comment = requireIndividualComment(commentId);
+        if (!studentId.equals(comment.getStudent().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 생각만 수정할 수 있습니다.");
+        }
+        return updateCommentContent(comment, choice, content, studentId);
+    }
+
+    @Transactional
+    public void deleteComment(Long studentId, Long commentId) {
+        Response comment = requireIndividualComment(commentId);
+        if (!studentId.equals(comment.getStudent().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 생각만 삭제할 수 있습니다.");
+        }
+        comment.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
+        responseRepository.save(comment);
+    }
+
+    @Transactional
+    public IndividualBookChatCommentResponse updateCommentAsTeacher(Long teacherId, Long commentId, String choice, String content) {
+        Response comment = requireTeacherManageableComment(teacherId, commentId);
+        if (!teacherId.equals(comment.getStudent().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "교사는 본인이 작성한 생각만 수정할 수 있습니다.");
+        }
+        return updateCommentContent(comment, choice, content, teacherId);
+    }
+
+    @Transactional
+    public void deleteCommentAsTeacher(Long teacherId, Long commentId) {
+        Response comment = requireTeacherManageableComment(teacherId, commentId);
+        comment.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
+        responseRepository.save(comment);
+    }
+
+    private IndividualBookChatCommentResponse updateCommentContent(
+            Response comment, String choice, String content, Long viewerId) {
+        if (isBlank(content)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "왜 그렇게 생각했는지 이유를 적어 주세요.");
+        }
+        String normalizedChoice = normalizeChoice(choice);
+        comment.setContent(content.trim());
+        comment.setExtraData(Map.of("choice", normalizedChoice));
+        return IndividualBookChatCommentResponse.fromComment(
+            responseRepository.save(comment), normalizedChoice, viewerId);
+    }
+
+    private Response requireIndividualComment(Long commentId) {
+        return responseRepository.findById(commentId)
+            .filter(item -> item.getDeletedAt() == null)
+            .filter(item -> MODE_INDIVIDUAL.equals(item.getMode()))
+            .filter(item -> CONTENT_TYPE_CHAT_REPLY.equals(item.getContentType()))
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "책수다방 생각을 찾을 수 없습니다."));
+    }
+
+    private Response requireTeacherManageableComment(Long teacherId, Long commentId) {
+        Response comment = requireIndividualComment(commentId);
+        if (comment.getParent() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "연결된 책수다방 글을 찾을 수 없습니다.");
+        }
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        Response parentPost = comment.getParent();
+        boolean postAuthorInClass = parentPost.getStudent() != null
+            && classmateStudentIdsForClass(teacherClass.getId()).contains(parentPost.getStudent().getId());
+        if (!postAuthorInClass || !isApproved(parentPost)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "담당 학급의 승인된 책수다방 댓글만 관리할 수 있습니다.");
+        }
+        Long authorId = comment.getStudent().getId();
+        boolean teacherOwn = teacherId.equals(authorId);
+        boolean studentInClass = classmateStudentIdsForClass(teacherClass.getId()).contains(authorId);
+        if (!teacherOwn && !studentInClass) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "담당 학급 학생의 내용만 관리할 수 있습니다.");
+        }
+        return comment;
     }
 
     @Transactional(readOnly = true)
@@ -560,6 +767,18 @@ public class IndividualBookChatService {
 
         response.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
         responseRepository.save(response);
+    }
+
+    @Transactional
+    public void deletePostAsTeacher(Long teacherId, Long postId) {
+        Response post = findTeacherManagedPost(teacherId, postId);
+        post.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
+        responseRepository.save(post);
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            postId, MODE_INDIVIDUAL, CONTENT_TYPE_CHAT_REPLY).forEach(comment -> {
+                comment.setDeletedAt(LocalDateTime.now(ZONE_SEOUL));
+                responseRepository.save(comment);
+            });
     }
 
     private boolean isBlank(String value) {

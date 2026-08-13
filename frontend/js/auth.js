@@ -557,22 +557,20 @@ document.addEventListener("DOMContentLoaded", function () {
         여러 이름을 함께 확인해서 안전하게 화면에 표시합니다.
       */
       const title = item.title || item.name || "제목 없음";
-      const type = item.type || item.category || "분류 없음";
+      const type = item.type || item.category || "자료형태 없음";
       const file = item.file || item.fileName || "파일명 없음";
       const description = item.description || item.license || "설명 없음";
       const source = item.source || "출처 없음";
       const location = item.location || item.usedIn || item.usage || "사용 위치 없음";
-      const edit = item.edit || item.modified || "수정 여부 없음";
       const note = item.note || item.memo || item.remark || "비고 없음";
 
       sourceItem.innerHTML = `
         <strong>${title}</strong>
-        <p><b>분류:</b> ${type}</p>
+        <p><b>자료형태:</b> ${type}</p>
         <p><b>파일명:</b> ${file}</p>
         <p><b>설명:</b> ${description}</p>
         <p><b>출처:</b> ${source}</p>
         <p><b>사용 위치:</b> ${location}</p>
-        <p><b>수정 여부:</b> ${edit}</p>
         <p><b>비고:</b> ${note}</p>
       `;
 

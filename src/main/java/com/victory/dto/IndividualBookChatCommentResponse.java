@@ -21,8 +21,15 @@ public class IndividualBookChatCommentResponse {
     private LocalDateTime createdAt;
     private boolean rewardGranted;
     private StudentStatsResponse stats;
+    private String authorRole;
+    private Long studentId;
+    private boolean mine;
 
     public static IndividualBookChatCommentResponse fromComment(Response response, String choice) {
+        return fromComment(response, choice, null);
+    }
+
+    public static IndividualBookChatCommentResponse fromComment(Response response, String choice, Long viewerId) {
         return new IndividualBookChatCommentResponse(
             response.getId(),
             response.getStudent().getName(),
@@ -31,7 +38,10 @@ public class IndividualBookChatCommentResponse {
             response.getContent(),
             response.getCreatedAt(),
             false,
-            null
+            null,
+            response.getStudent().getRole(),
+            response.getStudent().getId(),
+            viewerId != null && viewerId.equals(response.getStudent().getId())
         );
     }
 }

@@ -1000,7 +1000,8 @@ public class IndividualReadingService {
         summary.setReadingRecord(record);
         summary.setBookType(bookType);
         summary.setSummaryText(summaryText);
-        summary.setStatus("approved");
+        summary.setStatus("pending");
+        summary.setRejectionReason(null);
         summary.setAiPassed(request.getAiPassed() == null ? true : request.getAiPassed());
 
         if (summary.getIsShared() == null) {

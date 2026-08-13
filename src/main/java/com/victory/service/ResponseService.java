@@ -495,6 +495,12 @@ public class ResponseService {
             .map(Response::getId)
             .collect(HashSet::new, Set::add, Set::addAll);
 
+        // 생각 나누기 글의 최초 생각은 질문 Response.content에 저장된다.
+        // 질문 ID를 반응 대상 ID로 함께 사용해 새 컬럼 없이 이어쓰기를 지원한다.
+        if (!"direct".equals(normalizeTypeForBookChat(question))) {
+            thoughtIds.add(question.getId());
+        }
+
         if (thoughtIds.isEmpty()) {
             return List.of();
         }
@@ -550,6 +556,321 @@ public class ResponseService {
             studentId);
     }
 
+    /*
+     * =========================================================
+     * 교사용 책수다방 직접 참여 (읽기/댓글/답글).
+     * =========================================================
+     * 교사가 "책수다방 들어가기"로 들어와 학생들이 실제로 보는 화면과
+     * 같은 대화(생각/답글)를 보고 직접 참여할 수 있게 한다. 학생 전용
+     * 메서드(findApprovedBookChatQuestionForStudent 등)는 ClassStudent
+     * 소속을 기준으로 학급을 판정하는데 교사는 ClassStudent 행이 없으므로,
+     * SchoolClass(담당 학급) 기준으로 판정하는 이 전용 경로를 따로 둔다.
+     * 승인 대기 없이 즉시 approved로 저장하는 것은 학생용 메서드와 동일
+     * (생각/답글은 원래도 승인 절차가 없다 - 승인 대상은 최초 질문
+     * 게시물뿐이다). 보상(reward)은 애초에 이 두 메서드(생각/답글)에는
+     * 없으므로 별도로 차단할 것도 없다.
+     */
+    private Response findApprovedBookChatQuestionForTeacher(
+            Long teacherId,
+            Long questionResponseId) {
+
+        Response question = findBookThoughtById(questionResponseId);
+
+        if (!APPROVAL_STATUS_APPROVED.equals(getApprovalStatus(question))) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "승인된 책수다방 질문에만 접근할 수 있습니다."
+            );
+        }
+
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        ClassStudent writerClass = findClassStudent(question.getStudent().getId());
+
+        if (!teacherClass.getId().equals(writerClass.getSchoolClass().getId())) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "담당 학급의 책수다방 글만 볼 수 있습니다."
+            );
+        }
+
+        Long classReadingBookId = extractClassReadingBookId(question);
+
+        if (classReadingBookId == null) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "질문의 온책읽기 책 정보가 없습니다."
+            );
+        }
+
+        validateClassReadingBookBelongsToClass(classReadingBookId, teacherClass.getId());
+
+        return question;
+    }
+
+    public List<BookChatThoughtItem> getBookChatThoughtsForTeacher(
+            Long teacherId,
+            Long questionResponseId) {
+
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionResponseId);
+
+        return responseRepository
+            .findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+                question.getId(),
+                MODE_CLASS,
+                CONTENT_TYPE_THOUGHT)
+            .stream()
+            .filter(response -> ACTIVITY_TYPE_BOOK_CHAT_THOUGHT.equals(
+                extractExtraField(response, "activityType")))
+            .map(response -> BookChatThoughtItem.from(response, teacherId))
+            .toList();
+    }
+
+    public List<BookChatQuizAnswerItem> getBookChatQuizAnswersForTeacher(
+            Long teacherId,
+            Long questionResponseId) {
+
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionResponseId);
+
+        return responseRepository
+            .findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+                question.getId(),
+                MODE_CLASS,
+                CONTENT_TYPE_QUIZ_ANSWER)
+            .stream()
+            .filter(response -> ACTIVITY_TYPE_BOOK_CHAT_QUIZ_ANSWER.equals(
+                extractExtraField(response, "activityType")))
+            .map(response -> BookChatQuizAnswerItem.from(response, teacherId))
+            .toList();
+    }
+
+    public List<BookChatReplyItem> getBookChatRepliesForTeacher(
+            Long teacherId,
+            Long questionResponseId) {
+
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionResponseId);
+
+        Set<Long> thoughtIds = responseRepository
+            .findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+                question.getId(),
+                MODE_CLASS,
+                CONTENT_TYPE_THOUGHT)
+            .stream()
+            .filter(response -> ACTIVITY_TYPE_BOOK_CHAT_THOUGHT.equals(
+                extractExtraField(response, "activityType")))
+            .map(Response::getId)
+            .collect(HashSet::new, Set::add, Set::addAll);
+
+        if (!"direct".equals(normalizeTypeForBookChat(question))) {
+            thoughtIds.add(question.getId());
+        }
+
+        if (thoughtIds.isEmpty()) {
+            return List.of();
+        }
+
+        return responseRepository
+            .findByModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                MODE_CLASS,
+                CONTENT_TYPE_REPLY,
+                STAGE_DURING)
+            .stream()
+            .filter(response -> response.getParent() != null)
+            .filter(response -> thoughtIds.contains(response.getParent().getId()))
+            .filter(response -> ACTIVITY_TYPE_BOOK_CHAT_REPLY.equals(
+                extractExtraField(response, "activityType")))
+            .map(response -> BookChatReplyItem.from(response, teacherId))
+            .toList();
+    }
+
+    @Transactional
+    public BookChatThoughtItem saveBookChatThoughtAsTeacher(
+            Long teacherId,
+            Long questionResponseId,
+            BookChatThoughtRequest request) {
+
+        User teacher = findTeacher(teacherId);
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionResponseId);
+
+        Response response = responseRepository
+            .findByParent_IdAndModeAndContentTypeAndStudent_IdAndDeletedAtIsNullOrderByIdAsc(
+                question.getId(),
+                MODE_CLASS,
+                CONTENT_TYPE_THOUGHT,
+                teacherId)
+            .stream()
+            .filter(item -> ACTIVITY_TYPE_BOOK_CHAT_THOUGHT.equals(
+                extractExtraField(item, "activityType")))
+            .findFirst()
+            .orElseGet(() -> {
+                Response created = createResponse(
+                    teacher, CONTENT_TYPE_THOUGHT, STAGE_DURING);
+                created.setParent(question);
+                return created;
+            });
+
+        response.setContent(request.getMain().trim());
+        response.setStatus("approved");
+
+        Map<String, Object> extraData = mutableExtraData(response);
+        extraData.put("activityType", ACTIVITY_TYPE_BOOK_CHAT_THOUGHT);
+        extraData.put("questionResponseId", question.getId());
+        extraData.put("classReadingBookId", extractClassReadingBookId(question));
+        extraData.put("reason", request.getReason().trim());
+
+        return BookChatThoughtItem.from(
+            responseRepository.save(response),
+            teacherId);
+    }
+
+    @Transactional
+    public BookChatReplyItem saveBookChatReplyAsTeacher(
+            Long teacherId,
+            Long questionResponseId,
+            Long thoughtId,
+            BookChatReplyRequest request) {
+
+        User teacher = findTeacher(teacherId);
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionResponseId);
+        Response thought = findBookChatThoughtForQuestion(question, thoughtId);
+        String replyType = normalizeReplyType(request.getReplyType());
+
+        Response response = createResponse(
+            teacher, CONTENT_TYPE_REPLY, STAGE_DURING);
+        response.setParent(thought);
+        response.setContent(request.getText().trim());
+        response.setStatus("approved");
+
+        Map<String, Object> extraData = mutableExtraData(response);
+        extraData.put("activityType", ACTIVITY_TYPE_BOOK_CHAT_REPLY);
+        extraData.put("questionResponseId", question.getId());
+        extraData.put("classReadingBookId", extractClassReadingBookId(question));
+        extraData.put("replyType", replyType);
+
+        return BookChatReplyItem.from(
+            responseRepository.save(response),
+            teacherId);
+    }
+
+    @Transactional
+    public BookChatThoughtItem updateBookChatThought(Long studentId, Long questionId, Long thoughtId, BookChatThoughtRequest request) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        Response thought = requireOwnedClassBookChatContent(question, thoughtId, CONTENT_TYPE_THOUGHT, studentId);
+        updateThoughtText(thought, request);
+        return BookChatThoughtItem.from(responseRepository.save(thought), studentId);
+    }
+
+    @Transactional
+    public void deleteBookChatThought(Long studentId, Long questionId, Long thoughtId) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        Response thought = requireOwnedClassBookChatContent(question, thoughtId, CONTENT_TYPE_THOUGHT, studentId);
+        softDeleteWithChildren(thought);
+    }
+
+    @Transactional
+    public BookChatReplyItem updateBookChatReply(Long studentId, Long questionId, Long replyId, BookChatReplyRequest request) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        Response reply = requireOwnedClassBookChatContent(question, replyId, CONTENT_TYPE_REPLY, studentId);
+        reply.setContent(request.getText().trim());
+        mutableExtraData(reply).put("replyType", normalizeReplyType(request.getReplyType()));
+        return BookChatReplyItem.from(responseRepository.save(reply), studentId);
+    }
+
+    @Transactional
+    public void deleteBookChatReply(Long studentId, Long questionId, Long replyId) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        softDeleteWithChildren(requireOwnedClassBookChatContent(question, replyId, CONTENT_TYPE_REPLY, studentId));
+    }
+
+    @Transactional
+    public BookChatThoughtItem updateBookChatThoughtAsTeacher(Long teacherId, Long questionId, Long thoughtId, BookChatThoughtRequest request) {
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionId);
+        Response thought = requireOwnedClassBookChatContent(question, thoughtId, CONTENT_TYPE_THOUGHT, teacherId);
+        updateThoughtText(thought, request);
+        return BookChatThoughtItem.from(responseRepository.save(thought), teacherId);
+    }
+
+    @Transactional
+    public BookChatReplyItem updateBookChatReplyAsTeacher(Long teacherId, Long questionId, Long replyId, BookChatReplyRequest request) {
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionId);
+        Response reply = requireOwnedClassBookChatContent(question, replyId, CONTENT_TYPE_REPLY, teacherId);
+        reply.setContent(request.getText().trim());
+        mutableExtraData(reply).put("replyType", normalizeReplyType(request.getReplyType()));
+        return BookChatReplyItem.from(responseRepository.save(reply), teacherId);
+    }
+
+    @Transactional
+    public void deleteBookChatThoughtAsTeacher(Long teacherId, Long questionId, Long thoughtId) {
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionId);
+        softDeleteWithChildren(requireManageableClassBookChatContent(question, thoughtId, CONTENT_TYPE_THOUGHT, teacherId));
+    }
+
+    @Transactional
+    public void deleteBookChatReplyAsTeacher(Long teacherId, Long questionId, Long replyId) {
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionId);
+        softDeleteWithChildren(requireManageableClassBookChatContent(question, replyId, CONTENT_TYPE_REPLY, teacherId));
+    }
+
+    @Transactional
+    public BookChatQuizAnswerItem updateBookChatQuizAnswer(
+            Long studentId, Long questionId, Long answerId, BookChatQuizAnswerRequest request) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        Response answer = requireOwnedClassBookChatContent(question, answerId, CONTENT_TYPE_QUIZ_ANSWER, studentId);
+        answer.setContent(request.getAnswer().trim());
+        return BookChatQuizAnswerItem.from(responseRepository.save(answer), studentId);
+    }
+
+    @Transactional
+    public void deleteBookChatQuizAnswer(Long studentId, Long questionId, Long answerId) {
+        Response question = findApprovedBookChatQuestionForStudent(studentId, questionId);
+        softDeleteWithChildren(requireOwnedClassBookChatContent(
+            question, answerId, CONTENT_TYPE_QUIZ_ANSWER, studentId));
+    }
+
+    @Transactional
+    public void deleteBookChatQuizAnswerAsTeacher(Long teacherId, Long questionId, Long answerId) {
+        Response question = findApprovedBookChatQuestionForTeacher(teacherId, questionId);
+        softDeleteWithChildren(requireManageableClassBookChatContent(
+            question, answerId, CONTENT_TYPE_QUIZ_ANSWER, teacherId));
+    }
+
+    private void updateThoughtText(Response thought, BookChatThoughtRequest request) {
+        thought.setContent(request.getMain().trim());
+        mutableExtraData(thought).put("reason", request.getReason().trim());
+    }
+
+    private Response requireOwnedClassBookChatContent(Response question, Long contentId, String contentType, Long ownerId) {
+        Response content = requireManageableClassBookChatContent(question, contentId, contentType, ownerId);
+        if (content.getStudent() == null || !ownerId.equals(content.getStudent().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 내용만 수정하거나 삭제할 수 있습니다.");
+        }
+        return content;
+    }
+
+    private Response requireManageableClassBookChatContent(Response question, Long contentId, String contentType, Long viewerId) {
+        Response content = responseRepository.findById(contentId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "책수다방 내용을 찾을 수 없습니다."));
+        Long linkedQuestionId = BookChatThoughtItem.toLong(
+            content.getExtraData() == null ? null : content.getExtraData().get("questionResponseId"));
+        boolean linked = question.getId().equals(linkedQuestionId)
+            || (content.getParent() != null && question.getId().equals(content.getParent().getId()));
+        if (content.getDeletedAt() != null || !MODE_CLASS.equals(content.getMode())
+                || !contentType.equals(content.getContentType()) || !linked) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 질문의 내용을 찾을 수 없습니다.");
+        }
+        return content;
+    }
+
+    private void softDeleteWithChildren(Response response) {
+        LocalDateTime now = LocalDateTime.now();
+        response.setDeletedAt(now);
+        responseRepository.save(response);
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            response.getId(), MODE_CLASS, CONTENT_TYPE_REPLY).forEach(child -> {
+                child.setDeletedAt(now);
+                responseRepository.save(child);
+            });
+    }
+
     @Transactional
     public void deleteRejectedBookThoughtResponse(Long studentId, Long responseId) {
 
@@ -571,6 +892,70 @@ public class ResponseService {
 
         response.setDeletedAt(LocalDateTime.now());
         responseRepository.save(response);
+    }
+
+    @Transactional
+    public BookThoughtResponseItem reviseRejectedBookThoughtResponse(
+            Long studentId, Long responseId, BookThoughtResponseRequest request) {
+        Response response = findBookThoughtById(responseId);
+        if (!response.getStudent().getId().equals(studentId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인이 작성한 질문만 수정할 수 있습니다.");
+        }
+        if (!APPROVAL_STATUS_REJECTED.equals(getApprovalStatus(response))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거절된 질문만 다시 제출할 수 있습니다.");
+        }
+        if (demoAccountService.isDemoAccount(studentId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "심사계정의 책수다방 글은 브라우저에만 저장됩니다.");
+        }
+
+        /*
+         * 질문이 예전에 APPROVED였다가(친구들이 퀴즈 답/생각/답글을 이미
+         * 남긴 뒤) 교사가 다시 REJECTED로 되돌린 경우, 그 참여 데이터가
+         * DB에 그대로 남아있다. 글 내용을 통째로 바꾸면서 옛 대화만 화면에서
+         * 숨기면(작성자만 필터링) 다른 학생 GET에는 옛 답이 계속 보이므로,
+         * 여기서 실제로 소프트 삭제한다 - "댓글 자체 수정"(saveBookChatThought
+         * 등)과 달리 "게시글 자체 수정"에서만 적용되는 정리다.
+         */
+        softDeleteAllBookChatParticipation(response);
+
+        response.setContent(request.getAnswer().trim());
+        Map<String, Object> extraData = mutableExtraData(response);
+        extraData.put("questionType", request.getQuestionType());
+        extraData.put("question", request.getQuestion().trim());
+        extraData.put("classReadingBookId", request.getClassReadingBookId());
+        extraData.put("approvalStatus", APPROVAL_STATUS_PENDING);
+        extraData.remove("rejectionReason");
+        extraData.remove("reviewedByTeacherId");
+        extraData.remove("reviewedAt");
+        response.setStatus("pending");
+        response.setRejectReason(null);
+        response.setReviewedBy(null);
+        response.setReviewedAt(null);
+        return BookThoughtResponseItem.from(responseRepository.save(response));
+    }
+
+    /*
+     * question(책수다방 질문 Response)에 달려 있던 모든 참여 데이터를
+     * 소프트 삭제한다 - 퀴즈 답/생각(및 그 생각에 달린 답글)/질문 자체를
+     * "최초 생각"으로 보고 달린 답글(생각 나누기 유형)까지 전부 포함한다.
+     */
+    private void softDeleteAllBookChatParticipation(Response question) {
+        LocalDateTime now = LocalDateTime.now();
+
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            question.getId(), MODE_CLASS, CONTENT_TYPE_QUIZ_ANSWER).forEach(child -> {
+                child.setDeletedAt(now);
+                responseRepository.save(child);
+            });
+
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            question.getId(), MODE_CLASS, CONTENT_TYPE_THOUGHT).forEach(this::softDeleteWithChildren);
+
+        responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            question.getId(), MODE_CLASS, CONTENT_TYPE_REPLY).forEach(child -> {
+                child.setDeletedAt(now);
+                responseRepository.save(child);
+            });
     }
 
     public List<BookThoughtResponseItem> getTeacherBookThoughtReviews(
@@ -756,6 +1141,11 @@ public class ResponseService {
     private Response findBookChatThoughtForQuestion(
             Response question,
             Long thoughtId) {
+
+        if (question.getId().equals(thoughtId)
+                && !"direct".equals(normalizeTypeForBookChat(question))) {
+            return question;
+        }
 
         Response thought = responseRepository.findById(thoughtId)
             .orElseThrow(() -> new ResponseStatusException(

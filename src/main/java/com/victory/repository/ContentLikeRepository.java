@@ -21,4 +21,6 @@ public interface ContentLikeRepository extends JpaRepository<ContentLike, Long> 
             Long studentId,
             String contentType,
             Collection<Long> contentIds);
+
+    void deleteByContentTypeAndContentId(String contentType, Long contentId);
 }

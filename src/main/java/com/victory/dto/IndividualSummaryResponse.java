@@ -18,6 +18,8 @@ public class IndividualSummaryResponse {
     private Boolean aiPassed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String status;
+    private String rejectionReason;
 
     public static IndividualSummaryResponse from(Summary summary) {
         return new IndividualSummaryResponse(
@@ -27,7 +29,9 @@ public class IndividualSummaryResponse {
             summary.getSummaryText(),
             summary.getAiPassed(),
             summary.getCreatedAt(),
-            summary.getUpdatedAt()
+            summary.getUpdatedAt(),
+            summary.getStatus(),
+            summary.getRejectionReason()
         );
     }
 }

@@ -2289,6 +2289,12 @@ function goNextStep() {
 
   syncDemoPracticeApprovalRequests();
 
+  if (isDemoAccount()) {
+    const demoProgress = loadDemoState("practiceProgress", {});
+    demoProgress.classReadDone = true;
+    saveDemoState("practiceProgress", demoProgress);
+  }
+
   localStorage.setItem(
     "classReadingPassedQuestions",
     JSON.stringify(todayQuestions.slice(0, 3))

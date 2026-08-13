@@ -83,17 +83,7 @@ public class PracticeProgressResponse {
     }
 
     private static boolean isPracticeCompleted(PracticeProgress practiceProgress) {
-        Map<String, Boolean> during = practiceProgress.getDuringTypeProgress();
-
-        return Boolean.TRUE.equals(practiceProgress.getBookSelected())
-            && Boolean.TRUE.equals(practiceProgress.getBeforeDone())
-            && Boolean.TRUE.equals(practiceProgress.getClassReadDone())
-            && Boolean.TRUE.equals(practiceProgress.getAfterDone())
-            && during != null
-            && Boolean.TRUE.equals(during.get("direct"))
-            && Boolean.TRUE.equals(during.get("infer"))
-            && Boolean.TRUE.equals(during.get("opinion"))
-            && Boolean.TRUE.equals(during.get("connect"))
-            && Boolean.TRUE.equals(during.get("review"));
+        // 서버 최종 완료 처리와 홈의 개별읽기 해금 판정은 같은 값을 쓴다.
+        return Boolean.TRUE.equals(practiceProgress.getAfterDone());
     }
 }

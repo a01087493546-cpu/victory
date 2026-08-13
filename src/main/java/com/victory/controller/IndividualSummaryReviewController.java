@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,6 +61,37 @@ public class IndividualSummaryReviewController {
 
         return ResponseEntity.ok(
             individualSummaryShareService.toggleLikeAsTeacher(teacherId, summaryId));
+    }
+
+    @GetMapping("/summaries/review")
+    public ResponseEntity<List<IndividualSummaryShareItem>> getReviewSummaries(
+            @PathVariable Long teacherId,
+            @RequestParam(required = false) String status,
+            Authentication authentication) {
+        requireSelf(teacherId, authentication);
+        return ResponseEntity.ok(individualSummaryShareService.getReviewSummariesForTeacher(teacherId, status));
+    }
+
+    @PostMapping("/summaries/{summaryId}/approve")
+    public ResponseEntity<IndividualSummaryShareItem> approve(
+            @PathVariable Long teacherId, @PathVariable Long summaryId, Authentication authentication) {
+        requireSelf(teacherId, authentication);
+        return ResponseEntity.ok(individualSummaryShareService.approve(teacherId, summaryId));
+    }
+
+    @PostMapping("/summaries/{summaryId}/reject")
+    public ResponseEntity<IndividualSummaryShareItem> reject(
+            @PathVariable Long teacherId, @PathVariable Long summaryId,
+            @RequestBody java.util.Map<String, String> body, Authentication authentication) {
+        requireSelf(teacherId, authentication);
+        return ResponseEntity.ok(individualSummaryShareService.reject(teacherId, summaryId, body.get("reason")));
+    }
+
+    @PostMapping("/summaries/{summaryId}/pending")
+    public ResponseEntity<IndividualSummaryShareItem> returnToPending(
+            @PathVariable Long teacherId, @PathVariable Long summaryId, Authentication authentication) {
+        requireSelf(teacherId, authentication);
+        return ResponseEntity.ok(individualSummaryShareService.returnToPending(teacherId, summaryId));
     }
 
     private void requireSelf(Long teacherId, Authentication authentication) {

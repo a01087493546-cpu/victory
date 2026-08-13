@@ -20,6 +20,9 @@ public class BookChatThoughtItem {
     private String main;
     private String reason;
     private LocalDateTime createdAt;
+    // 작성자가 교사면 "teacher", 학생이면 "student" - 프론트가 이 값으로만
+    // "선생님" 배지를 붙인다(이름만으로 구분하지 않는다).
+    private String authorRole;
 
     public static BookChatThoughtItem from(Response response, Long viewerStudentId) {
 
@@ -36,11 +39,12 @@ public class BookChatThoughtItem {
             extraData == null || extraData.get("reason") == null
                 ? ""
                 : extraData.get("reason").toString(),
-            response.getCreatedAt()
+            response.getCreatedAt(),
+            response.getStudent() == null ? null : response.getStudent().getRole()
         );
     }
 
-    static Long toLong(Object value) {
+    public static Long toLong(Object value) {
 
         if (value == null) {
             return null;

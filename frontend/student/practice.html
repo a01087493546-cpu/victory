@@ -845,7 +845,11 @@ function goBeforeIntroPage() {
 }
 // 읽기 후 활동 화면으로 이동합니다.
 function goAfterReadingPage() {
-  window.location.href = "./after-read.html";
+  /* 단계 선택 화면에서 읽기 후를 시작할 때는 기존 3장면 스토리 인트로를
+     먼저 보여준다. 인트로 마지막 버튼이 after-read.html의 책 종류 선택
+     허브로 이어지므로, 읽기 후 내부 이동·수정하기 흐름에는 인트로가
+     다시 끼어들지 않는다. */
+  window.location.href = "./after-read-intro.html";
 }
 
 

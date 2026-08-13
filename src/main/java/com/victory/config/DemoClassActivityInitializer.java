@@ -55,12 +55,12 @@ public class DemoClassActivityInitializer implements ApplicationRunner {
         new QuestionSeed("demo_student_06", "connect", "친구가 어려울 때 나는 어떻게 도울 수 있을까요?", "친구가 도와주는 장면이 기억에 남았어. 나도 친구가 어려울 때 도와주고 싶어.", -2),
         new QuestionSeed("demo_student_07", "direct", "이 이야기에서 진짜 보물에 가까운 것은 무엇일까요?", "A. 소중한 사람과 기억 / B. 가장 비싼 물건 (정답 A)", -2),
         new QuestionSeed("demo_student_07", "opinion", "내가 가장 소중하게 생각하는 것은 무엇인가요?", "내가 가장 소중하게 생각하는 것은 가족과 같이 여행 갔던 사진이야.", 0),
-        new QuestionSeed("demo_student_08", "direct", "주인공이 끝까지 보물을 찾을 수 있었던 힘은 무엇일까요?", "A. 용기와 친구의 도움 / B. 우연히 찾은 지도 (정답 A)", 0),
+        new QuestionSeed("demo_student_08", "direct", "주인공이 가장 두려웠던 순간은 언제였을까요?", "A. 어두운 동굴에서 길을 잃었을 때 / B. 보물을 찾고 집으로 돌아왔을 때 (정답 A)", 0),
         new QuestionSeed("demo_student_08", "opinion", "주인공의 어떤 모습이 기억에 남았나요?", "주인공이 포기하지 않은 점이 멋있었어. 나라면 중간에 힘들어서 고민했을 것 같아.", -1)
     );
 
     private static final List<SummarySeed> SUMMARIES = List.of(
-        new SummarySeed("ss01", "주인공은 보물을 찾으러 가면서 여러 어려움을 만났습니다. 친구의 도움을 받으며 끝까지 찾아가고, 자신에게 정말 소중한 것이 무엇인지 생각하게 되었습니다.", 5),
+        new SummarySeed("ss01", "주인공은 보물을 찾기 위해 모험을 떠났습니다. 어려운 일이 있었지만 포기하지 않고 친구의 도움을 받아 계속 나아갔습니다. 마지막에는 진짜 보물은 소중한 사람들과 함께한 경험이라는 것을 깨달았습니다.", 5),
         new SummarySeed("demo_student_02", "주인공은 처음에는 특별한 보물을 찾으려고 했지만 보물을 찾는 과정에서 친구와 함께한 시간도 소중하다는 것을 알게 되었습니다.", 3),
         new SummarySeed("demo_student_03", "보물을 찾으러 간 주인공은 어려운 일이 생겨도 포기하지 않았습니다. 마지막에는 자신이 소중하게 생각하는 것이 진짜 보물이 될 수 있다는 것을 깨달았습니다.", 6),
         new SummarySeed("demo_student_05", "주인공은 친구와 힘을 합쳐 보물을 찾아갑니다. 그 과정에서 도움을 주고받으며 혼자보다 함께하는 것이 좋다는 것을 알게 됩니다.", 2),
@@ -105,22 +105,21 @@ public class DemoClassActivityInitializer implements ApplicationRunner {
         if (student == null || !Boolean.TRUE.equals(student.getDemoAccount())) return;
         Response existing = responseRepository.findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
                 student.getId(), "class", "answer", "during").stream()
-            .filter(item -> isDemoSeed(item) && seed.question().equals(item.getExtraData().get("question")))
+            .filter(item -> isDemoSeed(item) && Integer.valueOf(index).equals(asInteger(item.getExtraData().get("demoSeedIndex"))))
             .findFirst().orElse(null);
 
         if (existing != null) {
             /*
-             * 행을 새로 만들지 않고(멱등성 유지), 소스 코드의 dayOffset이
-             * 바뀌었을 때만 이미 저장된 행의 표시 날짜 오프셋을 갱신한다.
+             * 질문 문구가 바뀌어도 demoSeedIndex로 같은 행을 갱신한다.
+             * 질문 문자열로 찾으면 예전 seed가 남은 채 새 행이 추가된다.
              */
-            Object currentOffset = existing.getExtraData().get("demoDayOffset");
-            int currentOffsetValue = currentOffset instanceof Number number ? number.intValue() : Integer.MIN_VALUE;
-            if (currentOffsetValue != seed.dayOffset()) {
-                Map<String, Object> updatedExtra = new HashMap<>(existing.getExtraData());
-                updatedExtra.put("demoDayOffset", seed.dayOffset());
-                existing.setExtraData(updatedExtra);
-                responseRepository.save(existing);
-            }
+            Map<String, Object> updatedExtra = new HashMap<>(existing.getExtraData());
+            updatedExtra.put("demoDayOffset", seed.dayOffset());
+            updatedExtra.put("questionType", seed.type());
+            updatedExtra.put("question", seed.question());
+            existing.setContent(seed.answer());
+            existing.setExtraData(updatedExtra);
+            responseRepository.save(existing);
             return;
         }
 
@@ -159,6 +158,15 @@ public class DemoClassActivityInitializer implements ApplicationRunner {
             summary.setStatus("approved");
             summary.setAiPassed(true);
             summary = summaryRepository.save(summary);
+        } else if ("ss01".equals(seed.loginId()) && !seed.text().equals(summary.getSummaryText())) {
+            /*
+             * 대표학생 간추리기의 테스트용 본문만 자연스러운 seed 문장으로
+             * 멱등 갱신한다. 기존 Summary 행을 그대로 UPDATE하므로 id,
+             * createdAt, status, bookType, 공유 여부와 ContentLike 관계는
+             * 바뀌지 않으며 다른 학생 seed에도 영향을 주지 않는다.
+             */
+            summary.setSummaryText(seed.text());
+            summary = summaryRepository.save(summary);
         }
         for (int i = 0; i < Math.min(seed.likeCount(), demoStudents.size()); i++) {
             User liker = demoStudents.get(i);
@@ -173,6 +181,10 @@ public class DemoClassActivityInitializer implements ApplicationRunner {
 
     private boolean isDemoSeed(Response response) {
         return response.getExtraData() != null && DEMO_MARKER.equals(response.getExtraData().get("demoSeed"));
+    }
+
+    private Integer asInteger(Object value) {
+        return value instanceof Number number ? number.intValue() : null;
     }
 
     private record QuestionSeed(String loginId, String type, String question, String answer, int dayOffset) {}

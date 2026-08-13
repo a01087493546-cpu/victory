@@ -15,8 +15,12 @@ import com.victory.dto.AfterReadingDataResponse;
 import com.victory.dto.AfterReadingBookTypeRequest;
 import com.victory.dto.AfterReadingQuestionItem;
 import com.victory.dto.AfterReadingQuestionRequest;
+import com.victory.dto.AfterReadingQuestionSaveRequest;
 import com.victory.dto.AfterReadingSaveRequest;
 import com.victory.dto.AfterReadingSummaryItem;
+import com.victory.dto.AfterReadingSummarySaveRequest;
+import com.victory.dto.AfterReadingTypePracticeItem;
+import com.victory.dto.AfterReadingTypePracticeRequest;
 import com.victory.dto.PracticeProgressRequest;
 import com.victory.dto.PracticeProgressResponse;
 import com.victory.entity.ClassReadingBook;
@@ -48,7 +52,11 @@ public class AfterReadingService {
     private static final String STAGE_AFTER = "after";
     private static final String ACTIVITY_TYPE_AFTER_QUESTION = "after_reading_question";
     private static final String ACTIVITY_TYPE_AFTER_BOOK_TYPE = "after_reading_book_type";
+    private static final String ACTIVITY_TYPE_TYPE_PRACTICE = "after_reading_type_practice";
     private static final String CONTENT_TYPE_SUMMARY = "summary";
+    private static final String STATUS_PENDING = "pending";
+    private static final String STATUS_APPROVED = "approved";
+    private static final String STATUS_REJECTED = "rejected";
 
     private final SummaryRepository summaryRepository;
     private final ResponseRepository responseRepository;
@@ -74,11 +82,6 @@ public class AfterReadingService {
             .findByStudent_IdAndClassReadingBookId(studentId, classReadingBookId)
             .orElse(null);
 
-        List<AfterReadingQuestionItem> questions =
-            findAfterReadingQuestions(studentId, classReadingBookId).stream()
-                .map(AfterReadingQuestionItem::from)
-                .toList();
-
         Boolean afterDone = practiceProgressRepository
             .findByStudent_Id(studentId)
             .map(PracticeProgress::getAfterDone)
@@ -88,12 +91,23 @@ public class AfterReadingService {
             ? findAfterReadingBookType(studentId, classReadingBookId)
             : summary.getBookType();
 
+        Map<String, List<AfterReadingQuestionItem>> questionsByBookType =
+            buildQuestionsByBookType(studentId, classReadingBookId, savedBookType);
+        if (savedBookType == null && questionsByBookType.size() == 1) {
+            savedBookType = questionsByBookType.keySet().iterator().next();
+        }
+        List<AfterReadingQuestionItem> questions = savedBookType == null
+            ? List.of()
+            : questionsByBookType.getOrDefault(savedBookType, List.of());
+
         return AfterReadingDataResponse.of(
             classReadingBookId,
             summary,
             savedBookType,
             questions,
-            afterDone);
+            afterDone,
+            findTypePracticeAnswers(studentId, classReadingBookId),
+            questionsByBookType);
     }
 
     @Transactional
@@ -117,6 +131,18 @@ public class AfterReadingService {
         validateClassReadingBookBelongsToClass(
             request.getClassReadingBookId(),
             classStudent.getSchoolClass().getId());
+
+        String previousBookType = findAfterReadingBookType(studentId, request.getClassReadingBookId());
+        if (previousBookType != null && !previousBookType.isBlank()) {
+            findAfterReadingQuestions(studentId, request.getClassReadingBookId()).stream()
+                .filter(item -> extractExtraField(item, "bookType") == null)
+                .forEach(item -> {
+                    Map<String, Object> migrated = new HashMap<>(item.getExtraData());
+                    migrated.put("bookType", previousBookType);
+                    item.setExtraData(migrated);
+                    responseRepository.save(item);
+                });
+        }
 
         Response response = responseRepository
             .findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
@@ -164,26 +190,123 @@ public class AfterReadingService {
             findAfterReadingQuestions(studentId, request.getClassReadingBookId());
 
         for (AfterReadingQuestionRequest questionRequest : request.getQuestions()) {
-            Response response = existingQuestions.stream()
-                .filter(existing ->
-                    questionRequest.getIndex().equals(extractQuestionIndex(existing)))
-                .findFirst()
-                .orElseGet(() -> createAfterQuestionResponse(student));
-
-            response.setContent(questionRequest.getAnswer().trim());
-            response.setPassed(questionRequest.getAiPassed() == null
-                ? true
-                : questionRequest.getAiPassed());
-
-            Map<String, Object> extraData = new HashMap<>();
-            extraData.put("activityType", ACTIVITY_TYPE_AFTER_QUESTION);
-            extraData.put("classReadingBookId", request.getClassReadingBookId());
-            extraData.put("questionIndex", questionRequest.getIndex());
-            extraData.put("question", questionRequest.getQuestion().trim());
-            response.setExtraData(extraData);
-
-            responseRepository.save(response);
+            upsertAfterReadingQuestionResponse(
+                student,
+                request.getClassReadingBookId(),
+                existingQuestions,
+                request.getBookType().trim(),
+                questionRequest.getIndex(),
+                questionRequest.getQuestion(),
+                questionRequest.getAnswer(),
+                questionRequest.getAiPassed());
         }
+
+        Summary summary = summaryRepository
+            .findByStudent_IdAndClassReadingBookId(
+                studentId,
+                request.getClassReadingBookId())
+            .orElseGet(Summary::new);
+
+        /*
+         * 이 메서드는 최초 제출과(거절된 글의) 재제출을 모두 처리하는
+         * 하나의 upsert 경로다(연습읽기는 개별 resubmit 엔드포인트를
+         * 프론트에서 쓰지 않고 이 저장 경로로 재제출까지 이어진다).
+         * "이전 상태가 rejected였고 본문이 실제로 바뀐 경우"에만 기존
+         * 좋아요를 지운다 - 수정 전 글에 대한 반응이 수정본에 그대로
+         * 이어지면 안 되기 때문이다. 교사가 상태만 바꾸는 reviewSummary는
+         * 이 메서드를 타지 않으므로 좋아요가 그대로 보존된다.
+         */
+        boolean wasRejected = "rejected".equalsIgnoreCase(summary.getStatus());
+        String previousSummaryText = summary.getSummaryText();
+        String newSummaryText = request.getSummary().trim();
+
+        summary.setStudent(student);
+        summary.setClassReadingBookId(request.getClassReadingBookId());
+        summary.setBookType(request.getBookType().trim());
+        summary.setSummaryText(newSummaryText);
+        summary.setIsShared(true);
+        summary.setStatus("pending");
+        summary.setRejectionReason(null);
+        summary.setAiPassed(request.getSummaryAiPassed() == null
+            ? true
+            : request.getSummaryAiPassed());
+
+        Summary saved = summaryRepository.save(summary);
+
+        if (wasRejected && !newSummaryText.equals(previousSummaryText)) {
+            contentLikeRepository.deleteByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, saved.getId());
+        }
+
+        PracticeProgressRequest progressRequest = new PracticeProgressRequest();
+        progressRequest.setAfterDone(true);
+        PracticeProgressResponse progressResponse =
+            practiceProgressService.saveProgress(studentId, progressRequest);
+
+        return getMyAfterReadingData(studentId, request.getClassReadingBookId())
+            .withPracticeReward(progressResponse);
+    }
+
+    /*
+     * "루미 피드백 통과 = 자동저장" 정책 - 학생이 내 책 질문 1개(question1~3
+     * 중 하나)를 AI에게 통과받은 시점에, 아직 나머지 질문/간추리기가
+     * 없어도 그 질문 하나만 즉시 저장한다. saveMyAfterReadingData(최종
+     * 완료)와 같은 upsert 로직(upsertAfterReadingQuestionResponse)을
+     * 재사용하되, summary/afterDone/보상은 전혀 건드리지 않는다 - 완료
+     * 처리는 여전히 saveSummary()가 부르는 saveMyAfterReadingData에서만
+     * 일어난다.
+     */
+    @Transactional
+    public AfterReadingDataResponse saveAfterReadingQuestionDraft(
+            Long studentId,
+            AfterReadingQuestionSaveRequest request) {
+
+        User student = findStudent(studentId);
+        ClassStudent classStudent = findClassStudent(studentId);
+        validateClassReadingBookBelongsToClass(
+            request.getClassReadingBookId(),
+            classStudent.getSchoolClass().getId());
+
+        List<Response> existingQuestions =
+            findAfterReadingQuestions(studentId, request.getClassReadingBookId());
+
+        String draftBookType = request.getBookType() == null || request.getBookType().isBlank()
+            ? findAfterReadingBookType(studentId, request.getClassReadingBookId())
+            : request.getBookType().trim();
+        if (draftBookType == null || draftBookType.isBlank()) {
+            draftBookType = "story";
+        }
+
+        upsertAfterReadingQuestionResponse(
+            student,
+            request.getClassReadingBookId(),
+            existingQuestions,
+            draftBookType,
+            request.getIndex(),
+            request.getQuestion(),
+            request.getAnswer(),
+            true);
+
+        return getMyAfterReadingData(studentId, request.getClassReadingBookId());
+    }
+
+    /*
+     * 위와 같은 정책을 간추리기에도 적용한다. isShared/status/afterDone은
+     * 절대 건드리지 않는다 - "우리 반 간추리기 모음"에 공개되는 시점은
+     * 여전히 saveMyAfterReadingData(최종 "다음으로" 버튼)뿐이다. 이미
+     * 공유된 뒤에 학생이 다시 고쳐서 재통과하면, 최종 완료 때와 동일하게
+     * 같은 행을 덮어써(UPDATE) 이미 공개된 카드도 최신 내용을 보여준다
+     * (isShared 값 자체를 여기서 바꾸지 않으므로 true였으면 true로 유지된다).
+     */
+    @Transactional
+    public AfterReadingDataResponse saveAfterReadingSummaryDraft(
+            Long studentId,
+            AfterReadingSummarySaveRequest request) {
+
+        User student = findStudent(studentId);
+        ClassStudent classStudent = findClassStudent(studentId);
+        validateClassReadingBookBelongsToClass(
+            request.getClassReadingBookId(),
+            classStudent.getSchoolClass().getId());
 
         Summary summary = summaryRepository
             .findByStudent_IdAndClassReadingBookId(
@@ -195,21 +318,55 @@ public class AfterReadingService {
         summary.setClassReadingBookId(request.getClassReadingBookId());
         summary.setBookType(request.getBookType().trim());
         summary.setSummaryText(request.getSummary().trim());
-        summary.setIsShared(true);
-        summary.setStatus("approved");
-        summary.setAiPassed(request.getSummaryAiPassed() == null
-            ? true
-            : request.getSummaryAiPassed());
+        summary.setAiPassed(true);
 
         summaryRepository.save(summary);
 
-        PracticeProgressRequest progressRequest = new PracticeProgressRequest();
-        progressRequest.setAfterDone(true);
-        PracticeProgressResponse progressResponse =
-            practiceProgressService.saveProgress(studentId, progressRequest);
+        return getMyAfterReadingData(studentId, request.getClassReadingBookId());
+    }
 
-        return getMyAfterReadingData(studentId, request.getClassReadingBookId())
-            .withPracticeReward(progressResponse);
+    /*
+     * 책 유형별(이야기책/정보를 담은 책/주장을 담은 책) 연습 질문 2개+답
+     * 2개는 AfterReadingSaveRequest/PracticeProgress 어디에도 저장되지
+     * 않던 화면 전용 값이었다 - 이제 루미 검사를 통과한 순간 이 유형의
+     * 최신 통과본으로 upsert한다(같은 studentId+classReadingBookId+bookType
+     * 조합이면 새 row를 쌓지 않고 덮어쓴다).
+     */
+    @Transactional
+    public AfterReadingDataResponse saveTypePracticeAnswers(
+            Long studentId,
+            AfterReadingTypePracticeRequest request) {
+
+        User student = findStudent(studentId);
+        ClassStudent classStudent = findClassStudent(studentId);
+        validateClassReadingBookBelongsToClass(
+            request.getClassReadingBookId(),
+            classStudent.getSchoolClass().getId());
+
+        String bookType = request.getBookType().trim();
+
+        Response response = findTypePracticeResponses(studentId, request.getClassReadingBookId())
+            .stream()
+            .filter(existing -> bookType.equals(extractExtraField(existing, "bookType")))
+            .findFirst()
+            .orElseGet(() -> createAfterQuestionResponse(student));
+
+        response.setContent(bookType);
+        response.setPassed(true);
+
+        Map<String, Object> extraData = new HashMap<>();
+        extraData.put("activityType", ACTIVITY_TYPE_TYPE_PRACTICE);
+        extraData.put("classReadingBookId", request.getClassReadingBookId());
+        extraData.put("bookType", bookType);
+        extraData.put("question1", request.getQuestion1().trim());
+        extraData.put("answer1", request.getAnswer1().trim());
+        extraData.put("question2", request.getQuestion2().trim());
+        extraData.put("answer2", request.getAnswer2().trim());
+        response.setExtraData(extraData);
+
+        responseRepository.save(response);
+
+        return getMyAfterReadingData(studentId, request.getClassReadingBookId());
     }
 
     public List<AfterReadingSummaryItem> getSharedSummaries(
@@ -224,7 +381,8 @@ public class AfterReadingService {
         return buildSummaryItems(
             classReadingBookId,
             studentId,
-            viewerClassStudent.getSchoolClass().getId());
+            viewerClassStudent.getSchoolClass().getId(),
+            studentId);
     }
 
     public List<AfterReadingSummaryItem> getTeacherSharedSummaries(
@@ -243,7 +401,65 @@ public class AfterReadingService {
 
         validateClassReadingBookBelongsToClass(classReadingBookId, classId);
 
-        return buildSummaryItems(classReadingBookId, teacherId, classId);
+        return buildSummaryItems(classReadingBookId, teacherId, classId, null);
+    }
+
+    public List<AfterReadingSummaryItem> getTeacherReviewSummaries(Long teacherId, Long classId, String status) {
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        if (!teacherClass.getId().equals(classId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "담당 학급의 간추리기만 조회할 수 있습니다.");
+        }
+        String normalized = status == null || status.isBlank() ? null : status.trim().toLowerCase();
+        Map<Long, ClassStudent> members = classStudentRepository.findBySchoolClassId(classId).stream()
+            .collect(Collectors.toMap(item -> item.getStudent().getId(), item -> item));
+        return summaryRepository.findAllReviewablePracticeSummariesByStudentIds(members.keySet().stream().toList()).stream()
+            .filter(summary -> normalized == null || normalized.equals(normalizeSummaryStatus(summary)))
+            .map(summary -> AfterReadingSummaryItem.from(summary, members.get(summary.getStudent().getId()),
+                contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, summary.getId()), false, null))
+            .toList();
+    }
+
+    @Transactional
+    public AfterReadingSummaryItem reviewSummary(Long teacherId, Long classId, Long summaryId, String status, String reason) {
+        SchoolClass teacherClass = findTeacherClass(teacherId);
+        if (!teacherClass.getId().equals(classId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "담당 학급만 관리할 수 있습니다.");
+        Summary summary = summaryRepository.findById(summaryId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "간추리기를 찾을 수 없습니다."));
+        validateClassReadingBookBelongsToClass(summary.getClassReadingBookId(), classId);
+        String normalized = status == null ? "" : status.trim().toLowerCase();
+        if (!Set.of(STATUS_PENDING, STATUS_APPROVED, STATUS_REJECTED).contains(normalized)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "대기, 승인 또는 거절 상태만 지정할 수 있습니다.");
+        }
+        if (STATUS_REJECTED.equals(normalized) && (reason == null || reason.isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거절 사유를 입력해야 합니다.");
+        }
+        summary.setStatus(normalized);
+        summary.setRejectionReason(STATUS_REJECTED.equals(normalized) ? reason.trim() : null);
+        Summary saved = summaryRepository.save(summary);
+        return AfterReadingSummaryItem.from(saved, null,
+            contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, saved.getId()), false, null);
+    }
+
+    @Transactional
+    public AfterReadingSummaryItem resubmitSummary(Long studentId, Long summaryId, String text) {
+        Summary summary = requireOwnedRejectedSummary(studentId, summaryId);
+        if (text == null || text.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "간추리기 내용을 입력해야 합니다.");
+        String trimmed = text.trim();
+        boolean textChanged = !trimmed.equals(summary.getSummaryText());
+        summary.setSummaryText(trimmed);
+        summary.setStatus(STATUS_PENDING);
+        summary.setRejectionReason(null);
+        Summary saved = summaryRepository.save(summary);
+        if (textChanged) {
+            contentLikeRepository.deleteByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, saved.getId());
+        }
+        return AfterReadingSummaryItem.from(saved, null,
+            contentLikeRepository.countByContentTypeAndContentId(CONTENT_TYPE_SUMMARY, saved.getId()), false, studentId);
+    }
+
+    @Transactional
+    public void deleteRejectedSummary(Long studentId, Long summaryId) {
+        summaryRepository.delete(requireOwnedRejectedSummary(studentId, summaryId));
     }
 
     @Transactional
@@ -257,6 +473,10 @@ public class AfterReadingService {
                 HttpStatus.NOT_FOUND,
                 "간추리기를 찾을 수 없습니다. summaryId=" + summaryId
             ));
+
+        if (!STATUS_APPROVED.equals(normalizeSummaryStatus(summary))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "승인된 간추리기에만 좋아요를 누를 수 있습니다.");
+        }
 
         validateClassReadingBookBelongsToClass(
             summary.getClassReadingBookId(),
@@ -325,6 +545,9 @@ public class AfterReadingService {
                 HttpStatus.NOT_FOUND,
                 "간추리기를 찾을 수 없습니다. summaryId=" + summaryId
             ));
+        if (!STATUS_APPROVED.equals(normalizeSummaryStatus(summary))) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "승인된 간추리기에만 좋아요를 누를 수 있습니다.");
+        }
         validateClassReadingBookBelongsToClass(summary.getClassReadingBookId(), classId);
 
         // 학생용 toggleSummaryLike와 동일한 이유로 교사(심사계정)도 공용 DB에 좋아요를 남기지 않는다.
@@ -375,7 +598,8 @@ public class AfterReadingService {
     private List<AfterReadingSummaryItem> buildSummaryItems(
             Long classReadingBookId,
             Long viewerStudentId,
-            Long classId) {
+            Long classId,
+            Long mineStudentId) {
 
         Map<Long, ClassStudent> classStudentByStudentId =
             classStudentRepository.findBySchoolClassId(classId).stream()
@@ -390,6 +614,8 @@ public class AfterReadingService {
             .stream()
             .filter(summary ->
                 classStudentByStudentId.containsKey(summary.getStudent().getId()))
+            .filter(summary -> STATUS_APPROVED.equals(normalizeSummaryStatus(summary))
+                || (mineStudentId != null && mineStudentId.equals(summary.getStudent().getId())))
             .toList();
 
         Set<Long> likedSummaryIds =
@@ -414,6 +640,19 @@ public class AfterReadingService {
                 likedSummaryIds.contains(summary.getId()),
                 viewerStudentId))
             .toList();
+    }
+
+    private Summary requireOwnedRejectedSummary(Long studentId, Long summaryId) {
+        Summary summary = summaryRepository.findById(summaryId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "간추리기를 찾을 수 없습니다."));
+        if (!studentId.equals(summary.getStudent().getId()) || !STATUS_REJECTED.equals(normalizeSummaryStatus(summary))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "거절된 내 간추리기만 수정하거나 삭제할 수 있습니다.");
+        }
+        return summary;
+    }
+
+    private String normalizeSummaryStatus(Summary summary) {
+        return summary.getStatus() == null ? STATUS_PENDING : summary.getStatus().trim().toLowerCase();
     }
 
     private void validateCompleteRequest(AfterReadingSaveRequest request) {
@@ -523,6 +762,91 @@ public class AfterReadingService {
             .map(Response::getContent)
             .findFirst()
             .orElse(null);
+    }
+
+    /*
+     * questionRequest 1건을 index 기준으로 upsert한다 - 최종 완료
+     * (saveMyAfterReadingData)와 자동저장(saveAfterReadingQuestionDraft)이
+     * 완전히 같은 저장 로직을 쓰도록 공유한다.
+     */
+    private void upsertAfterReadingQuestionResponse(
+            User student,
+            Long classReadingBookId,
+            List<Response> existingQuestions,
+            String bookType,
+            Integer index,
+            String question,
+            String answer,
+            Boolean aiPassed) {
+
+        Response response = existingQuestions.stream()
+            .filter(existing -> bookType.equals(extractExtraField(existing, "bookType")))
+            .filter(existing -> index.equals(extractQuestionIndex(existing)))
+            .findFirst()
+            .orElseGet(() -> createAfterQuestionResponse(student));
+
+        response.setContent(answer.trim());
+        response.setPassed(aiPassed == null ? true : aiPassed);
+
+        Map<String, Object> extraData = new HashMap<>();
+        extraData.put("activityType", ACTIVITY_TYPE_AFTER_QUESTION);
+        extraData.put("classReadingBookId", classReadingBookId);
+        extraData.put("bookType", bookType);
+        extraData.put("questionIndex", index);
+        extraData.put("question", question.trim());
+        response.setExtraData(extraData);
+
+        responseRepository.save(response);
+    }
+
+    private Map<String, List<AfterReadingQuestionItem>> buildQuestionsByBookType(
+            Long studentId, Long classReadingBookId, String legacyBookType) {
+        Map<String, List<AfterReadingQuestionItem>> result = new HashMap<>();
+        findAfterReadingQuestions(studentId, classReadingBookId).forEach(response -> {
+            String bookType = extractExtraField(response, "bookType");
+            if ((bookType == null || bookType.isBlank()) && legacyBookType != null) {
+                bookType = legacyBookType;
+            }
+            if (bookType == null || bookType.isBlank()) return;
+            result.computeIfAbsent(bookType, ignored -> new java.util.ArrayList<>())
+                .add(AfterReadingQuestionItem.from(response));
+        });
+        return result;
+    }
+
+    private List<Response> findTypePracticeResponses(
+            Long studentId,
+            Long classReadingBookId) {
+
+        return responseRepository
+            .findByStudent_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
+                studentId,
+                MODE_CLASS,
+                CONTENT_TYPE_ANSWER,
+                STAGE_AFTER)
+            .stream()
+            .filter(response ->
+                ACTIVITY_TYPE_TYPE_PRACTICE.equals(
+                    extractExtraField(response, "activityType")))
+            .filter(response ->
+                classReadingBookId.equals(extractClassReadingBookId(response)))
+            .toList();
+    }
+
+    private Map<String, AfterReadingTypePracticeItem> findTypePracticeAnswers(
+            Long studentId,
+            Long classReadingBookId) {
+
+        Map<String, AfterReadingTypePracticeItem> result = new HashMap<>();
+
+        findTypePracticeResponses(studentId, classReadingBookId).forEach(response -> {
+            AfterReadingTypePracticeItem item = AfterReadingTypePracticeItem.from(response);
+            if (item.getBookType() != null) {
+                result.put(item.getBookType(), item);
+            }
+        });
+
+        return result;
     }
 
     private Response createAfterQuestionResponse(User student) {

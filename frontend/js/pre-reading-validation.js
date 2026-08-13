@@ -192,6 +192,19 @@ function requestPreReadingAiFeedback(options) {
   const classReadingBookId = options.classReadingBookId;
   const readingRecordId = options.readingRecordId;
 
+  /*
+    개별읽기 심사계정은 공용 DB ReadingRecord를 만들지 않고 브라우저 안에서만
+    쓰는 "demo-..." id를 사용한다. 인증 API DTO의 readingRecordId는 Long이므로
+    이 문자열을 그대로 보내면 컨트롤러에 도달하기 전 JSON 역직렬화 단계에서
+    400이 발생한다. 실제 숫자 id만 본문에 넣고, 심사 로컬 id는 생략한다.
+    서버는 JWT로 심사계정을 확인한 뒤 scope 검증/시도 기록만 건너뛰고 실제
+    AI 피드백 호출은 그대로 수행한다.
+  */
+  const numericReadingRecordId =
+    readingRecordId != null && /^\d+$/.test(String(readingRecordId))
+      ? Number(readingRecordId)
+      : undefined;
+
   const requestButton = options.requestButton;
   const onLoading = options.onLoading;
   const onResult = options.onResult;
@@ -299,7 +312,7 @@ function requestPreReadingAiFeedback(options) {
         evaluationKey: evaluationKey,
         bookTitle: bookTitle,
         classReadingBookId: classReadingBookId,
-        readingRecordId: readingRecordId
+        readingRecordId: numericReadingRecordId
       }
     : {
         type: "pre_reading_question",

@@ -584,4 +584,163 @@ class IndividualBookChatServiceTest {
             .isInstanceOf(ResponseStatusException.class)
             .hasMessageContaining("404");
     }
+
+    // =========================================================
+    // 교사용 책수다방 직접 참여 (댓글)
+    // =========================================================
+
+    private static final Long TEACHER_ID = 900L;
+
+    private User buildTeacher(Long id, String name) {
+        User teacher = new User();
+        teacher.setId(id);
+        teacher.setName(name);
+        teacher.setRole("teacher");
+        return teacher;
+    }
+
+    /* 교사가 담당 학급의 승인된 글에 댓글을 남기면 즉시 저장되고, 학생 보상(용기)은 지급되지 않는다 */
+    @Test
+    void createCommentAsTeacher_savesWithoutRewardAndTeacherAuthorRole() {
+        User teacher = buildTeacher(TEACHER_ID, "김문답");
+        User writer = buildStudent(STUDENT_ID, "학생1");
+        Response post = buildPost(5L, writer);
+        post.setStatus("APPROVED");
+
+        when(userRepository.findById(TEACHER_ID)).thenReturn(Optional.of(teacher));
+        when(responseRepository.findByIdAndModeAndContentTypeAndDeletedAtIsNull(5L, "individual", "chat_post"))
+            .thenReturn(Optional.of(post));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID)).thenReturn(Optional.of(buildClass(CLASS_ID)));
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID))
+            .thenReturn(List.of(buildMembership(CLASS_ID, writer)));
+        when(responseRepository.save(any(Response.class))).thenAnswer(inv -> {
+            Response saved = inv.getArgument(0);
+            saved.setId(777L);
+            return saved;
+        });
+
+        IndividualBookChatCommentResponse result =
+            service.createCommentAsTeacher(TEACHER_ID, 5L, "A", "선생님도 A를 고를 것 같아요.");
+
+        assertThat(result.getAuthorRole()).isEqualTo("teacher");
+        assertThat(result.isRewardGranted()).isFalse();
+        verify(rewardService, never()).grantCommentDailyRewardOnce(any(User.class), any());
+
+        org.mockito.ArgumentCaptor<Response> captor = org.mockito.ArgumentCaptor.forClass(Response.class);
+        verify(responseRepository).save(captor.capture());
+        assertThat(captor.getValue().getStudent().getId()).isEqualTo(TEACHER_ID);
+    }
+
+    /* 교사가 담당하지 않는 학급의 글에는 댓글을 남길 수 없다 */
+    @Test
+    void createCommentAsTeacher_rejectsPostFromDifferentClass() {
+        User teacher = buildTeacher(TEACHER_ID, "김문답");
+        User otherClassAuthor = buildStudent(OTHER_CLASS_STUDENT_ID, "다른학급학생");
+        Response post = buildPost(6L, otherClassAuthor);
+        post.setStatus("APPROVED");
+
+        when(userRepository.findById(TEACHER_ID)).thenReturn(Optional.of(teacher));
+        when(responseRepository.findByIdAndModeAndContentTypeAndDeletedAtIsNull(6L, "individual", "chat_post"))
+            .thenReturn(Optional.of(post));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID)).thenReturn(Optional.of(buildClass(CLASS_ID)));
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of());
+
+        assertThatThrownBy(() ->
+            service.createCommentAsTeacher(TEACHER_ID, 6L, "A", "댓글")
+        ).isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("404");
+
+        verify(responseRepository, never()).save(any(Response.class));
+    }
+
+    /* 교사는 담당 학급의 승인된 글에 달린 학생 댓글을 소프트 삭제할 수 있다 */
+    @Test
+    void deleteCommentAsTeacher_softDeletesStudentCommentFromOwnApprovedPost() {
+        User writer = buildStudent(STUDENT_ID, "학생1");
+        User commenter = buildStudent(CLASSMATE_ID, "학생2");
+        Response post = buildPost(7L, writer);
+        post.setStatus("APPROVED");
+        Response comment = new Response();
+        comment.setId(701L);
+        comment.setStudent(commenter);
+        comment.setParent(post);
+        comment.setMode("individual");
+        comment.setContentType("chat_reply");
+
+        when(responseRepository.findById(701L)).thenReturn(Optional.of(comment));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID)).thenReturn(Optional.of(buildClass(CLASS_ID)));
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(
+            buildMembership(CLASS_ID, writer), buildMembership(CLASS_ID, commenter)));
+        when(responseRepository.save(comment)).thenReturn(comment);
+
+        service.deleteCommentAsTeacher(TEACHER_ID, 701L);
+
+        assertThat(comment.getDeletedAt()).isNotNull();
+        verify(responseRepository).save(comment);
+    }
+
+    /* 댓글 작성자가 같은 반이어도 부모 글이 다른 반이면 교사가 삭제할 수 없다 */
+    @Test
+    void deleteCommentAsTeacher_rejectsCommentOnPostFromDifferentClass() {
+        User outsideWriter = buildStudent(OTHER_CLASS_STUDENT_ID, "다른학급학생");
+        User commenter = buildStudent(CLASSMATE_ID, "담당학급학생");
+        Response post = buildPost(8L, outsideWriter);
+        post.setStatus("APPROVED");
+        Response comment = new Response();
+        comment.setId(801L);
+        comment.setStudent(commenter);
+        comment.setParent(post);
+        comment.setMode("individual");
+        comment.setContentType("chat_reply");
+
+        when(responseRepository.findById(801L)).thenReturn(Optional.of(comment));
+        when(schoolClassRepository.findByTeacherId(TEACHER_ID)).thenReturn(Optional.of(buildClass(CLASS_ID)));
+        when(classStudentRepository.findBySchoolClassId(CLASS_ID))
+            .thenReturn(List.of(buildMembership(CLASS_ID, commenter)));
+
+        assertThatThrownBy(() -> service.deleteCommentAsTeacher(TEACHER_ID, 801L))
+            .isInstanceOf(ResponseStatusException.class)
+            .hasMessageContaining("403");
+
+        assertThat(comment.getDeletedAt()).isNull();
+        verify(responseRepository, never()).save(comment);
+    }
+
+    /*
+     * 재발 버그 회귀 테스트: REJECTED 게시글을 작성자가 수정해 재제출하면,
+     * 예전에 승인 상태였을 때 친구들이 남긴 댓글이 실제로 소프트 삭제되어야
+     * 한다 - 작성자 화면에서만 숨기는 방식은 실패다.
+     */
+    @Test
+    void reviseRejectedPost_softDeletesExistingComments() {
+        User author = buildStudent();
+        Response post = buildPost(7L, author);
+        post.setStatus("rejected");
+
+        Response friendComment = new Response();
+        friendComment.setId(701L);
+
+        when(responseRepository.findByIdAndStudent_IdAndModeAndContentType(
+            7L, STUDENT_ID, "individual", "chat_post")).thenReturn(Optional.of(post));
+        when(responseRepository.findByParent_IdAndModeAndContentTypeAndDeletedAtIsNullOrderByIdAsc(
+            7L, "individual", "chat_reply")).thenReturn(List.of(friendComment));
+        when(responseRepository.save(any(Response.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(classStudentRepository.findByStudentId(STUDENT_ID)).thenReturn(Optional.empty());
+
+        IndividualBookChatPostResponse revised = service.reviseRejectedPost(
+            STUDENT_ID, 7L, " 고친 책 ", " 고친 제목 ", " 고친 장면 ", " 고친 A ", " 고친 B ");
+
+        assertThat(friendComment.getDeletedAt()).isNotNull();
+        assertThat(post.getId()).isEqualTo(7L);
+        assertThat(post.getContent()).isEqualTo("고친 장면");
+        assertThat(post.getExtraData()).containsEntry("bookTitle", "고친 책")
+            .containsEntry("title", "고친 제목")
+            .containsEntry("optionA", "고친 A")
+            .containsEntry("optionB", "고친 B");
+        assertThat(post.getStatus()).isEqualTo("pending");
+        assertThat(post.getRejectReason()).isNull();
+        assertThat(revised.getId()).isEqualTo(7L);
+        verify(responseRepository).save(post);
+        verify(responseRepository).save(friendComment);
+    }
 }

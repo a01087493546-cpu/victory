@@ -64,4 +64,25 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
     List<Summary> findByStudent_IdAndReadingRecordIsNotNullAndAiPassedTrueAndStatusOrderByCreatedAtDesc(
             Long studentId,
             String status);
+
+    @Query("""
+        SELECT s FROM Summary s
+        WHERE s.student.id IN :studentIds
+          AND s.readingRecord IS NOT NULL
+          AND s.aiPassed = true
+        ORDER BY s.updatedAt DESC, s.id DESC
+        """)
+    List<Summary> findAllReviewableIndividualSummariesByStudentIds(
+            @Param("studentIds") List<Long> studentIds);
+
+    @Query("""
+        SELECT s FROM Summary s
+        WHERE s.student.id IN :studentIds
+          AND s.classReadingBookId IS NOT NULL
+          AND s.isShared = true
+          AND s.aiPassed = true
+        ORDER BY s.updatedAt DESC, s.id DESC
+        """)
+    List<Summary> findAllReviewablePracticeSummariesByStudentIds(
+            @Param("studentIds") List<Long> studentIds);
 }

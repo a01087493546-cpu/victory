@@ -4049,7 +4049,7 @@ function cancelContentsSkip() {
 
     // 질문 4개를 모두 완성하면 읽기 전 질문 공유하기 화면은 건너뛰고,
     // 바로 읽기 전/중/후 3단계 선택 화면(practice.html)으로 이동합니다.
-    async function completeAndGoPractice() {
+async function completeAndGoPractice() {
   const incompleteIndex = answers.findIndex(function(item) {
     return !item.passed;
   });
@@ -4069,6 +4069,17 @@ function cancelContentsSkip() {
         "아직 완성하지 않은 질문이 있어. 이 질문과 답을 완성하면 다음 단계로 갈 수 있어!";
     }, 100);
 
+    return;
+  }
+
+  /* 심사계정은 입력/AI 통과 여부가 아니라 마지막 이동 동작 자체를
+     읽기 전 완료로 본다. 공용 ss01 DB 진행도에는 쓰지 않고 이 브라우저의
+     demo 저장소에만 남겨 다른 심사위원 브라우저와 섞이지 않게 한다. */
+  if (isDemoAccount()) {
+    const demoProgress = loadDemoState("practiceProgress", {});
+    demoProgress.beforeDone = true;
+    saveDemoState("practiceProgress", demoProgress);
+    location.href = "./practice.html";
     return;
   }
 

@@ -593,6 +593,38 @@
   overflow-wrap: anywhere;
 }
 
+/* 거절 사유 - 간추리기 본문(.iar-share-summary)과 다른 전용 클래스라
+   화면 크기별 본문 글자 크기 조정과 무관하게 항상 20px 수준을 유지한다. */
+.iar-share-rejection {
+  margin-top: 10px;
+  padding: 18px 19px;
+  border-radius: 18px;
+  border: 1px solid rgba(184, 82, 55, 0.35);
+  background: rgba(184, 82, 55, 0.08);
+}
+.iar-share-rejection strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #9b4228;
+}
+.iar-share-rejection p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #7a3420;
+  max-height: 130px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-overflow-scrolling: touch;
+}
+
     .iar-comment-list {
       display: grid;
       gap: 8px;
@@ -1003,9 +1035,20 @@
 
 .iar-share-card-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.iar-share-card-title-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iar-share-card-title-row h3 {
+  min-width: 0;
 }
 
 .iar-share-card-date {
@@ -1018,6 +1061,32 @@
   font-size: 12px;
   font-weight: 950;
   white-space: nowrap;
+}
+
+/* 간추리기 승인 상태 배지 - 책수다방 상태 배지와 같은 색 구성으로 통일. */
+.iar-status-badge {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.iar-status-pending {
+  background: rgba(229, 174, 69, 0.20);
+  border-color: rgba(229, 174, 69, 0.42);
+  color: #8b5a1d;
+}
+.iar-status-approved {
+  background: rgba(88, 139, 62, 0.16);
+  border-color: rgba(88, 139, 62, 0.4);
+  color: #47722c;
+}
+.iar-status-rejected {
+  background: rgba(184, 82, 55, 0.15);
+  border-color: rgba(184, 82, 55, 0.4);
+  color: #9b4228;
 }
 
 .iar-share-empty {
@@ -1831,7 +1900,7 @@ body.iar-teacher-share-mode .iar-bottom-actions {
      마무리하기" 버튼은 숨긴다(교사 모드와 같은 패턴, 학생 화면
      자체는 그대로 두고 이 버튼 한 줄만 감춘다).
    ========================================================= */
-body.iar-shortcut-share-mode .iar-bottom-actions {
+body.iar-shortcut-share-mode #shareScreen .iar-bottom-actions {
   display: none !important;
 }
 
@@ -2340,6 +2409,14 @@ body.iar-teacher-share-mode .iar-share-guide {
   width: 150px !important;
   height: 56px !important;
   font-size: 17px !important;
+}
+
+#typeScreen #myShareShortcutButton {
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 0 18px !important;
+  font-size: 14px !important;
+  margin-right: auto;
 }
 /* 3단계 스스로 간추리기 보조설명 완전 제거 */
 #summaryScreen .iar-panel-head p {
@@ -3304,13 +3381,16 @@ body {
 }
 
 #shareScreen .iar-share-grid {
-  gap: 12px !important;
+  gap: 18px !important;
 }
 
 #shareScreen .iar-share-card {
-  min-height: 214px !important;
-  padding: 15px !important;
-  gap: 9px !important;
+  flex: 0 0 calc(50% - 9px) !important;
+  width: calc(50% - 9px) !important;
+  min-width: 0 !important;
+  min-height: 300px !important;
+  padding: 20px !important;
+  gap: 12px !important;
 }
 
 #shareScreen .iar-share-card h3 {
@@ -3323,15 +3403,18 @@ body {
 }
 
 #shareScreen .iar-share-summary {
-  min-height: 82px !important;
-  padding: 12px 13px !important;
+  min-height: 130px !important;
+  padding: 16px 17px !important;
   font-size: 18px !important;
-  line-height: 1.35 !important;
+  line-height: 1.55 !important;
+  white-space: normal !important;
+  word-break: keep-all !important;
+  overflow-wrap: anywhere !important;
 }
 
 #shareScreen .iar-like-button {
-  height: 38px !important;
-  font-size: 15px !important;
+  height: 42px !important;
+  font-size: 16px !important;
 }
 
 /* =========================================================
@@ -3459,8 +3542,8 @@ body {
 #summaryScreen .iar-panel {
   grid-template-rows:
     auto
-    430px
-    148px
+    minmax(0, 1fr)
+    112px
     auto !important;
 
   gap: 14px !important;
@@ -3470,8 +3553,8 @@ body {
 /* 좌우 카드 영역 */
 #summaryScreen .iar-summary-layout {
   width: 100% !important;
-  height: 430px !important;
-  min-height: 430px !important;
+  height: 100% !important;
+  min-height: 0 !important;
   align-items: stretch !important;
   gap: 18px !important;
 }
@@ -3480,8 +3563,8 @@ body {
 #summaryScreen .iar-summary-left,
 #summaryScreen .iar-summary-right {
   width: 100% !important;
-  height: 430px !important;
-  min-height: 430px !important;
+  height: 100% !important;
+  min-height: 0 !important;
   padding: 20px !important;
   overflow: hidden !important;
 }
@@ -3566,15 +3649,15 @@ body {
 /* 피드백 카드는 확대된 좌우 카드 바로 아래에 배치 */
 #summaryScreen .iar-lumi-feedback {
   width: 100% !important;
-  height: 148px !important;
-  min-height: 148px !important;
-  margin-top: 30px !important;
+  height: 112px !important;
+  min-height: 112px !important;
+  margin-top: 0 !important;
 }
 
 /* 버튼 영역도 함께 아래쪽으로 이동 */
 #summaryScreen .iar-bottom-actions {
   width: 100% !important;
-  margin: 48px 0 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
 
   align-self: end !important;
@@ -3766,6 +3849,7 @@ body {
           </div>
 
           <div class="iar-bottom-actions">
+            <button type="button" class="iar-main-button" id="myShareShortcutButton" onclick="goToMyIndividualSummaryShareDirect()" hidden>내가 올린 간추리기 보러가기</button>
             <button type="button" class="iar-main-button primary" onclick="goQuestionStep()">다음으로</button>
           </div>
         </article>
@@ -3927,7 +4011,7 @@ body {
     💬 주장을 담은 책
   </button>
   <button type="button" class="iar-share-filter-button" data-filter="other" onclick="changeShareFilter('other')">
-    📚 그 밖의 책
+    📚 그밖의 책
   </button>
 </div>
 
@@ -4036,6 +4120,7 @@ body {
       stage: "individualAdventureStage_" + studentId
     };
     const DEMO_AFTER_READING_KEY = "individualAfterReading";
+    const DEMO_SUMMARY_EDIT_DRAFT_KEY = "individualSummaryEditDraft";
 
     /*
      * 심사계정이 이 브라우저에서 직접 완료한 간추리기 목록. "우리 반
@@ -4046,10 +4131,14 @@ body {
     const DEMO_WRITTEN_SUMMARIES_KEY = "individualWrittenSummaries";
 
    let selectedBookType = isDemoAccount()
-     ? (loadDemoState(DEMO_AFTER_READING_KEY, {}).bookType || "")
+     ? ""
      : (sessionStorage.getItem(AFTER_KEYS.bookType) || "");
 let questionFeedbackPassed = false;
 let summaryFeedbackPassed = false;
+let restoredIndividualSummaryId = null;
+let editingRejectedSummary = false;
+let editingSummaryId = null;
+let editingSummaryOriginalText = "";
 /*
   오늘의 독서 모험 화면의 "간추리기 공유" 바로가기(?view=summaryShare)로
   들어왔는지 여부. true면 친구 글 조회·좋아요만 허용하고 "이 책
@@ -4129,7 +4218,7 @@ function renderSummaryDateNav() {
   const nextButton = document.getElementById("summaryNextDateButton");
   const today = getTodayInSeoul();
 
-  if (!isDemoAccount() && compareDateText(selectedSummaryDate, today) > 0) {
+  if (compareDateText(selectedSummaryDate, today) > 0) {
     selectedSummaryDate = today;
   }
 
@@ -4138,7 +4227,7 @@ function renderSummaryDateNav() {
   }
 
   if (nextButton) {
-    nextButton.disabled = !isDemoAccount() && selectedSummaryDate === today;
+    nextButton.disabled = compareDateText(selectedSummaryDate, today) >= 0;
   }
 }
 
@@ -4146,7 +4235,7 @@ async function moveSummaryDate(dayOffset) {
   const nextDate = addDays(selectedSummaryDate, dayOffset);
   const today = getTodayInSeoul();
 
-  selectedSummaryDate = !isDemoAccount() && compareDateText(nextDate, today) > 0 ? today : nextDate;
+  selectedSummaryDate = compareDateText(nextDate, today) > 0 ? today : nextDate;
   await refreshShareSummaries();
 }
 
@@ -4158,7 +4247,7 @@ async function moveSummaryDate(dayOffset) {
       보이지 않게 한다.
     */
     selectedBookType = isDemoAccount()
-      ? (loadDemoState(DEMO_AFTER_READING_KEY, {}).bookType || "")
+      ? ""
       : "";
     questionFeedbackPassed = false;
     summaryFeedbackPassed = false;
@@ -4183,10 +4272,12 @@ async function moveSummaryDate(dayOffset) {
     }
 
     if (isDemoAccount()) {
-      restoreDemoAfterReadingState();
+      resetDemoAfterReadingEntryUi();
     } else {
       await restoreIndividualAfterReadingFromServer();
     }
+
+    updateShareShortcutButtonVisibility();
 
     if (studentView === "summaryShare") {
       await activateStudentSummaryShareShortcutMode();
@@ -4250,6 +4341,8 @@ async function moveSummaryDate(dayOffset) {
       const afterResponses = afterResponsesResult.ok ? await afterResponsesResult.json() : [];
       const summary = summaryResult.status === 200 ? await summaryResult.json() : null;
 
+      restoredIndividualSummaryId = summary ? summary.summaryId : null;
+
       restoreAfterQuestionCards(afterResponses);
       prepareQuestionFeedbackCards();
 
@@ -4262,7 +4355,7 @@ async function moveSummaryDate(dayOffset) {
         summaryFeedbackPassed = summary.aiPassed === true;
 
         const finishAfterButton = document.getElementById("finishAfterButton");
-        if (finishAfterButton) finishAfterButton.disabled = !summaryFeedbackPassed;
+        if (finishAfterButton) finishAfterButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
 
         if (summaryFeedbackPassed) {
           setFeedback("summaryFeedback", "good", "이전에 저장한 간추리기예요. 그대로 완료할 수 있어요.");
@@ -4301,7 +4394,48 @@ async function moveSummaryDate(dayOffset) {
   }
 
   function persistDemoAfterReadingState() {
-    if (isDemoAccount()) saveDemoState(DEMO_AFTER_READING_KEY, collectDemoAfterReadingState());
+    if (!isDemoAccount()) return;
+    const state = collectDemoAfterReadingState();
+    if (editingRejectedSummary) {
+      saveDemoState(DEMO_SUMMARY_EDIT_DRAFT_KEY, Object.assign({}, state, {
+        editMode: true,
+        editSummaryId: editingSummaryId
+      }));
+      return;
+    }
+    saveDemoState(DEMO_AFTER_READING_KEY, state);
+  }
+
+  /* 일반 진입 전용 초기화. 저장 데이터는 삭제하지 않고 DOM만 비우므로
+     공유 카드와 과거 수정본은 그대로 남지만 '수정하기' 경로가 아니면
+     화면에 자동 복원되지 않는다. */
+  function resetDemoAfterReadingEntryUi() {
+    editingRejectedSummary = false;
+    editingSummaryId = null;
+    editingSummaryOriginalText = "";
+    selectedBookType = "";
+    questionFeedbackPassed = false;
+    summaryFeedbackPassed = false;
+    activeQuestionCardIndex = 0;
+
+    document.querySelectorAll(".iar-book-type-button").forEach(function(button) {
+      button.classList.remove("selected");
+    });
+
+    document.querySelectorAll("#qaList .iar-qa-card").forEach(function(card) {
+      const questionInput = card.querySelector(".qa-question");
+      const answerInput = card.querySelector(".qa-answer");
+      if (questionInput) questionInput.value = "";
+      if (answerInput) answerInput.value = "";
+      card.dataset.feedbackPassed = "false";
+      card.classList.remove("passed");
+    });
+    const summaryInput = document.getElementById("summaryInput");
+    if (summaryInput) summaryInput.value = "";
+    const finishButton = document.getElementById("finishAfterButton");
+    if (finishButton) finishButton.disabled = false;
+    setFeedback("questionFeedback", "", "질문과 답을 쓴 뒤 루미 피드백 받기를 눌러봐.");
+    setFeedback("summaryFeedback", "", "간추린 내용을 쓴 뒤 루미 피드백 받기를 눌러봐.");
   }
 
   function restoreDemoAfterReadingState() {
@@ -4322,7 +4456,12 @@ async function moveSummaryDate(dayOffset) {
     summaryFeedbackPassed = !!saved.summaryPassed;
     activeQuestionCardIndex = Math.max(0, Math.min(Number(saved.activeQuestionCardIndex) || 0, cards.length - 1));
     const finishButton = document.getElementById("finishAfterButton");
-    if (finishButton) finishButton.disabled = false;
+    /*
+     * 마지막으로 저장된 본문이 실제로 루미 AI good을 받은 상태였을 때만
+     * 버튼을 켠다 - 저장돼 있다고 해서(summaryPassed가 false인 채로도
+     * 자동저장/이전 값 복원이 될 수 있다) 무조건 통과로 간주하면 안 된다.
+     */
+    if (finishButton) finishButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
   }
 
   /*
@@ -4400,7 +4539,10 @@ async function moveSummaryDate(dayOffset) {
         }
 
         if (event.target.id === "summaryInput") {
+          /* 본문을 고치면 GOOD 판정은 무효화하되, 심사계정의 빠른 체험
+             완료 버튼은 계속 사용할 수 있다. 일반계정만 재검사를 요구한다. */
           summaryFeedbackPassed = false;
+          summaryAiRequestId++;
           const finishAfterButton = document.getElementById("finishAfterButton");
           if (finishAfterButton) finishAfterButton.disabled = !isDemoAccount();
           setFeedback("summaryFeedback", "need", "간추린 내용이 바뀌었어. 다시 루미 피드백을 받아줘.");
@@ -4431,6 +4573,41 @@ async function moveSummaryDate(dayOffset) {
     function showTypeScreen() {
       switchScreen("typeScreen");
       setActiveStep("stepType");
+      updateShareShortcutButtonVisibility();
+    }
+
+    /*
+     * 학생이 이 책(readingRecord)으로 이미 간추리기 공유 글을 등록했는지
+     * (PENDING/APPROVED/REJECTED 상관없이) 판단한다 - 기존
+     * restoredIndividualSummaryId(일반계정)/individualWrittenSummaries(심사계정)를
+     * 재사용하고 새 API는 만들지 않는다.
+     */
+    function hasOwnIndividualSummaryPost() {
+      if (isDemoAccount()) {
+        const readingRecordId = sessionStorage.getItem("individualReadingRecordId_" + studentId) || "";
+        const bookTitle = getCurrentBookTitle();
+        const stableKey = buildDemoSummaryStableKey(readingRecordId, bookTitle);
+        const list = normalizeDemoWrittenSummaries(loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []));
+        return list.some(function (item) {
+          return item && item.stableKey === stableKey
+            && typeof item.summaryText === "string" && item.summaryText.trim().length > 0;
+        });
+      }
+      return !!restoredIndividualSummaryId;
+    }
+
+    function updateShareShortcutButtonVisibility() {
+      const button = document.getElementById("myShareShortcutButton");
+      if (button) button.hidden = !hasOwnIndividualSummaryPost();
+    }
+
+    /*
+     * "내가 올린 간추리기 보러가기" - 자동 이동이 아니라 학생이 직접 눌렀을
+     * 때만 1~3단계를 건너뛰고 곧바로 4단계(간추리기 공유)로 이동한다.
+     */
+    async function goToMyIndividualSummaryShareDirect() {
+      if (!hasOwnIndividualSummaryPost()) return;
+      await showShareScreen();
     }
 
     function showQuestionScreen() {
@@ -4443,8 +4620,19 @@ async function moveSummaryDate(dayOffset) {
       switchScreen("summaryScreen");
       setActiveStep("stepSummary");
       renderSummaryQuestionAnswers();
+
+      /*
+       * 심사계정이라고 무조건 버튼을 켜지 않는다 - 이전에는 3단계에
+       * 들어올 때마다(검사를 한 번도 안 했어도) 심사계정이면 무조건
+       * 활성화됐던 것이 "검사 안 함 → 다음으로" 버그의 핵심 원인이었다.
+       * summaryFeedbackPassed는 restoreIndividualAfterReadingFromServer/
+       * restoreDemoAfterReadingState가 이미 "마지막 저장본이 실제로
+       * good이었는지"를 기준으로 정확히 채워 두므로, 여기서는 그 값을
+       * 그대로 반영만 한다.
+       */
       const finishButton = document.getElementById("finishAfterButton");
-      if (finishButton && isDemoAccount()) finishButton.disabled = false;
+      if (finishButton) finishButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
+
       persistDemoAfterReadingState();
     }
 
@@ -4592,6 +4780,18 @@ async function moveSummaryDate(dayOffset) {
       });
 
       return questionAnswers;
+    }
+
+    function getQuestionAnswerSlots() {
+      const questionInputs = document.querySelectorAll("#qaList .qa-question");
+      const answerInputs = document.querySelectorAll("#qaList .qa-answer");
+      return Array.from({ length: 3 }, function(_, index) {
+        return {
+          index: index + 1,
+          question: questionInputs[index] ? questionInputs[index].value.trim() : "",
+          answer: answerInputs[index] ? answerInputs[index].value.trim() : ""
+        };
+      });
     }
 
     function getQuestionAnswerFromCard(card) {
@@ -5013,18 +5213,39 @@ function goToPreviousQuestionCard() {
 
     function renderSummaryQuestionAnswers() {
       const summaryQaList = document.getElementById("summaryQaList");
-      const questionAnswers = getQuestionAnswers();
+      const questionAnswers = isDemoAccount()
+        ? Array.from(document.querySelectorAll("#qaList .qa-question")).map(function (input, index) {
+            const answerInput = document.querySelectorAll("#qaList .qa-answer")[index];
+            return {
+              question: input ? input.value.trim() : "",
+              answer: answerInput ? answerInput.value.trim() : ""
+            };
+          })
+        : getQuestionAnswers();
+      /* 심사계정은 질문 단계를 건너뛸 수 있으므로 저장 배열이 비어 있어도
+         3단계 왼쪽 UI 틀은 항상 유지한다. 일반계정은 기존 배열/렌더를
+         그대로 사용해 질문 작성 gate와 복원 동작에 영향을 주지 않는다. */
+      const displayQuestionAnswers = isDemoAccount()
+        ? Array.from({ length: 3 }, function (_, index) {
+            return questionAnswers[index] || { question: "", answer: "" };
+          })
+        : questionAnswers;
 
       summaryQaList.innerHTML = "";
 
-      questionAnswers.forEach(function (item, index) {
+      displayQuestionAnswers.forEach(function (item, index) {
         const card = document.createElement("div");
         card.className = "iar-summary-qa-card";
 
-        card.innerHTML = `
-          <strong>질문 ${index + 1}. ${escapeHtml(item.question || "질문을 적지 않았어요.")}</strong>
-          <p>${escapeHtml(item.answer || "답을 적지 않았어요.")}</p>
-        `;
+        card.innerHTML = isDemoAccount()
+          ? `
+            <strong>질문 ${index + 1}</strong>
+            <p><b>Q.</b>${item.question ? " " + escapeHtml(item.question) : ""}<br><b>A.</b>${item.answer ? " " + escapeHtml(item.answer) : ""}</p>
+          `
+          : `
+            <strong>질문 ${index + 1}. ${escapeHtml(item.question || "질문을 적지 않았어요.")}</strong>
+            <p>${escapeHtml(item.answer || "답을 적지 않았어요.")}</p>
+          `;
 
         summaryQaList.appendChild(card);
       });
@@ -5046,7 +5267,7 @@ function goToPreviousQuestionCard() {
 
   if (problems.length > 0) {
     summaryFeedbackPassed = false;
-    document.getElementById("finishAfterButton").disabled = true;
+    document.getElementById("finishAfterButton").disabled = !isDemoAccount();
     setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
     return;
   }
@@ -5055,7 +5276,7 @@ function goToPreviousQuestionCard() {
   const checkButton = document.getElementById("checkSummaryButton");
 
   summaryFeedbackPassed = false;
-  document.getElementById("finishAfterButton").disabled = true;
+  document.getElementById("finishAfterButton").disabled = !isDemoAccount();
   if (checkButton) checkButton.disabled = true;
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
@@ -5083,13 +5304,16 @@ function goToPreviousQuestionCard() {
     setFeedback("summaryFeedback", result.status, result.message);
 
     if (result.status === "good") {
-      const saved = await saveAfterSummaryToServer(selectedBookType, summaryText, true);
+      /* 거절글 수정 모드는 검사 단계에서 DB 상태를 바꾸지 않는다. */
+      const saved = editingRejectedSummary
+        ? { rejectedSummaryChecked: true }
+        : await saveAfterSummaryToServer(selectedBookType, summaryText, true);
 
       if (requestId !== summaryAiRequestId) return;
 
       if (!saved) {
         summaryFeedbackPassed = false;
-        document.getElementById("finishAfterButton").disabled = true;
+        document.getElementById("finishAfterButton").disabled = !isDemoAccount();
         setFeedback("summaryFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
         return;
       }
@@ -5164,13 +5388,27 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
       직접 계산하지 않는다).
     */
     async function finishAfterReading() {
-  if (!summaryFeedbackPassed && !isDemoAccount()) {
+  /* 일반계정은 기존 AI GOOD gate를 유지하고 심사계정만 검사 없이
+     완료·공유할 수 있다. */
+  if (!isDemoAccount() && !summaryFeedbackPassed) {
     alert("먼저 루미 피드백을 통과해야 해!");
     return;
   }
 
   const summaryText = document.getElementById("summaryInput").value.trim();
   const questionAnswers = getQuestionAnswers();
+
+  if (editingRejectedSummary) {
+    const resubmitted = await resubmitRejectedIndividualSummary(summaryText);
+    if (!resubmitted) return;
+    editingRejectedSummary = false;
+    editingSummaryId = null;
+    editingSummaryOriginalText = "";
+    summaryFeedbackPassed = false;
+    if (isDemoAccount()) saveDemoState(DEMO_SUMMARY_EDIT_DRAFT_KEY, {});
+    await showShareScreen();
+    return;
+  }
 
   if (isDemoAccount()) {
     saveAfterArchive(questionAnswers, summaryText);
@@ -5513,7 +5751,7 @@ async function activateTeacherSummaryShareMode() {
 
     backButton.type = "button";
     backButton.className = "iar-teacher-back-button";
-    backButton.textContent = "교사 개별읽기 관리로";
+    backButton.textContent = "← 관리 화면으로 돌아가기";
     backButton.onclick = goTeacherIndividualManage;
 
     topActions.appendChild(backButton);
@@ -6099,9 +6337,13 @@ async function saveBookFinishRecord() {
         list[existingIndex] = Object.assign({}, list[existingIndex], {
           stableKey: stableKey,
           readingRecordId: readingRecordId,
+          writerLoginId: sessionStorage.getItem("loginId") || "",
           bookTitle: bookTitle,
           bookType: selectedBookType || "other",
           summaryText: summaryText,
+          questionAnswers: getQuestionAnswerSlots(),
+          status: "pending",
+          rejectionReason: "",
           updatedAt: now
         });
       } else {
@@ -6109,10 +6351,14 @@ async function saveBookFinishRecord() {
           summaryId: "local-" + Date.now(),
           stableKey: stableKey,
           readingRecordId: readingRecordId,
+          writerLoginId: sessionStorage.getItem("loginId") || "",
           studentName: sessionStorage.getItem("name") || "나",
           bookTitle: bookTitle,
           bookType: selectedBookType || "other",
           summaryText: summaryText,
+          questionAnswers: getQuestionAnswerSlots(),
+          status: "pending",
+          rejectionReason: "",
           createdAt: now,
           updatedAt: now,
           likeCount: 0,
@@ -6149,13 +6395,60 @@ async function saveBookFinishRecord() {
        * 정해야 한다 - 교사(tt11) 화면에서까지 "나의 간추리기"로 보이면
        * 헷갈린다(실제 서버 응답도 교사 조회에서는 항상 isMine:false).
        */
-      const viewingAsOwner = !isTeacherShareMode();
+      const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+      const viewingAsStudent = !isTeacherShareMode();
       const sorted = written.slice().sort(function (a, b) {
         return String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || ""));
       }).map(function (item) {
-        return Object.assign({}, item, { isMine: viewingAsOwner });
+        const overrides = loadDemoState("summaryReviewOverrides", {});
+        const override = overrides["individual:" + item.summaryId];
+        return Object.assign({}, item, {
+          /* 새 데이터는 writerLoginId로 본인을 판정한다. writerLoginId가
+             없던 이전 브라우저-local 데이터만 동일 브라우저 학생에게
+             귀속시키는 호환 처리를 유지한다. */
+          isMine: viewingAsStudent && (!item.writerLoginId || String(item.writerLoginId) === currentLoginId),
+          status: override ? override.status : (item.status || "pending"),
+          rejectionReason: override ? (override.reason || "") : (item.rejectionReason || "")
+        });
       });
-      return sorted.concat(items);
+      return sorted.filter(function(item) { return !isTeacherShareMode() || item.status === "approved"; }).concat(items);
+    }
+
+    function mergeDemoVisibleIndividualReviewSeeds(items) {
+      if (!isDemoAccount() || !Array.isArray(items)) return items;
+      const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+      const existingIds = new Set(items.map(function(item) { return String(item.summaryId); }));
+      const visibleSeeds = getDemoFinalSummaryReviewSeeds("individual")
+        .map(function(seed) {
+          return Object.assign({}, seed, {
+            isMine: Boolean(currentLoginId) && String(seed.writerLoginId || "") === currentLoginId
+          });
+        })
+        .filter(function(seed) {
+          return seed.status === "approved" || (seed.isMine && (seed.status === "pending" || seed.status === "rejected"));
+        })
+        .filter(function(seed) { return !existingIds.has(String(seed.id)); })
+        .map(function(seed) {
+          return {
+            summaryId: seed.id,
+            studentId: seed.writerLoginId,
+            writerLoginId: seed.writerLoginId,
+            studentName: seed.studentName,
+            bookTitle: "심사 예시 책",
+            bookType: seed.bookType,
+            summaryText: seed.summary,
+            status: seed.status,
+            rejectionReason: seed.rejectionReason || "",
+            createdAt: seed.submittedAt,
+            updatedAt: seed.reviewedAt || seed.submittedAt,
+            likeCount: 0,
+            likedByMe: false,
+            isMine: seed.isMine,
+            questionAnswers: Array.isArray(seed.questions) ? seed.questions : [],
+            demoReviewSeed: true
+          };
+        });
+      return visibleSeeds.concat(items);
     }
 
     /*
@@ -6200,7 +6493,11 @@ async function saveBookFinishRecord() {
       }
 
       const items = await response.json();
-      return decorateDemoSummaries(mergeDemoWrittenSummaries(items));
+      return decorateDemoSummaries(
+        mergeDemoVisibleIndividualReviewSeeds(
+          mergeDemoWrittenSummaries(isDemoAccount() ? [] : items)
+        )
+      );
     }
 
     function decorateDemoSummaries(items) {
@@ -6235,7 +6532,7 @@ async function saveBookFinishRecord() {
          * 그대로 다시 읽을 뿐이라 애초에 생기지 않는다).
          */
         const isLocalWritten = typeof item.summaryId === "string" && item.summaryId.indexOf("local-") === 0;
-        if (isLocalWritten) return true;
+        if (isLocalWritten || item.demoReviewSeed === true) return true;
         if (seenNames.has(item.studentName)) return false;
         seenNames.add(item.studentName);
         return true;
@@ -6248,12 +6545,13 @@ async function saveBookFinishRecord() {
          * 0에서 시작해 이 브라우저의 로컬 좋아요만 더한다.
          */
         const isLocalWritten = typeof item.summaryId === "string" && item.summaryId.indexOf("local-") === 0;
+        const isReviewSeed = item.demoReviewSeed === true;
         const likeState = normalizeIndividualDemoLikeState(localLikes[String(item.summaryId)]);
-        const baseLikeCount = isLocalWritten
+        const baseLikeCount = isLocalWritten || isReviewSeed
           ? 0
           : Number(likeByName[item.studentName] || item.likeCount || 0);
         return Object.assign({}, item, {
-          bookType: isLocalWritten ? item.bookType : (typeByName[item.studentName] || item.bookType || "other"),
+          bookType: isLocalWritten || isReviewSeed ? item.bookType : (typeByName[item.studentName] || item.bookType || "other"),
           likeCount: baseLikeCount
             + (likeState.studentLiked ? 1 : 0)
             + (likeState.teacherLiked ? 1 : 0),
@@ -6330,6 +6628,8 @@ async function saveBookFinishRecord() {
            */
           const hasSummary = typeof item.summaryText === "string" && item.summaryText.trim().length > 0;
           if (!hasSummary) return false;
+          const status = String(item.status || "approved").toLowerCase();
+          if (status !== "approved" && (!item.isMine || isTeacherShareMode())) return false;
           return currentShareFilter === "all" || item.bookType === currentShareFilter;
         })
         .slice()
@@ -6364,11 +6664,31 @@ async function saveBookFinishRecord() {
         const displayDate = isDemoAccount() && !isTeacherShareMode()
           ? formatShareDate(selectedSummaryDate)
           : formatShareDate(item.createdAt);
+        const status = String(item.status || "approved").toLowerCase();
+        const statusLabel = status === "pending" ? "확인 중이에요" : status === "rejected" ? "다시 써볼까요?" : "승인됐어요";
+        const statusBadgeClass = "iar-status-badge iar-status-" + status;
+        /*
+         * 상태 배지는 작성자 본인에게만 보인다 - 친구가 보는 카드에는
+         * 승인된 글 내용만 보이고 내부 관리 상태는 노출하지 않는다.
+         * PENDING/REJECTED는 위쪽 filter(6419행)에서 이미 본인 것만
+         * 남기지만, 그 필터가 나중에 바뀌어도 배지 자체는 항상 이
+         * 조건을 다시 확인한다.
+         */
+        const statusBadgeHtml = item.isMine
+          ? `<span class="${statusBadgeClass}">${escapeHtml(statusLabel)}</span>`
+          : "";
+        const actionHtml = status === "approved" ? `<div class="iar-like-box">
+      <button type="button" class="iar-like-button ${item.likedByMe ? "liked" : ""}" onclick="toggleShareLike('${item.summaryId}', this)">
+        👍 좋아요 <span>${item.likeCount}</span>
+      </button></div>` : status === "rejected" && item.isMine ? `<div class="iar-like-box"><button type="button" class="iar-like-button" onclick="editRejectedIndividualSummary('${item.summaryId}')">수정</button><button type="button" class="iar-like-button" onclick="deleteRejectedIndividualSummary('${item.summaryId}')">삭제</button></div>` : "";
 
         return `
           <article class="iar-share-card">
             <div class="iar-share-card-head">
-              <h3>${heading}</h3>
+              <div class="iar-share-card-title-row">
+                <h3>${heading}</h3>
+                ${statusBadgeHtml}
+              </div>
               <span class="iar-share-card-date">${escapeHtml(displayDate)}</span>
             </div>
 
@@ -6377,19 +6697,164 @@ async function saveBookFinishRecord() {
             </div>
 
             <div class="iar-share-summary">${escapeHtml(item.summaryText)}</div>
-
-            <div class="iar-like-box">
-      <button
-        type="button"
-        class="iar-like-button ${item.likedByMe ? "liked" : ""}"
-        onclick="toggleShareLike('${item.summaryId}', this)"
-      >
-        👍 좋아요 <span>${item.likeCount}</span>
-      </button>
-    </div>
+            ${item.rejectionReason ? `<div class="iar-share-rejection"><strong>선생님이 남긴 이유</strong><p>${escapeHtml(item.rejectionReason)}</p></div>` : ""}
+            ${actionHtml}
           </article>
         `;
       }).join("");
+    }
+
+    /*
+     * REJECTED 상태였던 글의 본문을 실제로 고쳐 재제출하는 경우에만
+     * 기존 좋아요를 지운다(수정 전 글에 대한 반응이므로 수정본에 그대로
+     * 이어지면 안 됨) - 본문이 그대로인 재제출이나 교사가 상태만 바꾸는
+     * 경우는 이 함수를 타지 않으므로 좋아요가 보존된다. 일반계정은 이미
+     * 실제로 호출되는 resubmit 엔드포인트(IndividualSummaryShareService.resubmit)
+     * 쪽에 같은 조건으로 좋아요 삭제를 넣어 두었으니 여기서는 심사계정
+     * 로컬 저장소만 처리한다.
+     */
+    function editRejectedIndividualSummary(summaryId) {
+      const item = currentShareSummaries.find(function (summary) {
+        return String(summary.summaryId) === String(summaryId);
+      });
+      if (!item || !item.isMine || String(item.status || "").toLowerCase() !== "rejected") return;
+
+      editingRejectedSummary = true;
+      editingSummaryId = item.summaryId;
+      editingSummaryOriginalText = item.summaryText || "";
+      selectedBookType = item.bookType || selectedBookType;
+
+      const summaryInput = document.getElementById("summaryInput");
+      if (summaryInput) summaryInput.value = editingSummaryOriginalText;
+
+      /* 수정 모드에서만 공유 카드에 저장된 질문·답 스냅샷을 2단계 입력
+         DOM에 다시 넣는다. 3단계 왼쪽 목록과 '이전으로'로 돌아간 입력
+         화면이 모두 이 DOM을 공용으로 사용하므로 두 화면이 같은 값을
+         보여준다. */
+      const restoredQuestions = Array.isArray(item.questionAnswers)
+        ? item.questionAnswers
+        : (Array.isArray(item.questions) ? item.questions : []);
+      Array.from(document.querySelectorAll("#qaList .iar-qa-card")).forEach(function(card, index) {
+        const saved = restoredQuestions.find(function(entry) {
+          return Number(entry.index) === index + 1;
+        }) || restoredQuestions[index] || {};
+        const questionInput = card.querySelector(".qa-question");
+        const answerInput = card.querySelector(".qa-answer");
+        if (questionInput) questionInput.value = saved.question || "";
+        if (answerInput) answerInput.value = saved.answer || "";
+        card.dataset.feedbackPassed = "true";
+        card.classList.add("passed");
+      });
+
+      summaryFeedbackPassed = false;
+      summaryAiRequestId++;
+      const finishButton = document.getElementById("finishAfterButton");
+      if (finishButton) finishButton.disabled = !isDemoAccount();
+      setFeedback(
+        "summaryFeedback",
+        "need",
+        isDemoAccount()
+          ? "선생님 피드백을 참고해 고쳐봐. 원하면 루미 피드백도 다시 받을 수 있어."
+          : "선생님 피드백을 참고해 고친 뒤 루미 피드백을 다시 받아줘."
+      );
+      showSummaryScreen();
+    }
+
+    async function resubmitRejectedIndividualSummary(summaryText) {
+      const trimmedNext = String(summaryText || "").trim();
+      if (!editingSummaryId || !trimmedNext) return false;
+
+      if (isDemoAccount()) {
+        const list = normalizeDemoWrittenSummaries(loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []));
+        let target = list.find(function (item) {
+          return String(item.summaryId) === String(editingSummaryId);
+        });
+        if (!target) {
+          const source = currentShareSummaries.find(function (item) {
+            return String(item.summaryId) === String(editingSummaryId);
+          });
+          if (!source) return false;
+          target = Object.assign({}, source);
+          list.unshift(target);
+        }
+        target.summaryText = trimmedNext;
+        target.questionAnswers = getQuestionAnswerSlots();
+        target.status = "pending";
+        target.rejectionReason = "";
+        target.updatedAt = new Date().toISOString();
+        saveDemoState(DEMO_WRITTEN_SUMMARIES_KEY, list);
+
+        saveDemoSummaryRevisionOverride(
+          "individual",
+          editingSummaryId,
+          trimmedNext,
+          selectedBookType,
+          getQuestionAnswerSlots()
+        );
+
+        if (trimmedNext !== editingSummaryOriginalText) {
+          const localLikes = loadDemoState("individualSummaryLikes", {});
+          delete localLikes[String(editingSummaryId)];
+          saveDemoState("individualSummaryLikes", localLikes);
+        }
+
+        const savedAfterReading = loadDemoState(DEMO_AFTER_READING_KEY, {});
+        savedAfterReading.bookType = selectedBookType;
+        savedAfterReading.summary = trimmedNext;
+        savedAfterReading.summaryPassed = true;
+        saveDemoState(DEMO_AFTER_READING_KEY, savedAfterReading);
+        return true;
+      }
+
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/summaries/" + editingSummaryId + "/resubmit",
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+            body: JSON.stringify({ summaryText: trimmedNext })
+          }
+        );
+        if (!response.ok) throw new Error("간추리기 재제출 실패: " + response.status);
+        return true;
+      } catch (error) {
+        console.error(error);
+        alert("간추리기를 다시 등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return false;
+      }
+    }
+
+    async function deleteRejectedIndividualSummary(summaryId) {
+      if (!confirm("이 간추리기 글을 삭제할까요?")) return;
+      if (isDemoAccount()) {
+        const reviewSeed = getDemoFinalSummaryReviewSeeds("individual").find(function(seed) {
+          return String(seed.id) === String(summaryId);
+        });
+        if (reviewSeed) deleteDemoSummaryReviewSeed("individual", summaryId);
+        else clearDemoSummaryReviewOverride("individual", summaryId);
+        saveDemoState(
+          DEMO_WRITTEN_SUMMARIES_KEY,
+          loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []).filter(function(item) {
+            return String(item.summaryId) !== String(summaryId);
+          })
+        );
+        const localLikes = loadDemoState("individualSummaryLikes", {});
+        delete localLikes[String(summaryId)];
+        saveDemoState("individualSummaryLikes", localLikes);
+        const editDraft = loadDemoState(DEMO_SUMMARY_EDIT_DRAFT_KEY, {});
+        if (String(editDraft.editSummaryId || "") === String(summaryId)) {
+          saveDemoState(DEMO_SUMMARY_EDIT_DRAFT_KEY, {});
+        }
+        await refreshShareSummaries();
+        return;
+      }
+      const token = sessionStorage.getItem("token");
+      await fetch(INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/summaries/" + summaryId, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      });
+      await refreshShareSummaries();
     }
 
     // 서버가 내려준 ISO 시각(예: 2026-07-28T21:40:10)을 2026.07.28 형식으로 바꾼다.
@@ -6408,8 +6873,8 @@ async function saveBookFinishRecord() {
     function getBookTypeLabelForKey(bookTypeKey) {
       if (bookTypeKey === "story") return "📖 이야기 책";
       if (bookTypeKey === "info") return "🔍 정보를 담은 책";
-      if (bookTypeKey === "opinion") return "💬 주장을 담은 책";
-      if (bookTypeKey === "other") return "📚 그 밖의 책";
+      if (bookTypeKey === "opinion" || bookTypeKey === "argument") return "💬 주장을 담은 책";
+      if (bookTypeKey === "other") return "📚 그밖의 책";
       return bookTypeKey || "책";
     }
 
@@ -6509,6 +6974,9 @@ function getTodayText() {
 
 
     function goIndividualHome() {
+      editingRejectedSummary = false;
+      editingSummaryId = null;
+      editingSummaryOriginalText = "";
       location.href = "./individual-reading.html";
     }
     
@@ -6577,11 +7045,15 @@ function goAdventure() {
   // 책을 다 읽은 상태로 처리해서 읽기 후 카드가 잠기지 않게 합니다.
   sessionStorage.setItem("individualBookFinished_" + studentId, "true");
 
+  editingRejectedSummary = false;
+  editingSummaryId = null;
+  editingSummaryOriginalText = "";
+
   location.href = "./today-reading-adventure.html";
 }
 
    function goTeacherIndividualManage() {
-  location.href = "../teacher/individual-reading-manage.html";
+  location.href = "../teacher/individual-summary-manage.html";
 }
   </script>
   <!-- 개별읽기 공통: 나의 힘 팝업 + 활동 완료 보상 미니 모달(openMiniRewardModal)

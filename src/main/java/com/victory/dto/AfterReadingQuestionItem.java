@@ -10,6 +10,7 @@ import lombok.Getter;
 public class AfterReadingQuestionItem {
 
     private Long id;
+    private String bookType;
     private Integer index;
     private String question;
     private String answer;
@@ -39,6 +40,8 @@ public class AfterReadingQuestionItem {
 
         return new AfterReadingQuestionItem(
             response.getId(),
+            response.getExtraData() == null || response.getExtraData().get("bookType") == null
+                ? null : response.getExtraData().get("bookType").toString(),
             index,
             question,
             response.getContent(),

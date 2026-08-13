@@ -228,18 +228,15 @@ public class PracticeProgressService {
     }
 
     private boolean isPracticeCompleted(PracticeProgress progress) {
-        Map<String, Boolean> during = progress.getDuringTypeProgress();
-
-        return Boolean.TRUE.equals(progress.getBookSelected())
-            && Boolean.TRUE.equals(progress.getBeforeDone())
-            && Boolean.TRUE.equals(progress.getClassReadDone())
-            && Boolean.TRUE.equals(progress.getAfterDone())
-            && during != null
-            && Boolean.TRUE.equals(during.get("direct"))
-            && Boolean.TRUE.equals(during.get("infer"))
-            && Boolean.TRUE.equals(during.get("opinion"))
-            && Boolean.TRUE.equals(during.get("connect"))
-            && Boolean.TRUE.equals(during.get("review"));
+        /*
+         * afterDone은 간추리기 GOOD + 질문/답 검증 + 공유 Summary(PENDING)
+         * 저장이 모두 성공한 최종 트랜잭션에서만 true가 된다. 예전에는
+         * 여기에 읽기 중 5유형의 과거 플래그까지 다시 요구해서, 정상적인
+         * 공유 글과 afterDone이 저장됐는데도 +8 보상과 개별읽기 해금만
+         * 누락되는 계정이 생겼다. 최종 완료의 단일 원본을 afterDone으로
+         * 통일한다. 단계별 잠금은 각 화면의 기존 조건이 계속 담당한다.
+         */
+        return Boolean.TRUE.equals(progress.getAfterDone());
     }
 
     private Long findCurrentClassReadingBookId(Long studentId) {

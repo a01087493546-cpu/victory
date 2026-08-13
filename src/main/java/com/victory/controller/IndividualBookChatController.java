@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +67,17 @@ public class IndividualBookChatController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PutMapping(value = "/posts/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<IndividualBookChatPostResponse> reviseRejectedPost(
+            @PathVariable Long postId,
+            @RequestBody IndividualBookChatPostRequest request,
+            Authentication authentication) {
+        Long studentId = requireStudentId(authentication);
+        return ResponseEntity.ok(individualBookChatService.reviseRejectedPost(
+            studentId, postId, request.getBookTitle(), request.getTitle(), request.getScene(),
+            request.getOptionA(), request.getOptionB()));
+    }
+
     /*
      * 친구 책수다 글에 A/B 선택과 이유를 남기는 댓글. postId는 실제
      * 책수다 글의 id다.
@@ -91,6 +103,23 @@ public class IndividualBookChatController {
         Long studentId = requireStudentId(authentication);
 
         return ResponseEntity.ok(individualBookChatService.getComments(studentId, postId));
+    }
+
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<IndividualBookChatCommentResponse> updateComment(
+            @PathVariable Long commentId, @RequestBody IndividualBookChatCommentRequest request,
+            Authentication authentication) {
+        Long studentId = requireStudentId(authentication);
+        return ResponseEntity.ok(individualBookChatService.updateComment(
+            studentId, commentId, request.getChoice(), request.getContent()));
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long commentId, Authentication authentication) {
+        Long studentId = requireStudentId(authentication);
+        individualBookChatService.deleteComment(studentId, commentId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/posts/{postId}")

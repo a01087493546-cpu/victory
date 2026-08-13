@@ -156,6 +156,7 @@ body.teacher-mode .teacher-top-button {
   align-items: center;
   justify-content: center;
 }
+body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:none !important; }
 
     .ar-pill-button {
       height: 39px;
@@ -4450,6 +4451,32 @@ body.teacher-mode .teacher-top-button {
   font-size: 16px !important;
   font-weight: 900 !important;
 }
+/* 간추리기 승인 상태 배지 - 책수다방 상태 배지와 같은 색 구성으로 통일. */
+#sharePanel .ar-status-badge {
+  align-self: flex-start !important;
+  display: inline-block !important;
+  margin-bottom: 16px !important;
+  padding: 6px 13px !important;
+  border-radius: 999px !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  border: 1px solid transparent !important;
+}
+#sharePanel .ar-status-pending {
+  background: rgba(229, 174, 69, 0.20) !important;
+  border-color: rgba(229, 174, 69, 0.42) !important;
+  color: #8b5a1d !important;
+}
+#sharePanel .ar-status-approved {
+  background: rgba(88, 139, 62, 0.16) !important;
+  border-color: rgba(88, 139, 62, 0.4) !important;
+  color: #47722c !important;
+}
+#sharePanel .ar-status-rejected {
+  background: rgba(184, 82, 55, 0.15) !important;
+  border-color: rgba(184, 82, 55, 0.4) !important;
+  color: #9b4228 !important;
+}
 #sharePanel .ar-share-item p {
   flex: 1 1 auto !important;
   min-height: 0 !important;
@@ -4961,14 +4988,59 @@ body.teacher-mode .teacher-top-button {
   overflow-wrap: anywhere !important;
 }
 
-#sharePanel .ar-share-meta {
+#sharePanel .ar-share-head {
   display: flex !important;
+  align-items: baseline !important;
   justify-content: space-between !important;
   gap: 10px !important;
-  margin: -2px 0 12px !important;
+  margin-bottom: 6px !important;
+}
+
+#sharePanel .ar-share-head strong {
+  margin-bottom: 0 !important;
+}
+
+#sharePanel .ar-share-date {
+  flex: 0 0 auto !important;
   color: #8a6335 !important;
-  font-size: 15px !important;
-  font-weight: 900 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+#sharePanel .ar-share-rejection {
+  margin-top: 12px !important;
+  padding: 18px 20px !important;
+  border-radius: 16px !important;
+  border: 1.5px solid rgba(184, 82, 55, 0.35) !important;
+  background: rgba(184, 82, 55, 0.08) !important;
+}
+
+#sharePanel .ar-share-rejection strong {
+  display: block !important;
+  margin-bottom: 6px !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: #9b4228 !important;
+}
+
+#sharePanel .ar-share-rejection p {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  min-height: 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  color: #7a3420 !important;
+  max-height: 130px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 6px !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: keep-all !important;
+  -webkit-overflow-scrolling: touch;
 }
 
 #sharePanel .ar-share-like-count {
@@ -5093,7 +5165,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 .ar-type-board {
   grid-template-rows: auto auto auto !important;
   align-content: center;
-  gap: 16px !important;
+  gap: 26px !important;
   padding: 26px 36px 28px !important;
 }
 
@@ -5128,7 +5200,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 .ar-my-book-start-row {
   min-height: 82px;
   justify-content: center;
-  gap: 9px;
+  gap: 16px;
 }
 
 .ar-my-book-start-hint {
@@ -5142,6 +5214,32 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   padding: 0 44px !important;
   font-size: 20px !important;
   font-weight: 900;
+}
+
+.ar-my-book-start-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ar-my-book-share-shortcut-button {
+  min-height: 58px;
+  padding: 0 32px;
+  border: 2px solid rgba(185, 113, 31, 0.75);
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #8a5a24;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.ar-my-book-share-shortcut-button:hover {
+  transform: translateY(-2px);
+  background: #fff3dc;
 }
 
 .ar-type-board.is-my-book-mode {
@@ -5215,9 +5313,9 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   id="wholeReadingManageButton"
   type="button"
   hidden
-  onclick="location.href='../teacher/book-manage.html'"
+  onclick="location.href='../teacher/summary-manage.html'"
 >
-  📖 온책읽기 관리
+  ← 관리 화면으로 돌아가기
 </button>
         </div>
       </header>
@@ -5268,7 +5366,10 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
           <div class="ar-my-book-start-row" id="myBookStartRow">
             <p class="ar-my-book-start-hint" id="myBookStartHint">세 가지 책을 모두 연습하면 내가 읽은 책으로 간추리기를 시작할 수 있어요.</p>
-            <button class="ar-my-book-start-button" type="button" id="myBookStartButton" onclick="startMyBookSelection()" disabled>내가 읽은 책 간추리기 시작</button>
+            <div class="ar-my-book-start-buttons">
+              <button class="ar-my-book-start-button" type="button" id="myBookStartButton" onclick="startMyBookSelection()" disabled>내가 읽은 책 간추리기 시작</button>
+              <button class="ar-my-book-share-shortcut-button" type="button" id="myBookShareShortcutButton" onclick="goToMySummaryShareDirect()" hidden>간추리기 공유 바로가기</button>
+            </div>
           </div>
 
           <div class="ar-my-book-back-row" id="myBookBackRow" hidden>
@@ -5591,7 +5692,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('write')">이전으로</button>
-              <button class="ar-action-button" type="button" id="summaryNextButton" onclick="saveSummary()">다음으로</button>
+              <button class="ar-action-button" type="button" id="summaryNextButton" onclick="saveSummary()" disabled>다음으로</button>
             </div>
           </section>
 
@@ -5624,6 +5725,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     let currentClassReadingBookTitle = "";
     let sharedSummaries = [];
     let isAfterReadingSaving = false;
+    let editingDemoPracticeReviewSeedId = null;
     let currentBookQuestionIndex = 0;
     let restoredAfterReadingData = null;
 
@@ -5895,12 +5997,22 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     const DEMO_AFTER_READING_STORAGE_KEY = "afterReading";
 
     function loadDemoAfterReadingData() {
-      return loadDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
+      const data = loadDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
         bookType: null,
         questions: [],
+        questionsByBookType: {},
         summary: "",
         typeProgress: { story: false, info: false, opinion: false }
       });
+      if (!data.questionsByBookType || typeof data.questionsByBookType !== "object") {
+        data.questionsByBookType = {};
+      }
+      if (Array.isArray(data.questions) && data.questions.length && data.bookType
+          && !Array.isArray(data.questionsByBookType[data.bookType])) {
+        data.questionsByBookType[data.bookType] = data.questions;
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+      }
+      return data;
     }
 
     /*
@@ -5940,7 +6052,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       const actor = getDemoSummaryLikeActor();
       return items.map(function (item) {
         const likeState = normalizeDemoSummaryLikeState(localLikes[String(item.id)]);
-        const seedLikeCount = item.demoLocal
+        const seedLikeCount = item.demoLocal || item.demoReviewSeed === true
           ? Number(item.likeCount || 0)
           : DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName] != null
           ? DEMO_SHARE_LIKE_SEED_BY_NAME[item.studentName]
@@ -5997,8 +6109,17 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
         summary: summaryText,
         summaryText: summaryText,
         sharedAt: data.sharedAt || now,
-        afterDone: true
+        afterDone: true,
+        status: data.status || "pending",
+        rejectionReason: data.rejectionReason || ""
       });
+
+      const reviewOverrides = loadDemoState("summaryReviewOverrides", {});
+      const reviewOverride = reviewOverrides["practice:" + localId];
+      if (reviewOverride) {
+        normalized.status = reviewOverride.status;
+        normalized.rejectionReason = reviewOverride.reason || "";
+      }
 
       if (!data.localId || !data.demoBrowserId || !data.sharedAt || !data.summaryText) {
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, normalized);
@@ -6021,6 +6142,8 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
         updatedAt: normalized.sharedAt,
         likeCount: 0,
         likedByMe: false
+        ,status: normalized.status
+        ,rejectionReason: normalized.rejectionReason
       };
     }
 
@@ -6031,9 +6154,45 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
          병합 단계에서도 한 번 더 확인해 빈 direct 카드가 새어나가지 않게 한다. */
       if (!localSummary || !isRealAfterReadingSummary(localSummary.summary)) return serverItems;
 
+      if (isTeacherAfterReadingMode() && localSummary.status !== "approved") return serverItems;
       return [localSummary].concat(serverItems.filter(function(item) {
         return String(item.id) !== String(localSummary.id);
       }));
+    }
+
+    function mergeDemoVisibleReviewSeedSummaries(items) {
+      if (!isDemoAccount() || !Array.isArray(items)) return items;
+      const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+      const existingIds = new Set(items.map(function(item) { return String(item.id); }));
+      const visibleSeeds = getDemoFinalSummaryReviewSeeds("practice")
+        .map(function(seed) {
+          return Object.assign({}, seed, {
+            mine: Boolean(currentLoginId) && String(seed.writerLoginId || "") === currentLoginId
+          });
+        })
+        .filter(function(seed) {
+          return seed.status === "approved" || (seed.mine && (seed.status === "pending" || seed.status === "rejected"));
+        })
+        .filter(function(seed) { return !existingIds.has(String(seed.id)); })
+        .map(function(seed) {
+          return {
+            id: seed.id,
+            studentId: seed.writerLoginId,
+            writerLoginId: seed.writerLoginId,
+            studentName: seed.studentName,
+            bookType: seed.bookType,
+            summary: seed.summary,
+            status: seed.status,
+            rejectionReason: seed.rejectionReason || "",
+            createdAt: seed.submittedAt,
+            updatedAt: seed.reviewedAt || seed.submittedAt,
+            likeCount: 0,
+            likedByMe: false,
+            mine: seed.mine,
+            demoReviewSeed: true
+          };
+        });
+      return visibleSeeds.concat(items);
     }
 
     async function loadMyAfterReadingData() {
@@ -6076,23 +6235,66 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
         updateBookQuestionPlaceholders();
       }
 
-      if (Array.isArray(data.questions)) {
-        data.questions.forEach(function(item) {
-          const number = Number(item.index);
-          const question = document.getElementById("question" + number);
-          const answer = document.getElementById("answer" + number);
-
-          if (question) question.value = item.question || "";
-          if (answer) answer.value = item.answer || "";
-        });
-
-        restoreQuestionCardProgress(data.questions);
-      }
+      restoreQuestionsForBookType(selectedBookType);
 
       const summaryText = document.getElementById("summaryText");
-      if (summaryText && data.summary) {
-        summaryText.value = data.summary;
-      }
+      if (summaryText) summaryText.value = data.summary || "";
+    }
+
+    function getSavedQuestionsForBookType(bookType) {
+      const data = isDemoAccount() ? loadDemoAfterReadingData() : restoredAfterReadingData;
+      if (!data || !bookType) return [];
+      const grouped = data.questionsByBookType;
+      if (grouped && Array.isArray(grouped[bookType])) return grouped[bookType];
+      return data.bookType === bookType && Array.isArray(data.questions) ? data.questions : [];
+    }
+
+    function restoreQuestionsForBookType(bookType) {
+      const questions = getSavedQuestionsForBookType(bookType);
+      [1, 2, 3].forEach(function(number) {
+        const item = questions.find(function(saved) { return Number(saved.index) === number; });
+        const question = document.getElementById("question" + number);
+        const answer = document.getElementById("answer" + number);
+        if (question) question.value = item ? item.question || "" : "";
+        if (answer) answer.value = item ? item.answer || "" : "";
+      });
+      restoreQuestionCardProgress(questions);
+      currentBookQuestionIndex = 0;
+      showBookQuestionCard(0);
+    }
+
+    /*
+     * 3단계(간추리기 완성) 왼쪽 "질문에서 간추리기로 이어져요" 패널을
+     * 언제나 저장된 최신 데이터(questionsByBookType) 기준으로 다시
+     * 그린다 - 화면에 남아 있는 DOM 값(예전에 makeSummaryGuide가 한 번
+     * 그려둔 스냅샷)을 신뢰하지 않는다. showStudyPanel("summary")로
+     * 들어오는 모든 경로(다음으로/이전으로/수정하러 가기/탭 직접 진입)가
+     * 이 함수 하나를 공용으로 거치므로, 새 진입 경로가 추가돼도 별도
+     * 복원 코드를 다시 작성할 필요가 없다.
+     */
+    function restoreConnectBoxFromSaved(bookType) {
+      const connectBox = document.getElementById("connectBox");
+      if (!connectBox) return;
+
+      const type = bookType || selectedBookType;
+      const questions = getSavedQuestionsForBookType(type);
+
+      connectBox.innerHTML = "";
+
+      [1, 2, 3].forEach(function(number) {
+        const item = questions.find(function(saved) { return Number(saved.index) === number; });
+        const question = item && item.question ? item.question : "";
+        const answer = item && item.answer ? item.answer : "";
+
+        const div = document.createElement("div");
+        div.className = "ar-connect-item";
+        div.innerHTML =
+          "<strong>질문 " + number + "</strong><br>" +
+          "Q. " + escapeHtml(question) + "<br>" +
+          "A. " + escapeHtml(answer);
+
+        connectBox.appendChild(div);
+      });
     }
 
     function restoreQuestionCardProgress(questions) {
@@ -6222,16 +6424,18 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
 
+      /*
+       * studyTitle(화면 상단 제목)은 renderMethodPanel()만 갱신하는데,
+       * 이 함수는 예전부터 여기서 호출되지 않았다 - 그래서 직전에 3종류
+       * "연습" 카드를 다시 눌러봤다면(연습은 renderMethodPanel을 호출)
+       * 제목이 연습했던 종류로 남아 있는 채, 질문 내용만 지금 고른 my-book
+       * 종류로 바뀌는 불일치가 생겼다. 여기서 다시 그려서 제목도 항상
+       * 지금 선택된 종류와 맞게 한다.
+       */
+      renderMethodPanel();
+
       updateBookQuestionPlaceholders();
-
-      const hasSavedQuestion =
-        document.getElementById("question1")?.value.trim() ||
-        document.getElementById("question2")?.value.trim() ||
-        document.getElementById("question3")?.value.trim();
-
-      if (!hasSavedQuestion) {
-        prepareBookQuestionCards();
-      }
+      restoreQuestionsForBookType(type);
 
       showStudyPanel("write");
       syncBookQuestionCompletionState();
@@ -6252,9 +6456,13 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     function startTypePractice(type) {
       if (!isAfterReadingTypeOpen(type)) return;
 
+      console.log("[FLOW] startTypePractice", type);
+
       selectedBookType = type;
       selectedPracticeQuestionIndexes = [];
       isPracticingBookType = true;
+      resetExtraPracticeWriteForNewType();
+      restoreTypePracticeAnswersForCurrentType();
 
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
@@ -6262,6 +6470,38 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
       renderMethodPanel();
       showStudyPanel("method");
       updateBookQuestionPlaceholders();
+    }
+
+    /*
+     * 책 종류를 바꿔 연습을 새로 시작할 때, 이전 종류에서 쓰던 질문/답
+     * 텍스트와 검사(AI 피드백/통과 여부/다음 버튼 상태)가 새 종류 화면에
+     * 그대로 남아 있던 버그 수정 - practiceQuestion1/2, practiceAnswer1/2는
+     * 종류별로 저장되지 않는 화면 입력값이므로, 종류 전환 시점에 직접
+     * 비워준다. extraPracticeAiRequestId를 함께 올려 두면 아직 응답이
+     * 안 온 이전 종류의 AI 요청이 나중에 도착해도(requestId 불일치)
+     * 새 종류 화면에 반영되지 않는다.
+     */
+    function resetExtraPracticeWriteForNewType() {
+      console.log("[FLOW] resetExtraPracticeWriteForNewType", selectedBookType);
+      ["practiceQuestion1", "practiceQuestion2", "practiceAnswer1", "practiceAnswer2"].forEach(function(id) {
+        const element = document.getElementById(id);
+        if (element) element.value = "";
+      });
+
+      extraPracticeAiRequestId++;
+      isExtraPracticeAiRequestInFlight = false;
+      extraPracticeCheckPassed = false;
+
+      const checkButton = document.getElementById("extraPracticeCheckButton");
+      if (checkButton) checkButton.disabled = false;
+
+      setAfterAiFeedback(
+        "extraPracticeAiFeedback",
+        "",
+        "질문과 답을 쓰면 루미가 간추리기에 도움이 되는 질문인지 살펴봐 줄게."
+      );
+
+      setExtraPracticeNextButtonEnabled(false);
     }
 
     /*
@@ -6300,15 +6540,74 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
      * 재사용). 완료 표시(✓ 연습 완료)는 참고용으로 남기되, myBook
      * 모드에서는 카드 잠금 조건으로 쓰지 않는다.
      */
+    /*
+     * "내가 읽은 책"으로 실제 저장된 bookType만 돌려준다. 전역
+     * selectedBookType은 3종류 연습(startTypePractice)에서도 그대로
+     * 재사용되는 공용 변수라서, 학생이 my-book 유형을 이미 고른 뒤에도
+     * 연습 카드를 다시 눌러보면 selectedBookType이 마지막으로 연습한
+     * 종류로 덮어써진다 - 그 상태에서 재진입 판정에 selectedBookType을
+     * 쓰면 실제로 고른 유형이 아니라 마지막으로 "연습"한 유형으로 잘못
+     * 이동하는 버그가 생긴다(연습 완료 상태 afterReadingTypeProgress와도
+     * 별개). 그래서 여기서는 practice 흐름이 절대 건드리지 않는
+     * 저장소(restoredAfterReadingData.bookType / 심사계정
+     * mq_demo_afterReading.bookType)만 근거로 삼는다.
+     */
+    function getSavedMyBookType() {
+      const data = isDemoAccount() ? loadDemoAfterReadingData() : restoredAfterReadingData;
+      const saved = data && data.bookType;
+      return saved && bookTypeData[saved] ? saved : "";
+    }
+
     function startMyBookSelection() {
       if (!canStartMyBookSummary()) return;
       afterReadingMenuMode = "myBook";
+
+      const resolvedBookType = getSavedMyBookType();
+
+      /*
+       * 이미 책 유형을 골라 질문을 쓰기 시작한 뒤라면(저장된 bookType이
+       * 페이지 진입 시 이미 복원돼 있음) 매번 유형 선택 화면을 다시
+       * 보여주지 않고 곧바로 그 유형의 질문 작성 화면으로 이동한다.
+       * afterReadingMenuMode는 그대로 "myBook"으로 남겨 두므로, 학생이
+       * 질문 화면에서 "이전으로"(goTypeMenu)를 누르면 여전히 이 유형
+       * 선택 화면으로 돌아와 다른 유형을 고를 수 있다.
+       */
+      if (resolvedBookType) {
+        selectBookType(resolvedBookType);
+        return;
+      }
+
       renderTypeMenu();
     }
 
     function returnToPracticeMenu() {
       afterReadingMenuMode = "practice";
       renderTypeMenu();
+    }
+
+    /*
+     * 학생이 이미 간추리기 공유 글을 등록했는지(PENDING/APPROVED/REJECTED
+     * 상관없이) 판단한다 - 기존 summaryId/getDemoLocalSharedSummary()를
+     * 재사용하고 새 API는 만들지 않는다.
+     */
+    function hasOwnSummaryPost() {
+      if (isDemoAccount()) return !!getDemoLocalSharedSummary();
+      return !!(restoredAfterReadingData && restoredAfterReadingData.summaryId);
+    }
+
+    /*
+     * "내가 올린 간추리기 보러가기" - 자동 이동이 아니라 학생이 직접 눌렀을
+     * 때만 1~3단계를 건너뛰고 곧바로 4단계(간추리기 공유)로 이동한다.
+     * openAfterReadTargetFromUrl()의 교사 진입 로직과 같은 화면 전환을 쓴다.
+     */
+    function goToMySummaryShareDirect() {
+      if (!hasOwnSummaryPost()) return;
+
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+
+      showStudyPanel("share");
+      renderShareList();
     }
 
     function renderTypeMenu() {
@@ -6342,6 +6641,11 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
       if (startButton) {
         startButton.disabled = !ready;
+      }
+
+      const shortcutButton = document.getElementById("myBookShareShortcutButton");
+      if (shortcutButton) {
+        shortcutButton.hidden = inMyBookMode || !hasOwnSummaryPost();
       }
 
       AFTER_READING_TYPE_ORDER.forEach(function (type) {
@@ -6464,6 +6768,237 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
           })
         }
       );
+    }
+
+    /*
+      =========================================================
+      "루미 피드백 통과 = 자동저장" 정책 (내 책 질문/간추리기/유형별 연습)
+      ---------------------------------------------------------
+      아래 세 함수는 전부 통과(good) 시점에만 호출된다 - 실패한 시도로
+      기존 통과본을 덮어쓰지 않는다. 서버는 같은
+      studentId+classReadingBookId(+index/bookType) 조합이면 새 row를
+      쌓지 않고 UPDATE하므로, 다시 통과하면 자동으로 최신 통과본이 된다.
+      저장에 실패해도 이미 보여준 "통과" 피드백 자체를 취소하지는 않되,
+      성공한 것처럼 숨기지 않고 콘솔에 에러를 남긴다.
+      restoredAfterReadingData는 각 저장이 성공할 때마다 서버가 돌려준
+      최신 전체 데이터로 갱신해, 같은 세션에서 다른 유형으로 갔다가 다시
+      돌아와도 방금 저장한 값을 곧바로 복원할 수 있게 한다.
+    */
+    async function saveAfterReadingQuestionDraft(index, question, answer) {
+      const bookType = selectedBookType;
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        const grouped = data.questionsByBookType && typeof data.questionsByBookType === "object"
+          ? data.questionsByBookType : {};
+        const questions = Array.isArray(grouped[bookType]) ? grouped[bookType].slice() : [];
+        const filtered = questions.filter(function(item) {
+          return Number(item.index) !== Number(index);
+        });
+        filtered.push({ index: index, question: question, answer: answer });
+        grouped[bookType] = filtered;
+        data.questionsByBookType = grouped;
+        data.questions = filtered;
+        data.bookType = bookType;
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        return;
+      }
+
+      const context = getCurrentUserContext();
+
+      if (!context.id || context.role !== "student" || !context.token || !currentClassReadingBookId) {
+        return;
+      }
+
+      try {
+        const saved = await fetchJson(
+          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/question",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + context.token
+            },
+            body: JSON.stringify({
+              classReadingBookId: currentClassReadingBookId,
+              bookType: bookType,
+              index: index,
+              question: question,
+              answer: answer
+            })
+          }
+        );
+        restoredAfterReadingData = saved;
+      } catch (error) {
+        console.error("내 책 질문 자동저장에 실패했습니다.", error);
+      }
+    }
+
+    async function saveAfterReadingSummaryDraft(summaryText) {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        data.summary = summaryText;
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        return;
+      }
+
+      const context = getCurrentUserContext();
+
+      if (
+        !context.id ||
+        context.role !== "student" ||
+        !context.token ||
+        !currentClassReadingBookId ||
+        !selectedBookType
+      ) {
+        return;
+      }
+
+      try {
+        const saved = await fetchJson(
+          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/summary",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + context.token
+            },
+            body: JSON.stringify({
+              classReadingBookId: currentClassReadingBookId,
+              bookType: selectedBookType,
+              summary: summaryText
+            })
+          }
+        );
+        restoredAfterReadingData = saved;
+      } catch (error) {
+        console.error("간추리기 자동저장에 실패했습니다.", error);
+      }
+    }
+
+    async function saveTypePracticeAnswerDraft(question1, answer1, question2, answer2) {
+      if (isDemoAccount()) {
+        const data = loadDemoAfterReadingData();
+        const answers =
+          data.typePracticeAnswers && typeof data.typePracticeAnswers === "object"
+            ? data.typePracticeAnswers
+            : {};
+        answers[selectedBookType] = {
+          bookType: selectedBookType,
+          question1: question1,
+          answer1: answer1,
+          question2: question2,
+          answer2: answer2
+        };
+        data.typePracticeAnswers = answers;
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        console.log("[AFTER PRACTICE SAVE]", {
+          type: selectedBookType, source: "demo",
+          question1: question1, answer1: answer1, question2: question2, answer2: answer2
+        });
+        return;
+      }
+
+      const context = getCurrentUserContext();
+
+      if (!context.id || context.role !== "student" || !context.token || !currentClassReadingBookId) {
+        console.warn("[AFTER PRACTICE SAVE] 저장 조건 미충족 - 호출이 건너뛰어졌습니다.", {
+          type: selectedBookType,
+          hasId: !!context.id,
+          role: context.role,
+          hasToken: !!context.token,
+          currentClassReadingBookId: currentClassReadingBookId
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/type-practice",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + context.token
+            },
+            body: JSON.stringify({
+              classReadingBookId: currentClassReadingBookId,
+              bookType: selectedBookType,
+              question1: question1,
+              answer1: answer1,
+              question2: question2,
+              answer2: answer2
+            })
+          }
+        );
+
+        const responseStatus = response.status;
+
+        if (!response.ok) {
+          const bodyText = await response.text().catch(function () { return ""; });
+          console.error("[AFTER PRACTICE SAVE] 저장 요청 실패", {
+            type: selectedBookType, source: "general", responseStatus: responseStatus, body: bodyText
+          });
+          return;
+        }
+
+        const saved = await response.json();
+        restoredAfterReadingData = saved;
+
+        console.log("[AFTER PRACTICE SAVE]", {
+          type: selectedBookType, source: "general", responseStatus: responseStatus,
+          question1: question1, answer1: answer1, question2: question2, answer2: answer2,
+          serverTypePracticeAnswers: saved.typePracticeAnswers
+        });
+      } catch (error) {
+        console.error("책 유형별 연습 질문 자동저장에 실패했습니다.", error);
+      }
+    }
+
+    /*
+      startTypePractice()에서 입력값을 비운 직후 호출한다 - 이 유형에
+      저장된 최신 통과본이 있으면 그 유형 화면에서만 다시 채운다(다른
+      유형 값이 섞여 들어오지 않는다). AI 피드백 문구는 기본 안내로
+      유지하고(과거 판정 문구를 재현하지 않음), 통과한 값이었으므로
+      "다음으로" 버튼만 다시 활성화한다.
+    */
+    function restoreTypePracticeAnswersForCurrentType() {
+      const saved = isDemoAccount()
+        ? (loadDemoAfterReadingData().typePracticeAnswers || {})[selectedBookType]
+        : restoredAfterReadingData && restoredAfterReadingData.typePracticeAnswers
+        ? restoredAfterReadingData.typePracticeAnswers[selectedBookType]
+        : null;
+
+      console.log("[AFTER PRACTICE RESTORE]", {
+        type: selectedBookType,
+        source: isDemoAccount() ? "demo" : "general",
+        hasRestoredAfterReadingData: !!restoredAfterReadingData,
+        savedData: saved || null
+      });
+
+      if (!saved) return;
+
+      const practiceQuestion1 = document.getElementById("practiceQuestion1");
+      const practiceAnswer1 = document.getElementById("practiceAnswer1");
+      const practiceQuestion2 = document.getElementById("practiceQuestion2");
+      const practiceAnswer2 = document.getElementById("practiceAnswer2");
+
+      if (practiceQuestion1) practiceQuestion1.value = saved.question1 || "";
+      if (practiceAnswer1) practiceAnswer1.value = saved.answer1 || "";
+      if (practiceQuestion2) practiceQuestion2.value = saved.question2 || "";
+      if (practiceAnswer2) practiceAnswer2.value = saved.answer2 || "";
+
+      console.log("[AFTER PRACTICE RESTORE APPLIED]", {
+        type: selectedBookType,
+        q1: practiceQuestion1 ? practiceQuestion1.value : "(엘리먼트 없음)",
+        a1: practiceAnswer1 ? practiceAnswer1.value : "(엘리먼트 없음)",
+        q2: practiceQuestion2 ? practiceQuestion2.value : "(엘리먼트 없음)",
+        a2: practiceAnswer2 ? practiceAnswer2.value : "(엘리먼트 없음)"
+      });
+
+      if (saved.question1 && saved.answer1 && saved.question2 && saved.answer2) {
+        extraPracticeCheckPassed = true;
+        setExtraPracticeNextButtonEnabled(true);
+      }
     }
 
     function goTypeMenu() {
@@ -6862,12 +7397,15 @@ if (selectedBookType === "opinion") {
     return;
   }
 
+  console.log("[FLOW] goPracticeWritePanel", selectedBookType);
   showStudyPanel("practiceWrite");
   renderExtraPracticeWrite();
   setExtraPracticeNextButtonEnabled(extraPracticeCheckPassed);
 }
 
     function renderExtraPracticeWrite() {
+      console.log("[FLOW] renderExtraPracticeWrite", selectedBookType,
+        "(placeholder만 설정, .value는 건드리지 않음)");
       const data = bookTypeData[selectedBookType];
 
       if (!data) {
@@ -6904,7 +7442,23 @@ if (selectedBookType === "opinion") {
 
     let extraPracticeAiRequestId = 0;
     let isExtraPracticeAiRequestInFlight = false;
+    let summaryAiRequestId = 0;
     let extraPracticeCheckPassed = false;
+    /*
+      일반계정에서 간추리기 본문이 루미 AI에게 "good"을 받은 최신
+      상태인지를 나타낸다. 심사계정은 빠른 체험을 위해 이 값과 본문
+      작성 여부를 모두 완료 gate로 사용하지 않는다.
+    */
+    let summaryCheckPassed = false;
+
+    function syncSummaryNextButton() {
+      const summaryNextButton = document.getElementById("summaryNextButton");
+      if (!summaryNextButton) return;
+
+      summaryNextButton.disabled = isAfterReadingSaving || (
+        isDemoAccount() ? false : !summaryCheckPassed
+      );
+    }
 
     /*
       로컬 형식 필터. 의미 판정(간추리기 적합성, 책 유형과 맞는지, 예시
@@ -7087,6 +7641,11 @@ if (selectedBookType === "opinion") {
             extraPracticeCheckPassed = isGood;
 
             setExtraPracticeNextButtonEnabled(isGood);
+
+            /* 루미 피드백 통과 = 자동저장. 실패한 시도는 절대 저장하지 않는다. */
+            if (isGood) {
+              saveTypePracticeAnswerDraft(question1, answer1, question2, answer2);
+            }
           });
         })
         .catch(function(error) {
@@ -7118,7 +7677,7 @@ if (selectedBookType === "opinion") {
         });
     }
 
-    function goWritePanelAfterPractice() {
+    async function goWritePanelAfterPractice() {
   if (!isDemoAccount() && !extraPracticeCheckPassed) {
     alert("루미에게 검사를 받고 good을 받아야 다음으로 갈 수 있어요.");
     return;
@@ -7131,6 +7690,24 @@ if (selectedBookType === "opinion") {
    * === false) 그대로 write 패널로 진행한다.
    */
   if (isPracticingBookType) {
+    /*
+     * 심사계정은 위쪽 가드(!isDemoAccount() && !extraPracticeCheckPassed)를
+     * 통과하지 않아도(=루미 AI 통과 없이도) "다음으로"를 눌러 완료 표시까지
+     * 갈 수 있다(심사계정 전체 유형 제한 없음 정책). 그런데 자동저장은
+     * 지금까지 AI 통과 콜백 안에서만 호출되고 있어서, 심사계정이 검사를
+     * 건너뛰고 완료하면 practiceQuestion1/2·practiceAnswer1/2 값이 한 번도
+     * 저장되지 않은 채 완료 표시(afterTypeProgress)만 true가 되었다 -
+     * 재진입 시 "완료 ✓인데 입력칸은 빈칸"으로 보이던 버그의 원인이다.
+     * 완료 시점에 현재 입력값을 최종적으로 한 번 더 저장해 이 간극을 막는다.
+     */
+    if (isDemoAccount()) {
+      const question1 = document.getElementById("practiceQuestion1")?.value.trim() || "";
+      const answer1 = document.getElementById("practiceAnswer1")?.value.trim() || "";
+      const question2 = document.getElementById("practiceQuestion2")?.value.trim() || "";
+      const answer2 = document.getElementById("practiceAnswer2")?.value.trim() || "";
+      await saveTypePracticeAnswerDraft(question1, answer1, question2, answer2);
+    }
+
     completeTypePractice(selectedBookType);
     return;
   }
@@ -7235,24 +7812,30 @@ if (selectedBookType === "opinion") {
     }
 
     function resetSummaryFeedback() {
+      /*
+        본문을 고치는 순간 이전 통과 상태는 무효다. requestId도 함께
+        올려서, 지금 편집 전에 보낸 검사 요청이 뒤늦게 도착해도(늦게 온
+        "good") 이미 바뀐 지금 본문에 통과 상태를 잘못 씌우지 못하게 한다.
+      */
+      summaryCheckPassed = false;
+      summaryAiRequestId++;
+
       setAfterAiFeedback(
         "summaryAiFeedback",
         "",
         "간추리기를 쓴 뒤 검사하기를 눌러 봐."
       );
 
-      const summaryNextButton = document.getElementById("summaryNextButton");
-      if (summaryNextButton) summaryNextButton.disabled = false;
+      syncSummaryNextButton();
     }
 
     function checkSummaryFeedback() {
       const summaryTextElement = document.getElementById("summaryText");
-      const summaryNextButton = document.getElementById("summaryNextButton");
-
       if (!summaryTextElement) return;
 
       const summaryText = summaryTextElement.value.trim();
-      if (summaryNextButton) summaryNextButton.disabled = false;
+      summaryCheckPassed = false;
+      syncSummaryNextButton();
 
       if (!summaryText) {
         setAfterAiFeedback(
@@ -7267,7 +7850,7 @@ if (selectedBookType === "opinion") {
         setAfterAiFeedback(
           "summaryAiFeedback",
           "need",
-          "간추리기가 아직 조금 짧아. 중요한 내용을 한두 문장 더 넣어 보자. 그래도 다음으로 갈 수 있어."
+          "간추리기가 아직 조금 짧아. 중요한 내용을 한두 문장 더 넣어 보자."
         );
         return;
       }
@@ -7276,12 +7859,20 @@ if (selectedBookType === "opinion") {
         setAfterAiFeedback(
           "summaryAiFeedback",
           "need",
-          "아직 빈칸이 남아 있어. 빈칸을 내 말로 채워 보자. 그래도 다음으로 갈 수 있어."
+          "아직 빈칸이 남아 있어. 빈칸을 내 말로 채워 보자."
         );
         return;
       }
 
       setAfterAiFeedback("summaryAiFeedback", "", "루미가 답변을 읽고 있어요...");
+
+      /*
+        학생이 검사하기를 다시 누르며 간추리기를 고치는 사이 이전 요청의
+        응답이 늦게 도착해도(오래된 결과) 화면/자동저장/통과 상태에
+        반영되지 않도록 가장 최근 요청만 유효하게 만든다 -
+        extraPractice/bookQuestion과 동일한 requestId 패턴.
+      */
+      const requestId = ++summaryAiRequestId;
 
       /*
         연습읽기(after-read.html) 학생만 이해도 기록 대상이다. 교사 미리보기
@@ -7318,16 +7909,39 @@ if (selectedBookType === "opinion") {
 
       finalSummaryAiPromise
         .then(function(result) {
+          if (requestId !== summaryAiRequestId) {
+            return;
+          }
+
           setAfterAiFeedback("summaryAiFeedback", result.status, result.message);
-          if (summaryNextButton) summaryNextButton.disabled = false;
+
+          /*
+            requestId가 아직 최신이어도, 응답을 기다리는 사이 학생이
+            본문을 다시 고쳤을 수 있다(resetSummaryFeedback이 매
+            keystroke마다 requestId를 올리므로 보통은 여기서 이미 걸러지지만,
+            혹시 모를 경우를 대비해 지금 textarea 값과 검사를 보낸 시점의
+            값이 같은지 한 번 더 확인한다) - 검사받은 그 본문 그대로일
+            때만 통과로 인정한다.
+          */
+          const stillSameText = summaryTextElement.value.trim() === summaryText;
+
+          /* 루미 피드백 통과 = 자동저장. 실패한 시도는 절대 저장하지 않는다. */
+          if (result.status === "good" && stillSameText) {
+            summaryCheckPassed = true;
+            syncSummaryNextButton();
+            saveAfterReadingSummaryDraft(summaryText);
+          }
         })
         .catch(function() {
+          if (requestId !== summaryAiRequestId) {
+            return;
+          }
+
           setAfterAiFeedback(
             "summaryAiFeedback",
             "need",
-            "지금은 피드백을 확인하기 어려워요. 그래도 다음으로 갈 수 있어."
+            "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해 줘."
           );
-          if (summaryNextButton) summaryNextButton.disabled = false;
         });
     }
 
@@ -7384,6 +7998,17 @@ if (selectedBookType === "opinion") {
 
       const summaryElement = document.getElementById("summaryText");
       const summaryText = summaryElement ? summaryElement.value.trim() : "";
+
+      if (!summaryText && !isDemoAccount()) {
+        alert("간추리기 내용을 적어 주세요.");
+        syncSummaryNextButton();
+        return;
+      }
+
+      if (!isDemoAccount() && !summaryCheckPassed) {
+        alert("루미의 피드백을 통과하면 다음으로 갈 수 있어. 검사하기를 먼저 눌러 줘.");
+        return;
+      }
 
       /*
         심사계정은 완성 여부와 관계없이(빈 값이든 실제로 다 작성했든)
@@ -7472,7 +8097,7 @@ if (selectedBookType === "opinion") {
         alert("간추리기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
       } finally {
         isAfterReadingSaving = false;
-        if (summaryNextButton) summaryNextButton.disabled = false;
+        syncSummaryNextButton();
       }
     }
 
@@ -7503,6 +8128,23 @@ if (selectedBookType === "opinion") {
         const previousData = loadDemoAfterReadingData();
         const now = new Date().toISOString();
 
+        /* 교사용 공용 seed를 김초롱(ss01)이 거절 뒤 고치는 경우에는 새
+           local 카드로 복제하지 않고 같은 summaryId의 revision override를
+           PENDING으로 갱신한다. */
+        if (editingDemoPracticeReviewSeedId) {
+          saveDemoSummaryRevisionOverride(
+            "practice",
+            editingDemoPracticeReviewSeedId,
+            summaryText,
+            selectedBookType,
+            getAfterReadingQuestionPayload()
+          );
+          editingDemoPracticeReviewSeedId = null;
+          await renderShareList();
+          showStudyPanel("share");
+          return;
+        }
+
         /*
          * 이번 저장값이 실제 작성 내용이 아니면(빈 값/공백/미수정
          * 템플릿) 이미 저장돼 있던 정상 간추리기를 빈 값으로 덮어쓰지
@@ -7513,12 +8155,30 @@ if (selectedBookType === "opinion") {
           ? summaryText
           : (previousData.summary || "");
 
+        const resolvedLocalId = previousData.localId || [
+          "practice-summary",
+          getDemoBrowserId(),
+          currentClassReadingBookId || "book"
+        ].join("-");
+
+        /*
+         * getDemoLocalSharedSummary()가 화면에 보여주는 "실제 표시
+         * 상태"는 override가 있으면 override.status를 우선한다 - 그래서
+         * "이전 상태가 거절이었는가"도 raw data.status가 아니라 이
+         * 기준으로 판단해야 한다(안 그러면 override가 남아 있는데
+         * data.status만 pending으로 바뀐 경우를 "이전엔 안 거절됐었다"고
+         * 잘못 판단하게 된다).
+         */
+        const reviewOverrides = loadDemoState("summaryReviewOverrides", {});
+        const overrideKey = "practice:" + resolvedLocalId;
+        const previousOverride = reviewOverrides[overrideKey];
+        const previousDisplayedStatus = previousOverride
+          ? previousOverride.status
+          : (previousData.status || "pending");
+        const isRealTextChange = summaryToStore !== (previousData.summary || "");
+
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
-          localId: previousData.localId || [
-            "practice-summary",
-            getDemoBrowserId(),
-            currentClassReadingBookId || "book"
-          ].join("-"),
+          localId: resolvedLocalId,
           demoBrowserId: getDemoBrowserId(),
           studentId: context.id,
           studentName: sessionStorage.getItem("name") || "김초롱",
@@ -7526,9 +8186,14 @@ if (selectedBookType === "opinion") {
           bookTitle: currentClassReadingBookTitle || "우리 반 온책읽기 책",
           bookType: selectedBookType,
           questions: getAfterReadingQuestionPayload(),
+          questionsByBookType: Object.assign({}, previousData.questionsByBookType || {}, {
+            [selectedBookType]: getAfterReadingQuestionPayload()
+          }),
           summary: summaryToStore,
           summaryText: summaryToStore,
           sharedAt: previousData.sharedAt || now,
+          status: "pending",
+          rejectionReason: "",
           afterDone: true,
           /*
            * 3종류 연습 완료 상태는 이 저장(간추리기 완료)과 무관한 값이라
@@ -7536,37 +8201,73 @@ if (selectedBookType === "opinion") {
            * 통째로 만들면서 typeProgress를 빠뜨리면 방금 완료한 연습
            * 기록이 사라진다.
            */
-          typeProgress: previousData.typeProgress || { story: false, info: false, opinion: false }
+          typeProgress: previousData.typeProgress || { story: false, info: false, opinion: false },
+          /*
+           * 유형별 연습 질문/답 최신 통과본(story/info/opinion)도 같은
+           * 이유로 반드시 옮겨야 한다 - 옮기지 않으면 간추리기까지 완료한
+           * 순간 이 객체가 통째로 새로 만들어지면서 그동안 저장해 둔
+           * 유형별 통과본이 전부 사라진다(유형 재진입 시 빈칸으로 보이던
+           * 버그의 또 다른 원인).
+           */
+          typePracticeAnswers: previousData.typePracticeAnswers || {}
         });
 
-        await fetchJson(
-          AFTER_READING_API_BASE_URL +
-            "/api/students/" +
-            context.id +
-            "/practice-progress",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + context.token
-            },
-            body: JSON.stringify({ afterDone: true })
-          }
-        );
+        /*
+         * 거절된 글의 본문을 실제로 고쳐 재제출한 경우에만: 1) 거절
+         * override를 지워서 방금 pending으로 저장한 값이 화면에 그대로
+         * 반영되게 하고(override가 남아 있으면 raw status가 pending으로
+         * 바뀌어도 getDemoLocalSharedSummary()가 계속 "거절됨"으로
+         * 보여준다), 2) 수정 전 글에 달렸던 좋아요를 전부 지운다(수정본은
+         * 좋아요 0부터 다시 시작해야 한다). 상태만 바뀌는 경우(교사가
+         * 승인/거절/대기로만 돌리고 학생이 본문을 고치지 않은 경우)에는
+         * 이 분기를 타지 않으므로 기존 좋아요가 그대로 보존된다.
+         */
+        if (previousDisplayedStatus === "rejected" && isRealTextChange) {
+          delete reviewOverrides[overrideKey];
+          saveDemoState("summaryReviewOverrides", reviewOverrides);
+
+          const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+          delete localLikes[String(resolvedLocalId)];
+          saveDemoState(DEMO_SHARE_LIKES_KEY, localLikes);
+        }
+
+        /*
+         * 심사계정 완료 상태는 바로 위 mq_demo_afterReading.afterDone이
+         * 유일한 원본이다. 공용 ss01의 practice_progress에 afterDone을
+         * 쓰면 Browser A의 체험이 Browser B의 해금/보상 판정에 섞이므로
+         * 서버 진행도 API는 호출하지 않는다. 일반계정은
+         * saveMyAfterReadingData의 단일 트랜잭션에서 afterDone과 보상을
+         * 함께 저장한다.
+         */
 
         /*
          * 일반계정의 연습읽기 최종 완료 보상(PracticeReadingRewardService,
          * REWARD_AMOUNT=8 - 마법력/체력/지혜/용기 전부 +8)과 같은 값을
-         * 심사계정에도 그대로 적용한다. instanceId는 백엔드와 같은 기준
-         * (classReadingBookId)을 쓰고, 읽기 전/읽기 중 완료 여부는 전혀
-         * 확인하지 않는다 - practice.html이 심사계정에는 이미 3단계를
+         * 심사계정에도 그대로 적용한다. instanceId는 백엔드와 같은 학생별
+         * 1회 고정값(complete)을 쓰고, 예전 classReadingBookId 기반 로그도
+         * 아래에서 이미 지급된 것으로 인정한다. 읽기 전/읽기 중 완료 여부는
+         * 전혀 확인하지 않는다 - practice.html이 심사계정에는 이미 3단계를
          * 전부 잠금 해제해 두므로, 읽기 전/중을 건너뛰고 읽기 후만 체험해도
          * 이 보상은 정상 지급되어야 한다. 질문/간추리기가 비어 있어도
          * (공유 카드 생성 여부와는 완전히 별개로) 보상은 지급한다.
          */
-        const rewardInstanceId = currentClassReadingBookId || "unknown";
+        const rewardInstanceId = "complete";
         let demoResult = null;
-        if (typeof grantDemoStatRewardOnce === "function") {
+        const demoRewardLog = loadDemoState("statRewardLog", []);
+        const demoStudentRewardPrefix = String(context.id) + "|";
+        const demoRewardAlreadyGranted = Array.isArray(demoRewardLog)
+          && demoRewardLog.some(function (key) {
+            return String(key).startsWith(demoStudentRewardPrefix)
+              && String(key).endsWith("|practice-after");
+          });
+
+        if (demoRewardAlreadyGranted) {
+          demoResult = {
+            rewardGranted: false,
+            rewardAlreadyGranted: true,
+            stats: typeof getDemoStudentStats === "function" ? getDemoStudentStats() : null
+          };
+        } else if (typeof grantDemoStatRewardOnce === "function") {
           demoResult = grantDemoStatRewardOnce("practice-after", rewardInstanceId, { magic: 8, stamina: 8, wisdom: 8, courage: 8 });
         } else {
           console.error("grantDemoStatRewardOnce를 찾을 수 없어 연습읽기 읽기 후 보상을 지급하지 못했습니다.");
@@ -7602,7 +8303,7 @@ if (selectedBookType === "opinion") {
         alert("진행 상태를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
       } finally {
         isAfterReadingSaving = false;
-        if (summaryNextButton) summaryNextButton.disabled = false;
+        syncSummaryNextButton();
       }
     }
 
@@ -7687,9 +8388,13 @@ if (selectedBookType === "opinion") {
          * 않는다.
          */
         const allList = decorateDemoSharedSummaries(
-          mergeDemoLocalSharedSummary(await refreshSharedSummaries())
+          mergeDemoVisibleReviewSeedSummaries(
+            mergeDemoLocalSharedSummary(await refreshSharedSummaries())
+          )
         ).filter(function (item) {
-          return isRealAfterReadingSummary(item.summary);
+          if (!isRealAfterReadingSummary(item.summary)) return false;
+          const status = String(item.status || "approved").toLowerCase();
+          return status === "approved" || (item.mine === true || item.demoLocal === true) && !isTeacherAfterReadingMode();
         });
 
         if (!allList.length) {
@@ -7701,30 +8406,49 @@ if (selectedBookType === "opinion") {
         shareList.innerHTML = allList.map(function(item) {
           const typeData = bookTypeData[item.bookType] || {};
           const icon = typeData.icon || "📘";
-          const typeLabel = typeData.label || item.bookType || "내가 읽은 책";
+          const typeLabel = typeData.label
+            || (item.bookType === "other" ? "그밖의 책" : item.bookType)
+            || "내가 읽은 책";
           const dateText = formatAfterReadingDate(item.updatedAt || item.createdAt);
-          const studentNumber = item.studentNumber ? item.studentNumber + "번 · " : "";
           const authorName = item.studentName || "친구";
-          const summaryTitle = item.demoLocal && !isTeacherAfterReadingMode()
+          const isMine = item.mine === true || item.demoLocal === true;
+          const summaryTitle = isMine && !isTeacherAfterReadingMode()
             ? "나의 간추리기"
             : authorName + "의 간추리기";
           const likeCount = Number(item.likeCount || 0);
           const isLiked = item.likedByMe === true;
-          const footerContent =
+          const status = String(item.status || "approved").toLowerCase();
+          const statusLabel = status === "pending" ? "확인 중이에요" : status === "rejected" ? "다시 써볼까요?" : "승인됐어요";
+          const statusBadgeClass = "ar-status-badge ar-status-" + status;
+          /*
+           * 상태 배지(확인 중이에요/승인됐어요/다시 써볼까요?)는 작성자
+           * 본인에게만 보인다 - 친구가 보는 카드에는 승인된 글 내용만
+           * 보이고 내부 관리 상태(교사가 승인했는지)는 노출하지 않는다.
+           * PENDING/REJECTED는 애초에 목록 필터에서 본인 것만 남으니
+           * 여기서는 APPROVED 카드가 다른 학생 화면에 노출될 때를 막는
+           * 역할이 크다.
+           */
+          const statusBadgeHtml = isMine
+            ? '<span class="' + statusBadgeClass + '">' + escapeHtml(statusLabel) + '</span>'
+            : '';
+          const footerContent = status === "approved" ?
             '<button type="button" class="ar-share-like-button' + (isLiked ? ' is-liked' : '') + '" ' +
               'onclick=\'toggleSummaryLike(' + JSON.stringify(String(item.id)) + ')\'>' +
               (isLiked ? '♥' : '♡') + ' 좋아요 ' + likeCount +
-            '</button>';
+            '</button>' : isMine && status === "rejected" ?
+            '<button type="button" class="ar-share-like-button" onclick=\'goEditRejectedPracticeSummary(' + JSON.stringify(String(item.id)) + ')\'>수정하러 가기</button>' +
+            '<button type="button" class="ar-share-like-button" onclick=\'deleteRejectedPracticeSummary(' + JSON.stringify(String(item.id)) + ')\'>삭제</button>' : '';
 
           return (
             '<article class="ar-share-item">' +
-              '<strong>' + escapeHtml(summaryTitle) + '</strong>' +
-              '<div class="ar-share-meta">' +
-                '<span>' + escapeHtml(studentNumber + typeLabel) + '</span>' +
-                '<span>' + escapeHtml(dateText) + '</span>' +
+              '<div class="ar-share-head">' +
+                '<strong>' + escapeHtml(summaryTitle) + '</strong>' +
+                '<span class="ar-share-date">' + escapeHtml(dateText) + '</span>' +
               '</div>' +
+              statusBadgeHtml +
               '<span class="ar-share-tag">' + icon + ' ' + escapeHtml(typeLabel) + '</span>' +
               '<p>' + escapeHtml(item.summary || "") + '</p>' +
+              (item.rejectionReason ? '<div class="ar-share-rejection"><strong>선생님이 남긴 이유</strong><p>' + escapeHtml(item.rejectionReason) + '</p></div>' : '') +
               '<div class="ar-share-footer">' + footerContent + '</div>' +
             '</article>'
           );
@@ -7734,6 +8458,23 @@ if (selectedBookType === "opinion") {
         shareList.innerHTML =
           '<div class="ar-share-empty">공유 간추리기를 불러오지 못했어요.</div>';
       }
+    }
+
+    async function deleteRejectedPracticeSummary(summaryId) {
+      if (!confirm("이 간추리기 글을 삭제할까요?")) return;
+      if (isDemoAccount()) {
+        const reviewSeed = getDemoFinalSummaryReviewSeeds("practice").find(function(seed) { return String(seed.id) === String(summaryId); });
+        if (reviewSeed) deleteDemoSummaryReviewSeed("practice", summaryId);
+        else {
+          clearDemoSummaryReviewOverride("practice", summaryId);
+          const data=loadDemoAfterReadingData(); data.summary=""; data.summaryText=""; saveDemoState(DEMO_AFTER_READING_STORAGE_KEY,data);
+        }
+        const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+        delete localLikes[String(summaryId)];
+        saveDemoState(DEMO_SHARE_LIKES_KEY, localLikes);
+        await renderShareList(); return;
+      }
+      const c=getCurrentUserContext(); await fetchJson(AFTER_READING_API_BASE_URL+"/api/students/"+c.id+"/after-reading/summaries/"+summaryId,{method:"DELETE",headers:{Authorization:"Bearer "+c.token}}); await renderShareList();
     }
 
     async function toggleSummaryLike(summaryId) {
@@ -7940,7 +8681,7 @@ if (selectedBookType === "opinion") {
   const wholeReadingManageButton = document.getElementById("wholeReadingManageButton");
 
   if (teacherHomeButton) {
-    teacherHomeButton.hidden = !teacherMode;
+    teacherHomeButton.hidden = true;
   }
 
   if (wholeReadingManageButton) {
@@ -8135,8 +8876,8 @@ applyTeacherMode();
       }
 
       if (currentIndex >= cards.length - 1) {
-        currentButton.textContent = "질문 3개 완료";
-        currentButton.disabled = true;
+        currentButton.textContent = "다음으로";
+        currentButton.disabled = currentCard.dataset.feedbackPassed !== "true";
         return;
       }
 
@@ -8264,6 +9005,11 @@ function requestBookQuestionAiFeedback(card, item, number) {
         isGood ? "good" : "need",
         result.message
       );
+
+      /* 루미 피드백 통과 = 자동저장. 실패한 시도는 절대 저장하지 않는다. */
+      if (isGood) {
+        saveAfterReadingQuestionDraft(number, item.question, item.answer);
+      }
     })
     .catch(function() {
       if (requestId !== bookQuestionAiRequestId) {
@@ -8313,7 +9059,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
       const nextCard = cards[currentIndex + 1];
 
       if (!nextCard) {
-        alert("질문은 모두 3개까지 만들 수 있어.");
+        makeSummaryGuide();
         return;
       }
 
@@ -8388,7 +9134,11 @@ function requestBookQuestionAiFeedback(card, item, number) {
       );
 
       showStudyPanel("summary");
-      setTimeout(checkSummaryFeedback, 0);
+      if (isDemoAccount()) {
+        syncSummaryNextButton();
+      } else {
+        setTimeout(checkSummaryFeedback, 0);
+      }
     }
 
     const originalShowStudyPanelForQuestionWrite = showStudyPanel;
@@ -8399,7 +9149,72 @@ function requestBookQuestionAiFeedback(card, item, number) {
       if (panelName === "write") {
         showBookQuestionCard(currentBookQuestionIndex);
       }
+
+      if (panelName === "summary") {
+        restoreConnectBoxFromSaved();
+
+        /*
+         * 일반계정은 3단계에 들어오는 모든 경로에서 다시 검사를 요구한다.
+         * 심사계정은 같은 초기화 뒤에도 본문이 있으면 공용 동기화 함수가
+         * 다음 버튼을 바로 활성화한다.
+         */
+        summaryCheckPassed = false;
+        syncSummaryNextButton();
+      }
     };
+
+    /*
+     * REJECTED 상태인 내 간추리기를 "수정하러 가기" - 4단계 공유 화면에서
+     * 3단계로 이동한다. selectedBookType/summaryText는 이미 페이지 진입
+     * 시 restoreAfterReadingData()가 채워 두었고(간추리기 1건당 책 유형도
+     * 하나뿐이라 별도 유형 매칭이 필요 없다), 질문1~3 패널은 위
+     * showStudyPanel의 공용 restoreConnectBoxFromSaved() 훅이 그린다.
+     */
+    function goEditRejectedPracticeSummary(summaryId) {
+      let rejectedSeed = null;
+      if (isDemoAccount() && summaryId) {
+        const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+        rejectedSeed = getDemoFinalSummaryReviewSeeds("practice").find(function(item) {
+          return String(item.id) === String(summaryId)
+            && String(item.writerLoginId || "") === currentLoginId
+            && item.status === "rejected";
+        });
+        if (rejectedSeed) {
+          editingDemoPracticeReviewSeedId = rejectedSeed.id;
+          selectedBookType = rejectedSeed.bookType || selectedBookType;
+          const previousData = loadDemoAfterReadingData();
+          const restoredQuestions = Array.isArray(rejectedSeed.questions)
+            ? rejectedSeed.questions.map(function(item, index) {
+                return {
+                  index: Number(item.index) || index + 1,
+                  question: item.question || "",
+                  answer: item.answer || "",
+                  passed: true
+                };
+              })
+            : [];
+          saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, Object.assign({}, previousData, {
+            bookType: selectedBookType,
+            questions: restoredQuestions,
+            questionsByBookType: Object.assign({}, previousData.questionsByBookType || {}, {
+              [selectedBookType]: restoredQuestions
+            }),
+            summary: rejectedSeed.summary || "",
+            summaryText: rejectedSeed.summary || ""
+          }));
+          restoreQuestionsForBookType(selectedBookType);
+        }
+      }
+      document.getElementById("menuScreen").classList.remove("is-active");
+      document.getElementById("studyScreen").classList.add("is-active");
+      showStudyPanel("summary");
+      if (rejectedSeed) {
+        const summaryText = document.getElementById("summaryText");
+        if (summaryText) summaryText.value = rejectedSeed.summary || "";
+        summaryCheckPassed = false;
+        syncSummaryNextButton();
+      }
+    }
 
     initializeAfterReadingPage();
 

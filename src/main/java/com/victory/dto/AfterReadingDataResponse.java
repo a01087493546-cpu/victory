@@ -2,6 +2,7 @@ package com.victory.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.victory.entity.Summary;
 
@@ -25,13 +26,18 @@ public class AfterReadingDataResponse {
     private Boolean rewardGranted;
     private Boolean rewardAlreadyGranted;
     private StudentStatsResponse stats;
+    // 책 유형별(story/info/opinion) 연습 질문/답 최신 통과본 - bookType을 key로 가진다.
+    private Map<String, AfterReadingTypePracticeItem> typePracticeAnswers;
+    private Map<String, List<AfterReadingQuestionItem>> questionsByBookType;
 
     public static AfterReadingDataResponse of(
             Long classReadingBookId,
             Summary summary,
             String savedBookType,
             List<AfterReadingQuestionItem> questions,
-            Boolean afterDone) {
+            Boolean afterDone,
+            Map<String, AfterReadingTypePracticeItem> typePracticeAnswers,
+            Map<String, List<AfterReadingQuestionItem>> questionsByBookType) {
 
         return new AfterReadingDataResponse(
             classReadingBookId,
@@ -46,7 +52,9 @@ public class AfterReadingDataResponse {
             false,
             false,
             false,
-            null
+            null,
+            typePracticeAnswers,
+            questionsByBookType
         );
     }
 
@@ -70,7 +78,9 @@ public class AfterReadingDataResponse {
             progressResponse.getPracticeCompleted(),
             progressResponse.getRewardGranted(),
             progressResponse.getRewardAlreadyGranted(),
-            progressResponse.getStats()
+            progressResponse.getStats(),
+            typePracticeAnswers,
+            questionsByBookType
         );
     }
 }

@@ -180,6 +180,25 @@ class FeedbackAiServiceTest {
             .contains("주인공은 왜 다시 고치려고 했을까요?");
     }
 
+    @Test
+    void connectPrompts_acceptBroadElementaryExperienceConnections() throws Exception {
+        String during = privatePrompt("SYSTEM_PROMPT_DURING_READING_QUESTION");
+        String deep = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP");
+        String review = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW");
+
+        assertThat(during)
+            .contains("소재나 핵심 단어 하나")
+            .contains("자기 경험을 먼저 말하고 질문을 잇는 표현")
+            .contains("자유 경험 질문도");
+        assertThat(deep)
+            .contains("여러분도/친구들도 그런 적이")
+            .contains("특정 소재 하나만 잡은 경험 질문도 인정");
+        assertThat(review)
+            .contains("나도 전학가본 경험이 있나요?")
+            .contains("친구들도 전학 가면")
+            .contains("놀이공원에 가본 적이");
+    }
+
     private String privatePrompt(String fieldName) throws Exception {
         java.lang.reflect.Field field = FeedbackAiService.class.getDeclaredField(fieldName);
         field.setAccessible(true);

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -325,6 +326,23 @@ public class IndividualReadingController {
 
         return ResponseEntity.ok(
             individualSummaryShareService.toggleLikeAsStudent(studentId, summaryId));
+    }
+
+    @PutMapping("/summaries/{summaryId}/resubmit")
+    public ResponseEntity<IndividualSummaryShareItem> resubmitSummary(
+            @PathVariable Long summaryId,
+            @RequestBody java.util.Map<String, String> body,
+            Authentication authentication) {
+        Long studentId = requireStudentId(authentication);
+        return ResponseEntity.ok(individualSummaryShareService.resubmit(studentId, summaryId, body.get("summaryText")));
+    }
+
+    @DeleteMapping("/summaries/{summaryId}")
+    public ResponseEntity<Void> deleteRejectedSummary(
+            @PathVariable Long summaryId, Authentication authentication) {
+        Long studentId = requireStudentId(authentication);
+        individualSummaryShareService.deleteRejected(studentId, summaryId);
+        return ResponseEntity.noContent().build();
     }
 
     /*
