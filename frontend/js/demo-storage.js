@@ -123,10 +123,10 @@ const DEMO_SUMMARY_REVIEW_OVERRIDE_KEY = "summaryReviewOverrides";
 const DEMO_SUMMARY_REVIEW_SEEDS = {
   practice: {
     pending: [
-      { id: "practice-summary-seed-pending-01", writerLoginId: "ss01", studentName: "김초롱", bookType: "story", summary: "처음에는 노든이 혼자 사막을 걷다가 아기 펭귄을 만났습니다. 가운데에는 노든이 아기 펭귄에게 헤엄치는 법을 알려주려고 애썼습니다. 끝에는 둘이 함께 바다를 향해 걸어갔습니다.", questions: [
-        { index: 1, question: "노든은 사막에서 누구를 만났나요?", answer: "혼자 남은 아기 펭귄을 만났습니다." },
-        { index: 2, question: "노든은 아기 펭귄을 위해 무엇을 했나요?", answer: "헤엄치는 방법을 알려주며 함께 바다로 갔습니다." },
-        { index: 3, question: "두 주인공은 마지막에 어디로 향했나요?", answer: "서로 의지하며 바다를 향해 걸어갔습니다." }
+      { id: "practice-summary-seed-pending-01", writerLoginId: "ss01", studentName: "김초롱", bookType: "story", summary: "주인공은 보물을 찾기 위해 모험을 떠났습니다. 여러 단서를 살펴보며 어려운 문제를 만났지만 친구의 도움을 받아 해결했습니다. 마지막에는 보물도 중요하지만 친구와 함께 힘을 모아 문제를 해결하는 것이 더 중요하다는 것을 깨달았습니다.", questions: [
+        { index: 1, question: "처음에 주인공은 무엇을 하기 위해 모험을 시작했나요?", answer: "주인공은 보물을 찾기 위해 모험을 시작했습니다." },
+        { index: 2, question: "보물을 찾는 동안 주인공에게 어떤 일이 있었나요?", answer: "여러 단서를 찾고 어려운 문제를 만났지만 친구와 함께 해결했습니다." },
+        { index: 3, question: "마지막에 주인공이 깨달은 것은 무엇인가요?", answer: "혼자보다 친구와 함께 문제를 해결하는 것이 더 중요하다는 것을 깨달았습니다." }
       ], submittedAt: "2026-08-05T10:20:00" },
       { id: "practice-summary-seed-pending-02", writerLoginId: "demo_student_02", studentName: "송민정", bookType: "info", summary: "이 책은 우리 몸이 어떻게 병균과 싸우는지 알려줍니다. 처음에는 피부가 병균을 막아주고, 가운데에는 백혈구가 병균과 싸운다고 했습니다. 끝에는 손을 잘 씻는 것이 중요하다고 했습니다.", submittedAt: "2026-08-06T14:10:00" },
       { id: "practice-summary-seed-pending-03", writerLoginId: "demo_student_03", studentName: "박하민", bookType: "opinion", summary: "이 글쓴이는 학교에 도서관이 더 필요하다고 주장합니다. 처음에는 책 읽을 곳이 부족하다고 했고, 가운데에는 도서관이 생기면 좋은 점을 이야기했습니다. 끝에는 도서관을 늘려야 한다고 다시 강조했습니다.", submittedAt: "2026-08-07T09:40:00" }
@@ -532,6 +532,47 @@ function clearAllDemoState() {
       });
   } catch (error) {
     console.error("심사 체험 데이터를 이전하지 못했습니다.", error);
+  }
+})();
+
+/*
+  예전 심사 seed를 교사가 검토하거나 학생이 수정한 적이 있으면 원본 seed가
+  아니라 summaryReviewOverrides에 본문/질문이 복사돼 남아 있을 수 있다.
+  사용자가 직접 쓴 글은 보호하고, 과거 기본 문구와 정확히 같은 값만
+  「나만의 보물 찾기」 최신 seed로 바꾼다.
+*/
+(function migrateOldPracticeSummarySeed() {
+  const oldSummary = "처음에는 노든이 혼자 사막을 걷다가 아기 펭귄을 만났습니다. 가운데에는 노든이 아기 펭귄에게 헤엄치는 법을 알려주려고 애썼습니다. 끝에는 둘이 함께 바다를 향해 걸어갔습니다.";
+  const newSummary = "주인공은 보물을 찾기 위해 모험을 떠났습니다. 여러 단서를 살펴보며 어려운 문제를 만났지만 친구의 도움을 받아 해결했습니다. 마지막에는 보물도 중요하지만 친구와 함께 힘을 모아 문제를 해결하는 것이 더 중요하다는 것을 깨달았습니다.";
+  const oldQuestions = [
+    { index: 1, question: "노든은 사막에서 누구를 만났나요?", answer: "혼자 남은 아기 펭귄을 만났습니다." },
+    { index: 2, question: "노든은 아기 펭귄을 위해 무엇을 했나요?", answer: "헤엄치는 방법을 알려주며 함께 바다로 갔습니다." },
+    { index: 3, question: "두 주인공은 마지막에 어디로 향했나요?", answer: "서로 의지하며 바다를 향해 걸어갔습니다." }
+  ];
+  const newQuestions = [
+    { index: 1, question: "처음에 주인공은 무엇을 하기 위해 모험을 시작했나요?", answer: "주인공은 보물을 찾기 위해 모험을 시작했습니다." },
+    { index: 2, question: "보물을 찾는 동안 주인공에게 어떤 일이 있었나요?", answer: "여러 단서를 찾고 어려운 문제를 만났지만 친구와 함께 해결했습니다." },
+    { index: 3, question: "마지막에 주인공이 깨달은 것은 무엇인가요?", answer: "혼자보다 친구와 함께 문제를 해결하는 것이 더 중요하다는 것을 깨달았습니다." }
+  ];
+
+  try {
+    const overrides = loadDemoState(DEMO_SUMMARY_REVIEW_OVERRIDE_KEY, {});
+    const key = "practice:practice-summary-seed-pending-01";
+    const override = overrides && overrides[key];
+    if (!override) return;
+
+    let changed = false;
+    if (override.summary === oldSummary) {
+      override.summary = newSummary;
+      changed = true;
+    }
+    if (JSON.stringify(override.questions) === JSON.stringify(oldQuestions)) {
+      override.questions = newQuestions;
+      changed = true;
+    }
+    if (changed) saveDemoState(DEMO_SUMMARY_REVIEW_OVERRIDE_KEY, overrides);
+  } catch (error) {
+    console.error("예전 연습읽기 간추리기 seed를 이전하지 못했습니다.", error);
   }
 })();
 

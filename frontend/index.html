@@ -129,19 +129,48 @@
     height: 110px !important;
   }
 
-  .mq-kicker {
-    font-size: 24px !important;
-  }
-
   .mq-title {
     font-size: 92px !important;
     line-height: 1 !important;
+  }
+
+  .mq-title-row {
+    display: block;
+    margin-top: 18px;
+  }
+
+  .mq-title-row .mq-title {
+    margin: 0 !important;
+  }
+
+  .mq-title-tagline {
+    display: block;
+    margin-top: 10px;
+    font-family: "Noto Serif KR", "Noto Sans KR", serif;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.25;
+    letter-spacing: -1.5px;
+    color: #fff0cf;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.62);
   }
 
   .mq-main-copy {
     font-size: 24px !important;
     line-height: 1.5 !important;
     max-width: 520px;
+  }
+
+  .mq-grade-copy {
+    margin-top: 30px !important;
+  }
+
+  .mq-grade-copy span {
+    display: block;
+  }
+
+  .mq-grade-copy span + span {
+    margin-top: 12px;
   }
 
   /* 로그인 카드 안쪽 크기 키우기 */
@@ -200,6 +229,11 @@
 
   .mq-source-button {
     margin-top: 16px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    text-decoration: none;
   }
 
   /* 처음 이용하는 교사를 위한 계정 등록 안내 */
@@ -258,9 +292,6 @@
   .mq-demo-toast { min-height: 19px; margin-top: 6px; text-align: center; color: #3d762c; font-size: 13px; font-weight: 800; }
 </style>
 
-  <!-- 사용 자료 출처 데이터 -->
-  <script defer src="./js/source-data.js"></script>
-
   <!-- 심사계정 인트로 확인 여부(localStorage) 확인용 -->
   <script defer src="./js/demo-storage.js?v=20260811-intro-once"></script>
 
@@ -292,20 +323,16 @@
   >
 </div>
 
-        <!-- 작은 부제 -->
-        <p class="mq-kicker">
-         질문 독서 프로젝트
-        </p>
+        <!-- 공식 서비스 이름과 설명 -->
+        <div class="mq-title-row">
+          <h1 class="mq-title">문답책</h1>
+          <span class="mq-title-tagline">:질문하고 답하며 지속적인 책읽기</span>
+        </div>
 
-        <!-- 공식 서비스 이름 -->
-        <h1 class="mq-title">
-          문답책
-        </h1>
-
-        <!-- 기존 목표 문구 -->
-        <p class="mq-main-copy">
-          책을 읽고 좋은 질문을 만들며<br>
-          지식창고를 빼앗은 용을 물리치는 독서 모험
+        <!-- 문답책 적용 학년 안내 -->
+        <p class="mq-main-copy mq-grade-copy">
+          <span>적용 학년: 국어 4학년</span>
+          <span>(활용 가능 학년: 4~6학년)</span>
         </p>
 
         <!-- 캐릭터/드래곤 장면 -->
@@ -512,42 +539,19 @@
         </div>
 
         <!-- 사용 자료 출처 버튼: 심사위원이 확인하기 쉽게 크게 배치 -->
-        <button type="button" class="mq-source-button" id="openSourceButton">
+        <a
+          class="mq-source-button"
+          href="./material-sources.html"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <span>ⓘ</span>
           사용 자료 출처
-        </button>
+        </a>
       </div>
         </section>
       </main>
     </div>
-  </div>
-
-  <!-- 출처 모달 -->
-  <div class="modal-backdrop hidden" id="sourceModal">
-
-    <section class="source-modal">
-
-      <div class="modal-header">
-        <h3>
-          사용 자료 출처
-        </h3>
-
-        <button type="button" class="modal-close-btn" id="closeSourceButton">
-          ✕
-        </button>
-      </div>
-
-      <p class="modal-desc">
-        이미지 자료의 출처는 최초 사용 화면을 기준으로 기록하였으며, 같은 이미지의 반복 표기는 생략하였습니다.
-      </p>
-
-      <div class="source-list" id="sourceList">
-        <p class="empty-source">
-          출처 목록을 불러오는 중입니다.
-        </p>
-      </div>
-
-    </section>
   </div>
 
   <script>

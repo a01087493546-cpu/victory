@@ -1187,6 +1187,13 @@ if (
     }
 
     function isStageUnlocked(stageKey) {
+      /*
+        심사계정은 개별읽기 세 단계를 순서와 관계없이 바로 체험한다.
+        완료 여부와 보상 기록은 각 단계의 기존 browser-local 완료 함수가
+        따로 관리하므로, 여기서는 카드 잠금만 해제한다.
+      */
+      if (isDemoAccount()) return true;
+
       // 그 단계 자체를 이미 완료했다면, 다른 조건과 상관없이 항상 다시 볼 수 있어야 합니다.
       if (isStageDone(stageKey)) return true;
 
