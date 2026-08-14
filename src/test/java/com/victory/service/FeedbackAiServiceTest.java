@@ -147,17 +147,83 @@ class FeedbackAiServiceTest {
         String deep = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP");
         String review = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW");
 
-        assertThat(during)
-            .contains("정답이 글에 그대로 써 있지 않은 것이 정상")
-            .contains("어떤 마음이었을까요?")
-            .contains("애매하면 good");
-        assertThat(deep)
-            .contains("정답이 글에 직접 써 있어야 하는 유형이 아니야")
-            .contains("어떤 마음으로 ~했을까요?");
-        assertThat(review)
-            .contains("어떤 마음으로 친구 옆에 앉았을까요?")
-            .contains("친구는 왜 미소를")
-            .contains("무슨 색을 좋아할까요?");
+        for (String prompt : List.of(during, deep, review)) {
+            assertThat(prompt)
+                // Test A/E: 행동 단서로 마음을 추론하는 질문과 짧은 답
+                .contains("유나는 어떤 마음으로 친구 옆에")
+                .contains("친구를 위로하고 싶었을 것 같아요")
+                // Test B: 앞뒤 문맥으로 이유 추론
+                .contains("친구는 왜 미소를 지었을까요?")
+                // Test C: 본문에 답이 직접 있는 사실 질문은 direct 권장
+                .contains("유나는 어디에 갔나요? / 운동장에 갔습니다")
+                // Test D: 글에 단서가 전혀 없는 추측은 need
+                .contains("내일 눈이 올까요?")
+                // 실제 책 본문이 없는 연습/개별읽기에서도 구조를 우선 판단
+                .contains("실제 책 본문을 받지 않는 화면에서는 질문 구조")
+                .contains("답이 직접 적혀 있지")
+                .contains("반드시 good");
+        }
+    }
+
+    @Test
+    void questionTypePrompts_keepConnectOpinionDirectAndInferMutuallyExclusive() throws Exception {
+        String during = privatePrompt("SYSTEM_PROMPT_DURING_READING_QUESTION");
+        String deep = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP");
+        String review = privatePrompt("SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW");
+
+        for (String prompt : List.of(during, deep, review)) {
+            String normalizedPrompt = prompt.replaceAll("\\s+", " ");
+            assertThat(normalizedPrompt)
+                .contains("네 질문 유형 분류의 최종 우선순위")
+                .contains("질문의 핵심 의도를 아래 순서로 하나만 분류")
+                .contains("나도 내가 잘하는 것이 없다고 생각했다가")
+                .contains("나와 연결하기로는 good")
+                .contains("짐작하기·책에서 바로 답 찾기·생각이나 느낌 말하기로는 need")
+                .contains("내가 주인공이라면 어떻게 했을까요?")
+                .contains("강아지똥이 민들레를 도운 장면을 보고 어떤 생각이")
+                .contains("생각이나 느낌 말하기로는 good")
+                .contains("실제로 더 잘 맞는 한국어 유형과 이유")
+                .contains("'나와 연결하기'에 더 잘 맞아요")
+                .contains("'생각이나 느낌 말하기'에 더 잘 맞아요")
+                .contains("'단서로 짐작하기'에 더");
+        }
+    }
+
+    @Test
+    void storySummaryQuestionPrompts_doNotRequireBeginningMiddleEndWordingOrSlots() throws Exception {
+        String practiceQuestion = privatePrompt("SYSTEM_PROMPT_QUESTION").replaceAll("\\s+", " ");
+        String individualQuestion = privatePrompt("SYSTEM_PROMPT_INDIVIDUAL_QUESTION").replaceAll("\\s+", " ");
+        String finalSummary = privatePrompt("SYSTEM_PROMPT_FINAL_SUMMARY").replaceAll("\\s+", " ");
+
+        for (String prompt : List.of(practiceQuestion, individualQuestion)) {
+            assertThat(prompt)
+                .contains("그 낱말이 없다는 이유로 need를 주면 안 된다")
+                .contains("1번은 처음, 2번은 가운데, 3번은 마지막")
+                .contains("주인공에게 어떤 일이 있었나요?")
+                .contains("시간이 지나면서 주인공에게 어떤 변화가 생겼나요?")
+                .contains("주인공이 새로운 장소로 간 뒤 어떤 일이 생겼나요?")
+                .contains("이 일이 일어난 뒤 무엇이 달라졌나요?")
+                .contains("주인공이 겪은 문제는 어떻게 해결되었나요?")
+                .contains("주인공의 생각은 어떻게 달라졌나요?")
+                .contains("주인공의 생각이 바뀌게 된 계기는 무엇인가요?")
+                .contains("이야기에서 가장 중요한 사건은 무엇이었나요?")
+                .contains("처음에 똥은 왜 슬퍼했나요?")
+                .contains("자신이 더럽고 쓸모없는 존재라고 생각했기 때문입니다")
+                .contains("이야기 초반의 핵심 문제와 그 원인을 정리하므로 반드시 good")
+                .contains("책을 읽은 나는 어떤 기분이었나요?")
+                .contains("이 책 표지는 어떤 색인가요?");
+        }
+
+        assertThat(practiceQuestion)
+            .contains("인물의 마음·생각 변화나 그 이유가 사건의 원인·결과·문제·해결과 이어지면")
+            .contains("학생의 개인적 감상·선호만 묻고 이야기 내용이 전혀 드러나지 않을 때만");
+
+        assertThat(finalSummary)
+            .contains("질문 1=처음, 질문 2=가운데, 질문 3=마지막 순서일 필요도 없다")
+            .contains("세 질문을 전체적으로 봤을 때 이야기의 주요 내용을 정리할 수 있으면 충분")
+            .contains("주인공에게 가장 큰 문제는 무엇이었나요?")
+            .contains("주인공의 생각은 어떻게 달라졌나요?")
+            .contains("반드시 good");
     }
 
     @Test

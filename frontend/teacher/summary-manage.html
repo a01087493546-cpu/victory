@@ -675,7 +675,17 @@
 
         // 3) ss01이 같은 브라우저에서 직접 작성한 간추리기(있으면).
         const direct = getDemoLocalDirectSummaryAsReviewItem();
-        if (direct) next[direct.status].push(direct);
+        if (direct) {
+          /* 같은 summaryId가 서버/seed 쪽에도 있던 구버전 데이터라면 이전
+             상태 목록에서 먼저 제거하고 browser-local 최신 direct 하나만
+             남긴다. 재제출 뒤 rejected와 pending에 동시에 보이면 안 된다. */
+          ["pending", "approved", "rejected"].forEach(function(status) {
+            next[status] = next[status].filter(function(item) {
+              return String(item.id) !== String(direct.id);
+            });
+          });
+          next[direct.status].push(direct);
+        }
 
         reviewSummariesByStatus = next;
         renderAll();

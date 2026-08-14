@@ -6765,38 +6765,27 @@ async function saveBookFinishRecord() {
       if (!editingSummaryId || !trimmedNext) return false;
 
       if (isDemoAccount()) {
-        const list = normalizeDemoWrittenSummaries(loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []));
-        let target = list.find(function (item) {
+        const source = currentShareSummaries.find(function (item) {
           return String(item.summaryId) === String(editingSummaryId);
         });
-        if (!target) {
-          const source = currentShareSummaries.find(function (item) {
-            return String(item.summaryId) === String(editingSummaryId);
-          });
-          if (!source) return false;
-          target = Object.assign({}, source);
-          list.unshift(target);
-        }
-        target.summaryText = trimmedNext;
-        target.questionAnswers = getQuestionAnswerSlots();
-        target.status = "pending";
-        target.rejectionReason = "";
-        target.updatedAt = new Date().toISOString();
-        saveDemoState(DEMO_WRITTEN_SUMMARIES_KEY, list);
-
-        saveDemoSummaryRevisionOverride(
-          "individual",
+        if (!source) return false;
+        const saved = resubmitDemoIndividualDirectSummary(
           editingSummaryId,
+          source,
           trimmedNext,
           selectedBookType,
           getQuestionAnswerSlots()
         );
-
-        if (trimmedNext !== editingSummaryOriginalText) {
-          const localLikes = loadDemoState("individualSummaryLikes", {});
-          delete localLikes[String(editingSummaryId)];
-          saveDemoState("individualSummaryLikes", localLikes);
+        if (!saved) {
+          alert("간추리기를 다시 등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
+          return false;
         }
+
+        /* 거절 뒤 재제출되는 수정본은 새 승인 대상으로 보므로 이전 글의
+           browser-local 좋아요를 본문 변경 여부와 관계없이 초기화한다. */
+        const localLikes = loadDemoState("individualSummaryLikes", {});
+        delete localLikes[String(editingSummaryId)];
+        saveDemoState("individualSummaryLikes", localLikes);
 
         const savedAfterReading = loadDemoState(DEMO_AFTER_READING_KEY, {});
         savedAfterReading.bookType = selectedBookType;

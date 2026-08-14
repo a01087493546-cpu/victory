@@ -128,8 +128,8 @@ const DEMO_SUMMARY_REVIEW_SEEDS = {
         { index: 2, question: "보물을 찾는 동안 주인공에게 어떤 일이 있었나요?", answer: "여러 단서를 찾고 어려운 문제를 만났지만 친구와 함께 해결했습니다." },
         { index: 3, question: "마지막에 주인공이 깨달은 것은 무엇인가요?", answer: "혼자보다 친구와 함께 문제를 해결하는 것이 더 중요하다는 것을 깨달았습니다." }
       ], submittedAt: "2026-08-05T10:20:00" },
-      { id: "practice-summary-seed-pending-02", writerLoginId: "demo_student_02", studentName: "송민정", bookType: "info", summary: "이 책은 우리 몸이 어떻게 병균과 싸우는지 알려줍니다. 처음에는 피부가 병균을 막아주고, 가운데에는 백혈구가 병균과 싸운다고 했습니다. 끝에는 손을 잘 씻는 것이 중요하다고 했습니다.", submittedAt: "2026-08-06T14:10:00" },
-      { id: "practice-summary-seed-pending-03", writerLoginId: "demo_student_03", studentName: "박하민", bookType: "opinion", summary: "이 글쓴이는 학교에 도서관이 더 필요하다고 주장합니다. 처음에는 책 읽을 곳이 부족하다고 했고, 가운데에는 도서관이 생기면 좋은 점을 이야기했습니다. 끝에는 도서관을 늘려야 한다고 다시 강조했습니다.", submittedAt: "2026-08-07T09:40:00" }
+      { id: "practice-summary-seed-pending-02", writerLoginId: "demo_student_02", studentName: "송민정", bookType: "story", summary: "주인공은 오래된 지도를 발견하고 숨겨진 보물을 찾으러 떠났습니다. 모험을 하면서 여러 단서를 하나씩 해결하고 친구와 서로 도우며 어려움을 넘었습니다. 마지막에는 보물을 찾는 것뿐만 아니라 함께 도전하고 도와주는 일이 중요하다는 것을 깨달았습니다.", submittedAt: "2026-08-06T14:10:00" },
+      { id: "practice-summary-seed-pending-03", writerLoginId: "demo_student_03", studentName: "박하민", bookType: "story", summary: "주인공은 보물을 찾기 위해 낯선 길로 모험을 떠났습니다. 여러 단서를 따라가다가 길을 잃고 어려운 문제를 만났지만 친구의 도움을 받아 다시 길을 찾았습니다. 마지막에는 보물보다 친구와 함께 힘을 모아 문제를 해결한 경험이 더 소중하다는 것을 알게 되었습니다.", submittedAt: "2026-08-07T09:40:00" }
     ],
     rejected: [
       { id: "practice-summary-seed-rejected-01", writerLoginId: "demo_student_04", studentName: "이진우", bookType: "story", summary: "주인공이 여행을 떠났습니다. 그리고 집으로 돌아왔습니다.", submittedAt: "2026-08-04T11:05:00", rejectionReason: "중요한 내용이 조금 빠졌어요. 가운데 부분에서 어떤 일이 있었는지 다시 읽고 고쳐보세요." }
@@ -142,8 +142,8 @@ const DEMO_SUMMARY_REVIEW_SEEDS = {
         { index: 2, question: "주인공은 문제를 어떻게 해결했나요?", answer: "단서를 살피고 친구의 도움을 받아 해결했습니다." },
         { index: 3, question: "주인공이 마지막에 깨달은 것은 무엇인가요?", answer: "혼자보다 함께 해결하는 것이 중요하다는 것을 알았습니다." }
       ], submittedAt: "2026-08-08T10:15:00" },
-      { id: "individual-summary-seed-approved-02", writerLoginId: "demo_student_02", studentName: "송민정", bookType: "info", summary: "이 책은 바다거북이 어떻게 살아가는지 설명합니다. 바다거북은 먼 바다에서 먹이를 찾고 알을 낳기 위해 다시 해변으로 돌아옵니다. 바다 쓰레기가 바다거북에게 위험할 수 있다는 내용도 나옵니다.", submittedAt: "2026-08-09T11:25:00" },
-      { id: "individual-summary-seed-approved-03", writerLoginId: "demo_student_03", studentName: "박하민", bookType: "opinion", summary: "글쓴이는 학교에서 일회용품 사용을 줄여야 한다고 주장합니다. 쓰레기를 줄이고 환경을 보호할 수 있기 때문입니다. 그래서 물병과 다회용품을 사용하는 것이 좋다고 설명합니다.", submittedAt: "2026-08-10T09:35:00" },
+      { id: "individual-summary-seed-approved-02", writerLoginId: "demo_student_02", studentName: "송민정", bookType: "story", summary: "주인공은 오래된 지도를 발견하고 숨겨진 보물을 찾으러 떠났습니다. 모험을 하면서 여러 단서를 하나씩 해결하고 친구와 서로 도우며 어려움을 넘었습니다. 마지막에는 보물을 찾는 것뿐만 아니라 함께 도전하고 도와주는 일이 중요하다는 것을 깨달았습니다.", submittedAt: "2026-08-09T11:25:00" },
+      { id: "individual-summary-seed-approved-03", writerLoginId: "demo_student_03", studentName: "박하민", bookType: "story", summary: "주인공은 보물을 찾기 위해 낯선 길로 모험을 떠났습니다. 여러 단서를 따라가다가 길을 잃고 어려운 문제를 만났지만 친구의 도움을 받아 다시 길을 찾았습니다. 마지막에는 보물보다 친구와 함께 힘을 모아 문제를 해결한 경험이 더 소중하다는 것을 알게 되었습니다.", submittedAt: "2026-08-10T09:35:00" },
       { id: "individual-summary-seed-approved-04", writerLoginId: "demo_student_04", studentName: "이진우", bookType: "other", summary: "이 책에는 세계 여러 나라의 특별한 집이 소개됩니다. 날씨와 주변 환경에 따라 집의 재료와 모양이 달라집니다. 사람들은 사는 곳에 알맞게 집을 지으며 생활해 왔다는 것을 알게 되었습니다.", submittedAt: "2026-08-11T14:05:00" }
     ],
     pending: [
@@ -207,6 +207,9 @@ function saveDemoSummaryRevisionOverride(scope, summaryId, summary, bookType, qu
   overrides[key] = Object.assign({}, overrides[key] || {}, {
     status: "pending",
     reason: "",
+    rejectionReason: "",
+    teacherReason: "",
+    rejectedAt: "",
     summary: String(summary || "").trim(),
     bookType: bookType || "",
     questions: Array.isArray(questions) ? questions : (overrides[key] || {}).questions,
@@ -296,6 +299,51 @@ function getDemoIndividualDirectSummaries() {
         : ""
     });
   }).filter(Boolean);
+}
+
+/*
+  개별읽기 direct 간추리기 재제출의 단일 저장 지점. 학생 화면에서 원본
+  배열과 review override를 따로 갱신하면 한쪽만 남아 교사 승인대기와 상태가
+  어긋날 수 있으므로, 동일 summaryId의 본문·상태를 함께 PENDING으로 바꾼 뒤
+  공용 getter로 실제 반영 결과까지 확인한다.
+*/
+function resubmitDemoIndividualDirectSummary(summaryId, sourceItem, summaryText, bookType, questions) {
+  const id = String(summaryId == null ? "" : summaryId);
+  const trimmedSummary = String(summaryText || "").trim();
+  if (!id || !trimmedSummary) return null;
+
+  const list = loadDemoState("individualWrittenSummaries", []);
+  const directList = Array.isArray(list) ? list.slice() : [];
+  const existingIndex = directList.findIndex(function(item) {
+    return item && String(item.summaryId != null ? item.summaryId : item.id) === id;
+  });
+  const previous = existingIndex >= 0 ? directList[existingIndex] : (sourceItem || {});
+  const now = new Date().toISOString();
+  const saved = Object.assign({}, previous, {
+    summaryId: id,
+    demoBrowserId: getDemoBrowserId(),
+    summaryText: trimmedSummary,
+    bookType: bookType || previous.bookType || "other",
+    questionAnswers: Array.isArray(questions) ? questions : (previous.questionAnswers || previous.questions || []),
+    status: "pending",
+    rejectionReason: "",
+    teacherReason: "",
+    reason: "",
+    updatedAt: now
+  });
+
+  if (!saved.createdAt) saved.createdAt = now;
+  if (existingIndex >= 0) directList[existingIndex] = saved;
+  else directList.unshift(saved);
+  saveDemoState("individualWrittenSummaries", directList);
+  saveDemoSummaryRevisionOverride("individual", id, trimmedSummary, saved.bookType, saved.questionAnswers);
+
+  const effective = getDemoIndividualDirectSummaries().find(function(item) {
+    return String(item.summaryId) === id;
+  });
+  return effective && effective.status === "pending" && effective.summaryText === trimmedSummary
+    ? effective
+    : null;
 }
 
 function getDemoBookChatOverrideStorageKey(scope) {
@@ -577,6 +625,57 @@ function clearAllDemoState() {
 })();
 
 /*
+  송민정·박하민 공용 예시의 예전 기본 본문이 승인/수정 과정에서 override에
+  그대로 복사된 브라우저만 보정한다. seed id와 정확한 옛 본문·유형이 모두
+  일치하는 항목만 바꾸므로 심사위원이 직접 작성하거나 고친 간추리기는
+  건드리지 않는다.
+*/
+(function migrateOldTreasureSummarySeeds() {
+  const songSummary = "주인공은 오래된 지도를 발견하고 숨겨진 보물을 찾으러 떠났습니다. 모험을 하면서 여러 단서를 하나씩 해결하고 친구와 서로 도우며 어려움을 넘었습니다. 마지막에는 보물을 찾는 것뿐만 아니라 함께 도전하고 도와주는 일이 중요하다는 것을 깨달았습니다.";
+  const parkSummary = "주인공은 보물을 찾기 위해 낯선 길로 모험을 떠났습니다. 여러 단서를 따라가다가 길을 잃고 어려운 문제를 만났지만 친구의 도움을 받아 다시 길을 찾았습니다. 마지막에는 보물보다 친구와 함께 힘을 모아 문제를 해결한 경험이 더 소중하다는 것을 알게 되었습니다.";
+  const migrations = {
+    "practice:practice-summary-seed-pending-02": {
+      oldBookType: "info",
+      oldSummary: "이 책은 우리 몸이 어떻게 병균과 싸우는지 알려줍니다. 처음에는 피부가 병균을 막아주고, 가운데에는 백혈구가 병균과 싸운다고 했습니다. 끝에는 손을 잘 씻는 것이 중요하다고 했습니다.",
+      newSummary: songSummary
+    },
+    "practice:practice-summary-seed-pending-03": {
+      oldBookType: "opinion",
+      oldSummary: "이 글쓴이는 학교에 도서관이 더 필요하다고 주장합니다. 처음에는 책 읽을 곳이 부족하다고 했고, 가운데에는 도서관이 생기면 좋은 점을 이야기했습니다. 끝에는 도서관을 늘려야 한다고 다시 강조했습니다.",
+      newSummary: parkSummary
+    },
+    "individual:individual-summary-seed-approved-02": {
+      oldBookType: "info",
+      oldSummary: "이 책은 바다거북이 어떻게 살아가는지 설명합니다. 바다거북은 먼 바다에서 먹이를 찾고 알을 낳기 위해 다시 해변으로 돌아옵니다. 바다 쓰레기가 바다거북에게 위험할 수 있다는 내용도 나옵니다.",
+      newSummary: songSummary
+    },
+    "individual:individual-summary-seed-approved-03": {
+      oldBookType: "opinion",
+      oldSummary: "글쓴이는 학교에서 일회용품 사용을 줄여야 한다고 주장합니다. 쓰레기를 줄이고 환경을 보호할 수 있기 때문입니다. 그래서 물병과 다회용품을 사용하는 것이 좋다고 설명합니다.",
+      newSummary: parkSummary
+    }
+  };
+
+  try {
+    const overrides = loadDemoState(DEMO_SUMMARY_REVIEW_OVERRIDE_KEY, {});
+    let changed = false;
+    Object.keys(migrations).forEach(function(key) {
+      const override = overrides && overrides[key];
+      const migration = migrations[key];
+      if (!override || override.summary !== migration.oldSummary) return;
+      override.summary = migration.newSummary;
+      if (!override.bookType || override.bookType === migration.oldBookType) {
+        override.bookType = "story";
+      }
+      changed = true;
+    });
+    if (changed) saveDemoState(DEMO_SUMMARY_REVIEW_OVERRIDE_KEY, overrides);
+  } catch (error) {
+    console.error("예전 보물찾기 간추리기 seed를 이전하지 못했습니다.", error);
+  }
+})();
+
+/*
   ============================================================
   교사 메인 대시보드 "승인대기 n개" 배지
   ------------------------------------------------------------
@@ -698,7 +797,7 @@ async function getPracticeSummaryPendingCount(apiBaseUrl, classId) {
     }
   }
 
-  let count = 0;
+  const pendingIds = new Set();
 
   try {
     const results = await Promise.all([
@@ -710,7 +809,7 @@ async function getPracticeSummaryPendingCount(apiBaseUrl, classId) {
       const override = getDemoSummaryReviewOverride("practice", String(item.summaryId || item.id));
       if (override && override.deleted === true) return;
       const status = String(override ? override.status : (item.status || "pending")).toLowerCase();
-      if (status === "pending") count++;
+      if (status === "pending") pendingIds.add(String(item.summaryId || item.id));
     });
   } catch (error) {
     console.warn("심사 학급의 실제 간추리기를 불러오지 못했습니다.", error);
@@ -720,14 +819,14 @@ async function getPracticeSummaryPendingCount(apiBaseUrl, classId) {
     const override = getDemoSummaryReviewOverride("practice", id);
     if (override && override.deleted === true) return;
     const status = override ? override.status : "pending";
-    if (status === "pending") count++;
+    if (status === "pending") pendingIds.add(String(id));
   });
 
   TEACHER_BADGE_SEED_IDS.practiceSummaryRejected.forEach(function (id) {
     const override = getDemoSummaryReviewOverride("practice", id);
     if (override && override.deleted === true) return;
     const status = override ? override.status : "rejected";
-    if (status === "pending") count++;
+    if (status === "pending") pendingIds.add(String(id));
   });
 
   /*
@@ -749,9 +848,9 @@ async function getPracticeSummaryPendingCount(apiBaseUrl, classId) {
   }
 
   const directSummary = getDemoPracticeDirectSummary(classReadingBookId);
-  if (directSummary && directSummary.status === "pending") count++;
+  if (directSummary && directSummary.status === "pending") pendingIds.add(String(directSummary.id));
 
-  return count;
+  return pendingIds.size;
 }
 
 /*
@@ -834,7 +933,7 @@ async function getIndividualSummaryPendingCount(apiBaseUrl) {
     }
   }
 
-  let count = 0;
+  const pendingIds = new Set();
 
   try {
     const results = await Promise.all([
@@ -846,7 +945,7 @@ async function getIndividualSummaryPendingCount(apiBaseUrl) {
       const override = getDemoSummaryReviewOverride("individual", String(item.summaryId || item.id));
       if (override && override.deleted === true) return;
       const status = String(override ? override.status : (item.status || "pending")).toLowerCase();
-      if (status === "pending") count++;
+      if (status === "pending") pendingIds.add(String(item.summaryId || item.id));
     });
   } catch (error) {
     console.warn("심사 학급의 실제 개별읽기 간추리기를 불러오지 못했습니다.", error);
@@ -856,21 +955,21 @@ async function getIndividualSummaryPendingCount(apiBaseUrl) {
     const override = getDemoSummaryReviewOverride("individual", id);
     if (override && override.deleted === true) return;
     const status = override ? override.status : "pending";
-    if (status === "pending") count++;
+    if (status === "pending") pendingIds.add(String(id));
   });
 
   TEACHER_BADGE_SEED_IDS.individualSummaryRejected.forEach(function (id) {
     const override = getDemoSummaryReviewOverride("individual", id);
     if (override && override.deleted === true) return;
     const status = override ? override.status : "rejected";
-    if (status === "pending") count++;
+    if (status === "pending") pendingIds.add(String(id));
   });
 
   getDemoIndividualDirectSummaries().forEach(function (item) {
     if (!item || !item.summaryText) return;
     const status = String(item.status || "pending").toLowerCase();
-    if (status === "pending") count++;
+    if (status === "pending") pendingIds.add(String(item.summaryId));
   });
 
-  return count;
+  return pendingIds.size;
 }

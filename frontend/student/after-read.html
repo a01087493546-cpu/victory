@@ -8132,13 +8132,23 @@ if (selectedBookType === "opinion") {
            local 카드로 복제하지 않고 같은 summaryId의 revision override를
            PENDING으로 갱신한다. */
         if (editingDemoPracticeReviewSeedId) {
+          const resubmittedSeedId = editingDemoPracticeReviewSeedId;
           saveDemoSummaryRevisionOverride(
             "practice",
-            editingDemoPracticeReviewSeedId,
+            resubmittedSeedId,
             summaryText,
             selectedBookType,
             getAfterReadingQuestionPayload()
           );
+          const seedAfterResubmit = getDemoFinalSummaryReviewSeeds("practice").find(function(seed) {
+            return String(seed.id) === String(resubmittedSeedId);
+          });
+          if (!seedAfterResubmit || seedAfterResubmit.status !== "pending" || seedAfterResubmit.summary !== summaryText.trim()) {
+            throw new Error("심사용 연습읽기 seed 재제출 상태가 승인대기로 반영되지 않았습니다.");
+          }
+          const seedLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
+          delete seedLikes[String(resubmittedSeedId)];
+          saveDemoState(DEMO_SHARE_LIKES_KEY, seedLikes);
           editingDemoPracticeReviewSeedId = null;
           await renderShareList();
           showStudyPanel("share");
@@ -8175,8 +8185,6 @@ if (selectedBookType === "opinion") {
         const previousDisplayedStatus = previousOverride
           ? previousOverride.status
           : (previousData.status || "pending");
-        const isRealTextChange = summaryToStore !== (previousData.summary || "");
-
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
           localId: resolvedLocalId,
           demoBrowserId: getDemoBrowserId(),
@@ -8213,22 +8221,33 @@ if (selectedBookType === "opinion") {
         });
 
         /*
-         * 거절된 글의 본문을 실제로 고쳐 재제출한 경우에만: 1) 거절
-         * override를 지워서 방금 pending으로 저장한 값이 화면에 그대로
-         * 반영되게 하고(override가 남아 있으면 raw status가 pending으로
-         * 바뀌어도 getDemoLocalSharedSummary()가 계속 "거절됨"으로
-         * 보여준다), 2) 수정 전 글에 달렸던 좋아요를 전부 지운다(수정본은
-         * 좋아요 0부터 다시 시작해야 한다). 상태만 바뀌는 경우(교사가
-         * 승인/거절/대기로만 돌리고 학생이 본문을 고치지 않은 경우)에는
-         * 이 분기를 타지 않으므로 기존 좋아요가 그대로 보존된다.
+         * 거절된 글을 학생이 재제출했다면 본문 비교 결과와 관계없이 같은
+         * summaryId의 override를 PENDING으로 덮는다. 예전에는 실제 텍스트가
+         * 달라졌을 때만 rejected override를 삭제해서, 동일 본문 재공유나
+         * 변경 감지가 어긋난 경우 원본의 pending보다 옛 rejected override가
+         * 계속 우선하는 문제가 있었다. 재제출은 그 자체로 상태 전이이므로
+         * 거절 사유와 좋아요도 항상 초기화한다.
          */
-        if (previousDisplayedStatus === "rejected" && isRealTextChange) {
-          delete reviewOverrides[overrideKey];
-          saveDemoState("summaryReviewOverrides", reviewOverrides);
+        if (previousDisplayedStatus === "rejected") {
+          saveDemoSummaryRevisionOverride(
+            "practice",
+            resolvedLocalId,
+            summaryToStore,
+            selectedBookType,
+            getAfterReadingQuestionPayload()
+          );
 
           const localLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
           delete localLikes[String(resolvedLocalId)];
           saveDemoState(DEMO_SHARE_LIKES_KEY, localLikes);
+
+          const effectiveResubmission = getDemoPracticeDirectSummary(currentClassReadingBookId);
+          if (!effectiveResubmission
+              || String(effectiveResubmission.id) !== String(resolvedLocalId)
+              || effectiveResubmission.status !== "pending"
+              || effectiveResubmission.summary !== summaryToStore) {
+            throw new Error("심사용 연습읽기 재제출 상태가 승인대기로 반영되지 않았습니다.");
+          }
         }
 
         /*
