@@ -2867,6 +2867,18 @@
   <script src="../js/demo-storage.js"></script>
   <script src="../js/teacher-demo-guide.js"></script>
   <script>
+    function getApiBaseUrl() {
+      if (window.location.hostname === "127.0.0.1") {
+        return "http://127.0.0.1:8080";
+      }
+      if (window.location.hostname === "localhost") {
+        return "http://localhost:8080";
+      }
+      return "https://victory-production-f94d.up.railway.app";
+    }
+
+    const API_BASE_URL = getApiBaseUrl();
+
     function updateWholeReadingStageScale() {
       const stage = document.getElementById("wholeReadingFixedStage");
       const frame = document.getElementById("wholeReadingStageFrame");
@@ -3041,7 +3053,7 @@ function buildPracticeShortSupportSummary(student) {
 async function fetchStudentPracticeProgress(studentId, token) {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/students/${studentId}/practice-progress`,
+      `${API_BASE_URL}/api/students/${studentId}/practice-progress`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -3082,7 +3094,7 @@ async function fetchStudentPracticeProgress(studentId, token) {
 async function fetchClassPracticeAchievement(classId, teacherId, token) {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/teachers/${teacherId}/classes/${classId}/practice-achievement`,
+      `${API_BASE_URL}/api/teachers/${teacherId}/classes/${classId}/practice-achievement`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -3119,14 +3131,14 @@ async function loadTeacherMenuBadges() {
   const summaryBadge = document.getElementById("summaryPendingBadge");
 
   try {
-    const count = await getPracticeBookChatPendingCount("http://localhost:8080");
+    const count = await getPracticeBookChatPendingCount(API_BASE_URL);
     if (bookChatBadge) bookChatBadge.textContent = "승인대기 " + count + "개";
   } catch (error) {
     console.warn("책수다방 승인대기 배지를 갱신하지 못했습니다.", error);
   }
 
   try {
-    const count = await getPracticeSummaryPendingCount("http://localhost:8080", currentClassId);
+    const count = await getPracticeSummaryPendingCount(API_BASE_URL, currentClassId);
     if (summaryBadge) summaryBadge.textContent = "승인대기 " + count + "개";
   } catch (error) {
     console.warn("간추리기 승인대기 배지를 갱신하지 못했습니다.", error);
@@ -3148,7 +3160,7 @@ async function loadTeacherDashboardData() {
 
   try {
     const classResponse = await fetch(
-      `http://localhost:8080/api/teachers/${teacherId}/class`,
+      `${API_BASE_URL}/api/teachers/${teacherId}/class`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -3171,7 +3183,7 @@ await loadReadingRange();
       `${classData.grade}학년 ${classData.classNumber}반`;
 
     const studentResponse = await fetch(
-      `http://localhost:8080/api/classes/${classData.classId}/students`,
+      `${API_BASE_URL}/api/classes/${classData.classId}/students`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -3621,7 +3633,7 @@ function renderTodayStatus(practiceAchievementData) {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/api/classes/${currentClassId}/reading-range`,
+      `${API_BASE_URL}/api/classes/${currentClassId}/reading-range`,
       {
         method: "PUT",
         headers: {
@@ -3691,7 +3703,7 @@ async function loadReadingRange() {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/api/classes/${currentClassId}/reading-range`,
+      `${API_BASE_URL}/api/classes/${currentClassId}/reading-range`,
       {
         method: "GET",
         headers: {

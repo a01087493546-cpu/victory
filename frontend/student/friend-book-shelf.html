@@ -690,7 +690,17 @@
   <script>
     // checkLogin();
 
-    const API_BASE_URL = "http://localhost:8080";
+    function getApiBaseUrl() {
+      if (window.location.hostname === "127.0.0.1") {
+        return "http://127.0.0.1:8080";
+      }
+      if (window.location.hostname === "localhost") {
+        return "http://localhost:8080";
+      }
+      return "https://victory-production-f94d.up.railway.app";
+    }
+
+    const API_BASE_URL = getApiBaseUrl();
     const token = sessionStorage.getItem("token");
     /* 로그인 시 학생/교사 구분 없이 sessionStorage "studentId" 키에 숫자 사용자 id가 저장된다(auth.js). */
     const viewerId = sessionStorage.getItem("studentId") || "";

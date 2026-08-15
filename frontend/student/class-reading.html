@@ -858,6 +858,18 @@
 
   <script src="../js/auth.js"></script>
   <script>
+    function getApiBaseUrl() {
+      if (window.location.hostname === "127.0.0.1") {
+        return "http://127.0.0.1:8080";
+      }
+      if (window.location.hostname === "localhost") {
+        return "http://localhost:8080";
+      }
+      return "https://victory-production-f94d.up.railway.app";
+    }
+
+    const API_BASE_URL = getApiBaseUrl();
+
     /*
       =========================================================
       우리반 책읽기 메인 화면 이동 함수
@@ -922,7 +934,7 @@
 
       try {
         const classResponse = await fetch(
-          `http://localhost:8080/api/students/${currentStudentId}/class`,
+          `${API_BASE_URL}/api/students/${currentStudentId}/class`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -939,7 +951,7 @@
         const classData = await classResponse.json();
 
         const rangeResponse = await fetch(
-          `http://localhost:8080/api/classes/${classData.classId}/reading-range`,
+          `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -1017,7 +1029,7 @@
 
       try {
         const classResponse = await fetch(
-          `http://localhost:8080/api/students/${currentStudentId}/class`,
+          `${API_BASE_URL}/api/students/${currentStudentId}/class`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -1035,7 +1047,7 @@
 
         const [rangeResponse, progressResponse] = await Promise.all([
           fetch(
-            `http://localhost:8080/api/classes/${classData.classId}/reading-range`,
+            `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
             {
               headers: {
                 Authorization: `Bearer ${token}`
@@ -1043,7 +1055,7 @@
             }
           ),
           fetch(
-            `http://localhost:8080/api/students/${currentStudentId}/practice-progress`,
+            `${API_BASE_URL}/api/students/${currentStudentId}/practice-progress`,
             {
               headers: {
                 Authorization: `Bearer ${token}`
@@ -1164,7 +1176,7 @@
 
       try {
         const response = await fetch(
-          `http://localhost:8080/api/students/${currentStudentId}/practice-progress`,
+          `${API_BASE_URL}/api/students/${currentStudentId}/practice-progress`,
           {
             method: "PUT",
             headers: {
@@ -1182,7 +1194,7 @@
         }
 
         const refreshResponse = await fetch(
-          `http://localhost:8080/api/students/${currentStudentId}/practice-progress`,
+          `${API_BASE_URL}/api/students/${currentStudentId}/practice-progress`,
           {
             method: "GET",
             headers: {

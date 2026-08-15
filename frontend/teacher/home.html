@@ -522,6 +522,18 @@
   </div>
 
   <script>
+    function getApiBaseUrl() {
+      if (window.location.hostname === "127.0.0.1") {
+        return "http://127.0.0.1:8080";
+      }
+      if (window.location.hostname === "localhost") {
+        return "http://localhost:8080";
+      }
+      return "https://victory-production-f94d.up.railway.app";
+    }
+
+    const API_BASE_URL = getApiBaseUrl();
+
     function updateTeacherHomeStageScale() {
       const stage = document.getElementById("teacherHomeFixedStage");
       const frame = document.getElementById("teacherHomeStageFrame");
@@ -556,7 +568,7 @@ async function loadAccountStatus() {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/api/teachers/${teacherId}/class`,
+      `${API_BASE_URL}/api/teachers/${teacherId}/class`,
       {
         headers: {
           Authorization: `Bearer ${token}`

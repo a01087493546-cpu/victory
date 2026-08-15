@@ -95,7 +95,10 @@ const GameAPI = (() => {
     if (window.location.hostname === '127.0.0.1') {
       return 'http://127.0.0.1:8080';
     }
-    return 'http://localhost:8080';
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:8080';
+    }
+    return 'https://victory-production-f94d.up.railway.app';
   }
 
   function authHeaders() {

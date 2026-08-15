@@ -399,4 +399,14 @@ function requestPreReadingAiFeedback(options) {
     });
 }
 
-const PRE_READING_AI_API_BASE_URL = "http://localhost:8080";
+function getApiBaseUrl() {
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:8080";
+  }
+  return "https://victory-production-f94d.up.railway.app";
+}
+
+const PRE_READING_AI_API_BASE_URL = getApiBaseUrl();

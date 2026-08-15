@@ -979,7 +979,17 @@ body.teacher-mode .teacher-return-button {
     const studentName = sessionStorage.getItem("name") || "나";
     const currentRole = sessionStorage.getItem("role") || "student";
     const teacherMode = currentRole === "teacher" && new URLSearchParams(location.search).get("teacher") === "1";
-    const API_BASE_URL = "http://localhost:8080";
+    function getApiBaseUrl() {
+      if (window.location.hostname === "127.0.0.1") {
+        return "http://127.0.0.1:8080";
+      }
+      if (window.location.hostname === "localhost") {
+        return "http://localhost:8080";
+      }
+      return "https://victory-production-f94d.up.railway.app";
+    }
+
+    const API_BASE_URL = getApiBaseUrl();
 
 let classReadingBookId = null;
     const typeInfo = {

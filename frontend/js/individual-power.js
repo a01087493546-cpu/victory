@@ -233,7 +233,17 @@ function getRewardHistoryKey() {
     더 이상 능력치 숫자의 원본으로 쓰지 않는다 - 조회 실패 시에도 예전
     로컬 숫자를 대신 보여주지 않고 오류로 처리한다.
   */
-  const INDIVIDUAL_POWER_API_BASE_URL = "http://localhost:8080";
+  function getApiBaseUrl() {
+    if (window.location.hostname === "127.0.0.1") {
+      return "http://127.0.0.1:8080";
+    }
+    if (window.location.hostname === "localhost") {
+      return "http://localhost:8080";
+    }
+    return "https://victory-production-f94d.up.railway.app";
+  }
+
+  const INDIVIDUAL_POWER_API_BASE_URL = getApiBaseUrl();
 
   function clampPowerValue(value) {
     const number = Number(value) || 0;
