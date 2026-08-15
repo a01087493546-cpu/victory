@@ -15,7 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:*",
                         "http://[::1]:*",
                         "https://victory-production-f94d.up.railway.app",
-                        "https://*.github.io"
+                        "https://*.github.io",
+                        "null"
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
