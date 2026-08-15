@@ -13,7 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(
                         "http://127.0.0.1:*",
                         "http://localhost:*",
-                        "http://[::1]:*"
+                        "http://[::1]:*",
+                        "https://victory-production-f94d.up.railway.app",
+                        "https://*.github.io"
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
