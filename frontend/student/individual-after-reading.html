@@ -4139,6 +4139,7 @@ let restoredIndividualSummaryId = null;
 let editingRejectedSummary = false;
 let editingSummaryId = null;
 let editingSummaryOriginalText = "";
+let editingDemoSeedSummary = false;
 /*
   오늘의 독서 모험 화면의 "간추리기 공유" 바로가기(?view=summaryShare)로
   들어왔는지 여부. true면 친구 글 조회·좋아요만 허용하고 "이 책
@@ -4919,27 +4920,36 @@ async function moveSummaryDate(dayOffset) {
       if (checkButton) checkButton.disabled = true;
       setFeedback("questionFeedback", "", "루미가 답변을 읽고 있어요...");
 
-      const readingRecordId = await getIndividualReadingRecordId();
+      const readingRecordId = editingDemoSeedSummary ? null : await getIndividualReadingRecordId();
 
       if (requestId !== individualQuestionAiRequestId) {
         return;
       }
 
-      if (!readingRecordId) {
+      if (!readingRecordId && !editingDemoSeedSummary) {
         applyIndividualQuestionAiResult(
           card, item, number, "need", "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.");
         if (checkButton) checkButton.disabled = false;
         return;
       }
 
-      requestAuthenticatedAiFeedback({
-        activityType: "individual_question",
-        evaluationKey: buildIndividualQuestionEvaluationKey(readingRecordId, number),
-        readingRecordId: readingRecordId,
-        bookType: getBookTypeLabelForAi(),
-        question: item.question,
-        answer: item.answer
-      }).then(function(result) {
+      const questionFeedbackPromise = editingDemoSeedSummary
+        ? requestAiFeedback(
+            "book_question",
+            getBookTypeLabelForAi(),
+            [{ question: item.question, answer: item.answer }],
+            number
+          )
+        : requestAuthenticatedAiFeedback({
+            activityType: "individual_question",
+            evaluationKey: buildIndividualQuestionEvaluationKey(readingRecordId, number),
+            readingRecordId: readingRecordId,
+            bookType: getBookTypeLabelForAi(),
+            question: item.question,
+            answer: item.answer
+          });
+
+      questionFeedbackPromise.then(function(result) {
         if (requestId !== individualQuestionAiRequestId) {
           return;
         }
@@ -5323,24 +5333,34 @@ function goToPreviousQuestionCard() {
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
 
-  const readingRecordId = await getIndividualReadingRecordId();
+  const readingRecordId = editingDemoSeedSummary ? null : await getIndividualReadingRecordId();
 
   if (requestId !== summaryAiRequestId) return;
 
-  if (!readingRecordId) {
+  if (!readingRecordId && !editingDemoSeedSummary) {
     setFeedback("summaryFeedback", "need", "진행 중인 책 정보를 찾을 수 없어요. 책읽기 화면에서 다시 시도해 주세요.");
     if (checkButton) checkButton.disabled = false;
     return;
   }
 
-  requestAuthenticatedAiFeedback({
-    activityType: "individual_summary",
-    evaluationKey: "individual_after_summary_" + readingRecordId,
-    readingRecordId: readingRecordId,
-    bookType: getBookTypeLabelForAi(),
-    qaList: questionAnswers,
-    summaryText: summaryText
-  }).then(async function(result) {
+  const summaryFeedbackPromise = editingDemoSeedSummary
+    ? requestAiFeedback(
+        "final_summary",
+        getBookTypeLabelForAi(),
+        questionAnswers,
+        undefined,
+        summaryText
+      )
+    : requestAuthenticatedAiFeedback({
+        activityType: "individual_summary",
+        evaluationKey: "individual_after_summary_" + readingRecordId,
+        readingRecordId: readingRecordId,
+        bookType: getBookTypeLabelForAi(),
+        qaList: questionAnswers,
+        summaryText: summaryText
+      });
+
+  summaryFeedbackPromise.then(async function(result) {
     if (requestId !== summaryAiRequestId) return;
 
     setFeedback("summaryFeedback", result.status, result.message);
@@ -5446,6 +5466,7 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
     editingRejectedSummary = false;
     editingSummaryId = null;
     editingSummaryOriginalText = "";
+    editingDemoSeedSummary = false;
     summaryFeedbackPassed = false;
     if (isDemoAccount()) saveDemoState(DEMO_SUMMARY_EDIT_DRAFT_KEY, {});
     await showShareScreen();
@@ -6831,6 +6852,7 @@ async function saveBookFinishRecord() {
       editingRejectedSummary = true;
       editingSummaryId = item.summaryId;
       editingSummaryOriginalText = item.summaryText || "";
+      editingDemoSeedSummary = isDemoAccount() && item.demoReviewSeed === true;
       selectedBookType = item.bookType || selectedBookType;
 
       const summaryInput = document.getElementById("summaryInput");
@@ -6843,7 +6865,12 @@ async function saveBookFinishRecord() {
       const restoredQuestions = Array.isArray(item.questionAnswers)
         ? item.questionAnswers
         : (Array.isArray(item.questions) ? item.questions : []);
-      Array.from(document.querySelectorAll("#qaList .iar-qa-card")).forEach(function(card, index) {
+      let editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+      if (editingDemoSeedSummary && editCards.length > 3) {
+        editCards.slice(3).forEach(function(card) { card.remove(); });
+        editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+      }
+      editCards.forEach(function(card, index) {
         const saved = restoredQuestions.find(function(entry) {
           return Number(entry.index) === index + 1;
         }) || restoredQuestions[index] || {};
@@ -6854,6 +6881,9 @@ async function saveBookFinishRecord() {
         card.dataset.feedbackPassed = "true";
         card.classList.add("passed");
       });
+      activeQuestionCardIndex = 0;
+      updateQuestionProgress();
+      updateSequentialQuestionLock();
 
       summaryFeedbackPassed = false;
       summaryAiRequestId++;
@@ -6878,13 +6908,21 @@ async function saveBookFinishRecord() {
           return String(item.summaryId) === String(editingSummaryId);
         });
         if (!source) return false;
-        const saved = resubmitDemoIndividualDirectSummary(
-          editingSummaryId,
-          source,
-          trimmedNext,
-          selectedBookType,
-          getQuestionAnswerSlots()
-        );
+        const saved = editingDemoSeedSummary
+          ? saveDemoSummaryRevisionOverride(
+              "individual",
+              editingSummaryId,
+              trimmedNext,
+              selectedBookType,
+              getQuestionAnswerSlots()
+            )
+          : resubmitDemoIndividualDirectSummary(
+              editingSummaryId,
+              source,
+              trimmedNext,
+              selectedBookType,
+              getQuestionAnswerSlots()
+            );
         if (!saved) {
           alert("간추리기를 다시 등록하지 못했어요. 잠시 후 다시 시도해 주세요.");
           return false;
@@ -6896,11 +6934,14 @@ async function saveBookFinishRecord() {
         delete localLikes[String(editingSummaryId)];
         saveDemoState("individualSummaryLikes", localLikes);
 
-        const savedAfterReading = loadDemoState(DEMO_AFTER_READING_KEY, {});
-        savedAfterReading.bookType = selectedBookType;
-        savedAfterReading.summary = trimmedNext;
-        savedAfterReading.summaryPassed = true;
-        saveDemoState(DEMO_AFTER_READING_KEY, savedAfterReading);
+        /* seed 수정본은 review override에만 남겨 direct 읽기 후 상태와 섞지 않는다. */
+        if (!editingDemoSeedSummary) {
+          const savedAfterReading = loadDemoState(DEMO_AFTER_READING_KEY, {});
+          savedAfterReading.bookType = selectedBookType;
+          savedAfterReading.summary = trimmedNext;
+          savedAfterReading.summaryPassed = true;
+          saveDemoState(DEMO_AFTER_READING_KEY, savedAfterReading);
+        }
         return true;
       }
 
@@ -7072,9 +7113,10 @@ function getTodayText() {
 
 
     function goIndividualHome() {
-      editingRejectedSummary = false;
-      editingSummaryId = null;
-      editingSummaryOriginalText = "";
+    editingRejectedSummary = false;
+    editingSummaryId = null;
+    editingSummaryOriginalText = "";
+    editingDemoSeedSummary = false;
       location.href = "./individual-reading.html";
     }
     
@@ -7143,9 +7185,10 @@ function goAdventure() {
   // 책을 다 읽은 상태로 처리해서 읽기 후 카드가 잠기지 않게 합니다.
   sessionStorage.setItem("individualBookFinished_" + studentId, "true");
 
-  editingRejectedSummary = false;
-  editingSummaryId = null;
-  editingSummaryOriginalText = "";
+      editingRejectedSummary = false;
+      editingSummaryId = null;
+      editingSummaryOriginalText = "";
+      editingDemoSeedSummary = false;
 
   location.href = "./today-reading-adventure.html";
 }
