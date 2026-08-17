@@ -2254,6 +2254,38 @@ function goTodayBookChatDate() {
       if (!question) return;
       const key = String(questionId);
 
+      /*
+       * ss01이 현재 브라우저에서 직접 만든 글(demoApproval)은 공용 seed가
+       * 아니다. 이전에는 모든 심사 질문에 아래 예시 생성기를 적용해서,
+       * direct 글도 질문 문자열 fallback을 타며 친구 생각/답 3개를 자동
+       * 상속했다. direct 글은 postId별 실제 browser-local 활동만 보여야
+       * 하므로 예시를 만들지 않는다.
+       *
+       * 수정 전 브라우저에 이미 저장된 잘못된 demo-friend-* 항목도 이
+       * direct postId에서만 제거한다. 사용자가 실제로 작성한 항목
+       * (demo-thought-, demo-quiz-, demo-reply- 접두사)은 그대로 보존한다.
+       */
+      if (question.demoApproval === true) {
+        const thoughtSeedPrefix = "demo-friend-thought-" + key + "-";
+        const quizSeedPrefix = "demo-friend-quiz-" + key + "-";
+        const removedThoughtIds = new Set();
+
+        thoughtCache[key] = (thoughtCache[key] || []).filter(function(item) {
+          const isInjectedSeed = String(item && item.id || "").startsWith(thoughtSeedPrefix);
+          if (isInjectedSeed) removedThoughtIds.add(String(item.id));
+          return !isInjectedSeed;
+        });
+        quizAnswerCache[key] = (quizAnswerCache[key] || []).filter(function(item) {
+          return !String(item && item.id || "").startsWith(quizSeedPrefix);
+        });
+        replyCache[key] = (replyCache[key] || []).filter(function(item) {
+          return !removedThoughtIds.has(String(item && item.parentThoughtId || ""));
+        });
+
+        persistDemoBookChatActivity();
+        return;
+      }
+
       if (question.type === "direct") {
         const mine = (quizAnswerCache[key] || []).filter(item => item.isMine);
         const examples = getDemoQuizFriendAnswers(question);

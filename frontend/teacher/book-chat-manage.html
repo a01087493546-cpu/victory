@@ -1190,6 +1190,54 @@
       loadBackendReviewPosts();
     }
 
+    /*
+     * ss01이 현재 브라우저에서 직접 작성한 글은 서버 응답과 무관한
+     * browser-local 승인 요청이다. 교사 화면이 PENDING/APPROVED/REJECTED
+     * API 세 건을 모두 기다린 뒤에야 이 목록을 읽으면, 네트워크가 느린
+     * 동안 direct 글이 승인 대기에서 빠져 보인다. 따라서 demo 화면은
+     * 이 함수를 먼저 호출해 local 글을 즉시 보여 주고, 서버 seed를 받은
+     * 뒤에도 같은 requestId를 기준으로 한 번만 유지한다.
+     */
+    function mergeDemoDirectApprovalRequests(targetByStatus) {
+      loadDemoApprovalRequests("practice").forEach(function(request) {
+        const normalizedStatus = String(request.status || "pending").toLowerCase();
+        const status = ["pending", "approved", "rejected"].includes(normalizedStatus)
+          ? normalizedStatus
+          : "pending";
+        if (status === "approved" && !isDemoBookChatItemOnDate(
+          request,
+          getDemoTodayDateKey(),
+          request.reviewedAt || ""
+        )) return;
+
+        const requestId = String(request.requestId);
+        ["pending", "approved", "rejected"].forEach(function(groupStatus) {
+          targetByStatus[groupStatus] = targetByStatus[groupStatus].filter(function(post) {
+            return String(post.id) !== requestId;
+          });
+        });
+        targetByStatus[status].push({
+          id: requestId,
+          sourceId: requestId,
+          status: status,
+          studentId: request.studentId,
+          studentName: request.studentName || "김초롱",
+          type: normalizeType(request.questionType),
+          question: request.question || "",
+          thought: request.answer || "",
+          reason: "",
+          evidence: "",
+          answer: request.answer || "",
+          classReadingBookId: request.classReadingBookId,
+          submittedAt: request.submittedAt || "",
+          submittedText: formatSubmittedText(request.submittedAt),
+          reviewedAt: request.reviewedAt || "",
+          reviewedText: request.reviewedAt ? formatSubmittedText(request.reviewedAt) : "",
+          rejectReason: request.rejectedReason || ""
+        });
+      });
+    }
+
     function bindEvents() {
       filterButtons.forEach(function(button) {
         button.addEventListener("click", function() {
@@ -1522,6 +1570,11 @@
          */
         const nextReviewPostsByStatus = { pending: [], approved: [], rejected: [] };
 
+        /* 서버 조회를 기다리지 않고 같은 브라우저의 direct 글부터 표시한다. */
+        mergeDemoDirectApprovalRequests(nextReviewPostsByStatus);
+        reviewPostsByStatus = nextReviewPostsByStatus;
+        renderAll();
+
         /*
          * 1) 학생 화면에 이미 공개돼 있는 진짜 승인 예시(DemoClassActivityInitializer가
          * 만든 DB 행)를 일반계정과 같은 GET API로 읽어 온다 - 쓰기(승인/거절)만
@@ -1597,37 +1650,10 @@
         });
 
         /*
-         * 3) ss01이 이 브라우저에서 직접 쓴 글(기존 방식 그대로).
+         * 서버 조회 중 상태가 바뀌었을 수도 있으므로 최신 local 요청을
+         * requestId로 다시 병합한다. 기존 항목은 제거한 뒤 한 건만 넣는다.
          */
-        loadDemoApprovalRequests("practice").forEach(function(request) {
-          const status = ["pending", "approved", "rejected"].includes(request.status)
-            ? request.status
-            : "pending";
-          if (status === "approved" && !isDemoBookChatItemOnDate(
-            request,
-            getDemoTodayDateKey(),
-            request.reviewedAt || ""
-          )) return;
-          nextReviewPostsByStatus[status].push({
-            id: String(request.requestId),
-            sourceId: String(request.requestId),
-            status: status,
-            studentId: request.studentId,
-            studentName: request.studentName || "김초롱",
-            type: normalizeType(request.questionType),
-            question: request.question || "",
-            thought: request.answer || "",
-            reason: "",
-            evidence: "",
-            answer: request.answer || "",
-            classReadingBookId: request.classReadingBookId,
-            submittedAt: request.submittedAt || "",
-            submittedText: formatSubmittedText(request.submittedAt),
-            reviewedAt: request.reviewedAt || "",
-            reviewedText: request.reviewedAt ? formatSubmittedText(request.reviewedAt) : "",
-            rejectReason: request.rejectedReason || ""
-          });
-        });
+        mergeDemoDirectApprovalRequests(nextReviewPostsByStatus);
 
         reviewPostsByStatus = nextReviewPostsByStatus;
         if (options && options.keepSelection) selectedPostId = String(options.keepSelection);
