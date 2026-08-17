@@ -784,6 +784,7 @@
     </div>
   </main>
 <script src="../js/auth.js"></script>
+<script src="../js/demo-storage.js"></script>
 <script src="../js/ai-feedback.js"></script>
 
   <script>
@@ -845,11 +846,40 @@ async function init() {
       =========================================================
     */
 async function loadBookThoughtQuestions() {
+  /*
+    심사계정의 직접 질문은 공용 DB가 아니라 mq_demo_duringRead에 저장된다.
+    AI 통과본만 질문 보관함에 합치며, 같은 평가 슬롯을 재검사한 경우에는
+    during-read.html이 동일 id를 최신 내용으로 덮어쓰므로 실패 초안이나
+    예전 문장이 별도 질문으로 남지 않는다.
+  */
+  const demoDirectQuestions = isDemoAccount()
+    ? loadDemoState("duringRead", [])
+      .filter(function(item) {
+        return item && item.aiPassed === true && String(item.question || "").trim();
+      })
+      .sort(function(a, b) {
+        const aTime = Date.parse(a.updatedAt || a.createdAt || "") || 0;
+        const bTime = Date.parse(b.updatedAt || b.createdAt || "") || 0;
+        return bTime - aTime;
+      })
+      .map(function(item) {
+        return normalizeQuestion({
+          id: item.id,
+          text: item.question,
+          answer: item.answer,
+          type: item.questionType,
+          createdAt: item.updatedAt || item.createdAt
+        });
+      })
+    : [];
+
   const token = sessionStorage.getItem("token");
 
   if (!token || !studentId) {
     console.error("학생 로그인 정보가 없습니다.");
-    return [];
+    return isDemoAccount()
+      ? mergeDemoQuestionArchive(demoDirectQuestions, getDemoQuestionArchiveFallback())
+      : [];
   }
 
   try {
@@ -871,7 +901,7 @@ async function loadBookThoughtQuestions() {
 
     const items = await response.json();
 
-    return items.map(function(item) {
+    const serverQuestions = items.map(function(item) {
       return normalizeQuestion({
         id: item.id,
         text: item.question,
@@ -880,14 +910,48 @@ async function loadBookThoughtQuestions() {
         createdAt: item.createdAt
       });
     });
+
+    if (!isDemoAccount()) return serverQuestions;
+
+    /* direct를 앞에 두고 같은 id의 서버 항목은 제외한다. */
+    return mergeDemoQuestionArchive(
+      demoDirectQuestions,
+      serverQuestions.length > 0 ? serverQuestions : getDemoQuestionArchiveFallback()
+    );
   } catch (error) {
     console.error(
       "나의 질문을 DB에서 불러오지 못했습니다.",
       error
     );
 
-    return [];
+    if (!isDemoAccount()) return [];
+
+    /*
+      file:// 또는 서버 미실행 환경에서도 심사 예시가 사라지지 않도록
+      공용 demo-storage의 연습읽기 seed를 질문 보관함 형식으로 사용한다.
+      서버가 정상일 때는 위의 실제 seed 응답을 우선하므로 중복되지 않는다.
+    */
+    return mergeDemoQuestionArchive(demoDirectQuestions, getDemoQuestionArchiveFallback());
   }
+}
+
+function getDemoQuestionArchiveFallback() {
+  return getDemoBookChatPendingSeeds("practice").map(function(seed) {
+    return normalizeQuestion({
+      id: seed.id,
+      text: seed.question,
+      answer: seed.answer,
+      type: seed.questionType,
+      createdAt: seed.submittedAt
+    });
+  });
+}
+
+function mergeDemoQuestionArchive(directQuestions, seedQuestions) {
+  const directIds = new Set(directQuestions.map(function(item) { return String(item.id); }));
+  return directQuestions.concat(seedQuestions.filter(function(item) {
+    return !directIds.has(String(item.id));
+  }));
 }
 
 

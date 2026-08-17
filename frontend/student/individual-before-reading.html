@@ -3080,7 +3080,20 @@ updateDemoBanner(isBookStep);
       */
       if (isDemoAccount()) {
         const saved = loadDemoState("individualBeforeReading", {});
-        saved[stepType] = { question: question || "", answer: answer || "", skipped: !!skipped };
+        saved[stepType] = {
+          question: question || "",
+          answer: answer || "",
+          skipped: !!skipped,
+          /* 이 함수는 AI good 직후(또는 차례 없음 처리)에만 호출된다. */
+          aiPassed: !skipped,
+          readingRecordId: String(
+            currentReadingRecordId ||
+            sessionStorage.getItem("individualReadingRecordId_" + studentId) ||
+            ""
+          ),
+          bookTitle: sessionStorage.getItem(STORAGE_KEYS.bookTitle) || "",
+          updatedAt: new Date().toISOString()
+        };
         saveDemoState("individualBeforeReading", saved);
         return { demoSaved: true, stepType: stepType, question: question, answer: answer, skipped: !!skipped };
       }

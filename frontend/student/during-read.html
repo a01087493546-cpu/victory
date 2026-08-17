@@ -1498,6 +1498,7 @@ async function loadClassReadingBookId() {
       question: question,
       answer: answer,
       createdAt: existingItem?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       aiPassed: options.aiPassed === true
     };
 
