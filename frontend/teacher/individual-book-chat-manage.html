@@ -1607,6 +1607,7 @@
   <script src="../js/demo-storage.js"></script>
   <script>
     function getApiBaseUrl() {
+<<<<<<< HEAD
       if (window.location.hostname === "127.0.0.1") {
         return "http://127.0.0.1:8080";
       }
@@ -1617,6 +1618,18 @@
     }
 
     const API_BASE_URL = getApiBaseUrl();
+=======
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:8080";
+  }
+  return "https://victory-production-f94d.up.railway.app";
+}
+
+const API_BASE_URL = getApiBaseUrl();
+>>>>>>> jiao
 
     const statusInfo = {
       pending: { label: "승인 대기", className: "pending" },
@@ -2309,6 +2322,7 @@
     function openStudentBookChat() {
       sessionStorage.setItem("teacherMode", "true");
       sessionStorage.setItem("teacherBookChatReturn", "individual-book-chat-manage.html");
+      sessionStorage.setItem("teacherBookChatDemoMode", String(isDemoAccount()));
       location.href = "../student/individual-during-reading.html?view=bookChat&teacher=1";
     }
 

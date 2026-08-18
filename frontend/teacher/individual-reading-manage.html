@@ -2322,6 +2322,7 @@
       배열을 다시 채우지 않는다(하드코딩 대체 금지).
     */
     function getApiBaseUrl() {
+<<<<<<< HEAD
       if (window.location.hostname === "127.0.0.1") {
         return "http://127.0.0.1:8080";
       }
@@ -2332,6 +2333,18 @@
     }
 
     const API_BASE_URL = getApiBaseUrl();
+=======
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:8080";
+  }
+  return "https://victory-production-f94d.up.railway.app";
+}
+
+const API_BASE_URL = getApiBaseUrl();
+>>>>>>> jiao
 
     let students = [];
 
