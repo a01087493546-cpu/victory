@@ -2586,17 +2586,16 @@ updateDemoBanner(isBookStep);
       실패하면(특히 409: 진행 중인 책이 이미 있음) 여기서 멈춘다.
     */
     function getApiBaseUrl() {
-      if (window.location.hostname === "127.0.0.1") {
-        return "http://127.0.0.1:8080";
-      }
-      if (window.location.hostname === "localhost") {
-        return "http://localhost:8080";
-      }
-      return "https://victory-production-f94d.up.railway.app";
-    }
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:8080";
+  }
+  return "https://victory-production-f94d.up.railway.app";
+}
 
-    const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
-
+const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
     async function registerIndividualReadingBook(title, author, bookType) {
       const token = sessionStorage.getItem("token");
 

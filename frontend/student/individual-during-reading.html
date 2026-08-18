@@ -5468,7 +5468,7 @@
   font-size: 21px !important;
 }
 
-#shareScreen .idr-book-chat-layout .idr-share-card .idr-book-chat-scene {
+#shareScreen .idr-book-chat-layout .idr-share-card p {
   font-size: 16px !important;
   line-height: 1.5 !important;
 }
@@ -5553,19 +5553,6 @@
   color: #b23327;
   font-size: 15px;
   font-weight: 900;
-}
-
-.idr-reject-reason-box p {
-  margin: 0;
-  max-height: 130px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 6px;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: keep-all;
-  line-height: 1.6;
-  -webkit-overflow-scrolling: touch;
 }
 
 .idr-book-chat-modal-head {
@@ -6756,7 +6743,7 @@ body.idr-book-chat-open .idr-share-list-card {
 }
 
 /* 장면 설명이 길어도 카드가 무한히 늘어나지 않게 3줄로 자른다(전체 내용은 상세 모달에서) */
-#shareScreen .idr-book-chat-layout .idr-share-card .idr-book-chat-scene {
+#shareScreen .idr-book-chat-layout .idr-share-card p {
   display: -webkit-box !important;
   -webkit-line-clamp: 3 !important;
   line-clamp: 3 !important;
@@ -7909,25 +7896,6 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   border-color: rgba(214, 68, 58, 0.34);
   color: #b23327;
 }
-
-/* "수정하기" 버튼 - 삭제 버튼과 같은 크기/보조 버튼 스타일로 통일하되,
-   위험 동작이 아니므로 hover에서 붉은색이 아니라 살짝 진한 베이지로만 강조한다. */
-.idr-book-chat-edit-button {
-  height: 36px;
-  padding: 0 14px;
-  border: 1px solid rgba(181, 117, 37, 0.32);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
-  color: #8a5a2f;
-  font-size: 12px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.idr-book-chat-edit-button:hover {
-  background: rgba(181, 117, 37, 0.12);
-  border-color: rgba(181, 117, 37, 0.44);
-}
 /* 책수다 상세 모달 상단 버튼 정리 */
 #bookChatDetailModal .idr-book-chat-modal-panel {
   position: relative !important;
@@ -8022,16 +7990,32 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   font-size: 15px !important;
   font-weight: 850 !important;
   line-height: 1.45 !important;
-  max-height: 130px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  padding-right: 6px !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
+  white-space: pre-line !important;
   word-break: keep-all !important;
-  -webkit-overflow-scrolling: touch;
 }
 
+/* 인기 글 1~3위 배지: 카드 최상단, 작성자/상태 배지 행과 겹치지 않게 별도 행 */
+.idr-book-chat-popular-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  width: fit-content !important;
+  margin-bottom: 8px !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  white-space: nowrap !important;
+  background: linear-gradient(180deg, #ffe9a8, #f0c258) !important;
+  color: #6b4a10 !important;
+  border: 1px solid rgba(176, 122, 21, 0.35) !important;
+}
+
+.idr-book-chat-popular-rank-1 {
+  font-size: 14px !important;
+  background: linear-gradient(180deg, #fff2c4, #f4c94a) !important;
+  box-shadow: 0 2px 6px rgba(196, 145, 20, 0.35) !important;
+}
 /* =========================================================
    개별읽기 책수다방 최종 높이 조정
    1. 친구들의 책수다 배경카드를 화면 아래까지 확대
@@ -8116,9 +8100,6 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   margin: 0 !important;
   font-size: 13px !important;
   line-height: 1.35 !important;
-  max-height: 130px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
 }
 
 .idr-demo-banner {
@@ -8213,11 +8194,11 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 </style>
 <style>
   .idr-teacher-book-chat-return {
-    height:42px;
-    padding:0 18px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
+    position:fixed;
+    z-index:12000;
+    top:31px;
+    right:80px;
+    padding:11px 17px;
     border:1px solid rgba(161,104,31,.48);
     border-radius:999px;
     background:linear-gradient(180deg,#fff8e5,#e5bb68);
@@ -8225,31 +8206,22 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
     font-size:15px;
     font-weight:900;
     box-shadow:0 5px 0 rgba(101,57,12,.30);
-    cursor:pointer;
   }
   .idr-teacher-book-chat-return[hidden] { display:none !important; }
   body.individual-book-chat-teacher-mode .idr-top-actions > * {
     display:none !important;
   }
-  body.individual-book-chat-teacher-mode .idr-top-actions > .idr-teacher-book-chat-return {
-    display:inline-flex !important;
-  }
-  body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-home-button {
+  body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-date-actions {
     display:none !important;
   }
   body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-write-button {
     display:none !important;
   }
-  body.individual-book-chat-teacher-mode #individualBookChatTeacherReturn,
-  body.individual-book-chat-teacher-mode .idr-top-actions .idr-teacher-book-chat-return {
+  body.individual-book-chat-teacher-mode #individualBookChatTeacherReturn {
     display:inline-flex !important;
     align-items:center;
     justify-content:center;
   }
-  .idr-reply-item .content-manage-actions { display:inline-flex; gap:6px; margin-left:10px; }
-  .idr-reply-item .content-manage-button { padding:3px 8px; border:1px solid rgba(139,84,33,.28); border-radius:999px; background:#fffaf0; color:#744619; font-size:12px; font-weight:850; }
-  .idr-reply-item .content-manage-button.danger { color:#9a3f2d; border-color:rgba(154,63,45,.28); }
-  .idr-reply-item .idr-teacher-author-badge { display:inline-flex; align-items:center; margin-right:6px; padding:2px 7px; border:1px solid rgba(181,117,37,.34); border-radius:999px; background:#fff3d5; color:#744619; font-size:11px; font-weight:900; }
 </style>
 </head>
 
@@ -8268,8 +8240,15 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 
   <!-- 개별읽기 활동 중에도 현재 능력치를 확인할 수 있는 버튼입니다. -->
   <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-  <button class="idr-teacher-book-chat-return" id="individualBookChatTeacherReturn" type="button" onclick="returnToIndividualBookChatManage()" hidden>← 관리 화면으로 돌아가기</button>
-
+<button
+  class="idr-teacher-book-chat-return"
+  id="individualBookChatTeacherReturn"
+  type="button"
+  onclick="returnToIndividualBookChatManage()"
+  hidden
+>
+  ← 관리 화면으로 돌아가기
+</button>
   <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
 </div>
       </header>
@@ -8810,16 +8789,16 @@ const bookTypes = [
     let selectedShareQuestionId = null;
 
     function getApiBaseUrl() {
-      if (window.location.hostname === "127.0.0.1") {
-        return "http://127.0.0.1:8080";
-      }
-      if (window.location.hostname === "localhost") {
-        return "http://localhost:8080";
-      }
-      return "https://victory-production-f94d.up.railway.app";
-    }
+  if (window.location.hostname === "127.0.0.1") {
+    return "http://127.0.0.1:8080";
+  }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:8080";
+  }
+  return "https://victory-production-f94d.up.railway.app";
+}
 
-    const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
+const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
 
     /*
       쪽수 저장/완독 API 호출 시 필요한 진행 중 readingRecordId 캐시.
@@ -8838,7 +8817,9 @@ const bookTypes = [
         showScreen("bookChat");
       }
 
-      const teacherBookChatMode = isIndividualBookChatTeacherMode();
+      const teacherBookChatMode =
+        new URLSearchParams(location.search).get("teacher") === "1" &&
+        sessionStorage.getItem("role") === "teacher";
       const teacherReturnButton = document.getElementById("individualBookChatTeacherReturn");
       if (teacherReturnButton) teacherReturnButton.hidden = !teacherBookChatMode;
       document.body.classList.toggle("individual-book-chat-teacher-mode", teacherBookChatMode);
@@ -9400,11 +9381,8 @@ async function fetchClassBookChatFeed() {
   }
 
   try {
-    const feedUrl = individualBookChatTeacherMode
-      ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/posts?status=APPROVED"
-      : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts";
     const response = await fetch(
-      feedUrl,
+      INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts",
       {
         headers: {
           Authorization: "Bearer " + token
@@ -9418,10 +9396,7 @@ async function fetchClassBookChatFeed() {
       throw new Error("책수다방 글 목록 조회 실패: " + response.status);
     }
 
-    const feedPayload = await response.json();
-    const feed = individualBookChatTeacherMode
-      ? { hasClass: true, posts: Array.isArray(feedPayload) ? feedPayload : [] }
-      : feedPayload;
+    const feed = await response.json();
 
     let serverPosts = feed.posts.map(mapBookChatPostFromServer);
     let seedPosts = [];
@@ -9434,55 +9409,30 @@ async function fetchClassBookChatFeed() {
        * (내 글은 상태와 무관하게 항상 보이고, 남의 글은 approved일
        * 때만 보임) 여기서는 override 반영값만 정확히 채워 넣으면 된다.
        */
-      /* 심사계정은 서버 DB의 시점에 따라 학생/교사 목록이 달라지지 않도록
-         공용 최종 seed만 사용한다. direct 글은 아래에서 별도로 합친다. */
-      serverPosts = [];
-      seedPosts = getDemoFinalIndividualBookChatSeeds().map(mapIndividualPendingSeedToPost);
+      serverPosts = serverPosts.map(function (post) {
+        const override = getDemoBookChatStatusOverride("individual", post.id);
+        if (!override) return post;
+        return Object.assign({}, post, {
+          moderationStatus: override.status,
+          rejectReason: override.status === "rejected" ? override.reason : ""
+        });
+      });
+      seedPosts = INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost);
     }
     const demoPosts = isDemoAccount()
       ? loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost)
       : [];
-    const mergedPosts = serverPosts.concat(seedPosts).concat(demoPosts)
-      .map(function (post) {
-        const currentLoginId = String(sessionStorage.getItem("loginId") || "");
-        const mine = !individualBookChatTeacherMode && (
-          post.writerLoginId
-            ? String(post.writerLoginId) === currentLoginId
-            : post.studentId != null && String(post.studentId) === String(studentId)
-        );
-        return Object.assign({}, post, { isMine: mine });
-      })
-      .filter(function (post) {
-        const status = String(post.moderationStatus || "pending").toLowerCase();
-        if (individualBookChatTeacherMode) return status === "approved";
-        if (!isDemoAccount()) return true;
-        return status === "approved" || (post.isMine && (status === "pending" || status === "rejected"));
-      });
     return {
       hasClass: feed.hasClass,
-      posts: mergedPosts
+      posts: serverPosts.concat(seedPosts).concat(demoPosts)
     };
   } catch (error) {
     console.error("책수다방 글 목록을 불러오지 못했습니다.", error);
     return {
       hasClass: true,
       posts: isDemoAccount()
-        ? getDemoFinalIndividualBookChatSeeds().map(mapIndividualPendingSeedToPost)
+        ? INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost)
             .concat(loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost))
-            .map(function (post) {
-              const currentLoginId = String(sessionStorage.getItem("loginId") || "");
-              const mine = !individualBookChatTeacherMode && (
-                post.writerLoginId
-                  ? String(post.writerLoginId) === currentLoginId
-                  : post.studentId != null && String(post.studentId) === String(studentId)
-              );
-              return Object.assign({}, post, { isMine: mine });
-            })
-            .filter(function (post) {
-              const status = String(post.moderationStatus || "pending");
-              if (individualBookChatTeacherMode) return status === "approved";
-              return status === "approved" || (post.isMine && (status === "pending" || status === "rejected"));
-            })
         : []
     };
   }
@@ -9496,16 +9446,50 @@ async function fetchClassBookChatFeed() {
  * 목록(친구 글)에 보이지 않는다(isMine이 항상 false이므로 approved일
  * 때만 노출되는 기존 필터를 그대로 탄다).
  */
-const INDIVIDUAL_BOOK_CHAT_PENDING_SEED = getDemoBookChatPendingSeeds("individual");
+const INDIVIDUAL_BOOK_CHAT_PENDING_SEED = [
+  {
+    id: "individual-seed-pending-01",
+    studentName: "송민정",
+    bookTitle: "긴긴밤",
+    title: "노든의 선택",
+    scene: "노든은 위험한 길을 지나야 어린 펭귄을 지킬 수 있습니다.\n하지만 그 길은 아주 위험합니다.",
+    optionA: "안전한 길로 돌아간다.",
+    optionB: "위험해도 가장 빠른 길로 간다.",
+    authorChoice: "B",
+    submittedAt: "2026-08-05T10:20:00"
+  },
+  {
+    id: "individual-seed-pending-02",
+    studentName: "김민지",
+    bookTitle: "우리 몸의 신비",
+    title: "건강 습관 하나만 고르기",
+    scene: "몸을 건강하게 만들기 위해 매일 한 가지 습관만 지킬 수 있다면 어떤 것을 고를까요?",
+    optionA: "매일 운동하기",
+    optionB: "매일 충분히 잠자기",
+    authorChoice: "B",
+    submittedAt: "2026-08-06T14:10:00"
+  },
+  {
+    id: "individual-seed-pending-03",
+    studentName: "이혜원",
+    bookTitle: "초정리 편지",
+    title: "글을 배울 기회",
+    scene: "글을 배우는 것이 쉽지 않지만, 글을 알게 되면 내 생각을 다른 사람에게 전할 수 있습니다.",
+    optionA: "어렵더라도 끝까지 글을 배운다.",
+    optionB: "너무 어려우면 다른 사람이 대신 읽고 써 주게 한다.",
+    authorChoice: "A",
+    submittedAt: "2026-08-07T09:40:00"
+  }
+];
 
 function mapIndividualPendingSeedToPost(seed) {
-  const status = seed.status || "pending";
+  const override = getDemoBookChatStatusOverride("individual", seed.id);
+  const status = override ? override.status : "pending";
   return {
     id: seed.id,
     writer: seed.studentName,
     writerName: seed.studentName,
-    studentId: seed.writerLoginId || null,
-    writerLoginId: seed.writerLoginId || "",
+    studentId: null,
     classId: null,
     bookTitle: seed.bookTitle,
     title: seed.title,
@@ -9515,17 +9499,15 @@ function mapIndividualPendingSeedToPost(seed) {
     authorChoice: seed.authorChoice,
     isMine: false,
     moderationStatus: status,
-    rejectReason: status === "rejected" ? (seed.reason || "") : "",
+    rejectReason: status === "rejected" ? (override ? override.reason : "") : "",
     aCount: 0,
     bCount: 0,
     createdAt: seed.submittedAt,
-    createdDate: getDemoBookChatItemDateKey(seed, seed.updatedAt || ""),
-    demoPersistentSeed: true
+    createdDate: seed.submittedAt.slice(0, 10)
   };
 }
 
 function mapDemoIndividualApprovalToPost(request) {
-  const requestStudentId = request.studentId == null ? "" : String(request.studentId);
   return {
     id: String(request.requestId),
     writer: request.studentName || "김초롱",
@@ -9538,22 +9520,18 @@ function mapDemoIndividualApprovalToPost(request) {
     optionA: request.optionA || "",
     optionB: request.optionB || "",
     authorChoice: request.authorChoice || "",
-    isMine: requestStudentId !== "" && requestStudentId === String(studentId),
+    isMine: true,
     moderationStatus: request.status || "pending",
     rejectReason: request.rejectedReason || "",
     aCount: 0,
     bCount: 0,
     createdAt: request.submittedAt || "",
-    createdDate: getDemoBookChatItemDateKey(
-      request,
-      request.reviewedAt || ""
-    ),
+    createdDate: request.activityDate || "",
     demoApproval: true
   };
 }
 
 function mapBookChatPostFromServer(item) {
-  const itemStudentId = item.studentId == null ? "" : String(item.studentId);
   return {
     id: item.id,
     writer: item.writerName || item.writer,
@@ -9569,7 +9547,7 @@ function mapBookChatPostFromServer(item) {
     // 서버 DTO 필드명은 mine/countA/countB다 - isMine/aCount/bCount로
     // 두면 Jackson이 getter 이름에서 JSON 키를 유추할 때 각각
     // "mine"/"acount"/"bcount"로 뭉개져서 실제 응답과 어긋난다.
-    isMine: itemStudentId !== "" && itemStudentId === String(studentId),
+    isMine: item.isMine === true || item.mine === true,
     moderationStatus: normalizeIndividualModerationStatus(item.moderationStatus),
     rejectReason: item.rejectReason || "",
     aCount: item.countA || 0,
@@ -9597,7 +9575,7 @@ async function fetchBookChatComments(postId) {
     return String(request.requestId) === String(postId);
   })) {
     const temporary = loadDemoState("individualBookChatComments", {});
-    return (temporary[String(postId)] || []).filter(item => !(temporary._deletedIds || []).includes(String(item.id))).map(item => ({...item, mine:item.authorId != null && String(item.authorId) === String(individualBookChatActorId)}));
+    return (temporary[String(postId)] || []).filter(item => !(temporary._deletedIds || []).includes(String(item.id))).map(item => ({...item, mine:item.authorId != null && String(item.authorId) === String(studentId)}));
   }
   const token = sessionStorage.getItem("token");
 
@@ -9605,14 +9583,10 @@ async function fetchBookChatComments(postId) {
     return [];
   }
 
-  const demoRevisionOverride = isDemoAccount()
-    ? getDemoBookChatStatusOverride("individual", postId)
-    : null;
-
   try {
     const response = await fetch(
       individualBookChatTeacherMode
-        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/posts/" + postId + "/comments"
+        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/book-chat/posts/" + postId + "/comments"
         : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts/" + postId + "/comments",
       {
         headers: {
@@ -9643,12 +9617,9 @@ async function fetchBookChatComments(postId) {
     if (!isDemoAccount()) return serverComments;
     const temporary = loadDemoState("individualBookChatComments", {});
     const deletedIds = temporary._deletedIds || [];
-    const visibleServerComments = demoRevisionOverride && demoRevisionOverride.commentsCleared
-      ? []
-      : serverComments;
-    return visibleServerComments.concat(temporary[String(postId)] || [])
+    return serverComments.concat(temporary[String(postId)] || [])
       .filter(item => !deletedIds.includes(String(item.id)))
-      .map(item => ({...item, mine:item.authorId != null ? String(item.authorId) === String(individualBookChatActorId) : !!item.mine}));
+      .map(item => ({...item, mine:item.authorId != null ? String(item.authorId) === String(studentId) : !!item.mine}));
   } catch (error) {
     console.error("책수다방 댓글을 불러오지 못했습니다.", error);
     return [];
@@ -9730,18 +9701,18 @@ window.deleteMyBookChatPost = async function (postId) {
     const localRequest = loadDemoApprovalRequests("individual").find(function(request) {
       return String(request.requestId) === String(postId);
     });
-    if (!confirm("이 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
-    if (localRequest) {
-      saveDemoState("individualBookChatApprovals", loadDemoApprovalRequests("individual").filter(function(request) {
-        return String(request.requestId) !== String(postId);
-      }));
-    } else {
-      deleteDemoBookChatPost("individual", postId);
+    if (!localRequest) {
+      alert("심사용 공용 예시 글은 삭제되지 않아요.");
+      return;
     }
-    const comments = loadDemoState("individualBookChatComments", {});
-    delete comments[String(postId)];
-    comments._deletedPostIds = Array.from(new Set((comments._deletedPostIds || []).concat(String(postId))));
-    saveDemoState("individualBookChatComments", comments);
+    if (localRequest.status !== "rejected") {
+      alert("거절된 내 글만 삭제할 수 있어요.");
+      return;
+    }
+    if (!confirm("이 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+    saveDemoState("individualBookChatApprovals", loadDemoApprovalRequests("individual").filter(function(request) {
+      return String(request.requestId) !== String(postId);
+    }));
     await renderBookChatRoom();
     return;
   }
@@ -9777,71 +9748,7 @@ window.deleteMyBookChatPost = async function (postId) {
   await renderBookChatRoom();
 };
 
-/*
-  REJECTED 상태인 내 책수다 글을 "같은 글"로 다시 제출한다(새 글 생성
-  아님). 일반계정은 기존 PUT .../book-chat/posts/{postId}가 이미
-  같은 row를 UPDATE하고 status→pending, rejectReason 초기화, 자식
-  댓글 soft-delete까지 처리한다(IndividualBookChatService.reviseRejectedPost).
-  심사계정은 그 서버 동작과 같은 결과를, ss01이 이 브라우저에서 직접 쓴
-  글이면 individualBookChatApprovals를 갱신하고, 교사 seed 글이면
-  individualBookChatSeedOverrides에 revision을 남기는 방식으로
-  재현한다. 성공(true)/실패(false)만 돌려주고 화면 갱신·알림은 호출부가
-  책임진다. 수정하기/피드백 모달은 모두 기존 책수다 글쓰기 화면으로
-  진입하며, 그 화면의 saveBookChatPostEdit만 이 함수를 호출한다.
-*/
-async function submitBookChatRevision(postId, revision) {
-  if (isDemoAccount()) {
-    const localRequest = loadDemoApprovalRequests("individual")
-      .find(item => String(item.requestId) === String(postId));
-    if (localRequest) {
-      saveDemoApprovalRequest("individual", Object.assign({}, localRequest, revision, {
-        status: "pending", rejectedReason: "", submittedAt: new Date().toISOString(),
-        questions: [Object.assign({}, revision)]
-      }));
-    } else {
-      saveDemoBookChatRevisionOverride("individual", postId, Object.assign({}, revision, {
-        commentsCleared: true
-      }));
-    }
-    /*
-     * 이 글이 잠깐 승인 상태였을 때(같은 브라우저에서) 남긴 댓글 캐시가
-     * 남아있으면 글 내용을 바꾼 뒤에도 계속 보인다 - 게시글 자체를
-     * 수정하는 경우이므로 이 postId에 달린 댓글 캐시를 실제로 비운다.
-     */
-    const temporaryComments = loadDemoState("individualBookChatComments", {});
-    delete temporaryComments[String(postId)];
-    saveDemoState("individualBookChatComments", temporaryComments);
-    return true;
-  }
-
-  try {
-    const response = await fetch(
-      INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts/" + postId,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: "Bearer " + sessionStorage.getItem("token") },
-        body: JSON.stringify(revision)
-      }
-    );
-    if (!response.ok) throw new Error("책수다방 글 재제출 실패: " + response.status);
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-window.reviseMyRejectedBookChatPost = function (postId) {
-  const post = currentBookChatPosts.find(item => String(item.id) === String(postId));
-  if (!post || !post.isMine || post.moderationStatus !== "rejected") {
-    alert("거절된 내 글만 수정할 수 있어요.");
-    return;
-  }
-  renderBookChatWriteScreen(postId);
-};
-
 let currentBookChatPosts = [];
-let currentIndividualBookChatComments = [];
 
 function demoExampleBannerHtml() {
   if (!isDemoAccount()) return "";
@@ -9872,13 +9779,6 @@ async function renderBookChatRoom(selectedIndex = 0) {
   });
 
   if (isDemoAccount()) {
-    const hiddenPostIds = loadDemoState("individualBookChatComments", {})._deletedPostIds || [];
-    for (let index = feedPosts.length - 1; index >= 0; index -= 1) {
-      if (hiddenPostIds.includes(String(feedPosts[index].id))) feedPosts.splice(index, 1);
-    }
-  }
-
-  if (isDemoAccount()) {
     const temporaryComments = loadDemoState("individualBookChatComments", {});
     feedPosts.forEach(function (post) {
       (temporaryComments[String(post.id)] || []).forEach(function (comment) {
@@ -9891,10 +9791,31 @@ async function renderBookChatRoom(selectedIndex = 0) {
   // 선택한 날짜에 작성된 책수다 글만 보여줍니다.
   // createdDate가 없는 예전 글은 createdAt에서 날짜만 잘라서 사용합니다.
   const dateFilteredPosts = feedPosts.filter(function (post) {
-    if (isDemoAccount() && post.demoPersistentSeed === true) return true;
+    if (isDemoAccount()) return true;
     const postDate = post.createdDate || (post.createdAt ? post.createdAt.slice(0, 10) : getTodayDateKey());
     return postDate === selectedBookChatDate;
   });
+
+  /*
+    인기 글 1~3위: 승인된 글 중 참여 수(A+B)가 1 이상인 글만 후보,
+    참여 수 내림차순 → 동률이면 최신 작성 글 우선, 최대 3개.
+    나머지는 나의 글(모든 상태, 최신순) → 친구 승인 글(최신순) 순서로 붙인다.
+  */
+  const popularPool = dateFilteredPosts
+    .filter(function (post) {
+      return post.moderationStatus === "approved" && (post.aCount + post.bCount) > 0;
+    })
+    .sort(function (a, b) {
+      const countDiff = (b.aCount + b.bCount) - (a.aCount + a.bCount);
+      return countDiff !== 0 ? countDiff : new Date(b.createdAt) - new Date(a.createdAt);
+    })
+    .slice(0, 3);
+
+  popularPool.forEach(function (post, index) {
+    post.popularRank = index + 1;
+  });
+
+  const popularIds = new Set(popularPool.map(function (post) { return post.id; }));
 
   /*
     공개 여부(isPublic)와 작성자 판별(isMine)은 서로 다른 조건이다 - 공개
@@ -9904,17 +9825,17 @@ async function renderBookChatRoom(selectedIndex = 0) {
     있으므로 명시적으로 분리해 둔다.
   */
   const myRemainingPosts = dateFilteredPosts
-    .filter(function (post) { return post.isMine; })
+    .filter(function (post) { return post.isMine && !popularIds.has(post.id); })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 
   const friendRemainingPosts = dateFilteredPosts
     .filter(function (post) {
       const isPublic = post.moderationStatus === "approved";
-      return !post.isMine && isPublic;
+      return !post.isMine && isPublic && !popularIds.has(post.id);
     })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 
-  const allBookChatPosts = [...myRemainingPosts, ...friendRemainingPosts];
+  const allBookChatPosts = [...popularPool, ...myRemainingPosts, ...friendRemainingPosts];
   currentBookChatPosts = allBookChatPosts;
   // 선택한 날짜에 책수다 글이 하나도 없으면 빈 화면을 보여줍니다.
   // 이 처리가 없으면 이전 날짜로 이동했을 때 오른쪽 상세가 이전 글처럼 남을 수 있습니다.
@@ -9933,7 +9854,6 @@ async function renderBookChatRoom(selectedIndex = 0) {
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
           <span class="idr-top-button idr-top-date">오늘 날짜 2026.07.05 (일)</span>
           <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          ${individualBookChatTeacherMode ? `<button class="idr-teacher-book-chat-return" type="button" onclick="returnToIndividualBookChatManage()">← 관리 화면으로 돌아가기</button>` : ""}
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
         </div>
       </header>
@@ -9980,11 +9900,11 @@ async function renderBookChatRoom(selectedIndex = 0) {
             type="button"
             onclick="window.moveBookChatDate(1)"
             style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-            ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+            ${!isDemoAccount() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
           >
             다음날
           </button>
-          <button class="idr-top-button idr-book-chat-home-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
+          <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
         </div>
       </div>
 
@@ -10057,7 +9977,6 @@ window.selectedBookChatIndex = selectedIndex;
 const displayReplies = canDiscussSelectedPost
   ? await fetchBookChatComments(selectedPost.id)
   : [];
-currentIndividualBookChatComments = displayReplies;
 
   // A/B 참여 수는 서버가 목록 조회 때 이미 집계해서 내려준다(aCount/bCount).
   const totalReplyCount = allBookChatPosts.reduce(function (sum, post) {
@@ -10078,6 +9997,12 @@ currentIndividualBookChatComments = displayReplies;
       ? `onclick="event.stopPropagation(); window.openIndividualRejectReasonModal('${post.id}');"`
       : "";
 
+    const popularBadgeHtml = post.popularRank
+      ? `<div class="idr-book-chat-popular-badge idr-book-chat-popular-rank-${post.popularRank}">${
+          post.popularRank === 1 ? "👑 인기 글 1위" : post.popularRank === 2 ? "🥈 인기 글 2위" : "🥉 인기 글 3위"
+        }</div>`
+      : "";
+
     return `
       <article
         class="idr-share-card ${selectedClass}"
@@ -10086,6 +10011,7 @@ currentIndividualBookChatComments = displayReplies;
         onclick="window.openBookChatDetail(${index}, false)"
         onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); window.openBookChatDetail(${index}, false); }"
       >
+        ${popularBadgeHtml}
         <div class="idr-question-card-top">
   <div class="idr-book-chat-writer-status">
     <span>${post.label || post.writer}</span>
@@ -10113,7 +10039,7 @@ currentIndividualBookChatComments = displayReplies;
 
 
         <strong>${escapeHtml(post.title)}</strong>
-        <p class="idr-book-chat-scene">${escapeHtml(post.scene)}</p>
+        <p>${escapeHtml(post.scene)}</p>
         <div class="idr-book-chat-option-list">
           <div class="idr-book-chat-option-preview">
             <span class="idr-book-chat-option-label">A</span>
@@ -10129,7 +10055,7 @@ ${
   post.moderationStatus === "rejected"
     ? `
       <div class="idr-book-chat-reject-feedback">
-        <strong>선생님이 남긴 이유</strong>
+        <strong>선생님의 피드백</strong>
         <p>
           ${escapeHtml(
             post.rejectReason ||
@@ -10158,11 +10084,6 @@ ${
   ${
     post.isMine
       ? `
-        ${post.isMine && post.moderationStatus === "rejected" ? `<button
-          class="idr-book-chat-edit-button"
-          type="button"
-          onclick="event.stopPropagation(); window.reviseMyRejectedBookChatPost('${post.id}');"
-        >수정하기</button>` : ""}
         <button
           class="idr-book-chat-delete-button"
           type="button"
@@ -10185,11 +10106,10 @@ ${
   ? displayReplies.map(function (reply) {
     return `
       <div class="idr-reply-item">
-        ${String(reply.authorRole || "").toLowerCase() === "teacher" ? `<span class="idr-teacher-author-badge">선생님</span>` : ""}
         <strong>${escapeHtml(reply.writer)} · ${reply.choice} 선택</strong>
         ${escapeHtml(reply.content)}
         ${(reply.mine || individualBookChatTeacherMode) ? `<span class="content-manage-actions">
-          ${reply.mine && !individualBookChatTeacherMode ? `<button class="content-manage-button" type="button" onclick="window.editIndividualBookChatComment('${escapeHtml(reply.id)}')">수정하기</button>` : ""}
+          ${reply.mine ? `<button class="content-manage-button" type="button" onclick="window.editIndividualBookChatComment('${escapeHtml(reply.id)}')">수정</button>` : ""}
           <button class="content-manage-button danger" type="button" onclick="window.deleteIndividualBookChatComment('${escapeHtml(reply.id)}')">삭제</button>
         </span>` : ""}
       </div>
@@ -10252,7 +10172,6 @@ ${
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
           <span class="idr-top-button idr-top-date">오늘 날짜 2026.07.05 (일)</span>
           <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          ${individualBookChatTeacherMode ? `<button class="idr-teacher-book-chat-return" type="button" onclick="returnToIndividualBookChatManage()">← 관리 화면으로 돌아가기</button>` : ""}
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
         </div>
       </header>
@@ -10300,11 +10219,11 @@ ${
   type="button"
   onclick="window.moveBookChatDate(1)"
   style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-  ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+  ${!isDemoAccount() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
 >
   다음날
 </button>
-          <button class="idr-top-button idr-book-chat-home-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
+        <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
   </div>
 </div>
 
@@ -10467,77 +10386,12 @@ window.openBookChatDetail = async function (index, showRepliesOnly = false) {
   modal.setAttribute("aria-hidden", "false");
 };
 
-window.deleteIndividualBookChatPostAsTeacher = async function (postId) {
-  if (!individualBookChatTeacherMode) return;
-  if (!confirm("이 학생의 글을 책수다방에서 삭제할까요?")) return;
-  if (isDemoAccount()) {
-    const state = loadDemoState("individualBookChatComments", {});
-    state._deletedPostIds = Array.from(new Set((state._deletedPostIds || []).concat(String(postId))));
-    saveDemoState("individualBookChatComments", state);
-    await renderBookChatRoom();
-    return;
-  }
-  const token = sessionStorage.getItem("token");
-  const response = await fetch(INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/posts/" + postId, {method:"DELETE", headers:{Authorization:"Bearer " + token}});
-  if (!response.ok) { alert("학생 글을 삭제하지 못했어요."); return; }
-  await renderBookChatRoom();
-};
-
 window.closeBookChatDetail = function () {
   const modal = document.getElementById("bookChatDetailModal");
   if (!modal) return;
 
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
-};
-
-window.editIndividualBookChatComment = async function (commentId) {
-  const comment = currentIndividualBookChatComments.find(item => String(item.id) === String(commentId));
-  if (!comment || !comment.mine) return;
-  const content = prompt("생각을 수정해 주세요.", comment.content || "");
-  if (content === null) return;
-  if (!content.trim()) { alert("왜 그렇게 생각했는지 이유를 적어 주세요."); return; }
-  const choice = prompt("선택을 A 또는 B로 적어 주세요.", comment.choice || "A");
-  if (choice === null) return;
-  const normalizedChoice = choice.trim().toUpperCase();
-  if (normalizedChoice !== "A" && normalizedChoice !== "B") { alert("A 또는 B를 선택해 주세요."); return; }
-  if (isDemoAccount()) {
-    const temporary = loadDemoState("individualBookChatComments", {});
-    const list = temporary[String(window.selectedBookChatPostId)] || [];
-    const target = list.find(item => String(item.id) === String(commentId));
-    if (!target || String(target.authorId) !== String(individualBookChatActorId)) return;
-    target.content = content.trim(); target.choice = normalizedChoice;
-    saveDemoState("individualBookChatComments", temporary);
-    await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
-    return;
-  }
-  const token = sessionStorage.getItem("token");
-  const url = individualBookChatTeacherMode
-    ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/comments/" + commentId
-    : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments/" + commentId;
-  const response = await fetch(url, {method:"PUT", headers:{"Content-Type":"application/json", Authorization:"Bearer " + token}, body:JSON.stringify({choice:normalizedChoice, content:content.trim()})});
-  if (!response.ok) { alert("생각을 수정하지 못했어요."); return; }
-  await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
-};
-
-window.deleteIndividualBookChatComment = async function (commentId) {
-  if (!confirm(individualBookChatTeacherMode ? "이 댓글을 책수다방에서 삭제할까요?" : "이 댓글을 삭제할까요?\n삭제한 댓글은 다시 볼 수 없어요.")) return;
-  if (isDemoAccount()) {
-    const temporary = loadDemoState("individualBookChatComments", {});
-    const key = String(window.selectedBookChatPostId);
-    temporary[key] = (temporary[key] || []).filter(item => String(item.id) !== String(commentId));
-    temporary._deletedIds = Array.from(new Set((temporary._deletedIds || []).concat(String(commentId))));
-    saveDemoState("individualBookChatComments", temporary);
-    await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
-    return;
-  }
-  const token = sessionStorage.getItem("token");
-  const url = individualBookChatTeacherMode
-    ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/comments/" + commentId
-    : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments/" + commentId;
-  const response = await fetch(url, {method:"DELETE", headers:{Authorization:"Bearer " + token}});
-  if (!response.ok) { alert("글을 삭제하지 못했어요."); return; }
-  await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
 };
 
 window.openIndividualRejectReasonModal = function (postId) {
@@ -10554,10 +10408,10 @@ window.openIndividualRejectReasonModal = function (postId) {
 
   body.innerHTML = `
     <div class="idr-reject-reason-box">
-      <strong>선생님이 남긴 이유</strong>
-      <p>${escapeHtml(reason)}</p>
+      <strong>선생님의 피드백</strong>
+      ${escapeHtml(reason)}
     </div>
-    <button class="idr-main-button primary" type="button" style="margin-top: 16px; width: 100%;" onclick="window.closeIndividualRejectReasonModal(); window.renderBookChatWriteScreen('${escapeHtml(String(postId))}');">다시 쓰기</button>
+    <button class="idr-main-button primary" type="button" style="margin-top: 16px; width: 100%;" onclick="window.closeIndividualRejectReasonModal(); window.renderBookChatWriteScreen();">다시 쓰기</button>
   `;
 
   modal.classList.remove("hidden");
@@ -10596,32 +10450,17 @@ window.toggleBookChatReplies = function () {
   학생이 읽은 책의 장면을 설명하고,
   친구들에게 A/B 밸런스 선택을 묻는 글을 작성합니다.
 */
-/*
-  postId가 있으면(REJECTED 내 글 "수정하러 가기") 이 화면에 진입만 해도
-  기존 값을 입력창에 채워 넣는다 - 이 시점에는 서버/로컬 상태를 아무것도
-  바꾸지 않는다("취소"를 누르면 그대로 renderBookChatRoom()으로 돌아갈
-  뿐, REJECTED 글/댓글은 전혀 건드리지 않는다). 실제 status 변경과 댓글
-  정리는 오직 "책수다 다시 올리기" 버튼(saveBookChatPostEdit)이 성공한
-  뒤에만 일어난다.
-*/
-function renderBookChatWriteScreen(postId) {
+function renderBookChatWriteScreen() {
   const shareScreen = document.getElementById("shareScreen");
 
   if (!shareScreen) return;
-
-  const editingPost = postId
-    ? currentBookChatPosts.find(item => String(item.id) === String(postId))
-    : null;
-  const isEditMode = !!(editingPost && editingPost.isMine && editingPost.moderationStatus === "rejected");
 
   shareScreen.innerHTML = `
     <div class="idr-book-chat-write" style="width: 100%; height: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 16px; overflow: hidden; padding: 4px 8px;">
       <section class="idr-card idr-work-header">
         <div>
           <h1>책수다 글쓰기</h1>
-          <p>${isEditMode
-            ? "거절된 글을 고쳐 다시 올려 보세요."
-            : "친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요."}</p>
+          <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
         </div>
         <div class="idr-work-actions">
           <button class="idr-top-button" type="button" onclick="window.renderBookChatRoom()">← 책수다방</button>
@@ -10630,7 +10469,7 @@ function renderBookChatWriteScreen(postId) {
 
       <section class="idr-card idr-book-chat-write-card">
         <div class="idr-book-chat-write-intro">
-          <h2 class="idr-section-title">${isEditMode ? "내 글 수정하기" : "내가 나누고 싶은 장면"}</h2>
+          <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
           <p>
             책 속 장면을 친구들이 이해할 수 있게 알려 준 뒤, 두 가지 선택지로 생각을 물어봐요.
           </p>
@@ -10639,35 +10478,33 @@ function renderBookChatWriteScreen(postId) {
         <div class="idr-book-chat-write-row">
           <div class="idr-field">
             <label for="bookChatBookInput">내가 읽은 책</label>
-            <input class="idr-small-input" id="bookChatBookInput" type="text" placeholder="예) 마당을 나온 암탉" value="${isEditMode ? escapeHtml(editingPost.bookTitle || "") : ""}">
+            <input class="idr-small-input" id="bookChatBookInput" type="text" placeholder="예) 마당을 나온 암탉">
           </div>
           <div class="idr-field">
             <label for="bookChatTitleInput">밸런스 제목</label>
-            <input class="idr-small-input" id="bookChatTitleInput" type="text" placeholder="예) 안전한 길 vs 새로운 도전" value="${isEditMode ? escapeHtml(editingPost.title || "") : ""}">
+            <input class="idr-small-input" id="bookChatTitleInput" type="text" placeholder="예) 안전한 길 vs 새로운 도전">
           </div>
         </div>
 
         <div class="idr-field idr-book-chat-write-scene">
           <label for="bookChatSceneInput">장면 설명</label>
-          <textarea class="idr-textarea" id="bookChatSceneInput" placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요.">${isEditMode ? escapeHtml(editingPost.scene || "") : ""}</textarea>
+          <textarea class="idr-textarea" id="bookChatSceneInput" placeholder="친구들이 책을 몰라도 이해할 수 있게 장면이나 상황을 설명해 주세요."></textarea>
         </div>
 
         <div class="idr-book-chat-write-row idr-book-chat-write-options">
           <div class="idr-field">
             <label for="bookChatOptionAInput">A 선택지</label>
-            <input class="idr-small-input" id="bookChatOptionAInput" type="text" placeholder="예) 안전한 길" value="${isEditMode ? escapeHtml(editingPost.optionA || "") : ""}">
+            <input class="idr-small-input" id="bookChatOptionAInput" type="text" placeholder="예) 안전한 길">
           </div>
           <div class="idr-field">
             <label for="bookChatOptionBInput">B 선택지</label>
-            <input class="idr-small-input" id="bookChatOptionBInput" type="text" placeholder="예) 새로운 도전" value="${isEditMode ? escapeHtml(editingPost.optionB || "") : ""}">
+            <input class="idr-small-input" id="bookChatOptionBInput" type="text" placeholder="예) 새로운 도전">
           </div>
         </div>
 
         <div class="idr-book-chat-write-actions">
           <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">취소</button>
-          ${isEditMode
-            ? `<button class="idr-main-button primary" type="button" onclick="window.saveBookChatPostEdit('${escapeHtml(String(editingPost.id))}')">책수다 다시 올리기</button>`
-            : `<button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">책수다 올리기</button>`}
+          <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">책수다 올리기</button>
         </div>
       </section>
     </div>
@@ -10694,42 +10531,6 @@ async function saveBookChatPost() {
 
   await saveBookChatPostToServer(bookTitle, title, scene, optionA, optionB);
 }
-
-/*
-  REJECTED 글을 폼으로 고쳐서 다시 올릴 때 쓴다("수정하러 가기"/"다시
-  쓰기" 진입점 공용) - saveBookChatPost()와 달리 새 글을 만들지 않고
-  submitBookChatRevision()으로 같은 postId를 그대로 UPDATE한다. 이
-  함수가 성공적으로 끝나야만(즉 학생이 "책수다 다시 올리기"를 눌러야만)
-  REJECTED→PENDING 전환과 기존 댓글 정리가 일어난다 - 폼 진입/취소만으로는
-  아무것도 바뀌지 않는다.
-*/
-window.saveBookChatPostEdit = async function (postId) {
-  const bookInput = document.getElementById("bookChatBookInput");
-  const titleInput = document.getElementById("bookChatTitleInput");
-  const sceneInput = document.getElementById("bookChatSceneInput");
-  const optionAInput = document.getElementById("bookChatOptionAInput");
-  const optionBInput = document.getElementById("bookChatOptionBInput");
-
-  const bookTitle = bookInput ? bookInput.value.trim() : "";
-  const title = titleInput ? titleInput.value.trim() : "";
-  const scene = sceneInput ? sceneInput.value.trim() : "";
-  const optionA = optionAInput ? optionAInput.value.trim() : "";
-  const optionB = optionBInput ? optionBInput.value.trim() : "";
-
-  if (!bookTitle || !title || !scene || !optionA || !optionB) {
-    alert("책 제목, 밸런스 제목, 장면 설명, A/B 선택지를 모두 적어 주세요.");
-    return;
-  }
-
-  const revision = { bookTitle, title, scene, optionA, optionB };
-  const ok = await submitBookChatRevision(postId, revision);
-  if (ok) {
-    await renderBookChatRoom();
-    alert("수정한 글을 선생님께 다시 보냈어요.");
-  } else {
-    alert("지금은 수정한 글을 다시 보내지 못했어요.");
-  }
-};
 
 /*
   책수다 글을 서버(DB)에 텍스트로만 저장한다(사진 첨부 기능은 제거됨).
@@ -10880,13 +10681,7 @@ let selectedBookChatDate = getTodayDateKey();
   있다. 서버 날짜를 아직 못 받아온 초기 시점에만 로컬 값으로 대체한다.
 */
 function getTodayDateKey() {
-  if (window.serverTodayDateKey) return window.serverTodayDateKey;
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit"
-  }).formatToParts(new Date());
-  const byType = {};
-  parts.forEach(function(part) { byType[part.type] = part.value; });
-  return byType.year + "-" + byType.month + "-" + byType.day;
+  return window.serverTodayDateKey || new Date().toISOString().slice(0, 10);
 }
 
 /*
@@ -10903,16 +10698,14 @@ function formatBookChatDate(dateKey) {
   direction 값이 -1이면 이전날, 1이면 다음날입니다.
 */
 function moveBookChatDate(direction) {
-  const dateParts = String(selectedBookChatDate).split("-").map(Number);
-  const currentDate = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
-  currentDate.setUTCDate(currentDate.getUTCDate() + direction);
-  const nextDateKey = currentDate.getUTCFullYear() + "-"
-    + String(currentDate.getUTCMonth() + 1).padStart(2, "0") + "-"
-    + String(currentDate.getUTCDate()).padStart(2, "0");
+  const currentDate = new Date(selectedBookChatDate);
+  currentDate.setDate(currentDate.getDate() + direction);
+
+  const nextDateKey = currentDate.toISOString().slice(0, 10);
   const todayKey = getTodayDateKey();
 
   // 미래 날짜는 볼 수 없게 막습니다.
-  if (nextDateKey > todayKey) {
+  if (!isDemoAccount() && nextDateKey > todayKey) {
     alert("아직 오지 않은 날짜예요.");
     return;
   }
@@ -12563,7 +12356,7 @@ window.saveBookChatThought = async function () {
     temporary[key] = (temporary[key] || []).concat({
       id: "demo-individual-comment-" + Date.now(),
       writer: sessionStorage.getItem("name") || "김초롱",
-      authorId: individualBookChatTeacherMode ? teacherId : studentId,
+      authorId: studentId,
       authorRole: individualBookChatTeacherMode ? "teacher" : "student",
       mine: true,
       choice: choice,
@@ -12573,9 +12366,6 @@ window.saveBookChatThought = async function () {
     reasonInput.value = "";
     window.selectedBookChatChoice = "";
     await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
-
-    // 교사 참여에는 학생 능력치 보상을 지급하지 않는다.
-    if (individualBookChatTeacherMode) return;
 
     /* grantCommentDailyRewardOnce와 같은 "학생당 하루 1회"를 그대로 옮긴 것이다. */
     let demoResult = null;
@@ -12612,7 +12402,7 @@ window.saveBookChatThought = async function () {
   try {
     const response = await fetch(
       individualBookChatTeacherMode
-        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/posts/" + postId + "/comments"
+        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/book-chat/posts/" + postId + "/comments"
         : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments",
       {
         method: "POST",
