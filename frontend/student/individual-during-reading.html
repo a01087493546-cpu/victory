@@ -8666,6 +8666,12 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
     }
 
     const individualBookChatTeacherMode = isIndividualBookChatTeacherMode();
+    const individualBookChatTeacherDemoMode = individualBookChatTeacherMode && (
+      sessionStorage.getItem("teacherBookChatDemoMode") === "true" || isDemoAccount()
+    );
+    function isIndividualBookChatDemoView() {
+      return isDemoAccount() || individualBookChatTeacherDemoMode;
+    }
     const individualBookChatActorId = individualBookChatTeacherMode ? teacherId : studentId;
     showDemoBannerIfDemoAccount("individualDuringQuestionDemoBanner");
 /*
@@ -8809,7 +8815,10 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
     let currentReadingRecordId = null;
 
     document.addEventListener("DOMContentLoaded", async () => {
-      await prepareDefaults();
+      /* 교사 공개보기는 학생 개인 독서 초기화 API를 전혀 호출하지 않는다. */
+      if (!individualBookChatTeacherMode) {
+        await prepareDefaults();
+      }
       bindEvents();
       renderAll();
 
@@ -8828,6 +8837,7 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
     function returnToIndividualBookChatManage() {
       sessionStorage.removeItem("teacherMode");
       sessionStorage.removeItem("teacherBookChatReturn");
+      sessionStorage.removeItem("teacherBookChatDemoMode");
       location.href = "../teacher/individual-book-chat-manage.html";
     }
 
@@ -9003,6 +9013,10 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
     let bookTypeStatsCache = null;
 
     async function refreshBookTypeStatsFromServer() {
+      if (individualBookChatTeacherMode) {
+        return;
+      }
+
       const token = sessionStorage.getItem("token");
 
       if (!token) {
@@ -9134,6 +9148,10 @@ function getNextEmptyQuestionSlot() {
       복원한다. 진행 중인 책이 없으면(아직 등록 전) 아무 것도 하지 않는다.
     */
     async function loadCurrentReadingRecordFromServer() {
+      if (individualBookChatTeacherMode) {
+        return;
+      }
+
       const token = sessionStorage.getItem("token");
 
       if (!token) {
@@ -9380,6 +9398,73 @@ async function fetchClassBookChatFeed() {
     return { hasClass: true, posts: [] };
   }
 
+  /*
+   * 심사계정 공개 보기는 교사 관리 화면과 같은 browser-local source를 쓴다.
+   * 교사 토큰으로 학생 전용 feed API를 호출하면 실패하며, 기존 fallback은
+   * 승인대기 seed만 반환해 관리 화면의 승인 글이 공개 화면에서 0개가 됐다.
+   * 공용 최종 seed(override 반영)와 이 브라우저의 direct 글만 합친다.
+   * 교사 공개 보기에서는 APPROVED만 남기고, 학생 화면에서는 기존처럼
+   * 본인의 pending/rejected direct 글도 상태 확인을 위해 유지한다.
+   */
+  if (isIndividualBookChatDemoView()) {
+    const seedPosts = getDemoFinalIndividualBookChatSeeds()
+      .map(mapIndividualPendingSeedToPost);
+    const directPosts = loadDemoApprovalRequests("individual")
+      .map(mapDemoIndividualApprovalToPost);
+    const mergedById = new Map();
+
+    seedPosts.concat(directPosts).forEach(function(post) {
+      mergedById.set(String(post.id), post);
+    });
+
+    return {
+      hasClass: true,
+      posts: Array.from(mergedById.values()).filter(function(post) {
+        if (individualBookChatTeacherMode) {
+          return post.moderationStatus === "approved";
+        }
+        return post.moderationStatus === "approved" || post.isMine;
+      })
+    };
+  }
+
+  /*
+   * 일반 교사 공개보기 역시 학생 API를 호출하지 않는다. 승인 관리 화면과
+   * 같은 교사용 APPROVED endpoint를 사용해 기존 일반계정 기능을 지킨다.
+   */
+  if (individualBookChatTeacherMode) {
+    try {
+      const response = await fetch(
+        INDIVIDUAL_READING_API_BASE_URL +
+          "/api/teachers/" + teacherId +
+          "/individual-reading/book-chat/posts?status=APPROVED",
+        {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("교사용 승인 책수다방 조회 실패: " + response.status);
+      }
+
+      const items = await response.json();
+      return {
+        hasClass: true,
+        posts: items.map(function(item) {
+          return Object.assign({}, mapBookChatPostFromServer(item), {
+            isMine: false,
+            moderationStatus: "approved"
+          });
+        })
+      };
+    } catch (error) {
+      console.error("교사용 승인 책수다방 목록을 불러오지 못했습니다.", error);
+      return { hasClass: true, posts: [] };
+    }
+  }
+
   try {
     const response = await fetch(
       INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts",
@@ -9398,42 +9483,16 @@ async function fetchClassBookChatFeed() {
 
     const feed = await response.json();
 
-    let serverPosts = feed.posts.map(mapBookChatPostFromServer);
-    let seedPosts = [];
-    if (isDemoAccount()) {
-      /*
-       * 심사계정은 실제 DB 승인 예시(공용, 모든 심사 브라우저 공통) 위에
-       * 이 브라우저의 override(teacher 화면에서 거절/재승인한 결과)만
-       * 얹어서 보여준다 - DB 값 자체는 절대 바꾸지 않는다. isMine/
-       * moderationStatus 필터링은 아래 렌더 로직이 이미 하고 있으므로
-       * (내 글은 상태와 무관하게 항상 보이고, 남의 글은 approved일
-       * 때만 보임) 여기서는 override 반영값만 정확히 채워 넣으면 된다.
-       */
-      serverPosts = serverPosts.map(function (post) {
-        const override = getDemoBookChatStatusOverride("individual", post.id);
-        if (!override) return post;
-        return Object.assign({}, post, {
-          moderationStatus: override.status,
-          rejectReason: override.status === "rejected" ? override.reason : ""
-        });
-      });
-      seedPosts = INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost);
-    }
-    const demoPosts = isDemoAccount()
-      ? loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost)
-      : [];
+    const serverPosts = feed.posts.map(mapBookChatPostFromServer);
     return {
       hasClass: feed.hasClass,
-      posts: serverPosts.concat(seedPosts).concat(demoPosts)
+      posts: serverPosts
     };
   } catch (error) {
     console.error("책수다방 글 목록을 불러오지 못했습니다.", error);
     return {
       hasClass: true,
-      posts: isDemoAccount()
-        ? INDIVIDUAL_BOOK_CHAT_PENDING_SEED.map(mapIndividualPendingSeedToPost)
-            .concat(loadDemoApprovalRequests("individual").map(mapDemoIndividualApprovalToPost))
-        : []
+      posts: []
     };
   }
 }
@@ -9484,7 +9543,9 @@ const INDIVIDUAL_BOOK_CHAT_PENDING_SEED = [
 
 function mapIndividualPendingSeedToPost(seed) {
   const override = getDemoBookChatStatusOverride("individual", seed.id);
-  const status = override ? override.status : "pending";
+  const status = normalizeIndividualModerationStatus(
+    override ? override.status : (seed.status || "pending")
+  );
   return {
     id: seed.id,
     writer: seed.studentName,
@@ -9520,8 +9581,8 @@ function mapDemoIndividualApprovalToPost(request) {
     optionA: request.optionA || "",
     optionB: request.optionB || "",
     authorChoice: request.authorChoice || "",
-    isMine: true,
-    moderationStatus: request.status || "pending",
+    isMine: !individualBookChatTeacherMode,
+    moderationStatus: normalizeIndividualModerationStatus(request.status || "pending"),
     rejectReason: request.rejectedReason || "",
     aCount: 0,
     bCount: 0,
@@ -9571,7 +9632,7 @@ function normalizeIndividualModerationStatus(status) {
   내용이 보인다.
 */
 async function fetchBookChatComments(postId) {
-  if (isDemoAccount() && loadDemoApprovalRequests("individual").some(function(request) {
+  if (isIndividualBookChatDemoView() && loadDemoApprovalRequests("individual").some(function(request) {
     return String(request.requestId) === String(postId);
   })) {
     const temporary = loadDemoState("individualBookChatComments", {});
@@ -9614,7 +9675,7 @@ async function fetchBookChatComments(postId) {
         content: item.content
       };
     });
-    if (!isDemoAccount()) return serverComments;
+    if (!isIndividualBookChatDemoView()) return serverComments;
     const temporary = loadDemoState("individualBookChatComments", {});
     const deletedIds = temporary._deletedIds || [];
     return serverComments.concat(temporary[String(postId)] || [])
@@ -9751,7 +9812,7 @@ window.deleteMyBookChatPost = async function (postId) {
 let currentBookChatPosts = [];
 
 function demoExampleBannerHtml() {
-  if (!isDemoAccount()) return "";
+  if (!isIndividualBookChatDemoView()) return "";
   return `<div style="width:fit-content; max-width:100%; margin-top:8px; padding:4px 14px; border:1px solid rgba(180,130,60,.42); border-radius:16px; background:linear-gradient(180deg,rgba(255,247,225,.96),rgba(238,216,176,.92)); color:#6b4b26; font-size:14px; line-height:1.35; font-weight:700; white-space:normal; word-break:keep-all; overflow:visible; box-sizing:border-box;">🔍 <strong style="font-size:14px;font-weight:900;">심사 체험 안내</strong> — 가상 학생 활동 예시 데이터를 미리 준비했습니다.</div>`;
 }
 
@@ -9778,7 +9839,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
     };
   });
 
-  if (isDemoAccount()) {
+  if (isIndividualBookChatDemoView()) {
     const temporaryComments = loadDemoState("individualBookChatComments", {});
     feedPosts.forEach(function (post) {
       (temporaryComments[String(post.id)] || []).forEach(function (comment) {
@@ -9791,7 +9852,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
   // 선택한 날짜에 작성된 책수다 글만 보여줍니다.
   // createdDate가 없는 예전 글은 createdAt에서 날짜만 잘라서 사용합니다.
   const dateFilteredPosts = feedPosts.filter(function (post) {
-    if (isDemoAccount()) return true;
+    if (isIndividualBookChatDemoView()) return true;
     const postDate = post.createdDate || (post.createdAt ? post.createdAt.slice(0, 10) : getTodayDateKey());
     return postDate === selectedBookChatDate;
   });
@@ -9900,7 +9961,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
             type="button"
             onclick="window.moveBookChatDate(1)"
             style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-            ${!isDemoAccount() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+            ${!isIndividualBookChatDemoView() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
           >
             다음날
           </button>
@@ -10219,7 +10280,7 @@ ${
   type="button"
   onclick="window.moveBookChatDate(1)"
   style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-  ${!isDemoAccount() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+  ${!isIndividualBookChatDemoView() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
 >
   다음날
 </button>
@@ -10305,7 +10366,7 @@ ${
           <button type="button" class="idr-book-chat-close" onclick="window.closeBookChatDetail()">×</button>
         </div>
 
-        <div class="idr-book-chat-modal-body${isDemoAccount() ? " has-demo-banner" : ""}">
+        <div class="idr-book-chat-modal-body${isIndividualBookChatDemoView() ? " has-demo-banner" : ""}">
           ${demoExampleBannerHtml()}
           <div class="idr-selected-question">
             <p><strong>상황 설명</strong>${escapeHtml(selectedPost.scene)}</p>
@@ -10705,7 +10766,7 @@ function moveBookChatDate(direction) {
   const todayKey = getTodayDateKey();
 
   // 미래 날짜는 볼 수 없게 막습니다.
-  if (!isDemoAccount() && nextDateKey > todayKey) {
+  if (!isIndividualBookChatDemoView() && nextDateKey > todayKey) {
     alert("아직 오지 않은 날짜예요.");
     return;
   }
