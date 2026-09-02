@@ -4941,7 +4941,7 @@ async function loadProgress() {
             '<span class="select-progress-label">진행률</span>' +
             '<strong>' + doneCount + ' / 4</strong>' +
           '</div>' +
-          '<button class="main-button select-review-button" type="button" ' + (ready ? '' : 'disabled') + ' onclick="goReviewScreen()">총 복습 시작 →</button>' +
+          '<button class="main-button select-review-button" type="button" ' + (ready ? '' : 'disabled') + ' onclick="goReviewScreen()">총복습 시작 →</button>' +
         '</div>' +
       '</div>' +
 
@@ -5882,7 +5882,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
         '<section class="screen">' +
           '<div class="screen-title-row">' +
             '<div>' +
-              '<span class="title-badge">심화 연습</span>' +
+              '<span class="title-badge">총복습</span>' +
               '<h1 class="main-title review-main-title">한 편의 글에서 4가지 질문을 만들어 봐요</h1>' +
             '</div>' +
           '</div>' +
@@ -5936,7 +5936,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
                 '<button class="main-button" type="button" onclick="checkReviewQuestion()">검사하기</button>' +
-                '<button class="main-button" type="button" ' + (allReviewDone || isDemoAccount() ? "" : "disabled") + ' onclick="finishReview()">총 복습 완료 →</button>' +
+                '<button class="main-button" type="button" ' + (allReviewDone || isDemoAccount() ? "" : "disabled") + ' onclick="finishReview()">총복습 완료 →</button>' +
               '</div>' +
             '</article>' +
           '</div>' +
