@@ -263,6 +263,17 @@ function showDemoBannerIfDemoAccount(elementId) {
   }
 }
 
+/* 메인 화면에서만 호출하는 로그인 사용자 표시 문자열을 반환한다. */
+function getSessionUserDisplayText() {
+  const name = String(sessionStorage.getItem("name") || "").trim();
+  const role = String(sessionStorage.getItem("role") || "").trim().toLowerCase();
+
+  if (!name || ["undefined", "null", "nan"].includes(name.toLowerCase())) return "";
+  if (role === "student") return name + " 학생";
+  if (role === "teacher") return name + " 선생님";
+  return role ? name + " 님" : "";
+}
+
 /*
   함수명: logoutAndGoLogin
   역할: 로그아웃 버튼 공통 처리입니다. sessionStorage에 저장된 로그인 정보를

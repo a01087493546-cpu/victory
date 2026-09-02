@@ -268,6 +268,10 @@
         rgba(255, 250, 238, 0.88);
     }
 
+    .ir-pill[hidden] {
+      display: none !important;
+    }
+
     .ir-home-button {
       color: #fff9ec;
 
@@ -1927,17 +1931,18 @@
           <button
             class="ir-pill"
             type="button"
-            id="teacherNamePill"
+            id="classNamePill"
           >
-            교사 확인 중...
+            학급 확인 중...
           </button>
 
           <button
             class="ir-pill"
             type="button"
-            id="classNamePill"
+            id="teacherNamePill"
+            hidden
           >
-            학급 확인 중...
+            교사 확인 중...
           </button>
 
           <button
@@ -2322,18 +2327,6 @@
       배열을 다시 채우지 않는다(하드코딩 대체 금지).
     */
     function getApiBaseUrl() {
-<<<<<<< HEAD
-      if (window.location.hostname === "127.0.0.1") {
-        return "http://127.0.0.1:8080";
-      }
-      if (window.location.hostname === "localhost") {
-        return "http://localhost:8080";
-      }
-      return "https://victory-production-f94d.up.railway.app";
-    }
-
-    const API_BASE_URL = getApiBaseUrl();
-=======
   if (window.location.hostname === "127.0.0.1") {
     return "http://127.0.0.1:8080";
   }
@@ -2344,7 +2337,16 @@
 }
 
 const API_BASE_URL = getApiBaseUrl();
->>>>>>> jiao
+
+    function renderTeacherMainUserName() {
+      const teacherNamePill = document.getElementById("teacherNamePill");
+      const displayText = getSessionUserDisplayText();
+      if (!teacherNamePill || !displayText) return;
+      teacherNamePill.textContent = displayText;
+      teacherNamePill.hidden = false;
+    }
+
+    renderTeacherMainUserName();
 
     let students = [];
 
@@ -2848,7 +2850,7 @@ const API_BASE_URL = getApiBaseUrl();
           return;
         }
 
-        document.getElementById("teacherNamePill").textContent = `교사 ${classData.teacherName}`;
+        renderTeacherMainUserName();
         document.getElementById("classNamePill").textContent = classData.className;
 
         const dashboard = await fetchDashboard(auth, classData.classId);

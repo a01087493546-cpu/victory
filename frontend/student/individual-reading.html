@@ -76,6 +76,27 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       text-shadow: 0 3px 8px rgba(0, 0, 0, 0.42);
     }
 
+    .ir-logo .ir-user-name-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 2px;
+      padding: 6px 16px;
+      border: 1px solid rgba(255, 219, 124, 0.55);
+      border-radius: 999px;
+      background: rgba(61, 38, 22, 0.55);
+      color: #fff2c7;
+      font-family: "Pretendard Variable", "Pretendard", sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: normal;
+      text-shadow: none;
+      white-space: nowrap;
+    }
+
+    .ir-logo .ir-user-name-badge[hidden] {
+      display: none;
+    }
+
     .ir-top-actions {
       display: flex;
       align-items: center;
@@ -945,6 +966,7 @@ html {
       <div class="ir-logo">
         <img src="../assets/images/logo-book.png" alt="문답책 로고" />
         <span>문답책</span>
+        <span class="ir-user-name-badge" id="studentMainUserName" hidden></span>
       </div>
 
       <div class="ir-top-actions">
@@ -1365,8 +1387,25 @@ const API_BASE_URL = getApiBaseUrl();
         }
       }
 
+      function renderStudentMainUserName() {
+        const nameElement = document.getElementById("studentMainUserName");
+        const name = String(sessionStorage.getItem("name") || "").trim();
+        const invalidName = !name || ["undefined", "null", "nan"].includes(name.toLowerCase());
+
+        if (!nameElement) return;
+        if (invalidName) {
+          nameElement.textContent = "";
+          nameElement.hidden = true;
+          return;
+        }
+
+        nameElement.textContent = name + " 학생";
+        nameElement.hidden = false;
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         checkLogin();
+        renderStudentMainUserName();
         renderDemoExperienceBanner();
         renderStats(null);
         updateFlowButtonsLockState(false);

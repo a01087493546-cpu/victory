@@ -271,6 +271,10 @@
         rgba(255, 250, 238, 0.88);
     }
 
+    .wr-pill[hidden] {
+      display: none !important;
+    }
+
     .wr-home-button {
       color: #fff9ec;
 
@@ -2445,18 +2449,19 @@
         <div class="wr-top-pills">
           <button
   class="wr-pill"
-  id="teacherNamePill"
-  type="button"
->
-  교사 정보 불러오는 중
-</button>
-
-          <button
-  class="wr-pill"
   id="classNamePill"
   type="button"
 >
   학급 정보 불러오는 중
+</button>
+
+          <button
+  class="wr-pill"
+  id="teacherNamePill"
+  type="button"
+  hidden
+>
+  교사 정보 불러오는 중
 </button>
 
           <button
@@ -2879,6 +2884,16 @@
 
     const API_BASE_URL = getApiBaseUrl();
 
+    function renderTeacherMainUserName() {
+      const teacherNamePill = document.getElementById("teacherNamePill");
+      const displayText = getSessionUserDisplayText();
+      if (!teacherNamePill || !displayText) return;
+      teacherNamePill.textContent = displayText;
+      teacherNamePill.hidden = false;
+    }
+
+    renderTeacherMainUserName();
+
     function updateWholeReadingStageScale() {
       const stage = document.getElementById("wholeReadingFixedStage");
       const frame = document.getElementById("wholeReadingStageFrame");
@@ -3176,8 +3191,7 @@ async function loadTeacherDashboardData() {
 currentClassId = classData.classId;
 loadTeacherMenuBadges();
 await loadReadingRange();
-    document.getElementById("teacherNamePill").textContent =
-      `교사 ${classData.teacherName}`;
+    renderTeacherMainUserName();
 
     document.getElementById("classNamePill").textContent =
       `${classData.grade}학년 ${classData.classNumber}반`;

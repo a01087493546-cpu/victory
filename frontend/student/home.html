@@ -68,6 +68,34 @@
       color: #fff4d2 !important;
     }
 
+    .home-bookstore-page .student-main-user-name {
+      display: inline-flex !important;
+      align-items: center;
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 2;
+      visibility: visible;
+      opacity: 1;
+      max-width: 180px;
+      min-height: 32px;
+      margin-left: 12px;
+      padding: 5px 12px;
+      border: 1px solid rgba(225, 184, 105, 0.5);
+      border-radius: 999px;
+      background: rgba(61, 38, 22, 0.62);
+      color: #fff1cb;
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .home-bookstore-page .student-main-user-name[hidden] {
+      display: none !important;
+    }
+
     /* 메인 문구 위치입니다. */
     .home-bookstore-page .home-lumi-message {
       position: absolute !important;
@@ -338,6 +366,7 @@
       <div class="student-logo">
         <img src="../assets/images/logo-book.png" alt="문답책 로고" class="student-logo-image">
         <span class="student-logo-text">문답책</span>
+        <span class="student-main-user-name" id="studentMainUserName" hidden></span>
       </div>
 
       <!-- 오른쪽 메뉴입니다. -->
@@ -472,19 +501,39 @@
   <script src="../js/auth.js"></script>
 
   <script>
-    function updateStudentHomeStageScale() {
-      const stage = document.getElementById("studentHomeFixedStage");
-      const frame = document.getElementById("studentHomeStageFrame");
-      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080, 1);
+    function renderStudentMainUserName() {
+      const nameElement = document.getElementById("studentMainUserName");
+      const name = String(sessionStorage.getItem("name") || "").trim();
+      const invalidName = !name || ["undefined", "null", "nan"].includes(name.toLowerCase());
 
-      stage.style.setProperty("--stage-scale", scale);
-      frame.style.setProperty("--stage-scale", scale);
-      frame.style.width = `${1920 * scale}px`;
-      frame.style.height = `${1080 * scale}px`;
+      if (!nameElement) return;
+      if (invalidName) {
+        nameElement.textContent = "";
+        nameElement.hidden = true;
+        return;
+      }
+
+      nameElement.textContent = name + " 학생";
+      nameElement.hidden = false;
     }
 
-    updateStudentHomeStageScale();
-    window.addEventListener("resize", updateStudentHomeStageScale);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", renderStudentMainUserName, { once: true });
+    } else {
+      renderStudentMainUserName();
+    }
+
+    /*
+      1920x1080 고정 스테이지 축소/확대는 ../js/fixed-stage.js의
+      normalizeExistingStage()가 .student-stage-viewport /
+      .student-stage-frame / .student-home-page 세 요소를 이미 전담해서
+      처리한다(재시도 타이머 + resize/load 리스너 포함). 이 화면에서
+      같은 계산을 한 번 더 하면 같은 요소의 인라인 transform을
+      두 스크립트가 서로 다른 타이밍에 덮어쓰게 되어, 레이아웃이
+      아직 안정되지 않은 순간의 값(예: 0에 가까운 window 크기)이
+      그대로 굳어버리는 경쟁 상태가 생긴다. 그래서 여기서는 별도로
+      계산하지 않는다.
+    */
 
     /*
       학생 홈은 로그인이 필요한 화면이므로
