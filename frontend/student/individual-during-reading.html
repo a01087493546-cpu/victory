@@ -15,6 +15,7 @@
   사용 이미지:
   - 배경: ../assets/images/individual-reading/individual-during-home-bg.png
   - 루미: ../assets/images/individual-reading/individual-during-lumi-guide.png
+  - 독서하기 메뉴(임시): ../assets/images/individual-reading/today-reading-during-icon.png (오늘의 독서 모험 읽기 중 아이콘 재사용, 추후 전용 이미지로 교체 예정)
   - 질문 만들기 메뉴: ../assets/images/individual-reading/individual-during-menu-question.png
   - 질문 나누기 메뉴: ../assets/images/individual-reading/individual-during-menu-share.png
   - 나의 질문 모음 메뉴: ../assets/images/individual-reading/individual-during-menu-collection.png
@@ -5301,7 +5302,7 @@
   grid-column: 1 / -1 !important;
   grid-row: 2 / 3 !important;
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 14px !important;
   padding: 14px !important;
 }
@@ -8313,6 +8314,17 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
           </article>
 
           <article class="idr-card idr-menu-card">
+            <!-- 독서하기 화면이 아직 없어 임시로 안내만 띄웁니다. -->
+            <button type="button" class="idr-menu-button idr-menu-button-featured" onclick="goReadingFocusMode()">
+              <div class="idr-menu-icon">
+                <img src="../assets/images/individual-reading/today-reading-during-icon.png" alt="독서하기">
+              </div>
+              <div>
+                <strong>독서하기</strong>
+                <span>독서하기 화면으로 이동해 책을 읽어요.</span>
+              </div>
+            </button>
+
             <!-- 오늘 읽은 부분에서 내 질문과 생각을 기록하는 활동입니다. -->
             <button type="button" class="idr-menu-button" onclick="showScreen('question')">
               <div class="idr-menu-icon">
@@ -11302,7 +11314,8 @@ function confirmDuringRewardModal() {
       const feedbackBox = document.getElementById("questionFeedbackBox");
       const feedbackText = document.getElementById("questionFeedbackText");
       const checkButton = document.getElementById("checkQuestionButton");
-      const timeoutMs = 15000;
+      /* 백엔드의 OpenAI 응답 제한(20초)보다 먼저 요청을 끊지 않는다. */
+      const timeoutMs = 30000;
       const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 질문이 저장되지 않았어요, 잠시 후 다시 시도해봐.";
 
       const readingRecordId =
@@ -12192,6 +12205,15 @@ function goTodayAdventure() {
 
     function goIndividualReading() {
       location.href = "./individual-reading.html";
+    }
+
+    /*
+      독서하기 화면으로 이동시킬 자리입니다.
+      아직 독서하기 화면이 구현되어 있지 않아 임시 안내만 띄웁니다.
+      화면이 준비되면 이 함수 안의 alert를 실제 이동(location.href = "...")으로 바꾸면 됩니다.
+    */
+    function goReadingFocusMode() {
+      alert("독서하기는 곧 연결될 예정이에요!");
     }
     // 질문 나누기 화면의 저장 버튼 문구를 하나로 통일합니다.
 document.addEventListener("DOMContentLoaded", function () {

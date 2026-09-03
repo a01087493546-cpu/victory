@@ -35,6 +35,11 @@
       --green: #849d42;
       --green-dark: #61762e;
 
+      --olive: #74865f;
+      --olive-soft: #8fa574;
+      --bronze-gold: #c9a96a;
+      --sage-beige: #eff2e9;
+
       --paper: rgba(255, 254, 249, 0.97);
       --paper-warm: rgba(255, 247, 231, 0.96);
 
@@ -388,13 +393,13 @@
       padding: 0 12px;
 
       border:
-        1px solid rgba(190, 130, 55, 0.29);
+        1px solid rgba(116, 134, 95, 0.3);
       border-radius: 999px;
 
       background:
-        rgba(255, 249, 235, 0.92);
+        rgba(239, 242, 233, 0.92);
 
-      color: #8c5c1e;
+      color: #65452d;
 
       font-size: 13px;
       font-weight: 900;
@@ -404,7 +409,7 @@
       gap: 5px;
 
       box-shadow:
-        0 3px 0 rgba(135, 90, 35, 0.2);
+        0 3px 0 rgba(91, 105, 75, 0.13);
     }
 
     .ir-criteria-button:active {
@@ -439,6 +444,7 @@
 
     .ir-left-area {
       display: flex;
+      overflow: hidden;
     }
 
     .ir-right-area {
@@ -455,19 +461,23 @@
     }
 
     .ir-preview-card .ir-card-inner {
-      display: grid;
-      grid-template-rows:
-        auto
-        minmax(0, 1fr)
-        47px;
+      display: flex;
+      flex-direction: column;
 
-      gap: 9px;
+      gap: 0;
 
       padding: 18px 22px 16px;
+
+      min-height: 0;
+      overflow: hidden;
     }
 
     .ir-preview-card .ir-card-title {
       font-size: 27px;
+    }
+
+    .ir-preview-card .ir-card-title-row {
+      margin-bottom: 9px;
     }
 
     .ir-title-actions {
@@ -479,6 +489,7 @@
     .ir-preview-scroll {
       min-width: 0;
       min-height: 0;
+      flex: 1 1 auto;
 
       overflow-y: auto;
       overflow-x: hidden;
@@ -493,7 +504,7 @@
         rgba(255, 255, 255, 0.5);
 
       scrollbar-width: thin;
-      scrollbar-color: #b9771d #f0dfc3;
+      scrollbar-color: var(--olive-soft) #e9ede3;
     }
 
     .ir-preview-scroll::-webkit-scrollbar,
@@ -509,20 +520,20 @@
 
       border-radius: 999px;
 
-      background: #f0dfc3;
+      background: #e9ede3;
     }
 
     .ir-preview-scroll::-webkit-scrollbar-thumb,
     .ir-support-scroll::-webkit-scrollbar-thumb,
     .ir-modal-content::-webkit-scrollbar-thumb {
-      border: 3px solid #f0dfc3;
+      border: 3px solid #e9ede3;
       border-radius: 999px;
 
       background:
         linear-gradient(
           180deg,
-          #daa43a,
-          #9c5d13
+          #c6d3b2,
+          var(--olive-soft)
         );
     }
 
@@ -626,8 +637,8 @@
       background:
         linear-gradient(
           90deg,
-          #efc469,
-          #b76d0b
+          #c6d3b2,
+          var(--olive-soft)
         );
     }
 
@@ -635,8 +646,8 @@
       background:
         linear-gradient(
           90deg,
-          #efbd76,
-          #b97221
+          #d5dec8,
+          #879b70
         );
     }
 
@@ -668,11 +679,23 @@
     }
 
     .ir-student-percent {
-      color: #a76315;
+      color: #62462f;
 
       font-size: 22px;
       font-weight: 900;
       line-height: 1;
+    }
+
+    .ir-state-danger .ir-student-percent {
+      color: #a75f35;
+    }
+
+    .ir-state-neutral .ir-student-percent {
+      color: #80766a;
+    }
+
+    .ir-state-excellent .ir-student-percent {
+      color: #62462f;
     }
 
     .ir-student-state {
@@ -684,9 +707,15 @@
       font-weight: 900;
     }
 
+    .ir-state-excellent .ir-student-state {
+      color: #74553d;
+    }
+
     .ir-more-button {
       width: 100%;
       height: 47px;
+      flex: 0 0 47px;
+      align-self: end;
 
       border:
         1px solid rgba(132, 78, 15, 0.5);
@@ -695,9 +724,11 @@
       background:
         linear-gradient(
           180deg,
-          #e8b64c,
-          #bd7410
+          #95aa79,
+          #7f9368
         );
+
+      border-color: rgba(201, 169, 106, 0.55);
 
       color: #fffaf0;
 
@@ -705,7 +736,8 @@
       font-weight: 900;
 
       box-shadow:
-        0 4px 0 rgba(105, 57, 5, 0.5),
+        0 4px 0 rgba(82, 96, 67, 0.36),
+        0 0 0 1px rgba(201, 169, 106, 0.12),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
@@ -713,7 +745,7 @@
       transform: translateY(2px);
 
       box-shadow:
-        0 2px 0 rgba(105, 57, 5, 0.5);
+        0 2px 0 rgba(82, 96, 67, 0.36);
     }
 
     /* =========================================================
@@ -773,6 +805,10 @@
       font-size: 36px;
       font-weight: 900;
       line-height: 1;
+    }
+
+    #supportNeededValue {
+      color: #a76315;
     }
 
     .ir-today-label {
@@ -954,8 +990,8 @@
       background:
         linear-gradient(
           180deg,
-          #c6882b,
-          #86500e
+          #c09a61,
+          #8d6535
         );
 
       font-size: 16px;
@@ -1013,17 +1049,23 @@
       color: #fffaf0;
 
       border-color:
-        rgba(70, 83, 31, 0.5);
+        rgba(201, 169, 106, 0.58);
 
       background:
         linear-gradient(
           180deg,
-          #91aa4a,
-          #687c31
+          #91a876,
+          #7c9264
         );
 
       box-shadow:
-        0 5px 0 rgba(70, 83, 31, 0.44);
+        0 5px 0 rgba(82, 96, 67, 0.38),
+        inset 0 1px 0 rgba(255, 248, 222, 0.32);
+    }
+
+    .ir-big-button.green .ir-big-button-icon {
+      background: rgba(221, 229, 208, 0.9);
+      color: #543a27;
     }
 
     .ir-big-button:active {
@@ -1327,11 +1369,11 @@
     }
 
     .chip-excellent {
-      background: #b97919;
+      background: var(--olive);
     }
 
     .chip-good {
-      background: #a16b22;
+      background: var(--bronze-gold);
     }
 
     .chip-need {
@@ -1387,13 +1429,13 @@
       background:
         linear-gradient(
           90deg,
-          #efc36f,
-          #ad6a0d
+          #c6d3b2,
+          var(--olive-soft)
         );
     }
 
     .ir-detail-bar-value {
-      color: #a76315;
+      color: #6b452a;
 
       font-size: 15px;
       font-weight: 900;
@@ -1973,7 +2015,6 @@
                   </h2>
 
                   <p class="ir-card-sub">
-                    학생별 개별읽기 활동 상태를 확인할 수 있어요.
                   </p>
                 </div>
 
@@ -2046,7 +2087,6 @@
                   </h2>
 
                   <p class="ir-card-sub">
-                    오늘 개별읽기 활동에서 확인이 필요한 내용을 살펴봐요.
                   </p>
                 </div>
 
@@ -2481,23 +2521,9 @@ const API_BASE_URL = getApiBaseUrl();
     }
 
     /*
-      백엔드 supportReasons는 학생 판정용 짧은 문구라("독서실천도가 낮아요"
-      등) 그대로 노출하지 않고, 교사가 바로 실행할 수 있는 안내 문장으로
-      바꿔서 보여준다. 매핑에 없는 새 사유가 오면(백엔드 문구가 바뀐 경우)
-      원문을 그대로 보여줘 조용히 사라지지 않게 한다.
-    */
-    const SUPPORT_REASON_ADVICE = {
-      "읽기 중 활동을 완료해야 해요": "읽기 중 질문 활동을 이어서 완료하도록 도와주세요.",
-      "읽기 후 활동을 완료해야 해요": "읽기 후 질문과 간추리기를 마무리하도록 안내해 주세요.",
-      "독서실천도가 낮아요": "매일 조금씩 읽을 수 있도록 읽기 시간을 정해 주세요.",
-      "질문 만들기 참여가 필요해요": "읽은 내용에서 궁금한 점을 한 가지씩 만들도록 도와주세요.",
-      "생각 나누기 참여가 필요해요": "책수다방에 자신의 생각을 한 문장 이상 남기도록 격려해 주세요.",
-      "기록 내용을 조금 더 다듬어야 해요": "질문과 답이 책 내용과 연결되도록 다시 확인해 주세요."
-    };
-
-    /*
-      메인 화면 "확인이 필요한 학생" 목록 전용 - 상세 팝업의 SUPPORT_REASON_ADVICE(긴 지도
-      문구)와 다르게, 여기서는 무엇이 부족한지만 짧게 진단하는 용도로 쓴다.
+      메인 화면 "확인이 필요한 학생" 목록 전용 - 상세 팝업의 "교사 참고"(아래
+      buildTeacherNote)와 다르게, 여기서는 무엇이 부족한지만 짧게 진단하는
+      용도로 쓴다.
     */
     const SUPPORT_REASON_LABEL = {
       "읽기 중 활동을 완료해야 해요": "읽기 중 활동 미완료",
@@ -2526,13 +2552,7 @@ const API_BASE_URL = getApiBaseUrl();
         .join(" · ");
     }
 
-    /* 집중 지원은 buildNeedSupportNote()가 지표를 직접 비교해 만들므로 여기 없다. */
-    const STATE_TEACHER_NOTE = {
-      "매우 우수": "꾸준한 독서와 충실한 기록 활동을 잘 이어가고 있어요.",
-      "우수": "독서와 기록 활동에 안정적으로 참여하고 있어요.",
-      "보통": "독서와 기록 활동을 조금 더 꾸준히 이어가도록 격려해 주세요."
-    };
-
+    /* 완료 못한 단계(읽기 전/중/후)가 있으면 다른 무엇보다 그 단계부터 안내한다 - 실제 진행 단계 데이터. */
     function buildLowStageNote(completedStageCount) {
       if (completedStageCount === 0) {
         return "읽기 전 활동부터 차근차근 시작하도록 안내해 주세요.";
@@ -2546,41 +2566,153 @@ const API_BASE_URL = getApiBaseUrl();
     }
 
     /*
-      supportReasons가 비어 있는데도 achievementLevel이 집중 지원인
-      학생을 위한 문구. achievementLevel 하나만 보고 두루뭉술하게
-      말하지 않고, 실제 지표 중 가장 약한 부분을 우선순위대로 확인한다.
-      A. 완료 못한 단계가 있으면 그 단계부터 안내
-      B/C. 독서 실천도와 기록 완성도 중 더 낮은 쪽을 안내
-      D. 기록 내용 적합성이 낮으면 그것을 안내
-      E. 특별히 두드러진 약점이 없으면 포괄적으로 안내
+      "교사 참고"는 achievementLevel(매우 우수/우수/보통/집중 지원) 하나만
+      보고 정해진 한 문장을 반복하지 않도록, 읽은 책 수·독서 실천도·기록
+      완성도를 함께 해석해 만든다. 온책읽기 쪽 buildPracticeTeacherNote와
+      틀(문자열 시드로 안정적으로 문장 하나를 고른다)은 같지만, 지표 자체가
+      다르므로(참여도/이해도 대신 실천도/완성도/읽은 책 수) 판정 기준과
+      문장은 이 화면 전용으로 새로 만들었다.
+
+      우선순위:
+      1) 미참여 -> 고정 문구
+      2) 완료 못한 단계가 있으면(completedStageCount<3) -> 그 단계부터 안내
+         (실제 진행 단계 데이터, buildLowStageNote 그대로 재사용)
+      3) supportReasons가 있으면 -> 등급별 관찰 문장 + 그 사유에 맞춘 구체적
+         지도 방향(실제 백엔드 사유 문자열만 사용, 새 항목을 지어내지 않음)
+      4) 그 외 -> 등급 + 읽은 책 수를 함께 반영한 분석 문장
     */
-    function buildNeedSupportNote(student) {
-      if (student.completedStageCount < 3) {
-        return buildLowStageNote(student.completedStageCount);
-      }
 
-      if (student.readingPracticeScore < student.recordCompletionScore) {
-        return "기록은 잘하고 있으니, 매일 조금씩 읽는 습관을 이어가도록 도와주세요.";
+    /* 문자열을 시드로 배열에서 안정적으로 하나를 고른다(새로고침해도 같은 값). */
+    function pickStableIndividualVariant(seedText, variants) {
+      let hash = 0;
+      for (let i = 0; i < seedText.length; i++) {
+        hash = (hash * 31 + seedText.charCodeAt(i)) >>> 0;
       }
-
-      if (student.recordCompletionScore < student.readingPracticeScore) {
-        return "읽기 활동은 하고 있으니, 질문과 답을 끝까지 작성하도록 안내해 주세요.";
-      }
-
-      if (student.contentSuitabilityScore < 50) {
-        return "질문과 답이 책의 내용과 맞게 연결되었는지 함께 확인해 주세요.";
-      }
-
-      return "읽기와 기록 활동을 한 단계씩 완료하도록 옆에서 안내해 주세요.";
+      return variants[hash % variants.length];
     }
 
+    function resolveIndividualNoteTier(achievementLevel) {
+      if (achievementLevel === "매우 우수") return "veryHigh";
+      if (achievementLevel === "우수") return "high";
+      if (achievementLevel === "보통") return "moderate";
+      return "veryLow";
+    }
+
+    /* 읽은 책 수에 따라 "여러 권을 꾸준히" 같은 말이 1권짜리 학생에게 나가지 않게 구간을 나눈다. */
+    function resolveBookCountBand(totalCompletedBookCount) {
+      if (totalCompletedBookCount >= 5) return "many";
+      if (totalCompletedBookCount >= 2) return "moderate";
+      return "one";
+    }
+
+    const INDIVIDUAL_NOTE_VOLUME_OPENER = {
+      many: ["여러 권의 책을 꾸준히 읽고,", "다양한 책을 지속적으로 읽으며"],
+      moderate: ["책을 차근차근 꾸준히 읽어 나가고 있으며,", "몇 권의 책을 이어서 읽어가며"]
+    };
+
+    const INDIVIDUAL_NOTE_QUALITY_CLAUSE = {
+      veryHigh: [
+        "읽은 뒤 생각과 기록도 빠짐없이 남기는 독서 습관이 잘 형성되어 있어요.",
+        "기록 활동도 안정적으로 이어가고 있어요. 지금의 독서 흐름을 계속 유지하면 좋아요.",
+        "읽은 내용을 정리하는 힘도 꾸준히 늘고 있어요."
+      ],
+      high: [
+        "읽은 뒤 생각을 조금 더 자세히 남기면 기록의 깊이가 더 좋아질 수 있어요.",
+        "읽은 내용에 대한 생각을 조금 더 구체화하도록 격려해 주세요.",
+        "기록에 자신의 느낌을 한 줄씩 더해가면 좋아요."
+      ]
+    };
+
+    /* 읽은 책이 1권뿐일 때는 "여러 권"류 표현 대신 다음 책으로 이어가라는 문장을 그대로 쓴다. */
+    const INDIVIDUAL_NOTE_ONE_BOOK_CLOSER = {
+      veryHigh: ["현재 읽은 책의 활동은 충실하게 수행하고 있으니 다음 책으로 자연스럽게 독서를 이어가도록 격려해 주세요."],
+      high: ["현재 읽은 책의 기록은 충실히 남기고 있으니 다음 책을 골라 독서를 이어가도록 격려해 주세요."]
+    };
+
+    const INDIVIDUAL_NOTE_MODERATE_VARIANTS = [
+      "독서와 기록 활동은 기본적으로 이루어지고 있으나 꾸준함이 다소 부족해요. 짧은 분량이라도 자주 읽고 기록하는 습관을 이어가도록 격려해 주세요.",
+      "읽기와 기록 모두 조금씩 이루어지고 있어요. 읽은 책 수를 천천히 늘리면서 생각을 조금 더 구체적으로 남기도록 도와주세요."
+    ];
+
+    const INDIVIDUAL_NOTE_VERYLOW_VARIANTS = [
+      "독서 활동과 기록 모두 아직 충분히 이어지지 않고 있어요. 짧은 책이나 관심 있는 책부터 읽고 한 문장씩 기록하는 경험을 쌓도록 도와주세요.",
+      "책 읽기와 기록 모두 시작 단계예요. 관심 있는 짧은 책을 골라 읽고 간단히 기록해보는 경험부터 쌓도록 지원해 주세요."
+    ];
+
+    /* supportReasons가 있을 때 관찰 문장 뒤에 붙일, 등급별 도입부(부족한 부분은 아래 액션 문장이 구체적으로 짚어 준다). */
+    const INDIVIDUAL_NOTE_REASON_OBSERVATION = {
+      veryHigh: ["전반적인 독서와 기록 활동은 우수한 편이지만,"],
+      high: ["독서와 기록 활동은 전반적으로 잘 이루어지고 있지만,"],
+      moderate: [
+        "기본적인 독서와 기록 활동은 이어가고 있으나 꾸준함이 다소 부족해요.",
+        "읽은 책에 대한 기록은 남기고 있으나 활동의 꾸준함이 다소 부족해요."
+      ],
+      veryLow: [
+        "독서와 기록 활동이 아직 충분히 이어지지 않고 있어요.",
+        "현재 읽은 책의 경험은 있지만 활동이 꾸준히 이어지지 않고 있어요."
+      ]
+    };
+
     /*
-      교사 참고 문구를 학생 상태에 맞게 만든다.
-      1) 미참여 -> 고정 문구(점수 부족처럼 표현하지 않음)
-      2) 지원 사유가 있음 -> 실제 사유를 안내 문장으로 바꿔 최대 2개만 표시
-      3) 지원 사유는 없지만 집중 지원 -> 지표를 비교해 가장 약한 부분 안내
-      4) 그 외(보통/우수/매우 우수) -> 상태별 짧은 문구
+      백엔드 supportReasons(문자열)에 맞춘 구체적 지도 방향. 사유 문자열은
+      TeacherIndividualReadingStudentResponse가 실제로 내려주는 값 그대로다
+      (SUPPORT_REASON_LABEL과 같은 키 집합) - 코드에 없는 활동은 지어내지 않는다.
     */
+    const INDIVIDUAL_NOTE_REASON_ACTION = {
+      "읽기 중 활동을 완료해야 해요": "읽기 중 질문 활동을 이어서 완료하도록 도와주세요.",
+      "읽기 후 활동을 완료해야 해요": "읽기 후 질문과 간추리기를 마무리하도록 안내해 주세요.",
+      "독서실천도가 낮아요": "짧은 책이나 관심 있는 책부터 읽는 횟수를 조금씩 늘리도록 도와주세요.",
+      "질문 만들기 참여가 필요해요": "짧은 분량이라도 자주 읽고, 궁금한 점을 한 가지씩 질문으로 남기는 습관을 만들어 주세요.",
+      "생각 나누기 참여가 필요해요": "읽은 뒤 한 가지 생각을 책수다방에 남기도록 도와주세요.",
+      "기록 내용을 조금 더 다듬어야 해요": "질문과 답이 책 내용과 이어지는지 함께 확인해 주세요."
+    };
+
+    function buildIndividualReasonNote(student, seed, tier) {
+      const codes = student.supportReasons;
+
+      /*
+       * 실천도·기록 완성도가 동시에 낮은 경우("독서실천도가 낮아요" +
+       * "기록 내용을 조금 더 다듬어야 해요")는 두 문장을 이어 붙이는 대신,
+       * 읽은 책 수까지 반영한 문장 하나로 자연스럽게 합친다.
+       */
+      if (
+        codes.indexOf("독서실천도가 낮아요") !== -1 &&
+        codes.indexOf("기록 내용을 조금 더 다듬어야 해요") !== -1
+      ) {
+        const bookPhrase = student.totalCompletedBookCount >= 1
+          ? `현재 ${student.totalCompletedBookCount}권의 독서 경험은 있지만`
+          : "아직 완독한 책이 없고";
+        return `${bookPhrase} 활동이 꾸준히 이어지지 않고 있어요. 짧은 읽기와 간단한 기록부터 반복해 독서 흐름을 만들어 주세요.`;
+      }
+
+      const observationPool = INDIVIDUAL_NOTE_REASON_OBSERVATION[tier] || INDIVIDUAL_NOTE_REASON_OBSERVATION.moderate;
+      const observation = pickStableIndividualVariant(seed, observationPool);
+      const action = INDIVIDUAL_NOTE_REASON_ACTION[codes[0]] || "활동을 조금씩 꾸준히 이어가도록 격려해 주세요.";
+
+      return `${observation} ${action}`;
+    }
+
+    function buildIndividualScoreNote(student, seed, tier) {
+      if (tier === "moderate") {
+        return pickStableIndividualVariant(seed, INDIVIDUAL_NOTE_MODERATE_VARIANTS);
+      }
+
+      if (tier === "veryLow") {
+        return pickStableIndividualVariant(seed, INDIVIDUAL_NOTE_VERYLOW_VARIANTS);
+      }
+
+      // veryHigh / high: 읽은 책 수에 따라 "여러 권" 표현이 실제와 모순되지 않게 나눈다.
+      const bookBand = resolveBookCountBand(student.totalCompletedBookCount);
+
+      if (bookBand === "one") {
+        return pickStableIndividualVariant(seed, INDIVIDUAL_NOTE_ONE_BOOK_CLOSER[tier]);
+      }
+
+      const opener = pickStableIndividualVariant(seed + "_open", INDIVIDUAL_NOTE_VOLUME_OPENER[bookBand]);
+      const quality = pickStableIndividualVariant(seed + "_qual", INDIVIDUAL_NOTE_QUALITY_CLAUSE[tier]);
+      return `${opener} ${quality}`;
+    }
+
     function buildTeacherNote(student) {
       const state = student.achievementLevel;
 
@@ -2588,20 +2720,20 @@ const API_BASE_URL = getApiBaseUrl();
         return "아직 개별읽기를 시작하지 않았어요.";
       }
 
-      if (student.supportReasons && student.supportReasons.length > 0) {
-        return student.supportReasons
-          .slice(0, 2)
-          .map(function (reason) {
-            return SUPPORT_REASON_ADVICE[reason] || reason;
-          })
-          .join(" ");
+      const hasReasons = student.supportReasons && student.supportReasons.length > 0;
+
+      if (!hasReasons && student.completedStageCount < 3) {
+        return buildLowStageNote(student.completedStageCount);
       }
 
-      if (state === "집중 지원") {
-        return buildNeedSupportNote(student);
+      const seed = String(student.studentId || student.studentName || "");
+      const tier = resolveIndividualNoteTier(state);
+
+      if (hasReasons) {
+        return buildIndividualReasonNote(student, seed, tier);
       }
 
-      return STATE_TEACHER_NOTE[state] || "";
+      return buildIndividualScoreNote(student, seed, tier);
     }
 
     function renderStudentDetail() {

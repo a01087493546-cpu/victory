@@ -874,7 +874,6 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
         <div class="ira-top-actions">
             <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
 <button type="button" class="ira-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
-          <button type="button" class="ira-top-button" onclick="goAdventure()">오늘의 독서 모험</button>
           <button type="button" class="mq-book-home-button" onclick="goIndividualHome()">📚 책읽기 홈</button>
         </div>
       </header>
@@ -947,7 +946,6 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
   <script>
     const studentId = sessionStorage.getItem("studentId") || "student-demo";
     function getApiBaseUrl() {
-<<<<<<< HEAD
       if (window.location.hostname === "127.0.0.1") {
         return "http://127.0.0.1:8080";
       }
@@ -958,18 +956,6 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
     }
 
     const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
-=======
-  if (window.location.hostname === "127.0.0.1") {
-    return "http://127.0.0.1:8080";
-  }
-  if (window.location.hostname === "localhost") {
-    return "http://localhost:8080";
-  }
-  return "https://victory-production-f94d.up.railway.app";
-}
-
-const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
->>>>>>> jiao
 
     let archiveBooks = [];
     let selectedBookDetail = null;

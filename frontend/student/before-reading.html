@@ -2416,6 +2416,160 @@ body {
 }
 
 /* =========================================================
+   도움 받기 모달: 제목/차례 맥락 카드
+   - 제목 단계: 예시 책 제목을 크게 보여주는 배너 카드
+   - 차례 단계: 예시 차례 목록 + 질문 예시를 좌우로 배치
+   - #helpModal 안으로만 범위를 좁혀 다른 화면의 example-panel에는 영향 없음
+   ========================================================= */
+
+#helpModal .help-context-card {
+  margin-bottom: 22px;
+  padding: 22px 26px;
+  border-radius: 22px;
+  border: 1px solid rgba(203, 149, 61, 0.4);
+  background: linear-gradient(180deg, rgba(255, 244, 214, 0.96), rgba(247, 225, 178, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+#helpModal .help-context-kicker {
+  display: block;
+  margin-bottom: 10px;
+  color: #9b6a20;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+#helpModal .help-context-title-text {
+  margin: 0;
+  color: #3b250f;
+  font-family: "Noto Serif KR", serif;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+#helpModal .help-panel-split {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+#helpModal .help-panel-split .help-context-card {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+#helpModal .help-panel-main {
+  min-width: 0;
+}
+
+#helpModal .help-toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+#helpModal .help-toc-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px 15px;
+  border-radius: 14px;
+  background: rgba(255, 253, 246, 0.7);
+  border: 1px solid rgba(203, 149, 61, 0.28);
+}
+
+#helpModal .help-toc-num {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e0ad43 0%, #bd7f18 100%);
+  color: #fff7e7;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+#helpModal .help-toc-text {
+  color: #3b250f;
+  font-family: "Noto Serif KR", serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+/* 차례 예시는 긴 생각한 답도 글자를 줄이거나 숨기지 않고 같은 높이로 담습니다. */
+#helpModal .help-panel-split .example-list {
+  align-items: stretch !important;
+}
+
+#helpModal .help-panel-split .example-item {
+  min-height: 360px !important;
+  height: 100% !important;
+  padding: 20px 20px 22px !important;
+  gap: 16px !important;
+}
+
+#helpModal .help-panel-split .question-card-mini {
+  min-height: 112px !important;
+}
+
+#helpModal .help-panel-split .answer-card-mini {
+  min-height: 140px !important;
+}
+
+#helpModal .help-panel-split .example-qa-card {
+  overflow: visible !important;
+}
+
+/* 그림 질문 예시: 왼쪽 예시 그림(35%) + 오른쪽 질문 3개(65%) */
+#helpModal .help-panel-split.help-panel-split-picture {
+  grid-template-columns: minmax(0, 35%) minmax(0, 1fr);
+}
+
+/*
+  그림 예시는 차례 예시보다 질문 칸 폭이 좁아(65% vs 차례의 훨씬 넓은 폭) 질문
+  두 번째 예시("그림에 나온 물건은...")가 기존 112px 안에서 줄바꿈되며 카드 밖으로
+  살짝 넘쳤다. 그림 전용으로만 카드 높이를 조금 더 확보한다(차례 예시는 그대로 유지).
+*/
+#helpModal .help-panel-split-picture .example-item {
+  min-height: 388px !important;
+}
+
+#helpModal .help-panel-split-picture .question-card-mini {
+  min-height: 140px !important;
+}
+
+#helpModal .help-context-picture-frame {
+  overflow: hidden;
+  border-radius: 14px;
+  aspect-ratio: 1 / 1.15;
+}
+
+#helpModal .help-context-picture-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 900px) {
+  #helpModal .help-panel-split,
+  #helpModal .help-panel-split.help-panel-split-picture {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
    읽기 전 질문 만들기(01~04단계 공통) 카드 하단 잘림 방지
    - 화면(1080px) 안에 항상 맞도록 세로 흐름을 flex로 다시 짭니다.
    - 하단 "이전 단계 / 저장하고 다음" 버튼은 항상 화면에 보입니다.
@@ -3431,16 +3585,74 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
       skim: "글을 빠르게 살펴보며 모르는 말이나 더 알고 싶은 내용을 질문해요."
     };
 
+    /*
+      도움 받기 모달의 예시 질문은 항상 예시 책 "신통방통 홈 쇼핑" 기준이다.
+      제목 단계는 이 책의 제목을, 차례 단계는 이 책의 차례(예시 질문 속에
+      나오는 장 제목과 같음)를 큼직하게 보여줘서 예시 질문의 맥락을 함께 보게 한다.
+    */
+    const helpExampleContext = {
+      title: "신통방통 홈 쇼핑",
+      contents: [
+        "수상한 홈 쇼핑 방송",
+        "이상한 주문",
+        "생각지도 못한 선물"
+      ]
+    };
+
+    function buildHelpContextHtml(step) {
+      if (step.type === "title") {
+        return (
+          '<div class="help-context-card help-context-title">' +
+            '<span class="help-context-kicker">예시 책 제목</span>' +
+            '<p class="help-context-title-text">「' + helpExampleContext.title + '」</p>' +
+          '</div>'
+        );
+      }
+
+      if (step.type === "contents") {
+        return (
+          '<div class="help-context-card help-context-toc">' +
+            '<span class="help-context-kicker">예시 차례</span>' +
+            '<ol class="help-toc-list">' +
+              helpExampleContext.contents.map(function(item, index) {
+                return (
+                  '<li class="help-toc-item">' +
+                    '<span class="help-toc-num">' + (index + 1) + '</span>' +
+                    '<span class="help-toc-text">' + item + '</span>' +
+                  '</li>'
+                );
+              }).join("") +
+            '</ol>' +
+          '</div>'
+        );
+      }
+
+      if (step.type === "picture") {
+        return (
+          '<div class="help-context-card help-context-picture">' +
+            '<span class="help-context-kicker">예시 그림</span>' +
+            '<div class="help-context-picture-frame">' +
+              '<img src="../assets/images/read-before/intro/read-before-picture-example-shopping.png" alt="예시 그림: 신통방통 홈 쇼핑 표지">' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      return "";
+    }
+
     function openHelpModal() {
       const step = steps[currentStepIndex];
 
       document.getElementById("helpModalLumiText").textContent =
         helpLumiLines[step.type] || step.tip.replace(/\\n/g, " ");
 
-      document.getElementById("helpModalExamplePanel").innerHTML =
+      const contextHtml = buildHelpContextHtml(step);
+
+      const exampleListHtml =
         '<div class="panel-title-row">' +
           '<h3 class="panel-title">예시 질문</h3>' +
-          '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>' +
+          (step.type === "title" || step.type === "picture" ? "" : '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>') +
         '</div>' +
 
         '<div class="example-list">' +
@@ -3462,6 +3674,17 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
             '</article>';
           }).join("") +
         '</div>';
+
+      /* 차례/그림 단계만 "맥락 | 질문 예시" 좌우 배치, 나머지는 기존처럼 위아래 배치. */
+      const splitModifierClass = step.type === "picture" ? " help-panel-split-picture" : "";
+
+      document.getElementById("helpModalExamplePanel").innerHTML =
+        step.type === "contents" || step.type === "picture"
+          ? '<div class="help-panel-split' + splitModifierClass + '">' +
+              contextHtml +
+              '<div class="help-panel-main">' + exampleListHtml + '</div>' +
+            '</div>'
+          : contextHtml + exampleListHtml;
 
       document.getElementById("helpModal").classList.add("show");
     }

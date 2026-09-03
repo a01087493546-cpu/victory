@@ -761,6 +761,53 @@
       color: #8f3d24;
     }
 
+    /* 넓어진 관리 화면에서도 하단 처리 버튼이 상세 패널 안에 온전히 남도록 한다. */
+    .detail-card #detailArea {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 5px 10px 0;
+    }
+
+    .detail-card #detailArea .detail-box {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .detail-card #detailArea .detail-meta {
+      margin-bottom: 7px;
+    }
+
+    .detail-card #detailArea .detail-lines {
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .detail-card #detailArea .line-card {
+      min-height: 96px;
+      padding: 13px 16px;
+    }
+
+    .detail-card #detailArea .line-card strong {
+      margin-bottom: 6px;
+    }
+
+    .detail-card #detailArea .teacher-note-box {
+      margin-top: 10px;
+      padding: 12px 15px 15px;
+    }
+
+    .detail-card #detailArea .feedback-box {
+      margin-top: 8px;
+      padding: 10px 13px;
+    }
+
+    .detail-card #detailArea .button-row {
+      margin-top: 7px;
+      gap: 10px;
+    }
+
     .history-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;

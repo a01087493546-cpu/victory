@@ -271,6 +271,111 @@ class FeedbackAiServiceTest {
         return (String) field.get(null);
     }
 
+    /*
+     * 이번 작업의 핵심 검증: "질문을 고쳐야 하는지/답을 고쳐야 하는지/
+     * 둘 다인지"를 판단하는 공통 규칙([수정 대상 구분])이 KOREAN_ONLY_OUTPUT_RULE에
+     * 있고, 모든 SYSTEM_PROMPT_*가 그 규칙을 이어받는 구조라 한 곳만
+     * 고치면 연습읽기/개별읽기/읽기 전·중·후의 AI 피드백 전체 경로에
+     * 동일하게 적용된다. 아래 9개는 FeedbackAiService가 실제로 쓰는
+     * 프롬프트 전부다(특정 화면 하나만 고치고 끝내지 않았는지 확인).
+     */
+    @Test
+    void allAiFeedbackPrompts_shareTheSameRevisionTargetRule() throws Exception {
+        List<String> allPromptFieldNames = List.of(
+            "SYSTEM_PROMPT_QUESTION",                      // 읽기 후 "책 질문 3개 만들기"(연습/개별 공용)
+            "SYSTEM_PROMPT_SUMMARY",                        // 간추리기(질문 없이 요약문 하나만 평가)
+            "SYSTEM_PROMPT_DURING_READING_QUESTION",        // 읽기 중 질문 만들기
+            "SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP",   // 온책읽기 읽기 중 심화 연습(질문만, 답 없음)
+            "SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW", // 온책읽기 총복습
+            "SYSTEM_PROMPT_EXTRA_PRACTICE",                 // 읽기 후 "질문으로 간추리기"(질문 2개 + 답 2개)
+            "SYSTEM_PROMPT_FINAL_SUMMARY",                  // 읽기 후 최종 간추리기(질문 없이 요약문 하나만 평가)
+            "SYSTEM_PROMPT_INDIVIDUAL_QUESTION",            // 개별읽기 질문
+            "SYSTEM_PROMPT_PRE_READING_QUESTION"            // 읽기 전(연습/개별 공용) 제목/차례/그림/글
+        );
+
+        for (String fieldName : allPromptFieldNames) {
+            String normalizedPrompt = privatePrompt(fieldName).replaceAll("\\s+", " ");
+            assertThat(normalizedPrompt)
+                .as("프롬프트 %s에 수정 대상 구분 공통 규칙이 있어야 함", fieldName)
+                .contains("[수정 대상 구분 - 반드시 지킬 것")
+                .contains("\"답을 고쳐 보세요.\"로 시작")
+                .contains("\"질문을 고쳐 보세요.\"로 시작")
+                .contains("\"질문과 답을 함께 고쳐 보세요.\"로")
+                .contains("반드시 \"좋아요!\"로 시작");
+        }
+    }
+
+    /*
+     * 이번 작업의 핵심 검증: "질문↔답 관련성" 판정을 넓히는 [질문-답 관련성
+     * 판정] 규칙도 KOREAN_ONLY_OUTPUT_RULE에 있어 9개 프롬프트 전부가
+     * 공유한다(특정 화면 하나만 고치지 않았는지 확인). "완전히 무관한
+     * 경우만 실패"라는 원칙과, 질문의 전제를 부정하며 답해도 통과라는
+     * "밤" 사례, 짧은 답 허용, 사실 오류를 채점하지 말라는 원칙까지 전부
+     * 포함돼 있는지 확인한다.
+     */
+    @Test
+    void allAiFeedbackPrompts_shareTheSameAnswerRelevanceRule() throws Exception {
+        List<String> allPromptFieldNames = List.of(
+            "SYSTEM_PROMPT_QUESTION",
+            "SYSTEM_PROMPT_SUMMARY",
+            "SYSTEM_PROMPT_DURING_READING_QUESTION",
+            "SYSTEM_PROMPT_DURING_READING_PRACTICE_DEEP",
+            "SYSTEM_PROMPT_DURING_READING_PRACTICE_REVIEW",
+            "SYSTEM_PROMPT_EXTRA_PRACTICE",
+            "SYSTEM_PROMPT_FINAL_SUMMARY",
+            "SYSTEM_PROMPT_INDIVIDUAL_QUESTION",
+            "SYSTEM_PROMPT_PRE_READING_QUESTION"
+        );
+
+        for (String fieldName : allPromptFieldNames) {
+            String normalizedPrompt = privatePrompt(fieldName).replaceAll("\\s+", " ");
+            assertThat(normalizedPrompt)
+                .as("프롬프트 %s에 질문-답 관련성 공통 규칙이 있어야 함", fieldName)
+                .contains("[질문-답 관련성 판정 - 반드시 넓게 적용")
+                .contains("조금이라도 자연스럽게 대응하면 통과 우선")
+                // A~F 여섯 가지 중 하나만 만족해도 통과
+                .contains("질문에 나온 대상에 대해 답하고 있음")
+                .contains("학생의 생각·추측·느낌·경험으로 답함")
+                .contains("한 단계 정도 추론하면 질문과 답의 연결을 설명할 수 있음")
+                // "밤" 사례(질문의 전제를 부정하며 답해도 통과)
+                .contains("밤은 먹는 밤일까?")
+                .contains("밤은 먹는 것이 아니라 시간을 의미한다")
+                // 짧은 답도 통과
+                .contains("짧은 답도 무조건 실패시키지 말 것")
+                .contains("용은 무서울까?")
+                // 사실 채점기로 동작 금지
+                .contains("너는 지식 정답 채점기가 아니다")
+                // 완전히 무관한 경우만 실패
+                .contains("정말 관련 없음으로 판단할 때만 실패시켜라")
+                .contains("나는 김밥을 좋아한다")
+                .contains("오늘 날씨는 맑다")
+                .contains("내 연필은 파란색이다");
+        }
+    }
+
+    /*
+     * 실제 사용자 신고 사례: 질문의 전제를 "아니다, ~이다"로 바로잡으며
+     * 답하는 경우("밤은 먹는 밤일까?" / "밤은 먹는 것이 아니라 시간을
+     * 의미한다.")가 답 불일치로 처리됐다. 프롬프트가 이 사례를 명시적
+     * good 예시로 담고 있는지, 그리고 실제 서버 로직도 good을 그대로
+     * 통과시키는지 확인한다.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_answerThatCorrectsQuestionPremiseIsRelated() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        AiFeedbackResponse result = service.getFeedback(buildTitleRequest(
+            "긴긴밤",
+            "밤은 먹는 밤일까?",
+            "밤은 먹는 것이 아니라 시간을 의미한다."));
+
+        assertThat(result.getResult()).isEqualTo("good");
+    }
+
     /* 검증 6: AI 오류 요청은 기록되지 않고 attempt_number도 증가하지 않음 */
     @Test
     void getFeedbackForAuthenticatedStudent_doesNotRecordAttemptWhenAiCallFails() {
@@ -702,6 +807,259 @@ class FeedbackAiServiceTest {
         assertThat(userContent).contains("백설공주의 의미가 뭘까?");
     }
 
+    /*
+     * 제목의 핵심 낱말에서 자신의 경험·생각을 연결하거나 조금 어색하게
+     * 표현한 질문도 초4 수준의 정상 제목 질문으로 인정하도록, 실제 AI에
+     * 전달되는 공통 프롬프트에 필수 통과 사례가 모두 포함돼 있는지 검증한다.
+     * 연습읽기와 개별읽기는 같은 pre_reading_question 프롬프트를 사용한다.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_promptAllowsExperienceAndImperfectExpressions() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        service.getFeedback(buildTitleRequest(
+            "나만의 보물 찾기",
+            "나도 보물을 찾아본 경험이 있을까?",
+            "어릴 때 보물찾기 놀이를 해 본 적이 있다."));
+
+        org.mockito.ArgumentCaptor<org.springframework.http.HttpEntity<Map<String, Object>>> entityCaptor =
+            org.mockito.ArgumentCaptor.forClass(org.springframework.http.HttpEntity.class);
+        verify(mockRestTemplate).postForObject(anyString(), entityCaptor.capture(), eq(Map.class));
+
+        List<Map<String, Object>> messages =
+            (List<Map<String, Object>>) entityCaptor.getValue().getBody().get("messages");
+        String systemContent = (String) messages.get(0).get("content");
+
+        assertThat(systemContent)
+            .contains("보물 찾기는 어떤 내용일까")
+            .contains("어떤 보물을 찾게 될까")
+            .contains("주인공은 보물을 찾을 수 있을까")
+            .contains("왜 제목이 나만의 보물 찾기일까")
+            .contains("나도 보물을 찾아본 경험이 있을까")
+            .contains("내가 보물이라고 생각하는 것은 무엇일까")
+            .contains("나라면 어떤 보물을 찾고 싶을까")
+            .contains("주인공 보물은 뭘까")
+            .contains("주인공은 몇 살일까? → NOT_RELATED_TO_BOOK")
+            .contains("오늘 날씨는 어떨까? → NOT_RELATED_TO_BOOK")
+            .contains("재미있을 것 같다. → NOT_A_QUESTION")
+            .contains("왜? → NOT_A_QUESTION")
+            .contains("ㅋㅋㅋㅋㅋㅋ → NOT_A_QUESTION")
+            .contains("나만의 보물 찾기? → SHALLOW_STAGE_QUESTION")
+            .contains("NOT_RELATED_TO_BOOK을 주면 안 돼")
+            .contains("1~2문장");
+    }
+
+    /*
+     * "나만의 보물 찾기" 한 권만의 예외가 아니라, 어느 제목에나 적용되는
+     * 원칙인지 확인한다. 특히 줄거리 예상이 아닌 "제목 속 대상이 실제로
+     * 있는지/어떤 성질인지" 궁금해하는 일반적인 궁금증(존재 여부, 습성,
+     * 다른 지식과의 연결)도 정상 질문으로 인정하도록 프롬프트에 들어
+     * 있는지, 서로 다른 책 제목("용이 산다", "강아지똥", "긴긴밤") 예시로
+     * 검증한다. 연습읽기와 개별읽기는 같은 pre_reading_question 프롬프트를
+     * 쓰므로 이 한 곳만 확인하면 양쪽 모두에 적용된다.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_promptAllowsGeneralCuriosityAndKnowledgeConnection() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        service.getFeedback(buildTitleRequest(
+            "용이 산다",
+            "용은 실제로 존재할까?",
+            "진짜 있을 수도 있을 것 같다."));
+
+        org.mockito.ArgumentCaptor<org.springframework.http.HttpEntity<Map<String, Object>>> entityCaptor =
+            org.mockito.ArgumentCaptor.forClass(org.springframework.http.HttpEntity.class);
+        verify(mockRestTemplate).postForObject(anyString(), entityCaptor.capture(), eq(Map.class));
+
+        List<Map<String, Object>> messages =
+            (List<Map<String, Object>>) entityCaptor.getValue().getBody().get("messages");
+        String systemContent = (String) messages.get(0).get("content");
+
+        assertThat(systemContent)
+            // 줄거리 예상이 아니어도 되는 일반 궁금증(존재 여부·습성·이유)
+            .contains("용은 실제로 존재할까")
+            .contains("용은 어디에 살까")
+            .contains("용은 왜 불을 뿜을까")
+            .contains("나는 용을 만나면 무서울까")
+            // 다른 지식과의 연결
+            .contains("용은 공룡과 비슷할까")
+            // 제목 이유 / 앞으로 일어날 일 예상
+            .contains("왜 제목이 용이 산다일까")
+            .contains("앞으로 용에게 어떤 일이 생길까")
+            // 같은 원칙이 다른 제목에도 동일하게 적용됨을 보여주는 예시
+            .contains("강아지똥도 쓸모가 있을까")
+            .contains("강아지똥은 왜 생길까")
+            .contains("왜 밤이 긴 걸까")
+            .contains("긴 밤에는 무엇을 할까")
+            // 줄거리 예상 활동으로 한정하지 않는다는 명시적 원칙
+            .contains("줄거리를 예상해야만 하는 활동이 아니므로")
+            // 여전히 불통해야 하는 사례들
+            .contains("오늘 급식은 무엇일까? → NOT_RELATED_TO_BOOK")
+            .contains("용이 산다? → SHALLOW_STAGE_QUESTION");
+    }
+
+    /*
+     * 실제 사용자 신고 사례: "용은 전설속의 동물인가?"가 여전히 불통
+     * 처리됐다. "용은 실제로 존재할까?"라는 예시 하나만 넣어서는 표현이
+     * 조금만 달라도 AI가 다른 취급을 할 수 있다는 문제라, 이번에는
+     * "책 내용을 직접 예상하는가"가 아니라 "제목을 보고 자연스럽게 떠올릴
+     * 수 있는 궁금증인가"를 최우선 원칙으로 앞세우고, 1~4번 예시는 닫힌
+     * 목록이 아니라 참고 사례일 뿐이라는 점과 분류·상상형 질문("용은
+     * 전설 속의 동물인가?", "용도 가족이 있을까?" 등)도 명시적으로 포함해
+     * 프롬프트를 더 넓혔다. 새로 넓힌 원칙과 신고된 문장이 실제로 프롬프트
+     * 안에 있는지, 그리고 신고된 사례를 그대로 보내면 서버가 good을
+     * 그대로 통과시키는지 모두 확인한다.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_promptTreatsQuestionSpiritBroadlyNotJustExactExamples() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        service.getFeedback(buildTitleRequest(
+            "용이 산다",
+            "용은 전설속의 동물인가?",
+            "옛날이야기에 나오는 상상의 동물인 것 같다."));
+
+        org.mockito.ArgumentCaptor<org.springframework.http.HttpEntity<Map<String, Object>>> entityCaptor =
+            org.mockito.ArgumentCaptor.forClass(org.springframework.http.HttpEntity.class);
+        verify(mockRestTemplate).postForObject(anyString(), entityCaptor.capture(), eq(Map.class));
+
+        List<Map<String, Object>> messages =
+            (List<Map<String, Object>>) entityCaptor.getValue().getBody().get("messages");
+        String systemContent = ((String) messages.get(0).get("content")).replaceAll("\\s+", " ");
+
+        assertThat(systemContent)
+            // 새로 앞세운 핵심 원칙(책 내용 예상이 아니라 "떠올릴 수 있는 궁금증"인가)
+            .contains("책 내용을 직접 예상하는가")
+            .contains("이 책 제목이나 책에서 학생이 연상했을 가능성이 조금이라도")
+            .contains("닫힌 목록이 아니다")
+            .contains("애매하면 항상 통과시켜라")
+            // 신고된 실제 문장과 같은 종류(분류·상상형 질문)도 명시적으로 포함
+            .contains("용은 전설 속의 동물인가?")
+            .contains("용도 가족이 있을까?")
+            .contains("용은 학교에 갈 수 있을까?")
+            // 5번(NOT_RELATED_TO_BOOK)을 좁게 적용하라는 지시
+            .contains("이 5번은 좁게 적용해")
+            // 다양한 제목으로 같은 원칙이 반복 적용됨을 보여주는 예시
+            .contains("인어는 정말 있을까?")
+            .contains("만복이는 누구일까?");
+
+        // 실제 서버 로직도 이 입력을 good으로 그대로 통과시키는지 확인
+        AiFeedbackResponse result = service.getFeedback(buildTitleRequest(
+            "용이 산다",
+            "용은 전설속의 동물인가?",
+            "옛날이야기에 나오는 상상의 동물인 것 같다."));
+        assertThat(result.getResult()).isEqualTo("good");
+    }
+
+    /*
+     * 세 번째 완화 라운드의 핵심: 제목의 낱말을 질문에 전혀 쓰지 않아도,
+     * 제목이 다루는 가치·주제로 "한 단계" 확장한 질문이면 통과해야 한다.
+     * 실제 신고 사례: 책 제목이 "나만의 보물 찾기"인데 학생 질문
+     * "내가 좋아하는 보물은 무엇인가?"가 여전히 불통 처리됐다. 이 질문은
+     * "보물"이라는 낱말이 있어 사실 3번 기준(핵심 단어 포함)만으로도
+     * 통과해야 하는데도 막혔던 사례라, 프롬프트가 실제로 이 문장과 그보다
+     * 더 간접적인 문장(낱말이 아예 없는 문장)까지 명시적으로 통과 예시로
+     * 담고 있는지 확인한다. "책 내용과 조금 멀다" 류의 표현이 실패
+     * 피드백에서 완전히 빠졌는지도 함께 확인한다.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    void getFeedback_preReadingTitleStep_promptAllowsIndirectAssociationsWithNoTitleWordOverlap() throws Exception {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenReturn(openAiJsonResponse("{\"result\":\"good\",\"message\":\"좋아요!\",\"failedRule\":null}"));
+        service.restTemplate = mockRestTemplate;
+
+        service.getFeedback(buildTitleRequest(
+            "나만의 보물 찾기",
+            "내가 좋아하는 보물은 무엇인가?",
+            "우리 엄마다."));
+
+        org.mockito.ArgumentCaptor<org.springframework.http.HttpEntity<Map<String, Object>>> entityCaptor =
+            org.mockito.ArgumentCaptor.forClass(org.springframework.http.HttpEntity.class);
+        verify(mockRestTemplate).postForObject(anyString(), entityCaptor.capture(), eq(Map.class));
+
+        List<Map<String, Object>> messages =
+            (List<Map<String, Object>>) entityCaptor.getValue().getBody().get("messages");
+        String normalizedPrompt = ((String) messages.get(0).get("content")).replaceAll("\\s+", " ");
+
+        assertThat(normalizedPrompt)
+            // 신고된 실제 문장
+            .contains("내가 좋아하는 보물은 무엇인가?")
+            // "보물"이라는 낱말이 전혀 없는, 한 단계 더 간접적인 예시들
+            .contains("가족도 보물이 될 수 있을까?")
+            .contains("나에게 가장 중요한 사람은 누구일까?")
+            .contains("사람마다 소중한 것은 다를까?")
+            .contains("친구도 나에게 보물이 될 수 있을까?")
+            // 다른 제목에도 같은 간접 확장 원칙이 적용됨(강아지똥/긴긴밤)
+            .contains("쓸모없어 보이는 것도 중요한 역할을 할 수 있을까?")
+            .contains("식물은 무엇을 먹고 자랄까?")
+            .contains("밤에 혼자 있으면 어떤 기분일까?")
+            .contains("시간이 느리게 가는 때는 언제일까?")
+            // 간접 연상을 명시적으로 허용한다는 원칙 문구
+            .contains("한 단계 정도 떨어진 간접")
+            .contains("제목의 낱말이 질문에 전혀 없어도")
+            // "강아지는 귀여울까?"가 이제는 거부가 아니라 통과 예시로 바뀌었는지
+            .contains("강아지는 귀여울까?")
+            .contains("반드시 통과시켜");
+
+        // 금지된 문구("조금 멀어요", "인물/물건/행동 중 하나를 골라")가
+        // 더 이상 어디에도 남아 있지 않은지 프롬프트 전체에서 확인
+        assertThat(normalizedPrompt)
+            .doesNotContain("조금 멀어요")
+            .doesNotContain("사람, 물건, 행동 중 하나를 골라");
+
+        // 실제 서버 로직도 이 입력을 good으로 그대로 통과시키는지 확인
+        AiFeedbackResponse result = service.getFeedback(buildTitleRequest(
+            "나만의 보물 찾기",
+            "내가 좋아하는 보물은 무엇인가?",
+            "우리 엄마다."));
+        assertThat(result.getResult()).isEqualTo("good");
+    }
+
+    /*
+     * 실패 피드백 문구 자체("조금 멀어요", "인물/물건/행동 중 하나를 골라")가
+     * 서버 고정 템플릿(applyFixedTitleMismatchFeedback)에서도 완전히
+     * 사라졌는지 확인한다. 정말 무관한 질문일 때도 이제는 더 부드러운
+     * 안내("이 책 제목을 보고 떠오른 궁금한 점을 다시 질문해 보세요")를 쓴다.
+     */
+    @Test
+    void getFeedback_titleMismatchFixedTemplates_noLongerUseBannedPhrases() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+
+        AiFeedbackResponse withTitle = service.getFeedback(
+            buildTitleRequest("용이 산다", "오늘 급식은 무엇일까?", "김치찌개일 것 같다."));
+        assertThat(withTitle.getMessage())
+            .doesNotContain("조금 멀어요")
+            .doesNotContain("사람, 물건, 행동 중 하나를 골라")
+            .startsWith("질문을 고쳐 보세요.")
+            .contains("용이 산다");
+
+        stubAiResponse("{\"result\":\"retry\",\"message\":\"아무 문구\",\"failedRule\":\"NOT_RELATED_TO_BOOK\"}");
+        AiFeedbackRequest noTitleRequest = new AiFeedbackRequest();
+        noTitleRequest.setType("pre_reading_question");
+        noTitleRequest.setStepType("title");
+        noTitleRequest.setQaList(List.of(new AiFeedbackRequest.QAItem("오늘 급식은 무엇일까?", "김치찌개일 것 같다.")));
+        AiFeedbackResponse withoutTitle = service.getFeedback(noTitleRequest);
+        assertThat(withoutTitle.getMessage())
+            .doesNotContain("조금 멀어요")
+            .doesNotContain("사람, 물건, 행동 중 하나를 골라")
+            .startsWith("질문을 고쳐 보세요.");
+    }
+
     // =========================================================
     // NOT_RELATED_TO_BOOK 고정 피드백(applyFixedTitleMismatchFeedback) 검증
     // =========================================================
@@ -727,7 +1085,8 @@ class FeedbackAiServiceTest {
         assertThat(result.getResult()).isEqualTo("retry");
         assertThat(result.getFailedRule()).isEqualTo("NOT_RELATED_TO_BOOK");
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목 '우리 낙원에서'와 관련이 없어요. '우리 낙원에서'라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목 '우리 낙원에서'를 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
+        assertThat(result.getMessage()).startsWith("질문을 고쳐 보세요.");
         assertThat(result.getMessage()).doesNotContain("제목이 무엇인지 묻기보다");
         assertThat(result.getMessage()).doesNotContain("인물이나 사건을 적어 보세요");
     }
@@ -742,7 +1101,7 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getMessage()).contains("백설공주");
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목 '백설공주'와 관련이 없어요. '백설공주'라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목 '백설공주'를 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
     }
 
     /* 받침 있는 제목("마당을 나온 암탉")은 "과"/"이라는" 조사가 올바르게 붙음 */
@@ -754,7 +1113,7 @@ class FeedbackAiServiceTest {
             buildTitleRequest("마당을 나온 암탉", "축구를 잘하는 사람은 누구일까?", "손흥민일 것 같다."));
 
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목 '마당을 나온 암탉'과 관련이 없어요. '마당을 나온 암탉'이라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목 '마당을 나온 암탉'을 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
     }
 
     /* 테스트 6: bookTitle이 없으면(null) 안전한 일반 문구를 쓰고 "null" 문자열이 노출되지 않음 */
@@ -772,7 +1131,7 @@ class FeedbackAiServiceTest {
         assertThat(result.getMessage()).doesNotContainIgnoringCase("null");
         assertThat(result.getMessage()).doesNotContainIgnoringCase("undefined");
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목과 관련이 없어요. 책 제목을 다시 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목을 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
     }
 
     /* bookTitle이 빈 문자열("")이어도 위와 동일하게 안전한 일반 문구를 씀 */
@@ -783,7 +1142,7 @@ class FeedbackAiServiceTest {
         AiFeedbackResponse result = service.getFeedback(buildTitleRequest("", "안녕하세요는 무슨 뜻일까?", "잘 모르겠다."));
 
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목과 관련이 없어요. 책 제목을 다시 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목을 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
     }
 
     /* 회귀: NOT_RELATED_TO_BOOK이 아닌 다른 failedRule(예: SHALLOW_STAGE_QUESTION)은 건드리지 않음 */
@@ -827,6 +1186,26 @@ class FeedbackAiServiceTest {
         assertThat(result.getMessage()).isEqualTo("좋아!");
     }
 
+    /*
+     * 검증 4: 질문도 활동 목적과 안 맞고 답도 질문과 안 맞는(둘 다 진짜
+     * 문제인) 경우. 이 케이스는 서버가 결정적으로 보정하는 대상이 아니라
+     * AI가 직접 판단해 message를 만드므로(위 [수정 대상 구분] 프롬프트
+     * 규칙이 담당), AI가 이미 "질문과 답을 함께 고쳐 보세요."로 응답하면
+     * 서버가 그 문구를 그대로 통과시키는지만 확인한다(NOT_RELATED_TO_BOOK이
+     * 아니므로 서버 쪽 고정 문구 로직이 끼어들지 않는다).
+     */
+    @Test
+    void getFeedback_bothQuestionAndAnswerInvalid_passesThroughBothRevisionMessage() {
+        stubAiResponse(
+            "{\"result\":\"retry\",\"message\":\"질문과 답을 함께 고쳐 보세요. 먼저 제목에서 궁금한 점을 질문으로 만들고, 그 질문에 맞는 생각을 써 보세요.\",\"failedRule\":\"NOT_A_QUESTION\"}");
+
+        AiFeedbackResponse result = service.getFeedback(
+            buildTitleRequest("용이 산다", "오늘 급식은 무엇일까 재밌겠다", "ㅋㅋㅋㅋ"));
+
+        assertThat(result.getResult()).isEqualTo("retry");
+        assertThat(result.getMessage()).startsWith("질문과 답을 함께 고쳐 보세요.");
+    }
+
     // =========================================================
     // 질문 관련성 vs 답 관련성 오분류 보정("밤" 사례) - 이번 작업의 핵심 검증
     // =========================================================
@@ -848,7 +1227,8 @@ class FeedbackAiServiceTest {
         assertThat(result.getResult()).isEqualTo("retry");
         assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
         assertThat(result.getMessage()).isEqualTo(
-            "질문은 책 제목 '밤'과 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.");
+            "답을 고쳐 보세요. 질문은 책 제목 '밤'과 잘 연결되어 있어요. 질문에서 묻는 내용에 맞게 답을 다시 적어 보세요.");
+        assertThat(result.getMessage()).startsWith("답을 고쳐 보세요.");
         assertThat(result.getMessage()).doesNotContain("제목을 보고 궁금한 점을 질문으로 적어 보세요");
     }
 
@@ -863,7 +1243,7 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
         assertThat(result.getMessage()).isEqualTo(
-            "질문은 책 제목 '강아지똥'과 관련이 있어요. 하지만 답이 질문과 잘 맞지 않아요. 질문에 알맞은 답을 다시 적어 보세요.");
+            "답을 고쳐 보세요. 질문은 책 제목 '강아지똥'과 잘 연결되어 있어요. 질문에서 묻는 내용에 맞게 답을 다시 적어 보세요.");
     }
 
     /* 질문에 제목이 없으면(진짜 무관) 여전히 기존 고정 문구를 그대로 씀 - 오탐 방지 회귀 */
@@ -877,7 +1257,7 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getFailedRule()).isEqualTo("NOT_RELATED_TO_BOOK");
         assertThat(result.getMessage()).isEqualTo(
-            "지금 질문은 책 제목 '밤'과 관련이 없어요. '밤'이라는 제목을 보고 궁금한 점을 질문으로 적어 보세요.");
+            "질문을 고쳐 보세요. 이 책 제목 '밤'을 보고 떠오른 궁금한 점을 다시 질문해 보세요.");
     }
 
     /* 제목의 핵심 단어 일부만 겹치는 경우(제목 전체 포함이 아님)는 이 결정적 보정을 적용하지 않음 */
@@ -941,5 +1321,69 @@ class FeedbackAiServiceTest {
         // 이미 ANSWER_NOT_RELATED였다면 서버가 메시지를 건드리지 않고 AI 메시지를 그대로 씀
         assertThat(result.getFailedRule()).isEqualTo("ANSWER_NOT_RELATED");
         assertThat(result.getMessage()).isEqualTo("원본 메시지");
+    }
+
+    /*
+     * contents(차례)/picture(그림)/skim(내용 훑어보기) 단계는 AI가 실제
+     * 자료를 볼 수 없으므로, "자료와 정확히 일치하는가"가 아니라 질문·답의
+     * 형식과 서로의 연결만으로 판단하도록 프롬프트가 넓게 허용하는지
+     * 확인한다. title 단계 전용 기준([title 단계 핵심 원칙] 이하)은 이번
+     * 완화 대상이 아니므로 그대로 남아 있는지도 함께 확인한다.
+     */
+    @Test
+    void preReadingQuestionPrompt_contentsPictureSkimStagesAcceptBroadAssociativeQuestions() throws Exception {
+        String prompt = privatePrompt("SYSTEM_PROMPT_PRE_READING_QUESTION");
+
+        assertThat(prompt)
+            // 5가지 핵심 판단 기준(자료 일치 여부 대신 사용)
+            .contains("질문이 질문 문장으로 성립하는가")
+            .contains("답이 질문에 대체로 대응하는가")
+            .contains("질문과 답이 서로 완전히 딴소리는 아닌가")
+            // contents(차례) 통과 예시
+            .contains("비밀은 무엇을 말할까?")
+            .contains("주인공이 밤에 일어나는 일을 말할 것이다")
+            .contains("마지막에는 어떤 일이 생길까?")
+            .contains("왜 여행을 떠났을까?")
+            .contains("새로운 친구는 누구일까?")
+            // picture(그림) 통과 예시
+            .contains("이 사람은 왜 놀란 표정을 짓고 있을까?")
+            .contains("저 물건은 무엇에 쓰는 걸까?")
+            // skim(내용 훑어보기) 통과 예시
+            .contains("주문은 왜 자주 나올까?")
+            .contains("주인공은 왜 걱정하고 있을까?")
+            // title 단계 전용 기준은 이번 작업에서 그대로 유지되어야 함
+            .contains("[title 단계 핵심 원칙 - 가장 먼저, 가장 넓게 적용]")
+            .contains("이 책 제목이나 책에서 학생이 연상했을 가능성이 조금이라도");
+
+        // 금지된 판정 문구들은 "이렇게 쓰지 말라"는 금지 지시 안에서만 등장해야 함
+        String normalizedPrompt = prompt.replaceAll("\\s+", " ");
+        assertThat(normalizedPrompt)
+            .contains("차례와 관련 없는 질문이에요.")
+            .contains("그림에 나온 내용과 관련이 없어요.")
+            .contains("글에서 확인할 수 없는 질문이에요.")
+            .contains("책의 내용과 연결되지 않았어요.")
+            .contains("절대 쓰지 마");
+        assertThat(prompt.split("차례와 관련 없는 질문이에요").length - 1).isEqualTo(1);
+    }
+
+    /*
+     * 실제로 보고된 실패 사례: contents 단계에서 "비밀은 무엇을 말할까?" /
+     * "주인공이 밤에 일어나는 일을 말할 것이다."가 AI 응답을 통해 good으로
+     * 그대로 전달되는지 end-to-end로 확인한다.
+     */
+    @Test
+    void getFeedback_contentsStepKeywordMeaningQuestion_passesThrough() {
+        stubGoodResultResponse();
+
+        AiFeedbackRequest request = new AiFeedbackRequest();
+        request.setType("pre_reading_question");
+        request.setStepType("contents");
+        request.setQaList(List.of(new AiFeedbackRequest.QAItem(
+            "비밀은 무엇을 말할까?", "주인공이 밤에 일어나는 일을 말할 것이다.")));
+
+        AiFeedbackResponse result = service.getFeedback(request);
+
+        assertThat(result.getResult()).isEqualTo("good");
+        assertThat(result.getMessage()).isEqualTo("좋아!");
     }
 }

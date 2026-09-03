@@ -1351,8 +1351,8 @@
   grid-template-rows:
     auto
     minmax(0, 1fr)
-    88px !important;
-  gap: 8px !important;
+    76px !important;
+  gap: 6px !important;
 
   min-height: 0 !important;
   overflow: hidden !important;
@@ -1363,9 +1363,9 @@
 .detail-card #detailArea .detail-lines {
   display: grid !important;
   grid-template-rows:
-    minmax(74px, 0.82fr)
-    minmax(78px, 0.9fr)
-    minmax(120px, 1.35fr) !important;
+    minmax(64px, 0.82fr)
+    minmax(68px, 0.9fr)
+    minmax(98px, 1.35fr) !important;
 
   gap: 8px !important;
   margin: 0 !important;
@@ -1402,17 +1402,17 @@
 
 /* A/B 선택지 영역 높이 축소 */
 .detail-card #detailArea .balance-row {
-  height: 88px !important;
-  min-height: 88px !important;
+  height: 76px !important;
+  min-height: 76px !important;
   margin: 0 !important;
   gap: 8px !important;
 }
 
 /* A/B 카드도 축소된 영역 안에 맞춤 */
 .detail-card #detailArea .balance-card {
-  height: 88px !important;
-  min-height: 88px !important;
-  padding: 12px 14px !important;
+  height: 76px !important;
+  min-height: 76px !important;
+  padding: 9px 13px !important;
 
   display: flex !important;
   flex-direction: column !important;
@@ -1427,6 +1427,29 @@
 .detail-card #detailArea .balance-card p {
   font-size: 16px !important;
   line-height: 1.25 !important;
+}
+
+.detail-card #detailArea {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 5px 10px 0 !important;
+}
+
+.detail-card #detailArea > .teacher-note-box {
+  min-height: 0 !important;
+  margin-top: 8px !important;
+  padding: 10px 14px 14px !important;
+}
+
+.detail-card #detailArea > .teacher-note-box .feedback-box {
+  margin-top: 7px !important;
+  padding: 9px 12px !important;
+}
+
+.detail-card #detailArea > .teacher-note-box .button-row,
+.detail-card #detailArea > .pending-action-row {
+  margin-top: 6px !important;
+  gap: 10px !important;
 }
 
 /* 화면 높이가 낮을 때 추가 축소 */

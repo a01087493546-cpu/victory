@@ -5018,8 +5018,9 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
 #sharePanel .ar-share-rejection strong {
   display: block !important;
   margin-bottom: 6px !important;
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif !important;
   font-size: 20px !important;
-  font-weight: 800 !important;
+  font-weight: 900 !important;
   color: #9b4228 !important;
 }
 
@@ -5030,7 +5031,7 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
   background: none !important;
   min-height: 0 !important;
   font-size: 20px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 1.5 !important;
   color: #7a3420 !important;
   max-height: 130px !important;
@@ -7579,7 +7580,8 @@ if (selectedBookType === "opinion") {
     function requestExtraPracticeAiFeedback(question1, answer1, question2, answer2) {
       const requestId = ++extraPracticeAiRequestId;
       const checkButton = document.getElementById("extraPracticeCheckButton");
-      const timeoutMs = 15000;
+      /* 백엔드의 OpenAI 응답 제한(20초)보다 먼저 요청을 끊지 않는다. */
+      const timeoutMs = 30000;
       const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요.";
 
       isExtraPracticeAiRequestInFlight = true;

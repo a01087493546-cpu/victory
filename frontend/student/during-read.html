@@ -1650,7 +1650,8 @@ async function loadTodayBookThoughtResponses() {
 }
     async function requestDuringReadingAiFeedback(question, answer) {
       const requestId = ++duringReadingAiRequestId;
-      const timeoutMs = 15000;
+      /* 백엔드의 OpenAI 응답 제한(20초)보다 먼저 요청을 끊지 않는다. */
+      const timeoutMs = 30000;
       const aiFailMessage =
         "루미 피드백을 불러오지 못했어요. 잠시 후 다시 시도해봐.";
 
