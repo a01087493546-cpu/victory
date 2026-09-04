@@ -9,61 +9,62 @@
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
 
-   * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
 
-body {
-  position: relative;
-  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-  color: #3f2615;
-  background: #fff8e9 !important;
-}
+    body {
+      position: relative;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #3f2615;
+      background: #fff8e9 !important;
+    }
 
-button,
-textarea {
-  font-family: inherit;
-}
+    button,
+    textarea {
+      font-family: inherit;
+    }
 
-button {
-  cursor: pointer;
-}
+    button {
+      cursor: pointer;
+    }
 
-.page {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+    .page {
+      position: absolute;
+      top: 50%;
+      left: 50%;
 
-  width: 1920px;
-  height: 1080px;
-  padding: 8px 20px 10px;
-  overflow: hidden;
+      width: 1920px;
+      height: 1080px;
+      padding: 8px 20px 10px;
+      overflow: hidden;
 
-  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
-  transform-origin: center center;
+      transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+      transform-origin: center center;
 
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 247, 224, 0.08)
-    ),
-    url("../assets/images/practice/during-reading-magic-space-bg.png") !important;
+      background-image:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 247, 224, 0.08)
+        ),
+        url("../assets/images/practice/during-reading-magic-space-bg.png") !important;
 
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  background-color: #fff8e9 !important;
-}
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      background-color: #fff8e9 !important;
+    }
+
     .shell {
       width: 1580px;
       height: 1062px;
@@ -129,11 +130,6 @@ button {
       display: none;
     }
 
-    /*
-      title-area는 원래 비어 있는 제목(main-title/main-desc)을 담던 자리라
-      화면에서 완전히 숨겨져 있었다. 그 빈 자리(.top 헤더의 가운데 칸)를
-      심사 체험 배지 전용 자리로 재사용한다.
-    */
     .title-area {
       display: flex;
       align-items: center;
@@ -141,8 +137,6 @@ button {
       min-width: 0;
     }
 
-    /* 심사 체험 계정에서만 보이는 짧은 안내 배지. 연습읽기 질문 작성
-       화면들이 공통으로 사용하는 디자인(베이지/브라운/골드)이다. */
     .mq-demo-banner {
       display: inline-flex;
       align-items: center;
@@ -152,8 +146,15 @@ button {
       padding: 6px 18px;
       border-radius: 20px;
       border: 1px solid rgba(180, 130, 60, 0.42);
-      background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(238, 216, 176, 0.92));
-      box-shadow: 0 6px 14px rgba(90, 55, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 247, 225, 0.96),
+          rgba(238, 216, 176, 0.92)
+        );
+      box-shadow:
+        0 6px 14px rgba(90, 55, 15, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
       color: #6b4b26;
       font-size: 15px;
       line-height: 1.45;
@@ -169,7 +170,9 @@ button {
       font-weight: 900;
     }
 
-    .mq-demo-banner[hidden] { display: none !important; }
+    .mq-demo-banner[hidden] {
+      display: none !important;
+    }
 
     .top-actions {
       justify-self: end;
@@ -186,6 +189,7 @@ button {
 
     .mq-book-home-button,
     .class-reading-button,
+    .focus-time-button,
     .date-pill {
       height: 46px;
 
@@ -222,6 +226,24 @@ button {
       box-shadow:
         0 8px 16px rgba(105, 57, 5, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+    /* 독서 집중타임 상단 버튼 */
+    .focus-time-button {
+      padding: 0 20px;
+
+      border: 1px solid rgba(124, 86, 38, 0.5);
+      background:
+        linear-gradient(
+          180deg,
+          #725032,
+          #3b2717
+        );
+      color: #fff4db;
+
+      box-shadow:
+        0 8px 16px rgba(52, 30, 11, 0.25),
+        inset 0 1px 0 rgba(255, 239, 210, 0.18);
     }
 
     .date-pill {
@@ -288,45 +310,46 @@ button {
       overflow: hidden;
     }
 
-   .section-title-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-}
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
 
-.section-title-row .section-title {
-  flex-shrink: 0;
-  margin: 0;
-}
+    .section-title-row .section-title {
+      flex-shrink: 0;
+      margin: 0;
+    }
 
-.section-title-row .mq-demo-banner {
-  flex: 1;
-  min-width: 0;
-  max-width: 900px;
-  min-height: 38px;
-  height: auto;
-  padding: 6px 16px;
-  font-size: 16px;
-  line-height: 1.4;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  word-break: keep-all;
-}
+    .section-title-row .mq-demo-banner {
+      flex: 1;
+      min-width: 0;
+      max-width: 900px;
+      min-height: 38px;
+      height: auto;
+      padding: 6px 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      word-break: keep-all;
+    }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
 
-  color: #4b2a13;
-  font-family: "Noto Serif KR", serif;
-  font-size: 34px;
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -0.7px;
-}
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.7px;
+    }
+
     .title-line {
       height: 1px;
       margin: 9px 0 10px;
@@ -390,9 +413,6 @@ button {
       margin-top: 5px;
     }
 
-    /*
-      답 영역이 남는 공간을 모두 차지하도록 설정
-    */
     .answer-block {
       flex: 1 1 auto;
       min-height: 0;
@@ -458,18 +478,11 @@ button {
         inset 0 1px 0 rgba(255, 255, 255, 0.72);
     }
 
-    /*
-      질문 입력칸도 기존보다 확대
-    */
     #questionInput {
       height: 130px;
       min-height: 130px;
     }
 
-    /*
-      답 입력칸은 고정 높이가 아니라
-      카드에서 남는 높이를 자동으로 채움
-    */
     #answerInput {
       flex: 1 1 auto;
       height: auto;
@@ -521,7 +534,8 @@ button {
     .main-button:hover,
     .type-button:hover,
     .mq-book-home-button:hover,
-    .class-reading-button:hover {
+    .class-reading-button:hover,
+    .focus-time-button:hover {
       transform: translateY(-1px);
     }
 
@@ -529,7 +543,8 @@ button {
     .main-button:active,
     .type-button:active,
     .mq-book-home-button:active,
-    .class-reading-button:active {
+    .class-reading-button:active,
+    .focus-time-button:active {
       transform: translateY(1px);
     }
 
@@ -729,12 +744,425 @@ button {
       text-align: center;
     }
 
-    /*
-      1920×1080 고정 스테이지를 사용하므로
-      화면 크기에 따라 글씨·버튼·카드 크기를 바꾸는 반응형 규칙은 사용하지 않습니다.
-      아래 스크립트가 전체 화면만 같은 비율로 축소·확대합니다.
-    */
+    /* ==================================================
+       독서 집중타임 - 시간 선택 모달
+    ================================================== */
 
+    .focus-select-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(20, 12, 6, 0.65);
+      backdrop-filter: blur(7px);
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease;
+    }
+
+    .focus-select-overlay.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .focus-select-card {
+      width: 650px;
+      padding: 44px 48px 38px;
+
+      border: 1px solid rgba(224, 180, 104, 0.55);
+      border-radius: 32px;
+
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          rgba(255, 227, 158, 0.22),
+          transparent 38%
+        ),
+        linear-gradient(
+          180deg,
+          #fffaf0,
+          #f5e6c9
+        );
+
+      box-shadow:
+        0 28px 70px rgba(25, 13, 4, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+      text-align: center;
+
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.22s ease;
+    }
+
+    .focus-select-overlay.show .focus-select-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .focus-select-icon {
+      font-size: 48px;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .focus-select-title {
+      color: #432814;
+
+      font-family: "Noto Serif KR", serif;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.25;
+
+      margin-bottom: 13px;
+    }
+
+    .focus-select-description {
+      color: #72563b;
+
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.55;
+
+      word-break: keep-all;
+    }
+
+    .focus-select-tip {
+      margin-top: 10px;
+
+      color: #9a7041;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .focus-minute-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+
+      margin-top: 30px;
+    }
+
+    .focus-minute-button {
+      height: 74px;
+
+      border: 1px solid rgba(165, 112, 44, 0.34);
+      border-radius: 20px;
+
+      background: rgba(255, 252, 245, 0.86);
+      color: #65401f;
+
+      font-size: 23px;
+      font-weight: 900;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        0 5px 12px rgba(111, 68, 22, 0.08);
+
+      transition:
+        transform 0.12s ease,
+        border-color 0.12s ease,
+        background 0.12s ease;
+    }
+
+    .focus-minute-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(184, 119, 32, 0.6);
+    }
+
+    .focus-minute-button.active {
+      border-color: rgba(168, 102, 20, 0.88);
+
+      background:
+        linear-gradient(
+          180deg,
+          #f4cc7a,
+          #ce9131
+        );
+
+      color: #43250f;
+
+      box-shadow:
+        0 7px 16px rgba(149, 89, 18, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }
+
+    .focus-select-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 13px;
+
+      margin-top: 31px;
+    }
+
+    .focus-cancel-button,
+    .focus-start-button {
+      height: 62px;
+      border-radius: 18px;
+
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .focus-cancel-button {
+      width: 150px;
+
+      border: 1px solid rgba(121, 88, 51, 0.25);
+      background: rgba(255, 252, 245, 0.75);
+      color: #735437;
+    }
+
+    .focus-start-button {
+      width: 285px;
+
+      border: 1px solid rgba(137, 84, 22, 0.45);
+
+      background:
+        linear-gradient(
+          180deg,
+          #714b2d,
+          #3e2817
+        );
+
+      color: #fff5de;
+
+      box-shadow:
+        0 6px 0 rgba(42, 24, 10, 0.72),
+        inset 0 1px 0 rgba(255, 244, 217, 0.18);
+    }
+
+    .focus-start-button:active {
+      transform: translateY(2px);
+      box-shadow:
+        0 3px 0 rgba(42, 24, 10, 0.72),
+        inset 0 1px 0 rgba(255, 244, 217, 0.18);
+    }
+
+    /* ==================================================
+       독서 집중타임 - 실제 타이머 전체 화면
+    ================================================== */
+
+    .focus-reading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 38%,
+          rgba(103, 76, 44, 0.18),
+          transparent 35%
+        ),
+        #120d09;
+
+      color: #fff8e9;
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transition:
+        opacity 0.35s ease,
+        visibility 0.35s ease;
+    }
+
+    .focus-reading-overlay.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .focus-reading-top {
+      position: absolute;
+      top: 58px;
+      left: 0;
+      width: 100%;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .focus-reading-label {
+      color: rgba(244, 207, 139, 0.82);
+
+      font-family: "Noto Serif KR", serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .focus-reading-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      transform: translateY(-15px);
+    }
+
+    .focus-reading-book-icon {
+      font-size: 50px;
+      margin-bottom: 28px;
+
+      opacity: 0.88;
+      filter: drop-shadow(0 5px 20px rgba(255, 208, 120, 0.08));
+    }
+
+    .focus-timer {
+      min-width: 520px;
+
+      color: #fff8e9;
+
+      font-size: 150px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 3px;
+
+      text-align: center;
+
+      font-variant-numeric: tabular-nums;
+
+      text-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.4),
+        0 0 28px rgba(232, 190, 110, 0.06);
+    }
+
+    .focus-reading-message {
+      margin-top: 30px;
+
+      color: rgba(255, 244, 222, 0.8);
+
+      font-size: 25px;
+      font-weight: 700;
+      line-height: 1.5;
+
+      text-align: center;
+
+      word-break: keep-all;
+    }
+
+    .focus-reading-sub-message {
+      margin-top: 9px;
+
+      color: rgba(219, 190, 143, 0.55);
+
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .focus-end-button {
+      position: absolute;
+      bottom: 54px;
+
+      min-width: 164px;
+      height: 48px;
+      padding: 0 20px;
+
+      border: 1px solid rgba(236, 211, 171, 0.16);
+      border-radius: 999px;
+
+      background: rgba(255, 248, 232, 0.065);
+      color: rgba(255, 244, 223, 0.48);
+
+      font-size: 15px;
+      font-weight: 800;
+
+      transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .focus-end-button:hover {
+      border-color: rgba(236, 211, 171, 0.3);
+      background: rgba(255, 248, 232, 0.11);
+      color: rgba(255, 244, 223, 0.78);
+    }
+
+    /* 집중 시간이 끝난 상태 */
+    .focus-reading-overlay.complete .focus-reading-book-icon {
+      font-size: 62px;
+    }
+
+    .focus-reading-overlay.complete .focus-timer {
+      display: none;
+    }
+
+    .focus-reading-overlay.complete .focus-reading-label {
+      color: rgba(247, 211, 146, 0.9);
+    }
+
+    .focus-reading-overlay.complete .focus-reading-message {
+      margin-top: 0;
+
+      color: #fff7e6;
+
+      font-family: "Noto Serif KR", serif;
+      font-size: 42px;
+      font-weight: 900;
+    }
+
+    .focus-reading-overlay.complete .focus-reading-sub-message {
+      margin-top: 18px;
+
+      color: rgba(245, 221, 181, 0.76);
+
+      font-size: 21px;
+      line-height: 1.6;
+    }
+
+    .focus-return-button {
+      display: none;
+
+      width: 280px;
+      height: 64px;
+
+      margin-top: 38px;
+
+      border: 1px solid rgba(226, 174, 80, 0.48);
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dba947,
+          #9f610d
+        );
+
+      color: #fff9ec;
+
+      font-size: 21px;
+      font-weight: 900;
+
+      box-shadow:
+        0 6px 0 rgba(78, 43, 6, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    .focus-reading-overlay.complete .focus-return-button {
+      display: block;
+    }
+
+    .focus-reading-overlay.complete .focus-end-button {
+      display: none;
+    }
   </style>
 </head>
 
@@ -754,14 +1182,25 @@ button {
           <span>우리반 책읽기</span>
         </div>
 
-       <div class="title-area">
-  <h1 class="main-title"></h1>
-  <p class="main-desc">
-    질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
-  </p>
-</div>
+        <div class="title-area">
+          <h1 class="main-title"></h1>
+
+          <p class="main-desc">
+            질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
+          </p>
+        </div>
 
         <div class="top-actions">
+
+          <!-- 새로 추가된 독서 집중타임 버튼 -->
+          <button
+            class="focus-time-button"
+            type="button"
+            onclick="openFocusTimeSelector()"
+          >
+            ⏳ 독서 집중타임
+          </button>
+
           <button
             class="mq-book-home-button"
             type="button"
@@ -792,8 +1231,15 @@ button {
               ✎ 책 속 생각 쓰기
             </h2>
 
-            <div class="mq-demo-banner" id="demoExperienceBanner" hidden>
-              🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.
+            <div
+              class="mq-demo-banner"
+              id="demoExperienceBanner"
+              hidden
+            >
+              🔍
+              <strong>심사 체험 안내</strong>
+              — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만,
+              심사계정은 바로 이동할 수 있습니다.
             </div>
           </div>
 
@@ -960,16 +1406,182 @@ button {
     </div>
   </main>
 
+
+  <!-- =====================================================
+       독서 집중타임 - 시간 선택 화면
+  ====================================================== -->
+
+  <div
+    class="focus-select-overlay"
+    id="focusSelectOverlay"
+    aria-hidden="true"
+  >
+    <div
+      class="focus-select-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="focusSelectTitle"
+    >
+
+      <div class="focus-select-icon">
+        📖
+      </div>
+
+      <h2
+        class="focus-select-title"
+        id="focusSelectTitle"
+      >
+        독서 집중타임
+      </h2>
+
+      <p class="focus-select-description">
+        지금부터 책에만 집중해 볼까요?<br>
+        읽을 시간을 골라 주세요.
+      </p>
+
+      <p class="focus-select-tip">
+        읽는 동안에는 질문을 만들지 않고 책에만 집중해요.
+      </p>
+
+      <div class="focus-minute-buttons">
+        <button
+          class="focus-minute-button"
+          type="button"
+          data-minutes="5"
+          onclick="selectFocusMinutes(5)"
+        >
+          5분
+        </button>
+
+        <button
+          class="focus-minute-button active"
+          type="button"
+          data-minutes="10"
+          onclick="selectFocusMinutes(10)"
+        >
+          10분
+        </button>
+
+        <button
+          class="focus-minute-button"
+          type="button"
+          data-minutes="15"
+          onclick="selectFocusMinutes(15)"
+        >
+          15분
+        </button>
+
+        <button
+          class="focus-minute-button"
+          type="button"
+          data-minutes="20"
+          onclick="selectFocusMinutes(20)"
+        >
+          20분
+        </button>
+      </div>
+
+      <div class="focus-select-actions">
+        <button
+          class="focus-cancel-button"
+          type="button"
+          onclick="closeFocusTimeSelector()"
+        >
+          취소
+        </button>
+
+        <button
+          class="focus-start-button"
+          type="button"
+          onclick="startFocusTime()"
+        >
+          집중 시작하기
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =====================================================
+       독서 집중타임 - 실제 집중 화면
+  ====================================================== -->
+
+  <div
+    class="focus-reading-overlay"
+    id="focusReadingOverlay"
+    aria-hidden="true"
+  >
+
+    <div class="focus-reading-top">
+      <div class="focus-reading-label" id="focusReadingLabel">
+        📖 독서 집중타임
+      </div>
+    </div>
+
+    <div class="focus-reading-main">
+
+      <div
+        class="focus-reading-book-icon"
+        id="focusReadingIcon"
+      >
+        📖
+      </div>
+
+      <div
+        class="focus-timer"
+        id="focusTimer"
+      >
+        10:00
+      </div>
+
+      <div
+        class="focus-reading-message"
+        id="focusReadingMessage"
+      >
+        책에 집중해 보세요.
+      </div>
+
+      <div
+        class="focus-reading-sub-message"
+        id="focusReadingSubMessage"
+      >
+        지금은 읽는 시간이에요.
+      </div>
+
+      <button
+        class="focus-return-button"
+        id="focusReturnButton"
+        type="button"
+        onclick="returnFromFocusTime()"
+      >
+        ✎ 질문 만들러 가기
+      </button>
+
+    </div>
+
+    <button
+      class="focus-end-button"
+      id="focusEndButton"
+      type="button"
+      onclick="endFocusTimeEarly()"
+    >
+      집중타임 끝내기
+    </button>
+
+  </div>
+
+
   <script src="../js/auth.js"></script>
   <script src="../js/demo-storage.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
-<script src="../js/ai-feedback.js"></script>
+  <script src="../js/ai-feedback.js"></script>
+
   <script>
     /* =========================================================
        1920×1080 고정 화면 비율 유지
-       - 내부 글씨, 버튼, 카드 크기는 원본 그대로 유지
-       - 브라우저 창 크기에 맞춰 화면 전체만 동일 비율로 축소/확대
     ========================================================= */
+
     function fitFixedStage() {
       const designWidth = 1920;
       const designHeight = 1080;
@@ -986,8 +1598,377 @@ button {
 
     window.addEventListener("resize", fitFixedStage);
     window.addEventListener("DOMContentLoaded", fitFixedStage);
+
     fitFixedStage();
   </script>
+
+
+  <!-- =========================================================
+       독서 집중타임 프론트 기능
+  ========================================================== -->
+
+  <script>
+    let selectedFocusMinutes = 10;
+    let focusRemainingSeconds = 0;
+    let focusTimerInterval = null;
+    let focusTimerRunning = false;
+
+    const focusSelectOverlay =
+      document.getElementById("focusSelectOverlay");
+
+    const focusReadingOverlay =
+      document.getElementById("focusReadingOverlay");
+
+    const focusTimer =
+      document.getElementById("focusTimer");
+
+    const focusReadingLabel =
+      document.getElementById("focusReadingLabel");
+
+    const focusReadingIcon =
+      document.getElementById("focusReadingIcon");
+
+    const focusReadingMessage =
+      document.getElementById("focusReadingMessage");
+
+    const focusReadingSubMessage =
+      document.getElementById("focusReadingSubMessage");
+
+
+    /* ---------------------------------------------------------
+       시간 선택창 열기
+    --------------------------------------------------------- */
+
+    function openFocusTimeSelector() {
+      if (focusTimerRunning) {
+        return;
+      }
+
+      focusSelectOverlay.classList.add("show");
+      focusSelectOverlay.setAttribute("aria-hidden", "false");
+    }
+
+
+    /* ---------------------------------------------------------
+       시간 선택창 닫기
+    --------------------------------------------------------- */
+
+    function closeFocusTimeSelector() {
+      focusSelectOverlay.classList.remove("show");
+      focusSelectOverlay.setAttribute("aria-hidden", "true");
+    }
+
+
+    /* ---------------------------------------------------------
+       5 / 10 / 15 / 20분 선택
+    --------------------------------------------------------- */
+
+    function selectFocusMinutes(minutes) {
+      selectedFocusMinutes = minutes;
+
+      const minuteButtons =
+        document.querySelectorAll(".focus-minute-button");
+
+      minuteButtons.forEach(function(button) {
+        const buttonMinutes =
+          Number(button.dataset.minutes);
+
+        button.classList.toggle(
+          "active",
+          buttonMinutes === minutes
+        );
+      });
+    }
+
+
+    /* ---------------------------------------------------------
+       집중타임 시작
+    --------------------------------------------------------- */
+
+    function startFocusTime() {
+      closeFocusTimeSelector();
+
+      clearInterval(focusTimerInterval);
+
+      focusRemainingSeconds =
+        selectedFocusMinutes * 60;
+
+      focusTimerRunning = true;
+
+      resetFocusScreen();
+
+      updateFocusTimerDisplay();
+
+      focusReadingOverlay.classList.add("show");
+      focusReadingOverlay.setAttribute("aria-hidden", "false");
+
+      focusTimerInterval =
+        setInterval(function() {
+          focusRemainingSeconds -= 1;
+
+          if (focusRemainingSeconds <= 0) {
+            focusRemainingSeconds = 0;
+            updateFocusTimerDisplay();
+            completeFocusTime();
+            return;
+          }
+
+          updateFocusTimerDisplay();
+        }, 1000);
+    }
+
+
+    /* ---------------------------------------------------------
+       카운트다운 화면 표시
+    --------------------------------------------------------- */
+
+    function updateFocusTimerDisplay() {
+      const minutes =
+        Math.floor(focusRemainingSeconds / 60);
+
+      const seconds =
+        focusRemainingSeconds % 60;
+
+      const minuteText =
+        String(minutes).padStart(2, "0");
+
+      const secondText =
+        String(seconds).padStart(2, "0");
+
+      focusTimer.textContent =
+        minuteText + ":" + secondText;
+
+      /* 마지막 1분일 때 문구만 살짝 바꿔 준다. */
+      if (
+        focusTimerRunning &&
+        focusRemainingSeconds > 0 &&
+        focusRemainingSeconds <= 60
+      ) {
+        focusReadingSubMessage.textContent =
+          "마지막 1분이에요. 끝까지 천천히 읽어 보세요.";
+      }
+    }
+
+
+    /* ---------------------------------------------------------
+       집중 시간이 모두 끝남
+    --------------------------------------------------------- */
+
+    function completeFocusTime() {
+      clearInterval(focusTimerInterval);
+
+      focusTimerInterval = null;
+      focusTimerRunning = false;
+
+      focusReadingOverlay.classList.add("complete");
+
+      focusReadingLabel.textContent =
+        "📖 독서 집중타임";
+
+      focusReadingIcon.textContent =
+        "✨";
+
+      focusReadingMessage.textContent =
+        "집중타임 완료!";
+
+      focusReadingSubMessage.innerHTML =
+        "잘 집중해서 읽었어요.<br>" +
+        "이제 읽은 내용을 떠올리며 질문을 만들어 볼까요?";
+
+      playFocusCompleteSound();
+    }
+
+
+    /* ---------------------------------------------------------
+       사용자가 중간에 끝내기
+       확인창만 띄우고 실제 기록은 아무것도 남기지 않는다.
+    --------------------------------------------------------- */
+
+    function endFocusTimeEarly() {
+      if (!focusTimerRunning) {
+        return;
+      }
+
+      const shouldEnd =
+        window.confirm(
+          "아직 집중 시간이 남아 있어요.\n정말 집중타임을 끝낼까요?"
+        );
+
+      if (!shouldEnd) {
+        return;
+      }
+
+      clearInterval(focusTimerInterval);
+
+      focusTimerInterval = null;
+      focusTimerRunning = false;
+
+      focusReadingOverlay.classList.remove("show");
+      focusReadingOverlay.classList.remove("complete");
+      focusReadingOverlay.setAttribute("aria-hidden", "true");
+
+      resetFocusScreen();
+    }
+
+
+    /* ---------------------------------------------------------
+       완료 후 질문 작성 화면으로 돌아오기
+    --------------------------------------------------------- */
+
+    function returnFromFocusTime() {
+      focusReadingOverlay.classList.remove("show");
+      focusReadingOverlay.classList.remove("complete");
+      focusReadingOverlay.setAttribute("aria-hidden", "true");
+
+      resetFocusScreen();
+
+      /*
+        기존에 질문 입력창을 사용할 수 있는 상태라면
+        자연스럽게 질문 쓰기 칸으로 시선을 이동시킨다.
+      */
+      const questionField =
+        document.getElementById("questionInput");
+
+      if (
+        questionField &&
+        !questionField.disabled
+      ) {
+        setTimeout(function() {
+          questionField.focus();
+        }, 200);
+      }
+    }
+
+
+    /* ---------------------------------------------------------
+       집중 화면 기본 상태 복구
+    --------------------------------------------------------- */
+
+    function resetFocusScreen() {
+      focusReadingOverlay.classList.remove("complete");
+
+      focusReadingLabel.textContent =
+        "📖 독서 집중타임";
+
+      focusReadingIcon.textContent =
+        "📖";
+
+      focusReadingMessage.textContent =
+        "책에 집중해 보세요.";
+
+      focusReadingSubMessage.textContent =
+        "지금은 읽는 시간이에요.";
+    }
+
+
+    /* ---------------------------------------------------------
+       완료 알림음
+
+       별도 mp3 파일 없이 Web Audio API를 이용한다.
+       브라우저 설정에 따라 소리가 차단될 수도 있으므로
+       기능 동작 자체에는 영향을 주지 않는다.
+    --------------------------------------------------------- */
+
+    function playFocusCompleteSound() {
+      try {
+        const AudioContextClass =
+          window.AudioContext ||
+          window.webkitAudioContext;
+
+        if (!AudioContextClass) {
+          return;
+        }
+
+        const audioContext =
+          new AudioContextClass();
+
+        const frequencies = [
+          523.25,
+          659.25,
+          783.99
+        ];
+
+        frequencies.forEach(
+          function(frequency, index) {
+            const oscillator =
+              audioContext.createOscillator();
+
+            const gain =
+              audioContext.createGain();
+
+            const startTime =
+              audioContext.currentTime +
+              index * 0.17;
+
+            oscillator.type = "sine";
+            oscillator.frequency.value =
+              frequency;
+
+            gain.gain.setValueAtTime(
+              0,
+              startTime
+            );
+
+            gain.gain.linearRampToValueAtTime(
+              0.11,
+              startTime + 0.025
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+              0.001,
+              startTime + 0.42
+            );
+
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.45);
+          }
+        );
+      } catch (error) {
+        console.log(
+          "집중타임 완료 알림음을 재생하지 못했습니다.",
+          error
+        );
+      }
+    }
+
+
+    /* ---------------------------------------------------------
+       ESC 동작
+
+       시간 선택창만 ESC로 닫을 수 있다.
+       집중 중에는 실수로 빠져나가지 않도록 ESC로 종료하지 않는다.
+    --------------------------------------------------------- */
+
+    window.addEventListener(
+      "keydown",
+      function(event) {
+        if (
+          event.key === "Escape" &&
+          focusSelectOverlay.classList.contains("show")
+        ) {
+          closeFocusTimeSelector();
+        }
+      }
+    );
+
+
+    /* ---------------------------------------------------------
+       모달의 바깥 영역을 누르면 선택창 닫기
+    --------------------------------------------------------- */
+
+    focusSelectOverlay.addEventListener(
+      "click",
+      function(event) {
+        if (event.target === focusSelectOverlay) {
+          closeFocusTimeSelector();
+        }
+      }
+    );
+  </script>
+
 
   <script>
     /*
@@ -998,7 +1979,9 @@ button {
 
     const studentId =
       sessionStorage.getItem("studentId") || "student-demo";
-      let classReadingBookId = null;
+
+    let classReadingBookId = null;
+
     const typeInfo = {
       direct: {
         label: "바로 찾기",
@@ -1111,70 +2094,97 @@ button {
 
     const todayText =
       document.getElementById("todayText");
-async function loadClassReadingBookId() {
-  const token = sessionStorage.getItem("token");
-  const role = sessionStorage.getItem("role");
 
-  if (!token || !studentId || role !== "student") {
-    alert("학생 로그인이 필요합니다.");
-    location.href = "../../index.html";
-    return false;
-  }
 
-  try {
-    const classResponse = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/class`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+    async function loadClassReadingBookId() {
+      const token =
+        sessionStorage.getItem("token");
+
+      const role =
+        sessionStorage.getItem("role");
+
+      if (
+        !token ||
+        !studentId ||
+        role !== "student"
+      ) {
+        alert("학생 로그인이 필요합니다.");
+        location.href = "../../index.html";
+        return false;
       }
-    );
 
-    if (!classResponse.ok) {
-      throw new Error(
-        `학생 학급 조회 실패: ${classResponse.status}`
-      );
-    }
+      try {
+        const classResponse =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/class`,
+            {
+              method: "GET",
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
 
-    const classData = await classResponse.json();
-
-    const bookResponse = await fetch(
-      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
+        if (!classResponse.ok) {
+          throw new Error(
+            `학생 학급 조회 실패: ${classResponse.status}`
+          );
         }
+
+        const classData =
+          await classResponse.json();
+
+        const bookResponse =
+          await fetch(
+            `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+            {
+              method: "GET",
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        if (bookResponse.status === 404) {
+          alert(
+            "아직 우리 반의 온책읽기 책이 등록되지 않았습니다."
+          );
+          return false;
+        }
+
+        if (!bookResponse.ok) {
+          throw new Error(
+            `온책읽기 책 조회 실패: ${bookResponse.status}`
+          );
+        }
+
+        const bookData =
+          await bookResponse.json();
+
+        classReadingBookId =
+          bookData.id;
+
+        return true;
+
+      } catch (error) {
+        console.error(
+          "학급 책 정보를 불러오지 못했습니다.",
+          error
+        );
+
+        alert(
+          "책 정보를 불러오지 못했습니다."
+        );
+
+        return false;
       }
-    );
-
-    if (bookResponse.status === 404) {
-      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
-      return false;
     }
 
-    if (!bookResponse.ok) {
-      throw new Error(
-        `온책읽기 책 조회 실패: ${bookResponse.status}`
-      );
-    }
 
-    const bookData = await bookResponse.json();
-
-    classReadingBookId = bookData.id;
-    return true;
-  } catch (error) {
-    console.error(
-      "학급 책 정보를 불러오지 못했습니다.",
-      error
-    );
-    alert("책 정보를 불러오지 못했습니다.");
-    return false;
-  }
-}
     initPage();
+
 
     /*
       =========================================================
@@ -1183,18 +2193,23 @@ async function loadClassReadingBookId() {
     */
 
     async function initPage() {
-  showDemoBannerIfDemoAccount("demoExperienceBanner");
+      showDemoBannerIfDemoAccount(
+        "demoExperienceBanner"
+      );
 
-  const bookLoaded = await loadClassReadingBookId();
+      const bookLoaded =
+        await loadClassReadingBookId();
 
-  if (!bookLoaded) {
-    return;
-  }
+      if (!bookLoaded) {
+        return;
+      }
 
-  todayText.textContent =
-    "오늘 날짜 " + todayInfo.display;
+      todayText.textContent =
+        "오늘 날짜 " +
+        todayInfo.display;
 
       await loadTodayBookThoughtResponses();
+
       updateCounts();
       renderTodayQuestions();
 
@@ -1203,30 +2218,44 @@ async function loadClassReadingBookId() {
         setCompletionFeedback();
       }
 
-      typeButtons.forEach(function(button) {
-        button.addEventListener("click", function() {
-          if (todayQuestions.length >= 3) {
-            setCompletionFeedback();
-            return;
-          }
+      typeButtons.forEach(
+        function(button) {
+          button.addEventListener(
+            "click",
+            function() {
 
-          typeButtons.forEach(function(btn) {
-            btn.classList.remove("active");
-          });
+              if (todayQuestions.length >= 3) {
+                setCompletionFeedback();
+                return;
+              }
 
-          button.classList.add("active");
-          selectedType = button.dataset.type;
+              typeButtons.forEach(
+                function(btn) {
+                  btn.classList.remove(
+                    "active"
+                  );
+                }
+              );
 
-          setFeedback(
-            "need",
-            "'" +
-              typeInfo[selectedType].label +
-              "' 유형을 골랐어. " +
-              typeInfo[selectedType].guide +
-              " 질문과 내 생각을 써 보고 루미에게 확인 받아 봐."
+              button.classList.add(
+                "active"
+              );
+
+              selectedType =
+                button.dataset.type;
+
+              setFeedback(
+                "need",
+                "'" +
+                typeInfo[selectedType].label +
+                "' 유형을 골랐어. " +
+                typeInfo[selectedType].guide +
+                " 질문과 내 생각을 써 보고 루미에게 확인 받아 봐."
+              );
+            }
           );
-        });
-      });
+        }
+      );
 
       questionInput.addEventListener(
         "input",
@@ -1249,17 +2278,17 @@ async function loadClassReadingBookId() {
       );
     }
 
-    /*
-      직전 검사 결과(good/need)가 남아 있는 채로 질문이나 답을 수정하면,
-      아직 검사하지 않은 새 내용이 이미 통과한 것처럼 보일 수 있다.
-      검사 중(로딩)이거나 이미 잠긴 상태(3개 완료)라면 건드리지 않는다.
-    */
+
     function resetDuringReadingFeedbackOnEdit() {
-      if (isDuringReadingAiRequestInFlight) {
+      if (
+        isDuringReadingAiRequestInFlight
+      ) {
         return;
       }
 
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         return;
       }
 
@@ -1276,18 +2305,23 @@ async function loadClassReadingBookId() {
       );
     }
 
+
     function getTodayInfo() {
-      const today = new Date();
+      const today =
+        new Date();
 
-      const year = today.getFullYear();
+      const year =
+        today.getFullYear();
 
-      const month = String(
-        today.getMonth() + 1
-      ).padStart(2, "0");
+      const month =
+        String(
+          today.getMonth() + 1
+        ).padStart(2, "0");
 
-      const date = String(
-        today.getDate()
-      ).padStart(2, "0");
+      const date =
+        String(
+          today.getDate()
+        ).padStart(2, "0");
 
       const dayNames = [
         "일",
@@ -1299,7 +2333,8 @@ async function loadClassReadingBookId() {
         "토"
       ];
 
-      const day = dayNames[today.getDay()];
+      const day =
+        dayNames[today.getDay()];
 
       return {
         key:
@@ -1326,6 +2361,7 @@ async function loadClassReadingBookId() {
       };
     }
 
+
     function updateCounts() {
       questionCount.textContent =
         questionInput.value.length +
@@ -1336,6 +2372,7 @@ async function loadClassReadingBookId() {
         " / 400자";
     }
 
+
     /*
       =========================================================
       3. 루미 피드백 검사
@@ -1343,17 +2380,23 @@ async function loadClassReadingBookId() {
     */
 
     let duringReadingAiRequestId = 0;
-    let isDuringReadingAiRequestInFlight = false;
+
+    let isDuringReadingAiRequestInFlight =
+      false;
+
 
     function checkQuestion() {
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         lockQuestionForm();
         setCompletionFeedback();
         return;
       }
 
-      /* 요청이 진행 중이면 버튼이 비활성화되어 있지만, 혹시 모를 중복 클릭을 한 번 더 막는다. */
-      if (isDuringReadingAiRequestInFlight) {
+      if (
+        isDuringReadingAiRequestInFlight
+      ) {
         return;
       }
 
@@ -1378,17 +2421,17 @@ async function loadClassReadingBookId() {
         return;
       }
 
-      requestDuringReadingAiFeedback(question, answer);
+      requestDuringReadingAiFeedback(
+        question,
+        answer
+      );
     }
 
-    /*
-      로컬 형식 필터. 의미 판정(선택한 질문 유형에 맞는지, 질문과 답이
-      자연스럽게 이어지는지)은 하지 않고, 읽기 전 검증(js/pre-reading-
-      validation.js)과 같은 기준으로 빈 입력·초성/기호만 입력·반복 글자·
-      너무 짧은 입력·질문 형태가 아닌 입력만 걸러낸다. 의미 판정은
-      requestDuringReadingAiFeedback()에서 AI에게 맡긴다.
-    */
-    function validateDuringReadingFormat(question, answer) {
+
+    function validateDuringReadingFormat(
+      question,
+      answer
+    ) {
       if (!question) {
         return {
           ok: false,
@@ -1397,21 +2440,35 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (preReadingIsJamoOrSymbolOnly(question)) {
+      if (
+        preReadingIsJamoOrSymbolOnly(
+          question
+        )
+      ) {
         return {
           ok: false,
-          message: "질문의 뜻이 잘 보이지 않아. 궁금한 점을 문장으로 다시 적어 보자."
+          message:
+            "질문의 뜻이 잘 보이지 않아. 궁금한 점을 문장으로 다시 적어 보자."
         };
       }
 
-      if (preReadingHasExcessiveRepetition(question)) {
+      if (
+        preReadingHasExcessiveRepetition(
+          question
+        )
+      ) {
         return {
           ok: false,
-          message: "같은 글자가 너무 많이 반복됐어. 궁금한 내용을 문장으로 적어 보자."
+          message:
+            "같은 글자가 너무 많이 반복됐어. 궁금한 내용을 문장으로 적어 보자."
         };
       }
 
-      if (preReadingCountWithoutSpaces(question) < 5) {
+      if (
+        preReadingCountWithoutSpaces(
+          question
+        ) < 5
+      ) {
         return {
           ok: false,
           message:
@@ -1419,7 +2476,11 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (!preReadingLooksLikeQuestion(question)) {
+      if (
+        !preReadingLooksLikeQuestion(
+          question
+        )
+      ) {
         return {
           ok: false,
           message:
@@ -1435,21 +2496,35 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (preReadingIsJamoOrSymbolOnly(answer)) {
+      if (
+        preReadingIsJamoOrSymbolOnly(
+          answer
+        )
+      ) {
         return {
           ok: false,
-          message: "답의 뜻이 잘 보이지 않아. 내 생각을 문장으로 다시 적어 보자."
+          message:
+            "답의 뜻이 잘 보이지 않아. 내 생각을 문장으로 다시 적어 보자."
         };
       }
 
-      if (preReadingHasExcessiveRepetition(answer)) {
+      if (
+        preReadingHasExcessiveRepetition(
+          answer
+        )
+      ) {
         return {
           ok: false,
-          message: "같은 글자가 너무 많이 반복됐어. 내 생각을 문장으로 적어 보자."
+          message:
+            "같은 글자가 너무 많이 반복됐어. 내 생각을 문장으로 적어 보자."
         };
       }
 
-      if (preReadingCountWithoutSpaces(answer) < 3) {
+      if (
+        preReadingCountWithoutSpaces(
+          answer
+        ) < 3
+      ) {
         return {
           ok: false,
           message:
@@ -1457,400 +2532,719 @@ async function loadClassReadingBookId() {
         };
       }
 
-      return { ok: true };
+      return {
+        ok: true
+      };
     }
 
-    /*
-      심사 체험 계정은 공용 DB 대신 "현재 브라우저" localStorage에만
-      질문·답을 저장한다. 같은 ss01 로그인을 쓰는 다른 심사위원 브라우저와
-      서로 섞이지 않게 하기 위함이다(일반 학생 계정은 이 분기를 타지 않음).
-    */
-    const DEMO_DURING_READ_STORAGE_KEY = "duringRead";
 
-    /*
-      =========================================================
-      읽기 중 AI 피드백 요청
-      =========================================================
-      AI가 good을 줘야만 저장·통과 카운트·다음 단계 조건에 반영된다.
-      AbortController + 타임아웃으로 "루미가 답변을 읽고 있어요..."에서
-      무한정 멈추는 문제를 막고, 요청 중에는 checkButton을 잠가 중복
-      요청을 막는다.
-    */
+    const DEMO_DURING_READ_STORAGE_KEY =
+      "duringRead";
+
+
     async function saveBookThoughtResponse(
-  questionType,
-  question,
-  answer,
-  demoOptions
-) {
-  if (isDemoAccount()) {
-    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    const options = demoOptions || {};
-    const demoId = options.id ||
-      "demo-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
-    const existingIndex = items.findIndex(function(item) {
-      return String(item.id) === String(demoId);
-    });
-    const existingItem = existingIndex >= 0 ? items[existingIndex] : null;
+      questionType,
+      question,
+      answer,
+      demoOptions
+    ) {
 
-    const newItem = {
-      id: demoId,
-      questionType: questionType,
-      question: question,
-      answer: answer,
-      createdAt: existingItem?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      aiPassed: options.aiPassed === true
-    };
+      if (isDemoAccount()) {
+        const items =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
 
-    if (existingIndex >= 0) {
-      items[existingIndex] = newItem;
-    } else {
-      items.push(newItem);
-    }
+        const options =
+          demoOptions || {};
 
-    saveDemoState(DEMO_DURING_READ_STORAGE_KEY, items);
+        const demoId =
+          options.id ||
+          "demo-" +
+          Date.now() +
+          "-" +
+          Math.floor(
+            Math.random() * 1000
+          );
 
-    /* saveDemoState는 저장 예외를 내부에서 처리하므로 실제 재조회로 성공을 확인한다. */
-    const persistedItems = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    return persistedItems.find(function(item) {
-      return String(item.id) === String(demoId) &&
-        item.question === question &&
-        item.answer === answer;
-    }) || null;
-  }
+        const existingIndex =
+          items.findIndex(
+            function(item) {
+              return (
+                String(item.id) ===
+                String(demoId)
+              );
+            }
+          );
 
-  const token = sessionStorage.getItem("token");
+        const existingItem =
+          existingIndex >= 0
+            ? items[existingIndex]
+            : null;
 
-  if (!token || !studentId || !classReadingBookId) {
-    console.error(
-      "책 속 생각 저장에 필요한 정보가 없습니다."
-    );
-    return null;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
+        const newItem = {
+          id: demoId,
           questionType: questionType,
           question: question,
           answer: answer,
-          classReadingBookId: classReadingBookId
-        })
-      }
-    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
+          createdAt:
+            existingItem?.createdAt ||
+            new Date().toISOString(),
 
-      console.error(
-        "책 속 생각 저장 실패:",
-        response.status,
-        errorText
-      );
+          updatedAt:
+            new Date().toISOString(),
 
-      return null;
-    }
+          aiPassed:
+            options.aiPassed === true
+        };
 
-    return await response.json();
-  } catch (error) {
-    console.error(
-      "책 속 생각 저장 중 오류가 발생했습니다.",
-      error
-    );
-
-    return null;
-  }
-}
-function applyTodayBookThoughtItems(items) {
-  todayQuestions = items
-    .filter(function(item) {
-      /* AI 확인 전 저장한 심사 체험 초안은 완료 질문 수에 포함하지 않는다. */
-      if (isDemoAccount() && item.aiPassed === false) {
-        return false;
-      }
-
-      if (!item.createdAt) {
-        return false;
-      }
-
-      const createdDate =
-        String(item.createdAt).slice(0, 10);
-
-      return createdDate === todayInfo.key;
-    })
-    .map(function(item) {
-      return {
-        id: item.id,
-        dateKey: todayInfo.key,
-        dateText: todayInfo.display,
-        shortDateText: todayInfo.shortDisplay,
-        type: item.questionType,
-        typeLabel:
-          typeInfo[item.questionType]?.label ||
-          item.questionType,
-        text: item.question,
-        answer: item.answer,
-        createdAt:
-          String(item.createdAt).slice(11, 16)
-      };
-    });
-}
-
-async function loadTodayBookThoughtResponses() {
-  if (isDemoAccount()) {
-    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    applyTodayBookThoughtItems(items);
-    return true;
-  }
-
-  const token = sessionStorage.getItem("token");
-
-  if (!token || !studentId || !classReadingBookId) {
-    return false;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought?classReadingBookId=${classReadingBookId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
+        if (existingIndex >= 0) {
+          items[existingIndex] =
+            newItem;
+        } else {
+          items.push(newItem);
         }
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error(
-        `책 속 생각 조회 실패: ${response.status}`
-      );
+        saveDemoState(
+          DEMO_DURING_READ_STORAGE_KEY,
+          items
+        );
+
+        const persistedItems =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
+
+        return (
+          persistedItems.find(
+            function(item) {
+              return (
+                String(item.id) ===
+                  String(demoId) &&
+                item.question ===
+                  question &&
+                item.answer ===
+                  answer
+              );
+            }
+          ) || null
+        );
+      }
+
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
+
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        console.error(
+          "책 속 생각 저장에 필요한 정보가 없습니다."
+        );
+
+        return null;
+      }
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/responses/book-thought`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${token}`
+              },
+
+              body:
+                JSON.stringify({
+                  questionType:
+                    questionType,
+
+                  question:
+                    question,
+
+                  answer:
+                    answer,
+
+                  classReadingBookId:
+                    classReadingBookId
+                })
+            }
+          );
+
+        if (!response.ok) {
+          const errorText =
+            await response.text();
+
+          console.error(
+            "책 속 생각 저장 실패:",
+            response.status,
+            errorText
+          );
+
+          return null;
+        }
+
+        return (
+          await response.json()
+        );
+
+      } catch (error) {
+        console.error(
+          "책 속 생각 저장 중 오류가 발생했습니다.",
+          error
+        );
+
+        return null;
+      }
     }
 
-    const items = await response.json();
 
-    applyTodayBookThoughtItems(items);
+    function applyTodayBookThoughtItems(
+      items
+    ) {
+      todayQuestions =
+        items
 
-    return true;
-  } catch (error) {
-    console.error(
-      "오늘의 책 속 생각 기록을 불러오지 못했습니다.",
-      error
-    );
+          .filter(
+            function(item) {
 
-    todayQuestions = [];
-    return false;
-  }
-}
-    async function requestDuringReadingAiFeedback(question, answer) {
-      const requestId = ++duringReadingAiRequestId;
-      /* 백엔드의 OpenAI 응답 제한(20초)보다 먼저 요청을 끊지 않는다. */
-      const timeoutMs = 30000;
+              if (
+                isDemoAccount() &&
+                item.aiPassed === false
+              ) {
+                return false;
+              }
+
+              if (!item.createdAt) {
+                return false;
+              }
+
+              const createdDate =
+                String(
+                  item.createdAt
+                ).slice(0, 10);
+
+              return (
+                createdDate ===
+                todayInfo.key
+              );
+            }
+          )
+
+          .map(
+            function(item) {
+              return {
+                id:
+                  item.id,
+
+                dateKey:
+                  todayInfo.key,
+
+                dateText:
+                  todayInfo.display,
+
+                shortDateText:
+                  todayInfo.shortDisplay,
+
+                type:
+                  item.questionType,
+
+                typeLabel:
+                  typeInfo[
+                    item.questionType
+                  ]?.label ||
+                  item.questionType,
+
+                text:
+                  item.question,
+
+                answer:
+                  item.answer,
+
+                createdAt:
+                  String(
+                    item.createdAt
+                  ).slice(11, 16)
+              };
+            }
+          );
+    }
+
+
+    async function loadTodayBookThoughtResponses() {
+      if (isDemoAccount()) {
+        const items =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
+
+        applyTodayBookThoughtItems(
+          items
+        );
+
+        return true;
+      }
+
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
+
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        return false;
+      }
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/responses/book-thought?classReadingBookId=${classReadingBookId}`,
+            {
+              method: "GET",
+
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            `책 속 생각 조회 실패: ${response.status}`
+          );
+        }
+
+        const items =
+          await response.json();
+
+        applyTodayBookThoughtItems(
+          items
+        );
+
+        return true;
+
+      } catch (error) {
+        console.error(
+          "오늘의 책 속 생각 기록을 불러오지 못했습니다.",
+          error
+        );
+
+        todayQuestions = [];
+
+        return false;
+      }
+    }
+
+
+    async function requestDuringReadingAiFeedback(
+      question,
+      answer
+    ) {
+      const requestId =
+        ++duringReadingAiRequestId;
+
+      const timeoutMs =
+        30000;
+
       const aiFailMessage =
         "루미 피드백을 불러오지 못했어요. 잠시 후 다시 시도해봐.";
 
-      isDuringReadingAiRequestInFlight = true;
+      isDuringReadingAiRequestInFlight =
+        true;
 
       if (checkButton) {
-        checkButton.disabled = true;
+        checkButton.disabled =
+          true;
       }
 
-      setFeedback("", "루미가 답변을 읽고 있어요...");
+      setFeedback(
+        "",
+        "루미가 답변을 읽고 있어요..."
+      );
 
-      const abortController = new AbortController();
+      const abortController =
+        new AbortController();
 
-      const timeoutId = setTimeout(function() {
-        abortController.abort();
-      }, timeoutMs);
+      const timeoutId =
+        setTimeout(
+          function() {
+            abortController.abort();
+          },
+          timeoutMs
+        );
 
-      const token = sessionStorage.getItem("token");
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
 
-if (!token || !studentId || !classReadingBookId) {
-  clearTimeout(timeoutId);
-  isDuringReadingAiRequestInFlight = false;
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        clearTimeout(
+          timeoutId
+        );
 
-  if (checkButton) {
-    checkButton.disabled = false;
-  }
+        isDuringReadingAiRequestInFlight =
+          false;
 
-  setFeedback(
-    "need",
-    "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
-  );
+        if (checkButton) {
+          checkButton.disabled =
+            false;
+        }
 
-  return;
-}
+        setFeedback(
+          "need",
+          "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
+        );
 
-/*
-  아직 저장되지 않은 현재 질문의 순번을 사용한다.
-  같은 질문을 수정해서 재검사할 때는 todayQuestions.length가 바뀌지 않으므로
-  동일한 evaluationKey가 유지된다.
-*/
-const questionNumber = todayQuestions.length + 1;
+        return;
+      }
 
-const evaluationKey =
-  "practice-during-" +
-  classReadingBookId +
-  "-" +
-  studentId +
-  "-book-thought-" +
-  todayInfo.key +
-  "-" +
-  questionNumber;
 
-      const isDemo = isDemoAccount();
-      const demoResponseId = "demo-" + evaluationKey;
+      const questionNumber =
+        todayQuestions.length + 1;
+
+      const evaluationKey =
+        "practice-during-" +
+        classReadingBookId +
+        "-" +
+        studentId +
+        "-book-thought-" +
+        todayInfo.key +
+        "-" +
+        questionNumber;
+
+
+      const isDemo =
+        isDemoAccount();
+
+      const demoResponseId =
+        "demo-" +
+        evaluationKey;
+
 
       try {
-        /* 심사 체험은 공용 DB가 아니라 현재 브라우저에 먼저 초안으로 저장한다. */
+
         if (isDemo) {
-          const localDraft = await saveBookThoughtResponse(
-            selectedType,
-            question,
-            answer,
-            { id: demoResponseId, aiPassed: false }
-          );
+          const localDraft =
+            await saveBookThoughtResponse(
+              selectedType,
+              question,
+              answer,
+              {
+                id:
+                  demoResponseId,
+
+                aiPassed:
+                  false
+              }
+            );
 
           if (!localDraft) {
-            setFeedback("need", "질문을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+            setFeedback(
+              "need",
+              "질문을 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+            );
+
             return;
           }
         }
 
-        const apiPath = isDemo
-          ? "/api/feedback/ai-review"
-          : "/api/students/me/feedback/ai-review";
-        const headers = { "Content-Type": "application/json" };
+
+        const apiPath =
+          isDemo
+            ? "/api/feedback/ai-review"
+            : "/api/students/me/feedback/ai-review";
+
+
+        const headers = {
+          "Content-Type":
+            "application/json"
+        };
+
 
         if (!isDemo) {
-          headers.Authorization = "Bearer " + token;
+          headers.Authorization =
+            "Bearer " +
+            token;
         }
 
-        const requestBody = isDemo
-          ? {
-              type: "during_reading_question",
-              stepType: selectedType,
-              qaList: [{ question: question, answer: answer }]
+
+        const requestBody =
+          isDemo
+            ? {
+                type:
+                  "during_reading_question",
+
+                stepType:
+                  selectedType,
+
+                qaList: [
+                  {
+                    question:
+                      question,
+
+                    answer:
+                      answer
+                  }
+                ]
+              }
+
+            : {
+                question:
+                  question,
+
+                answer:
+                  answer,
+
+                activityType:
+                  "during_reading_question",
+
+                questionType:
+                  selectedType,
+
+                evaluationKey:
+                  evaluationKey,
+
+                classReadingBookId:
+                  classReadingBookId
+              };
+
+
+        const response =
+          await fetch(
+            API_BASE_URL +
+              apiPath,
+            {
+              method:
+                "POST",
+
+              headers:
+                headers,
+
+              signal:
+                abortController.signal,
+
+              body:
+                JSON.stringify(
+                  requestBody
+                )
             }
-          : {
-              question: question,
-              answer: answer,
-              activityType: "during_reading_question",
-              questionType: selectedType,
-              evaluationKey: evaluationKey,
-              classReadingBookId: classReadingBookId
-            };
+          );
 
-        const response = await fetch(API_BASE_URL + apiPath, {
-          method: "POST",
-          headers: headers,
-          signal: abortController.signal,
-          body: JSON.stringify(requestBody)
-        });
 
-        if (requestId !== duringReadingAiRequestId) {
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
           return;
         }
 
+
         if (!response.ok) {
-          const bodyText = await response.text().catch(function() {
-            return "(읽지 못함)";
-          });
+
+          const bodyText =
+            await response
+              .text()
+              .catch(
+                function() {
+                  return "(읽지 못함)";
+                }
+              );
+
           console.error(
             "읽기 중 AI 피드백 요청 실패 - status:",
             response.status,
             "body:",
             bodyText
           );
-          setFeedback("need", aiFailMessage);
-          return;
-        }
 
-        const result = await response.json();
-
-        if (requestId !== duringReadingAiRequestId) {
-          return;
-        }
-
-        const isGood = result.status === "good";
-        setFeedback(isGood ? "good" : "need", result.message);
-
-        if (isGood) {
-          const savedResponse = await saveBookThoughtResponse(
-            selectedType,
-            question,
-            answer,
-            isDemo ? { id: demoResponseId, aiPassed: true } : undefined
+          setFeedback(
+            "need",
+            aiFailMessage
           );
 
-          if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
+          return;
+        }
+
+
+        const isGood =
+          result.status === "good";
+
+
+        setFeedback(
+          isGood
+            ? "good"
+            : "need",
+
+          result.message
+        );
+
+
+        if (isGood) {
+
+          const savedResponse =
+            await saveBookThoughtResponse(
+              selectedType,
+              question,
+              answer,
+
+              isDemo
+                ? {
+                    id:
+                      demoResponseId,
+
+                    aiPassed:
+                      true
+                  }
+                : undefined
+            );
+
+
+          if (
+            requestId !==
+            duringReadingAiRequestId
+          ) {
             return;
           }
 
+
           if (!savedResponse) {
+
             setFeedback(
               "need",
               "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 확인 받아 주세요."
             );
+
             return;
           }
 
-          saveQuestion(question, answer, savedResponse);
-          questionInput.value = "";
-          answerInput.value = "";
+
+          saveQuestion(
+            question,
+            answer,
+            savedResponse
+          );
+
+
+          questionInput.value =
+            "";
+
+          answerInput.value =
+            "";
+
           updateCounts();
 
-          if (todayQuestions.length >= 3) {
+
+          if (
+            todayQuestions.length >= 3
+          ) {
             syncDemoPracticeApprovalRequests();
+
             lockQuestionForm();
+
             setCompletionFeedback();
           }
         }
+
       } catch (error) {
-          if (requestId !== duringReadingAiRequestId) {
-            return;
-          }
 
-          if (error.name === "AbortError") {
-            console.error(
-              "읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
-              error
-            );
-          } else {
-            console.error(
-              "읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
-              error
-            );
-          }
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
+          return;
+        }
 
-          setFeedback("need", aiFailMessage);
+
+        if (
+          error.name ===
+          "AbortError"
+        ) {
+          console.error(
+            "읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
+            error
+          );
+
+        } else {
+
+          console.error(
+            "읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
+            error
+          );
+        }
+
+
+        setFeedback(
+          "need",
+          aiFailMessage
+        );
+
       } finally {
-          clearTimeout(timeoutId);
-          isDuringReadingAiRequestInFlight = false;
 
-          /* 질문 3개를 이미 다 통과했으면 lockQuestionForm()이 잠근 상태를 유지해야 한다. */
-          if (checkButton && todayQuestions.length < 3) {
-            checkButton.disabled = false;
-          }
+        clearTimeout(
+          timeoutId
+        );
+
+        isDuringReadingAiRequestInFlight =
+          false;
+
+
+        if (
+          checkButton &&
+          todayQuestions.length < 3
+        ) {
+          checkButton.disabled =
+            false;
+        }
       }
     }
+
 
     function setFeedback(
       state,
       message
     ) {
       feedbackBox.className =
-        "feedback-message " + state;
+        "feedback-message " +
+        state;
 
       feedbackBox.innerHTML =
         message;
     }
+
 
     /*
       =========================================================
@@ -1859,58 +3253,97 @@ const evaluationKey =
     */
 
     function saveQuestion(
-  question,
-  answer,
-  savedResponse
-) {
-  const alreadyExists = todayQuestions.some(
-    function(item) {
-      return item.id === savedResponse.id;
+      question,
+      answer,
+      savedResponse
+    ) {
+      const alreadyExists =
+        todayQuestions.some(
+          function(item) {
+            return (
+              item.id ===
+              savedResponse.id
+            );
+          }
+        );
+
+      if (alreadyExists) {
+        setFeedback(
+          "need",
+          "이미 통과한 질문과 같은 내용이에요. 다른 질문을 만들어 보세요."
+        );
+
+        return;
+      }
+
+
+      const newQuestion = {
+        id:
+          savedResponse.id,
+
+        dateKey:
+          todayInfo.key,
+
+        dateText:
+          todayInfo.display,
+
+        shortDateText:
+          todayInfo.shortDisplay,
+
+        type:
+          savedResponse.questionType,
+
+        typeLabel:
+          typeInfo[
+            savedResponse.questionType
+          ]?.label ||
+          savedResponse.questionType,
+
+        text:
+          savedResponse.question,
+
+        answer:
+          savedResponse.answer,
+
+        createdAt:
+          String(
+            savedResponse.createdAt ||
+            ""
+          ).slice(11, 16)
+      };
+
+
+      todayQuestions.push(
+        newQuestion
+      );
+
+      saveTodayQuestions();
+
+      renderTodayQuestions();
     }
-  );
 
-  if (alreadyExists) {
-    setFeedback(
-      "need",
-      "이미 통과한 질문과 같은 내용이에요. 다른 질문을 만들어 보세요."
-    );
-    return;
-  }
-
-  const newQuestion = {
-    id: savedResponse.id,
-    dateKey: todayInfo.key,
-    dateText: todayInfo.display,
-    shortDateText: todayInfo.shortDisplay,
-    type: savedResponse.questionType,
-    typeLabel:
-      typeInfo[savedResponse.questionType]?.label ||
-      savedResponse.questionType,
-    text: savedResponse.question,
-    answer: savedResponse.answer,
-    createdAt:
-      String(savedResponse.createdAt || "").slice(11, 16)
-  };
-
-  todayQuestions.push(newQuestion);
-
-  saveTodayQuestions();
-  renderTodayQuestions();
-}
 
     function getCurrentTimeText() {
-      const now = new Date();
+      const now =
+        new Date();
 
-      const hour = String(
-        now.getHours()
-      ).padStart(2, "0");
+      const hour =
+        String(
+          now.getHours()
+        ).padStart(2, "0");
 
-      const minute = String(
-        now.getMinutes()
-      ).padStart(2, "0");
+      const minute =
+        String(
+          now.getMinutes()
+        ).padStart(2, "0");
 
-      return hour + ":" + minute;
+      return (
+        hour +
+        ":" +
+        minute
+      );
     }
+
 
     function loadTodayQuestions() {
       const savedData =
@@ -1925,11 +3358,15 @@ const evaluationKey =
 
       try {
         todayQuestions =
-          JSON.parse(savedData);
+          JSON.parse(
+            savedData
+          );
+
       } catch (error) {
         todayQuestions = [];
       }
     }
+
 
     function saveTodayQuestions() {
       localStorage.setItem(
@@ -1939,41 +3376,58 @@ const evaluationKey =
         )
       );
 
+
       const archiveKey =
         "classReadingQuestionArchive_" +
         studentId;
+
 
       let archive =
         JSON.parse(
           localStorage.getItem(
             archiveKey
-          ) || "{}"
+          ) ||
+          "{}"
         );
 
-      archive[todayInfo.key] =
+
+      archive[
+        todayInfo.key
+      ] =
         todayQuestions;
+
 
       localStorage.setItem(
         archiveKey,
-        JSON.stringify(archive)
+        JSON.stringify(
+          archive
+        )
       );
     }
+
 
     function renderTodayQuestions() {
       const passed =
         todayQuestions.length;
 
+
       if (passCount) {
         passCount.textContent =
           "통과 " +
-          Math.min(passed, 3) +
+          Math.min(
+            passed,
+            3
+          ) +
           " / 3개";
       }
 
+
       if (nextButton) {
         nextButton.disabled =
-          !isDemoAccount() && passed < 3;
+          !isDemoAccount() &&
+          passed < 3;
       }
+
 
       if (passed >= 3) {
         lockQuestionForm();
@@ -1981,9 +3435,11 @@ const evaluationKey =
         unlockQuestionForm();
       }
 
+
       if (!questionList) {
         return;
       }
+
 
       if (selectCount) {
         selectCount.textContent =
@@ -1991,15 +3447,18 @@ const evaluationKey =
           " / 3개 선택됨";
       }
 
+
       if (shareButton) {
         shareButton.disabled =
           selectedQuestionIds.length === 0;
       }
 
+
       if (topShareButton) {
         topShareButton.disabled =
           selectedQuestionIds.length === 0;
       }
+
 
       if (
         todayQuestions.length === 0
@@ -2013,65 +3472,93 @@ const evaluationKey =
         return;
       }
 
+
       questionList.innerHTML =
         todayQuestions
-          .map(function(question) {
-            const selected =
-              selectedQuestionIds.includes(
-                question.id
+
+          .map(
+            function(question) {
+
+              const selected =
+                selectedQuestionIds.includes(
+                  question.id
+                );
+
+
+              const selectedClass =
+                selected
+                  ? " selected"
+                  : "";
+
+
+              return (
+                '<article class="question-card' +
+                selectedClass +
+                '" onclick="toggleQuestionSelect(' +
+                question.id +
+                ')">' +
+
+                '<div class="check"></div>' +
+
+                '<div class="q-meta">' +
+                question.shortDateText +
+
+                '<span class="type-badge">' +
+                escapeHtml(
+                  question.typeLabel
+                ) +
+                "</span>" +
+
+                "</div>" +
+
+                '<div class="q-text">' +
+                escapeHtml(
+                  question.text
+                ) +
+                "</div>" +
+
+                '<div class="q-answer">내 답: ' +
+                escapeHtml(
+                  question.answer ||
+                  ""
+                ) +
+                "</div>" +
+
+                '<button class="edit-button" type="button" onclick="editQuestion(event, ' +
+                question.id +
+                ')">✎</button>' +
+
+                "</article>"
               );
+            }
+          )
 
-            const selectedClass =
-              selected
-                ? " selected"
-                : "";
-
-            return (
-              '<article class="question-card' +
-              selectedClass +
-              '" onclick="toggleQuestionSelect(' +
-              question.id +
-              ')">' +
-              '<div class="check"></div>' +
-              '<div class="q-meta">' +
-              question.shortDateText +
-              '<span class="type-badge">' +
-              escapeHtml(
-                question.typeLabel
-              ) +
-              "</span>" +
-              "</div>" +
-              '<div class="q-text">' +
-              escapeHtml(
-                question.text
-              ) +
-              "</div>" +
-              '<div class="q-answer">내 답: ' +
-              escapeHtml(
-                question.answer || ""
-              ) +
-              "</div>" +
-              '<button class="edit-button" type="button" onclick="editQuestion(event, ' +
-              question.id +
-              ')">✎</button>' +
-              "</article>"
-            );
-          })
           .join("");
     }
 
-    function toggleQuestionSelect(id) {
+
+    function toggleQuestionSelect(
+      id
+    ) {
       const alreadySelected =
-        selectedQuestionIds.includes(id);
+        selectedQuestionIds.includes(
+          id
+        );
+
 
       if (alreadySelected) {
+
         selectedQuestionIds =
           selectedQuestionIds.filter(
             function(itemId) {
-              return itemId !== id;
+              return (
+                itemId !== id
+              );
             }
           );
+
       } else {
+
         if (
           selectedQuestionIds.length >= 3
         ) {
@@ -2083,11 +3570,16 @@ const evaluationKey =
           return;
         }
 
-        selectedQuestionIds.push(id);
+
+        selectedQuestionIds.push(
+          id
+        );
       }
+
 
       renderTodayQuestions();
     }
+
 
     function editQuestion(
       event,
@@ -2095,53 +3587,72 @@ const evaluationKey =
     ) {
       event.stopPropagation();
 
+
       const target =
         todayQuestions.find(
           function(question) {
-            return question.id === id;
+            return (
+              question.id === id
+            );
           }
         );
+
 
       if (!target) {
         return;
       }
 
+
       selectedType =
         target.type;
+
 
       questionInput.value =
         target.text;
 
+
       answerInput.value =
         target.answer;
+
 
       typeButtons.forEach(
         function(button) {
           button.classList.toggle(
             "active",
+
             button.dataset.type ===
               selectedType
           );
         }
       );
 
+
       todayQuestions =
         todayQuestions.filter(
           function(question) {
-            return question.id !== id;
+            return (
+              question.id !== id
+            );
           }
         );
+
 
       selectedQuestionIds =
         selectedQuestionIds.filter(
           function(questionId) {
-            return questionId !== id;
+            return (
+              questionId !== id
+            );
           }
         );
 
+
       saveTodayQuestions();
+
       renderTodayQuestions();
+
       updateCounts();
+
 
       setFeedback(
         "need",
@@ -2149,41 +3660,70 @@ const evaluationKey =
       );
     }
 
-    function lockQuestionForm() {
-      questionInput.disabled = true;
-      answerInput.disabled = true;
 
-      typeButtons.forEach(function(button) {
-        button.disabled = true;
-      });
+    function lockQuestionForm() {
+      questionInput.disabled =
+        true;
+
+      answerInput.disabled =
+        true;
+
+
+      typeButtons.forEach(
+        function(button) {
+          button.disabled =
+            true;
+        }
+      );
+
 
       if (resetButton) {
-        resetButton.disabled = true;
+        resetButton.disabled =
+          true;
       }
 
+
       if (checkButton) {
-        checkButton.disabled = true;
-        checkButton.textContent = "✓ 질문 3개 통과 완료";
+        checkButton.disabled =
+          true;
+
+        checkButton.textContent =
+          "✓ 질문 3개 통과 완료";
       }
     }
+
 
     function unlockQuestionForm() {
-      questionInput.disabled = false;
-      answerInput.disabled = false;
+      questionInput.disabled =
+        false;
 
-      typeButtons.forEach(function(button) {
-        button.disabled = false;
-      });
+      answerInput.disabled =
+        false;
+
+
+      typeButtons.forEach(
+        function(button) {
+          button.disabled =
+            false;
+        }
+      );
+
 
       if (resetButton) {
-        resetButton.disabled = false;
+        resetButton.disabled =
+          false;
       }
 
+
       if (checkButton) {
-        checkButton.disabled = false;
-        checkButton.textContent = "✨ 루미에게 확인 받기";
+        checkButton.disabled =
+          false;
+
+        checkButton.textContent =
+          "✨ 루미에게 확인 받기";
       }
     }
+
 
     function setCompletionFeedback() {
       setFeedback(
@@ -2194,14 +3734,20 @@ const evaluationKey =
       );
     }
 
+
     function resetForm() {
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         setCompletionFeedback();
         return;
       }
 
-      questionInput.value = "";
-      answerInput.value = "";
+      questionInput.value =
+        "";
+
+      answerInput.value =
+        "";
 
       updateCounts();
 
@@ -2211,126 +3757,294 @@ const evaluationKey =
       );
     }
 
+
     /*
-  =========================================================
-  5. 다음 단계 이동
-  =========================================================
-*/
+      =========================================================
+      5. 다음 단계 이동
+      =========================================================
+    */
 
-function syncDemoPracticeApprovalRequests() {
-  if (!isDemoAccount() || todayQuestions.length < 3) return [];
+    function syncDemoPracticeApprovalRequests() {
+      if (
+        !isDemoAccount() ||
+        todayQuestions.length < 3
+      ) {
+        return [];
+      }
 
-  const existingRequests = loadDemoApprovalRequests("practice");
-  return todayQuestions.slice(0, 3).map(function(question, index) {
-    const requestId = "practice-book-thought-" + String(question.id || index);
-    const existing = existingRequests.find(function(item) {
-      return String(item.requestId) === requestId;
-    });
-    const unchanged = existing
-      && existing.question === question.text
-      && existing.answer === question.answer
-      && existing.questionType === question.type;
 
-    return saveDemoApprovalRequest("practice", {
-      requestId: requestId,
-      activityScope: "practiceBookChat",
-      studentId: studentId,
-      studentName: sessionStorage.getItem("name") || "김초롱",
-      classReadingBookId: classReadingBookId,
-      questionId: String(question.id || index),
-      submittedAt: existing && unchanged ? existing.submittedAt : new Date().toISOString(),
-      status: existing && unchanged ? existing.status : "pending",
-      rejectedReason: existing && unchanged ? existing.rejectedReason : "",
-      questionType: question.type,
-      question: question.text,
-      answer: question.answer,
-      questions: [{
-        questionId: String(question.id || index),
-        questionType: question.type,
-        question: question.text,
-        answer: question.answer
-      }]
-    });
-  });
-}
+      const existingRequests =
+        loadDemoApprovalRequests(
+          "practice"
+        );
 
-function goNextStep() {
-  if (!isDemoAccount() && todayQuestions.length < 3) {
-    setFeedback(
-      "need",
-      "아직 " +
-        (3 - todayQuestions.length) +
-        "개가 더 필요해. 질문과 내 생각을 쓰고 루미에게 확인 받아 봐."
-    );
 
-    return;
-  }
+      return todayQuestions
+        .slice(0, 3)
+        .map(
+          function(
+            question,
+            index
+          ) {
 
-  /*
-    책수다방에서 불러올 질문 저장
-  */
-  const studentQuestionData = {
-    name: sessionStorage.getItem("name") || "나",
-    isMine: true,
-    dateKey: todayInfo.key,
-    dateText: todayInfo.display,
+            const requestId =
+              "practice-book-thought-" +
+              String(
+                question.id ||
+                index
+              );
 
-    questions: todayQuestions.slice(0, 3).map(function(question) {
-      return {
-        text: question.text,
-        answer: question.answer,
-        type: question.type,
-        typeLabel: question.typeLabel,
-        createdAt:
-          question.dateText +
-          " " +
-          question.createdAt
+
+            const existing =
+              existingRequests.find(
+                function(item) {
+                  return (
+                    String(
+                      item.requestId
+                    ) ===
+                    requestId
+                  );
+                }
+              );
+
+
+            const unchanged =
+              existing &&
+              existing.question ===
+                question.text &&
+              existing.answer ===
+                question.answer &&
+              existing.questionType ===
+                question.type;
+
+
+            return saveDemoApprovalRequest(
+              "practice",
+              {
+                requestId:
+                  requestId,
+
+                activityScope:
+                  "practiceBookChat",
+
+                studentId:
+                  studentId,
+
+                studentName:
+                  sessionStorage.getItem(
+                    "name"
+                  ) ||
+                  "김초롱",
+
+                classReadingBookId:
+                  classReadingBookId,
+
+                questionId:
+                  String(
+                    question.id ||
+                    index
+                  ),
+
+                submittedAt:
+                  existing &&
+                  unchanged
+                    ? existing.submittedAt
+                    : new Date().toISOString(),
+
+                status:
+                  existing &&
+                  unchanged
+                    ? existing.status
+                    : "pending",
+
+                rejectedReason:
+                  existing &&
+                  unchanged
+                    ? existing.rejectedReason
+                    : "",
+
+                questionType:
+                  question.type,
+
+                question:
+                  question.text,
+
+                answer:
+                  question.answer,
+
+                questions: [
+                  {
+                    questionId:
+                      String(
+                        question.id ||
+                        index
+                      ),
+
+                    questionType:
+                      question.type,
+
+                    question:
+                      question.text,
+
+                    answer:
+                      question.answer
+                  }
+                ]
+              }
+            );
+          }
+        );
+    }
+
+
+    function goNextStep() {
+      if (
+        !isDemoAccount() &&
+        todayQuestions.length < 3
+      ) {
+        setFeedback(
+          "need",
+          "아직 " +
+          (
+            3 -
+            todayQuestions.length
+          ) +
+          "개가 더 필요해. 질문과 내 생각을 쓰고 루미에게 확인 받아 봐."
+        );
+
+        return;
+      }
+
+
+      const studentQuestionData = {
+        name:
+          sessionStorage.getItem(
+            "name"
+          ) ||
+          "나",
+
+        isMine:
+          true,
+
+        dateKey:
+          todayInfo.key,
+
+        dateText:
+          todayInfo.display,
+
+        questions:
+          todayQuestions
+            .slice(0, 3)
+            .map(
+              function(question) {
+                return {
+                  text:
+                    question.text,
+
+                  answer:
+                    question.answer,
+
+                  type:
+                    question.type,
+
+                  typeLabel:
+                    question.typeLabel,
+
+                  createdAt:
+                    question.dateText +
+                    " " +
+                    question.createdAt
+                };
+              }
+            )
       };
-    })
-  };
 
-  syncDemoPracticeApprovalRequests();
 
-  if (isDemoAccount()) {
-    const demoProgress = loadDemoState("practiceProgress", {});
-    demoProgress.classReadDone = true;
-    saveDemoState("practiceProgress", demoProgress);
-  }
+      syncDemoPracticeApprovalRequests();
 
-  localStorage.setItem(
-    "classReadingPassedQuestions",
-    JSON.stringify(todayQuestions.slice(0, 3))
-  );
 
-  localStorage.setItem(
-    "mySharedQuestions",
-    JSON.stringify(studentQuestionData)
-  );
+      if (isDemoAccount()) {
 
-  location.href = "./book-chat.html";
-}
+        const demoProgress =
+          loadDemoState(
+            "practiceProgress",
+            {}
+          );
+
+        demoProgress.classReadDone =
+          true;
+
+        saveDemoState(
+          "practiceProgress",
+          demoProgress
+        );
+      }
+
+
+      localStorage.setItem(
+        "classReadingPassedQuestions",
+        JSON.stringify(
+          todayQuestions.slice(
+            0,
+            3
+          )
+        )
+      );
+
+
+      localStorage.setItem(
+        "mySharedQuestions",
+        JSON.stringify(
+          studentQuestionData
+        )
+      );
+
+
+      location.href =
+        "./book-chat.html";
+    }
+
 
     function goReadingMain() {
       location.href =
         "./class-reading.html";
     }
 
+
     function goHome() {
       location.href =
         "./individual-reading.html";
     }
+
 
     function goClassReading() {
       location.href =
         "./class-reading.html";
     }
 
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
+
+    function escapeHtml(
+      text
+    ) {
+      return String(
+        text || ""
+      )
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
         .replaceAll(
           "'",
           "&#039;"
