@@ -2781,6 +2781,205 @@ body {
     0 5px 10px rgba(35, 20, 8, 0.3),
     inset 0 1px 0 rgba(255, 238, 205, 0.14);
 }
+/* =========================================================
+   BEFORE READING - FINAL SIZE OVERRIDE
+   ========================================================= */
+.book-strip {
+  min-height: 76px !important;
+  padding: 8px 20px !important;
+}
+
+.book-small-label {
+  font-size: 19px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 4px !important;
+}
+
+.book-title {
+  font-size: 23px !important;
+  line-height: 1.35 !important;
+  overflow-wrap: anywhere;
+}
+
+#bookMeta,
+.book-meta {
+  display: none !important;
+}
+
+#activityCard .write-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+#activityCard .write-grid {
+  flex: 0 0 auto !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+#activityCard .input-label {
+  font-size: 35px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.03em !important;
+}
+
+#activityCard .input-help,
+#activityCard #questionLength,
+#activityCard #answerLength {
+  font-size: 22px !important;
+  flex-shrink: 0;
+}
+
+#activityCard textarea,
+#activityCard #questionInput,
+#activityCard #answerInput {
+  display: block;
+  height: 280px !important;
+  min-height: 280px !important;
+  padding: 18px 20px !important;
+  font-size: 30px !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+}
+
+#activityCard .feedback-box-with-lumi {
+  flex: 1 1 auto !important;
+  min-height: 120px !important;
+  max-height: none !important;
+  margin-top: 14px !important;
+  padding: 16px 20px !important;
+  gap: 20px !important;
+  align-items: center !important;
+  overflow: auto;
+}
+
+#activityCard .feedback-lumi {
+  width: 104px !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
+  object-fit: contain !important;
+}
+
+#activityCard .feedback-message {
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.45 !important;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+#activityCard .feedback-check-button {
+  flex-shrink: 0 !important;
+  height: 56px !important;
+  font-size: 20px !important;
+}
+/* =========================================================
+   BEFORE READING - FEEDBACK HEIGHT & BUTTON SIZE FINAL OVERRIDE
+   ========================================================= */
+#activityCard .feedback-box-with-lumi {
+  flex: 0 0 auto !important;
+  min-height: 200px !important;
+  height: 200px !important;
+  max-height: 200px !important;
+  margin-top: 12px !important;
+  padding: 18px 22px !important;
+}
+
+#activityCard .feedback-check-button {
+  height: 60px !important;
+  padding: 0 26px !important;
+  font-size: 23px !important;
+  font-weight: 900 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+#activityCard .tab-button {
+  font-size: 25px !important;
+  font-weight: 900 !important;
+}
+/* 도움 받기 팝업 - 읽기 쉬운 글자 크기 */
+#helpModal .help-modal-box {
+  width: 1600px;
+  max-width: calc(100% - 64px);
+  padding: 28px 32px;
+}
+
+#helpModal .help-modal-lumi-row {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+}
+
+#helpModal .example-panel {
+  padding: 20px !important;
+}
+
+#helpModal .help-context-card {
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+#helpModal .help-panel-split.help-panel-split-picture {
+  grid-template-columns: minmax(0, 28%) minmax(0, 1fr);
+}
+
+#helpModal .help-modal-kicker,
+#helpModal .help-context-kicker {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+}
+
+#helpModal .help-modal-bubble p {
+  font-size: 28px !important;
+  line-height: 1.5 !important;
+}
+
+#helpModal .example-question,
+#helpModal .example-answer,
+#helpModal .help-toc-text {
+  font-size: 26px !important;
+  line-height: 1.5 !important;
+  overflow-wrap: anywhere !important;
+}
+
+#helpModal .example-label {
+  height: auto !important;
+  padding: 7px 14px !important;
+  font-size: 20px !important;
+  line-height: 1.2 !important;
+}
+
+#helpModal .example-item {
+  height: auto !important;
+}
+
+#helpModal .example-qa-card {
+  flex: 1 0 auto !important;
+  height: auto !important;
+}
+/* 팝업의 예시 책 제목을 한 줄로 표시 */
+#helpModal .help-context-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+#helpModal .help-context-title .help-context-kicker {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+#helpModal .help-context-title .help-context-kicker::after {
+  content: " :";
+}
   </style>
 </head>
 
