@@ -205,7 +205,58 @@
     drop-shadow(0 0 22px rgba(255, 211, 111, 0.18));
   z-index: 3;
 }
-  </style>
+  /* 읽기 전·중·후 소개 - 공통 글상자 및 글자 크기 */
+:root body .intro-page .story-box,
+:root body .after-intro-page .after-intro-card {
+  left: 100px !important;
+  top: auto !important;
+  bottom: 132px !important;
+  width: 1000px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 32px 40px !important;
+  display: flex;
+  flex-direction: column;
+}
+:root body .intro-page .story-text,
+:root body .after-intro-page .after-intro-text {
+  flex: 0 0 auto;
+  min-height: 0 !important;
+  font-size: 44px !important;
+  line-height: 1.48 !important;
+  font-weight: 900;
+  letter-spacing: -1px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: block;
+}
+:root body .intro-page .scene-label,
+:root body .after-intro-page .after-intro-small-title {
+  display: none !important;
+}
+:root body .intro-page .speaker-name,
+:root body .after-intro-page .after-intro-speaker {
+  font-size: 26px !important;
+}
+:root body .intro-page .story-bottom,
+:root body .after-intro-page .after-intro-bottom {
+  flex: 0 0 auto;
+  margin-top: 20px !important;
+}
+:root body .intro-page .prev-button,
+:root body .intro-page .next-button,
+:root body .after-intro-page .after-intro-button {
+  min-width: 180px !important;
+  height: 68px !important;
+  padding: 14px 28px !important;
+  font-size: 28px !important;
+  font-weight: 900;
+  white-space: nowrap;
+}
+:root body .after-intro-page .after-intro-bottom {
+  grid-template-columns: 180px 1fr 300px;
+}
+</style>
 </head>
 
 <body>
