@@ -408,7 +408,30 @@
       const params = new URLSearchParams(location.search);
       const context = params.get("context") === "individual" ? "individual" : "practice";
       const studentId = sessionStorage.getItem("studentId") || "student-demo";
+      const authToken = sessionStorage.getItem("token");
+
+      /*
+        총 독서 집중 시간 저장 위치는 계정 종류에 따라 다르다:
+        - 일반 학생계정: backend(MySQL, StudentStats.totalReadingFocusSeconds)가
+          source of truth. 다른 브라우저/기기에서도 같은 값을 보여준다.
+        - 심사 학생계정: 브라우저 localStorage만 사용(기존 readingFocusTotalSeconds_
+          키 그대로). 심사위원이 여러 브라우저/기기에서 각자 독립된 데모 상태를
+          유지할 수 있어야 하므로 backend 조회/저장을 아예 호출하지 않는다.
+        isDemoAccount()는 auth.js가 로그인 시 sessionStorage에 심어 둔 실제
+        서버 판정값(User.demoAccount)을 그대로 읽는 기존 공통 판별기다.
+      */
       const totalStorageKey = "readingFocusTotalSeconds_" + studentId;
+
+      function getApiBaseUrl() {
+        if (window.location.hostname === "127.0.0.1") {
+          return "http://127.0.0.1:8080";
+        }
+        if (window.location.hostname === "localhost") {
+          return "http://localhost:8080";
+        }
+        return "https://victory-production-f94d.up.railway.app";
+      }
+
       const praiseMessages = [
         "오늘도 집중해서 읽었어요. 대단해요!",
         "차근차근 읽는 모습이 아주 좋아요!",
@@ -452,15 +475,87 @@
       let isRunning = false;
       let sessionSaved = false;
 
+      /*
+        화면에 보여주는 "총 독서 집중 시간" 캐시. 심사계정은 localStorage에서
+        한 번 읽어 두고, 일반계정은 backend GET 응답으로 채운다(초기화는
+        아래 initializeTotalSeconds 참고). saveSessionOnce가 세션 종료 시
+        이 값을 갱신한다.
+      */
+      let currentTotalSeconds = 0;
+
       function showView(view) {
         [setupView, runningView, completeView].forEach(function (item) {
           item.classList.toggle("active", item === view);
         });
       }
 
-      function loadTotalSeconds() {
+      /* 심사계정 전용 - 브라우저 localStorage 읽기/쓰기 */
+      function loadLocalTotalSeconds() {
         const value = Number(localStorage.getItem(totalStorageKey));
         return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+      }
+
+      function saveLocalTotalSeconds(totalSeconds) {
+        localStorage.setItem(totalStorageKey, String(totalSeconds));
+      }
+
+      /* 일반계정 전용 - backend 조회/추가 */
+      async function fetchBackendTotalSeconds() {
+        const response = await fetch(
+          getApiBaseUrl() + "/api/students/" + studentId + "/reading-focus",
+          { headers: { Authorization: "Bearer " + authToken } }
+        );
+        if (!response.ok) {
+          throw new Error("독서 집중 누적 시간을 불러오지 못했습니다: " + response.status);
+        }
+        const data = await response.json();
+        return Number(data.totalSeconds) || 0;
+      }
+
+      /*
+        keepalive: true는 "끝내기"를 누르지 않고 그냥 화면을 벗어날 때도
+        (pagehide 핸들러) 이 요청이 취소되지 않고 끝까지 전송되게 한다.
+        평소 흐름(끝내기/자연 종료)에서도 그대로 켜 둬도 안전하다.
+      */
+      async function addBackendTotalSeconds(addSeconds) {
+        const response = await fetch(
+          getApiBaseUrl() + "/api/students/" + studentId + "/reading-focus",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + authToken
+            },
+            body: JSON.stringify({ addSeconds: addSeconds }),
+            keepalive: true
+          }
+        );
+        if (!response.ok) {
+          throw new Error("독서 집중 누적 시간을 저장하지 못했습니다: " + response.status);
+        }
+        const data = await response.json();
+        return Number(data.totalSeconds) || 0;
+      }
+
+      /*
+        화면 진입 시 총 누적시간을 가져온다. 심사계정은 절대 backend를
+        호출하지 않고(데모 값이 실제 DB에 섞이면 안 됨), 일반계정은 반대로
+        localStorage의 readingFocusTotalSeconds_* 값을 더 이상 누적 계산에
+        쓰지 않는다 - backend 값 하나만 source of truth로 표시한다.
+      */
+      async function initializeTotalSeconds() {
+        if (isDemoAccount()) {
+          currentTotalSeconds = loadLocalTotalSeconds();
+          updateTotalDisplays(currentTotalSeconds);
+          return;
+        }
+
+        try {
+          currentTotalSeconds = await fetchBackendTotalSeconds();
+        } catch (error) {
+          console.error(error);
+        }
+        updateTotalDisplays(currentTotalSeconds);
       }
 
       function formatDuration(seconds) {
@@ -524,14 +619,30 @@
         intervalId = null;
       }
 
-      function saveSessionOnce() {
-        if (sessionSaved) return loadTotalSeconds();
+      /*
+        한 집중 세션을 정확히 한 번만 반영한다. sessionSaved를 네트워크
+        요청 전에 먼저 true로 바꿔 두므로, 자연 종료/끝내기 클릭/
+        pagehide/버튼 연타가 겹쳐도 실제 저장(로컬 또는 backend)은 한
+        번만 일어난다.
+      */
+      async function saveSessionOnce() {
+        if (sessionSaved) return currentTotalSeconds;
         stopRunningClock();
         const actualSeconds = getFocusedSeconds();
-        const totalSeconds = loadTotalSeconds() + actualSeconds;
-        localStorage.setItem(totalStorageKey, String(totalSeconds));
         sessionSaved = true;
-        return totalSeconds;
+
+        if (isDemoAccount()) {
+          currentTotalSeconds = loadLocalTotalSeconds() + actualSeconds;
+          saveLocalTotalSeconds(currentTotalSeconds);
+          return currentTotalSeconds;
+        }
+
+        try {
+          currentTotalSeconds = await addBackendTotalSeconds(actualSeconds);
+        } catch (error) {
+          console.error(error);
+        }
+        return currentTotalSeconds;
       }
 
       function getKoreanDateKey() {
@@ -552,10 +663,10 @@
         return praiseMessages[hash % praiseMessages.length];
       }
 
-      function finishSession(completedNaturally) {
+      async function finishSession(completedNaturally) {
         if (sessionSaved) return;
         if (completedNaturally) focusedMilliseconds = plannedSeconds * 1000;
-        const totalSeconds = saveSessionOnce();
+        const totalSeconds = await saveSessionOnce();
         sessionTime.textContent = formatDuration(getFocusedSeconds());
         praiseText.textContent = selectPraise();
         updateTotalDisplays(totalSeconds);
@@ -627,7 +738,7 @@
         if (plannedSeconds > 0 && !sessionSaved) saveSessionOnce();
       });
 
-      updateTotalDisplays(loadTotalSeconds());
+      initializeTotalSeconds();
       validateSelection();
     })();
   </script>

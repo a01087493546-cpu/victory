@@ -561,19 +561,19 @@ border: 1.5px solid rgba(181, 117, 37, 0.20);
     }
 
     .ira-record-card h3 {
-      margin: 0 0 8px;
+      margin: 0 0 12px;
       color: #4d2b10;
-      font-size: 20px;
+      font-size: 25px;
       font-weight: 950;
-      line-height: 1.35;
+      line-height: 1.5;
       word-break: keep-all;
     }
 
     .ira-record-card p {
       margin: 0;
       color: #416928;
-      font-size: 15px;
-      font-weight: 850;
+      font-size: 25px;
+      font-weight: 700;
       line-height: 1.55;
       word-break: keep-all;
       white-space: pre-wrap;
@@ -1374,7 +1374,6 @@ function renderArchiveSummary() {
             <article class="ira-summary-card">
               <div class="ira-record-meta">
                 <span class="ira-badge">간추린 내용</span>
-                ${record.feedback ? `<span class="ira-badge brown">루미 피드백 통과</span>` : ""}
               </div>
               <h3>내가 쓴 간추리기</h3>
               <p>${escapeHtml(record.summary)}</p>
@@ -1391,7 +1390,6 @@ function renderArchiveSummary() {
             </div>
             <h3>Q. ${escapeHtml(record.question || "질문 없음")}</h3>
             <p>${escapeHtml(record.answer || "아직 답은 없어요.")}</p>
-            ${record.feedback ? `<p style="margin-top:8px;color:#8a5a22;">💬 루미: ${escapeHtml(record.feedback)}</p>` : ""}
           </article>
         `;
       }).join("");

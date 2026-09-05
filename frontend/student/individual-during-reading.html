@@ -8192,6 +8192,42 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   font-weight: 850;
   white-space: nowrap;
 }
+
+/* 책 속 생각쓰기: 질문·답 영역을 위로 모으고 루미 피드백을 강조 */
+#questionScreen .idr-question-panel {
+  gap: 10px !important;
+  padding-top: 18px !important;
+  padding-bottom: 20px !important;
+}
+
+#questionScreen .idr-question-panel .idr-question-type-field {
+  margin-bottom: 4px !important;
+}
+
+#questionScreen .idr-question-panel .idr-field:nth-of-type(2),
+#questionScreen .idr-question-panel .idr-field:nth-of-type(3) {
+  row-gap: 6px !important;
+}
+
+#questionScreen .idr-question-panel .idr-field:nth-of-type(2) label,
+#questionScreen .idr-question-panel .idr-field:nth-of-type(3) label {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+}
+
+#questionScreen .idr-inline-feedback {
+  min-height: 150px !important;
+  padding: 22px 24px !important;
+  align-items: center !important;
+}
+
+#questionScreen .idr-inline-feedback .idr-feedback-box {
+  min-height: 106px !important;
+  padding: 0 10px !important;
+  font-size: 30px !important;
+  line-height: 1.45 !important;
+  align-items: center !important;
+}
 </style>
 <style>
   .idr-teacher-book-chat-return {

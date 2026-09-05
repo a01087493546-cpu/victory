@@ -321,102 +321,69 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
 
     .ir-power-body {
       height: calc(100% - 44px);
-      display: grid;
-      grid-template-columns: 170px minmax(0, 1fr);
-      gap: 16px;
-      padding: 0 18px 16px;
+      display: flex;
+      padding: 2px 22px 16px;
       align-items: center;
-    }
-
-    .ir-radar {
-      position: relative;
-      width: 165px;
-      height: 165px;
-      margin: 0 auto;
-    }
-
-    .ir-radar::before,
-    .ir-radar::after {
-      content: "";
-      position: absolute;
-      inset: 25px;
-      border: 1px solid rgba(126, 77, 20, 0.22);
-      transform: rotate(45deg);
-    }
-
-    .ir-radar::after {
-      inset: 45px;
-      border-color: rgba(126, 77, 20, 0.14);
-    }
-
-    .ir-radar-core {
-      position: absolute;
-      inset: 58px;
-      z-index: 2;
-      background: linear-gradient(180deg, #d99b32, #b06a1d);
-      clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-    }
-
-    .ir-radar span {
-      position: absolute;
-      z-index: 3;
-      color: #4f2f13;
-      font-size: 15px;
-      font-weight: 900;
-      line-height: 1.2;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .radar-top {
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .radar-right {
-      right: -10px;
-      top: 68px;
-    }
-
-    .radar-bottom {
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .radar-left {
-      left: -10px;
-      top: 68px;
     }
 
     .ir-power-bars {
       display: grid;
-      gap: 13px;
+      width: 100%;
+      gap: 0;
     }
 
     .ir-power-row {
       display: grid;
-      grid-template-columns: 70px 1fr 84px;
+      grid-template-columns: 54px 92px minmax(120px, 1fr) 108px;
       align-items: center;
-      gap: 10px;
-      font-size: 16px;
-      font-weight: 900;
+      gap: 12px;
+      min-height: 41px;
       color: #543315;
     }
 
-    .ir-power-row div {
-      height: 13px;
-      border-radius: 999px;
-      background: rgba(113, 75, 31, 0.15);
-      overflow: hidden;
+    .ir-power-row + .ir-power-row {
+      border-top: 1px solid rgba(139, 91, 35, 0.12);
     }
 
-    .ir-power-row i {
+    .ir-power-icon {
+      width: 48px;
+      height: 38px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(78, 45, 13, 0.13));
+    }
+
+    .ir-power-name {
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      white-space: nowrap;
+    }
+
+    .ir-power-track {
+      height: 14px;
+      border: 1px solid rgba(128, 82, 29, 0.12);
+      border-radius: 999px;
+      background: rgba(150, 113, 66, 0.13);
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(89, 52, 18, 0.09);
+    }
+
+    .ir-power-track i {
       display: block;
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #8a5019, #c1842e, #e1b456);
+      background: linear-gradient(90deg, #d9a441, #a66a24);
+      box-shadow: inset 0 1px 0 rgba(255, 242, 198, 0.36);
+    }
+
+    .ir-power-value {
+      color: #543315;
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      text-align: right;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
     }
 
     .ir-practice-card {
@@ -498,7 +465,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     .ir-chart-body {
       height: calc(100% - 44px);
       display: grid;
-      grid-template-columns: 28px 1fr;
+      grid-template-columns: 40px 1fr;
       gap: 8px;
       padding: 0 16px 14px 12px;
     }
@@ -509,7 +476,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       justify-content: space-between;
       padding: 8px 0 20px;
       color: #7a4a19;
-      font-size: 13px;
+      font-size: 22px;
       font-weight: 900;
       text-align: center;
     }
@@ -532,7 +499,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       display: flex;
       align-items: end;
       justify-content: center;
-      padding-bottom: 18px;
+      padding-bottom: 36px;
     }
 
     .ir-bar b {
@@ -545,18 +512,19 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
 
     .ir-bar em {
       position: absolute;
-      bottom: calc(var(--h) + 24px);
+      bottom: calc(var(--h) + 32px);
       font-style: normal;
       color: #4d2d10;
-      font-size: 12px;
+      font-size: 24px;
       font-weight: 900;
+      white-space: nowrap;
     }
 
     .ir-bar span {
       position: absolute;
       bottom: 0;
       color: #5d3715;
-      font-size: 12px;
+      font-size: 25px;
       font-weight: 900;
       white-space: nowrap;
     }
@@ -669,25 +637,6 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
         inset 0 0 34px rgba(255, 212, 100, 0.08) !important;
     }
 
-    .ir-practice-card::after {
-      content: "처음해요";
-      position: absolute;
-      top: 16px;
-      right: 20px;
-      height: 34px;
-      padding: 0 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 226, 143, 0.88);
-      border-radius: 999px;
-      background: linear-gradient(180deg, #fff0b9 0%, #d4a13c 100%);
-      color: #3d260d;
-      font-size: 14px;
-      font-weight: 900;
-      box-shadow: 0 8px 16px rgba(25, 54, 18, 0.22);
-    }
-
     .ir-practice-lumi {
       width: 190px !important;
       height: 200px !important;
@@ -737,7 +686,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     }
 
     .ir-flow-text strong {
-      font-size: 26px !important;
+      font-size: 28px !important;
       line-height: 1.15 !important;
     }
 
@@ -795,16 +744,6 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
     0 12px 24px rgba(23, 63, 25, 0.2),
     inset 0 0 0 1px rgba(255, 236, 167, 0.18),
     inset 0 0 28px rgba(255, 214, 118, 0.08) !important;
-}
-
-.ir-practice-card::after {
-  top: 14px !important;
-  right: 18px !important;
-  height: 32px !important;
-  padding: 0 17px !important;
-  background: linear-gradient(180deg, #f4df9f 0%, #bd8430 100%) !important;
-  color: #3e260c !important;
-  font-size: 13px !important;
 }
 
 .ir-practice-text button {
@@ -893,30 +832,6 @@ html {
   opacity: 1 !important;
 }
 
-/* 연습읽기 카드의 "처음해요" 배지를 크게 강조 */
-.ir-practice-card::after {
-  top: 18px !important;
-  right: 22px !important;
-  height: 48px !important;
-  min-width: 116px !important;
-  padding: 0 24px !important;
-  border: 2px solid rgba(255, 239, 172, 0.96) !important;
-  border-radius: 999px !important;
-  background:
-    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.58), transparent 36%),
-    linear-gradient(180deg, #fff0a8 0%, #d99e2d 58%, #a86b19 100%) !important;
-  color: #3d250b !important;
-  font-size: 19px !important;
-  font-weight: 950 !important;
-  letter-spacing: -0.03em !important;
-  box-shadow:
-    0 10px 20px rgba(15, 45, 18, 0.30),
-    0 0 0 4px rgba(255, 226, 126, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
-  transform: translateY(-2px) !important;
-  z-index: 3 !important;
-}
-
 .ir-practice-text {
   width: fit-content !important;
   min-width: 320px !important;
@@ -942,7 +857,7 @@ html {
   margin: 0 0 14px;
   color: #f4e7b9;
   font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", sans-serif;
-  font-size: 17px;
+  font-size: 25px;
   font-weight: 700;
   line-height: 1.4;
   text-align: center;
@@ -1024,34 +939,30 @@ html {
           </div>
 
           <div class="ir-power-body">
-            <div class="ir-radar">
-              <span class="radar-top">마법력<br /><b id="radarMagicValue">0</b></span>
-              <span class="radar-right">체력<br /><b id="radarStaminaValue">0</b></span>
-              <span class="radar-bottom">지혜<br /><b id="radarWisdomValue">0</b></span>
-              <span class="radar-left">용기<br /><b id="radarCourageValue">0</b></span>
-              <div class="ir-radar-core"></div>
-            </div>
-
             <div class="ir-power-bars">
               <div class="ir-power-row">
-                <span>마법력</span>
-                <div><i id="magicPowerFill" style="width: 0%"></i></div>
-                <b id="magicPowerText">0 / 100</b>
+                <img class="ir-power-icon" src="../assets/images/ability/ability-magic.png" alt="">
+                <span class="ir-power-name">마법력</span>
+                <div class="ir-power-track"><i id="magicPowerFill" style="width: 0%"></i></div>
+                <b class="ir-power-value" id="magicPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
-                <span>체력</span>
-                <div><i id="staminaPowerFill" style="width: 0%"></i></div>
-                <b id="staminaPowerText">0 / 100</b>
+                <img class="ir-power-icon" src="../assets/images/ability/ability-health.png" alt="">
+                <span class="ir-power-name">체력</span>
+                <div class="ir-power-track"><i id="staminaPowerFill" style="width: 0%"></i></div>
+                <b class="ir-power-value" id="staminaPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
-                <span>지혜</span>
-                <div><i id="wisdomPowerFill" style="width: 0%"></i></div>
-                <b id="wisdomPowerText">0 / 100</b>
+                <img class="ir-power-icon" src="../assets/images/ability/ability-wisdom.png" alt="">
+                <span class="ir-power-name">지혜</span>
+                <div class="ir-power-track"><i id="wisdomPowerFill" style="width: 0%"></i></div>
+                <b class="ir-power-value" id="wisdomPowerText">0 / 100</b>
               </div>
               <div class="ir-power-row">
-                <span>용기</span>
-                <div><i id="couragePowerFill" style="width: 0%"></i></div>
-                <b id="couragePowerText">0 / 100</b>
+                <img class="ir-power-icon" src="../assets/images/ability/ability-courage.png" alt="">
+                <span class="ir-power-name">용기</span>
+                <div class="ir-power-track"><i id="couragePowerFill" style="width: 0%"></i></div>
+                <b class="ir-power-value" id="couragePowerText">0 / 100</b>
               </div>
             </div>
           </div>
@@ -1166,20 +1077,9 @@ const API_BASE_URL = getApiBaseUrl();
       }
 
       function updateStat(type, value) {
-        const radarIdMap = {
-          magic: "radarMagicValue",
-          stamina: "radarStaminaValue",
-          wisdom: "radarWisdomValue",
-          courage: "radarCourageValue"
-        };
         const text = document.getElementById(type + "PowerText");
         const fill = document.getElementById(type + "PowerFill");
-        const radar = document.getElementById(radarIdMap[type]);
         const numericValue = Number(value) || 0;
-
-        if (radar) {
-          radar.textContent = String(numericValue);
-        }
 
         if (text) {
           text.textContent = numericValue + " / 100";
