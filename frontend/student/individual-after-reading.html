@@ -3405,7 +3405,7 @@ body {
 #shareScreen .iar-share-summary {
   min-height: 130px !important;
   padding: 16px 17px !important;
-  font-size: 18px !important;
+  font-size: 28px !important;
   line-height: 1.55 !important;
   white-space: normal !important;
   word-break: keep-all !important;
@@ -3784,6 +3784,74 @@ body {
 #questionScreen .iar-qa-card .iar-textarea {
   height: 218px !important;
   min-height: 218px !important;
+}
+
+/* 개별읽기 읽기 후: 루미 피드백 영역을 여유 있게 강조 */
+#questionScreen .iar-lumi-feedback {
+  height: 168px !important;
+  min-height: 168px !important;
+  padding: 22px 24px !important;
+  align-items: center !important;
+}
+
+#summaryScreen .iar-panel {
+  grid-template-rows: auto minmax(0, 1fr) 140px auto !important;
+}
+
+#summaryScreen .iar-lumi-feedback {
+  height: 140px !important;
+  min-height: 140px !important;
+  padding: 22px 24px !important;
+  align-items: center !important;
+}
+
+#questionScreen .iar-lumi-feedback,
+#summaryScreen .iar-lumi-feedback {
+  grid-template-columns: 104px minmax(0, 1fr) auto !important;
+  gap: 20px !important;
+}
+
+#questionScreen .iar-lumi-feedback img,
+#summaryScreen .iar-lumi-feedback img {
+  width: 96px !important;
+  height: 96px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+}
+
+#questionScreen #questionFeedback,
+#summaryScreen #summaryFeedback,
+#questionScreen #questionFeedback *,
+#summaryScreen #summaryFeedback * {
+  font-size: 30px !important;
+  line-height: 1.45 !important;
+}
+
+#questionScreen .iar-lumi-feedback-actions,
+#summaryScreen .iar-lumi-feedback-actions {
+  align-self: center !important;
+}
+
+/* 읽기 후 2단계: 루미를 아이콘이 아닌 안내 캐릭터 크기로 확대 */
+#questionScreen .iar-panel {
+  grid-template-rows: auto 435px 248px auto !important;
+}
+
+#questionScreen .iar-lumi-feedback {
+  height: 248px !important;
+  min-height: 248px !important;
+  grid-template-columns: 208px minmax(0, 1fr) auto !important;
+  gap: 24px !important;
+  padding: 22px 24px !important;
+  align-items: center !important;
+}
+
+#questionScreen .iar-lumi-feedback img {
+  width: 200px !important;
+  height: 200px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
 }
 </style>
 </head>

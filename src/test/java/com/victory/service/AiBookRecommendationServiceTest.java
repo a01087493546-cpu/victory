@@ -391,4 +391,51 @@ class AiBookRecommendationServiceTest {
         assertThat(result.getRecommendations()).extracting(AiBookRecommendationItem::getBookId)
             .containsExactly(2L, 3L, 4L);
     }
+
+    /*
+     * recommendationReason이 "감정이 풍부합니다" 같은 추상적인 감상/분위기
+     * 평가가 아니라 실제 줄거리(주인공/상황/사건) 중심으로 작성되도록,
+     * 프롬프트가 금지 표현을 명시하고 구체적 줄거리 작성을 지시하는지 확인.
+     */
+    @Test
+    void systemPrompt_bansAbstractPraiseAndRequiresConcretePlot() throws Exception {
+        String prompt = privateSystemPrompt();
+        String normalized = prompt.replaceAll("\\s+", " ");
+
+        assertThat(normalized)
+            .contains("감정이 풍부합니다")
+            .contains("상상력을 자극합니다")
+            .contains("재미있는 이야기입니다")
+            .contains("많은 것을 배울 수 있습니다")
+            .contains("성장하는 과정을 담았습니다")
+            .contains("우정의 소중함을 느낄 수 있습니다")
+            .contains("흥미로운 모험 이야기입니다")
+            .contains("따뜻한 이야기입니다")
+            .contains("주인공이 누구인지")
+            .contains("어떤 사건이나")
+            .contains("description")
+            .contains("그대로 베끼지 말고")
+            .contains("결말이나 중요한 반전은 절대 밝히지 마");
+    }
+
+    /*
+     * 화면에서 노란 요약(description)과 AI 추천 이유를 둘 다 보여주던 것을
+     * recommendationReason 하나로 합쳤으므로, 프롬프트도 "이것이 유일하게
+     * 보이는 설명"이라는 전제를 명시하고 있는지 확인.
+     */
+    @Test
+    void systemPrompt_statesRecommendationReasonIsTheOnlyVisibleDescription() throws Exception {
+        String prompt = privateSystemPrompt();
+        String normalized = prompt.replaceAll("\\s+", " ");
+
+        assertThat(normalized)
+            .contains("유일한 책 설명")
+            .contains("완결된 문장으로 써");
+    }
+
+    private String privateSystemPrompt() throws Exception {
+        java.lang.reflect.Field field = AiBookRecommendationService.class.getDeclaredField("SYSTEM_PROMPT");
+        field.setAccessible(true);
+        return (String) field.get(null);
+    }
 }

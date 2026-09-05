@@ -8165,7 +8165,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   flex: 1 1 auto;
   min-width: 0;
   padding-top: 3px;
-  font-size: 17px;
+  font-size: 28px;
   font-weight: 750;
   line-height: 1.45;
   word-break: keep-all;
@@ -8209,6 +8209,11 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   row-gap: 6px !important;
 }
 
+#questionScreen .idr-question-panel .idr-field:nth-of-type(2) > .idr-count-row,
+#questionScreen .idr-question-panel .idr-field:nth-of-type(3) > .idr-count-row {
+  display: none !important;
+}
+
 #questionScreen .idr-question-panel .idr-field:nth-of-type(2) label,
 #questionScreen .idr-question-panel .idr-field:nth-of-type(3) label {
   font-size: 28px !important;
@@ -8216,9 +8221,21 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 }
 
 #questionScreen .idr-inline-feedback {
-  min-height: 150px !important;
-  padding: 22px 24px !important;
+  min-height: 190px !important;
+  grid-template-columns: 172px minmax(0, 1fr) !important;
+  column-gap: 20px !important;
+  margin: 12px 0 2px !important;
+  padding: 12px 20px !important;
   align-items: center !important;
+}
+
+#questionScreen .idr-inline-feedback-lumi {
+  width: 165px !important;
+  height: 165px !important;
+  max-height: 100% !important;
+  align-self: center !important;
+  object-fit: contain !important;
+  object-position: center !important;
 }
 
 #questionScreen .idr-inline-feedback .idr-feedback-box {

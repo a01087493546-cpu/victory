@@ -560,8 +560,13 @@
     .ibr-feedback-row {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #eac675;
+      border-radius: 24px;
+      background: #fff3d5;
     }
 
     .ibr-feedback-row .ibr-feedback {
@@ -569,8 +574,21 @@
       min-width: 0;
     }
 
+    /*
+      기본(정답/오답 판정 전) 상태만 배경을 투명하게 만들어 바깥 row의
+      배경과 하나로 보이게 한다. .good/.need 판정 색상은 그대로 보여야
+      하므로 이 두 클래스가 붙은 경우는 건드리지 않는다.
+    */
+    .ibr-feedback-row .ibr-feedback:not(.good):not(.need) {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
     .ibr-check-button {
       flex: 0 0 auto;
+      align-self: center;
+      margin-right: 6px;
       height: 56px;
       padding: 0 28px;
       white-space: nowrap;
@@ -952,9 +970,9 @@
 
     .ibr-feedback {
       min-height: 92px !important;
-      height: auto !important;
+      height: 100% !important;
       grid-template-columns: 56px 1fr !important;
-      padding: 20px 22px !important;
+      padding: 30px 28px !important;
       font-size: 28px !important;
       line-height: 1.35 !important;
       overflow: hidden !important;
@@ -3931,6 +3949,44 @@ function goTodayAdventure() {
   font-weight: 950 !important;
   text-align: center !important;
   word-break: keep-all !important;
+}
+
+/* 개별읽기 읽기 전: 루미 피드백 이미지 확대 */
+.ibr-page:not(.book-step) .ibr-form-card {
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 205px !important;
+}
+
+.ibr-page:not(.book-step) .ibr-feedback {
+  grid-template-columns: 142px minmax(0, 1fr) !important;
+  gap: 20px !important;
+  padding: 12px 16px !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+.ibr-page:not(.book-step) .ibr-feedback img {
+  width: 136px !important;
+  height: 164px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+}
+
+@media (max-height: 760px) {
+  .ibr-page:not(.book-step) .ibr-form-card {
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 172px !important;
+  }
+
+  .ibr-page:not(.book-step) .ibr-feedback {
+    grid-template-columns: 120px minmax(0, 1fr) !important;
+    gap: 16px !important;
+    padding: 10px 14px !important;
+  }
+
+  .ibr-page:not(.book-step) .ibr-feedback img {
+    width: 114px !important;
+    height: 138px !important;
+  }
 }
   </style>
 </body>
