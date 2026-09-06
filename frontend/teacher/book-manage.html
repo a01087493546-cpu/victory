@@ -2416,6 +2416,96 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
+
+    /* 오른쪽 현황을 압축하고 성장 포트폴리오 주요 액션을 배치합니다. */
+    .wr-right-area {
+      grid-template-rows: minmax(0, 1fr) 112px 185px !important;
+      gap: 12px !important;
+    }
+
+    .wr-status-card .wr-card-inner {
+      grid-template-rows: auto 82px minmax(0, 1fr) !important;
+      gap: 8px !important;
+      padding: 14px 18px !important;
+    }
+
+    .wr-portfolio-card {
+      width: 100%;
+      min-width: 0;
+      height: 112px;
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) 32px;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border: 1px solid rgba(137, 86, 22, 0.48);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 246, 205, 0.72), transparent 38%),
+        linear-gradient(145deg, #e8c46f, #bd7a28);
+      color: #fffaf0;
+      text-align: left;
+      cursor: pointer;
+      box-shadow:
+        0 7px 0 rgba(101, 59, 13, 0.42),
+        0 14px 24px rgba(92, 55, 16, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+    }
+
+    .wr-portfolio-card:hover,
+    .wr-portfolio-card:focus-visible {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+      box-shadow:
+        0 9px 0 rgba(101, 59, 13, 0.38),
+        0 18px 28px rgba(92, 55, 16, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      outline: 3px solid rgba(221, 174, 79, 0.28);
+      outline-offset: 2px;
+    }
+
+    .wr-portfolio-card:active {
+      transform: translateY(2px);
+      box-shadow: 0 3px 0 rgba(101, 59, 13, 0.42);
+    }
+
+    .wr-portfolio-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 249, 226, 0.46);
+      border-radius: 18px;
+      background: rgba(91, 52, 14, 0.16);
+      font-size: 29px;
+    }
+
+    .wr-portfolio-copy {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .wr-portfolio-title {
+      font-size: 23px;
+      font-weight: 950;
+      line-height: 1.2;
+    }
+
+    .wr-portfolio-description {
+      color: rgba(255, 250, 235, 0.9);
+      font-size: 14px;
+      font-weight: 750;
+      line-height: 1.3;
+      word-break: keep-all;
+    }
+
+    .wr-portfolio-arrow {
+      font-size: 30px;
+      font-weight: 900;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -2599,6 +2689,15 @@
 
 </div>
 </article>
+
+<button class="wr-portfolio-card" type="button" onclick="openStudentGrowthPortfolio()">
+  <span class="wr-portfolio-icon" aria-hidden="true">📘</span>
+  <span class="wr-portfolio-copy">
+    <span class="wr-portfolio-title">학생 성장 포트폴리오</span>
+    <span class="wr-portfolio-description">학생의 독서 성장 기록을 한눈에 살펴보세요.</span>
+  </span>
+  <span class="wr-portfolio-arrow" aria-hidden="true">›</span>
+</button>
 
 <!-- 읽기 범위 -->
 <article class="wr-card wr-range-card">
@@ -3871,6 +3970,10 @@ async function loadReadingRange() {
 }
     function goTeacherHome() {
       location.href = "home.html";
+    }
+
+    function openStudentGrowthPortfolio() {
+      alert("학생 성장 포트폴리오 기능을 준비하고 있습니다.");
     }
 
     function goBookSelect() {
