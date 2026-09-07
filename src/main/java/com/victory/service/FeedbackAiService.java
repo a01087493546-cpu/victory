@@ -1,8 +1,12 @@
 package com.victory.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.victory.dto.AiFeedbackRequest;
 import com.victory.dto.AiFeedbackResponse;
+import com.victory.dto.PortfolioAiAnalysisResponse;
 import com.victory.entity.AiEvaluationAttempt;
 import com.victory.entity.ClassReadingBook;
 import com.victory.entity.ClassStudent;
@@ -21,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
@@ -34,6 +39,23 @@ public class FeedbackAiService {
 
     private static final String OPENAI_CHAT_COMPLETIONS_URL = "https://api.openai.com/v1/chat/completions";
     private static final String MODEL = "gpt-4o-mini";
+
+    private static final String PORTFOLIO_ANALYSIS_SYSTEM_PROMPT = """
+            너는 초등학생 성장 포트폴리오를 돕는 독서교육 분석 도우미다.
+            제공된 집계 데이터만 근거로 교사와 학부모가 읽을 한국어 문장을 작성한다.
+
+            반드시 지킬 규칙:
+            1. 제공되지 않은 행동, 책 내용, 성향, 감정, 가정환경을 추측하지 않는다.
+            2. 숫자를 단순히 나열하지 말고 교육적인 의미로 해석한다.
+            3. 잘하는 점과 노력할 점이 서로 모순되지 않게 한다.
+            4. 노력할 점은 학생이 실천할 수 있는 구체적인 행동으로 제안한다.
+            5. 기록이 적으면 '현재 기록에서는'처럼 근거의 한계를 밝히고 과도하게 평가하지 않는다.
+            6. '부족합니다', '문제가 있습니다' 같은 낙인·비판 표현을 쓰지 않는다.
+            7. strengthText와 improvementText는 각각 1~2문장의 짧고 자연스러운 한국어로 쓴다.
+            8. 입력의 portfolioType에 해당하는 데이터만 분석하고 다른 읽기 유형을 언급하지 않는다.
+            9. 다른 설명이나 마크다운 없이 아래 JSON 객체만 반환한다.
+            {"strengthText":"...", "improvementText":"..."}
+            """;
 
     private final DemoAccountService demoAccountService;
 
@@ -2266,7 +2288,18 @@ public class FeedbackAiService {
      * 코드에서는 buildRestTemplate()로만 생성된다.
      */
     RestTemplate restTemplate = buildRestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    /*
+     * 포트폴리오 AI 분석 입력(practiceInput/individualInput)에 LocalDate
+     * (periodStart/periodEnd)가 포함되는데, JavaTimeModule을 등록하지
+     * 않은 기본 ObjectMapper는 LocalDate를 직렬화하지 못하고
+     * InvalidDefinitionException(JsonProcessingException의 하위 타입)을
+     * 던진다 - buildPortfolioAnalysisRequestBody가 이 예외를 그대로
+     * 전파해 generatePortfolioAnalysis의 502 처리로 이어졌다(실제
+     * OpenAI 호출 이전에 요청 직렬화 단계에서 실패).
+     */
+    private final ObjectMapper objectMapper = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     private final AiEvaluationAttemptRepository aiEvaluationAttemptRepository;
     private final ClassStudentRepository classStudentRepository;
     private final ClassReadingBookRepository classReadingBookRepository;
@@ -2300,6 +2333,57 @@ public class FeedbackAiService {
         } catch (Exception e) {
             return handleAiCallFailure(request, e);
         }
+    }
+
+    /** 기존 OpenAI 클라이언트와 JSON 추출 경로를 재사용하는 포트폴리오 전용 호출. */
+    public PortfolioAiAnalysisResponse generatePortfolioAnalysis(
+            String portfolioType, Map<String, Object> aggregateInput) {
+        try {
+            Map<String, Object> requestBody = buildPortfolioAnalysisRequestBody(portfolioType, aggregateInput);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(openaiApiKey);
+            Map<?, ?> response = restTemplate.postForObject(
+                OPENAI_CHAT_COMPLETIONS_URL, new HttpEntity<>(requestBody, headers), Map.class);
+            String content = extractContent(response);
+            PortfolioAiAnalysisResponse parsed = objectMapper.readValue(content, PortfolioAiAnalysisResponse.class);
+            if (parsed == null || isBlank(parsed.strengthText()) || isBlank(parsed.improvementText())) {
+                throw new JsonProcessingException("포트폴리오 AI 응답 필드가 비어 있습니다.") { };
+            }
+            return new PortfolioAiAnalysisResponse(parsed.strengthText().trim(), parsed.improvementText().trim());
+        } catch (RestClientException e) {
+            log.warn("포트폴리오 AI 호출 실패: type={}", portfolioType, e);
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE, "AI 분석 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.", e);
+        } catch (JsonProcessingException | IllegalStateException e) {
+            log.warn("포트폴리오 AI 응답 파싱 실패: type={}", portfolioType, e);
+            throw new ResponseStatusException(
+                HttpStatus.BAD_GATEWAY, "AI 분석 응답을 확인할 수 없습니다. 다시 시도해 주세요.", e);
+        }
+    }
+
+    Map<String, Object> buildPortfolioAnalysisRequestBody(
+            String portfolioType, Map<String, Object> aggregateInput) throws JsonProcessingException {
+        if (!"practice".equals(portfolioType) && !"individual".equals(portfolioType)) {
+            throw new IllegalArgumentException("지원하지 않는 포트폴리오 유형입니다.");
+        }
+        Map<String, Object> userPayload = new LinkedHashMap<>();
+        userPayload.put("portfolioType", portfolioType);
+        userPayload.put("aggregate", aggregateInput == null ? Map.of() : aggregateInput);
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("model", MODEL);
+        body.put("messages", List.of(
+            Map.of("role", "system", "content", PORTFOLIO_ANALYSIS_SYSTEM_PROMPT),
+            Map.of("role", "user", "content", objectMapper.writeValueAsString(userPayload))));
+        body.put("response_format", Map.of("type", "json_object"));
+        body.put("temperature", 0);
+        body.put("seed", 42);
+        return body;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     /*

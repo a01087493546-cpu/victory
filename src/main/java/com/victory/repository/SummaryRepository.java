@@ -85,4 +85,9 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
         """)
     List<Summary> findAllReviewablePracticeSummariesByStudentIds(
             @Param("studentIds") List<Long> studentIds);
+
+    List<Summary> findByStudent_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(
+            Long studentId, LocalDateTime startAt, LocalDateTime endAt);
+
+    List<Summary> findByStudent_IdAndReadingRecordIsNotNullOrderByIdAsc(Long studentId);
 }

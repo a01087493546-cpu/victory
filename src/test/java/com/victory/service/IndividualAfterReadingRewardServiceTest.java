@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import com.victory.entity.StudentStatRewardLog;
 import com.victory.entity.StudentStats;
@@ -63,6 +64,10 @@ class IndividualAfterReadingRewardServiceTest {
         assertThat(result.getStats().getMagic()).isEqualTo(9);
         assertThat(result.getStats().getWisdom()).isEqualTo(9);
         assertThat(result.getStats().getCourage()).isEqualTo(8);
+
+        ArgumentCaptor<StudentStatRewardLog> logCaptor = ArgumentCaptor.forClass(StudentStatRewardLog.class);
+        verify(rewardLogRepository).save(logCaptor.capture());
+        assertThat(logCaptor.getValue().getAmount()).isEqualTo(3);
     }
 
     /* 검증: student_stats 행이 아직 없는 학생은 8/8/8/8을 기본값으로 새로 만든 뒤 보상을 얹는다 */

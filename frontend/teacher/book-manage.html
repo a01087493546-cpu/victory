@@ -2419,8 +2419,10 @@
 
     /* 오른쪽 현황을 압축하고 성장 포트폴리오 주요 액션을 배치합니다. */
     .wr-right-area {
-      grid-template-rows: minmax(0, 1fr) 112px 185px !important;
+      grid-template-rows: minmax(0, 1fr) 185px 96px !important;
       gap: 12px !important;
+      padding-bottom: 10px !important;
+      box-sizing: border-box !important;
     }
 
     .wr-status-card .wr-card-inner {
@@ -2432,12 +2434,12 @@
     .wr-portfolio-card {
       width: 100%;
       min-width: 0;
-      height: 112px;
+      height: 96px;
       display: grid;
       grid-template-columns: 58px minmax(0, 1fr) 32px;
       align-items: center;
       gap: 16px;
-      padding: 16px 20px;
+      padding: 10px 18px;
       border: 1px solid rgba(137, 86, 22, 0.48);
       border-radius: 24px;
       background:
@@ -2505,6 +2507,30 @@
       font-size: 30px;
       font-weight: 900;
       text-align: center;
+    }
+
+    .wr-status-card .wr-support-scroll {
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+    }
+
+    .wr-status-card .wr-support-item {
+      min-height: 64px !important;
+      height: auto !important;
+      align-items: center !important;
+    }
+
+    .wr-status-card .wr-support-reason {
+      min-width: 0 !important;
+      display: -webkit-box !important;
+      overflow: hidden !important;
+      white-space: normal !important;
+      word-break: keep-all !important;
+      overflow-wrap: break-word !important;
+      line-height: 1.35 !important;
+      -webkit-box-orient: vertical !important;
+      -webkit-line-clamp: 2 !important;
     }
   </style>
 </head>
@@ -2690,15 +2716,6 @@
 </div>
 </article>
 
-<button class="wr-portfolio-card" type="button" onclick="openStudentGrowthPortfolio()">
-  <span class="wr-portfolio-icon" aria-hidden="true">📘</span>
-  <span class="wr-portfolio-copy">
-    <span class="wr-portfolio-title">학생 성장 포트폴리오</span>
-    <span class="wr-portfolio-description">학생의 독서 성장 기록을 한눈에 살펴보세요.</span>
-  </span>
-  <span class="wr-portfolio-arrow" aria-hidden="true">›</span>
-</button>
-
 <!-- 읽기 범위 -->
 <article class="wr-card wr-range-card">
             <div class="wr-card-inner">
@@ -2748,6 +2765,15 @@
               </div>
             </div>
           </article>
+
+          <button class="wr-portfolio-card" type="button" onclick="openStudentGrowthPortfolio()">
+            <span class="wr-portfolio-icon" aria-hidden="true">📘</span>
+            <span class="wr-portfolio-copy">
+              <span class="wr-portfolio-title">학생 성장 포트폴리오</span>
+              <span class="wr-portfolio-description">학생의 독서 성장 기록을 한눈에 살펴보세요.</span>
+            </span>
+            <span class="wr-portfolio-arrow" aria-hidden="true">›</span>
+          </button>
 
         </div>
       </section>
@@ -3973,7 +3999,7 @@ async function loadReadingRange() {
     }
 
     function openStudentGrowthPortfolio() {
-      alert("학생 성장 포트폴리오 기능을 준비하고 있습니다.");
+      window.location.href = "practice-growth-portfolio.html";
     }
 
     function goBookSelect() {

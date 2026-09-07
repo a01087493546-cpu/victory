@@ -21,11 +21,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.victory.dto.AiFeedbackRequest;
 import com.victory.dto.AiFeedbackResponse;
+import com.victory.dto.PortfolioAiAnalysisResponse;
 import com.victory.entity.AiEvaluationAttempt;
 import com.victory.entity.ClassReadingBook;
 import com.victory.entity.ClassStudent;
@@ -1385,5 +1388,53 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getResult()).isEqualTo("good");
         assertThat(result.getMessage()).isEqualTo("좋아!");
+    }
+
+    @Test
+    void generatePortfolioAnalysis_parsesStructuredStrengthAndImprovement() {
+        stubAiResponse("{\"strengthText\":\"활동에 꾸준히 참여하고 있어요.\","
+            + "\"improvementText\":\"생각을 한 번 더 구체적으로 적어 보면 좋아요.\"}");
+
+        PortfolioAiAnalysisResponse result = service.generatePortfolioAnalysis(
+            "practice", Map.of("participationRate", 80, "activityCount", 5));
+
+        assertThat(result.strengthText()).isEqualTo("활동에 꾸준히 참여하고 있어요.");
+        assertThat(result.improvementText()).isEqualTo("생각을 한 번 더 구체적으로 적어 보면 좋아요.");
+    }
+
+    @Test
+    void generatePortfolioAnalysis_allowsSparseDataWithoutInventingFallbackText() throws Exception {
+        stubAiResponse("{\"strengthText\":\"현재 기록에서는 참여를 시작한 점이 보여요.\","
+            + "\"improvementText\":\"활동 기록을 조금씩 이어가면 좋아요.\"}");
+        Map<String, Object> body = service.buildPortfolioAnalysisRequestBody("individual", Map.of("completedBookCount", 0));
+        String messages = body.get("messages").toString();
+        assertThat(messages).contains("현재 기록에서는").contains("추측하지 않는다");
+        assertThat(service.generatePortfolioAnalysis("individual", Map.of("completedBookCount", 0)).strengthText())
+            .startsWith("현재 기록에서는");
+    }
+
+    @Test
+    void generatePortfolioAnalysis_returnsRetryableStatusWhenOpenAiCallFails() {
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        when(mockRestTemplate.postForObject(anyString(), any(), eq(Map.class)))
+            .thenThrow(new RestClientException("timeout"));
+        service.restTemplate = mockRestTemplate;
+
+        assertThatThrownBy(() -> service.generatePortfolioAnalysis("practice", Map.of()))
+            .isInstanceOfSatisfying(ResponseStatusException.class,
+                error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE));
+    }
+
+    @Test
+    void generatePortfolioAnalysis_rejectsMalformedOrIncompleteJson() {
+        stubAiResponse("{not-json}");
+        assertThatThrownBy(() -> service.generatePortfolioAnalysis("practice", Map.of()))
+            .isInstanceOfSatisfying(ResponseStatusException.class,
+                error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY));
+
+        stubAiResponse("{\"strengthText\":\"좋아요\"}");
+        assertThatThrownBy(() -> service.generatePortfolioAnalysis("practice", Map.of()))
+            .isInstanceOfSatisfying(ResponseStatusException.class,
+                error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY));
     }
 }

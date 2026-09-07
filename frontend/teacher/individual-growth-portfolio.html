@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문답책 | 개별읽기 성장 포트폴리오</title>
+
+<style>
+  @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+  @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700;900&display=swap");
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --brown: #4b2a13;
+    --brown-deep: #3a1d0b;
+    --brown-soft: #765136;
+
+    --gold: #e4ad45;
+    --gold-light: #f3cf7c;
+    --gold-dark: #a9630b;
+
+    --cream: #fff8e9;
+    --cream-deep: #f2ddb7;
+
+    --green: #849d42;
+    --green-dark: #61762e;
+
+    --paper: rgba(255, 254, 249, 0.97);
+    --line: rgba(190, 130, 55, 0.32);
+    --shadow: 0 13px 27px rgba(82, 51, 23, 0.17);
+
+    --radius-large: 24px;
+    --radius-medium: 16px;
+    --radius-small: 10px;
+  }
+
+  html, body {
+    min-height: 100%;
+  }
+
+  body {
+    color: var(--brown);
+    font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    background:
+      linear-gradient(180deg, rgba(255, 247, 226, 0.4), rgba(214, 195, 162, 0.5)),
+      var(--cream);
+    padding-bottom: 60px;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea { font-family: inherit; }
+
+  .gp-topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 28px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 6px 16px rgba(82, 51, 23, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .gp-back-button {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--brown-soft);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .gp-title {
+    font-family: "Noto Serif KR", serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--brown-deep);
+    flex: 1;
+  }
+
+  .gp-teacher-pill {
+    border: 1px solid var(--line);
+    background: var(--cream);
+    color: var(--brown-soft);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .gp-demo-badge {
+    border-radius: 999px;
+    background: var(--gold-light);
+    color: var(--brown-deep);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+
+  main {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 28px 24px 0;
+  }
+
+  .gp-picker-card {
+    background: var(--paper);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    max-width: 620px;
+    margin: 30px auto;
+  }
+
+  .gp-picker-title {
+    font-family: "Noto Serif KR", serif;
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: var(--brown-deep);
+  }
+
+  .gp-picker-sub {
+    color: var(--brown-soft);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  .gp-student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+
+  .gp-student-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 16px;
+    border-radius: var(--radius-medium);
+    border: 1px solid var(--line);
+    background: #fff;
+    text-align: left;
+    font-size: 15px;
+    color: var(--brown);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .gp-student-row:hover {
+    background: var(--cream);
+    transform: translateX(2px);
+  }
+
+  .gp-student-row .gp-student-number {
+    color: var(--gold-dark);
+    font-weight: 800;
+    min-width: 30px;
+  }
+
+  .gp-student-row .gp-student-name {
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .gp-student-row .gp-student-arrow {
+    color: var(--brown-soft);
+  }
+
+  .gp-empty-note {
+    color: var(--brown-soft);
+    font-size: 14px;
+    padding: 20px 4px;
+    text-align: center;
+  }
+
+  .gp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    background: var(--paper);
+    border-radius: var(--radius-medium);
+    padding: 14px 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+
+  .gp-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--brown-soft);
+  }
+
+  .gp-toolbar-group input[type="date"] {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--brown);
+  }
+
+  .gp-toolbar-button {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--brown);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .gp-toolbar-button.primary {
+    background: var(--green);
+    border-color: var(--green-dark);
+    color: #fff;
+  }
+
+  .gp-toolbar-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .gp-save-indicator {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--brown-soft);
+  }
+
+  .gp-source-note {
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: var(--radius-small);
+    background: var(--cream-deep);
+    color: var(--brown-deep);
+    margin-bottom: 16px;
+  }
+
+  .gp-layout {
+    display: grid;
+    grid-template-columns: minmax(380px, 500px) 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .gp-editor {
+    background: var(--paper);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  .gp-editor-header {
+    font-family: "Noto Serif KR", serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--brown-deep);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold-light);
+  }
+
+  .gp-fieldset {
+    margin-bottom: 20px;
+  }
+
+  .gp-fieldset-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--gold-dark);
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+  }
+
+  .gp-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .gp-field-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .gp-field {
+    margin-bottom: 10px;
+  }
+
+  .gp-field label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--brown-soft);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .gp-field .gp-unavailable-hint {
+    font-size: 11px;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-left: 6px;
+  }
+
+  .gp-field input,
+  .gp-field textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-small);
+    padding: 9px 11px;
+    font-size: 14px;
+    color: var(--brown);
+    background: #fff;
+  }
+
+  .gp-field textarea {
+    resize: vertical;
+    min-height: 64px;
+    line-height: 1.5;
+  }
+
+  .gp-field input:focus,
+  .gp-field textarea:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+  }
+
+  .gp-monthly-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .gp-monthly-cell label {
+    display: block;
+    font-size: 10.5px;
+    color: var(--brown-soft);
+    text-align: center;
+    margin-bottom: 2px;
+  }
+
+  .gp-monthly-cell input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 5px 4px;
+    font-size: 12.5px;
+    text-align: center;
+  }
+
+  .gp-ai-regenerate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .gp-ai-regenerate button {
+    border: 1px solid var(--green-dark);
+    background: linear-gradient(180deg, #eef3df, var(--green));
+    color: var(--brown-deep);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 12.5px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(97, 118, 46, 0.16);
+  }
+
+  .gp-ai-regenerate button:hover:not(:disabled) {
+    filter: brightness(1.04);
+  }
+
+  .gp-ai-regenerate button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .gp-ai-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--line);
+    border-top-color: var(--green-dark);
+    border-radius: 50%;
+    display: inline-block;
+    animation: gp-ai-spin 0.8s linear infinite;
+  }
+
+  @keyframes gp-ai-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .gp-ai-regenerate span {
+    font-size: 11.5px;
+    color: var(--brown-soft);
+  }
+
+  .gp-ai-regenerate span.gp-ai-error {
+    color: #9b352c;
+    font-weight: 700;
+  }
+
+  .gp-preview-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .gp-a4-outer {
+    overflow: hidden;
+  }
+
+  .gp-a4 {
+    width: 794px;
+    height: 1123px;
+    transform-origin: top left;
+    position: relative;
+    background-color: #fdf6e6;
+    background-image: var(--gp-a4-bg-image, none);
+    background-size: cover;
+    background-position: center;
+    box-shadow: var(--shadow);
+    border-radius: 6px;
+    color: var(--brown-deep);
+    font-family: "Noto Serif KR", serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .gp-a4-content {
+    position: absolute;
+    top: 175px;
+    left: 92px;
+    right: 92px;
+    bottom: 175px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .gp-a4-title {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 900;
+    color: var(--brown-deep);
+    margin-bottom: 2px;
+  }
+
+  .gp-a4-section {
+    border-top: 1px solid rgba(169, 99, 11, 0.28);
+    padding-top: 9px;
+  }
+
+  .gp-a4-section-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--gold-dark);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .gp-a4-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+
+  .gp-a4-item {
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .gp-a4-item-label {
+    font-size: 11.5px;
+    color: var(--brown-soft);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .gp-a4-item-value {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--brown-deep);
+    word-break: keep-all;
+  }
+
+  .gp-a4-item-value.gp-empty {
+    color: var(--gold-dark);
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .gp-a4-text-block {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--brown);
+    white-space: pre-wrap;
+    word-break: keep-all;
+  }
+
+  .gp-a4-desc {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--brown-soft);
+  }
+
+  .gp-a4-desc b {
+    color: var(--brown-deep);
+  }
+
+  /* 월별 완독 미니 차트 (외부 라이브러리 없이 CSS/div만 사용) */
+  .gp-chart {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    align-items: end;
+    gap: 4px;
+    height: 84px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(169, 99, 11, 0.2);
+  }
+
+  .gp-chart-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  .gp-chart-bar b {
+    display: block;
+    width: 60%;
+    border-radius: 4px 4px 2px 2px;
+    background: linear-gradient(180deg, #dda64d, #a45e19);
+    min-height: 2px;
+  }
+
+  .gp-chart-bar span {
+    font-size: 8.5px;
+    color: var(--brown-soft);
+    margin-top: 3px;
+  }
+
+  .gp-competency-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gp-competency-item {
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+
+  [hidden] { display: none !important; }
+
+  @media print {
+    .gp-topbar,
+    .gp-toolbar,
+    .gp-source-note,
+    .gp-editor,
+    #pickerScreen {
+      display: none !important;
+    }
+
+    body {
+      background: #fff !important;
+      padding: 0 !important;
+    }
+
+    main {
+      max-width: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    .gp-layout {
+      display: block !important;
+    }
+
+    .gp-preview-wrap {
+      display: block !important;
+    }
+
+    .gp-a4-outer {
+      width: auto !important;
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    .gp-a4 {
+      width: 210mm !important;
+      height: 297mm !important;
+      transform: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 1220px) {
+    .gp-layout {
+      grid-template-columns: 1fr;
+    }
+    .gp-editor {
+      max-height: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header class="gp-topbar">
+    <button class="gp-back-button" type="button" onclick="goBackToManage()">← 돌아가기</button>
+    <div class="gp-title">개별읽기 성장 포트폴리오</div>
+    <span class="gp-demo-badge" id="demoBadge" hidden>심사 체험 데이터로 보는 중</span>
+    <span class="gp-teacher-pill" id="teacherNamePill" hidden></span>
+  </header>
+
+  <main>
+
+    <section id="pickerScreen">
+      <div class="gp-picker-card">
+        <div class="gp-picker-title">포트폴리오를 만들 학생을 선택하세요</div>
+        <div class="gp-picker-sub">우리 반 학생 목록에서 한 명을 고르면 편집 화면으로 이동해요.</div>
+        <div class="gp-student-list" id="studentList">
+          <div class="gp-empty-note">학생 목록을 불러오는 중...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="editorScreen" hidden>
+
+      <div class="gp-toolbar">
+        <button class="gp-toolbar-button" type="button" onclick="backToPicker()">학생 다시 선택</button>
+
+        <div class="gp-toolbar-group">
+          <label for="periodFromInput">평가 시작일</label>
+          <input type="date" id="periodFromInput" />
+          <label for="periodToInput">종료일</label>
+          <input type="date" id="periodToInput" />
+        </div>
+
+        <button class="gp-toolbar-button" type="button" id="reloadOriginalButton" onclick="reloadOriginalData()">원본 데이터 다시 불러오기</button>
+
+        <span class="gp-save-indicator" id="saveIndicator"></span>
+
+        <button class="gp-toolbar-button primary" type="button" onclick="window.print()">🖨 PDF 저장 / 인쇄</button>
+      </div>
+
+      <div class="gp-source-note" id="sourceNote" hidden></div>
+
+      <div class="gp-layout">
+
+        <div class="gp-editor">
+          <div class="gp-editor-header">포트폴리오 편집</div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">기본 정보</div>
+            <div class="gp-field">
+              <label for="fieldStudentName">이름</label>
+              <input type="text" id="fieldStudentName" />
+            </div>
+            <div class="gp-field-row">
+              <div class="gp-field">
+                <label for="fieldGrade">학년</label>
+                <input type="number" id="fieldGrade" min="1" max="6" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldClassNumber">반</label>
+                <input type="number" id="fieldClassNumber" min="1" max="30" />
+              </div>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">핵심 지표</div>
+            <div class="gp-field-row-3">
+              <div class="gp-field">
+                <label for="fieldBooksRead">읽은 책 수<span class="gp-unavailable-hint" id="hintBooksRead" hidden>집계 대기</span></label>
+                <input type="number" id="fieldBooksRead" min="0" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldPracticeAvg">독서 실천도 평균<span class="gp-unavailable-hint" id="hintPracticeAvg" hidden>집계 대기</span></label>
+                <input type="number" id="fieldPracticeAvg" min="0" max="100" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldCompletionAvg">기록 완성도 평균<span class="gp-unavailable-hint" id="hintCompletionAvg" hidden>집계 대기</span></label>
+                <input type="number" id="fieldCompletionAvg" min="0" max="100" />
+              </div>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">활동 현황<span class="gp-unavailable-hint" id="hintActivity" hidden>집계 대기 · 직접 입력</span></div>
+            <div class="gp-field-row">
+              <div class="gp-field">
+                <label for="fieldActivityQuestion">질문 작성 (회)</label>
+                <input type="number" id="fieldActivityQuestion" min="0" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldActivityThought">생각 쓰기 (회)</label>
+                <input type="number" id="fieldActivityThought" min="0" />
+              </div>
+            </div>
+            <div class="gp-field-row">
+              <div class="gp-field">
+                <label for="fieldActivitySummary">간추리기 (회)</label>
+                <input type="number" id="fieldActivitySummary" min="0" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldActivityBookChat">책수다방/생각 나눔 (회)</label>
+                <input type="number" id="fieldActivityBookChat" min="0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">월별 완독 기록<span class="gp-unavailable-hint" id="hintMonthly" hidden>집계 대기 · 직접 입력</span></div>
+            <div class="gp-monthly-grid" id="monthlyInputGrid"></div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">독서 역량<span class="gp-unavailable-hint" id="hintCompetency" hidden>집계 대기 · 직접 입력</span></div>
+            <div class="gp-field-row">
+              <div class="gp-field">
+                <label for="fieldCompQuestion">질문 생성 역량</label>
+                <input type="number" id="fieldCompQuestion" min="0" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldCompPersistence">독서 지속 역량</label>
+                <input type="number" id="fieldCompPersistence" min="0" />
+              </div>
+            </div>
+            <div class="gp-field-row">
+              <div class="gp-field">
+                <label for="fieldCompRefine">생각 다듬기 역량</label>
+                <input type="number" id="fieldCompRefine" min="0" />
+              </div>
+              <div class="gp-field">
+                <label for="fieldCompShare">생각 나눔 역량</label>
+                <input type="number" id="fieldCompShare" min="0" />
+              </div>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">AI 분석</div>
+            <div class="gp-ai-regenerate">
+              <button type="button" id="regenerateAiButton" onclick="handleRegenerateAi()">✨ AI 분석 생성</button>
+              <span class="gp-ai-spinner" id="aiSpinner" hidden></span>
+              <span id="aiRegenerateNote"></span>
+            </div>
+            <div class="gp-field">
+              <label for="fieldAiStrengths">잘하는 점</label>
+              <textarea id="fieldAiStrengths" placeholder="AI 분석 결과가 없으면 직접 입력해 주세요."></textarea>
+            </div>
+            <div class="gp-field">
+              <label for="fieldAiImprovements">노력할 점</label>
+              <textarea id="fieldAiImprovements" placeholder="AI 분석 결과가 없으면 직접 입력해 주세요."></textarea>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">교사 의견</div>
+            <div class="gp-field">
+              <label for="fieldTeacherComment">교사 의견</label>
+              <textarea id="fieldTeacherComment"></textarea>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">지표 설명</div>
+            <div class="gp-field">
+              <label for="fieldBooksReadDesc">읽은 책 수 설명</label>
+              <textarea id="fieldBooksReadDesc"></textarea>
+            </div>
+            <div class="gp-field">
+              <label for="fieldPracticeAvgDesc">독서 실천도 평균 설명</label>
+              <textarea id="fieldPracticeAvgDesc"></textarea>
+            </div>
+            <div class="gp-field">
+              <label for="fieldCompletionAvgDesc">기록 완성도 평균 설명</label>
+              <textarea id="fieldCompletionAvgDesc"></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="gp-preview-wrap">
+          <div class="gp-a4-outer" id="a4Outer">
+            <div class="gp-a4" id="a4Sheet">
+              <div class="gp-a4-content">
+
+                <div class="gp-a4-title">개별읽기 성장 포트폴리오</div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">기본 정보</div>
+                  <div class="gp-a4-row">
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">이름</div>
+                      <div class="gp-a4-item-value" id="previewStudentName">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">학년·반</div>
+                      <div class="gp-a4-item-value" id="previewGradeClass">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">평가 기간</div>
+                      <div class="gp-a4-item-value" id="previewPeriod">-</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">핵심 지표</div>
+                  <div class="gp-a4-row">
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">읽은 책 수</div>
+                      <div class="gp-a4-item-value" id="previewBooksRead">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">독서 실천도 평균</div>
+                      <div class="gp-a4-item-value" id="previewPracticeAvg">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">기록 완성도 평균</div>
+                      <div class="gp-a4-item-value" id="previewCompletionAvg">-</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">활동 현황</div>
+                  <div class="gp-a4-row">
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">질문 작성</div>
+                      <div class="gp-a4-item-value" id="previewActivityQuestion">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">생각 쓰기</div>
+                      <div class="gp-a4-item-value" id="previewActivityThought">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">간추리기</div>
+                      <div class="gp-a4-item-value" id="previewActivitySummary">-</div>
+                    </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">책수다방/생각 나눔</div>
+                      <div class="gp-a4-item-value" id="previewActivityBookChat">-</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">월별 완독 기록</div>
+                  <div class="gp-chart" id="monthlyChart"></div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">독서 역량</div>
+                  <div class="gp-competency-grid">
+                    <div class="gp-competency-item">
+                      <div class="gp-a4-item-label">질문 생성 역량</div>
+                      <div class="gp-a4-item-value" id="previewCompQuestion">-</div>
+                    </div>
+                    <div class="gp-competency-item">
+                      <div class="gp-a4-item-label">독서 지속 역량</div>
+                      <div class="gp-a4-item-value" id="previewCompPersistence">-</div>
+                    </div>
+                    <div class="gp-competency-item">
+                      <div class="gp-a4-item-label">생각 다듬기 역량</div>
+                      <div class="gp-a4-item-value" id="previewCompRefine">-</div>
+                    </div>
+                    <div class="gp-competency-item">
+                      <div class="gp-a4-item-label">생각 나눔 역량</div>
+                      <div class="gp-a4-item-value" id="previewCompShare">-</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">AI 분석</div>
+                  <div class="gp-a4-item-label">잘하는 점</div>
+                  <div class="gp-a4-text-block" id="previewAiStrengths">-</div>
+                  <div class="gp-a4-item-label" style="margin-top:6px;">노력할 점</div>
+                  <div class="gp-a4-text-block" id="previewAiImprovements">-</div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">교사 의견</div>
+                  <div class="gp-a4-text-block" id="previewTeacherComment">-</div>
+                </div>
+
+                <div class="gp-a4-section">
+                  <div class="gp-a4-section-label">지표 설명</div>
+                  <div class="gp-a4-desc"><b>읽은 책 수:</b> <span id="previewBooksReadDesc"></span></div>
+                  <div class="gp-a4-desc" style="margin-top:3px;"><b>독서 실천도 평균:</b> <span id="previewPracticeAvgDesc"></span></div>
+                  <div class="gp-a4-desc" style="margin-top:3px;"><b>기록 완성도 평균:</b> <span id="previewCompletionAvgDesc"></span></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/demo-storage.js"></script>
+  <script src="../js/portfolio-data.js"></script>
+  <script>
+    const PORTFOLIO_KIND = "individual";
+    const A4_BG_PATH = "../assets/images/portfolio/individual-portfolio-bg.png";
+    const DEMO_SEED_LOGIN_IDS = new Set([
+      "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
+      "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08"
+    ]);
+    const MONTH_LABELS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+    const BOOKS_READ_DESC_DEFAULT = "평가 기간 동안 완독한 책의 수입니다.";
+    const PRACTICE_AVG_DESC_DEFAULT = "완독한 책들을 기준으로 꾸준히 읽기 활동을 이어간 정도의 평균입니다.";
+    const COMPLETION_AVG_DESC_DEFAULT = "완독한 책들을 기준으로 질문, 생각, 간추리기 등의 기록을 충실히 남긴 정도의 평균입니다.";
+
+    let currentClassId = null;
+    let currentStudentId = null;
+    let saveTimer = null;
+
+    function renderTeacherPill() {
+      const pill = document.getElementById("teacherNamePill");
+      const text = getSessionUserDisplayText();
+      if (!pill || !text) return;
+      pill.textContent = text;
+      pill.hidden = false;
+    }
+
+    function goBackToManage() {
+      window.location.href = "individual-reading-manage.html";
+    }
+
+    function backToPicker() {
+      document.getElementById("editorScreen").hidden = true;
+      document.getElementById("pickerScreen").hidden = false;
+      currentStudentId = null;
+    }
+
+    function applyA4Background() {
+      const probe = new Image();
+      probe.onload = function () {
+        document.getElementById("a4Sheet").style.setProperty(
+          "--gp-a4-bg-image", "url('" + A4_BG_PATH + "')"
+        );
+      };
+      probe.src = A4_BG_PATH;
+    }
+
+    function updateA4Scale() {
+      const outer = document.getElementById("a4Outer");
+      const sheet = document.getElementById("a4Sheet");
+      const wrap = document.querySelector(".gp-preview-wrap");
+      if (!outer || !sheet || !wrap) return;
+
+      const available = wrap.clientWidth - 4;
+      const scale = Math.max(0.32, Math.min(1, available / 794));
+
+      sheet.style.transform = "scale(" + scale + ")";
+      outer.style.width = (794 * scale) + "px";
+      outer.style.height = (1123 * scale) + "px";
+    }
+
+    window.addEventListener("resize", updateA4Scale);
+
+    function buildMonthlyInputs() {
+      const grid = document.getElementById("monthlyInputGrid");
+      grid.innerHTML = MONTH_LABELS.map(function (label, index) {
+        return (
+          '<div class="gp-monthly-cell">' +
+          '<label for="monthlyInput' + index + '">' + label + '</label>' +
+          '<input type="number" min="0" id="monthlyInput' + index + '" />' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function readMonthlyInputs() {
+      const values = [];
+      for (let i = 0; i < 12; i++) {
+        const el = document.getElementById("monthlyInput" + i);
+        values.push(el ? el.value : "");
+      }
+      return values;
+    }
+
+    function writeMonthlyInputs(values) {
+      for (let i = 0; i < 12; i++) {
+        const el = document.getElementById("monthlyInput" + i);
+        if (!el) continue;
+        const value = Array.isArray(values) ? values[i] : null;
+        el.value = (value === null || value === undefined) ? "" : value;
+      }
+    }
+
+    /* ---------- 학생 목록 ---------- */
+
+    async function loadStudentPicker() {
+      const auth = getPortfolioTeacherAuthContext();
+      if (!auth) {
+        alert("교사 로그인이 필요합니다.");
+        window.location.href = "../index.html";
+        return;
+      }
+
+      renderTeacherPill();
+      document.getElementById("demoBadge").hidden = !isDemoAccount();
+
+      const list = document.getElementById("studentList");
+      list.innerHTML = '<div class="gp-empty-note">학생 목록을 불러오는 중...</div>';
+
+      try {
+        const classInfo = await portfolioFetchJson("/api/teachers/" + auth.teacherId + "/class", auth.token);
+        if (!classInfo.ok || !classInfo.body) {
+          list.innerHTML = '<div class="gp-empty-note">담당 학급 정보를 불러오지 못했어요.</div>';
+          return;
+        }
+        currentClassId = classInfo.body.classId;
+
+        const studentsInfo = await portfolioFetchJson("/api/classes/" + currentClassId + "/students", auth.token);
+        if (!studentsInfo.ok || !Array.isArray(studentsInfo.body)) {
+          list.innerHTML = '<div class="gp-empty-note">학생 명단을 불러오지 못했어요.</div>';
+          return;
+        }
+
+        let students = studentsInfo.body;
+
+        if (isDemoAccount()) {
+          students = students.filter(function (student) {
+            return DEMO_SEED_LOGIN_IDS.has(student.loginId);
+          });
+        }
+
+        if (students.length === 0) {
+          list.innerHTML = '<div class="gp-empty-note">학급 학생이 없어요.</div>';
+          return;
+        }
+
+        list.innerHTML = students.map(function (student) {
+          return (
+            '<button type="button" class="gp-student-row" onclick="selectStudent(' + student.studentId + ')">' +
+            '<span class="gp-student-number">' + (student.studentNumber != null ? student.studentNumber + "번" : "") + '</span>' +
+            '<span class="gp-student-name">' + student.name + '</span>' +
+            '<span class="gp-student-arrow">›</span>' +
+            '</button>'
+          );
+        }).join("");
+      } catch (error) {
+        console.error("학생 목록을 불러오는 중 오류가 발생했습니다.", error);
+        list.innerHTML = '<div class="gp-empty-note">학생 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';
+      }
+    }
+
+    function selectStudent(studentId) {
+      currentStudentId = studentId;
+      document.getElementById("pickerScreen").hidden = true;
+      document.getElementById("editorScreen").hidden = false;
+      updateA4Scale();
+      openEditorForCurrentStudent();
+    }
+
+    /* ---------- 편집 화면 ---------- */
+
+    function collectDraftFromForm() {
+      return {
+        studentName: document.getElementById("fieldStudentName").value,
+        grade: document.getElementById("fieldGrade").value,
+        classNumber: document.getElementById("fieldClassNumber").value,
+        periodFrom: document.getElementById("periodFromInput").value,
+        periodTo: document.getElementById("periodToInput").value,
+        booksReadCount: document.getElementById("fieldBooksRead").value,
+        readingPracticeAvg: document.getElementById("fieldPracticeAvg").value,
+        recordCompletionAvg: document.getElementById("fieldCompletionAvg").value,
+        activityQuestionCount: document.getElementById("fieldActivityQuestion").value,
+        activityThoughtCount: document.getElementById("fieldActivityThought").value,
+        activitySummaryCount: document.getElementById("fieldActivitySummary").value,
+        activityBookChatCount: document.getElementById("fieldActivityBookChat").value,
+        monthlyCounts: readMonthlyInputs(),
+        competencyQuestion: document.getElementById("fieldCompQuestion").value,
+        competencyPersistence: document.getElementById("fieldCompPersistence").value,
+        competencyRefine: document.getElementById("fieldCompRefine").value,
+        competencyShare: document.getElementById("fieldCompShare").value,
+        aiStrengths: document.getElementById("fieldAiStrengths").value,
+        aiImprovements: document.getElementById("fieldAiImprovements").value,
+        teacherComment: document.getElementById("fieldTeacherComment").value,
+        booksReadDesc: document.getElementById("fieldBooksReadDesc").value,
+        practiceAvgDesc: document.getElementById("fieldPracticeAvgDesc").value,
+        completionAvgDesc: document.getElementById("fieldCompletionAvgDesc").value
+      };
+    }
+
+    function fillFormFromDraft(draft) {
+      document.getElementById("fieldStudentName").value = draft.studentName || "";
+      document.getElementById("fieldGrade").value = draft.grade != null ? draft.grade : "";
+      document.getElementById("fieldClassNumber").value = draft.classNumber != null ? draft.classNumber : "";
+      document.getElementById("periodFromInput").value = draft.periodFrom || "";
+      document.getElementById("periodToInput").value = draft.periodTo || "";
+      document.getElementById("fieldBooksRead").value = draft.booksReadCount != null ? draft.booksReadCount : "";
+      document.getElementById("fieldPracticeAvg").value = draft.readingPracticeAvg != null ? draft.readingPracticeAvg : "";
+      document.getElementById("fieldCompletionAvg").value = draft.recordCompletionAvg != null ? draft.recordCompletionAvg : "";
+      document.getElementById("fieldActivityQuestion").value = draft.activityQuestionCount != null ? draft.activityQuestionCount : "";
+      document.getElementById("fieldActivityThought").value = draft.activityThoughtCount != null ? draft.activityThoughtCount : "";
+      document.getElementById("fieldActivitySummary").value = draft.activitySummaryCount != null ? draft.activitySummaryCount : "";
+      document.getElementById("fieldActivityBookChat").value = draft.activityBookChatCount != null ? draft.activityBookChatCount : "";
+      writeMonthlyInputs(draft.monthlyCounts);
+      document.getElementById("fieldCompQuestion").value = draft.competencyQuestion != null ? draft.competencyQuestion : "";
+      document.getElementById("fieldCompPersistence").value = draft.competencyPersistence != null ? draft.competencyPersistence : "";
+      document.getElementById("fieldCompRefine").value = draft.competencyRefine != null ? draft.competencyRefine : "";
+      document.getElementById("fieldCompShare").value = draft.competencyShare != null ? draft.competencyShare : "";
+      document.getElementById("fieldAiStrengths").value = draft.aiStrengths || "";
+      document.getElementById("fieldAiImprovements").value = draft.aiImprovements || "";
+      document.getElementById("fieldTeacherComment").value = draft.teacherComment || "";
+      document.getElementById("fieldBooksReadDesc").value = draft.booksReadDesc || BOOKS_READ_DESC_DEFAULT;
+      document.getElementById("fieldPracticeAvgDesc").value = draft.practiceAvgDesc || PRACTICE_AVG_DESC_DEFAULT;
+      document.getElementById("fieldCompletionAvgDesc").value = draft.completionAvgDesc || COMPLETION_AVG_DESC_DEFAULT;
+
+      updatePreview();
+    }
+
+    function setUnavailableHints(unavailableFields) {
+      const singleMap = {
+        booksReadCount: "hintBooksRead",
+        readingPracticeAvg: "hintPracticeAvg",
+        recordCompletionAvg: "hintCompletionAvg"
+      };
+      Object.keys(singleMap).forEach(function (field) {
+        const el = document.getElementById(singleMap[field]);
+        if (el) el.hidden = !unavailableFields.includes(field);
+      });
+
+      const activityFields = ["activityQuestionCount", "activityThoughtCount", "activitySummaryCount", "activityBookChatCount"];
+      document.getElementById("hintActivity").hidden =
+        !activityFields.some(function (field) { return unavailableFields.includes(field); });
+
+      document.getElementById("hintMonthly").hidden = !unavailableFields.includes("monthlyCounts");
+
+      const competencyFields = ["competencyQuestion", "competencyPersistence", "competencyRefine", "competencyShare"];
+      document.getElementById("hintCompetency").hidden =
+        !competencyFields.some(function (field) { return unavailableFields.includes(field); });
+    }
+
+    function showSourceNote(result) {
+      const note = document.getElementById("sourceNote");
+      if (result.source === "aggregate-api") {
+        note.hidden = true;
+        return;
+      }
+      const missing = result.unavailableFields.length > 0
+        ? " (집계 대기 항목: " + result.unavailableFields.length + "개 · 직접 입력 가능)"
+        : "";
+      note.hidden = false;
+      note.textContent = "포트폴리오 집계 API가 아직 준비 중이라 기존 화면과 같은 데이터로 채웠어요." + missing;
+    }
+
+    async function fetchFreshDraft(periodFrom, periodTo) {
+      const auth = getPortfolioTeacherAuthContext();
+      const result = await loadIndividualPortfolioData(auth, currentClassId, currentStudentId, periodFrom, periodTo);
+
+      showSourceNote(result);
+      setUnavailableHints(result.unavailableFields);
+
+      return Object.assign({
+        periodFrom: periodFrom,
+        periodTo: periodTo,
+        booksReadDesc: BOOKS_READ_DESC_DEFAULT,
+        practiceAvgDesc: PRACTICE_AVG_DESC_DEFAULT,
+        completionAvgDesc: COMPLETION_AVG_DESC_DEFAULT,
+        teacherComment: ""
+      }, result.data);
+    }
+
+    async function openEditorForCurrentStudent() {
+      const savedDraft = loadPortfolioDraft(PORTFOLIO_KIND, currentStudentId);
+
+      if (savedDraft && savedDraft.draft) {
+        fillFormFromDraft(savedDraft.draft);
+        document.getElementById("sourceNote").hidden = false;
+        document.getElementById("sourceNote").textContent =
+          "임시 저장된 편집 내용을 불러왔어요. (저장 시각: " + new Date(savedDraft.savedAt).toLocaleString("ko-KR") + ")";
+        return;
+      }
+
+      const period = defaultPortfolioPeriod();
+      document.getElementById("periodFromInput").value = period.from;
+      document.getElementById("periodToInput").value = period.to;
+
+      const editor = document.querySelector(".gp-editor");
+      editor.style.opacity = "0.5";
+      try {
+        const draft = await fetchFreshDraft(period.from, period.to);
+        fillFormFromDraft(draft);
+        savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
+        updateSaveIndicator();
+      } finally {
+        editor.style.opacity = "1";
+      }
+    }
+
+    async function reloadOriginalData() {
+      if (!confirm("직접 수정한 내용과 AI 분석 결과가 초기화됩니다. 계속할까요?")) {
+        return;
+      }
+
+      const periodFrom = document.getElementById("periodFromInput").value || defaultPortfolioPeriod().from;
+      const periodTo = document.getElementById("periodToInput").value || defaultPortfolioPeriod().to;
+
+      const button = document.getElementById("reloadOriginalButton");
+      button.disabled = true;
+      button.textContent = "불러오는 중...";
+
+      try {
+        const draft = await fetchFreshDraft(periodFrom, periodTo);
+        fillFormFromDraft(draft);
+        savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
+        updateSaveIndicator();
+      } catch (error) {
+        console.error("원본 데이터를 다시 불러오지 못했습니다.", error);
+        alert("원본 데이터를 다시 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "원본 데이터 다시 불러오기";
+      }
+    }
+
+    function scheduleAutoSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () {
+        const draft = collectDraftFromForm();
+        savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
+        updateSaveIndicator();
+      }, 500);
+    }
+
+    function updateSaveIndicator() {
+      const indicator = document.getElementById("saveIndicator");
+      indicator.textContent = "임시 저장됨 · " + new Date().toLocaleTimeString("ko-KR");
+    }
+
+    function refreshAiButtonLabel() {
+      const button = document.getElementById("regenerateAiButton");
+      if (!button || button.disabled) return;
+      const hasAnalysis =
+        document.getElementById("fieldAiStrengths").value.trim() !== "" ||
+        document.getElementById("fieldAiImprovements").value.trim() !== "";
+      button.textContent = hasAnalysis ? "✨ AI 분석 다시 생성" : "✨ AI 분석 생성";
+    }
+
+    async function handleRegenerateAi() {
+      const auth = getPortfolioTeacherAuthContext();
+      if (!auth || !currentClassId || !currentStudentId) return;
+
+      const button = document.getElementById("regenerateAiButton");
+      const spinner = document.getElementById("aiSpinner");
+      const note = document.getElementById("aiRegenerateNote");
+      const periodFrom = document.getElementById("periodFromInput").value;
+      const periodTo = document.getElementById("periodToInput").value;
+
+      button.disabled = true;
+      spinner.hidden = false;
+      note.classList.remove("gp-ai-error");
+      note.textContent = "학생 데이터를 분석하고 있어요...";
+
+      try {
+        const result = await regeneratePortfolioAnalysis(
+          PORTFOLIO_KIND, auth, currentClassId, currentStudentId, periodFrom, periodTo
+        );
+
+        if (!result.ok) {
+          note.classList.add("gp-ai-error");
+          note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+          return;
+        }
+
+        document.getElementById("fieldAiStrengths").value = result.strength;
+        document.getElementById("fieldAiImprovements").value = result.improvement;
+        note.textContent = "AI 분석을 반영했어요.";
+        updatePreview();
+        scheduleAutoSave();
+      } catch (error) {
+        console.error("AI 분석 생성 중 오류가 발생했습니다.", error);
+        note.classList.add("gp-ai-error");
+        note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+      } finally {
+        button.disabled = false;
+        spinner.hidden = true;
+        refreshAiButtonLabel();
+      }
+    }
+
+    function formatNumber(value, suffix) {
+      if (value === "" || value === null || value === undefined || Number.isNaN(Number(value))) {
+        return '<span class="gp-empty">집계 대기 · 직접 입력</span>';
+      }
+      return Math.round(Number(value) * 10) / 10 + (suffix || "");
+    }
+
+    function formatPlainText(value, fallback) {
+      const text = (value || "").toString().trim();
+      if (!text) return '<span class="gp-empty">' + (fallback || "집계 대기 · 직접 입력") + '</span>';
+      return escapeHtml(text);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderMonthlyChartPreview(monthlyCounts) {
+      const chart = document.getElementById("monthlyChart");
+      const counts = MONTH_LABELS.map(function (_, index) {
+        const raw = Array.isArray(monthlyCounts) ? monthlyCounts[index] : null;
+        const num = Number(raw);
+        return Number.isFinite(num) && num > 0 ? num : 0;
+      });
+      const maxCount = Math.max(4, Math.max.apply(null, counts));
+
+      chart.innerHTML = counts.map(function (count, index) {
+        const heightPercent = Math.max(0, Math.min(100, (count / maxCount) * 100));
+        return (
+          '<div class="gp-chart-bar">' +
+          '<b style="height:' + heightPercent + '%; min-height:' + (count > 0 ? "3px" : "0") + ';"></b>' +
+          '<span>' + MONTH_LABELS[index].replace("월", "") + '</span>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
+    function updatePreview() {
+      const draft = collectDraftFromForm();
+
+      document.getElementById("previewStudentName").textContent = draft.studentName || "-";
+      document.getElementById("previewGradeClass").textContent =
+        (draft.grade || draft.classNumber) ? (draft.grade || "-") + "학년 " + (draft.classNumber || "-") + "반" : "-";
+      document.getElementById("previewPeriod").textContent =
+        (draft.periodFrom && draft.periodTo) ? draft.periodFrom + " ~ " + draft.periodTo : "-";
+
+      document.getElementById("previewBooksRead").innerHTML = formatNumber(draft.booksReadCount, "권");
+      document.getElementById("previewPracticeAvg").innerHTML = formatNumber(draft.readingPracticeAvg, "점");
+      document.getElementById("previewCompletionAvg").innerHTML = formatNumber(draft.recordCompletionAvg, "점");
+
+      document.getElementById("previewActivityQuestion").innerHTML = formatNumber(draft.activityQuestionCount, "회");
+      document.getElementById("previewActivityThought").innerHTML = formatNumber(draft.activityThoughtCount, "회");
+      document.getElementById("previewActivitySummary").innerHTML = formatNumber(draft.activitySummaryCount, "회");
+      document.getElementById("previewActivityBookChat").innerHTML = formatNumber(draft.activityBookChatCount, "회");
+
+      renderMonthlyChartPreview(draft.monthlyCounts);
+
+      document.getElementById("previewCompQuestion").innerHTML = formatNumber(draft.competencyQuestion);
+      document.getElementById("previewCompPersistence").innerHTML = formatNumber(draft.competencyPersistence);
+      document.getElementById("previewCompRefine").innerHTML = formatNumber(draft.competencyRefine);
+      document.getElementById("previewCompShare").innerHTML = formatNumber(draft.competencyShare);
+
+      document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, "AI 분석 결과가 아직 없어요.");
+      document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, "AI 분석 결과가 아직 없어요.");
+      document.getElementById("previewTeacherComment").innerHTML = formatPlainText(draft.teacherComment, "교사 의견을 입력해 주세요.");
+
+      document.getElementById("previewBooksReadDesc").textContent = draft.booksReadDesc || BOOKS_READ_DESC_DEFAULT;
+      document.getElementById("previewPracticeAvgDesc").textContent = draft.practiceAvgDesc || PRACTICE_AVG_DESC_DEFAULT;
+      document.getElementById("previewCompletionAvgDesc").textContent = draft.completionAvgDesc || COMPLETION_AVG_DESC_DEFAULT;
+
+      refreshAiButtonLabel();
+    }
+
+    document.addEventListener("input", function (event) {
+      if (!event.target.closest(".gp-editor")) return;
+      updatePreview();
+      scheduleAutoSave();
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      buildMonthlyInputs();
+      applyA4Background();
+      loadStudentPicker();
+      updateA4Scale();
+    });
+  </script>
+
+</body>
+</html>

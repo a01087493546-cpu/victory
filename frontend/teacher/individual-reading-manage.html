@@ -1944,29 +1944,44 @@
     /* 오른쪽 현황을 압축하고 성장 포트폴리오 주요 액션을 배치합니다. */
     .ir-right-area {
       display: grid !important;
-      grid-template-rows: minmax(0, 1fr) 112px !important;
-      gap: 12px !important;
+      grid-template-rows: minmax(620px, 1fr) 104px !important;
+      align-content: start !important;
+      gap: 14px !important;
+      padding-bottom: 10px !important;
+      box-sizing: border-box !important;
+      overflow: visible !important;
     }
 
     .ir-status-card {
+      height: 100% !important;
       min-height: 0 !important;
     }
 
     .ir-status-card .ir-card-inner {
+      height: 100% !important;
       grid-template-rows: auto 82px minmax(0, 1fr) !important;
-      gap: 8px !important;
+      gap: 14px !important;
       padding: 14px 18px !important;
+    }
+
+    .ir-status-card .ir-support-scroll {
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      margin-top: 6px !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
     }
 
     .ir-portfolio-card {
       width: 100%;
       min-width: 0;
-      height: 112px;
+      height: 104px;
       display: grid;
       grid-template-columns: 58px minmax(0, 1fr) 32px;
       align-items: center;
       gap: 16px;
-      padding: 16px 20px;
+      padding: 12px 20px;
       border: 1px solid rgba(92, 112, 72, 0.54);
       border-radius: 24px;
       background:
@@ -2034,6 +2049,27 @@
       font-size: 30px;
       font-weight: 900;
       text-align: center;
+    }
+
+    .ir-status-card .ir-support-item {
+      min-height: 68px !important;
+      height: auto !important;
+      align-items: center !important;
+      padding-top: 11px !important;
+      padding-bottom: 11px !important;
+    }
+
+    .ir-status-card .ir-support-reason {
+      min-width: 0 !important;
+      display: block !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      white-space: normal !important;
+      word-break: keep-all !important;
+      overflow-wrap: break-word !important;
+      line-height: 1.4 !important;
+      -webkit-box-orient: initial !important;
+      -webkit-line-clamp: unset !important;
     }
 
   </style>
@@ -3180,7 +3216,7 @@ const API_BASE_URL = getApiBaseUrl();
     }
 
     function openStudentGrowthPortfolio() {
-      alert("학생 성장 포트폴리오 기능을 준비하고 있습니다.");
+      window.location.href = "individual-growth-portfolio.html";
     }
 
     function goBookChatManage() {
