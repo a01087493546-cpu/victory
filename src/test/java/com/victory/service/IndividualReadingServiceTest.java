@@ -100,6 +100,8 @@ class IndividualReadingServiceTest {
     @Mock
     private IndividualAchievementService individualAchievementService;
 
+    private final DemoMonthlyCompletionProvider demoMonthlyCompletionProvider = new DemoMonthlyCompletionProvider();
+
     private IndividualReadingService service;
 
     private User student;
@@ -110,7 +112,7 @@ class IndividualReadingServiceTest {
             bookRepository, readingRecordRepository, userRepository, responseRepository,
             readingProgressLogRepository, summaryRepository,
             beforeReadingRewardService, duringReadingRewardService, afterReadingRewardService,
-            individualAchievementService);
+            individualAchievementService, demoMonthlyCompletionProvider);
 
         student = new User();
         student.setId(STUDENT_ID);
@@ -2018,6 +2020,61 @@ class IndividualReadingServiceTest {
 
         assertThat(myStats.getMonthlyCounts().get(3)).isEqualTo(1);
         assertThat(otherStats.getMonthlyCounts()).containsOnly(0);
+    }
+
+    /*
+     * 심사계정은 실제 ReadingRecord 집계 대신 학생별 고정 demo 값을 쓰고,
+     * 절대 readingRecordRepository를 조회하지 않는다(일반계정 로직과 경로가
+     * 완전히 분리돼 있음을 함께 확인).
+     */
+    @Test
+    void getMonthlyCompletionStats_demoAccount_usesFixedPerStudentValuesNotRealRecords() {
+        User demoStudent = new User();
+        demoStudent.setId(STUDENT_ID);
+        demoStudent.setDemoAccount(true);
+        demoStudent.setLoginId("ss01");
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(demoStudent));
+
+        MonthlyCompletionStatsResponse stats = service.getMonthlyCompletionStats(STUDENT_ID);
+
+        assertThat(stats.getMonthlyCounts()).isEqualTo(List.of(1, 2, 1, 2, 3, 2, 3, 2, 4, 2, 3, 2));
+        verify(readingRecordRepository, never()).findByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID);
+    }
+
+    /* 심사계정끼리도 서로 다른 학생이면 서로 다른 12개월 값이 나와야 한다(그래프 모양 차별화). */
+    @Test
+    void getMonthlyCompletionStats_demoAccounts_differByStudent() {
+        User kimChorong = new User();
+        kimChorong.setId(STUDENT_ID);
+        kimChorong.setDemoAccount(true);
+        kimChorong.setLoginId("ss01");
+        User leeJinwoo = new User();
+        leeJinwoo.setId(OTHER_STUDENT_ID);
+        leeJinwoo.setDemoAccount(true);
+        leeJinwoo.setLoginId("demo_student_04");
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(kimChorong));
+        when(userRepository.findById(OTHER_STUDENT_ID)).thenReturn(Optional.of(leeJinwoo));
+
+        MonthlyCompletionStatsResponse chorongStats = service.getMonthlyCompletionStats(STUDENT_ID);
+        MonthlyCompletionStatsResponse jinwooStats = service.getMonthlyCompletionStats(OTHER_STUDENT_ID);
+
+        assertThat(chorongStats.getMonthlyCounts()).isNotEqualTo(jinwooStats.getMonthlyCounts());
+    }
+
+    /* 같은 심사 학생은 매번 호출해도(=재조회/새로고침해도) 항상 같은 값이 나와야 한다. */
+    @Test
+    void getMonthlyCompletionStats_demoAccount_isDeterministicAcrossCalls() {
+        User demoStudent = new User();
+        demoStudent.setId(STUDENT_ID);
+        demoStudent.setDemoAccount(true);
+        demoStudent.setLoginId("demo_student_07");
+        when(userRepository.findById(STUDENT_ID)).thenReturn(Optional.of(demoStudent));
+
+        MonthlyCompletionStatsResponse first = service.getMonthlyCompletionStats(STUDENT_ID);
+        MonthlyCompletionStatsResponse second = service.getMonthlyCompletionStats(STUDENT_ID);
+
+        assertThat(first.getMonthlyCounts()).isEqualTo(second.getMonthlyCounts());
+        assertThat(first.getMonthlyCounts()).isEqualTo(List.of(3, 2, 4, 3, 4, 3, 4, 4, 3, 4, 3, 4));
     }
 
     private Book buildBook(Long id, String title, String author, String bookType) {

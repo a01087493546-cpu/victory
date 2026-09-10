@@ -155,6 +155,18 @@ function portfolioParticipationStatus(participation, aliasStatus) {
 }
 
 function normalizePracticePortfolioAggregate(body) {
+  const stageAnalysis = body.stageAnalysis || {};
+  const stageText = function (keys) {
+    for (const key of keys) {
+      const value = stageAnalysis[key];
+      if (typeof value === "string" && value.trim()) return value;
+      if (value && typeof value === "object") {
+        const text = value.growthPoint || value.strength || value.strengthText || value.message || value.summary;
+        if (typeof text === "string" && text.trim()) return text;
+      }
+    }
+    return "";
+  };
   return {
     studentName: body.studentName || "",
     grade: body.grade != null ? body.grade : null,
@@ -164,6 +176,11 @@ function normalizePracticePortfolioAggregate(body) {
     beforeStatus: portfolioParticipationStatus(body.beforeParticipation, body.beforeStatus),
     duringStatus: portfolioParticipationStatus(body.duringParticipation, body.duringStatus),
     afterStatus: portfolioParticipationStatus(body.afterParticipation, body.afterStatus),
+    stageAnalysis: {
+      before: stageText(["before", "beforeReading"]) || body.beforeStage?.growthNote || body.beforeAnalysis || body.beforeGrowthPoint || "",
+      during: stageText(["during", "duringReading"]) || body.duringStage?.growthNote || body.duringAnalysis || body.duringGrowthPoint || "",
+      after: stageText(["after", "afterReading"]) || body.afterStage?.growthNote || body.afterAnalysis || body.afterGrowthPoint || ""
+    },
     bookTitle: body.currentBookTitle || body.bookTitle || "",
     activityCount: body.activityCount != null ? body.activityCount : null,
     aiStrengths: body.aiStrengths || "",
@@ -182,6 +199,7 @@ async function loadPracticePortfolioFallback(auth, classId, studentId, from, to)
     beforeStatus: "",
     duringStatus: "",
     afterStatus: "",
+    stageAnalysis: { before: "", during: "", after: "" },
     bookTitle: "",
     activityCount: null,
     aiStrengths: "",
@@ -297,8 +315,9 @@ async function loadIndividualPortfolioData(auth, classId, studentId, from, to) {
  * canonical: completedBookCount, averageReadingPracticeScore,
  * averageRecordCompletionScore, activitySummary.{questions,
  * thoughtWriting, summaries, bookChatSharing},
- * monthlyCompletionStats.monthlyCounts, competencies.{questionGeneration,
- * readingPersistence, thoughtRefinement, thoughtSharing}.
+ * monthlyCompletionStats.monthlyCounts,
+ * readingCompetencies.{questionGeneration, readingPersistence,
+ * thoughtRefinement, thoughtSharing}.{score, level}.
  */
 function portfolioPickNumber() {
   for (let i = 0; i < arguments.length; i++) {
@@ -311,7 +330,15 @@ function portfolioPickNumber() {
 function normalizeIndividualPortfolioAggregate(body) {
   const activitySummary = body.activitySummary || {};
   const monthlyStats = body.monthlyCompletionStats || {};
-  const competencies = body.competencies || {};
+  const readingCompetencies = body.readingCompetencies || {};
+  const competency = function (name) {
+    const value = readingCompetencies[name];
+    return value && typeof value === "object" ? value : {};
+  };
+  const questionGeneration = competency("questionGeneration");
+  const readingPersistence = competency("readingPersistence");
+  const thoughtRefinement = competency("thoughtRefinement");
+  const thoughtSharing = competency("thoughtSharing");
 
   return {
     studentName: body.studentName || "",
@@ -319,7 +346,9 @@ function normalizeIndividualPortfolioAggregate(body) {
     classNumber: body.classNumber != null ? body.classNumber : null,
     booksReadCount: portfolioPickNumber(body.completedBookCount, body.booksReadCount),
     readingPracticeAvg: portfolioPickNumber(body.averageReadingPracticeScore, body.readingPracticeAvg),
+    readingPracticeLevel: body.averageReadingPracticeLevel || body.readingPracticeLevel || "",
     recordCompletionAvg: portfolioPickNumber(body.averageRecordCompletionScore, body.recordCompletionAvg),
+    recordCompletionLevel: body.averageRecordCompletionLevel || body.recordCompletionLevel || "",
     activityQuestionCount: portfolioPickNumber(activitySummary.questions, body.activityQuestionCount),
     activityThoughtCount: portfolioPickNumber(activitySummary.thoughtWriting, body.activityThoughtCount),
     activitySummaryCount: portfolioPickNumber(activitySummary.summaries, body.activitySummaryCount),
@@ -327,10 +356,14 @@ function normalizeIndividualPortfolioAggregate(body) {
     monthlyCounts: Array.isArray(monthlyStats.monthlyCounts)
       ? monthlyStats.monthlyCounts
       : (Array.isArray(body.monthlyCounts) ? body.monthlyCounts : null),
-    competencyQuestion: portfolioPickNumber(competencies.questionGeneration, body.competencyQuestion),
-    competencyPersistence: portfolioPickNumber(competencies.readingPersistence, body.competencyPersistence),
-    competencyRefine: portfolioPickNumber(competencies.thoughtRefinement, body.competencyRefine),
-    competencyShare: portfolioPickNumber(competencies.thoughtSharing, body.competencyShare),
+    competencyQuestion: portfolioPickNumber(questionGeneration.score, body.questionGenerationScore),
+    competencyQuestionLevel: questionGeneration.level || body.questionGenerationLevel || "",
+    competencyPersistence: portfolioPickNumber(readingPersistence.score, body.readingPersistenceScore),
+    competencyPersistenceLevel: readingPersistence.level || body.readingPersistenceLevel || "",
+    competencyRefine: portfolioPickNumber(thoughtRefinement.score, body.thoughtRefinementScore),
+    competencyRefineLevel: thoughtRefinement.level || body.thoughtRefinementLevel || "",
+    competencyShare: portfolioPickNumber(thoughtSharing.score, body.thoughtSharingScore),
+    competencyShareLevel: thoughtSharing.level || body.thoughtSharingLevel || "",
     aiStrengths: body.aiStrengths || "",
     aiImprovements: body.aiImprovements || ""
   };
@@ -351,9 +384,13 @@ async function loadIndividualPortfolioFallback(auth, classId, studentId, from, t
     activityBookChatCount: null,
     monthlyCounts: null,
     competencyQuestion: null,
+    competencyQuestionLevel: "",
     competencyPersistence: null,
+    competencyPersistenceLevel: "",
     competencyRefine: null,
+    competencyRefineLevel: "",
     competencyShare: null,
+    competencyShareLevel: "",
     aiStrengths: "",
     aiImprovements: ""
   };
@@ -461,9 +498,29 @@ function normalizePortfolioAnalysisResponse(body) {
 
   if (strength == null && improvement == null) return null;
 
+  const stages = body.stageAnalysis && typeof body.stageAnalysis === "object" ? body.stageAnalysis : null;
+  const stageText = function (stage) {
+    if (!stage || typeof stage !== "object") return "";
+    const strengthText = typeof stage.strengthText === "string" ? stage.strengthText.trim() : "";
+    const growthText = typeof stage.growthText === "string" ? stage.growthText.trim() : "";
+    if (strengthText || growthText) return {
+      title: typeof stage.title === "string" ? stage.title.trim() : "",
+      completed: typeof stage.completed === "boolean" ? stage.completed : null,
+      strengthText: strengthText,
+      growthText: growthText
+    };
+    const text = stage.growthPoint || stage.message;
+    return typeof text === "string" ? text.trim() : "";
+  };
+
   return {
     strength: typeof strength === "string" ? strength : "",
-    improvement: typeof improvement === "string" ? improvement : ""
+    improvement: typeof improvement === "string" ? improvement : "",
+    stageAnalysis: stages ? {
+      before: stageText(stages.before),
+      during: stageText(stages.during),
+      after: stageText(stages.after)
+    } : null
   };
 }
 
@@ -492,7 +549,8 @@ async function regeneratePortfolioAnalysis(kind, auth, classId, studentId, from,
     return { ok: false, status: result.status, reason: "empty-response" };
   }
 
-  return { ok: true, strength: analysis.strength, improvement: analysis.improvement };
+  return { ok: true, strength: analysis.strength, improvement: analysis.improvement,
+    stageAnalysis: analysis.stageAnalysis };
 }
 
 /* =========================================================

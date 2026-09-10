@@ -474,7 +474,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px 0 20px;
+      padding: 32px 0 34px;
       color: #7a4a19;
       font-size: 22px;
       font-weight: 900;
@@ -487,7 +487,12 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       grid-template-columns: repeat(12, 1fr);
       align-items: end;
       gap: 10px;
-      padding-top: 8px;
+      /*
+       * 최고 막대가 plotting area를 100% 써도 값 라벨이
+       * 카드 위로 튀어나가지 않도록 상단에 라벨 전용 여백을
+       * 둔다. 하단 34px은 기존 월 라벨 영역이다.
+       */
+      padding: 32px 0 34px;
       border-top: 1px solid rgba(173, 118, 44, 0.16);
       background:
         linear-gradient(to bottom, rgba(173, 118, 44, 0.15) 1px, transparent 1px) 0 25% / 100% 25% repeat-y;
@@ -499,7 +504,7 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
       display: flex;
       align-items: end;
       justify-content: center;
-      padding-bottom: 36px;
+      padding-bottom: 0;
     }
 
     .ir-bar b {
@@ -512,17 +517,18 @@ background: #1b120a; /* 이미지 로딩 전 깜빡임 방지용 기본 색 */
 
     .ir-bar em {
       position: absolute;
-      bottom: calc(var(--h) + 32px);
+      bottom: calc(var(--h) + 8px);
       font-style: normal;
       color: #4d2d10;
       font-size: 24px;
       font-weight: 900;
+      line-height: 1;
       white-space: nowrap;
     }
 
     .ir-bar span {
       position: absolute;
-      bottom: 0;
+      bottom: -32px;
       color: #5d3715;
       font-size: 25px;
       font-weight: 900;

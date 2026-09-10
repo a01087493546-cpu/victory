@@ -5432,6 +5432,17 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   #sharePanel .ar-share-item p { font-size:22px !important; }
   #sharePanel .ar-share-like-button { height:50px !important; font-size:18px !important; }
 }
+
+/*
+ * 읽기 후 각 단계의 하단 네비게이션을 viewport 끝에서 10px 띄운다.
+ * wrapper만 시각적으로 올려 버튼 크기·간격과 패널의 실제 높이, 인쇄
+ * 레이아웃에는 영향을 주지 않는다.
+ */
+@media screen {
+  .ar-study-panel .ar-panel-actions {
+    transform: translateY(-10px);
+  }
+}
 </style>
 </head>
 
@@ -5865,7 +5876,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   </div>
 
   <script src="../js/auth.js"></script>
-  <script src="../js/demo-storage.js"></script>
+  <script src="../js/demo-storage.js?v=20260910-practice-summary-source"></script>
 
   <script>
     function getApiBaseUrl() {
@@ -6242,10 +6253,74 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
       return !trimmed.includes("________________");
     }
 
+    function findDemoPracticeSummaryByIdentity(loginId, studentName) {
+      if (typeof getDemoPracticeDirectSummaries !== "function") return null;
+
+      const normalizedLoginId = String(loginId || "").trim();
+      const normalizedName = String(studentName || "").trim();
+      const loginAliases = new Set();
+      if (normalizedLoginId) loginAliases.add(normalizedLoginId);
+
+      /* 과거 심사용 계정 ss02~ss08과 현재 seed 계정
+         demo_student_02~08은 같은 학생이다. 두 표기를 canonical alias로
+         묶어 교사 review override가 적용된 동일 direct record를 찾는다. */
+      let match = normalizedLoginId.match(/^ss0?([2-8])$/);
+      if (match) loginAliases.add("demo_student_0" + match[1]);
+      match = normalizedLoginId.match(/^demo_student_0?([2-8])$/);
+      if (match) loginAliases.add("ss0" + match[1]);
+
+      return getDemoPracticeDirectSummaries().find(function(item) {
+        const itemLoginId = String(item && item.writerLoginId || "").trim();
+        const itemName = String(item && item.studentName || "").trim();
+        return (itemLoginId && loginAliases.has(itemLoginId))
+          || (normalizedName && itemName === normalizedName);
+      }) || null;
+    }
+
     function getDemoLocalSharedSummary() {
       if (!isDemoAccount()) return null;
 
+      const currentLoginId = sessionStorage.getItem("loginId") || "";
       const data = loadDemoAfterReadingData();
+      /* 거절된 공용 seed를 편집 폼에 불러온 임시 값은 별도의 학생 작성
+         카드로 병합하지 않는다. 실제 seed 카드는 revision override가
+         최신 질문/답/간추리기를 보존해 같은 summaryId로 렌더링한다. */
+      if (data.source === "demo-seed-edit" || data.editingReviewSeedId) return null;
+
+      /* mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한
+         칸뿐이라, 같은 브라우저에서 다른 심사 학생이 이어서 글을 쓰면
+         그 학생의 내용으로 덮어써진다. 지금 로그인한 학생 것이 아니면 이
+         내용을 "내 글"로 보여주지 않고, 대신 이 학생이 예전에 이미
+         제출해 둔 누적 기록(practiceWrittenSummaries)에서 찾는다. */
+      if (data.writerLoginId && String(data.writerLoginId) !== currentLoginId) {
+        const archived = findDemoPracticeSummaryByIdentity(
+          currentLoginId,
+          sessionStorage.getItem("name") || ""
+        );
+        if (!archived) return null;
+        return {
+          id: archived.localId,
+          localId: archived.localId,
+          demoBrowserId: archived.demoBrowserId,
+          demoLocal: true,
+          writerLoginId: archived.writerLoginId,
+          studentId: archived.studentId,
+          studentName: archived.studentName,
+          classReadingBookId: archived.classReadingBookId,
+          bookTitle: archived.bookTitle,
+          bookType: archived.bookType,
+          summary: archived.summary,
+          summaryText: archived.summaryText,
+          sharedAt: archived.sharedAt,
+          createdAt: archived.sharedAt,
+          updatedAt: archived.sharedAt,
+          likeCount: 0,
+          likedByMe: false,
+          status: archived.status,
+          rejectionReason: archived.rejectionReason || ""
+        };
+      }
+
       const summaryText = String(data.summary || "").trim();
       if (!isRealAfterReadingSummary(summaryText)) return null;
 
@@ -6254,14 +6329,18 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
       if (data.demoBrowserId && data.demoBrowserId !== demoBrowserId) return null;
 
       const now = new Date().toISOString();
-      const localId = data.localId || [
-        "practice-summary",
-        demoBrowserId,
-        currentClassReadingBookId || "book"
-      ].join("-");
+      const localId = (data.localId && String(data.writerLoginId || "") === currentLoginId)
+        ? data.localId
+        : [
+          "practice-summary",
+          demoBrowserId,
+          currentLoginId || "unknown",
+          currentClassReadingBookId || "book"
+        ].join("-");
       const normalized = Object.assign({}, data, {
         localId: localId,
         demoBrowserId: demoBrowserId,
+        writerLoginId: currentLoginId || data.writerLoginId || "",
         studentId: data.studentId || context.id || "",
         studentName: data.studentName || sessionStorage.getItem("name") || "김초롱",
         classReadingBookId: data.classReadingBookId || currentClassReadingBookId,
@@ -6291,6 +6370,7 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         localId: localId,
         demoBrowserId: demoBrowserId,
         demoLocal: true,
+        writerLoginId: normalized.writerLoginId,
         studentId: normalized.studentId,
         studentName: normalized.studentName,
         classReadingBookId: normalized.classReadingBookId,
@@ -6317,13 +6397,31 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
       if (isTeacherAfterReadingMode() && localSummary.status !== "approved") return serverItems;
       return [localSummary].concat(serverItems.filter(function(item) {
-        return String(item.id) !== String(localSummary.id);
+        const sameSummary = String(item.id) === String(localSummary.id);
+        const sameStudentId = localSummary.studentId != null && item.studentId != null
+          && String(item.studentId) === String(localSummary.studentId);
+        const sameLoginId = localSummary.writerLoginId && item.writerLoginId
+          && String(item.writerLoginId) === String(localSummary.writerLoginId);
+        const sameStudentName = localSummary.studentName && item.studentName
+          && String(item.studentName) === String(localSummary.studentName);
+
+        /* demo DB에 미리 심은 같은 학생의 예시는 별도 summaryId를 쓰므로
+           ID 비교만으로는 실제 작성본과 함께 '나의 간추리기'로 남는다.
+           실제 작성본이 source of truth일 때는 서버가 mine으로 표시한 예시와
+           동일 학생 식별값의 예시를 제거한다. */
+        const sameDemoOwner = isDemoAccount() && (
+          item.mine === true || sameStudentId || sameLoginId || sameStudentName
+        );
+        return !(sameSummary || sameDemoOwner);
       }));
     }
 
     function mergeDemoVisibleReviewSeedSummaries(items) {
       if (!isDemoAccount() || !Array.isArray(items)) return items;
       const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+      const hasStudentWrittenSummary = items.some(function(item) {
+        return item && item.demoLocal === true && isRealAfterReadingSummary(item.summary || item.summaryText || "");
+      });
       const existingIds = new Set(items.map(function(item) { return String(item.id); }));
       const visibleSeeds = getDemoFinalSummaryReviewSeeds("practice")
         .map(function(seed) {
@@ -6332,6 +6430,9 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
           });
         })
         .filter(function(seed) {
+          /* 같은 학생이 직접 저장한 글이 있으면 공용 예시는 더 이상
+             fallback이 아니다. 학생 작성본을 최우선 source of truth로 둔다. */
+          if (seed.mine && hasStudentWrittenSummary) return false;
           return seed.status === "approved" || (seed.mine && (seed.status === "pending" || seed.status === "rejected"));
         })
         .filter(function(seed) { return !existingIds.has(String(seed.id)); })
@@ -6358,7 +6459,50 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
     async function loadMyAfterReadingData() {
       if (isDemoAccount()) {
-        const data = loadDemoAfterReadingData();
+        const currentLoginId = sessionStorage.getItem("loginId") || "";
+        let data = loadDemoAfterReadingData();
+
+        /* mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한
+           칸뿐이라, 같은 브라우저에서 다른 심사 학생이 이어서 로그인하면
+           그 학생이 쓴 질문/답/간추리기가 남아 있다. 지금 로그인한 학생
+           것이 아니면 그 내용을 이어받지 않는다 - 내가 예전에 이미 제출해
+           둔 기록(practiceWrittenSummaries)이 있으면 그걸로 이어서
+           편집하고, 없으면 빈 폼에서 새로 시작한다. */
+        if (data.writerLoginId && String(data.writerLoginId) !== currentLoginId) {
+          const archived = findDemoPracticeSummaryByIdentity(
+            currentLoginId,
+            sessionStorage.getItem("name") || ""
+          );
+          data = archived ? {
+            localId: archived.localId,
+            demoBrowserId: archived.demoBrowserId,
+            writerLoginId: currentLoginId,
+            studentId: archived.studentId,
+            studentName: archived.studentName,
+            classReadingBookId: archived.classReadingBookId,
+            bookTitle: archived.bookTitle,
+            bookType: archived.bookType,
+            questions: archived.questions || [],
+            questionsByBookType: archived.questionsByBookType || {},
+            summary: archived.summary,
+            summaryText: archived.summaryText,
+            sharedAt: archived.sharedAt,
+            status: archived.status,
+            rejectionReason: archived.rejectionReason || "",
+            afterDone: true,
+            source: "student",
+            typeProgress: { story: false, info: false, opinion: false },
+            typePracticeAnswers: {}
+          } : {
+            bookType: null,
+            questions: [],
+            questionsByBookType: {},
+            summary: "",
+            typeProgress: { story: false, info: false, opinion: false }
+          };
+          saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        }
+
         restoreAfterReadingData(data);
         return data;
       }
@@ -6420,8 +6564,28 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         if (answer) answer.value = item ? item.answer || "" : "";
       });
       restoreQuestionCardProgress(questions);
-      currentBookQuestionIndex = 0;
-      showBookQuestionCard(0);
+      const firstIncompleteIndex = [1, 2, 3].findIndex(function(number) {
+        const saved = questions.find(function(item) {
+          return Number(item.index) === number;
+        });
+        return !isRestoredBookQuestionPassed(saved);
+      });
+      currentBookQuestionIndex = firstIncompleteIndex === -1 ? 2 : firstIncompleteIndex;
+      showBookQuestionCard(currentBookQuestionIndex);
+    }
+
+    /*
+     * 일반계정은 서버가 돌려준 aiPassed를 통과 상태의 기준으로 삼는다.
+     * 심사계정의 예전 브라우저 저장본에는 passed 필드가 없을 수 있는데,
+     * 그 저장본은 기존에도 AI good 콜백에서만 만들어졌으므로 질문·답이
+     * 모두 있으면 한 번만 이전 형식으로 호환한다.
+     */
+    function isRestoredBookQuestionPassed(saved) {
+      if (!saved || !saved.question || !saved.answer) return false;
+      if (saved.aiPassed === true || saved.passed === true) return true;
+      return isDemoAccount()
+        && saved.aiPassed == null
+        && saved.passed == null;
     }
 
     /*
@@ -6467,7 +6631,7 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
           return Number(item.index) === number;
         });
 
-        const passed = !!(saved && saved.question && saved.answer);
+        const passed = isRestoredBookQuestionPassed(saved);
         card.dataset.feedbackPassed = passed ? "true" : "false";
         card.classList.toggle("passed", passed);
       });
@@ -6512,6 +6676,30 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
             encodeURIComponent(currentClassReadingBookId),
           { headers: headers }
         );
+      }
+
+      /* 교사 심사 화면에서 변경한 demo 판정은 서버 예시 자체를 수정하지
+         않고 브라우저 override로 보존한다. 서버 응답 카드에도 같은 id의
+         override를 적용해야 승인 취소/거절 결과가 학생 화면에 즉시 같다. */
+      if (isDemoAccount() && Array.isArray(sharedSummaries)) {
+        sharedSummaries = sharedSummaries.map(function(item) {
+          const summaryId = String(item && (item.id != null ? item.id : item.summaryId));
+          const override = getDemoSummaryReviewOverride("practice", summaryId);
+          if (!override) return item;
+          return Object.assign({}, item, {
+            status: String(override.status || item.status || "approved").toLowerCase(),
+            summary: typeof override.summary === "string" ? override.summary : item.summary,
+            bookType: override.bookType || item.bookType,
+            rejectionReason: String(override.status).toLowerCase() === "rejected"
+              ? String(override.reason || "")
+              : "",
+            updatedAt: override.updatedAt || item.updatedAt
+          });
+        }).filter(function(item) {
+          const summaryId = String(item && (item.id != null ? item.id : item.summaryId));
+          const override = getDemoSummaryReviewOverride("practice", summaryId);
+          return !(override && override.deleted === true);
+        });
       }
 
       return sharedSummaries;
@@ -6762,7 +6950,9 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
      * openAfterReadTargetFromUrl()의 교사 진입 로직과 같은 화면 전환을 쓴다.
      */
     function goToMySummaryShareDirect() {
-      if (!hasOwnSummaryPost()) return;
+      /* 심사계정은 연습/작성 상태와 무관하게 공유 화면 전체를 바로 체험할
+         수 있게 한다. 일반계정은 기존처럼 본인 간추리기가 있을 때만 이동한다. */
+      if (!isDemoAccount() && !hasOwnSummaryPost()) return;
 
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
@@ -6806,7 +6996,8 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
       const shortcutButton = document.getElementById("myBookShareShortcutButton");
       if (shortcutButton) {
-        shortcutButton.hidden = inMyBookMode || !hasOwnSummaryPost();
+        const canOpenShareDirectly = isDemoAccount() || hasOwnSummaryPost();
+        shortcutButton.hidden = inMyBookMode || !canOpenShareDirectly;
       }
 
       AFTER_READING_TYPE_ORDER.forEach(function (type) {
@@ -6955,49 +7146,60 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         const filtered = questions.filter(function(item) {
           return Number(item.index) !== Number(index);
         });
-        filtered.push({ index: index, question: question, answer: answer });
+        filtered.push({
+          index: index,
+          question: question,
+          answer: answer,
+          passed: true,
+          aiPassed: true
+        });
         grouped[bookType] = filtered;
         data.questionsByBookType = grouped;
         data.questions = filtered;
         data.bookType = bookType;
+        if (data.source !== "demo-seed-edit") {
+          data.source = "student";
+          delete data.editingReviewSeedId;
+          delete data.seedEditBackup;
+        }
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
-        return;
+        return data;
       }
 
       const context = getCurrentUserContext();
 
       if (!context.id || context.role !== "student" || !context.token || !currentClassReadingBookId) {
-        return;
+        throw new Error("자동저장에 필요한 로그인 또는 온책읽기 정보가 없습니다.");
       }
 
-      try {
-        const saved = await fetchJson(
-          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/question",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + context.token
-            },
-            body: JSON.stringify({
-              classReadingBookId: currentClassReadingBookId,
-              bookType: bookType,
-              index: index,
-              question: question,
-              answer: answer
-            })
-          }
-        );
-        restoredAfterReadingData = saved;
-      } catch (error) {
-        console.error("내 책 질문 자동저장에 실패했습니다.", error);
-      }
+      const saved = await fetchJson(
+        AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/question",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + context.token
+          },
+          body: JSON.stringify({
+            classReadingBookId: currentClassReadingBookId,
+            bookType: bookType,
+            index: index,
+            question: question,
+            answer: answer
+          })
+        }
+      );
+      restoredAfterReadingData = saved;
+      return saved;
     }
 
     async function saveAfterReadingSummaryDraft(summaryText) {
       if (isDemoAccount()) {
         const data = loadDemoAfterReadingData();
         data.summary = summaryText;
+        data.summaryText = summaryText;
+        /* 학생이 직접 입력한 순간부터 seed는 fallback으로만 취급한다. */
+        if (data.source !== "demo-seed-edit") data.source = "student";
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
         return;
       }
@@ -8293,14 +8495,16 @@ if (selectedBookType === "opinion") {
         /* 교사용 공용 seed를 김초롱(ss01)이 거절 뒤 고치는 경우에는 새
            local 카드로 복제하지 않고 같은 summaryId의 revision override를
            PENDING으로 갱신한다. */
-        if (editingDemoPracticeReviewSeedId) {
-          const resubmittedSeedId = editingDemoPracticeReviewSeedId;
+        const editingReviewSeedId = editingDemoPracticeReviewSeedId || previousData.editingReviewSeedId;
+        if (editingReviewSeedId) {
+          const resubmittedSeedId = editingReviewSeedId;
+          const revisedQuestions = getAfterReadingQuestionPayload();
           saveDemoSummaryRevisionOverride(
             "practice",
             resubmittedSeedId,
             summaryText,
             selectedBookType,
-            getAfterReadingQuestionPayload()
+            revisedQuestions
           );
           const seedAfterResubmit = getDemoFinalSummaryReviewSeeds("practice").find(function(seed) {
             return String(seed.id) === String(resubmittedSeedId);
@@ -8311,6 +8515,21 @@ if (selectedBookType === "opinion") {
           const seedLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
           delete seedLikes[String(resubmittedSeedId)];
           saveDemoState(DEMO_SHARE_LIKES_KEY, seedLikes);
+          /* seed 편집을 위해 afterReading에 임시로 넣었던 값은 다시 direct
+             글로 남기지 않는다. 편집 전에 있던 학생별 작성 상태를 그대로
+             복원하고, 수정 결과는 위 revision override 한 곳에만 보존한다. */
+          const editBackup = previousData.seedEditBackup;
+          saveDemoState(DEMO_AFTER_READING_STORAGE_KEY,
+            editBackup && typeof editBackup === "object" ? editBackup : {
+              bookType: selectedBookType,
+              questions: [],
+              questionsByBookType: {},
+              summary: "",
+              summaryText: "",
+              typeProgress: previousData.typeProgress || { story: false, info: false, opinion: false },
+              typePracticeAnswers: previousData.typePracticeAnswers || {}
+            }
+          );
           editingDemoPracticeReviewSeedId = null;
           await renderShareList();
           showStudyPanel("share");
@@ -8327,11 +8546,18 @@ if (selectedBookType === "opinion") {
           ? summaryText
           : (previousData.summary || "");
 
-        const resolvedLocalId = previousData.localId || [
-          "practice-summary",
-          getDemoBrowserId(),
-          currentClassReadingBookId || "book"
-        ].join("-");
+        /* localId는 같은 브라우저에서 다른 심사 학생이 이어서 쓴 값이면
+           재사용하지 않는다 - 재사용하면 이전 학생의 summaryReviewOverrides
+           (승인/거절 상태)가 새 학생 글에 그대로 씌워진다. */
+        const currentWriterLoginId = sessionStorage.getItem("loginId") || "";
+        const resolvedLocalId = (previousData.localId && String(previousData.writerLoginId || "") === currentWriterLoginId)
+          ? previousData.localId
+          : [
+            "practice-summary",
+            getDemoBrowserId(),
+            currentWriterLoginId || "unknown",
+            currentClassReadingBookId || "book"
+          ].join("-");
 
         /*
          * getDemoLocalSharedSummary()가 화면에 보여주는 "실제 표시
@@ -8347,10 +8573,11 @@ if (selectedBookType === "opinion") {
         const previousDisplayedStatus = previousOverride
           ? previousOverride.status
           : (previousData.status || "pending");
-        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
+        const savedAfterReadingData = {
           localId: resolvedLocalId,
           demoBrowserId: getDemoBrowserId(),
           studentId: context.id,
+          writerLoginId: currentWriterLoginId,
           studentName: sessionStorage.getItem("name") || "김초롱",
           classReadingBookId: currentClassReadingBookId,
           bookTitle: currentClassReadingBookTitle || "우리 반 온책읽기 책",
@@ -8363,6 +8590,7 @@ if (selectedBookType === "opinion") {
           summaryText: summaryToStore,
           sharedAt: previousData.sharedAt || now,
           status: "pending",
+          source: "student",
           rejectionReason: "",
           afterDone: true,
           /*
@@ -8380,7 +8608,17 @@ if (selectedBookType === "opinion") {
            * 버그의 또 다른 원인).
            */
           typePracticeAnswers: previousData.typePracticeAnswers || {}
-        });
+        };
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, savedAfterReadingData);
+        /*
+         * 같은 브라우저에서 다른 심사 학생이 이어서 글을 쓰면 위
+         * mq_demo_afterReading 한 칸은 새 학생 값으로 덮어써진다. 교사
+         * 간추리기 관리가 이 학생의 제출을 계속 볼 수 있도록 누적 기록에도
+         * 같은 localId로 남겨 둔다.
+         */
+        if (typeof saveDemoPracticeWrittenSummary === "function") {
+          saveDemoPracticeWrittenSummary(savedAfterReadingData);
+        }
 
         /*
          * 거절된 글을 학생이 재제출했다면 본문 비교 결과와 관계없이 같은
@@ -9110,6 +9348,7 @@ let bookQuestionAiRequestId = 0;
 
 function requestBookQuestionAiFeedback(card, item, number) {
   const requestId = ++bookQuestionAiRequestId;
+  let isSavingPassedQuestion = false;
   const checkButton = document.querySelector(
     "#writePanel .ar-after-feedback-button"
   );
@@ -9159,14 +9398,33 @@ function requestBookQuestionAiFeedback(card, item, number) {
       );
 
   bookQuestionAiPromise
-    .then(function(result) {
+    .then(async function(result) {
       if (requestId !== bookQuestionAiRequestId) {
         return;
       }
 
       const isGood = result.status === "good";
 
-      /* AI가 good을 준 경우에만 현재 질문을 통과 처리한다. */
+      /*
+       * 일반계정은 서버 자동저장까지 성공해야 통과 UI와 다음 질문 버튼을
+       * 연다. 이렇게 해야 저장 요청이 끝나기 전에 화면을 떠나 재진입 시
+       * 내용이 사라지는 경쟁 상태와, 저장 실패를 성공처럼 숨기는 문제를
+       * 함께 막을 수 있다. demo도 같은 순서로 browser-local 저장한다.
+       */
+      if (isGood) {
+        isSavingPassedQuestion = true;
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "",
+          "좋아요! 질문과 답을 저장하고 있어요..."
+        );
+        await saveAfterReadingQuestionDraft(number, item.question, item.answer);
+      }
+
+      if (requestId !== bookQuestionAiRequestId) {
+        return;
+      }
+
       card.dataset.feedbackPassed = isGood ? "true" : "false";
       card.classList.toggle("passed", isGood);
 
@@ -9187,12 +9445,8 @@ function requestBookQuestionAiFeedback(card, item, number) {
         result.message
       );
 
-      /* 루미 피드백 통과 = 자동저장. 실패한 시도는 절대 저장하지 않는다. */
-      if (isGood) {
-        saveAfterReadingQuestionDraft(number, item.question, item.answer);
-      }
     })
-    .catch(function() {
+    .catch(function(error) {
       if (requestId !== bookQuestionAiRequestId) {
         return;
       }
@@ -9205,10 +9459,14 @@ function requestBookQuestionAiFeedback(card, item, number) {
 
       updateAddQuestionButton();
 
+      console.error("내 책 질문 검사 또는 자동저장에 실패했습니다.", error);
+
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "need",
-        "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해줘."
+        isSavingPassedQuestion
+          ? "질문과 답을 저장하지 못했어요. 내용은 그대로 두었으니 잠시 후 다시 검사해줘."
+          : "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해줘."
       );
     })
     .finally(function() {
@@ -9374,7 +9632,13 @@ function requestBookQuestionAiFeedback(card, item, number) {
                 };
               })
             : [];
+          const seedEditBackup = previousData.source === "demo-seed-edit"
+            ? (previousData.seedEditBackup || {})
+            : Object.assign({}, previousData);
           saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, Object.assign({}, previousData, {
+            source: "demo-seed-edit",
+            editingReviewSeedId: rejectedSeed.id,
+            seedEditBackup: seedEditBackup,
             bookType: selectedBookType,
             questions: restoredQuestions,
             questionsByBookType: Object.assign({}, previousData.questionsByBookType || {}, {

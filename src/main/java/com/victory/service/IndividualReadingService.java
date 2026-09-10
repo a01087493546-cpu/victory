@@ -117,6 +117,7 @@ public class IndividualReadingService {
     private final IndividualDuringReadingRewardService duringReadingRewardService;
     private final IndividualAfterReadingRewardService afterReadingRewardService;
     private final IndividualAchievementService individualAchievementService;
+    private final DemoMonthlyCompletionProvider demoMonthlyCompletionProvider;
 
     /*
      * 학생당 진행 중(finished_at IS NULL) 기록은 항상 1개만 있어야 한다.
@@ -1170,28 +1171,27 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
 }
 
     /*
-     * 심사 화면에서 그래프가 빈약해 보이지 않도록 보여줄 고정 가상 월별 완독
-     * 권수. 대표 심사 학생(demoAccount=true && loginId="ss01") 한 명에게만
-     * 적용되며, 이 상수 하나가 코드 전체에서 유일한 "ss01" 참조 지점이다.
-     */
-    private static final List<Integer> DEMO_MONTHLY_COMPLETION_COUNTS =
-        List.of(5, 8, 4, 7, 11, 6, 9, 10, 5, 8, 6, 7);
-    private static final String DEMO_REPRESENTATIVE_LOGIN_ID = "ss01";
-
-    /*
      * 학생 메인 화면 "월별 완독 기록" 그래프용. 완독(finished_at IS NOT NULL)한
      * 기록만 집계 대상이며, 현재 연도(Asia/Seoul 기준)에 완독한 것만 1~12월에
      * 나눠 센다. 다른 해에 완독한 기록은 포함하지 않는다. 반환되는
      * monthlyCounts는 항상 12개 원소이고(0권인 달도 0으로 채움), index 0이
      * 1월이다.
+     *
+     * 심사계정(demoAccount=true)은 실제 장기간 완독 기록이 쌓이지 않아 이
+     * 집계가 밋밋하거나 비어 보이므로, 학생별 고정 예시값(DemoMonthlyCompletionProvider,
+     * loginId 기준 deterministic)을 대신 쓴다 - 일반계정 집계 로직과는
+     * 완전히 분리된 경로라 서로 섞이지 않는다.
      */
     @Transactional(readOnly = true)
     public MonthlyCompletionStatsResponse getMonthlyCompletionStats(Long studentId) {
 
         int currentYear = LocalDate.now(ZONE_SEOUL).getYear();
 
-        if (isDemoRepresentativeStudent(studentId)) {
-            return new MonthlyCompletionStatsResponse(currentYear, DEMO_MONTHLY_COMPLETION_COUNTS);
+        Optional<User> demoStudent = userRepository.findById(studentId)
+            .filter(user -> Boolean.TRUE.equals(user.getDemoAccount()));
+        if (demoStudent.isPresent()) {
+            return new MonthlyCompletionStatsResponse(
+                currentYear, demoMonthlyCompletionProvider.forLoginId(demoStudent.get().getLoginId()));
         }
 
         List<ReadingRecord> completedRecords =
@@ -1213,13 +1213,6 @@ public BookTypeStatsResponse getBookTypeStats(Long studentId) {
         }
 
         return new MonthlyCompletionStatsResponse(currentYear, monthlyCountsList);
-    }
-
-    private boolean isDemoRepresentativeStudent(Long studentId) {
-        return userRepository.findById(studentId)
-            .filter(user -> Boolean.TRUE.equals(user.getDemoAccount()))
-            .map(user -> DEMO_REPRESENTATIVE_LOGIN_ID.equals(user.getLoginId()))
-            .orElse(false);
     }
 
     private double percentOf(int count, int total) {

@@ -535,7 +535,7 @@
   </div>
 
   <script src="../js/auth.js"></script>
-  <script src="../js/demo-storage.js"></script>
+  <script src="../js/demo-storage.js?v=20260910-practice-summary-source"></script>
 
   <script>
     function getApiBaseUrl() {
@@ -674,20 +674,53 @@ const API_BASE_URL = getApiBaseUrl();
       };
     }
 
-    function getDemoLocalDirectSummaryAsReviewItem() {
-      const data = getDemoPracticeDirectSummary(teacherClassReadingBookId);
-      if (!data) return null;
+    /*
+     * mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한 칸뿐이라
+     * 다른 심사 학생이 같은 브라우저에서 이어서 글을 쓰면 먼저 쓴 학생의
+     * 글이 사라져 보인다. 교사 화면은 여러 학생의 제출을 동시에 봐야 하므로
+     * 학생별로 누적되는 practiceWrittenSummaries 기록(여러 개일 수 있음)을
+     * 사용한다 - individual-summary-manage.html과 같은 패턴이다.
+     */
+    function getDemoDirectPracticeSummaries() {
+      const archived = getDemoPracticeDirectSummaries();
+      const mergedById = new Map();
 
+      archived.forEach(function(item) {
+        if (!item) return;
+        const id = String(item.localId || item.id || "").trim();
+        if (id) mergedById.set(id, item);
+      });
+
+      /* 이전 버전/캐시된 학생 화면에서 제출한 글은 afterReading에는 있지만
+         practiceWrittenSummaries 누적 배열에는 아직 복사되지 않았을 수 있다.
+         학생 공유 화면과 동일한 effective getter로 현재 작성본도 합쳐서,
+         이미 작성된 승인대기 글이 재제출 없이 교사 화면에 나타나게 한다. */
+      /* 교사/학생 역할을 오가며 로그인할 때 browserId가 새로 발급된 구형
+         기록도 같은 로컬 브라우저 저장소 안의 실제 제출본이다. 학생끼리의
+         화면 격리는 그대로 두고 교사 관리 조회에서만 이를 허용한다. */
+      const current = getDemoPracticeDirectSummary(teacherClassReadingBookId, {
+        allowStoredBrowserRecord: true
+      });
+      if (current) {
+        const currentId = String(current.localId || current.id || "").trim();
+        if (currentId) mergedById.set(currentId, current);
+      }
+
+      return Array.from(mergedById.values());
+    }
+
+    function mapDemoDirectItemToReviewItem(item) {
       return {
-        id: data.id,
-        status: data.status,
-        studentId: data.studentId || null,
-        studentName: data.studentName || "김초롱",
-        bookType: data.bookType || "story",
-        summary: data.summary,
-        submittedAt: data.sharedAt || new Date().toISOString(),
-        submittedText: formatSubmittedText(data.sharedAt),
-        rejectionReason: data.rejectionReason || ""
+        id: String(item.localId),
+        status: String(item.status || "pending").toLowerCase(),
+        studentId: item.studentId || null,
+        writerLoginId: item.writerLoginId || "",
+        studentName: item.studentName || "김초롱",
+        bookType: item.bookType || "story",
+        summary: item.summary || item.summaryText || "",
+        submittedAt: item.sharedAt || item.updatedAt || "",
+        submittedText: formatSubmittedText(item.sharedAt || item.updatedAt),
+        rejectionReason: item.rejectionReason || ""
       };
     }
 
@@ -720,14 +753,30 @@ const API_BASE_URL = getApiBaseUrl();
           console.warn("심사 학급의 실제 간추리기를 불러오지 못했습니다.", error);
         }
 
-        // 2) 학생 공유 화면과 같은 effective seed를 사용한다. 수정 본문,
+        // 2) 심사 학생들이 같은 브라우저에서 직접 작성한 간추리기(여러
+        // 명일 수 있음). 이후 3)에서 같은 학생의 공용 seed를 걸러내는
+        // 기준으로 먼저 계산해 둔다.
+        const directItems = getDemoDirectPracticeSummaries();
+
+        // 3) 학생 공유 화면과 같은 effective seed를 사용한다. 수정 본문,
         // 승인 상태, 삭제 tombstone이 한 번 계산된 결과라 두 화면의 목록과
         // 카운트가 어긋나지 않는다.
+        //
+        // 학생이 실제로 작성/제출한 글이 있으면 그 학생의 demo seed
+        // pending/approved/rejected 예시는 더 이상 대표값으로 쓰지 않는다
+        // (writerLoginId 기준). id가 우연히 같지 않은 한 id 기반 중복
+        // 제거만으로는 걸러지지 않아, 학생 화면에서는 이미 숨겨진 옛 seed
+        // 카드가 교사 승인대기에는 계속 남아있는 문제가 있었다.
         const existingSummaryIds = new Set(
           next.pending.concat(next.approved, next.rejected).map(function(item) { return String(item.id); })
         );
+        const writtenLoginIds = new Set(
+          directItems.filter(function(item) { return item.writerLoginId; })
+            .map(function(item) { return String(item.writerLoginId); })
+        );
         getDemoFinalSummaryReviewSeeds("practice").forEach(function(seed) {
           if (existingSummaryIds.has(String(seed.id))) return;
+          if (writtenLoginIds.has(String(seed.writerLoginId || ""))) return;
           const status = seed.status;
           next[status].push({
             id: seed.id, status: status, studentId: seed.writerLoginId || null,
@@ -738,19 +787,57 @@ const API_BASE_URL = getApiBaseUrl();
           });
         });
 
-        // 3) ss01이 같은 브라우저에서 직접 작성한 간추리기(있으면).
-        const direct = getDemoLocalDirectSummaryAsReviewItem();
-        if (direct) {
-          /* 같은 summaryId가 서버/seed 쪽에도 있던 구버전 데이터라면 이전
-             상태 목록에서 먼저 제거하고 browser-local 최신 direct 하나만
-             남긴다. 재제출 뒤 rejected와 pending에 동시에 보이면 안 된다. */
+        // 4) 위 direct 글들을 실제 목록에 반영한다.
+        directItems.forEach(function (item) {
+          const mapped = mapDemoDirectItemToReviewItem(item);
+          if (!mapped.summary) return;
+          /* 이미 교사 판정이 저장된 같은 학생의 구형/서버 예시가 있으면,
+             과거 버전에서 서로 다른 id로 갈라진 direct 작성본도 로딩 순간
+             같은 상태로 복구한다. 그래서 사용자가 다시 거절 버튼을 누르지
+             않아도 기존 판정이 학생 화면에 반영된다. */
+          const matchedReviewedCopy = next.pending.concat(next.approved, next.rejected).find(function(existing) {
+            const sameStudentId = mapped.studentId != null && existing.studentId != null
+              && String(existing.studentId) === String(mapped.studentId);
+            const sameLoginId = mapped.writerLoginId && existing.writerLoginId
+              && String(existing.writerLoginId) === String(mapped.writerLoginId);
+            const sameStudentName = mapped.studentName && existing.studentName
+              && String(existing.studentName) === String(mapped.studentName);
+            return (sameStudentId || sameLoginId || sameStudentName)
+              && getDemoSummaryReviewOverride("practice", existing.id);
+          });
+          if (matchedReviewedCopy) {
+            const inheritedOverride = getDemoSummaryReviewOverride("practice", matchedReviewedCopy.id);
+            const directId = String(mapped.id);
+            saveDemoSummaryReviewOverride(
+              "practice",
+              directId,
+              inheritedOverride.status,
+              inheritedOverride.reason || ""
+            );
+            mapped.status = String(inheritedOverride.status || mapped.status).toLowerCase();
+            mapped.rejectionReason = mapped.status === "rejected"
+              ? String(inheritedOverride.reason || "")
+              : "";
+          }
+          /* 심사 DB에 미리 들어간 김초롱 등의 예시와 학생 직접 작성본은
+             summaryId가 서로 다를 수 있다. 직접 작성본이 생긴 뒤에도 ID만
+             비교하면 예시 보물찾기 글이 함께 남으므로, demo 화면에서만
+             학생 식별값(학생 id/login id, 구형 응답은 이름)을 함께 비교해
+             같은 학생의 예시를 걷어내고 실제 작성본 하나를 남긴다. */
           ["pending", "approved", "rejected"].forEach(function(status) {
-            next[status] = next[status].filter(function(item) {
-              return String(item.id) !== String(direct.id);
+            next[status] = next[status].filter(function(existing) {
+              const sameSummary = String(existing.id) === mapped.id;
+              const sameStudentId = mapped.studentId != null && existing.studentId != null
+                && String(existing.studentId) === String(mapped.studentId);
+              const sameLoginId = mapped.writerLoginId && existing.writerLoginId
+                && String(existing.writerLoginId) === String(mapped.writerLoginId);
+              const sameDemoName = mapped.studentName && existing.studentName
+                && String(existing.studentName) === String(mapped.studentName);
+              return !(sameSummary || sameStudentId || sameLoginId || sameDemoName);
             });
           });
-          next[direct.status].push(direct);
-        }
+          next[mapped.status].push(mapped);
+        });
 
         reviewSummariesByStatus = next;
         renderAll();
@@ -905,12 +992,34 @@ const API_BASE_URL = getApiBaseUrl();
 
     async function reviewSummaryWithApi(id, status, reason) {
       if (isDemoAccount()) {
-        const direct = getDemoLocalDirectSummaryAsReviewItem();
-        if (direct && direct.id === id) {
-          saveDemoSummaryReviewOverride("practice", id, status, reason);
-          return true;
-        }
         saveDemoSummaryReviewOverride("practice", id, status, reason);
+
+        /*
+         * 심사 데이터에는 같은 학생의 서버 예시와 브라우저에서 직접 쓴
+         * 간추리기가 서로 다른 id로 존재할 수 있다. 교사 목록에서 예시
+         * 카드를 처리했더라도 학생 화면의 실제 작성본만 이전 상태로 남지
+         * 않도록, 선택한 학생과 동일한 direct record에도 같은 판정을
+         * 기록한다. 일반계정과 다른 학생의 기록에는 적용하지 않는다.
+         */
+        const reviewedItem = allSummaries.find(function(item) {
+          return String(item.id) === String(id);
+        });
+        if (reviewedItem && typeof getDemoPracticeDirectSummaries === "function") {
+          getDemoPracticeDirectSummaries().forEach(function(directItem) {
+            const sameStudentId = reviewedItem.studentId != null && directItem.studentId != null
+              && String(reviewedItem.studentId) === String(directItem.studentId);
+            const sameLoginId = reviewedItem.writerLoginId && directItem.writerLoginId
+              && String(reviewedItem.writerLoginId) === String(directItem.writerLoginId);
+            const sameStudentName = reviewedItem.studentName && directItem.studentName
+              && String(reviewedItem.studentName) === String(directItem.studentName);
+            if (sameStudentId || sameLoginId || sameStudentName) {
+              const directId = String(directItem.localId || directItem.id || "");
+              if (directId && directId !== String(id)) {
+                saveDemoSummaryReviewOverride("practice", directId, status, reason);
+              }
+            }
+          });
+        }
         return true;
       }
 

@@ -1735,7 +1735,7 @@
       개별읽기에서는 다음 기능을 유지합니다.
       1. 친구 질문에 대한 내 생각 쓰기
       2. 내 책에 맞게 비슷한 질문으로 바꾸기
-      3. 댓글이 많은 질문을 BEST 질문으로 맨 위 자동 배치
+      3. 질문을 최신 등록순으로 표시
       =========================================================
     */
 
@@ -1961,21 +1961,6 @@
       word-break: keep-all !important;
     }
 
-    .idr-best-badge {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      height: 24px !important;
-      padding: 0 9px !important;
-      margin-left: 6px !important;
-      border-radius: 999px !important;
-      background: linear-gradient(180deg, #e8bc55, #b87622) !important;
-      color: #fff8e8 !important;
-      font-size: 11px !important;
-      font-weight: 950 !important;
-      vertical-align: middle !important;
-      box-shadow: 0 6px 12px rgba(128, 76, 18, 0.16) !important;
-    }
 
     .idr-comment-count {
       color: #9a631e !important;
@@ -2552,22 +2537,6 @@
       font-weight: 850 !important;
       line-height: 1.45 !important;
       word-break: keep-all !important;
-    }
-
-    #shareScreen .idr-best-badge {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      height: 24px !important;
-      padding: 0 9px !important;
-      margin-left: 6px !important;
-      border-radius: 999px !important;
-      background: linear-gradient(180deg, #e8bc55, #b87622) !important;
-      color: #fff8e8 !important;
-      font-size: 11px !important;
-      font-weight: 950 !important;
-      vertical-align: middle !important;
-      box-shadow: 0 6px 12px rgba(128, 76, 18, 0.16) !important;
     }
 
     #shareScreen .idr-comment-count {
@@ -7538,6 +7507,16 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   overflow: hidden !important;
 }
 
+/*
+  수정 모드에서는 선생님 피드백 행이 맨 앞에 하나 추가된다. 기본 작성
+  화면의 3번째 minmax 행을 그대로 쓰면 책/제목 입력 행이 남은 높이를
+  전부 차지해 라벨과 입력칸이 멀어지므로, 수정 화면에서는 장면 설명인
+  4번째 행만 늘어나도록 명시한다.
+*/
+.idr-book-chat-write-card.is-editing {
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto auto !important;
+}
+
 .idr-book-chat-write-intro {
   display: grid !important;
   gap: 8px !important;
@@ -7892,6 +7871,39 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   cursor: pointer;
 }
 
+.idr-book-chat-edit-button {
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(181, 117, 37, 0.5);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff8e8 0%, #f5dfb2 100%);
+  color: #754516;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.idr-book-chat-edit-button:hover {
+  background: linear-gradient(180deg, #fffdf5 0%, #efd397 100%);
+  border-color: rgba(153, 91, 27, 0.62);
+}
+
+.idr-book-chat-edit-feedback {
+  padding: 14px 18px;
+  border: 1px solid rgba(191, 95, 68, 0.3);
+  border-radius: 16px;
+  background: #fff7f2;
+  color: #73402f;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.idr-book-chat-edit-feedback strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #a6523a;
+}
+
 .idr-book-chat-delete-button:hover {
   background: rgba(214, 68, 58, 0.1);
   border-color: rgba(214, 68, 58, 0.34);
@@ -7995,28 +8007,6 @@ body.idr-book-chat-open #shareScreen .idr-comment-count {
   word-break: keep-all !important;
 }
 
-/* 인기 글 1~3위 배지: 카드 최상단, 작성자/상태 배지 행과 겹치지 않게 별도 행 */
-.idr-book-chat-popular-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  width: fit-content !important;
-  margin-bottom: 8px !important;
-  padding: 4px 12px !important;
-  border-radius: 999px !important;
-  font-size: 13px !important;
-  font-weight: 950 !important;
-  white-space: nowrap !important;
-  background: linear-gradient(180deg, #ffe9a8, #f0c258) !important;
-  color: #6b4a10 !important;
-  border: 1px solid rgba(176, 122, 21, 0.35) !important;
-}
-
-.idr-book-chat-popular-rank-1 {
-  font-size: 14px !important;
-  background: linear-gradient(180deg, #fff2c4, #f4c94a) !important;
-  box-shadow: 0 2px 6px rgba(196, 145, 20, 0.35) !important;
-}
 /* =========================================================
    개별읽기 책수다방 최종 높이 조정
    1. 친구들의 책수다 배경카드를 화면 아래까지 확대
@@ -8244,6 +8234,12 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   font-size: 30px !important;
   line-height: 1.45 !important;
   align-items: center !important;
+}
+
+.idr-main-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  transform: none !important;
 }
 </style>
 <style>
@@ -8491,7 +8487,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 
             <div class="idr-question-actions">
               <button type="button" class="idr-main-button primary" id="checkQuestionButton" onclick="checkAndSaveQuestion()">✨ 루미에게 확인 받기</button>
-              <button type="button" class="idr-main-button" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
+              <button type="button" class="idr-main-button" id="questionNextStageButton" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
             </div>
           </article>
 
@@ -9478,11 +9474,22 @@ async function fetchClassBookChatFeed() {
     const seedPosts = getDemoFinalIndividualBookChatSeeds()
       .map(mapIndividualPendingSeedToPost);
     const directPosts = loadDemoApprovalRequests("individual")
+      .filter(function(request) {
+        const override = getDemoBookChatStatusOverride("individual", request.requestId);
+        return !(override && override.deleted === true);
+      })
       .map(mapDemoIndividualApprovalToPost);
     const mergedById = new Map();
+    const deletedIds = new Set(
+      Object.entries(loadDemoBookChatStatusOverrides("individual"))
+        .filter(function(entry) { return entry[1] && entry[1].deleted === true; })
+        .map(function(entry) { return String(entry[0]).trim(); })
+    );
 
     seedPosts.concat(directPosts).forEach(function(post) {
-      mergedById.set(String(post.id), post);
+      const normalizedId = String(post.id == null ? "" : post.id).trim();
+      if (!normalizedId || deletedIds.has(normalizedId)) return;
+      mergedById.set(normalizedId, post);
     });
 
     return {
@@ -9567,48 +9574,13 @@ async function fetchClassBookChatFeed() {
 
 /*
  * 학생이 아무것도 안 써도 심사 교사 승인/거절 체험을 볼 수 있게 넣어 둔
- * 가상 승인대기 예시 - teacher/individual-book-chat-manage.html의 같은
- * 이름 상수와 id가 반드시 같아야 승인 결과가 이 화면에도 반영된다.
+ * 가상 승인대기 예시의 단일 원본은 js/demo-storage.js의
+ * DEMO_BOOK_CHAT_PENDING_SEEDS.individual / DEMO_INDIVIDUAL_BOOK_CHAT_APPROVED_SEEDS다
+ * (teacher/individual-book-chat-manage.html도 같은 함수로 읽으므로 id가 항상 같다).
  * 기본 상태는 "pending"이라 teacher 화면에서 승인하기 전에는 이
  * 목록(친구 글)에 보이지 않는다(isMine이 항상 false이므로 approved일
  * 때만 노출되는 기존 필터를 그대로 탄다).
  */
-const INDIVIDUAL_BOOK_CHAT_PENDING_SEED = [
-  {
-    id: "individual-seed-pending-01",
-    studentName: "송민정",
-    bookTitle: "긴긴밤",
-    title: "노든의 선택",
-    scene: "노든은 위험한 길을 지나야 어린 펭귄을 지킬 수 있습니다.\n하지만 그 길은 아주 위험합니다.",
-    optionA: "안전한 길로 돌아간다.",
-    optionB: "위험해도 가장 빠른 길로 간다.",
-    authorChoice: "B",
-    submittedAt: "2026-08-05T10:20:00"
-  },
-  {
-    id: "individual-seed-pending-02",
-    studentName: "김민지",
-    bookTitle: "우리 몸의 신비",
-    title: "건강 습관 하나만 고르기",
-    scene: "몸을 건강하게 만들기 위해 매일 한 가지 습관만 지킬 수 있다면 어떤 것을 고를까요?",
-    optionA: "매일 운동하기",
-    optionB: "매일 충분히 잠자기",
-    authorChoice: "B",
-    submittedAt: "2026-08-06T14:10:00"
-  },
-  {
-    id: "individual-seed-pending-03",
-    studentName: "이혜원",
-    bookTitle: "초정리 편지",
-    title: "글을 배울 기회",
-    scene: "글을 배우는 것이 쉽지 않지만, 글을 알게 되면 내 생각을 다른 사람에게 전할 수 있습니다.",
-    optionA: "어렵더라도 끝까지 글을 배운다.",
-    optionB: "너무 어려우면 다른 사람이 대신 읽고 써 주게 한다.",
-    authorChoice: "A",
-    submittedAt: "2026-08-07T09:40:00"
-  }
-];
-
 function mapIndividualPendingSeedToPost(seed) {
   const override = getDemoBookChatStatusOverride("individual", seed.id);
   const status = normalizeIndividualModerationStatus(
@@ -9625,7 +9597,6 @@ function mapIndividualPendingSeedToPost(seed) {
     scene: seed.scene,
     optionA: seed.optionA,
     optionB: seed.optionB,
-    authorChoice: seed.authorChoice,
     isMine: false,
     moderationStatus: status,
     rejectReason: status === "rejected" ? (override ? override.reason : "") : "",
@@ -9648,7 +9619,6 @@ function mapDemoIndividualApprovalToPost(request) {
     scene: request.scene || "",
     optionA: request.optionA || "",
     optionB: request.optionB || "",
-    authorChoice: request.authorChoice || "",
     isMine: !individualBookChatTeacherMode,
     moderationStatus: normalizeIndividualModerationStatus(request.status || "pending"),
     rejectReason: request.rejectedReason || "",
@@ -9700,11 +9670,13 @@ function normalizeIndividualModerationStatus(status) {
   내용이 보인다.
 */
 async function fetchBookChatComments(postId) {
-  if (isIndividualBookChatDemoView() && loadDemoApprovalRequests("individual").some(function(request) {
-    return String(request.requestId) === String(postId);
-  })) {
+  if (isIndividualBookChatDemoView()) {
     const temporary = loadDemoState("individualBookChatComments", {});
-    return (temporary[String(postId)] || []).filter(item => !(temporary._deletedIds || []).includes(String(item.id))).map(item => ({...item, mine:item.authorId != null && String(item.authorId) === String(studentId)}));
+    const deletedIds = temporary._deletedIds || [];
+    return getDemoIndividualBookChatSeedComments(postId)
+      .concat(temporary[String(postId)] || [])
+      .filter(item => !deletedIds.includes(String(item.id)))
+      .map(item => ({...item, mine:item.authorId != null ? String(item.authorId) === String(studentId) : !!item.mine}));
   }
   const token = sessionStorage.getItem("token");
 
@@ -9743,12 +9715,7 @@ async function fetchBookChatComments(postId) {
         content: item.content
       };
     });
-    if (!isIndividualBookChatDemoView()) return serverComments;
-    const temporary = loadDemoState("individualBookChatComments", {});
-    const deletedIds = temporary._deletedIds || [];
-    return serverComments.concat(temporary[String(postId)] || [])
-      .filter(item => !deletedIds.includes(String(item.id)))
-      .map(item => ({...item, mine:item.authorId != null ? String(item.authorId) === String(studentId) : !!item.mine}));
+    return serverComments;
   } catch (error) {
     console.error("책수다방 댓글을 불러오지 못했습니다.", error);
     return [];
@@ -9826,22 +9793,30 @@ function getIndividualModerationBadgeInfo(status) {
   내가 쓴 책수다 글을 서버(DB)에서 소프트 삭제합니다.
 */
 window.deleteMyBookChatPost = async function (postId) {
-  if (isDemoAccount()) {
+  const normalizedPostId = String(postId == null ? "" : postId).trim();
+  const browserLocalPostId = !/^\d+$/.test(normalizedPostId);
+  if (isIndividualBookChatDemoView() || browserLocalPostId) {
     const localRequest = loadDemoApprovalRequests("individual").find(function(request) {
-      return String(request.requestId) === String(postId);
+      return String(request.requestId == null ? "" : request.requestId).trim() === normalizedPostId;
     });
-    if (!localRequest) {
-      alert("심사용 공용 예시 글은 삭제되지 않아요.");
+    const targetPost = allBookChatPosts.find(function(post) {
+      return String(post.id == null ? "" : post.id).trim() === normalizedPostId;
+    });
+    if (!targetPost || !targetPost.isMine) {
+      alert("내가 작성한 글만 삭제할 수 있어요.");
       return;
     }
-    if (localRequest.status !== "rejected") {
-      alert("거절된 내 글만 삭제할 수 있어요.");
-      return;
-    }
+    if (targetPost.moderationStatus === "pending") return;
     if (!confirm("이 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
-    saveDemoState("individualBookChatApprovals", loadDemoApprovalRequests("individual").filter(function(request) {
-      return String(request.requestId) !== String(postId);
-    }));
+    if (localRequest) {
+      deleteDemoApprovalRequest("individual", normalizedPostId);
+    }
+    /* 삭제 tombstone도 함께 남겨 진행 중이던 비동기 목록 갱신이나 오래된
+       direct snapshot이 같은 글을 다시 합쳐도 재등장하지 않게 한다. */
+    deleteDemoBookChatPost("individual", normalizedPostId);
+    allBookChatPosts = allBookChatPosts.filter(function(post) {
+      return String(post.id == null ? "" : post.id).trim() !== normalizedPostId;
+    });
     await renderBookChatRoom();
     return;
   }
@@ -9878,6 +9853,7 @@ window.deleteMyBookChatPost = async function (postId) {
 };
 
 let currentBookChatPosts = [];
+let editingRejectedBookChatPostId = null;
 
 function demoExampleBannerHtml() {
   if (!isIndividualBookChatDemoView()) return "";
@@ -9910,10 +9886,14 @@ async function renderBookChatRoom(selectedIndex = 0) {
   if (isIndividualBookChatDemoView()) {
     const temporaryComments = loadDemoState("individualBookChatComments", {});
     feedPosts.forEach(function (post) {
-      (temporaryComments[String(post.id)] || []).forEach(function (comment) {
-        if (comment.choice === "A") post.aCount += 1;
-        if (comment.choice === "B") post.bCount += 1;
-      });
+      const deletedIds = temporaryComments._deletedIds || [];
+      getDemoIndividualBookChatSeedComments(post.id)
+        .concat(temporaryComments[String(post.id)] || [])
+        .filter(function (comment) { return !deletedIds.includes(String(comment.id)); })
+        .forEach(function (comment) {
+          if (comment.choice === "A") post.aCount += 1;
+          if (comment.choice === "B") post.bCount += 1;
+        });
     });
   }
 
@@ -9926,45 +9906,24 @@ async function renderBookChatRoom(selectedIndex = 0) {
   });
 
   /*
-    인기 글 1~3위: 승인된 글 중 참여 수(A+B)가 1 이상인 글만 후보,
-    참여 수 내림차순 → 동률이면 최신 작성 글 우선, 최대 3개.
-    나머지는 나의 글(모든 상태, 최신순) → 친구 승인 글(최신순) 순서로 붙인다.
-  */
-  const popularPool = dateFilteredPosts
-    .filter(function (post) {
-      return post.moderationStatus === "approved" && (post.aCount + post.bCount) > 0;
-    })
-    .sort(function (a, b) {
-      const countDiff = (b.aCount + b.bCount) - (a.aCount + a.bCount);
-      return countDiff !== 0 ? countDiff : new Date(b.createdAt) - new Date(a.createdAt);
-    })
-    .slice(0, 3);
-
-  popularPool.forEach(function (post, index) {
-    post.popularRank = index + 1;
-  });
-
-  const popularIds = new Set(popularPool.map(function (post) { return post.id; }));
-
-  /*
     공개 여부(isPublic)와 작성자 판별(isMine)은 서로 다른 조건이다 - 공개
     피드에는 작성자가 누구든 승인된 글이 모두 보여야 하고, isMine은 오직
     "내 글" 묶음/배지/거절 사유 표시에만 쓴다. 두 조건을 한 필터에서
     섞으면 다른 학생(가상 학생 포함)의 승인 글이 공개 피드에서 빠질 수
     있으므로 명시적으로 분리해 둔다.
   */
-  const myRemainingPosts = dateFilteredPosts
-    .filter(function (post) { return post.isMine && !popularIds.has(post.id); })
+  const myPosts = dateFilteredPosts
+    .filter(function (post) { return post.isMine; })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 
-  const friendRemainingPosts = dateFilteredPosts
+  const friendPosts = dateFilteredPosts
     .filter(function (post) {
       const isPublic = post.moderationStatus === "approved";
-      return !post.isMine && isPublic && !popularIds.has(post.id);
+      return !post.isMine && isPublic;
     })
     .sort(function (a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
 
-  const allBookChatPosts = [...popularPool, ...myRemainingPosts, ...friendRemainingPosts];
+  const allBookChatPosts = [...myPosts, ...friendPosts];
   currentBookChatPosts = allBookChatPosts;
   // 선택한 날짜에 책수다 글이 하나도 없으면 빈 화면을 보여줍니다.
   // 이 처리가 없으면 이전 날짜로 이동했을 때 오른쪽 상세가 이전 글처럼 남을 수 있습니다.
@@ -10126,12 +10085,6 @@ const displayReplies = canDiscussSelectedPost
       ? `onclick="event.stopPropagation(); window.openIndividualRejectReasonModal('${post.id}');"`
       : "";
 
-    const popularBadgeHtml = post.popularRank
-      ? `<div class="idr-book-chat-popular-badge idr-book-chat-popular-rank-${post.popularRank}">${
-          post.popularRank === 1 ? "👑 인기 글 1위" : post.popularRank === 2 ? "🥈 인기 글 2위" : "🥉 인기 글 3위"
-        }</div>`
-      : "";
-
     return `
       <article
         class="idr-share-card ${selectedClass}"
@@ -10140,7 +10093,6 @@ const displayReplies = canDiscussSelectedPost
         onclick="window.openBookChatDetail(${index}, false)"
         onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); window.openBookChatDetail(${index}, false); }"
       >
-        ${popularBadgeHtml}
         <div class="idr-question-card-top">
   <div class="idr-book-chat-writer-status">
     <span>${post.label || post.writer}</span>
@@ -10211,7 +10163,21 @@ ${
   }
 
   ${
-    post.isMine
+    post.isMine && post.moderationStatus === "rejected"
+      ? `
+        <button
+          class="idr-book-chat-edit-button"
+          type="button"
+          onclick="event.stopPropagation(); window.editRejectedBookChatPost('${post.id}');"
+        >
+          수정
+        </button>
+      `
+      : ""
+  }
+
+  ${
+    post.isMine && post.moderationStatus !== "pending"
       ? `
         <button
           class="idr-book-chat-delete-button"
@@ -10438,7 +10404,6 @@ ${
           ${demoExampleBannerHtml()}
           <div class="idr-selected-question">
             <p><strong>상황 설명</strong>${escapeHtml(selectedPost.scene)}</p>
-            ${selectedPost.authorChoice ? `<p><strong>작성자의 선택</strong>${escapeHtml(selectedPost.authorChoice)}</p>` : ""}
           </div>
 
           ${selectedDiscussionHtml}
@@ -10540,7 +10505,7 @@ window.openIndividualRejectReasonModal = function (postId) {
       <strong>선생님의 피드백</strong>
       ${escapeHtml(reason)}
     </div>
-    <button class="idr-main-button primary" type="button" style="margin-top: 16px; width: 100%;" onclick="window.closeIndividualRejectReasonModal(); window.renderBookChatWriteScreen();">다시 쓰기</button>
+    <button class="idr-main-button primary" type="button" style="margin-top: 16px; width: 100%;" onclick="window.closeIndividualRejectReasonModal(); window.editRejectedBookChatPost('${postId}');">수정하기</button>
   `;
 
   modal.classList.remove("hidden");
@@ -10579,16 +10544,24 @@ window.toggleBookChatReplies = function () {
   학생이 읽은 책의 장면을 설명하고,
   친구들에게 A/B 밸런스 선택을 묻는 글을 작성합니다.
 */
-function renderBookChatWriteScreen() {
+function renderBookChatWriteScreen(editPostId = null) {
   const shareScreen = document.getElementById("shareScreen");
 
   if (!shareScreen) return;
+
+  const editPost = editPostId == null
+    ? null
+    : currentBookChatPosts.find(function (post) {
+        return String(post.id) === String(editPostId) && post.isMine && post.moderationStatus === "rejected";
+      });
+
+  editingRejectedBookChatPostId = editPost ? String(editPost.id) : null;
 
   shareScreen.innerHTML = `
     <div class="idr-book-chat-write" style="width: 100%; height: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 16px; overflow: hidden; padding: 4px 8px;">
       <section class="idr-card idr-work-header">
         <div>
-          <h1>책수다 글쓰기</h1>
+          <h1>${editPost ? "밸런스 글 수정하기" : "책수다 글쓰기"}</h1>
           <p>친구들이 책을 몰라도 이해할 수 있게 장면을 설명하고, 밸런스 선택을 만들어 봐요.</p>
         </div>
         <div class="idr-work-actions">
@@ -10596,7 +10569,13 @@ function renderBookChatWriteScreen() {
         </div>
       </section>
 
-      <section class="idr-card idr-book-chat-write-card">
+      <section class="idr-card idr-book-chat-write-card${editPost ? " is-editing" : ""}">
+        ${editPost ? `
+          <div class="idr-book-chat-edit-feedback">
+            <strong>선생님의 피드백</strong>
+            ${escapeHtml(editPost.rejectReason || "글을 다시 살펴보고 조금 더 자세히 써 보세요.")}
+          </div>
+        ` : ""}
         <div class="idr-book-chat-write-intro">
           <h2 class="idr-section-title">내가 나누고 싶은 장면</h2>
           <p>
@@ -10632,13 +10611,30 @@ function renderBookChatWriteScreen() {
         </div>
 
         <div class="idr-book-chat-write-actions">
-          <button class="idr-main-button" type="button" onclick="window.renderBookChatRoom()">취소</button>
-          <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">책수다 올리기</button>
+          <button class="idr-main-button" type="button" onclick="window.cancelBookChatWrite()">취소</button>
+          <button class="idr-main-button primary" type="button" onclick="window.saveBookChatPost()">${editPost ? "수정" : "책수다 올리기"}</button>
         </div>
       </section>
     </div>
   `;
+
+  if (editPost) {
+    document.getElementById("bookChatBookInput").value = editPost.bookTitle || "";
+    document.getElementById("bookChatTitleInput").value = editPost.title || "";
+    document.getElementById("bookChatSceneInput").value = editPost.scene || "";
+    document.getElementById("bookChatOptionAInput").value = editPost.optionA || "";
+    document.getElementById("bookChatOptionBInput").value = editPost.optionB || "";
+  }
 }
+
+window.editRejectedBookChatPost = function (postId) {
+  renderBookChatWriteScreen(postId);
+};
+
+window.cancelBookChatWrite = function () {
+  editingRejectedBookChatPostId = null;
+  renderBookChatRoom();
+};
 
 async function saveBookChatPost() {
   const bookInput = document.getElementById("bookChatBookInput");
@@ -10658,7 +10654,74 @@ async function saveBookChatPost() {
     return;
   }
 
+  if (editingRejectedBookChatPostId) {
+    await reviseRejectedBookChatPost(bookTitle, title, scene, optionA, optionB);
+    return;
+  }
+
   await saveBookChatPostToServer(bookTitle, title, scene, optionA, optionB);
+}
+
+async function reviseRejectedBookChatPost(bookTitle, title, scene, optionA, optionB) {
+  const postId = editingRejectedBookChatPostId;
+  const saveButton = document.querySelector(".idr-book-chat-write-actions .idr-main-button.primary");
+  if (!postId) return;
+
+  if (saveButton) saveButton.disabled = true;
+
+  try {
+    if (isDemoAccount()) {
+      const request = loadDemoApprovalRequests("individual").find(function (item) {
+        return String(item.requestId) === String(postId);
+      });
+      if (!request || normalizeIndividualModerationStatus(request.status) !== "rejected") {
+        alert("거절된 내 글만 수정할 수 있어요.");
+        return;
+      }
+      saveDemoApprovalRequest("individual", Object.assign({}, request, {
+        bookTitle: bookTitle,
+        title: title,
+        scene: scene,
+        optionA: optionA,
+        optionB: optionB,
+        questions: [{ title: title, scene: scene, optionA: optionA, optionB: optionB }],
+        status: "pending",
+        rejectedReason: "",
+        reviewedAt: "",
+        reviewedBy: ""
+      }));
+    } else {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        alert("로그인 정보가 없어요. 다시 로그인한 뒤 다시 시도해 주세요.");
+        return;
+      }
+      const response = await fetch(
+        INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/posts/" + postId,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+          },
+          body: JSON.stringify({ bookTitle, title, scene, optionA, optionB })
+        }
+      );
+      if (!response.ok) {
+        const errorBody = await response.json().catch(function () { return null; });
+        alert((errorBody && errorBody.message) || "글을 수정하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+    }
+
+    editingRejectedBookChatPostId = null;
+    await renderBookChatRoom();
+  } catch (error) {
+    console.error("거절된 책수다 글을 수정하지 못했습니다.", error);
+    alert("지금은 글을 수정하지 못했어요. 잠시 후 다시 시도해 주세요.");
+  } finally {
+    if (saveButton) saveButton.disabled = false;
+  }
 }
 
 /*
@@ -11753,8 +11816,9 @@ function getBookTypeCounts() {
       그대로 쓴다 - 책속 생각쓰기 일일 보상도 정확히 이 3개가 모두 채워질
       때만 지급되므로, 배지 숫자와 실제 보상 조건이 항상 일치한다.
     */
-    function updateMadeQuestionCountBadge() {
+function updateMadeQuestionCountBadge() {
   const count = getTodayCompletedQuestionCount();
+  const canMoveNext = count >= 3 || isDemoAccount();
 
   const countText =
     count >= 3
@@ -11770,6 +11834,11 @@ function getBookTypeCounts() {
   if (todayBadge) {
     todayBadge.textContent = "만든 질문 " + count + "/3개";
   }
+
+  const nextButton = document.getElementById("questionNextStageButton");
+  const bottomButton = document.getElementById("bottomShareButton");
+  if (nextButton) nextButton.disabled = !canMoveNext;
+  if (bottomButton) bottomButton.disabled = !canMoveNext;
 }
 
     function renderQuestionCard(item) {
@@ -11822,10 +11891,6 @@ function getBookTypeCounts() {
       }
 
       const selectedItem = sortedQuestions.find((item) => item.id === selectedShareQuestionId) || sortedQuestions[0];
-      const bestQuestionId = sortedQuestions.length > 0 && sortedQuestions[0].replyCount > 0
-        ? sortedQuestions[0].id
-        : null;
-
       list.innerHTML = "";
 
       sortedQuestions.forEach((item) => {
@@ -11833,13 +11898,9 @@ function getBookTypeCounts() {
         card.className = "idr-share-card";
         card.classList.toggle("selected", selectedShareQuestionId === item.id);
 
-        const bestBadge = item.id === bestQuestionId
-          ? `<span class="idr-best-badge">BEST 질문</span>`
-          : "";
-
         card.innerHTML = `
           <div class="idr-question-card-top">
-            <span>${item.name || "친구"} · ${getTypeLabel(item.type)} ${bestBadge}</span>
+            <span>${item.name || "친구"} · ${getTypeLabel(item.type)}</span>
             <span class="idr-comment-count">댓글 ${item.replyCount}개</span>
           </div>
           <strong>${escapeHtml(item.question)}</strong>
@@ -11883,17 +11944,10 @@ function getBookTypeCounts() {
         ? allQuestions
         : allQuestions.filter((item) => item.type === activeShareFilter);
 
-      /*
-        질문 나누기 화면에서는 별도 정렬 선택 상자를 두지 않습니다.
-        댓글이 많은 질문은 자동으로 위에 오고, 댓글 수가 같으면 최신 질문이 위에 오게 합니다.
-      */
-      return [...filtered].sort((a, b) => {
-        if (b.replyCount !== a.replyCount) {
-          return b.replyCount - a.replyCount;
-        }
-
-        return getQuestionTimeValue(b) - getQuestionTimeValue(a);
-      });
+      // 인기/BEST 우선순위 없이 현재 날짜의 최신 질문부터 표시합니다.
+      return [...filtered].sort((a, b) =>
+        getQuestionTimeValue(b) - getQuestionTimeValue(a)
+      );
     }
 
     function getQuestionTimeValue(item) {

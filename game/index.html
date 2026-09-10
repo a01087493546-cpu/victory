@@ -142,8 +142,6 @@
                 </span>
                 <span>던전 입장하기</span>
               </button>
-
-              <div id="detail-blocked-note" class="detail-blocked-note" style="margin-top:10px;color:#ffb2b2;font-size:15px;line-height:1.5;white-space:pre-line;" hidden></div>
             </div>
           </section>
 
@@ -459,18 +457,9 @@
       document.getElementById('detail-reward-note').textContent = '';
 
       const enterBtn = document.getElementById('enter-btn');
-      const blockedNote = document.getElementById('detail-blocked-note');
 
       enterBtn.disabled = !dungeon.eligible;
       enterBtn.classList.toggle('locked', !dungeon.eligible);
-
-      if (!dungeon.eligible && dungeon.blockedReasons && dungeon.blockedReasons.length > 0) {
-        blockedNote.textContent = dungeon.blockedReasons.join('\n');
-        blockedNote.hidden = false;
-      } else {
-        blockedNote.textContent = '';
-        blockedNote.hidden = true;
-      }
     }
 
     async function loadDungeons() {

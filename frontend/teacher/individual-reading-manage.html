@@ -655,9 +655,28 @@
       background:
         linear-gradient(
           90deg,
-          #f2b879,
-          #c27b3a
+          #dc9279,
+          #cf7a5e
         );
+    }
+
+    .ir-state-need .ir-student-percent {
+      color: #b85f4d;
+    }
+
+    .ir-state-need .ir-student-state {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border: 1px solid rgba(201, 111, 91, 0.58);
+      border-radius: 999px;
+      background: #f6e1dc;
+      color: #ad5947;
+    }
+
+    .ir-student-row.ir-state-need:hover {
+      background: rgba(246, 225, 220, 0.48);
     }
 
     .ir-state-danger .ir-achieve-fill {
@@ -1377,7 +1396,9 @@
     }
 
     .chip-need {
-      background: #c27b3a;
+      border: 1px solid rgba(201, 111, 91, 0.62);
+      background: #f6e1dc;
+      color: #ad5947;
     }
 
     .chip-danger {
@@ -1432,6 +1453,25 @@
           #c6d3b2,
           var(--olive-soft)
         );
+    }
+
+    .ir-detail-card.ir-state-need {
+      border-color: rgba(201, 111, 91, 0.4);
+      background: rgba(255, 247, 244, 0.96);
+      box-shadow: 0 7px 14px rgba(173, 89, 71, 0.09);
+    }
+
+    .ir-detail-card.ir-state-need .ir-detail-bar-fill {
+      background: linear-gradient(90deg, #dc9279, #cf7a5e);
+    }
+
+    .ir-detail-card.ir-state-need .ir-detail-bar-value {
+      color: #b85f4d;
+    }
+
+    .ir-detail-card.ir-state-need .ir-teacher-note {
+      border-color: rgba(201, 111, 91, 0.34);
+      background: rgba(246, 225, 220, 0.5);
     }
 
     .ir-detail-bar-value {
@@ -1978,77 +2018,70 @@
       min-width: 0;
       height: 104px;
       display: grid;
-      grid-template-columns: 58px minmax(0, 1fr) 32px;
+      grid-template-columns: 46px minmax(0, 1fr) 26px;
       align-items: center;
-      gap: 16px;
-      padding: 12px 20px;
-      border: 1px solid rgba(92, 112, 72, 0.54);
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 12% 0%, rgba(246, 239, 195, 0.42), transparent 38%),
-        linear-gradient(145deg, #a9b98e, #71865e);
-      color: #fffdf2;
+      gap: 15px;
+      padding: 12px 22px;
+      border: 1px solid rgba(100, 116, 72, 0.48);
+      border-radius: 17px;
+      background: linear-gradient(135deg, #f8f5df 0%, #dce3bd 50%, #aeba82 100%);
+      color: #344128;
       text-align: left;
       cursor: pointer;
-      box-shadow:
-        0 7px 0 rgba(65, 81, 52, 0.42),
-        0 14px 24px rgba(62, 78, 51, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      box-shadow: 0 7px 18px rgba(57, 72, 43, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.7);
       transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
     }
 
     .ir-portfolio-card:hover,
     .ir-portfolio-card:focus-visible {
-      transform: translateY(-2px);
-      filter: brightness(1.06);
-      box-shadow:
-        0 9px 0 rgba(65, 81, 52, 0.38),
-        0 18px 28px rgba(62, 78, 51, 0.24),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-      outline: 3px solid rgba(184, 199, 151, 0.34);
+      transform: translateY(-1px);
+      filter: brightness(1.025);
+      box-shadow: 0 10px 23px rgba(57, 72, 43, 0.21), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      outline: 3px solid rgba(139, 158, 102, 0.22);
       outline-offset: 2px;
     }
 
     .ir-portfolio-card:active {
-      transform: translateY(2px);
-      box-shadow: 0 3px 0 rgba(65, 81, 52, 0.42);
+      transform: translateY(0);
+      box-shadow: 0 5px 12px rgba(57, 72, 43, 0.16);
     }
 
     .ir-portfolio-icon {
-      width: 58px;
-      height: 58px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255, 253, 236, 0.44);
-      border-radius: 18px;
-      background: rgba(50, 67, 40, 0.18);
-      font-size: 29px;
+      border: 1px solid rgba(104, 122, 73, 0.3);
+      border-radius: 13px;
+      background: rgba(255, 253, 237, 0.7);
+      font-size: 24px;
     }
 
     .ir-portfolio-copy {
       min-width: 0;
       display: grid;
+      align-items: center;
       gap: 4px;
     }
 
     .ir-portfolio-title {
-      font-size: 23px;
-      font-weight: 950;
+      color: #344128;
+      font-size: 24px;
+      font-weight: 800;
       line-height: 1.2;
     }
 
-    .ir-portfolio-description {
-      color: rgba(255, 253, 239, 0.9);
-      font-size: 14px;
-      font-weight: 750;
-      line-height: 1.3;
-      word-break: keep-all;
+    .ir-portfolio-arrow {
+      color: #495b37;
+      font-size: 23px;
+      font-weight: 800;
+      text-align: center;
+      transition: transform 160ms ease;
     }
 
-    .ir-portfolio-arrow {
-      font-size: 30px;
-      font-weight: 900;
-      text-align: center;
+    .ir-portfolio-card:hover .ir-portfolio-arrow,
+    .ir-portfolio-card:focus-visible .ir-portfolio-arrow {
+      transform: translateX(3px);
     }
 
     .ir-status-card .ir-support-item {
@@ -2270,7 +2303,6 @@
             <span class="ir-portfolio-icon" aria-hidden="true">📘</span>
             <span class="ir-portfolio-copy">
               <span class="ir-portfolio-title">학생 성장 포트폴리오</span>
-              <span class="ir-portfolio-description">학생의 독서 성장 기록을 한눈에 살펴보세요.</span>
             </span>
             <span class="ir-portfolio-arrow" aria-hidden="true">›</span>
           </button>
@@ -2530,6 +2562,15 @@ const API_BASE_URL = getApiBaseUrl();
 
     let students = [];
 
+    function isSupportNeededState(state) {
+      const normalized = String(state || "").replace(/\s+/g, "");
+      return normalized === ["집중", "지원"].join("") || normalized === "지원필요";
+    }
+
+    function displayAchievementLevel(state) {
+      return isSupportNeededState(state) ? "지원필요" : state;
+    }
+
     function getTeacherAuthContext() {
       const token = sessionStorage.getItem("token");
       const teacherId = sessionStorage.getItem("id") || sessionStorage.getItem("studentId");
@@ -2558,6 +2599,10 @@ const API_BASE_URL = getApiBaseUrl();
         return "ir-state-neutral";
       }
 
+      if (isSupportNeededState(state)) {
+        return "ir-state-need";
+      }
+
       return "ir-state-danger";
     }
 
@@ -2575,6 +2620,10 @@ const API_BASE_URL = getApiBaseUrl();
 
       if (state === "미참여") {
         return "chip-neutral";
+      }
+
+      if (isSupportNeededState(state)) {
+        return "chip-need";
       }
 
       return "chip-danger";
@@ -2620,7 +2669,7 @@ const API_BASE_URL = getApiBaseUrl();
                 </div>
 
                 <div class="ir-student-state">
-                  ${state}
+                  ${displayAchievementLevel(state)}
                 </div>
 
               </div>
@@ -2706,7 +2755,7 @@ const API_BASE_URL = getApiBaseUrl();
     }
 
     /*
-      "교사 참고"는 achievementLevel(매우 우수/우수/보통/집중 지원) 하나만
+      "교사 참고"는 achievementLevel(매우 우수/우수/보통/지원필요) 하나만
       보고 정해진 한 문장을 반복하지 않도록, 읽은 책 수·독서 실천도·기록
       완성도를 함께 해석해 만든다. 온책읽기 쪽 buildPracticeTeacherNote와
       틀(문자열 시드로 안정적으로 문장 하나를 고른다)은 같지만, 지표 자체가
@@ -2910,7 +2959,7 @@ const API_BASE_URL = getApiBaseUrl();
             `;
 
           return `
-            <article class="ir-detail-card">
+            <article class="ir-detail-card ${getPreviewStateClass(state)}">
 
               <div class="ir-detail-card-header">
 
@@ -2922,7 +2971,7 @@ const API_BASE_URL = getApiBaseUrl();
                 <span
                   class="ir-state-chip ${getDetailChipClass(state)}"
                 >
-                  ${state}
+                  ${displayAchievementLevel(state)}
                 </span>
 
               </div>

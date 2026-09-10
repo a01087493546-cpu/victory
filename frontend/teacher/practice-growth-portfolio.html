@@ -39,8 +39,18 @@
     --radius-small: 10px;
   }
 
-  html, body {
-    min-height: 100%;
+  html {
+    width: 100%;
+    min-width: 0;
+    min-height: 1080px;
+    overflow-x: hidden;
+  }
+
+  body {
+    width: 1920px;
+    min-width: 1920px;
+    min-height: 1080px;
+    overflow-x: hidden;
   }
 
   body {
@@ -107,18 +117,29 @@
   }
 
   main {
+    width: 1500px;
     max-width: 1500px;
-    margin: 0 auto;
+    margin-left: max(24px, calc((100vw - 1500px) / 2));
+    margin-right: 0;
     padding: 28px 24px 0;
   }
 
   /* ---------- 학생 선택 화면 ---------- */
+  #pickerScreen {
+    width: min(1500px, calc(100vw - 48px));
+    min-height: calc(100vh - 75px - 28px - 60px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
   .gp-picker-card {
     background: var(--paper);
     border-radius: var(--radius-large);
     box-shadow: var(--shadow);
     padding: 28px;
     max-width: 620px;
+    width: 100%;
     margin: 30px auto;
   }
 
@@ -136,25 +157,29 @@
     margin-bottom: 18px;
   }
 
+  /* 원래 크기의 48px 행 8개까지만 노출하고 9번째부터 목록만 스크롤한다. */
   .gp-student-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 480px;
+    max-height: 440px;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .gp-student-row {
     display: flex;
     align-items: center;
+    flex: 0 0 48px;
+    height: 48px;
     gap: 12px;
     padding: 13px 16px;
     border-radius: var(--radius-medium);
     border: 1px solid var(--line);
     background: #fff;
     text-align: left;
-    font-size: 15px;
     color: var(--brown);
+    font-size: 15px;
     transition: background 0.15s ease, transform 0.15s ease;
   }
 
@@ -263,7 +288,9 @@
     border-radius: var(--radius-large);
     box-shadow: var(--shadow);
     padding: 24px;
-    max-height: calc(100vh - 200px);
+    height: var(--gp-editor-height, auto);
+    max-height: none;
+    min-height: 0;
     overflow-y: auto;
   }
 
@@ -308,6 +335,12 @@
     margin-bottom: 4px;
   }
 
+  .gp-field-sublabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(118, 81, 54, 0.75);
+  }
+
   .gp-field .gp-unavailable-hint {
     font-size: 11px;
     color: var(--gold-dark);
@@ -316,6 +349,7 @@
   }
 
   .gp-field input,
+  .gp-field select,
   .gp-field textarea {
     width: 100%;
     border: 1px solid var(--line);
@@ -326,13 +360,24 @@
     background: #fff;
   }
 
+  .gp-field select {
+    appearance: auto;
+  }
+
   .gp-field textarea {
     resize: vertical;
     min-height: 64px;
     line-height: 1.5;
   }
 
+  .gp-field textarea.gp-stage-editor-textarea {
+    min-height: 104px;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
   .gp-field input:focus,
+  .gp-field select:focus,
   .gp-field textarea:focus {
     outline: 2px solid var(--gold);
     outline-offset: 1px;
@@ -397,8 +442,13 @@
   }
 
   .gp-a4-outer {
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: visible;
   }
+
+  .gp-a4-page-slot { position: relative; flex: 0 0 auto; }
 
   .gp-a4 {
     width: 794px;
@@ -417,6 +467,8 @@
     print-color-adjust: exact;
   }
 
+  .gp-a4-page-slot > .gp-a4 { position: absolute; inset: 0 auto auto 0; }
+
   .gp-a4-content {
     position: absolute;
     top: 165px;
@@ -426,7 +478,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 8px;
   }
 
   .gp-a4-title {
@@ -438,27 +490,32 @@
   }
 
   .gp-a4-section {
-    border-top: 1px solid rgba(169, 99, 11, 0.28);
-    padding-top: 12px;
+    padding: 7px 10px;
+    border: 1px solid rgba(165, 116, 42, 0.22);
+    border-radius: 12px;
+    background: rgba(255, 252, 242, 0.64);
+    box-shadow: 0 3px 10px rgba(91, 58, 25, 0.045);
   }
 
   .gp-a4-section-label {
     font-size: 12.5px;
     font-weight: 800;
     color: var(--gold-dark);
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     letter-spacing: 0.03em;
   }
 
   .gp-a4-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 26px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
   }
 
   .gp-a4-item {
-    flex: 1;
-    min-width: 130px;
+    min-width: 0;
+    padding: 8px 9px;
+    border-radius: 9px;
+    background: rgba(250, 242, 220, 0.72);
   }
 
   .gp-a4-item-label {
@@ -466,6 +523,14 @@
     color: var(--brown-soft);
     font-weight: 700;
     margin-bottom: 3px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .gp-a4-item-sublabel {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: rgba(118, 81, 54, 0.78);
   }
 
   .gp-a4-item-value {
@@ -485,8 +550,53 @@
     font-size: 13.5px;
     line-height: 1.6;
     color: var(--brown);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  #previewTeacherComment {
+    min-height: 88px;
+    height: auto;
     white-space: pre-wrap;
-    word-break: keep-all;
+    overflow: visible;
+  }
+
+  .gp-ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; align-items: stretch; }
+  .gp-ai-card { min-width: 0; padding: 7px 9px; border: 1px solid rgba(165, 116, 42, 0.18); border-radius: 10px; background: rgba(250, 244, 226, 0.72); }
+  .gp-ai-card .gp-a4-item-label { margin-bottom: 4px; color: var(--gold-dark); font-weight: 800; }
+  .gp-teacher-card { padding: 7px 10px; border-radius: 10px; border-left: 3px solid rgba(165, 116, 42, 0.58); background: rgba(250, 244, 226, 0.72); }
+  .gp-teacher-card .gp-a4-text-block { line-height: 1.48; white-space: normal; overflow-wrap: break-word; }
+
+  .gp-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .gp-metric-card { padding: 8px 10px; border: 1px solid rgba(165, 116, 42, 0.24); border-radius: 11px; background: rgba(255, 251, 238, 0.72); }
+  .gp-metric-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .gp-metric-value { font-size: 17px; font-weight: 900; color: var(--brown-deep); }
+  .gp-progress-track { height: 8px; overflow: hidden; border-radius: 999px; background: #e8dfcf; }
+  .gp-progress-fill { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #c8953d, #8eaa5d); }
+  .gp-stage-badge, .gp-metric-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; font-size: 9px; font-weight: 800; white-space: nowrap; border: 1px solid transparent; }
+  .gp-level-needs { background: #f5dfc2; color: #7a4c25; border-color: #d8ad7b; }
+  .gp-level-average { background: #eee6d4; color: #665844; border-color: #cfc1a7; }
+  .gp-level-good { background: #dce4c7; color: #4e6035; border-color: #aeba82; }
+  .gp-level-excellent { background: #c9d4a5; color: #354421; border-color: #819451; }
+  .gp-level-pending { background: #f1eee7; color: #766f64; border-color: #d8d1c5; }
+  .gp-stage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .gp-stage-card { min-width: 0; min-height: 78px; height: auto; padding: 8px; border: 1px solid rgba(165, 116, 42, 0.22); border-radius: 11px; background: rgba(255, 252, 241, 0.7); }
+  .gp-stage-head { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-bottom: 6px; }
+  .gp-stage-name { font-size: 15px; font-weight: 900; color: var(--brown-deep); }
+  .gp-stage-text { min-height: 48px; height: auto; font-size: 13.5px; line-height: 1.48; color: var(--brown); white-space: normal; overflow-wrap: break-word; word-break: normal; overflow: visible; }
+  #fieldTeacherComment { min-height: 150px; }
+
+  /* 1920×1080 고정 캔버스: 좁은 창에서는 크기를 줄이지 않고 overflow로 탐색한다. */
+  #pickerScreen {
+    min-height: 917px;
+  }
+
+  .gp-title,
+  .gp-demo-badge,
+  .gp-teacher-pill,
+  .gp-toolbar {
+    white-space: nowrap;
   }
 
   .gp-a4-desc {
@@ -511,15 +621,33 @@
       display: none !important;
     }
 
+    /*
+     * 실측 결과 .gp-a4를 정확히 297mm로 잡으면 브라우저(특히 Safari)의
+     * mm→디바이스 픽셀 반올림 오차로 인쇄 가능 영역을 아주 미세하게
+     * 넘겨 빈 2페이지가 생길 수 있다. 297mm보다 0.5mm 작은 296.5mm를
+     * 상한으로 써서 항상 1페이지 안에 확실히 들어오게 한다(육안으로는
+     * 차이가 없는 수준). html/body/main까지 같은 상한 + overflow:hidden
+     * 으로 감싸서, 혹시 다른 요소가 조금이라도 삐져나와도 2페이지째로
+     * 넘어가지 않게 이중으로 막는다.
+     */
+    html,
     body {
-      background: #fff !important;
+      margin: 0 !important;
       padding: 0 !important;
+      width: 210mm !important;
+      min-height: 296.5mm !important;
+      height: auto !important;
+      overflow: visible !important;
+      background: #fff !important;
     }
 
     main {
       max-width: none !important;
+      width: 210mm !important;
+      height: auto !important;
       padding: 0 !important;
       margin: 0 !important;
+      overflow: visible !important;
     }
 
     .gp-layout {
@@ -531,35 +659,42 @@
     }
 
     .gp-a4-outer {
-      width: auto !important;
+      display: block !important;
+      width: 210mm !important;
       height: auto !important;
       overflow: visible !important;
     }
 
-    .gp-a4 {
+    .gp-a4-page-slot {
       width: 210mm !important;
-      height: 297mm !important;
+      height: 296.5mm !important;
+      break-after: page;
+      page-break-after: always;
+    }
+
+    .gp-a4-page-slot:last-child { break-after: auto; page-break-after: auto; }
+
+    .gp-a4 {
+      box-sizing: border-box !important;
+      width: 210mm !important;
+      height: 296.5mm !important;
       transform: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-      page-break-after: avoid;
+      break-inside: avoid;
+      break-after: avoid;
       page-break-inside: avoid;
+      page-break-after: auto;
     }
 
+    .gp-a4-section { break-inside: avoid; page-break-inside: avoid; }
+
     @page {
-      size: A4;
+      size: A4 portrait;
       margin: 0;
     }
   }
 
-  @media (max-width: 1180px) {
-    .gp-layout {
-      grid-template-columns: 1fr;
-    }
-    .gp-editor {
-      max-height: none;
-    }
-  }
 </style>
 </head>
 <body>
@@ -595,7 +730,7 @@
           <input type="date" id="periodToInput" />
         </div>
 
-        <button class="gp-toolbar-button" type="button" id="reloadOriginalButton" onclick="reloadOriginalData()">원본 데이터 다시 불러오기</button>
+        <button class="gp-toolbar-button" type="button" id="reloadOriginalButton" onclick="reloadOriginalData()">최신 데이터 반영하기</button>
 
         <span class="gp-save-indicator" id="saveIndicator"></span>
 
@@ -631,11 +766,11 @@
             <div class="gp-fieldset-title">핵심 지표</div>
             <div class="gp-field-row">
               <div class="gp-field">
-                <label for="fieldParticipation">참여도 (%)<span class="gp-unavailable-hint" id="hintParticipation" hidden>집계 대기</span></label>
+                <label for="fieldParticipation">참여도<span class="gp-unavailable-hint" id="hintParticipation" hidden>집계 대기</span></label>
                 <input type="number" id="fieldParticipation" min="0" max="100" />
               </div>
               <div class="gp-field">
-                <label for="fieldComprehension">질문 이해도 (%)<span class="gp-unavailable-hint" id="hintComprehension" hidden>집계 대기</span></label>
+                <label for="fieldComprehension">질문 이해도<span class="gp-unavailable-hint" id="hintComprehension" hidden>집계 대기</span></label>
                 <input type="number" id="fieldComprehension" min="0" max="100" />
               </div>
             </div>
@@ -645,15 +780,40 @@
             <div class="gp-fieldset-title">활동 현황</div>
             <div class="gp-field">
               <label for="fieldBeforeStatus">읽기 전 참여 현황</label>
-              <input type="text" id="fieldBeforeStatus" placeholder="예: 완료" />
+              <select id="fieldBeforeStatus">
+                <option value="완료">완료</option>
+                <option value="미완료">미완료</option>
+              </select>
             </div>
             <div class="gp-field">
               <label for="fieldDuringStatus">읽기 중 참여 현황</label>
-              <input type="text" id="fieldDuringStatus" placeholder="예: 완료" />
+              <select id="fieldDuringStatus">
+                <option value="완료">완료</option>
+                <option value="미완료">미완료</option>
+              </select>
             </div>
             <div class="gp-field">
               <label for="fieldAfterStatus">읽기 후 참여 현황</label>
-              <input type="text" id="fieldAfterStatus" placeholder="예: 완료" />
+              <select id="fieldAfterStatus">
+                <option value="완료">완료</option>
+                <option value="미완료">미완료</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">읽기 단계별 성장</div>
+            <div class="gp-field">
+              <label for="fieldBeforeGrowthText">읽기 전 성장과정</label>
+              <textarea class="gp-stage-editor-textarea" id="fieldBeforeGrowthText" placeholder="읽기 전 활동에서 나타난 성장 모습을 입력해 주세요."></textarea>
+            </div>
+            <div class="gp-field">
+              <label for="fieldDuringGrowthText">읽기 중 성장과정</label>
+              <textarea class="gp-stage-editor-textarea" id="fieldDuringGrowthText" placeholder="읽기 중 활동에서 나타난 성장 모습을 입력해 주세요."></textarea>
+            </div>
+            <div class="gp-field">
+              <label for="fieldAfterGrowthText">읽기 후 성장과정</label>
+              <textarea class="gp-stage-editor-textarea" id="fieldAfterGrowthText" placeholder="읽기 후 활동에서 나타난 성장 모습을 입력해 주세요."></textarea>
             </div>
           </div>
 
@@ -662,10 +822,6 @@
             <div class="gp-field">
               <label for="fieldBookTitle">함께 읽은 책</label>
               <input type="text" id="fieldBookTitle" />
-            </div>
-            <div class="gp-field">
-              <label for="fieldActivityCount">활동 횟수<span class="gp-unavailable-hint" id="hintActivityCount" hidden>집계 대기 · 직접 입력</span></label>
-              <input type="number" id="fieldActivityCount" min="0" />
             </div>
           </div>
 
@@ -690,19 +846,7 @@
             <div class="gp-fieldset-title">교사 의견</div>
             <div class="gp-field">
               <label for="fieldTeacherComment">교사 의견</label>
-              <textarea id="fieldTeacherComment"></textarea>
-            </div>
-          </div>
-
-          <div class="gp-fieldset">
-            <div class="gp-fieldset-title">지표 설명</div>
-            <div class="gp-field">
-              <label for="fieldParticipationDesc">참여도 설명</label>
-              <textarea id="fieldParticipationDesc"></textarea>
-            </div>
-            <div class="gp-field">
-              <label for="fieldComprehensionDesc">질문 이해도 설명</label>
-              <textarea id="fieldComprehensionDesc"></textarea>
+              <textarea id="fieldTeacherComment" maxlength="500"></textarea>
             </div>
           </div>
 
@@ -710,13 +854,12 @@
 
         <div class="gp-preview-wrap">
           <div class="gp-a4-outer" id="a4Outer">
+            <div class="gp-a4-page-slot" id="a4Page1Slot">
             <div class="gp-a4" id="a4Sheet">
               <div class="gp-a4-content">
 
-                <div class="gp-a4-title">온책읽기 성장 포트폴리오</div>
-
                 <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">기본 정보</div>
+                  <div class="gp-a4-section-label">학생 정보</div>
                   <div class="gp-a4-row">
                     <div class="gp-a4-item">
                       <div class="gp-a4-item-label">이름</div>
@@ -730,76 +873,53 @@
                       <div class="gp-a4-item-label">평가 기간</div>
                       <div class="gp-a4-item-value" id="previewPeriod">-</div>
                     </div>
+                    <div class="gp-a4-item">
+                      <div class="gp-a4-item-label">함께 읽은 책</div>
+                      <div class="gp-a4-item-value" id="previewBookTitle">-</div>
+                    </div>
                   </div>
                 </div>
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">핵심 지표</div>
-                  <div class="gp-a4-row">
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">참여도</div>
-                      <div class="gp-a4-item-value" id="previewParticipation">-</div>
+                  <div class="gp-metric-grid">
+                    <div class="gp-metric-card">
+                      <div class="gp-a4-item-label">참여도 <span class="gp-a4-item-sublabel">(읽기 활동에 꾸준히 참여한 정도)</span></div>
+                      <div class="gp-metric-head"><span class="gp-metric-value" id="previewParticipation">-</span><span class="gp-metric-badge gp-level-pending" id="previewParticipationLevel">집계 준비 중</span></div>
+                      <div class="gp-progress-track"><span class="gp-progress-fill" id="previewParticipationBar" style="width:0%"></span></div>
                     </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">질문 이해도</div>
-                      <div class="gp-a4-item-value" id="previewComprehension">-</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">활동 현황</div>
-                  <div class="gp-a4-row">
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">읽기 전</div>
-                      <div class="gp-a4-item-value" id="previewBefore">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">읽기 중</div>
-                      <div class="gp-a4-item-value" id="previewDuring">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">읽기 후</div>
-                      <div class="gp-a4-item-value" id="previewAfter">-</div>
+                    <div class="gp-metric-card">
+                      <div class="gp-a4-item-label">질문 이해도 <span class="gp-a4-item-sublabel">(질문의 뜻을 이해하고 적절히 답한 정도)</span></div>
+                      <div class="gp-metric-head"><span class="gp-metric-value" id="previewComprehension">-</span><span class="gp-metric-badge gp-level-pending" id="previewComprehensionLevel">집계 준비 중</span></div>
+                      <div class="gp-progress-track"><span class="gp-progress-fill" id="previewComprehensionBar" style="width:0%"></span></div>
                     </div>
                   </div>
                 </div>
 
                 <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">독서 기록</div>
-                  <div class="gp-a4-row">
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">함께 읽은 책</div>
-                      <div class="gp-a4-item-value" id="previewBookTitle">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">활동 횟수</div>
-                      <div class="gp-a4-item-value" id="previewActivityCount">-</div>
-                    </div>
+                  <div class="gp-a4-section-label">읽기 단계별 성장</div>
+                  <div class="gp-stage-grid">
+                    <div class="gp-stage-card"><div class="gp-stage-head"><span class="gp-stage-name">📖 읽기 전</span><span class="gp-stage-badge" id="previewBefore"></span></div><div class="gp-stage-text" id="previewBeforeAnalysis"></div></div>
+                    <div class="gp-stage-card"><div class="gp-stage-head"><span class="gp-stage-name">✍️ 읽기 중</span><span class="gp-stage-badge" id="previewDuring"></span></div><div class="gp-stage-text" id="previewDuringAnalysis"></div></div>
+                    <div class="gp-stage-card"><div class="gp-stage-head"><span class="gp-stage-name">✨ 읽기 후</span><span class="gp-stage-badge" id="previewAfter"></span></div><div class="gp-stage-text" id="previewAfterAnalysis"></div></div>
                   </div>
                 </div>
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">AI 분석</div>
-                  <div class="gp-a4-item-label">잘하는 점</div>
-                  <div class="gp-a4-text-block" id="previewAiStrengths">-</div>
-                  <div class="gp-a4-item-label" style="margin-top:8px;">노력할 점</div>
-                  <div class="gp-a4-text-block" id="previewAiImprovements">-</div>
+                  <div class="gp-ai-grid">
+                    <div class="gp-ai-card"><div class="gp-a4-item-label">✨ 잘하는 점</div><div class="gp-a4-text-block" id="previewAiStrengths">-</div></div>
+                    <div class="gp-ai-card"><div class="gp-a4-item-label">🌱 노력할 점</div><div class="gp-a4-text-block" id="previewAiImprovements">-</div></div>
+                  </div>
                 </div>
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">교사 의견</div>
-                  <div class="gp-a4-text-block" id="previewTeacherComment">-</div>
-                </div>
-
-                <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">지표 설명</div>
-                  <div class="gp-a4-desc"><b>참여도:</b> <span id="previewParticipationDesc"></span></div>
-                  <div class="gp-a4-desc" style="margin-top:4px;"><b>질문 이해도:</b> <span id="previewComprehensionDesc"></span></div>
+                  <div class="gp-teacher-card"><div class="gp-a4-text-block" id="previewTeacherComment">-</div></div>
                 </div>
 
               </div>
-            </div>
+            </div></div>
           </div>
         </div>
 
@@ -818,13 +938,22 @@
       "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
       "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08"
     ]);
-    const PARTICIPATION_DESC_DEFAULT = "함께 읽기 활동에 얼마나 꾸준히 참여했는지 보여줍니다.";
-    const COMPREHENSION_DESC_DEFAULT = "질문의 뜻을 이해하고 적절히 답하거나 활동에 반영한 정도를 보여줍니다.";
-
     let currentClassId = null;
     let currentStudentId = null;
     let currentStudentNumber = null;
+    let teacherEdited = false;
+    let teacherEditedAt = null;
+    let sourceLoadedAt = null;
+    let currentStageAnalysis = { before: "", during: "", after: "" };
+    let stageAnalysisSource = "aggregate";
     let saveTimer = null;
+    /*
+     * 집계 API가 실제로 돌려준 activityCount(0 포함)만 신뢰해 "활동 전"을
+     * 판정한다. legacy-fallback 등으로 값을 확인할 수 없으면 null로 두고
+     * 기존 동작(AI 호출 허용)을 그대로 유지한다 - 확인 안 된 상태를
+     * 활동 없음으로 성급히 단정하지 않기 위함.
+     */
+    let currentActivityCount = null;
     let a4BackgroundAvailable = false;
 
     function renderTeacherPill() {
@@ -850,10 +979,10 @@
     function applyA4Background() {
       const probe = new Image();
       probe.onload = function () {
-        document.getElementById("a4Sheet").style.setProperty(
-          "--gp-a4-bg-image", "url('" + A4_BG_PATH + "')"
-        );
         a4BackgroundAvailable = true;
+        document.querySelectorAll(".gp-a4").forEach(function (sheet) {
+          sheet.style.setProperty("--gp-a4-bg-image", "url('" + A4_BG_PATH + "')");
+        });
       };
       probe.onerror = function () {
         a4BackgroundAvailable = false;
@@ -863,16 +992,51 @@
 
     function updateA4Scale() {
       const outer = document.getElementById("a4Outer");
-      const sheet = document.getElementById("a4Sheet");
       const wrap = document.querySelector(".gp-preview-wrap");
-      if (!outer || !sheet || !wrap) return;
+      if (!outer || !wrap) return;
 
       const available = wrap.clientWidth - 4;
       const scale = Math.max(0.32, Math.min(1, available / 794));
 
-      sheet.style.transform = "scale(" + scale + ")";
+      document.querySelectorAll(".gp-a4").forEach(function (sheet) { sheet.style.transform = "scale(" + scale + ")"; });
+      document.querySelectorAll(".gp-a4-page-slot").forEach(function (slot) {
+        slot.style.width = (794 * scale) + "px";
+        slot.style.height = (1123 * scale) + "px";
+      });
       outer.style.width = (794 * scale) + "px";
-      outer.style.height = (1123 * scale) + "px";
+      outer.style.height = "auto";
+
+      const editor = document.querySelector(".gp-editor");
+      if (editor) {
+        editor.style.setProperty(
+          "--gp-editor-height",
+          outer.scrollHeight + "px"
+        );
+      }
+    }
+
+    /*
+     * 기본 포트폴리오는 항상 A4 1페이지로만 완성한다 - 2페이지 자동
+     * 분할(내용이 넘치면 뒤 섹션을 다음 페이지로 밀어내는 방식)은 더
+     * 이상 쓰지 않는다. 예전에는 넘칠 때 섹션을 새 페이지로 옮겼지만,
+     * 그 과정에서 "교사 의견만 2페이지에 남는" 것처럼 보이는 문제가
+     * 있었다. 이제는 항상 모든 섹션을 1페이지 안에 그대로 유지하고,
+     * 1페이지 안에 들어가도록 하는 책임은 콘텐츠 길이 제한(AI
+     * 프롬프트)과 카드 여백/줄간격 CSS 쪽에 둔다. 교사 의견은 DOM
+     * 순서상 항상 마지막 섹션이라 자연스럽게 페이지 맨 아래에 위치한다.
+     */
+    function paginateA4() {
+      const outer = document.getElementById("a4Outer");
+      const first = document.querySelector("#a4Sheet > .gp-a4-content");
+      if (!outer || !first) return;
+      const sections = Array.from(outer.querySelectorAll(".gp-a4-section"));
+      sections.forEach(function (section, index) {
+        if (!section.dataset.pageOrder) section.dataset.pageOrder = String(index);
+      });
+      sections.sort(function (a, b) { return Number(a.dataset.pageOrder) - Number(b.dataset.pageOrder); })
+        .forEach(function (section) { first.appendChild(section); });
+      outer.querySelectorAll(".gp-a4-page-slot:not(#a4Page1Slot)").forEach(function (slot) { slot.remove(); });
+      updateA4Scale();
     }
 
     window.addEventListener("resize", updateA4Scale);
@@ -952,7 +1116,35 @@
 
     /* ---------- 편집 화면 ---------- */
 
+    function normalizeStageStatus(value) {
+      return value === "완료" ? "완료" : "미완료";
+    }
+
+    /*
+     * strengthText/growthText를 별도 문단으로 보이게 하지 않고 하나의
+     * 자연스러운 문단으로 합친다("\n"이 아니라 " "로 이어붙임) - AI가
+     * 여전히 두 필드를 나눠 줘도 편집 textarea에는 처음부터 하나로
+     * 합쳐진 최종 문장만 들어가게 하기 위함.
+     */
+    function stageAnalysisToEditorText(value) {
+      if (typeof value === "string") return value.trim();
+      if (!value || typeof value !== "object") return "";
+      return [value.strengthText, value.growthText]
+        .filter(function (text) { return typeof text === "string" && text.trim(); })
+        .map(function (text) { return text.trim(); })
+        .join(" ");
+    }
+
+    function readStageEditorValues() {
+      return {
+        before: document.getElementById("fieldBeforeGrowthText").value,
+        during: document.getElementById("fieldDuringGrowthText").value,
+        after: document.getElementById("fieldAfterGrowthText").value
+      };
+    }
+
     function collectDraftFromForm() {
+      currentStageAnalysis = readStageEditorValues();
       return {
         studentName: document.getElementById("fieldStudentName").value,
         grade: document.getElementById("fieldGrade").value,
@@ -964,13 +1156,19 @@
         beforeStatus: document.getElementById("fieldBeforeStatus").value,
         duringStatus: document.getElementById("fieldDuringStatus").value,
         afterStatus: document.getElementById("fieldAfterStatus").value,
+        beforeGrowthText: currentStageAnalysis.before,
+        duringGrowthText: currentStageAnalysis.during,
+        afterGrowthText: currentStageAnalysis.after,
+        stageAnalysis: currentStageAnalysis,
+        stageAnalysisSource: stageAnalysisSource,
+        activityCount: currentActivityCount,
         bookTitle: document.getElementById("fieldBookTitle").value,
-        activityCount: document.getElementById("fieldActivityCount").value,
         aiStrengths: document.getElementById("fieldAiStrengths").value,
         aiImprovements: document.getElementById("fieldAiImprovements").value,
         teacherComment: document.getElementById("fieldTeacherComment").value,
-        participationDesc: document.getElementById("fieldParticipationDesc").value,
-        comprehensionDesc: document.getElementById("fieldComprehensionDesc").value
+        teacherEdited: teacherEdited,
+        teacherEditedAt: teacherEditedAt,
+        sourceLoadedAt: sourceLoadedAt
       };
     }
 
@@ -982,16 +1180,24 @@
       document.getElementById("periodToInput").value = draft.periodTo || "";
       document.getElementById("fieldParticipation").value = draft.participationRate != null ? draft.participationRate : "";
       document.getElementById("fieldComprehension").value = draft.comprehensionRate != null ? draft.comprehensionRate : "";
-      document.getElementById("fieldBeforeStatus").value = draft.beforeStatus || "";
-      document.getElementById("fieldDuringStatus").value = draft.duringStatus || "";
-      document.getElementById("fieldAfterStatus").value = draft.afterStatus || "";
+      document.getElementById("fieldBeforeStatus").value = normalizeStageStatus(draft.beforeStatus);
+      document.getElementById("fieldDuringStatus").value = normalizeStageStatus(draft.duringStatus);
+      document.getElementById("fieldAfterStatus").value = normalizeStageStatus(draft.afterStatus);
+      const draftStages = Object.assign({ before: "", during: "", after: "" }, draft.stageAnalysis || {});
+      currentStageAnalysis = {
+        before: draft.beforeGrowthText != null ? String(draft.beforeGrowthText) : stageAnalysisToEditorText(draftStages.before),
+        during: draft.duringGrowthText != null ? String(draft.duringGrowthText) : stageAnalysisToEditorText(draftStages.during),
+        after: draft.afterGrowthText != null ? String(draft.afterGrowthText) : stageAnalysisToEditorText(draftStages.after)
+      };
+      document.getElementById("fieldBeforeGrowthText").value = currentStageAnalysis.before;
+      document.getElementById("fieldDuringGrowthText").value = currentStageAnalysis.during;
+      document.getElementById("fieldAfterGrowthText").value = currentStageAnalysis.after;
+      stageAnalysisSource = draft.stageAnalysisSource || (draft.teacherEdited ? "teacher" : "aggregate");
+      currentActivityCount = typeof draft.activityCount === "number" ? draft.activityCount : null;
       document.getElementById("fieldBookTitle").value = draft.bookTitle || "";
-      document.getElementById("fieldActivityCount").value = draft.activityCount != null ? draft.activityCount : "";
       document.getElementById("fieldAiStrengths").value = draft.aiStrengths || "";
       document.getElementById("fieldAiImprovements").value = draft.aiImprovements || "";
       document.getElementById("fieldTeacherComment").value = draft.teacherComment || "";
-      document.getElementById("fieldParticipationDesc").value = draft.participationDesc || PARTICIPATION_DESC_DEFAULT;
-      document.getElementById("fieldComprehensionDesc").value = draft.comprehensionDesc || COMPREHENSION_DESC_DEFAULT;
 
       updatePreview();
     }
@@ -999,8 +1205,7 @@
     function setUnavailableHints(unavailableFields) {
       const map = {
         participationRate: "hintParticipation",
-        comprehensionRate: "hintComprehension",
-        activityCount: "hintActivityCount"
+        comprehensionRate: "hintComprehension"
       };
       Object.keys(map).forEach(function (field) {
         const el = document.getElementById(map[field]);
@@ -1031,20 +1236,23 @@
       return Object.assign({
         periodFrom: periodFrom,
         periodTo: periodTo,
-        participationDesc: PARTICIPATION_DESC_DEFAULT,
-        comprehensionDesc: COMPREHENSION_DESC_DEFAULT,
-        teacherComment: ""
+        teacherComment: "",
+        teacherEdited: false,
+        teacherEditedAt: null,
+        stageAnalysisSource: "aggregate",
+        sourceLoadedAt: new Date().toISOString()
       }, result.data);
     }
 
     async function openEditorForCurrentStudent() {
       const savedDraft = loadPortfolioDraft(PORTFOLIO_KIND, currentStudentId);
 
-      if (savedDraft && savedDraft.draft) {
+      if (savedDraft && savedDraft.draft && savedDraft.draft.teacherEdited === true) {
+        teacherEdited = true;
+        teacherEditedAt = savedDraft.draft.teacherEditedAt || savedDraft.savedAt || null;
+        sourceLoadedAt = savedDraft.draft.sourceLoadedAt || null;
         fillFormFromDraft(savedDraft.draft);
-        document.getElementById("sourceNote").hidden = false;
-        document.getElementById("sourceNote").textContent =
-          "임시 저장된 편집 내용을 불러왔어요. (저장 시각: " + new Date(savedDraft.savedAt).toLocaleString("ko-KR") + ")";
+        updateA4Scale();
         return;
       }
 
@@ -1054,18 +1262,33 @@
 
       const editor = document.querySelector(".gp-editor");
       editor.style.opacity = "0.5";
+      let loadedFreshData = false;
       try {
         const draft = await fetchFreshDraft(period.from, period.to);
+        teacherEdited = false;
+        teacherEditedAt = null;
+        sourceLoadedAt = draft.sourceLoadedAt;
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
         updateSaveIndicator();
+        loadedFreshData = true;
       } finally {
         editor.style.opacity = "1";
+        updateA4Scale();
       }
+      if (loadedFreshData) await generateInitialAiAnalysisIfNeeded();
     }
 
+    /*
+     * "최신 데이터 반영하기"는 현재 draft를 전부 버리고 backend
+     * aggregate/AI를 기준으로 포트폴리오를 처음부터 다시 만드는
+     * 기능이다. 교사가 직접 쓴 교사의견도 예외 없이 초기화한다
+     * (backend에는 교사의견 원본이 없으므로 "최신값"은 항상 빈 값)-
+     * 예전에는 preservedTeacherComment로 교사의견만 따로 복원했지만
+     * 그 정책은 더 이상 쓰지 않는다.
+     */
     async function reloadOriginalData() {
-      if (!confirm("직접 수정한 내용과 AI 분석 결과가 초기화됩니다. 계속할까요?")) {
+      if (teacherEdited && !confirm("최신 데이터를 반영하면 직접 수정한 내용과 교사 의견이 모두 초기화됩니다. 계속할까요?")) {
         return;
       }
 
@@ -1078,15 +1301,22 @@
 
       try {
         const draft = await fetchFreshDraft(periodFrom, periodTo);
+        draft.teacherComment = "";
+        draft.aiStrengths = "";
+        draft.aiImprovements = "";
+        teacherEdited = false;
+        teacherEditedAt = null;
+        sourceLoadedAt = draft.sourceLoadedAt;
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
         updateSaveIndicator();
+        await generateInitialAiAnalysisIfNeeded();
       } catch (error) {
         console.error("원본 데이터를 다시 불러오지 못했습니다.", error);
         alert("원본 데이터를 다시 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
       } finally {
         button.disabled = false;
-        button.textContent = "원본 데이터 다시 불러오기";
+        button.textContent = "최신 데이터 반영하기";
       }
     }
 
@@ -1104,6 +1334,11 @@
       indicator.textContent = "임시 저장됨 · " + new Date().toLocaleTimeString("ko-KR");
     }
 
+    /* activityCount가 실제로 0으로 확인된 경우에만 "활동 전"으로 판정한다(집계 실패 등 확인 불가 상태는 제외). */
+    function practiceHasConfirmedNoActivity() {
+      return typeof currentActivityCount === "number" && currentActivityCount <= 0;
+    }
+
     function refreshAiButtonLabel() {
       const button = document.getElementById("regenerateAiButton");
       if (!button || button.disabled) return;
@@ -1113,13 +1348,40 @@
       button.textContent = hasAnalysis ? "✨ AI 분석 다시 생성" : "✨ AI 분석 생성";
     }
 
-    async function handleRegenerateAi() {
+    async function generateInitialAiAnalysisIfNeeded() {
+      const strengths = document.getElementById("fieldAiStrengths").value.trim();
+      const improvements = document.getElementById("fieldAiImprovements").value.trim();
+      const hasStageAnalysis = Object.values(readStageEditorValues()).every(function (value) {
+        return value.trim() !== "";
+      });
+      if ((strengths || improvements) && hasStageAnalysis && stageAnalysisSource !== "aggregate") {
+        refreshAiButtonLabel();
+        return;
+      }
+      await handleRegenerateAi({ initialLoad: true });
+    }
+
+    async function handleRegenerateAi(options) {
+      const initialLoad = Boolean(options && options.initialLoad);
       const auth = getPortfolioTeacherAuthContext();
       if (!auth || !currentClassId || !currentStudentId) return;
 
       const button = document.getElementById("regenerateAiButton");
       const spinner = document.getElementById("aiSpinner");
       const note = document.getElementById("aiRegenerateNote");
+
+      /*
+       * 활동이 하나도 없는 것으로 확인된 학생은 OpenAI를 호출하지 않는다
+       * - 근거 데이터가 전혀 없는데 그럴듯한 평가 문구가 생기는 것을
+       * 막기 위함(요구사항 6/8/9번). 네트워크 요청 자체를 보내지 않는다.
+       */
+      if (practiceHasConfirmedNoActivity()) {
+        note.classList.remove("gp-ai-error");
+        note.textContent = "아직 분석할 독서 활동 기록이 없습니다.";
+        refreshAiButtonLabel();
+        return;
+      }
+
       const periodFrom = document.getElementById("periodFromInput").value;
       const periodTo = document.getElementById("periodToInput").value;
 
@@ -1135,19 +1397,30 @@
 
         if (!result.ok) {
           note.classList.add("gp-ai-error");
-          note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+          note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
           return;
         }
 
         document.getElementById("fieldAiStrengths").value = result.strength;
         document.getElementById("fieldAiImprovements").value = result.improvement;
+        if (result.stageAnalysis) {
+          currentStageAnalysis = {
+            before: stageAnalysisToEditorText(result.stageAnalysis.before),
+            during: stageAnalysisToEditorText(result.stageAnalysis.during),
+            after: stageAnalysisToEditorText(result.stageAnalysis.after)
+          };
+          document.getElementById("fieldBeforeGrowthText").value = currentStageAnalysis.before;
+          document.getElementById("fieldDuringGrowthText").value = currentStageAnalysis.during;
+          document.getElementById("fieldAfterGrowthText").value = currentStageAnalysis.after;
+          stageAnalysisSource = "ai";
+        }
         note.textContent = "AI 분석을 반영했어요.";
         updatePreview();
         scheduleAutoSave();
       } catch (error) {
         console.error("AI 분석 생성 중 오류가 발생했습니다.", error);
         note.classList.add("gp-ai-error");
-        note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+        note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
       } finally {
         button.disabled = false;
         spinner.hidden = true;
@@ -1174,6 +1447,55 @@
       return div.innerHTML;
     }
 
+    function growthLevel(value) {
+      if (value === "" || value === null || value === undefined || !Number.isFinite(Number(value))) return "집계 준비 중";
+      const score = Math.max(0, Math.min(100, Number(value)));
+      if (score >= 80) return "매우 우수";
+      if (score >= 60) return "우수";
+      if (score >= 40) return "보통";
+      return "노력 필요";
+    }
+
+    function growthLevelClass(level) {
+      return { "노력 필요": "gp-level-needs", "보통": "gp-level-average", "우수": "gp-level-good", "매우 우수": "gp-level-excellent" }[level] || "gp-level-pending";
+    }
+
+    function renderMetric(prefix, value) {
+      const level = growthLevel(value);
+      const numeric = value === "" || value === null || value === undefined || !Number.isFinite(Number(value))
+        ? null : Math.max(0, Math.min(100, Number(value)));
+      document.getElementById("preview" + prefix).innerHTML = numeric === null ? formatPercent("") : Math.round(numeric) + "%";
+      const badge = document.getElementById("preview" + prefix + "Level");
+      badge.textContent = level;
+      badge.className = "gp-metric-badge " + growthLevelClass(level);
+      document.getElementById("preview" + prefix + "Bar").style.width = (numeric === null ? 0 : numeric) + "%";
+    }
+
+    /*
+     * analysis는 항상 문자열이다(collectDraftFromForm이 stageAnalysis를
+     * 편집 textarea 값으로 평탄화한다). 완료 단계는 backend가 항상 실제
+     * 성장 문장(AI 또는 결정적 growthNote 안전망)을 채워 주므로, 문자열이
+     * 비어 있는 경우는 진짜로 미완료뿐이라 "활동 기록이 없습니다." 하나만
+     * fallback으로 쓴다. strengthText/growthText를 점선·별색 등으로
+     * 나눠 보여주던 별도 영역은 없앴다 - 여러 줄이 섞여 들어와도
+     * 공백으로 이어붙여 하나의 자연스러운 문단으로만 표시한다
+     * (.gp-stage-text가 white-space:normal이라 줄바꿈은 어차피 시각적
+     * 공백으로 접히지만, "\n"으로 저장된 옛 draft도 명시적으로
+     * 공백 결합해 일관되게 한 문단으로 보이게 한다).
+     */
+    function renderStage(stage, status, analysis) {
+      const badge = document.getElementById("preview" + stage);
+      const completed = status === "완료";
+      badge.textContent = completed ? "완료" : (status || "미집계");
+      badge.className = "gp-stage-badge " + (completed ? "gp-level-good" : "gp-level-pending");
+      const target = document.getElementById("preview" + stage + "Analysis");
+      const text = (analysis || "").toString().split("\n")
+        .map(function (line) { return line.trim(); })
+        .filter(Boolean)
+        .join(" ");
+      target.innerHTML = formatPlainText(text, "활동 기록이 없습니다.");
+    }
+
     function updatePreview() {
       const draft = collectDraftFromForm();
 
@@ -1183,29 +1505,32 @@
       document.getElementById("previewPeriod").textContent =
         (draft.periodFrom && draft.periodTo) ? draft.periodFrom + " ~ " + draft.periodTo : "-";
 
-      document.getElementById("previewParticipation").innerHTML = formatPercent(draft.participationRate);
-      document.getElementById("previewComprehension").innerHTML = formatPercent(draft.comprehensionRate);
+      renderMetric("Participation", draft.participationRate);
+      renderMetric("Comprehension", draft.comprehensionRate);
 
-      document.getElementById("previewBefore").innerHTML = formatPlainText(draft.beforeStatus);
-      document.getElementById("previewDuring").innerHTML = formatPlainText(draft.duringStatus);
-      document.getElementById("previewAfter").innerHTML = formatPlainText(draft.afterStatus);
+      renderStage("Before", draft.beforeStatus, draft.stageAnalysis && draft.stageAnalysis.before);
+      renderStage("During", draft.duringStatus, draft.stageAnalysis && draft.stageAnalysis.during);
+      renderStage("After", draft.afterStatus, draft.stageAnalysis && draft.stageAnalysis.after);
 
       document.getElementById("previewBookTitle").innerHTML = formatPlainText(draft.bookTitle);
-      document.getElementById("previewActivityCount").innerHTML =
-        (draft.activityCount === "" || draft.activityCount === null) ? formatPlainText("") : draft.activityCount + "회";
-
-      document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, "AI 분석 결과가 아직 없어요.");
-      document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, "AI 분석 결과가 아직 없어요.");
+      const aiEmptyFallback = practiceHasConfirmedNoActivity()
+        ? "독서 활동이 시작되면 AI 분석이 표시됩니다."
+        : "AI 분석 결과가 아직 없어요.";
+      document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, aiEmptyFallback);
+      document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, aiEmptyFallback);
       document.getElementById("previewTeacherComment").innerHTML = formatPlainText(draft.teacherComment, "교사 의견을 입력해 주세요.");
 
-      document.getElementById("previewParticipationDesc").textContent = draft.participationDesc || PARTICIPATION_DESC_DEFAULT;
-      document.getElementById("previewComprehensionDesc").textContent = draft.comprehensionDesc || COMPREHENSION_DESC_DEFAULT;
-
       refreshAiButtonLabel();
+      requestAnimationFrame(paginateA4);
     }
 
     document.addEventListener("input", function (event) {
-      if (!event.target.closest(".gp-editor")) return;
+      if (!event.target.closest("#editorScreen")) return;
+      teacherEdited = true;
+      teacherEditedAt = new Date().toISOString();
+      if (event.target.classList.contains("gp-stage-editor-textarea")) {
+        stageAnalysisSource = "teacher";
+      }
       updatePreview();
       scheduleAutoSave();
     });
@@ -1216,6 +1541,5 @@
       updateA4Scale();
     });
   </script>
-
 </body>
 </html>

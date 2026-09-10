@@ -750,6 +750,10 @@
       margin-top: 9px;
     }
 
+    .button-row.has-delete {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .pending-action-row {
       align-self: stretch;
       min-height: 54px;
@@ -1478,6 +1482,46 @@
     min-height: 68px !important;
   }
 }
+
+/*
+  승인/거절 상태에서는 하단 교사 안내 영역이 추가된다. 기존 2행 grid가
+  위 상세 카드를 남은 높이에 억지로 압축하면서 글 제목·장면 설명과 A/B
+  카드가 겹쳤다. 상세 내용과 액션을 정상 흐름으로 쌓고, 공간이 부족한
+  경우 detailArea 내부만 스크롤되게 해 심사 예시 화면과 같은 배치를 유지한다.
+*/
+.detail-card #detailArea {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.detail-card #detailArea > .detail-box {
+  flex: 0 0 auto !important;
+  min-height: 350px !important;
+  grid-template-rows: auto auto 76px !important;
+  align-content: start !important;
+  overflow: visible !important;
+}
+
+.detail-card #detailArea .detail-lines {
+  height: auto !important;
+  grid-template-rows: minmax(58px, auto) minmax(62px, auto) minmax(94px, auto) !important;
+  align-content: start !important;
+}
+
+.detail-card #detailArea .line-card,
+.detail-card #detailArea .detail-lines .line-card:nth-child(3) {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.detail-card #detailArea > .teacher-note-box,
+.detail-card #detailArea > .pending-action-row {
+  flex: 0 0 auto !important;
+}
   </style>
 </head>
 
@@ -1844,9 +1888,10 @@ const API_BASE_URL = getApiBaseUrl();
     function renderTeacherActionArea(post) {
       if (post.status === "pending") {
         return `
-            <div class="button-row pending-action-row">
+            <div class="button-row pending-action-row has-delete">
               <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
               <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
         `;
       }
@@ -1859,9 +1904,10 @@ const API_BASE_URL = getApiBaseUrl();
               이 글은 현재 개별읽기 책수다방에 공개되는 글이에요.
             </div>
 
-            <div class="button-row">
+            <div class="button-row has-delete">
               <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">승인 취소</button>
               <button class="danger-button" type="button" onclick="hideApprovedPost('${escapeAttribute(post.id)}')">거절 목록으로 보내기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
           </div>
         `;
@@ -1876,9 +1922,10 @@ const API_BASE_URL = getApiBaseUrl();
             <p class="reject-reason-text">${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}</p>
           </div>
 
-          <div class="button-row">
+          <div class="button-row has-delete">
             <button class="main-button" type="button" onclick="approveRejectedPost('${escapeAttribute(post.id)}')">다시 승인하기</button>
             <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">대기로 돌리기</button>
+            <button class="danger-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
           </div>
         </div>
       `;
@@ -2014,6 +2061,39 @@ const API_BASE_URL = getApiBaseUrl();
       await loadBackendReviewPosts({ keepSelection: id });
     }
 
+    async function deletePostAsTeacher(id) {
+      const post = findPostById(id);
+      if (!post || !confirm("이 학생의 책수다방 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+
+      const browserLocalPostId = !/^\d+$/.test(String(id));
+      if (isDemoAccount() || browserLocalPostId) {
+        const directRequest = loadDemoApprovalRequests("individual").find(function(item) {
+          return String(item.requestId) === String(id);
+        });
+        if (directRequest) {
+          deleteDemoApprovalRequest("individual", id);
+        }
+        deleteDemoBookChatPost("individual", id);
+      } else {
+        const auth = getTeacherAuthContext();
+        if (!auth) {
+          alert("로그인 정보가 없어 삭제할 수 없어요. 다시 로그인해 주세요.");
+          return;
+        }
+        const response = await fetch(
+          `${API_BASE_URL}/api/teachers/${auth.teacherId}/individual-reading/book-chat/posts/${encodeURIComponent(id)}`,
+          { method: "DELETE", headers: { Authorization: `Bearer ${auth.token}` } }
+        );
+        if (!response.ok) {
+          alert("글을 삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+          return;
+        }
+      }
+
+      selectedPostId = null;
+      await loadBackendReviewPosts();
+    }
+
     function findPostById(id) {
       return getAllPosts().find(function(post) {
         return post.id === id;
@@ -2111,6 +2191,8 @@ const API_BASE_URL = getApiBaseUrl();
          * 기준 별도 저장소) - 위 두 종류와 id 네임스페이스가 겹치지 않는다.
          */
         loadDemoApprovalRequests("individual").forEach(function(request) {
+          const override = getDemoBookChatStatusOverride("individual", request.requestId);
+          if (override && override.deleted === true) return;
           const status = ["pending", "approved", "rejected"].includes(request.status)
             ? request.status
             : "pending";

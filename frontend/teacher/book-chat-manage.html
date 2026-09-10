@@ -1497,9 +1497,10 @@ const API_BASE_URL = getApiBaseUrl();
           <div class="teacher-note-box">
             <div class="box-title">게시물 처리</div>
 
-            <div class="button-row">
+            <div class="button-row three">
               <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
               <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
 
             <div class="feedback-box good">
@@ -1517,9 +1518,10 @@ const API_BASE_URL = getApiBaseUrl();
               이 글은 현재 학생 책수다방에 공개되는 글이에요.
             </div>
 
-            <div class="button-row">
+            <div class="button-row three">
               <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">승인 취소</button>
               <button class="danger-button" type="button" onclick="hideApprovedPost('${escapeAttribute(post.id)}')">거절 목록으로 보내기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
           </div>
         `;
@@ -1534,9 +1536,10 @@ const API_BASE_URL = getApiBaseUrl();
             ${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}
           </div>
 
-          <div class="button-row">
+          <div class="button-row three">
             <button class="main-button" type="button" onclick="approveRejectedPost('${escapeAttribute(post.id)}')">다시 승인하기</button>
             <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">대기로 돌리기</button>
+            <button class="danger-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
           </div>
         </div>
       `;
@@ -2005,6 +2008,42 @@ const API_BASE_URL = getApiBaseUrl();
 
     function hideApprovedPost(id) {
       openRejectModal(id);
+    }
+
+    async function deletePostAsTeacher(id) {
+      const post = findPostById(id);
+      if (!post || !confirm("이 학생의 책수다방 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+
+      const directRequest = loadDemoApprovalRequests("practice").find(function(item) {
+        return String(item.requestId) === String(id);
+      });
+      const browserLocalPostId = !/^\d+$/.test(String(id));
+      if (isDemoAccount() || browserLocalPostId) {
+        if (directRequest) {
+          saveDemoState("practiceBookChatApprovals", loadDemoApprovalRequests("practice").filter(function(item) {
+            return String(item.requestId) !== String(id);
+          }));
+        } else {
+          deleteDemoBookChatPost("practice", id);
+        }
+      } else {
+        const auth = getTeacherAuthContext();
+        if (!auth) {
+          alert("로그인 정보가 없어 삭제할 수 없어요. 다시 로그인해 주세요.");
+          return;
+        }
+        const response = await fetch(
+          `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews/${encodeURIComponent(id)}`,
+          { method: "DELETE", headers: { Authorization: `Bearer ${auth.token}` } }
+        );
+        if (!response.ok) {
+          alert("글을 삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+          return;
+        }
+      }
+
+      selectedPostId = null;
+      await loadBackendReviewPosts();
     }
 
     function findPostById(id) {

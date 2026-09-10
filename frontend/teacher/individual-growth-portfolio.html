@@ -39,8 +39,18 @@
     --radius-small: 10px;
   }
 
-  html, body {
-    min-height: 100%;
+  html {
+    width: 100%;
+    min-width: 0;
+    min-height: 1080px;
+    overflow-x: hidden;
+  }
+
+  body {
+    width: 1920px;
+    min-width: 1920px;
+    min-height: 1080px;
+    overflow-x: hidden;
   }
 
   body {
@@ -106,9 +116,20 @@
   }
 
   main {
+    width: 1500px;
     max-width: 1500px;
-    margin: 0 auto;
+    margin-left: max(24px, calc((100vw - 1500px) / 2));
+    margin-right: 0;
     padding: 28px 24px 0;
+  }
+
+  /* ---------- 학생 선택 화면 ---------- */
+  #pickerScreen {
+    width: min(1500px, calc(100vw - 48px));
+    min-height: calc(100vh - 75px - 28px - 60px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   .gp-picker-card {
@@ -117,6 +138,7 @@
     box-shadow: var(--shadow);
     padding: 28px;
     max-width: 620px;
+    width: 100%;
     margin: 30px auto;
   }
 
@@ -134,25 +156,29 @@
     margin-bottom: 18px;
   }
 
+  /* 원래 크기의 48px 행 8개까지만 노출하고 9번째부터 목록만 스크롤한다. */
   .gp-student-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 480px;
+    max-height: 440px;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .gp-student-row {
     display: flex;
     align-items: center;
+    flex: 0 0 48px;
+    height: 48px;
     gap: 12px;
     padding: 13px 16px;
     border-radius: var(--radius-medium);
     border: 1px solid var(--line);
     background: #fff;
     text-align: left;
-    font-size: 15px;
     color: var(--brown);
+    font-size: 15px;
     transition: background 0.15s ease, transform 0.15s ease;
   }
 
@@ -259,7 +285,9 @@
     border-radius: var(--radius-large);
     box-shadow: var(--shadow);
     padding: 24px;
-    max-height: calc(100vh - 200px);
+    height: var(--gp-editor-height, auto);
+    max-height: none;
+    min-height: 0;
     overflow-y: auto;
   }
 
@@ -423,8 +451,13 @@
   }
 
   .gp-a4-outer {
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: visible;
   }
+
+  .gp-a4-page-slot { position: relative; flex: 0 0 auto; }
 
   .gp-a4 {
     width: 794px;
@@ -443,16 +476,18 @@
     print-color-adjust: exact;
   }
 
+  .gp-a4-page-slot > .gp-a4 { position: absolute; inset: 0 auto auto 0; }
+
   .gp-a4-content {
     position: absolute;
     top: 175px;
     left: 92px;
     right: 92px;
-    bottom: 175px;
-    overflow: hidden;
+    bottom: 145px;
+    overflow: visible;
     display: flex;
     flex-direction: column;
-    gap: 13px;
+    gap: 6px;
   }
 
   .gp-a4-title {
@@ -464,27 +499,34 @@
   }
 
   .gp-a4-section {
-    border-top: 1px solid rgba(169, 99, 11, 0.28);
-    padding-top: 9px;
+    padding: 6px 9px;
+    border: 1px solid rgba(113, 125, 70, 0.21);
+    border-radius: 11px;
+    background: rgba(255, 253, 243, 0.64);
+    box-shadow: 0 3px 10px rgba(64, 71, 38, 0.04);
   }
 
   .gp-a4-section-label {
     font-size: 12px;
     font-weight: 800;
     color: var(--gold-dark);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     letter-spacing: 0.03em;
   }
 
   .gp-a4-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 22px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
   }
+  .gp-student-info-row { grid-template-columns: 0.8fr 0.9fr 2fr; }
+  #previewPeriod { white-space: nowrap; font-size: 14px; }
 
   .gp-a4-item {
-    flex: 1;
-    min-width: 110px;
+    min-width: 0;
+    padding: 7px 8px;
+    border-radius: 8px;
+    background: rgba(241, 241, 218, 0.66);
   }
 
   .gp-a4-item-label {
@@ -492,6 +534,14 @@
     color: var(--brown-soft);
     font-weight: 700;
     margin-bottom: 2px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .gp-a4-item-sublabel {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(118, 81, 54, 0.78);
   }
 
   .gp-a4-item-value {
@@ -511,9 +561,30 @@
     font-size: 12.5px;
     line-height: 1.5;
     color: var(--brown);
-    white-space: pre-wrap;
-    word-break: keep-all;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
+
+  #previewTeacherComment {
+    min-height: 48px;
+    height: auto;
+    white-space: pre-wrap;
+    overflow: visible;
+  }
+
+  .gp-ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch; }
+  .gp-ai-card { min-width: 0; padding: 6px 8px; border: 1px solid rgba(113, 125, 70, 0.18); border-radius: 9px; background: rgba(243, 242, 220, 0.68); }
+  .gp-ai-card .gp-a4-item-label { margin-bottom: 3px; color: var(--green-dark); font-weight: 800; }
+  .gp-teacher-card { padding: 6px 9px; border-radius: 9px; border-left: 3px solid rgba(113, 125, 70, 0.58); background: rgba(243, 242, 220, 0.68); }
+  .gp-teacher-card .gp-a4-text-block { line-height: 1.55; white-space: normal; overflow-wrap: break-word; }
+  #fieldTeacherComment { min-height: 120px; }
+  .gp-metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .gp-metric-card { padding: 6px 9px; border: 1px solid rgba(113, 125, 70, 0.18); border-radius: 9px; background: rgba(243, 242, 220, 0.68); }
+  .gp-metric-card .gp-a4-item-value { margin-top: 4px; }
+  .gp-metric-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 3px; margin-bottom: 4px; }
+  .gp-progress-track { height: 8px; overflow: hidden; border-radius: 999px; background: #e2e2cf; }
+  .gp-progress-fill { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #b78b47, #71834a); }
 
   .gp-a4-desc {
     font-size: 11px;
@@ -525,52 +596,76 @@
     color: var(--brown-deep);
   }
 
-  /* 월별 완독 미니 차트 (외부 라이브러리 없이 CSS/div만 사용) */
+  /* 월별 완독 차트 (외부 라이브러리 없이 CSS/div만 사용) */
   .gp-chart {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    align-items: end;
-    gap: 4px;
-    height: 84px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(169, 99, 11, 0.2);
+    height: 100px;
+    overflow: hidden;
   }
 
-  .gp-chart-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
+  .gp-chart svg {
+    width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
-  .gp-chart-bar b {
-    display: block;
-    width: 60%;
-    border-radius: 4px 4px 2px 2px;
-    background: linear-gradient(180deg, #dda64d, #a45e19);
-    min-height: 2px;
+  .gp-radar {
+    height: 145px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .gp-chart-bar span {
-    font-size: 8.5px;
-    color: var(--brown-soft);
-    margin-top: 3px;
-  }
+  .gp-radar svg { width: 100%; height: 100%; overflow: visible; }
+  .gp-radar text { fill: var(--brown-deep); font-size: 15px; font-weight: 750; }
 
-  .gp-competency-grid {
+  .gp-competency-overview {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.25fr);
+    gap: 8px;
+    align-items: stretch;
   }
 
-  .gp-competency-item {
-    background: rgba(255, 255, 255, 0.55);
-    border-radius: 10px;
-    padding: 8px 10px;
+  .gp-competency-cards {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 3px;
   }
+
+  .gp-competency-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2px 8px;
+    padding: 4px 7px;
+    border: 1px solid rgba(113, 125, 70, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 253, 242, 0.66);
+  }
+
+  .gp-competency-name { font-size: 12.5px; font-weight: 800; color: var(--brown-deep); }
+  .gp-competency-desc { grid-column: 1 / -1; font-size: 10.5px; line-height: 1.32; color: var(--brown-soft); }
+  .gp-level-badge { padding: 2px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 800; white-space: nowrap; border: 1px solid transparent; }
+  .gp-level-needs { background: #f5dfc2; color: #7a4c25; border-color: #d8ad7b; }
+  .gp-level-average { background: #eee6d4; color: #665844; border-color: #cfc1a7; }
+  .gp-level-good { background: #dce4c7; color: #4e6035; border-color: #aeba82; }
+  .gp-level-excellent { background: #c9d4a5; color: #354421; border-color: #819451; }
+  .gp-level-pending { background: #f1eee7; color: #766f64; border-color: #d8d1c5; }
+
+  .gp-competency-level-preview { margin-left: 6px; color: var(--green-dark); font-size: 11px; font-weight: 700; }
 
   [hidden] { display: none !important; }
+
+  /* 1920×1080 고정 캔버스: 좁은 창에서는 크기를 줄이지 않고 overflow로 탐색한다. */
+  #pickerScreen {
+    min-height: 917px;
+  }
+
+  .gp-title,
+  .gp-demo-badge,
+  .gp-teacher-pill,
+  .gp-toolbar {
+    white-space: nowrap;
+  }
 
   @media print {
     .gp-topbar,
@@ -581,15 +676,32 @@
       display: none !important;
     }
 
+    /*
+     * 실측 결과 .gp-a4를 정확히 297mm로 잡으면 브라우저(특히 Safari)의
+     * mm→디바이스 픽셀 반올림 오차로 인쇄 가능 영역을 아주 미세하게
+     * 넘겨 빈 2페이지가 생길 수 있다. 297mm보다 0.5mm 작은 296.5mm를
+     * 상한으로 써서 항상 1페이지 안에 확실히 들어오게 한다(육안으로는
+     * 차이가 없는 수준). html/body/main까지 같은 상한 + overflow:hidden
+     * 으로 감싸서, 혹시 다른 요소가 조금이라도 삐져나와도 2페이지째로
+     * 넘어가지 않게 이중으로 막는다.
+     */
+    html,
     body {
-      background: #fff !important;
+      margin: 0 !important;
       padding: 0 !important;
+      width: 210mm !important;
+      height: 296.5mm !important;
+      overflow: hidden !important;
+      background: #fff !important;
     }
 
     main {
       max-width: none !important;
+      width: 210mm !important;
+      height: 296.5mm !important;
       padding: 0 !important;
       margin: 0 !important;
+      overflow: hidden !important;
     }
 
     .gp-layout {
@@ -601,35 +713,35 @@
     }
 
     .gp-a4-outer {
-      width: auto !important;
-      height: auto !important;
-      overflow: visible !important;
+      display: block !important;
+      width: 210mm !important;
+      height: 296.5mm !important;
+      overflow: hidden !important;
     }
 
+    .gp-a4-page-slot { width: 210mm !important; height: 296.5mm !important; break-after: avoid; page-break-after: avoid; }
+
     .gp-a4 {
+      box-sizing: border-box !important;
       width: 210mm !important;
-      height: 297mm !important;
+      height: 296.5mm !important;
       transform: none !important;
       box-shadow: none !important;
       border-radius: 0 !important;
-      page-break-after: avoid;
+      break-inside: avoid;
+      break-after: avoid;
       page-break-inside: avoid;
+      page-break-after: auto;
     }
 
+    .gp-a4-section { break-inside: avoid; page-break-inside: avoid; }
+
     @page {
-      size: A4;
+      size: A4 portrait;
       margin: 0;
     }
   }
 
-  @media (max-width: 1220px) {
-    .gp-layout {
-      grid-template-columns: 1fr;
-    }
-    .gp-editor {
-      max-height: none;
-    }
-  }
 </style>
 </head>
 <body>
@@ -665,7 +777,7 @@
           <input type="date" id="periodToInput" />
         </div>
 
-        <button class="gp-toolbar-button" type="button" id="reloadOriginalButton" onclick="reloadOriginalData()">원본 데이터 다시 불러오기</button>
+        <button class="gp-toolbar-button" type="button" id="reloadOriginalButton" onclick="reloadOriginalData()">최신 데이터 반영하기</button>
 
         <span class="gp-save-indicator" id="saveIndicator"></span>
 
@@ -699,42 +811,14 @@
 
           <div class="gp-fieldset">
             <div class="gp-fieldset-title">핵심 지표</div>
-            <div class="gp-field-row-3">
+            <div class="gp-field-row">
               <div class="gp-field">
-                <label for="fieldBooksRead">읽은 책 수<span class="gp-unavailable-hint" id="hintBooksRead" hidden>집계 대기</span></label>
-                <input type="number" id="fieldBooksRead" min="0" />
-              </div>
-              <div class="gp-field">
-                <label for="fieldPracticeAvg">독서 실천도 평균<span class="gp-unavailable-hint" id="hintPracticeAvg" hidden>집계 대기</span></label>
+                <label for="fieldPracticeAvg">독서 실천도 평균 <span class="gp-unavailable-hint" id="hintPracticeAvg" hidden>집계 대기</span></label>
                 <input type="number" id="fieldPracticeAvg" min="0" max="100" />
               </div>
               <div class="gp-field">
-                <label for="fieldCompletionAvg">기록 완성도 평균<span class="gp-unavailable-hint" id="hintCompletionAvg" hidden>집계 대기</span></label>
+                <label for="fieldCompletionAvg">기록 완성도 평균 <span class="gp-unavailable-hint" id="hintCompletionAvg" hidden>집계 대기</span></label>
                 <input type="number" id="fieldCompletionAvg" min="0" max="100" />
-              </div>
-            </div>
-          </div>
-
-          <div class="gp-fieldset">
-            <div class="gp-fieldset-title">활동 현황<span class="gp-unavailable-hint" id="hintActivity" hidden>집계 대기 · 직접 입력</span></div>
-            <div class="gp-field-row">
-              <div class="gp-field">
-                <label for="fieldActivityQuestion">질문 작성 (회)</label>
-                <input type="number" id="fieldActivityQuestion" min="0" />
-              </div>
-              <div class="gp-field">
-                <label for="fieldActivityThought">생각 쓰기 (회)</label>
-                <input type="number" id="fieldActivityThought" min="0" />
-              </div>
-            </div>
-            <div class="gp-field-row">
-              <div class="gp-field">
-                <label for="fieldActivitySummary">간추리기 (회)</label>
-                <input type="number" id="fieldActivitySummary" min="0" />
-              </div>
-              <div class="gp-field">
-                <label for="fieldActivityBookChat">책수다방/생각 나눔 (회)</label>
-                <input type="number" id="fieldActivityBookChat" min="0" />
               </div>
             </div>
           </div>
@@ -749,21 +833,21 @@
             <div class="gp-field-row">
               <div class="gp-field">
                 <label for="fieldCompQuestion">질문 생성 역량</label>
-                <input type="number" id="fieldCompQuestion" min="0" />
+                <input type="number" id="fieldCompQuestion" min="0" max="100" /><span class="gp-competency-level-preview" id="fieldCompQuestionLevel">집계 준비 중</span>
               </div>
               <div class="gp-field">
                 <label for="fieldCompPersistence">독서 지속 역량</label>
-                <input type="number" id="fieldCompPersistence" min="0" />
+                <input type="number" id="fieldCompPersistence" min="0" max="100" /><span class="gp-competency-level-preview" id="fieldCompPersistenceLevel">집계 준비 중</span>
               </div>
             </div>
             <div class="gp-field-row">
               <div class="gp-field">
                 <label for="fieldCompRefine">생각 다듬기 역량</label>
-                <input type="number" id="fieldCompRefine" min="0" />
+                <input type="number" id="fieldCompRefine" min="0" max="100" /><span class="gp-competency-level-preview" id="fieldCompRefineLevel">집계 준비 중</span>
               </div>
               <div class="gp-field">
                 <label for="fieldCompShare">생각 나눔 역량</label>
-                <input type="number" id="fieldCompShare" min="0" />
+                <input type="number" id="fieldCompShare" min="0" max="100" /><span class="gp-competency-level-preview" id="fieldCompShareLevel">집계 준비 중</span>
               </div>
             </div>
           </div>
@@ -789,23 +873,7 @@
             <div class="gp-fieldset-title">교사 의견</div>
             <div class="gp-field">
               <label for="fieldTeacherComment">교사 의견</label>
-              <textarea id="fieldTeacherComment"></textarea>
-            </div>
-          </div>
-
-          <div class="gp-fieldset">
-            <div class="gp-fieldset-title">지표 설명</div>
-            <div class="gp-field">
-              <label for="fieldBooksReadDesc">읽은 책 수 설명</label>
-              <textarea id="fieldBooksReadDesc"></textarea>
-            </div>
-            <div class="gp-field">
-              <label for="fieldPracticeAvgDesc">독서 실천도 평균 설명</label>
-              <textarea id="fieldPracticeAvgDesc"></textarea>
-            </div>
-            <div class="gp-field">
-              <label for="fieldCompletionAvgDesc">기록 완성도 평균 설명</label>
-              <textarea id="fieldCompletionAvgDesc"></textarea>
+              <textarea id="fieldTeacherComment" maxlength="500"></textarea>
             </div>
           </div>
 
@@ -813,14 +881,13 @@
 
         <div class="gp-preview-wrap">
           <div class="gp-a4-outer" id="a4Outer">
+            <div class="gp-a4-page-slot" id="a4Page1Slot">
             <div class="gp-a4" id="a4Sheet">
               <div class="gp-a4-content">
 
-                <div class="gp-a4-title">개별읽기 성장 포트폴리오</div>
-
                 <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">기본 정보</div>
-                  <div class="gp-a4-row">
+                  <div class="gp-a4-section-label">학생 정보</div>
+                  <div class="gp-a4-row gp-student-info-row">
                     <div class="gp-a4-item">
                       <div class="gp-a4-item-label">이름</div>
                       <div class="gp-a4-item-value" id="previewStudentName">-</div>
@@ -838,40 +905,16 @@
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">핵심 지표</div>
-                  <div class="gp-a4-row">
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">읽은 책 수</div>
-                      <div class="gp-a4-item-value" id="previewBooksRead">-</div>
+                  <div class="gp-metric-grid">
+                    <div class="gp-metric-card">
+                      <div class="gp-a4-item-label">독서 실천도 평균 <span class="gp-a4-item-sublabel">(꾸준히 읽기를 이어간 정도)</span></div>
+                      <div class="gp-metric-head"><div class="gp-a4-item-value" id="previewPracticeAvg">-</div><span class="gp-level-badge gp-level-pending" id="previewPracticeAvgLevel">집계 준비 중</span></div>
+                      <div class="gp-progress-track"><span class="gp-progress-fill" id="previewPracticeAvgBar" style="width:0%"></span></div>
                     </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">독서 실천도 평균</div>
-                      <div class="gp-a4-item-value" id="previewPracticeAvg">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">기록 완성도 평균</div>
-                      <div class="gp-a4-item-value" id="previewCompletionAvg">-</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">활동 현황</div>
-                  <div class="gp-a4-row">
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">질문 작성</div>
-                      <div class="gp-a4-item-value" id="previewActivityQuestion">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">생각 쓰기</div>
-                      <div class="gp-a4-item-value" id="previewActivityThought">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">간추리기</div>
-                      <div class="gp-a4-item-value" id="previewActivitySummary">-</div>
-                    </div>
-                    <div class="gp-a4-item">
-                      <div class="gp-a4-item-label">책수다방/생각 나눔</div>
-                      <div class="gp-a4-item-value" id="previewActivityBookChat">-</div>
+                    <div class="gp-metric-card">
+                      <div class="gp-a4-item-label">기록 완성도 평균 <span class="gp-a4-item-sublabel">(질문·생각·간추리기 기록 정도)</span></div>
+                      <div class="gp-metric-head"><div class="gp-a4-item-value" id="previewCompletionAvg">-</div><span class="gp-level-badge gp-level-pending" id="previewCompletionAvgLevel">집계 준비 중</span></div>
+                      <div class="gp-progress-track"><span class="gp-progress-fill" id="previewCompletionAvgBar" style="width:0%"></span></div>
                     </div>
                   </div>
                 </div>
@@ -883,48 +926,27 @@
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">독서 역량</div>
-                  <div class="gp-competency-grid">
-                    <div class="gp-competency-item">
-                      <div class="gp-a4-item-label">질문 생성 역량</div>
-                      <div class="gp-a4-item-value" id="previewCompQuestion">-</div>
-                    </div>
-                    <div class="gp-competency-item">
-                      <div class="gp-a4-item-label">독서 지속 역량</div>
-                      <div class="gp-a4-item-value" id="previewCompPersistence">-</div>
-                    </div>
-                    <div class="gp-competency-item">
-                      <div class="gp-a4-item-label">생각 다듬기 역량</div>
-                      <div class="gp-a4-item-value" id="previewCompRefine">-</div>
-                    </div>
-                    <div class="gp-competency-item">
-                      <div class="gp-a4-item-label">생각 나눔 역량</div>
-                      <div class="gp-a4-item-value" id="previewCompShare">-</div>
-                    </div>
+                  <div class="gp-competency-overview">
+                    <div class="gp-radar" id="competencyRadar" aria-label="독서 역량 4축 레이더 차트"></div>
+                    <div class="gp-competency-cards" id="competencyCards"></div>
                   </div>
                 </div>
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">AI 분석</div>
-                  <div class="gp-a4-item-label">잘하는 점</div>
-                  <div class="gp-a4-text-block" id="previewAiStrengths">-</div>
-                  <div class="gp-a4-item-label" style="margin-top:6px;">노력할 점</div>
-                  <div class="gp-a4-text-block" id="previewAiImprovements">-</div>
+                  <div class="gp-ai-grid">
+                    <div class="gp-ai-card"><div class="gp-a4-item-label">✨ 잘하는 점</div><div class="gp-a4-text-block" id="previewAiStrengths">-</div></div>
+                    <div class="gp-ai-card"><div class="gp-a4-item-label">🌱 노력할 점</div><div class="gp-a4-text-block" id="previewAiImprovements">-</div></div>
+                  </div>
                 </div>
 
                 <div class="gp-a4-section">
                   <div class="gp-a4-section-label">교사 의견</div>
-                  <div class="gp-a4-text-block" id="previewTeacherComment">-</div>
-                </div>
-
-                <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">지표 설명</div>
-                  <div class="gp-a4-desc"><b>읽은 책 수:</b> <span id="previewBooksReadDesc"></span></div>
-                  <div class="gp-a4-desc" style="margin-top:3px;"><b>독서 실천도 평균:</b> <span id="previewPracticeAvgDesc"></span></div>
-                  <div class="gp-a4-desc" style="margin-top:3px;"><b>기록 완성도 평균:</b> <span id="previewCompletionAvgDesc"></span></div>
+                  <div class="gp-teacher-card"><div class="gp-a4-text-block" id="previewTeacherComment">-</div></div>
                 </div>
 
               </div>
-            </div>
+            </div></div>
           </div>
         </div>
 
@@ -944,13 +966,27 @@
       "demo_student_05", "demo_student_06", "demo_student_07", "demo_student_08"
     ]);
     const MONTH_LABELS = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
-    const BOOKS_READ_DESC_DEFAULT = "평가 기간 동안 완독한 책의 수입니다.";
-    const PRACTICE_AVG_DESC_DEFAULT = "완독한 책들을 기준으로 꾸준히 읽기 활동을 이어간 정도의 평균입니다.";
-    const COMPLETION_AVG_DESC_DEFAULT = "완독한 책들을 기준으로 질문, 생각, 간추리기 등의 기록을 충실히 남긴 정도의 평균입니다.";
 
     let currentClassId = null;
     let currentStudentId = null;
+    let teacherEdited = false;
+    let teacherEditedAt = null;
+    let sourceLoadedAt = null;
+    let competencyLevels = { question: "", persistence: "", refine: "", share: "" };
+    let metricLevels = { practice: "", completion: "" };
     let saveTimer = null;
+    /*
+     * 집계 API가 실제로 돌려준 활동 현황 4종(0 포함)만 신뢰해 "활동 전"을
+     * 판정한다. legacy-fallback 등으로 값을 확인할 수 없으면 null로 두고
+     * 기존 동작(AI 호출 허용)을 그대로 유지한다.
+     */
+    let currentActivityCounts = {
+      booksReadCount: null,
+      activityQuestionCount: null,
+      activityThoughtCount: null,
+      activitySummaryCount: null,
+      activityBookChatCount: null
+    };
 
     function renderTeacherPill() {
       const pill = document.getElementById("teacherNamePill");
@@ -973,25 +1009,51 @@
     function applyA4Background() {
       const probe = new Image();
       probe.onload = function () {
-        document.getElementById("a4Sheet").style.setProperty(
-          "--gp-a4-bg-image", "url('" + A4_BG_PATH + "')"
-        );
+        document.querySelectorAll(".gp-a4").forEach(function (sheet) {
+          sheet.style.setProperty("--gp-a4-bg-image", "url('" + A4_BG_PATH + "')");
+        });
       };
       probe.src = A4_BG_PATH;
     }
 
     function updateA4Scale() {
       const outer = document.getElementById("a4Outer");
-      const sheet = document.getElementById("a4Sheet");
       const wrap = document.querySelector(".gp-preview-wrap");
-      if (!outer || !sheet || !wrap) return;
+      if (!outer || !wrap) return;
 
       const available = wrap.clientWidth - 4;
       const scale = Math.max(0.32, Math.min(1, available / 794));
 
-      sheet.style.transform = "scale(" + scale + ")";
+      document.querySelectorAll(".gp-a4").forEach(function (sheet) { sheet.style.transform = "scale(" + scale + ")"; });
+      document.querySelectorAll(".gp-a4-page-slot").forEach(function (slot) {
+        slot.style.width = (794 * scale) + "px";
+        slot.style.height = (1123 * scale) + "px";
+      });
       outer.style.width = (794 * scale) + "px";
-      outer.style.height = (1123 * scale) + "px";
+      outer.style.height = "auto";
+
+      const editor = document.querySelector(".gp-editor");
+      if (editor) {
+        editor.style.setProperty(
+          "--gp-editor-height",
+          outer.scrollHeight + "px"
+        );
+      }
+    }
+
+    /* 개별읽기 결과지는 항상 한 장: 이전 동적 페이지가 있으면 1페이지로 복원한다. */
+    function paginateA4() {
+      const outer = document.getElementById("a4Outer");
+      const first = document.querySelector("#a4Sheet > .gp-a4-content");
+      if (!outer || !first) return;
+      const sections = Array.from(outer.querySelectorAll(".gp-a4-section"));
+      sections.forEach(function (section, index) {
+        if (!section.dataset.pageOrder) section.dataset.pageOrder = String(index);
+      });
+      sections.sort(function (a, b) { return Number(a.dataset.pageOrder) - Number(b.dataset.pageOrder); })
+        .forEach(function (section) { first.appendChild(section); });
+      outer.querySelectorAll(".gp-a4-page-slot:not(#a4Page1Slot)").forEach(function (slot) { slot.remove(); });
+      updateA4Scale();
     }
 
     window.addEventListener("resize", updateA4Scale);
@@ -1101,24 +1163,30 @@
         classNumber: document.getElementById("fieldClassNumber").value,
         periodFrom: document.getElementById("periodFromInput").value,
         periodTo: document.getElementById("periodToInput").value,
-        booksReadCount: document.getElementById("fieldBooksRead").value,
         readingPracticeAvg: document.getElementById("fieldPracticeAvg").value,
+        readingPracticeLevel: metricLevels.practice,
         recordCompletionAvg: document.getElementById("fieldCompletionAvg").value,
-        activityQuestionCount: document.getElementById("fieldActivityQuestion").value,
-        activityThoughtCount: document.getElementById("fieldActivityThought").value,
-        activitySummaryCount: document.getElementById("fieldActivitySummary").value,
-        activityBookChatCount: document.getElementById("fieldActivityBookChat").value,
+        recordCompletionLevel: metricLevels.completion,
         monthlyCounts: readMonthlyInputs(),
         competencyQuestion: document.getElementById("fieldCompQuestion").value,
+        competencyQuestionLevel: competencyLevels.question,
         competencyPersistence: document.getElementById("fieldCompPersistence").value,
+        competencyPersistenceLevel: competencyLevels.persistence,
         competencyRefine: document.getElementById("fieldCompRefine").value,
+        competencyRefineLevel: competencyLevels.refine,
         competencyShare: document.getElementById("fieldCompShare").value,
+        competencyShareLevel: competencyLevels.share,
+        booksReadCount: currentActivityCounts.booksReadCount,
+        activityQuestionCount: currentActivityCounts.activityQuestionCount,
+        activityThoughtCount: currentActivityCounts.activityThoughtCount,
+        activitySummaryCount: currentActivityCounts.activitySummaryCount,
+        activityBookChatCount: currentActivityCounts.activityBookChatCount,
         aiStrengths: document.getElementById("fieldAiStrengths").value,
         aiImprovements: document.getElementById("fieldAiImprovements").value,
         teacherComment: document.getElementById("fieldTeacherComment").value,
-        booksReadDesc: document.getElementById("fieldBooksReadDesc").value,
-        practiceAvgDesc: document.getElementById("fieldPracticeAvgDesc").value,
-        completionAvgDesc: document.getElementById("fieldCompletionAvgDesc").value
+        teacherEdited: teacherEdited,
+        teacherEditedAt: teacherEditedAt,
+        sourceLoadedAt: sourceLoadedAt
       };
     }
 
@@ -1128,31 +1196,39 @@
       document.getElementById("fieldClassNumber").value = draft.classNumber != null ? draft.classNumber : "";
       document.getElementById("periodFromInput").value = draft.periodFrom || "";
       document.getElementById("periodToInput").value = draft.periodTo || "";
-      document.getElementById("fieldBooksRead").value = draft.booksReadCount != null ? draft.booksReadCount : "";
       document.getElementById("fieldPracticeAvg").value = draft.readingPracticeAvg != null ? draft.readingPracticeAvg : "";
       document.getElementById("fieldCompletionAvg").value = draft.recordCompletionAvg != null ? draft.recordCompletionAvg : "";
-      document.getElementById("fieldActivityQuestion").value = draft.activityQuestionCount != null ? draft.activityQuestionCount : "";
-      document.getElementById("fieldActivityThought").value = draft.activityThoughtCount != null ? draft.activityThoughtCount : "";
-      document.getElementById("fieldActivitySummary").value = draft.activitySummaryCount != null ? draft.activitySummaryCount : "";
-      document.getElementById("fieldActivityBookChat").value = draft.activityBookChatCount != null ? draft.activityBookChatCount : "";
+      metricLevels = {
+        practice: draft.readingPracticeLevel || "",
+        completion: draft.recordCompletionLevel || ""
+      };
       writeMonthlyInputs(draft.monthlyCounts);
       document.getElementById("fieldCompQuestion").value = draft.competencyQuestion != null ? draft.competencyQuestion : "";
       document.getElementById("fieldCompPersistence").value = draft.competencyPersistence != null ? draft.competencyPersistence : "";
       document.getElementById("fieldCompRefine").value = draft.competencyRefine != null ? draft.competencyRefine : "";
       document.getElementById("fieldCompShare").value = draft.competencyShare != null ? draft.competencyShare : "";
+      competencyLevels = {
+        question: draft.competencyQuestionLevel || "",
+        persistence: draft.competencyPersistenceLevel || "",
+        refine: draft.competencyRefineLevel || "",
+        share: draft.competencyShareLevel || ""
+      };
       document.getElementById("fieldAiStrengths").value = draft.aiStrengths || "";
       document.getElementById("fieldAiImprovements").value = draft.aiImprovements || "";
       document.getElementById("fieldTeacherComment").value = draft.teacherComment || "";
-      document.getElementById("fieldBooksReadDesc").value = draft.booksReadDesc || BOOKS_READ_DESC_DEFAULT;
-      document.getElementById("fieldPracticeAvgDesc").value = draft.practiceAvgDesc || PRACTICE_AVG_DESC_DEFAULT;
-      document.getElementById("fieldCompletionAvgDesc").value = draft.completionAvgDesc || COMPLETION_AVG_DESC_DEFAULT;
+      currentActivityCounts = {
+        booksReadCount: typeof draft.booksReadCount === "number" ? draft.booksReadCount : null,
+        activityQuestionCount: typeof draft.activityQuestionCount === "number" ? draft.activityQuestionCount : null,
+        activityThoughtCount: typeof draft.activityThoughtCount === "number" ? draft.activityThoughtCount : null,
+        activitySummaryCount: typeof draft.activitySummaryCount === "number" ? draft.activitySummaryCount : null,
+        activityBookChatCount: typeof draft.activityBookChatCount === "number" ? draft.activityBookChatCount : null
+      };
 
       updatePreview();
     }
 
     function setUnavailableHints(unavailableFields) {
       const singleMap = {
-        booksReadCount: "hintBooksRead",
         readingPracticeAvg: "hintPracticeAvg",
         recordCompletionAvg: "hintCompletionAvg"
       };
@@ -1160,10 +1236,6 @@
         const el = document.getElementById(singleMap[field]);
         if (el) el.hidden = !unavailableFields.includes(field);
       });
-
-      const activityFields = ["activityQuestionCount", "activityThoughtCount", "activitySummaryCount", "activityBookChatCount"];
-      document.getElementById("hintActivity").hidden =
-        !activityFields.some(function (field) { return unavailableFields.includes(field); });
 
       document.getElementById("hintMonthly").hidden = !unavailableFields.includes("monthlyCounts");
 
@@ -1195,21 +1267,22 @@
       return Object.assign({
         periodFrom: periodFrom,
         periodTo: periodTo,
-        booksReadDesc: BOOKS_READ_DESC_DEFAULT,
-        practiceAvgDesc: PRACTICE_AVG_DESC_DEFAULT,
-        completionAvgDesc: COMPLETION_AVG_DESC_DEFAULT,
-        teacherComment: ""
+        teacherComment: "",
+        teacherEdited: false,
+        teacherEditedAt: null,
+        sourceLoadedAt: new Date().toISOString()
       }, result.data);
     }
 
     async function openEditorForCurrentStudent() {
       const savedDraft = loadPortfolioDraft(PORTFOLIO_KIND, currentStudentId);
 
-      if (savedDraft && savedDraft.draft) {
+      if (savedDraft && savedDraft.draft && savedDraft.draft.teacherEdited === true) {
+        teacherEdited = true;
+        teacherEditedAt = savedDraft.draft.teacherEditedAt || savedDraft.savedAt || null;
+        sourceLoadedAt = savedDraft.draft.sourceLoadedAt || null;
         fillFormFromDraft(savedDraft.draft);
-        document.getElementById("sourceNote").hidden = false;
-        document.getElementById("sourceNote").textContent =
-          "임시 저장된 편집 내용을 불러왔어요. (저장 시각: " + new Date(savedDraft.savedAt).toLocaleString("ko-KR") + ")";
+        updateA4Scale();
         return;
       }
 
@@ -1219,18 +1292,33 @@
 
       const editor = document.querySelector(".gp-editor");
       editor.style.opacity = "0.5";
+      let loadedFreshData = false;
       try {
         const draft = await fetchFreshDraft(period.from, period.to);
+        teacherEdited = false;
+        teacherEditedAt = null;
+        sourceLoadedAt = draft.sourceLoadedAt;
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
         updateSaveIndicator();
+        loadedFreshData = true;
       } finally {
         editor.style.opacity = "1";
+        updateA4Scale();
       }
+      if (loadedFreshData) await generateInitialAiAnalysisIfNeeded();
     }
 
+    /*
+     * "최신 데이터 반영하기"는 현재 draft를 전부 버리고 backend
+     * aggregate/AI를 기준으로 포트폴리오를 처음부터 다시 만드는
+     * 기능이다. 교사가 직접 쓴 교사의견도 예외 없이 초기화한다
+     * (backend에는 교사의견 원본이 없으므로 "최신값"은 항상 빈 값)-
+     * 예전에는 preservedTeacherComment로 교사의견만 따로 복원했지만
+     * 그 정책은 더 이상 쓰지 않는다.
+     */
     async function reloadOriginalData() {
-      if (!confirm("직접 수정한 내용과 AI 분석 결과가 초기화됩니다. 계속할까요?")) {
+      if (teacherEdited && !confirm("최신 데이터를 반영하면 직접 수정한 내용과 교사 의견이 모두 초기화됩니다. 계속할까요?")) {
         return;
       }
 
@@ -1243,15 +1331,22 @@
 
       try {
         const draft = await fetchFreshDraft(periodFrom, periodTo);
+        draft.teacherComment = "";
+        draft.aiStrengths = "";
+        draft.aiImprovements = "";
+        teacherEdited = false;
+        teacherEditedAt = null;
+        sourceLoadedAt = draft.sourceLoadedAt;
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
         updateSaveIndicator();
+        await generateInitialAiAnalysisIfNeeded();
       } catch (error) {
         console.error("원본 데이터를 다시 불러오지 못했습니다.", error);
         alert("원본 데이터를 다시 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
       } finally {
         button.disabled = false;
-        button.textContent = "원본 데이터 다시 불러오기";
+        button.textContent = "최신 데이터 반영하기";
       }
     }
 
@@ -1269,6 +1364,17 @@
       indicator.textContent = "임시 저장됨 · " + new Date().toLocaleTimeString("ko-KR");
     }
 
+    /* 완독/질문/생각쓰기/간추리기/책수다방 전부 0으로 확인된 경우에만 "활동 전"으로 판정한다(확인 불가 상태는 제외). */
+    function individualHasConfirmedNoActivity() {
+      const counts = [
+        currentActivityCounts.booksReadCount, currentActivityCounts.activityQuestionCount,
+        currentActivityCounts.activityThoughtCount, currentActivityCounts.activitySummaryCount,
+        currentActivityCounts.activityBookChatCount
+      ];
+      if (counts.some(function (value) { return typeof value !== "number"; })) return false;
+      return counts.every(function (value) { return value <= 0; });
+    }
+
     function refreshAiButtonLabel() {
       const button = document.getElementById("regenerateAiButton");
       if (!button || button.disabled) return;
@@ -1278,13 +1384,37 @@
       button.textContent = hasAnalysis ? "✨ AI 분석 다시 생성" : "✨ AI 분석 생성";
     }
 
-    async function handleRegenerateAi() {
+    async function generateInitialAiAnalysisIfNeeded() {
+      const strengths = document.getElementById("fieldAiStrengths").value.trim();
+      const improvements = document.getElementById("fieldAiImprovements").value.trim();
+      if (strengths || improvements) {
+        refreshAiButtonLabel();
+        return;
+      }
+      await handleRegenerateAi({ initialLoad: true });
+    }
+
+    async function handleRegenerateAi(options) {
+      const initialLoad = Boolean(options && options.initialLoad);
       const auth = getPortfolioTeacherAuthContext();
       if (!auth || !currentClassId || !currentStudentId) return;
 
       const button = document.getElementById("regenerateAiButton");
       const spinner = document.getElementById("aiSpinner");
       const note = document.getElementById("aiRegenerateNote");
+
+      /*
+       * 활동이 하나도 없는 것으로 확인된 학생은 OpenAI를 호출하지 않는다
+       * - 근거 데이터가 전혀 없는데 그럴듯한 평가 문구가 생기는 것을
+       * 막기 위함(요구사항 6/8/9번). 네트워크 요청 자체를 보내지 않는다.
+       */
+      if (individualHasConfirmedNoActivity()) {
+        note.classList.remove("gp-ai-error");
+        note.textContent = "아직 분석할 독서 활동 기록이 없습니다.";
+        refreshAiButtonLabel();
+        return;
+      }
+
       const periodFrom = document.getElementById("periodFromInput").value;
       const periodTo = document.getElementById("periodToInput").value;
 
@@ -1300,7 +1430,7 @@
 
         if (!result.ok) {
           note.classList.add("gp-ai-error");
-          note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+          note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
           return;
         }
 
@@ -1312,7 +1442,7 @@
       } catch (error) {
         console.error("AI 분석 생성 중 오류가 발생했습니다.", error);
         note.classList.add("gp-ai-error");
-        note.textContent = "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+        note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
       } finally {
         button.disabled = false;
         spinner.hidden = true;
@@ -1346,17 +1476,130 @@
         const num = Number(raw);
         return Number.isFinite(num) && num > 0 ? num : 0;
       });
-      const maxCount = Math.max(4, Math.max.apply(null, counts));
-
-      chart.innerHTML = counts.map(function (count, index) {
-        const heightPercent = Math.max(0, Math.min(100, (count / maxCount) * 100));
-        return (
-          '<div class="gp-chart-bar">' +
-          '<b style="height:' + heightPercent + '%; min-height:' + (count > 0 ? "3px" : "0") + ';"></b>' +
-          '<span>' + MONTH_LABELS[index].replace("월", "") + '</span>' +
-          '</div>'
-        );
+      const maxCount = Math.max(1, Math.max.apply(null, counts));
+      const tickStep = Math.max(1, Math.ceil((maxCount + 1) / 4));
+      const axisMax = tickStep * 4;
+      const left = 38, right = 594, top = 16, bottom = 82;
+      const xStep = (right - left) / 11;
+      /*
+       * top/bottom로 clamp: axisMax 계산이 항상 count보다 커지도록 짜여
+       * 있어 정상 데이터에서는 필요 없지만, 값이 비정상적으로 크게
+       * 들어와도 좌표가 차트 밖으로 튀지 않도록 방어적으로 고정한다.
+       */
+      const yFor = function (value) {
+        const y = bottom - (value / axisMax) * (bottom - top);
+        return Math.min(bottom, Math.max(top, y));
+      };
+      const ticks = [0, 1, 2, 3, 4].map(function (index) {
+        const value = index * tickStep;
+        const y = yFor(value);
+        return '<line x1="' + left + '" y1="' + y + '" x2="' + right + '" y2="' + y + '" stroke="rgba(90,67,40,.14)" />' +
+          '<text x="30" y="' + (y + 3) + '" text-anchor="end" font-size="9" fill="#705943">' + value + '</text>';
       }).join("");
+      /*
+       * 버그 수정: 좌표쌍 사이를 공백 없이(.join("")) 이어붙이면
+       * "38,8288.545,73.75"처럼 숫자가 서로 붙어버려 SVG가 이를 하나의
+       * 거대한 좌표로 잘못 해석 - 화면을 가로지르는 대각선의 원인이었다.
+       * points 문자열은 좌표쌍 사이에 반드시 공백이 있어야 한다.
+       */
+      const points = counts.map(function (count, index) {
+        return (left + index * xStep) + ',' + yFor(count);
+      }).join(" ");
+      const markers = counts.map(function (count, index) {
+        const x = left + index * xStep;
+        const y = yFor(count);
+        return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="#a45e19" />' +
+          '<text x="' + x + '" y="' + Math.max(9, y - 6) + '" text-anchor="middle" font-size="9" font-weight="700" fill="#5b3a22">' + count + '</text>' +
+          '<text x="' + x + '" y="105" text-anchor="middle" font-size="9" fill="#705943">' + MONTH_LABELS[index] + '</text>';
+      }).join("");
+      chart.innerHTML = '<svg viewBox="0 0 610 112" role="img" aria-label="월별 완독 권수 꺾은선 그래프">' +
+        '<text x="8" y="11" font-size="9" fill="#705943">권</text>' + ticks +
+        '<line x1="' + left + '" y1="' + top + '" x2="' + left + '" y2="' + bottom + '" stroke="rgba(90,67,40,.38)" />' +
+        '<line x1="' + left + '" y1="' + bottom + '" x2="' + right + '" y2="' + bottom + '" stroke="rgba(90,67,40,.38)" />' +
+        '<polyline points="' + points + '" fill="none" stroke="#a45e19" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" />' +
+        markers + '</svg>';
+    }
+
+    function renderCompetencyRadar(draft) {
+      const rawValues = [draft.competencyQuestion, draft.competencyPersistence, draft.competencyRefine, draft.competencyShare];
+      const values = rawValues.map(function (value) {
+        if (value === "" || value === null || value === undefined) return 0;
+        const number = Number(value);
+        return Number.isFinite(number) ? Math.max(0, Math.min(100, number)) : 0;
+      });
+      const centerX = 180, centerY = 102, radius = 76;
+      const axes = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+      const point = function (axis, scale) {
+        return (centerX + axes[axis][0] * radius * scale) + "," + (centerY + axes[axis][1] * radius * scale);
+      };
+      const grid = [0.25, 0.5, 0.75, 1].map(function (scale) {
+        return '<polygon points="' + axes.map(function (_, index) { return point(index, scale); }).join(" ") + '" fill="none" stroke="rgba(90,67,40,.18)" />';
+      }).join("");
+      const polygon = axes.map(function (_, index) { return point(index, values[index] / 100); }).join(" ");
+      const labels = [
+        ["질문 생성", 180, 13], ["독서 지속", 338, 106],
+        ["생각 다듬기", 180, 205], ["생각 나눔", 22, 106]
+      ].map(function (item) {
+        return '<text x="' + item[1] + '" y="' + item[2] + '" text-anchor="middle">' + item[0] + '</text>';
+      }).join("");
+      document.getElementById("competencyRadar").innerHTML =
+        '<svg viewBox="0 0 360 214" role="img">' + grid +
+        axes.map(function (_, index) { return '<line x1="180" y1="102" x2="' + point(index, 1).replace(",", '" y2="') + '" stroke="rgba(90,67,40,.22)" />'; }).join("") +
+        '<polygon points="' + polygon + '" fill="rgba(124,145,74,.28)" stroke="#667a36" stroke-width="2" />' + labels + '</svg>';
+
+      renderCompetencyCards(draft);
+    }
+
+    function competencyLevel(score, backendLevel) {
+      const normalized = (backendLevel || "").toString().trim().toUpperCase().replace(/[\s-]+/g, "_");
+      const backendMap = {
+        "노력 필요": "노력 필요", "NEEDS_IMPROVEMENT": "노력 필요", "NEEDS_WORK": "노력 필요",
+        "보통": "보통", "AVERAGE": "보통",
+        "우수": "우수", "GOOD": "우수",
+        "매우 우수": "매우 우수", "EXCELLENT": "매우 우수", "VERY_GOOD": "매우 우수"
+      };
+      if (backendMap[backendLevel] || backendMap[normalized]) return backendMap[backendLevel] || backendMap[normalized];
+      if (score === "" || score === null || score === undefined || !Number.isFinite(Number(score))) return "집계 준비 중";
+      const value = Math.max(0, Math.min(100, Number(score)));
+      if (value >= 80) return "매우 우수";
+      if (value >= 60) return "우수";
+      if (value >= 40) return "보통";
+      return "노력 필요";
+    }
+
+    function competencyBadgeClass(level) {
+      return { "노력 필요": "gp-level-needs", "보통": "gp-level-average", "우수": "gp-level-good", "매우 우수": "gp-level-excellent" }[level] || "gp-level-pending";
+    }
+
+    function renderCompetencyCards(draft) {
+      const items = [
+        ["question", "질문 생성 역량", "읽으며 궁금한 점을 질문으로 만들어 보는 힘", draft.competencyQuestion, draft.competencyQuestionLevel, "fieldCompQuestionLevel"],
+        ["persistence", "독서 지속 역량", "책 읽기와 독서 활동을 꾸준히 이어 가는 힘", draft.competencyPersistence, draft.competencyPersistenceLevel, "fieldCompPersistenceLevel"],
+        ["refine", "생각 다듬기 역량", "질문·생각·간추리기를 통해 생각을 더 구체화하는 힘", draft.competencyRefine, draft.competencyRefineLevel, "fieldCompRefineLevel"],
+        ["share", "생각 나눔 역량", "친구와 생각을 나누고 다른 생각을 받아들이는 힘", draft.competencyShare, draft.competencyShareLevel, "fieldCompShareLevel"]
+      ];
+      document.getElementById("competencyCards").innerHTML = items.map(function (item) {
+        const level = competencyLevel(item[3], item[4]);
+        const editorLevel = document.getElementById(item[5]);
+        if (editorLevel) editorLevel.textContent = level;
+        return '<div class="gp-competency-card"><span class="gp-competency-name">' + item[1] + '</span>' +
+          '<span class="gp-level-badge ' + competencyBadgeClass(level) + '">' + level + '</span>' +
+          '<span class="gp-competency-desc">' + item[2] + '</span></div>';
+      }).join("");
+    }
+
+    function renderMetricPreview(prefix, rawScore, backendLevel) {
+      const score = Number(rawScore);
+      const valid = rawScore !== "" && rawScore !== null && rawScore !== undefined && Number.isFinite(score);
+      const bounded = valid ? Math.max(0, Math.min(100, score)) : 0;
+      const level = valid ? competencyLevel(bounded, backendLevel) : "집계 준비 중";
+      document.getElementById("preview" + prefix).innerHTML = valid
+        ? Math.round(bounded) + "점"
+        : formatNumber(null, "점");
+      const badge = document.getElementById("preview" + prefix + "Level");
+      badge.textContent = level;
+      badge.className = "gp-level-badge " + competencyBadgeClass(level);
+      document.getElementById("preview" + prefix + "Bar").style.width = bounded + "%";
     }
 
     function updatePreview() {
@@ -1368,35 +1611,40 @@
       document.getElementById("previewPeriod").textContent =
         (draft.periodFrom && draft.periodTo) ? draft.periodFrom + " ~ " + draft.periodTo : "-";
 
-      document.getElementById("previewBooksRead").innerHTML = formatNumber(draft.booksReadCount, "권");
-      document.getElementById("previewPracticeAvg").innerHTML = formatNumber(draft.readingPracticeAvg, "점");
-      document.getElementById("previewCompletionAvg").innerHTML = formatNumber(draft.recordCompletionAvg, "점");
-
-      document.getElementById("previewActivityQuestion").innerHTML = formatNumber(draft.activityQuestionCount, "회");
-      document.getElementById("previewActivityThought").innerHTML = formatNumber(draft.activityThoughtCount, "회");
-      document.getElementById("previewActivitySummary").innerHTML = formatNumber(draft.activitySummaryCount, "회");
-      document.getElementById("previewActivityBookChat").innerHTML = formatNumber(draft.activityBookChatCount, "회");
+      renderMetricPreview("PracticeAvg", draft.readingPracticeAvg, draft.readingPracticeLevel);
+      renderMetricPreview("CompletionAvg", draft.recordCompletionAvg, draft.recordCompletionLevel);
 
       renderMonthlyChartPreview(draft.monthlyCounts);
+      renderCompetencyRadar(draft);
 
-      document.getElementById("previewCompQuestion").innerHTML = formatNumber(draft.competencyQuestion);
-      document.getElementById("previewCompPersistence").innerHTML = formatNumber(draft.competencyPersistence);
-      document.getElementById("previewCompRefine").innerHTML = formatNumber(draft.competencyRefine);
-      document.getElementById("previewCompShare").innerHTML = formatNumber(draft.competencyShare);
-
-      document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, "AI 분석 결과가 아직 없어요.");
-      document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, "AI 분석 결과가 아직 없어요.");
+      const aiEmptyFallback = individualHasConfirmedNoActivity()
+        ? "독서 활동이 시작되면 AI 분석이 표시됩니다."
+        : "AI 분석 결과가 아직 없어요.";
+      document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, aiEmptyFallback);
+      document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, aiEmptyFallback);
       document.getElementById("previewTeacherComment").innerHTML = formatPlainText(draft.teacherComment, "교사 의견을 입력해 주세요.");
 
-      document.getElementById("previewBooksReadDesc").textContent = draft.booksReadDesc || BOOKS_READ_DESC_DEFAULT;
-      document.getElementById("previewPracticeAvgDesc").textContent = draft.practiceAvgDesc || PRACTICE_AVG_DESC_DEFAULT;
-      document.getElementById("previewCompletionAvgDesc").textContent = draft.completionAvgDesc || COMPLETION_AVG_DESC_DEFAULT;
-
       refreshAiButtonLabel();
+      requestAnimationFrame(paginateA4);
     }
 
     document.addEventListener("input", function (event) {
-      if (!event.target.closest(".gp-editor")) return;
+      if (!event.target.closest("#editorScreen")) return;
+      const competencyKeyById = {
+        fieldCompQuestion: "question",
+        fieldCompPersistence: "persistence",
+        fieldCompRefine: "refine",
+        fieldCompShare: "share"
+      };
+      if (competencyKeyById[event.target.id]) {
+        competencyLevels[competencyKeyById[event.target.id]] = "";
+      }
+      if (event.target.id === "fieldPracticeAvg") metricLevels.practice = "";
+      if (event.target.id === "fieldCompletionAvg") metricLevels.completion = "";
+      if (event.isTrusted) {
+        teacherEdited = true;
+        teacherEditedAt = new Date().toISOString();
+      }
       updatePreview();
       scheduleAutoSave();
     });
@@ -1408,6 +1656,5 @@
       updateA4Scale();
     });
   </script>
-
 </body>
 </html>

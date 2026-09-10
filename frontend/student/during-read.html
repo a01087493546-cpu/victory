@@ -767,6 +767,107 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
 .focus-time-button { font-size: 22px; }
 .write-card { padding-top: 16px; padding-bottom: 14px; }
 .write-actions { margin-top: 10px; }
+
+/* 다음 단계 전에 질문 활용 방법을 안내하는 보조창 */
+.question-route-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(48, 30, 17, 0.54);
+  backdrop-filter: blur(3px);
+}
+.question-route-overlay.is-open { display: flex; }
+.question-route-dialog {
+  position: relative;
+  width: min(920px, calc(100vw - 64px));
+  padding: 38px 40px 34px;
+  border: 1px solid rgba(181, 117, 37, 0.42);
+  border-radius: 26px;
+  background: linear-gradient(180deg, #fffdf7 0%, #fff5df 100%);
+  box-shadow: 0 24px 60px rgba(58, 34, 16, 0.3);
+  color: #513018;
+  text-align: center;
+}
+.question-route-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(181, 117, 37, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  color: #74471f;
+  font-size: 26px;
+  line-height: 1;
+}
+.question-route-dialog h2 {
+  margin: 0 48px 10px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 32px;
+  font-weight: 900;
+}
+.question-route-intro {
+  margin: 0 0 24px;
+  color: #765132;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.question-route-cards {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
+  gap: 16px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.question-route-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(181, 117, 37, 0.3);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+}
+.question-route-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #684019;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.question-route-card p {
+  margin: 0;
+  color: #6e4a2c;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.question-route-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.question-route-actions button {
+  min-height: 54px;
+  border: 1px solid rgba(181, 117, 37, 0.34);
+  border-radius: 15px;
+  background: #fffdf7;
+  color: #71451f;
+  font-size: 18px;
+  font-weight: 900;
+}
+.question-route-actions .question-route-primary {
+  background: linear-gradient(180deg, #e5b75f, #b7751b);
+  color: #fffaf0;
+  box-shadow: 0 5px 0 rgba(101, 57, 5, 0.54);
+}
   </style>
 </head>
 
@@ -1000,6 +1101,28 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
       </section>
     </div>
   </main>
+
+  <div class="question-route-overlay" id="questionRouteOverlay" aria-hidden="true" onclick="handleQuestionRouteOverlayClick(event)">
+    <section class="question-route-dialog" role="dialog" aria-modal="true" aria-labelledby="questionRouteTitle" onclick="event.stopPropagation()">
+      <button class="question-route-close" type="button" aria-label="안내창 닫기" onclick="closeQuestionRouteModal()">×</button>
+      <h2 id="questionRouteTitle">내 질문은 어디로 갈까요?</h2>
+      <p class="question-route-intro">책 속에서 만든 질문은 친구들과 함께 활용해요.</p>
+      <div class="question-route-cards">
+        <article class="question-route-card">
+          <strong>🔎 바로 찾기</strong>
+          <p>책수다방의 ‘책 퀴즈’에 활용돼요.</p>
+        </article>
+        <article class="question-route-card">
+          <strong>💬 짐작하기 · 생각/느낌 · 삶과 연결</strong>
+          <p>‘생각 나누기’에서 친구들과 이야기를 나눌 수 있어요.</p>
+        </article>
+      </div>
+      <div class="question-route-actions">
+        <button type="button" onclick="hideQuestionRouteAndGoNext()">다시 보지 않기</button>
+        <button class="question-route-primary" type="button" onclick="finishQuestionRouteAndGoNext()">책수다방 이동하기</button>
+      </div>
+    </section>
+  </div>
 
 
   <script src="../js/auth.js"></script>
@@ -2975,6 +3098,62 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
 
         return;
       }
+
+      if (shouldSkipQuestionRouteModal()) {
+        completeQuestionSharingAndNavigate();
+        return;
+      }
+
+      openQuestionRouteModal();
+    }
+
+
+    function getQuestionRouteGuideKey() {
+      return "individualDuringQuestionGuideHidden_" + studentId;
+    }
+
+
+    function shouldSkipQuestionRouteModal() {
+      return localStorage.getItem(getQuestionRouteGuideKey()) === "true";
+    }
+
+
+    function openQuestionRouteModal() {
+      const overlay = document.getElementById("questionRouteOverlay");
+      if (!overlay) return;
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+
+
+    function closeQuestionRouteModal() {
+      const overlay = document.getElementById("questionRouteOverlay");
+      if (!overlay) return;
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+    }
+
+
+    function handleQuestionRouteOverlayClick(event) {
+      if (event.target === event.currentTarget) {
+        closeQuestionRouteModal();
+      }
+    }
+
+
+    function finishQuestionRouteAndGoNext() {
+      closeQuestionRouteModal();
+      completeQuestionSharingAndNavigate();
+    }
+
+
+    function hideQuestionRouteAndGoNext() {
+      localStorage.setItem(getQuestionRouteGuideKey(), "true");
+      finishQuestionRouteAndGoNext();
+    }
+
+
+    function completeQuestionSharingAndNavigate() {
 
 
       const studentQuestionData = {
