@@ -364,6 +364,7 @@
     function prevAfterIntro() {
       if (currentAfterIntroIndex > 0) {
         currentAfterIntroIndex--;
+        playPageTurnSound();
         renderAfterIntro();
       }
     }
@@ -375,6 +376,7 @@
       }
 
       currentAfterIntroIndex++;
+      playPageTurnSound();
       renderAfterIntro();
     }
 
@@ -384,6 +386,7 @@
 
     renderAfterIntro();
   </script>
+  <script src="../js/page-turn-sound.js?v=20260913"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

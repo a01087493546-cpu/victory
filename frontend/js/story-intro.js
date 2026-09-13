@@ -202,6 +202,7 @@ function renderStoryDots() {
 function goPrevStory() {
   if (currentSlideIndex > 0) {
     currentSlideIndex = currentSlideIndex - 1;
+    playPageTurnSound();
     renderStorySlide();
   }
 }
@@ -219,6 +220,7 @@ function goNextStory() {
   }
 
   currentSlideIndex = currentSlideIndex + 1;
+  playPageTurnSound();
   renderStorySlide();
 }
 

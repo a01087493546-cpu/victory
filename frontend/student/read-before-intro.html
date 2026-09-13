@@ -461,6 +461,7 @@ if (currentSceneIndex > 0) {
   function nextScene() {
     if (currentSceneIndex < scenes.length - 1) {
       currentSceneIndex++;
+      playPageTurnSound();
       renderScene();
       return;
     }
@@ -473,10 +474,12 @@ if (currentSceneIndex > 0) {
   function prevScene() {
     if (currentSceneIndex > 0) {
       currentSceneIndex--;
+      playPageTurnSound();
       renderScene();
     }
   }
 </script>
+  <script src="../js/page-turn-sound.js?v=20260913"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

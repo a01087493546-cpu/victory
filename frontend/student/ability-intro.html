@@ -367,6 +367,7 @@
     abilityPrevButton.addEventListener("click", () => {
       if (abilityIndex > 0) {
         abilityIndex -= 1;
+        playPageTurnSound();
         renderAbilityStep();
       }
     });
@@ -381,6 +382,7 @@
     abilityNextButton.addEventListener("click", () => {
       if (abilityIndex < abilityCards.length - 1) {
         abilityIndex += 1;
+        playPageTurnSound();
         renderAbilityStep();
         return;
       }
@@ -427,6 +429,7 @@
     renderAbilityStep();
     checkEndingStatusAndShowBanner();
   </script>
+  <script src="../js/page-turn-sound.js?v=20260913"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>
