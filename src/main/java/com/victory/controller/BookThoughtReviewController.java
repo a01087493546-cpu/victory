@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,6 +85,16 @@ public class BookThoughtReviewController {
 
         return ResponseEntity.ok(
             responseService.returnBookThoughtResponseToPending(teacherId, responseId));
+    }
+
+    @DeleteMapping("/{responseId}")
+    public ResponseEntity<Void> deleteBookThought(
+            @PathVariable Long teacherId,
+            @PathVariable Long responseId,
+            Authentication authentication) {
+        requireSelf(teacherId, authentication);
+        responseService.deleteBookThoughtResponseAsTeacher(teacherId, responseId);
+        return ResponseEntity.noContent().build();
     }
 
     private void requireSelf(Long teacherId, Authentication authentication) {

@@ -883,13 +883,15 @@ public class ResponseService {
             );
         }
 
-        if (!APPROVAL_STATUS_REJECTED.equals(getApprovalStatus(response))) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "거절된 질문만 삭제할 수 있습니다."
-            );
-        }
+        response.setDeletedAt(LocalDateTime.now());
+        responseRepository.save(response);
+    }
 
+    @Transactional
+    public void deleteBookThoughtResponseAsTeacher(Long teacherId, Long responseId) {
+        Response response = findTeacherManagedBookThought(teacherId, responseId);
+        if (demoAccountService.isDemoAccount(teacherId)) return;
+        softDeleteAllBookChatParticipation(response);
         response.setDeletedAt(LocalDateTime.now());
         responseRepository.save(response);
     }

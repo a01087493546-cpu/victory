@@ -72,7 +72,8 @@ public class IndividualAfterReadingRewardService {
         log.setStudent(student);
         log.setRewardType(REWARD_TYPE);
         log.setStatType("stamina_magic_wisdom");
-        log.setAmount(1);
+        // 복합 statType의 대표 amount는 가장 큰 실제 지급량과 맞춘다.
+        log.setAmount(STAMINA_REWARD);
         log.setInstanceId(instanceId);
         rewardLogRepository.save(log);
 

@@ -155,10 +155,7 @@ public class ResponseController {
             responseService.saveBookThoughtResponse(studentId, request));
     }
 
-    /*
-     * 교사가 거절한 "책 속 생각 쓰기"만 학생 본인이 숨길 수 있다.
-     * 실제 삭제가 아니라 deletedAt을 기록하는 소프트 삭제 방식이다.
-     */
+    /* 본인이 쓴 책수다방 질문은 승인 상태와 관계없이 소프트 삭제한다. */
     @DeleteMapping("/book-thought/{responseId}")
     public ResponseEntity<Void> deleteRejectedBookThoughtResponse(
             @PathVariable Long studentId,

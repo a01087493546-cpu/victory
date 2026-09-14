@@ -209,7 +209,9 @@ function requestPreReadingAiFeedback(options) {
   const onLoading = options.onLoading;
   const onResult = options.onResult;
   const guard = options.guard;
-  const timeoutMs = options.timeoutMs || 15000;
+  /* 백엔드는 OpenAI 응답을 최대 20초까지 기다리므로 브라우저가 먼저
+     정상 요청을 중단하지 않도록 공통 읽기 전 제한 시간을 30초로 둔다. */
+  const timeoutMs = options.timeoutMs || 30000;
   const failMessage =
     options.failMessage ||
     "피드백을 불러오지 못했어요. 잠시 후 다시 해 보세요.";

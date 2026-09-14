@@ -82,6 +82,30 @@ function saveDemoApprovalRequest(scope, request) {
   return savedRequest;
 }
 
+function deleteDemoApprovalRequest(scope, requestId) {
+  const storageKey = getDemoApprovalStorageKey(scope);
+  const normalizedId = String(requestId == null ? "" : requestId).trim();
+  if (!storageKey || !normalizedId) return false;
+
+  /* loadDemoApprovalRequests()는 현재 브라우저 항목만 돌려주므로 그 결과를
+     그대로 저장하면 다른 browserId 항목까지 사라질 수 있다. 원본 배열에서
+     현재 브라우저의 동일 requestId 한 건만 제거한다. */
+  const browserId = getDemoBrowserId();
+  const stored = loadDemoState(storageKey, []);
+  const requests = Array.isArray(stored) ? stored : [];
+  const remaining = requests.filter(function (request) {
+    if (!request) return false;
+    return !(
+      String(request.demoBrowserId || "") === String(browserId) &&
+      String(request.requestId == null ? "" : request.requestId).trim() === normalizedId
+    );
+  });
+
+  if (remaining.length === requests.length) return false;
+  saveDemoState(storageKey, remaining);
+  return true;
+}
+
 function updateDemoApprovalRequest(scope, requestId, status, rejectedReason) {
   const request = loadDemoApprovalRequests(scope).find(function (item) {
     return String(item.requestId) === String(requestId);
@@ -239,17 +263,25 @@ function clearDemoSummaryReviewOverride(scope, summaryId) {
 
 /* 연습읽기 학생·교사 화면이 같은 direct 간추리기와 같은 summaryId를
    사용하도록 mq_demo_afterReading을 한 곳에서 effective record로 만든다. */
-function getDemoPracticeDirectSummary(classReadingBookId) {
+function getDemoPracticeDirectSummary(classReadingBookId, options) {
   const data = loadDemoState("afterReading", {});
+  /* 공용 demo seed를 수정하는 동안 폼에 임시로 채운 값은 학생이 직접
+     저장한 direct record가 아니다. 이를 direct로 해석하면 같은 seed가
+     새 ID의 학생 글로 한 번 더 생기고 교사 목록에도 중복 노출된다. */
+  if (data.source === "demo-seed-edit" || data.editingReviewSeedId) return null;
   const summary = String(data.summary || data.summaryText || "").trim();
   if (!summary || summary.indexOf("________________") >= 0) return null;
 
   const browserId = getDemoBrowserId();
-  if (data.demoBrowserId && String(data.demoBrowserId) !== String(browserId)) return null;
+  const allowStoredBrowserRecord = options && options.allowStoredBrowserRecord === true;
+  if (!allowStoredBrowserRecord
+      && data.demoBrowserId
+      && String(data.demoBrowserId) !== String(browserId)) return null;
 
   const id = String(data.localId || [
     "practice-summary",
     browserId,
+    data.writerLoginId || "unknown",
     classReadingBookId || data.classReadingBookId || "book"
   ].join("-"));
   const override = getDemoSummaryReviewOverride("practice", id);
@@ -259,7 +291,7 @@ function getDemoPracticeDirectSummary(classReadingBookId) {
   return Object.assign({}, data, {
     id: id,
     localId: id,
-    demoBrowserId: browserId,
+    demoBrowserId: data.demoBrowserId || browserId,
     summary: override && typeof override.summary === "string" ? override.summary : summary,
     summaryText: override && typeof override.summary === "string" ? override.summary : summary,
     bookType: override && override.bookType ? override.bookType : (data.bookType || "story"),
@@ -268,6 +300,70 @@ function getDemoPracticeDirectSummary(classReadingBookId) {
       ? String(override ? override.reason || "" : data.rejectionReason || "")
       : ""
   });
+}
+
+/*
+ * mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한 칸뿐이라,
+ * 같은 브라우저에서 다른 심사 학생이 이어서 로그인해 글을 쓰면 이전 학생의
+ * 글이 덮어써진다. 교사 간추리기 관리처럼 "여러 학생의 실제 제출 글을 한
+ * 화면에서 함께" 봐야 하는 곳은 이 practiceWrittenSummaries 배열(학생별로
+ * 쌓이는 누적 기록)을 대신 사용한다 - individualWrittenSummaries와 같은 패턴이다.
+ */
+function getDemoPracticeDirectSummaries() {
+  const list = loadDemoState("practiceWrittenSummaries", []);
+  const archived = Array.isArray(list) ? list : [];
+  const normalized = archived.map(function(item) {
+    if (!item) return null;
+    const id = String(item.localId || item.id || "");
+    const summaryText = String(item.summary || item.summaryText || "").trim();
+    if (!id || !summaryText || summaryText.indexOf("________________") >= 0) return null;
+
+    const override = getDemoSummaryReviewOverride("practice", id);
+    if (override && override.deleted === true) return null;
+    const status = String(override ? override.status : (item.status || "pending")).toLowerCase();
+
+    return Object.assign({}, item, {
+      id: id,
+      localId: id,
+      summary: override && typeof override.summary === "string" ? override.summary : summaryText,
+      summaryText: override && typeof override.summary === "string" ? override.summary : summaryText,
+      bookType: override && override.bookType ? override.bookType : (item.bookType || "story"),
+      status: status,
+      rejectionReason: status === "rejected"
+        ? String(override ? override.reason || "" : item.rejectionReason || "")
+        : ""
+    });
+  }).filter(Boolean);
+
+  /* 학생 공유 화면의 현재 작성본(afterReading)도 동일 목록의 최신 record로
+     합친다. 이전 화면 버전에서 누적 배열 저장이 빠졌더라도 학생/교사가
+     서로 다른 복사본을 보지 않고 같은 localId/본문/상태를 사용한다. */
+  const current = getDemoPracticeDirectSummary(null, {
+    allowStoredBrowserRecord: true
+  });
+  if (!current) return normalized;
+
+  const currentId = String(current.localId || current.id || "").trim();
+  const withoutOlderCopy = normalized.filter(function(item) {
+    return String(item.localId || item.id || "").trim() !== currentId;
+  });
+  withoutOlderCopy.unshift(current);
+  return withoutOlderCopy;
+}
+
+/* 학생이 온책읽기 간추리기를 실제로 저장할 때마다 위 누적 기록에도 같은
+   localId로 upsert한다 - 다른 학생이 같은 브라우저에서 나중에 글을 써도
+   이 학생의 제출 이력은 여기서 그대로 남아 있다. */
+function saveDemoPracticeWrittenSummary(entry) {
+  if (!entry || !entry.localId) return;
+  const list = loadDemoState("practiceWrittenSummaries", []);
+  const directList = Array.isArray(list) ? list.slice() : [];
+  const existingIndex = directList.findIndex(function(item) {
+    return item && String(item.localId) === String(entry.localId);
+  });
+  if (existingIndex >= 0) directList[existingIndex] = entry;
+  else directList.unshift(entry);
+  saveDemoState("practiceWrittenSummaries", directList);
 }
 
 function getDemoIndividualDirectSummaries() {
@@ -431,21 +527,21 @@ const DEMO_BOOK_CHAT_PENDING_SEEDS = {
   ],
   individual: [
     {
-      id: "individual-seed-pending-01", studentName: "송민정", bookTitle: "긴긴밤", title: "노든의 선택",
-      scene: "노든은 위험한 길을 지나야 어린 펭귄을 지킬 수 있습니다.\n하지만 그 길은 아주 위험합니다.",
-      optionA: "안전한 길로 돌아간다.", optionB: "위험해도 가장 빠른 길로 간다.", authorChoice: "B",
+      id: "individual-seed-pending-01", studentName: "김민지", bookTitle: "정직한 나무꾼", title: "나무꾼의 정직한 대답",
+      scene: "나무꾼이 실수로 도끼를 연못에 빠뜨리자 산신령이 나타나 반짝이는 금도끼를 들어 보이며 네 것이냐고 묻습니다. 나무꾼은 금도끼를 갖고 싶은 마음이 들지만, 사실대로 내 도끼가 아니라고 말할지 그냥 받을지 고민합니다.",
+      optionA: "내 도끼가 아니라고 솔직하게 말한다.", optionB: "금도끼를 내 것이라고 하고 받는다.",
       submittedAt: "2026-08-05T10:20:00"
     },
     {
-      id: "individual-seed-pending-02", studentName: "김민지", bookTitle: "우리 몸의 신비", title: "건강 습관 하나만 고르기",
-      scene: "몸을 건강하게 만들기 위해 매일 한 가지 습관만 지킬 수 있다면 어떤 것을 고를까요?",
-      optionA: "매일 운동하기", optionB: "매일 충분히 잠자기", authorChoice: "B",
+      id: "individual-seed-pending-02", studentName: "서희원", bookTitle: "강아지똥", title: "강아지똥의 결심",
+      scene: "골목에 있던 강아지똥은 자신이 아무 쓸모도 없다고 생각하며 슬퍼합니다. 어느 날 민들레가 예쁜 꽃을 피우려면 거름이 필요하다며 도와달라고 하자, 강아지똥은 자신을 녹여 도와줄지 그냥 가만히 있을지 고민합니다.",
+      optionA: "자신을 녹여 민들레를 도와준다.", optionB: "그냥 가만히 아무것도 하지 않는다.",
       submittedAt: "2026-08-06T14:10:00"
     },
     {
-      id: "individual-seed-pending-03", studentName: "이혜원", bookTitle: "초정리 편지", title: "글을 배울 기회",
-      scene: "글을 배우는 것이 쉽지 않지만, 글을 알게 되면 내 생각을 다른 사람에게 전할 수 있습니다.",
-      optionA: "어렵더라도 끝까지 글을 배운다.", optionB: "너무 어려우면 다른 사람이 대신 읽고 써 주게 한다.", authorChoice: "A",
+      id: "individual-seed-pending-03", studentName: "김수진", bookTitle: "이사 가는 날", title: "다솜이의 새로운 도전",
+      scene: "다솜이는 아빠의 새 직장 때문에 멀리 이사를 가게 되어 친한 친구와 헤어져야 할까 봐 속상합니다. 다솜이는 새 학교에서 씩씩하게 적응해 볼지, 이사 가지 말자고 부모님을 계속 조를지 고민합니다.",
+      optionA: "새 학교에서 씩씩하게 적응해 보기로 한다.", optionB: "이사 가지 말자고 부모님을 계속 조른다.",
       submittedAt: "2026-08-07T09:40:00"
     }
   ]
@@ -457,29 +553,29 @@ const DEMO_INDIVIDUAL_BOOK_CHAT_APPROVED_SEEDS = [
   {
     id: "individual-seed-approved-01", status: "approved", writerLoginId: "ss01",
     studentName: "김초롱", bookTitle: "긴긴밤", title: "노든이 지키고 싶었던 것",
-    scene: "노든은 위험한 길에서도 어린 펭귄을 끝까지 지키려고 합니다.",
-    optionA: "안전한 곳으로 먼저 피한다.", optionB: "위험해도 펭귄과 함께 간다.", authorChoice: "B",
+    scene: "노든은 어린 펭귄과 함께 길을 가다가 앞쪽에 아주 위험한 길목이 있다는 것을 알게 됩니다. 노든은 혼자라도 안전한 곳으로 먼저 피할지, 위험해도 펭귄과 끝까지 함께 갈지 고민합니다.",
+    optionA: "안전한 곳으로 먼저 피한다.", optionB: "위험해도 펭귄과 함께 간다.",
     submittedAt: "2026-08-08T10:10:00"
   },
   {
     id: "individual-seed-approved-02", status: "approved", writerLoginId: "demo_student_02",
     studentName: "송민정", bookTitle: "바다거북의 여행", title: "바다거북을 돕는 방법",
-    scene: "바다 쓰레기 때문에 바다거북이 먹이를 찾고 헤엄치는 데 어려움을 겪습니다.",
-    optionA: "일회용품을 줄인다.", optionB: "쓰레기는 바다에서 저절로 없어진다.", authorChoice: "A",
+    scene: "바다거북은 사람들이 버린 쓰레기 때문에 먹이를 찾거나 헤엄치는 데 자꾸 어려움을 겪습니다. 책은 나라면 일회용품 사용을 줄이려고 노력할지, 아니면 불편해도 지금처럼 그대로 지낼지 생각해 보게 합니다.",
+    optionA: "일회용품 사용을 줄이려고 노력한다.", optionB: "불편해서 예전처럼 그대로 사용한다.",
     submittedAt: "2026-08-09T11:20:00"
   },
   {
     id: "individual-seed-approved-03", status: "approved", writerLoginId: "demo_student_03",
     studentName: "박하민", bookTitle: "초정리 편지", title: "어려워도 글을 배울까?",
-    scene: "글을 배우는 일은 어렵지만 내 생각을 직접 전할 수 있게 해 줍니다.",
-    optionA: "어려워도 끝까지 배운다.", optionB: "다른 사람이 대신 써 주게 한다.", authorChoice: "A",
+    scene: "주인공은 글을 배우는 것이 쉽지 않아 자주 실수하고 힘들어합니다. 그래도 글을 알면 내 생각을 직접 전할 수 있다는 것을 알고, 어렵더라도 끝까지 배울지 다른 사람에게 부탁만 할지 고민합니다.",
+    optionA: "어려워도 끝까지 배운다.", optionB: "다른 사람이 대신 써 주게 한다.",
     submittedAt: "2026-08-10T09:30:00"
   },
   {
     id: "individual-seed-approved-04", status: "approved", writerLoginId: "demo_student_04",
     studentName: "이진우", bookTitle: "우리 몸의 신비", title: "건강 습관 하나 고르기",
-    scene: "몸을 건강하게 지키기 위해 매일 한 가지 습관을 실천하려고 합니다.",
-    optionA: "충분히 자고 규칙적으로 운동한다.", optionB: "늦게까지 깨어 있는다.", authorChoice: "A",
+    scene: "책에서는 몸을 건강하게 지키기 위해 매일 꾸준히 실천하는 습관이 중요하다고 설명합니다. 주인공은 운동을 할지, 충분히 잠을 잘지 한 가지를 골라 꾸준히 실천하려고 합니다.",
+    optionA: "매일 꾸준히 운동한다.", optionB: "매일 충분히 잠을 잔다.",
     submittedAt: "2026-08-11T14:00:00"
   }
 ];
@@ -500,6 +596,47 @@ function getDemoFinalIndividualBookChatSeeds() {
       });
     })
     .filter(function(seed) { return seed.deleted !== true; });
+}
+
+/*
+ * 개별읽기 책수다방 심사 seed 글마다 미리 준비해 둔 친구 생각(댓글) 예시.
+ * 각 글의 상황 설명·A·B와 직접 관련된 선택과 이유만 담는다. 글 작성자
+ * 본인은 댓글 작성자로 넣지 않는다(친구가 남긴 생각이어야 하므로).
+ */
+const DEMO_INDIVIDUAL_BOOK_CHAT_SEED_COMMENTS = {
+  "individual-seed-approved-01": [
+    { id: "individual-seed-approved-01-c1", writer: "송민정", choice: "A", content: "나는 A가 더 좋아. 위험한 곳으로 가는 것보다 먼저 안전한 곳을 찾는 게 낫다고 생각해." },
+    { id: "individual-seed-approved-01-c2", writer: "박하민", choice: "B", content: "나는 B를 고를 것 같아. 어린 펭귄을 혼자 두고 가면 더 위험해질 수 있으니까 같이 가는 게 맞다고 생각해." }
+  ],
+  "individual-seed-approved-02": [
+    { id: "individual-seed-approved-02-c1", writer: "이진우", choice: "A", content: "나는 A가 좋아. 쓰레기를 줄이면 바다거북이 더 편하게 헤엄칠 수 있을 것 같아." },
+    { id: "individual-seed-approved-02-c2", writer: "김민지", choice: "B", content: "나는 B를 고를 것 같아. 아직은 습관을 바꾸기가 쉽지 않아서 조금씩 노력해야 할 것 같아." }
+  ],
+  "individual-seed-approved-03": [
+    { id: "individual-seed-approved-03-c1", writer: "서희원", choice: "A", content: "나는 A가 더 좋아. 어렵더라도 내가 직접 글을 배우면 내 생각을 더 잘 전할 수 있을 것 같아." },
+    { id: "individual-seed-approved-03-c2", writer: "김수진", choice: "B", content: "나는 B를 고를 것 같아. 지금은 너무 어려우니까 도움을 받으면서 천천히 배우고 싶어." }
+  ],
+  "individual-seed-approved-04": [
+    { id: "individual-seed-approved-04-c1", writer: "김초롱", choice: "A", content: "나는 A가 좋아. 매일 운동을 하면 몸이 튼튼해질 것 같아." },
+    { id: "individual-seed-approved-04-c2", writer: "이혜원", choice: "B", content: "나는 B를 고를래. 잠을 충분히 자야 다음 날 더 힘이 날 것 같아." }
+  ],
+  "individual-seed-pending-01": [
+    { id: "individual-seed-pending-01-c1", writer: "송민정", choice: "A", content: "나는 A가 더 좋아. 내 것이 아닌 걸 가지면 마음이 계속 불편할 것 같아." },
+    { id: "individual-seed-pending-01-c2", writer: "이진우", choice: "B", content: "나는 B가 더 끌려. 산신령님이 준다고 했으니까 받아도 괜찮을 것 같아." }
+  ],
+  "individual-seed-pending-02": [
+    { id: "individual-seed-pending-02-c1", writer: "김수진", choice: "A", content: "나는 A가 좋아. 강아지똥이 도와주면 민들레가 예쁜 꽃을 피울 수 있잖아." },
+    { id: "individual-seed-pending-02-c2", writer: "이혜원", choice: "B", content: "나는 B를 고를 것 같아. 나라면 도움이 될 수 있을지 걱정돼서 선뜻 나서지 못했을 것 같아." }
+  ],
+  "individual-seed-pending-03": [
+    { id: "individual-seed-pending-03-c1", writer: "김초롱", choice: "A", content: "나는 A가 더 좋아. 새 학교에 가서도 씩씩하게 지내면 새로운 친구도 사귈 수 있을 것 같아." },
+    { id: "individual-seed-pending-03-c2", writer: "박하민", choice: "B", content: "나는 B를 고를 것 같아. 친한 친구랑 헤어지는 게 너무 슬퍼서 나라면 이사 가지 말자고 말씀드렸을 것 같아." }
+  ]
+};
+
+function getDemoIndividualBookChatSeedComments(postId) {
+  const comments = DEMO_INDIVIDUAL_BOOK_CHAT_SEED_COMMENTS[String(postId)] || [];
+  return comments.map(function (comment) { return Object.assign({}, comment); });
 }
 
 function getDemoTodayDateKey() {

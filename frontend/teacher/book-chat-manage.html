@@ -761,6 +761,53 @@
       color: #8f3d24;
     }
 
+    /* 넓어진 관리 화면에서도 하단 처리 버튼이 상세 패널 안에 온전히 남도록 한다. */
+    .detail-card #detailArea {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 5px 10px 0;
+    }
+
+    .detail-card #detailArea .detail-box {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+
+    .detail-card #detailArea .detail-meta {
+      margin-bottom: 7px;
+    }
+
+    .detail-card #detailArea .detail-lines {
+      gap: 6px;
+      margin-top: 7px;
+    }
+
+    .detail-card #detailArea .line-card {
+      min-height: 96px;
+      padding: 13px 16px;
+    }
+
+    .detail-card #detailArea .line-card strong {
+      margin-bottom: 6px;
+    }
+
+    .detail-card #detailArea .teacher-note-box {
+      margin-top: 10px;
+      padding: 12px 15px 15px;
+    }
+
+    .detail-card #detailArea .feedback-box {
+      margin-top: 8px;
+      padding: 10px 13px;
+    }
+
+    .detail-card #detailArea .button-row {
+      margin-top: 7px;
+      gap: 10px;
+    }
+
     .history-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -966,7 +1013,7 @@
   </style>
 </head>
 
-<body>
+<body data-fixed-stage-size="summary-manage">
   <main class="page">
     <div class="shell">
       <header class="top">
@@ -1450,9 +1497,10 @@ const API_BASE_URL = getApiBaseUrl();
           <div class="teacher-note-box">
             <div class="box-title">게시물 처리</div>
 
-            <div class="button-row">
+            <div class="button-row three">
               <button class="main-button" type="button" onclick="approvePost('${escapeAttribute(post.id)}')">승인하기</button>
               <button class="danger-button" type="button" onclick="openRejectModal('${escapeAttribute(post.id)}')">거절하기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
 
             <div class="feedback-box good">
@@ -1470,9 +1518,10 @@ const API_BASE_URL = getApiBaseUrl();
               이 글은 현재 학생 책수다방에 공개되는 글이에요.
             </div>
 
-            <div class="button-row">
+            <div class="button-row three">
               <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">승인 취소</button>
               <button class="danger-button" type="button" onclick="hideApprovedPost('${escapeAttribute(post.id)}')">거절 목록으로 보내기</button>
+              <button class="brown-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
             </div>
           </div>
         `;
@@ -1487,9 +1536,10 @@ const API_BASE_URL = getApiBaseUrl();
             ${escapeHtml(post.rejectReason || "거절 이유가 따로 입력되지 않았어요.")}
           </div>
 
-          <div class="button-row">
+          <div class="button-row three">
             <button class="main-button" type="button" onclick="approveRejectedPost('${escapeAttribute(post.id)}')">다시 승인하기</button>
             <button class="brown-button" type="button" onclick="returnToPending('${escapeAttribute(post.id)}')">대기로 돌리기</button>
+            <button class="danger-button" type="button" onclick="deletePostAsTeacher('${escapeAttribute(post.id)}')">삭제</button>
           </div>
         </div>
       `;
@@ -1958,6 +2008,42 @@ const API_BASE_URL = getApiBaseUrl();
 
     function hideApprovedPost(id) {
       openRejectModal(id);
+    }
+
+    async function deletePostAsTeacher(id) {
+      const post = findPostById(id);
+      if (!post || !confirm("이 학생의 책수다방 글을 삭제할까요? 삭제하면 되돌릴 수 없어요.")) return;
+
+      const directRequest = loadDemoApprovalRequests("practice").find(function(item) {
+        return String(item.requestId) === String(id);
+      });
+      const browserLocalPostId = !/^\d+$/.test(String(id));
+      if (isDemoAccount() || browserLocalPostId) {
+        if (directRequest) {
+          saveDemoState("practiceBookChatApprovals", loadDemoApprovalRequests("practice").filter(function(item) {
+            return String(item.requestId) !== String(id);
+          }));
+        } else {
+          deleteDemoBookChatPost("practice", id);
+        }
+      } else {
+        const auth = getTeacherAuthContext();
+        if (!auth) {
+          alert("로그인 정보가 없어 삭제할 수 없어요. 다시 로그인해 주세요.");
+          return;
+        }
+        const response = await fetch(
+          `${API_BASE_URL}/api/teachers/${auth.teacherId}/book-thought-reviews/${encodeURIComponent(id)}`,
+          { method: "DELETE", headers: { Authorization: `Bearer ${auth.token}` } }
+        );
+        if (!response.ok) {
+          alert("글을 삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+          return;
+        }
+      }
+
+      selectedPostId = null;
+      await loadBackendReviewPosts();
     }
 
     function findPostById(id) {

@@ -209,7 +209,58 @@
     gap: 12px;
     align-items: center;
   }
- </style>
+ /* 읽기 전·중·후 소개 - 공통 글상자 및 글자 크기 */
+:root body .intro-page .story-box,
+:root body .after-intro-page .after-intro-card {
+  left: 100px !important;
+  top: auto !important;
+  bottom: 132px !important;
+  width: 1000px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 32px 40px !important;
+  display: flex;
+  flex-direction: column;
+}
+:root body .intro-page .story-text,
+:root body .after-intro-page .after-intro-text {
+  flex: 0 0 auto;
+  min-height: 0 !important;
+  font-size: 44px !important;
+  line-height: 1.48 !important;
+  font-weight: 900;
+  letter-spacing: -1px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  display: block;
+}
+:root body .intro-page .scene-label,
+:root body .after-intro-page .after-intro-small-title {
+  display: none !important;
+}
+:root body .intro-page .speaker-name,
+:root body .after-intro-page .after-intro-speaker {
+  font-size: 26px !important;
+}
+:root body .intro-page .story-bottom,
+:root body .after-intro-page .after-intro-bottom {
+  flex: 0 0 auto;
+  margin-top: 20px !important;
+}
+:root body .intro-page .prev-button,
+:root body .intro-page .next-button,
+:root body .after-intro-page .after-intro-button {
+  min-width: 180px !important;
+  height: 68px !important;
+  padding: 14px 28px !important;
+  font-size: 28px !important;
+  font-weight: 900;
+  white-space: nowrap;
+}
+:root body .after-intro-page .after-intro-bottom {
+  grid-template-columns: 180px 1fr 240px;
+}
+</style>
 </head>
 
 <body>
@@ -277,6 +328,7 @@
 
     // 현재 보고 있는 장면 번호입니다.
     let currentSceneIndex = 0;
+    let isStartingDuringPractice = false;
 
     // 화면이 열리면 첫 장면을 보여줍니다.
     renderScene();
@@ -330,25 +382,33 @@
     function nextScene() {
       if (currentSceneIndex < scenes.length - 1) {
         currentSceneIndex++;
+        playPageTurnSound();
         renderScene();
         return;
       }
 
-      /*
-        나중에 읽기 중 질문 연습 화면을 만들면
-        아래 경로를 실제 파일명에 맞게 연결하면 됩니다.
-      */
-      location.href = "./during-reading-practice.html";
+      if (isStartingDuringPractice) return;
+      isStartingDuringPractice = true;
+      document.getElementById("nextButton").disabled = true;
+      playPageTurnSound();
+
+      /* 실제 읽기 중 질문 연습 화면으로 이동한다. 짧은 지연은 Safari가
+         클릭 효과음을 시작할 시간을 주며 진행 상태는 변경하지 않는다. */
+      window.setTimeout(function() {
+        location.href = "./during-reading-practice.html";
+      }, 120);
     }
 
     // 이전 장면으로 이동합니다.
     function prevScene() {
       if (currentSceneIndex > 0) {
         currentSceneIndex--;
+        playPageTurnSound();
         renderScene();
       }
     }
   </script>
+  <script src="../js/page-turn-sound.js?v=20260913"></script>
   <script src="../js/fixed-stage.js"></script>
 </body>
 </html>

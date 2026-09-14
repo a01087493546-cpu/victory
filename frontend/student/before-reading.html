@@ -2416,6 +2416,160 @@ body {
 }
 
 /* =========================================================
+   도움 받기 모달: 제목/차례 맥락 카드
+   - 제목 단계: 예시 책 제목을 크게 보여주는 배너 카드
+   - 차례 단계: 예시 차례 목록 + 질문 예시를 좌우로 배치
+   - #helpModal 안으로만 범위를 좁혀 다른 화면의 example-panel에는 영향 없음
+   ========================================================= */
+
+#helpModal .help-context-card {
+  margin-bottom: 22px;
+  padding: 22px 26px;
+  border-radius: 22px;
+  border: 1px solid rgba(203, 149, 61, 0.4);
+  background: linear-gradient(180deg, rgba(255, 244, 214, 0.96), rgba(247, 225, 178, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+#helpModal .help-context-kicker {
+  display: block;
+  margin-bottom: 10px;
+  color: #9b6a20;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+#helpModal .help-context-title-text {
+  margin: 0;
+  color: #3b250f;
+  font-family: "Noto Serif KR", serif;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+#helpModal .help-panel-split {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+
+#helpModal .help-panel-split .help-context-card {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+#helpModal .help-panel-main {
+  min-width: 0;
+}
+
+#helpModal .help-toc-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+
+#helpModal .help-toc-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px 15px;
+  border-radius: 14px;
+  background: rgba(255, 253, 246, 0.7);
+  border: 1px solid rgba(203, 149, 61, 0.28);
+}
+
+#helpModal .help-toc-num {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e0ad43 0%, #bd7f18 100%);
+  color: #fff7e7;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+#helpModal .help-toc-text {
+  color: #3b250f;
+  font-family: "Noto Serif KR", serif;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+/* 차례 예시는 긴 생각한 답도 글자를 줄이거나 숨기지 않고 같은 높이로 담습니다. */
+#helpModal .help-panel-split .example-list {
+  align-items: stretch !important;
+}
+
+#helpModal .help-panel-split .example-item {
+  min-height: 360px !important;
+  height: 100% !important;
+  padding: 20px 20px 22px !important;
+  gap: 16px !important;
+}
+
+#helpModal .help-panel-split .question-card-mini {
+  min-height: 112px !important;
+}
+
+#helpModal .help-panel-split .answer-card-mini {
+  min-height: 140px !important;
+}
+
+#helpModal .help-panel-split .example-qa-card {
+  overflow: visible !important;
+}
+
+/* 그림 질문 예시: 왼쪽 예시 그림(35%) + 오른쪽 질문 3개(65%) */
+#helpModal .help-panel-split.help-panel-split-picture {
+  grid-template-columns: minmax(0, 35%) minmax(0, 1fr);
+}
+
+/*
+  그림 예시는 차례 예시보다 질문 칸 폭이 좁아(65% vs 차례의 훨씬 넓은 폭) 질문
+  두 번째 예시("그림에 나온 물건은...")가 기존 112px 안에서 줄바꿈되며 카드 밖으로
+  살짝 넘쳤다. 그림 전용으로만 카드 높이를 조금 더 확보한다(차례 예시는 그대로 유지).
+*/
+#helpModal .help-panel-split-picture .example-item {
+  min-height: 388px !important;
+}
+
+#helpModal .help-panel-split-picture .question-card-mini {
+  min-height: 140px !important;
+}
+
+#helpModal .help-context-picture-frame {
+  overflow: hidden;
+  border-radius: 14px;
+  aspect-ratio: 1 / 1.15;
+}
+
+#helpModal .help-context-picture-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 900px) {
+  #helpModal .help-panel-split,
+  #helpModal .help-panel-split.help-panel-split-picture {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
    읽기 전 질문 만들기(01~04단계 공통) 카드 하단 잘림 방지
    - 화면(1080px) 안에 항상 맞도록 세로 흐름을 flex로 다시 짭니다.
    - 하단 "이전 단계 / 저장하고 다음" 버튼은 항상 화면에 보입니다.
@@ -2626,6 +2780,205 @@ body {
   box-shadow:
     0 5px 10px rgba(35, 20, 8, 0.3),
     inset 0 1px 0 rgba(255, 238, 205, 0.14);
+}
+/* =========================================================
+   BEFORE READING - FINAL SIZE OVERRIDE
+   ========================================================= */
+.book-strip {
+  min-height: 76px !important;
+  padding: 8px 20px !important;
+}
+
+.book-small-label {
+  font-size: 19px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 4px !important;
+}
+
+.book-title {
+  font-size: 23px !important;
+  line-height: 1.35 !important;
+  overflow-wrap: anywhere;
+}
+
+#bookMeta,
+.book-meta {
+  display: none !important;
+}
+
+#activityCard .write-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+#activityCard .write-grid {
+  flex: 0 0 auto !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+#activityCard .input-label {
+  font-size: 35px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.03em !important;
+}
+
+#activityCard .input-help,
+#activityCard #questionLength,
+#activityCard #answerLength {
+  font-size: 22px !important;
+  flex-shrink: 0;
+}
+
+#activityCard textarea,
+#activityCard #questionInput,
+#activityCard #answerInput {
+  display: block;
+  height: 280px !important;
+  min-height: 280px !important;
+  padding: 18px 20px !important;
+  font-size: 30px !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+}
+
+#activityCard .feedback-box-with-lumi {
+  flex: 1 1 auto !important;
+  min-height: 120px !important;
+  max-height: none !important;
+  margin-top: 14px !important;
+  padding: 16px 20px !important;
+  gap: 20px !important;
+  align-items: center !important;
+  overflow: auto;
+}
+
+#activityCard .feedback-lumi {
+  width: 104px !important;
+  height: auto !important;
+  flex-shrink: 0 !important;
+  object-fit: contain !important;
+}
+
+#activityCard .feedback-message {
+  flex: 1 1 0;
+  min-width: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  font-size: 30px !important;
+  font-weight: 900 !important;
+  line-height: 1.45 !important;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+#activityCard .feedback-check-button {
+  flex-shrink: 0 !important;
+  height: 56px !important;
+  font-size: 20px !important;
+}
+/* =========================================================
+   BEFORE READING - FEEDBACK HEIGHT & BUTTON SIZE FINAL OVERRIDE
+   ========================================================= */
+#activityCard .feedback-box-with-lumi {
+  flex: 0 0 auto !important;
+  min-height: 200px !important;
+  height: 200px !important;
+  max-height: 200px !important;
+  margin-top: 12px !important;
+  padding: 18px 22px !important;
+}
+
+#activityCard .feedback-check-button {
+  height: 60px !important;
+  padding: 0 26px !important;
+  font-size: 23px !important;
+  font-weight: 900 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+#activityCard .tab-button {
+  font-size: 25px !important;
+  font-weight: 900 !important;
+}
+/* 도움 받기 팝업 - 읽기 쉬운 글자 크기 */
+#helpModal .help-modal-box {
+  width: 1600px;
+  max-width: calc(100% - 64px);
+  padding: 28px 32px;
+}
+
+#helpModal .help-modal-lumi-row {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+}
+
+#helpModal .example-panel {
+  padding: 20px !important;
+}
+
+#helpModal .help-context-card {
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+#helpModal .help-panel-split.help-panel-split-picture {
+  grid-template-columns: minmax(0, 28%) minmax(0, 1fr);
+}
+
+#helpModal .help-modal-kicker,
+#helpModal .help-context-kicker {
+  font-size: 22px !important;
+  font-weight: 900 !important;
+}
+
+#helpModal .help-modal-bubble p {
+  font-size: 28px !important;
+  line-height: 1.5 !important;
+}
+
+#helpModal .example-question,
+#helpModal .example-answer,
+#helpModal .help-toc-text {
+  font-size: 26px !important;
+  line-height: 1.5 !important;
+  overflow-wrap: anywhere !important;
+}
+
+#helpModal .example-label {
+  height: auto !important;
+  padding: 7px 14px !important;
+  font-size: 20px !important;
+  line-height: 1.2 !important;
+}
+
+#helpModal .example-item {
+  height: auto !important;
+}
+
+#helpModal .example-qa-card {
+  flex: 1 0 auto !important;
+  height: auto !important;
+}
+/* 팝업의 예시 책 제목을 한 줄로 표시 */
+#helpModal .help-context-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+#helpModal .help-context-title .help-context-kicker {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+#helpModal .help-context-title .help-context-kicker::after {
+  content: " :";
 }
   </style>
 </head>
@@ -2998,7 +3351,8 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
     throw new Error("읽기 전 질문·답 저장 실패: " + response.status);
   }
 
-  return response.json();
+  const saved = await response.json();
+  return saved;
 }
 
     async function loadSelectedBook() {
@@ -3431,16 +3785,74 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
       skim: "글을 빠르게 살펴보며 모르는 말이나 더 알고 싶은 내용을 질문해요."
     };
 
+    /*
+      도움 받기 모달의 예시 질문은 항상 예시 책 "신통방통 홈 쇼핑" 기준이다.
+      제목 단계는 이 책의 제목을, 차례 단계는 이 책의 차례(예시 질문 속에
+      나오는 장 제목과 같음)를 큼직하게 보여줘서 예시 질문의 맥락을 함께 보게 한다.
+    */
+    const helpExampleContext = {
+      title: "신통방통 홈 쇼핑",
+      contents: [
+        "수상한 홈 쇼핑 방송",
+        "이상한 주문",
+        "생각지도 못한 선물"
+      ]
+    };
+
+    function buildHelpContextHtml(step) {
+      if (step.type === "title") {
+        return (
+          '<div class="help-context-card help-context-title">' +
+            '<span class="help-context-kicker">예시 책 제목</span>' +
+            '<p class="help-context-title-text">「' + helpExampleContext.title + '」</p>' +
+          '</div>'
+        );
+      }
+
+      if (step.type === "contents") {
+        return (
+          '<div class="help-context-card help-context-toc">' +
+            '<span class="help-context-kicker">예시 차례</span>' +
+            '<ol class="help-toc-list">' +
+              helpExampleContext.contents.map(function(item, index) {
+                return (
+                  '<li class="help-toc-item">' +
+                    '<span class="help-toc-num">' + (index + 1) + '</span>' +
+                    '<span class="help-toc-text">' + item + '</span>' +
+                  '</li>'
+                );
+              }).join("") +
+            '</ol>' +
+          '</div>'
+        );
+      }
+
+      if (step.type === "picture") {
+        return (
+          '<div class="help-context-card help-context-picture">' +
+            '<span class="help-context-kicker">예시 그림</span>' +
+            '<div class="help-context-picture-frame">' +
+              '<img src="../assets/images/read-before/intro/read-before-picture-example-shopping.png" alt="예시 그림: 신통방통 홈 쇼핑 표지">' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      return "";
+    }
+
     function openHelpModal() {
       const step = steps[currentStepIndex];
 
       document.getElementById("helpModalLumiText").textContent =
         helpLumiLines[step.type] || step.tip.replace(/\\n/g, " ");
 
-      document.getElementById("helpModalExamplePanel").innerHTML =
+      const contextHtml = buildHelpContextHtml(step);
+
+      const exampleListHtml =
         '<div class="panel-title-row">' +
           '<h3 class="panel-title">예시 질문</h3>' +
-          '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>' +
+          (step.type === "title" || step.type === "picture" ? "" : '<span class="book-tag">예시 책: 신통방통 홈 쇼핑</span>') +
         '</div>' +
 
         '<div class="example-list">' +
@@ -3462,6 +3874,17 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
             '</article>';
           }).join("") +
         '</div>';
+
+      /* 차례/그림 단계만 "맥락 | 질문 예시" 좌우 배치, 나머지는 기존처럼 위아래 배치. */
+      const splitModifierClass = step.type === "picture" ? " help-panel-split-picture" : "";
+
+      document.getElementById("helpModalExamplePanel").innerHTML =
+        step.type === "contents" || step.type === "picture"
+          ? '<div class="help-panel-split' + splitModifierClass + '">' +
+              contextHtml +
+              '<div class="help-panel-main">' + exampleListHtml + '</div>' +
+            '</div>'
+          : contextHtml + exampleListHtml;
 
       document.getElementById("helpModal").classList.add("show");
     }

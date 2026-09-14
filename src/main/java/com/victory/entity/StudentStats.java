@@ -50,6 +50,14 @@ public class StudentStats {
     @Column(name = "courage", nullable = false)
     private Integer courage = 0;
 
+    /*
+     * 독서 집중 시간(연습읽기+개별읽기 공통) 누적 초. 학생당 한 행이라
+     * 별도 테이블 없이 여기 그대로 더한다(ReadingFocusSchemaInitializer가
+     * 기존 student_stats 테이블에 컬럼만 추가).
+     */
+    @Column(name = "total_reading_focus_seconds", nullable = false)
+    private Long totalReadingFocusSeconds = 0L;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 

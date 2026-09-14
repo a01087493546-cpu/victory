@@ -1,6 +1,8 @@
 (function () {
-  const STAGE_WIDTH = 1920;
-  const STAGE_HEIGHT = 1080;
+  const useSummaryManageStage = document.body && document.body.dataset.fixedStageSize === "summary-manage";
+  const STAGE_WIDTH = useSummaryManageStage ? 1556 : 1920;
+  const STAGE_HEIGHT = useSummaryManageStage ? 900 : 1080;
+  const STAGE_SHELL_WIDTH = useSummaryManageStage ? 1500 : 1680;
 
   const existingStagePairs = [
     [".mq-stage-viewport", ".mq-stage-frame", ".mq-login-page"],
@@ -60,14 +62,14 @@
 
       .mq-fixed-stage-frame {
         position: relative;
-        width: calc(1920px * var(--stage-scale, 1));
-        height: calc(1080px * var(--stage-scale, 1));
+        width: calc(${STAGE_WIDTH}px * var(--stage-scale, 1));
+        height: calc(${STAGE_HEIGHT}px * var(--stage-scale, 1));
       }
 
       .mq-fixed-stage-page {
-        width: 1920px !important;
-        height: 1080px !important;
-        min-height: 1080px !important;
+        width: ${STAGE_WIDTH}px !important;
+        height: ${STAGE_HEIGHT}px !important;
+        min-height: ${STAGE_HEIGHT}px !important;
         transform: scale(var(--stage-scale, 1));
         transform-origin: top left;
         overflow: hidden !important;
@@ -75,9 +77,9 @@
 
       .mq-fixed-stage-page > main,
       .mq-fixed-stage-page > div:not(.home-modal-backdrop):not(.fw-question-modal):not(.fw-complete-modal):not(.fw-reward-overlay):not(.wr-guide-modal):not(.help-modal-overlay) {
-        width: 1920px !important;
+        width: ${STAGE_WIDTH}px !important;
         max-width: none !important;
-        min-height: 1080px !important;
+        min-height: ${STAGE_HEIGHT}px !important;
       }
 
       .mq-fixed-stage-page .shell,
@@ -88,8 +90,8 @@
       .mq-fixed-stage-page .tra-shell,
       .mq-fixed-stage-page .wr-shell,
       .mq-fixed-stage-page .bs-shell {
-        width: 1680px !important;
-        max-width: 1680px !important;
+        width: ${STAGE_SHELL_WIDTH}px !important;
+        max-width: ${STAGE_SHELL_WIDTH}px !important;
         margin-left: auto !important;
         margin-right: auto !important;
       }
@@ -102,7 +104,13 @@
       .mq-fixed-stage-page.mq-page-friend-question .shell,
       .mq-fixed-stage-page.mq-page-book-chat-manage .shell,
       .mq-fixed-stage-page.mq-page-individual-book-chat-manage .shell {
-        min-height: 980px !important;
+        width: 1500px !important;
+        max-width: 1500px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        display: grid !important;
+        grid-template-rows: auto auto auto minmax(0, 1fr) !important;
+        gap: 12px !important;
       }
 
       .mq-fixed-stage-page .ar-shell {
@@ -113,8 +121,57 @@
       }
 
       .mq-fixed-stage-page .page {
-        width: 1920px !important;
-        min-height: 1080px !important;
+        width: ${STAGE_WIDTH}px !important;
+        min-height: ${STAGE_HEIGHT}px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .top,
+      .mq-fixed-stage-page.mq-page-book-chat-manage .hero,
+      .mq-fixed-stage-page.mq-page-book-chat-manage .filter-card,
+      .mq-fixed-stage-page.mq-page-book-chat-manage .board-grid,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .top,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .hero,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .filter-card,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .board-grid {
+        margin: 0 !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .top,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .top {
+        min-height: 54px !important;
+        grid-template-columns: 220px minmax(0, 1fr) 300px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .hero,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .hero {
+        min-height: 154px !important;
+        grid-template-columns: 0.9fr 1.1fr !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .filter-row,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .filter-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) 160px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .board-grid,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .board-grid {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr) !important;
+        gap: 16px !important;
+      }
+
+      .mq-fixed-stage-page.mq-page-book-chat-manage .list-card,
+      .mq-fixed-stage-page.mq-page-book-chat-manage .detail-card,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .list-card,
+      .mq-fixed-stage-page.mq-page-individual-book-chat-manage .detail-card {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 20px 24px !important;
       }
 
       .mq-fixed-stage-page.mq-page-read-before-intro .intro-page {

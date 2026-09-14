@@ -1,5 +1,6 @@
 package com.victory.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,7 @@ public interface StudentStatRewardLogRepository
             String instanceId);
 
     List<StudentStatRewardLog> findByStudent_Id(Long studentId);
+
+    List<StudentStatRewardLog> findByStudent_IdAndGrantedAtGreaterThanEqualAndGrantedAtLessThan(
+            Long studentId, LocalDateTime startAt, LocalDateTime endAt);
 }

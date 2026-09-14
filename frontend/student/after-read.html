@@ -5018,8 +5018,9 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
 #sharePanel .ar-share-rejection strong {
   display: block !important;
   margin-bottom: 6px !important;
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif !important;
   font-size: 20px !important;
-  font-weight: 800 !important;
+  font-weight: 900 !important;
   color: #9b4228 !important;
 }
 
@@ -5030,7 +5031,7 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
   background: none !important;
   min-height: 0 !important;
   font-size: 20px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 1.5 !important;
   color: #7a3420 !important;
   max-height: 130px !important;
@@ -5278,6 +5279,168 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
   #methodSentence {
     font-size: 32px !important;
+  }
+}
+
+/* =========================================================
+   초4 가독성 최종 보정 - 내 책 질문 만들기
+   기존 중복 선언보다 마지막에 적용해 실제 학생 화면의 크기를 고정한다.
+   ========================================================= */
+@media (min-width: 1181px) {
+  .ar-study-header { min-height:132px; padding:16px 22px; }
+  .ar-study-title { font-size:40px !important; }
+  .mq-demo-banner { min-height:40px; padding:6px 16px; font-size:18px; line-height:1.45; }
+  .mq-demo-banner strong { font-size:18px; }
+  .mq-book-home-button { height:52px; padding:0 24px; font-size:20px; }
+  .ar-study-stepbar { gap:12px; }
+  .ar-study-step { height:52px; gap:11px; font-size:20px; }
+  .ar-study-step span { width:34px; height:34px; flex-basis:34px; font-size:18px; }
+  .ar-study-step.is-active { background:linear-gradient(180deg, #e5aa37, #c57b16) !important; color:#fffdf7 !important; }
+  .ar-study-step.is-active span { background:#fff5d7 !important; color:#9a5d10 !important; }
+
+  #writePanel.ar-study-panel.is-active { gap:10px !important; }
+  #writePanel .ar-panel-title { margin:0 !important; }
+  #writePanel .ar-panel-title h2 { font-size:42px !important; line-height:1.13 !important; }
+  /* 큰 입력 글씨를 유지하기 위해 카드의 세로 여백만 압축해 피드백과 겹치지 않게 한다. */
+  #writePanel .ar-qa-card { height:476px !important; min-height:476px !important; padding:18px 38px !important; align-content:start !important; }
+  #writePanel .ar-qa-head-row { margin-bottom:14px !important; }
+  #writePanel .ar-qa-card h3 { font-size:34px !important; }
+  #writePanel .ar-input-label { margin:10px 0 7px !important; font-size:30px !important; line-height:1.32 !important; }
+  #writePanel .ar-question-input,
+  #writePanel .ar-question-textarea,
+  #writePanel .ar-answer-input { color:#4f3520 !important; font-size:27px !important; font-weight:850 !important; }
+  #writePanel .ar-question-textarea { height:82px !important; min-height:82px !important; padding:16px 18px !important; line-height:1.45 !important; }
+  #writePanel .ar-answer-input { height:165px !important; min-height:165px !important; padding:18px !important; line-height:1.53 !important; }
+  #writePanel .ar-question-input::placeholder,
+  #writePanel .ar-question-textarea::placeholder,
+  #writePanel .ar-answer-input::placeholder { color:#71685e !important; font-size:26px !important; font-weight:800 !important; opacity:1 !important; }
+
+  #writePanel .ar-add-question-button { min-width:182px !important; height:60px !important; padding:0 26px !important; border:1.5px solid rgba(205, 235, 168, .88) !important; border-radius:999px !important; background:linear-gradient(180deg, #4f9d3a, #2f7023) !important; color:#fff !important; font-size:22px !important; font-weight:900 !important; white-space:nowrap !important; box-shadow:0 5px 0 #215319, 0 9px 16px rgba(47,112,35,.22) !important; }
+  #writePanel .ar-add-question-button:not(:disabled):hover { filter:brightness(1.08); }
+  #writePanel .ar-add-question-button:not(:disabled):active { transform:translateY(3px); box-shadow:0 2px 0 #215319 !important; }
+  #writePanel .ar-add-question-button:disabled,
+  #writePanel .ar-panel-actions .ar-action-button:disabled { opacity:.66 !important; background:#b7aa98 !important; color:#fffaf0 !important; box-shadow:none !important; filter:none !important; cursor:not-allowed !important; }
+
+  #writePanel .ar-after-feedback-card.is-question-feedback { height:156px !important; min-height:156px !important; padding:14px 22px !important; grid-template-columns:140px minmax(0, 1fr) 160px !important; gap:20px !important; align-items:center !important; border-radius:24px !important; overflow:hidden !important; }
+  #writePanel .ar-after-feedback-lumi { display:block !important; visibility:visible !important; opacity:1 !important; width:132px !important; height:132px !important; max-height:none !important; object-fit:contain !important; align-self:center !important; justify-self:center !important; transform:none !important; }
+  #writePanel .ar-after-feedback-content { height:100% !important; display:flex !important; align-items:center !important; min-width:0 !important; }
+  #writePanel .ar-after-feedback-message { min-height:108px !important; max-height:108px !important; padding:16px 20px !important; border-radius:18px !important; font-size:26px !important; font-weight:900 !important; line-height:1.48 !important; overflow-y:auto !important; }
+  #writePanel #bookQuestionAiFeedback { height:108px !important; min-height:108px !important; max-height:108px !important; padding:0 !important; display:flex !important; align-items:center !important; font-size:26px !important; font-weight:900 !important; line-height:1.48 !important; overflow-y:auto !important; }
+  #writePanel .ar-after-feedback-button { width:160px !important; min-width:160px !important; height:62px !important; padding:0 22px !important; border:2px solid rgba(255,224,142,.95) !important; border-radius:999px !important; background:linear-gradient(180deg, #f0b83f 0%, #d88d19 55%, #b9670e 100%) !important; color:#fffdf7 !important; font-size:22px !important; font-weight:900 !important; box-shadow:0 5px 0 #96500c, 0 9px 16px rgba(184,104,20,.25) !important; }
+  #writePanel .ar-after-feedback-button:hover { filter:brightness(1.05); }
+  #writePanel .ar-after-feedback-button:active { transform:translateY(3px); box-shadow:0 2px 0 #96500c !important; }
+  /* 질문 카드의 실제 높이를 그리드 행에도 반영해 피드백 카드와 겹치지 않게 한다. */
+  #writePanel .ar-write-grid { min-height:476px !important; overflow:visible !important; }
+  /* 이전의 더 구체적인 선택자도 이 최종 검사 버튼 크기를 덮도록 한다. */
+  #writePanel .ar-after-feedback-card.is-question-feedback .ar-after-feedback-button { width:160px !important; min-width:160px !important; height:62px !important; padding:0 22px !important; border:2px solid rgba(255,224,142,.95) !important; border-radius:999px !important; background:linear-gradient(180deg, #f0b83f 0%, #d88d19 55%, #b9670e 100%) !important; color:#fffdf7 !important; font-size:22px !important; font-weight:900 !important; box-shadow:0 5px 0 #96500c, 0 9px 16px rgba(184,104,20,.25) !important; }
+
+  #writePanel .ar-panel-actions { margin-top:12px !important; }
+  #writePanel .ar-panel-actions .ar-action-button { min-width:156px !important; height:58px !important; padding:0 24px !important; font-size:21px !important; font-weight:900 !important; }
+  #writePanel .ar-panel-actions .ar-action-button:not(.is-brown):not(:disabled) { background:linear-gradient(180deg, #4f9d3a, #2f7023) !important; color:#fff !important; box-shadow:0 5px 0 #215319, 0 9px 16px rgba(47,112,35,.20) !important; }
+  #writePanel .ar-panel-actions .ar-action-button.is-brown { background:linear-gradient(180deg, #8e6840, #644424) !important; }
+}
+
+@media (min-width: 1181px) and (max-height: 820px) {
+  .ar-study-header { min-height:116px; padding:12px 18px; }
+  .ar-study-title { font-size:38px !important; }
+  .ar-study-step { height:46px; font-size:17px; }
+  .ar-study-step span { width:30px; height:30px; flex-basis:30px; font-size:17px; }
+  #writePanel .ar-panel-title h2 { font-size:40px !important; }
+  #writePanel .ar-qa-card { min-height:360px !important; padding:24px 30px !important; }
+  #writePanel .ar-qa-card h3 { font-size:32px !important; }
+  #writePanel .ar-input-label { font-size:24px !important; }
+  #writePanel .ar-question-textarea { height:72px !important; min-height:72px !important; font-size:22px !important; }
+  #writePanel .ar-answer-input { height:138px !important; min-height:138px !important; font-size:22px !important; }
+  #writePanel .ar-after-feedback-card.is-question-feedback { height:136px !important; min-height:136px !important; grid-template-columns:112px minmax(0, 1fr) 142px !important; gap:14px !important; }
+  #writePanel .ar-after-feedback-lumi { width:106px !important; height:106px !important; }
+  #writePanel .ar-after-feedback-message,
+  #writePanel #bookQuestionAiFeedback { min-height:90px !important; height:90px !important; max-height:90px !important; font-size:21px !important; }
+  #writePanel .ar-after-feedback-button { width:142px !important; min-width:142px !important; height:54px !important; font-size:18px !important; }
+  #writePanel .ar-add-question-button { height:54px !important; font-size:19px !important; }
+  #writePanel .ar-panel-actions .ar-action-button { height:52px !important; font-size:18px !important; }
+}
+
+/* =========================================================
+   초4 가독성 최종 보정 - 간추리기 완성 / 공유
+   ========================================================= */
+@media (min-width: 1181px) {
+  /* 3단계: 피드백을 키우고 위 2열 작성 영역은 같은 화면 안에서 조금 압축 */
+  #summaryPanel.ar-summary-panel.is-active { grid-template-rows:48px minmax(0, 1fr) 148px auto !important; gap:10px !important; padding-bottom:16px !important; box-sizing:border-box; }
+  #summaryPanel .ar-panel-title { height:48px !important; margin:0 !important; display:flex !important; align-items:center !important; }
+  #summaryPanel .ar-panel-title h2 { font-size:40px !important; font-weight:900 !important; line-height:1.1 !important; }
+  #summaryPanel .ar-summary-layout { gap:16px !important; min-height:0 !important; overflow:hidden !important; }
+  #summaryPanel .ar-summary-layout .ar-study-card { min-height:0 !important; padding:17px 20px !important; overflow:hidden !important; }
+  #summaryPanel .ar-summary-layout .ar-study-card h3 { margin-bottom:10px !important; font-size:32px !important; font-weight:900 !important; line-height:1.2 !important; }
+  #summaryPanel .ar-connect-list { height:100%; min-height:0; grid-auto-rows:minmax(min-content, 1fr); gap:10px !important; overflow-y:auto !important; }
+  #summaryPanel .ar-connect-item { padding:9px 20px !important; font-size:26px !important; font-weight:850 !important; line-height:1.35 !important; }
+  #summaryPanel .ar-connect-item strong { font-size:27px !important; font-weight:900 !important; }
+  #summaryPanel .ar-summary-textarea { height:calc(100% - 48px) !important; min-height:0 !important; padding:18px 20px !important; font-size:27px !important; font-weight:850 !important; line-height:1.62 !important; overflow-y:auto !important; }
+  #summaryPanel .ar-summary-textarea::placeholder { color:#71685e !important; font-size:24px !important; font-weight:800 !important; line-height:1.58 !important; opacity:1 !important; }
+  #summaryPanel .ar-after-feedback-card.is-summary-feedback { height:148px !important; min-height:148px !important; padding:12px 20px !important; grid-template-columns:118px minmax(0,1fr) 155px !important; gap:18px !important; align-items:center !important; overflow:hidden !important; }
+  #summaryPanel .ar-after-feedback-lumi { display:block !important; width:110px !important; height:110px !important; max-height:none !important; object-fit:contain !important; align-self:center !important; justify-self:center !important; }
+  #summaryPanel .ar-after-feedback-content { min-width:0 !important; height:100% !important; display:flex !important; align-items:center !important; }
+  #summaryPanel #summaryAiFeedback { min-height:112px !important; max-height:112px !important; height:112px !important; display:flex !important; align-items:center !important; overflow-y:auto !important; font-size:26px !important; font-weight:900 !important; line-height:1.48 !important; }
+  #summaryPanel .ar-after-feedback-button { width:155px !important; min-width:155px !important; height:60px !important; padding:0 24px !important; border:2px solid rgba(255,224,142,.95) !important; border-radius:999px !important; background:linear-gradient(180deg,#f0b83f 0%,#d88d19 55%,#b9670e 100%) !important; color:#fffdf7 !important; font-size:21px !important; font-weight:900 !important; box-shadow:0 5px 0 #96500c,0 9px 16px rgba(184,104,20,.25) !important; }
+  #summaryPanel .ar-panel-actions,
+  #sharePanel .ar-panel-actions { margin:0 !important; gap:14px !important; }
+  #summaryPanel .ar-action-button,
+  #sharePanel .ar-action-button { min-width:160px !important; height:58px !important; padding:0 24px !important; font-size:21px !important; font-weight:900 !important; }
+  #summaryPanel .ar-action-button:not(.is-brown):not(:disabled),
+  #sharePanel .ar-action-button:not(.is-brown):not(:disabled) { background:linear-gradient(180deg,#4f9d3a,#2f7023) !important; color:#fff !important; box-shadow:0 5px 0 #215319,0 9px 16px rgba(47,112,35,.20) !important; }
+  #summaryPanel .ar-action-button.is-brown,
+  #sharePanel .ar-action-button.is-brown { background:linear-gradient(180deg,#8e6840,#644424) !important; }
+  #summaryPanel .ar-action-button:disabled,
+  #sharePanel .ar-action-button:disabled { opacity:.66 !important; background:#b7aa98 !important; color:#fffaf0 !important; box-shadow:none !important; filter:none !important; }
+
+  /* 4단계: 목록만 스크롤하고, 제목·책 종류·날짜를 카드 첫 줄에 고정한다. */
+  #sharePanel.is-active { grid-template-rows:48px minmax(0,1fr) auto !important; gap:12px !important; overflow:hidden !important; }
+  #sharePanel .ar-panel-title { height:48px !important; margin:0 !important; display:flex !important; align-items:center !important; justify-content:center !important; }
+  #sharePanel .ar-panel-title h2 { font-size:40px !important; font-weight:900 !important; }
+  #sharePanel .ar-share-list { display:flex !important; flex-flow:row wrap !important; gap:20px !important; padding:6px 10px 16px !important; overflow-x:hidden !important; overflow-y:auto !important; }
+  #sharePanel .ar-share-item { flex:0 0 calc(50% - 10px) !important; width:calc(50% - 10px) !important; min-width:0 !important; padding:24px !important; overflow:visible !important; }
+  #sharePanel .ar-share-head { display:flex !important; align-items:center !important; width:100% !important; min-width:0 !important; gap:14px !important; margin-bottom:10px !important; flex-wrap:nowrap !important; }
+  #sharePanel .ar-share-head strong { min-width:0 !important; margin:0 !important; font-size:31px !important; font-weight:900 !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+  #sharePanel .ar-share-tag { flex:0 1 auto !important; display:inline-flex !important; align-items:center !important; min-width:0 !important; height:44px !important; margin:0 !important; padding:9px 14px !important; font-size:20px !important; font-weight:900 !important; white-space:nowrap !important; }
+  #sharePanel .ar-share-date { flex:0 0 auto !important; margin-left:auto !important; color:#7a5228 !important; font-size:20px !important; font-weight:900 !important; white-space:nowrap !important; }
+  #sharePanel .ar-status-badge { align-self:flex-start !important; margin:0 0 14px !important; padding:7px 15px !important; font-size:18px !important; font-weight:900 !important; }
+  #sharePanel .ar-share-item p { min-height:0 !important; padding:20px !important; font-size:26px !important; font-weight:850 !important; line-height:1.68 !important; overflow:visible !important; }
+  #sharePanel .ar-share-footer { margin-top:18px !important; justify-content:flex-end !important; }
+  #sharePanel .ar-share-like-button { min-width:150px !important; height:56px !important; padding:0 20px !important; font-size:21px !important; font-weight:900 !important; background:linear-gradient(180deg,#fff0e9,#f1c6b8) !important; color:#7e3426 !important; }
+  #sharePanel .ar-share-like-button.is-liked { background:linear-gradient(180deg,#f7d7c9,#df9278) !important; color:#642310 !important; }
+}
+
+@media (min-width: 1181px) and (max-height:820px) {
+  #summaryPanel.ar-summary-panel.is-active { grid-template-rows:42px minmax(0,1fr) 126px auto !important; gap:8px !important; }
+  #summaryPanel .ar-panel-title h2 { font-size:34px !important; }
+  #summaryPanel .ar-summary-layout .ar-study-card { padding:13px 16px !important; }
+  #summaryPanel .ar-summary-layout .ar-study-card h3 { font-size:27px !important; }
+  #summaryPanel .ar-connect-item { padding:12px 16px !important; font-size:21px !important; line-height:1.45 !important; }
+  #summaryPanel .ar-connect-item strong { font-size:22px !important; }
+  #summaryPanel .ar-summary-textarea { padding:14px 16px !important; font-size:22px !important; line-height:1.52 !important; }
+  #summaryPanel .ar-summary-textarea::placeholder { font-size:22px !important; }
+  #summaryPanel .ar-after-feedback-card.is-summary-feedback { height:126px !important; min-height:126px !important; grid-template-columns:104px minmax(0,1fr) 142px !important; gap:14px !important; }
+  #summaryPanel .ar-after-feedback-lumi { width:96px !important; height:96px !important; }
+  #summaryPanel #summaryAiFeedback { height:90px !important; min-height:90px !important; max-height:90px !important; font-size:22px !important; }
+  #summaryPanel .ar-after-feedback-button { width:142px !important; min-width:142px !important; height:54px !important; font-size:18px !important; }
+  #summaryPanel .ar-action-button,
+  #sharePanel .ar-action-button { min-width:150px !important; height:52px !important; font-size:18px !important; }
+  #sharePanel .ar-panel-title h2 { font-size:34px !important; }
+  #sharePanel .ar-share-head strong { font-size:27px !important; }
+  #sharePanel .ar-share-tag { height:40px !important; padding:7px 10px !important; font-size:18px !important; }
+  #sharePanel .ar-share-date { font-size:17px !important; }
+  #sharePanel .ar-status-badge { font-size:17px !important; }
+  #sharePanel .ar-share-item p { font-size:22px !important; }
+  #sharePanel .ar-share-like-button { height:50px !important; font-size:18px !important; }
+}
+
+/*
+ * 읽기 후 각 단계의 하단 네비게이션을 viewport 끝에서 10px 띄운다.
+ * wrapper만 시각적으로 올려 버튼 크기·간격과 패널의 실제 높이, 인쇄
+ * 레이아웃에는 영향을 주지 않는다.
+ */
+@media screen {
+  .ar-study-panel .ar-panel-actions {
+    transform: translateY(-10px);
   }
 }
 </style>
@@ -5655,7 +5818,6 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
             <div class="ar-summary-layout">
               <article class="ar-study-card">
-                <h3>질문에서 간추리기로 이어져요</h3>
                 <div class="ar-connect-list" id="connectBox"></div>
               </article>
 
@@ -5714,7 +5876,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
   </div>
 
   <script src="../js/auth.js"></script>
-  <script src="../js/demo-storage.js"></script>
+  <script src="../js/demo-storage.js?v=20260910-practice-summary-source"></script>
 
   <script>
     function getApiBaseUrl() {
@@ -6091,10 +6253,74 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
       return !trimmed.includes("________________");
     }
 
+    function findDemoPracticeSummaryByIdentity(loginId, studentName) {
+      if (typeof getDemoPracticeDirectSummaries !== "function") return null;
+
+      const normalizedLoginId = String(loginId || "").trim();
+      const normalizedName = String(studentName || "").trim();
+      const loginAliases = new Set();
+      if (normalizedLoginId) loginAliases.add(normalizedLoginId);
+
+      /* 과거 심사용 계정 ss02~ss08과 현재 seed 계정
+         demo_student_02~08은 같은 학생이다. 두 표기를 canonical alias로
+         묶어 교사 review override가 적용된 동일 direct record를 찾는다. */
+      let match = normalizedLoginId.match(/^ss0?([2-8])$/);
+      if (match) loginAliases.add("demo_student_0" + match[1]);
+      match = normalizedLoginId.match(/^demo_student_0?([2-8])$/);
+      if (match) loginAliases.add("ss0" + match[1]);
+
+      return getDemoPracticeDirectSummaries().find(function(item) {
+        const itemLoginId = String(item && item.writerLoginId || "").trim();
+        const itemName = String(item && item.studentName || "").trim();
+        return (itemLoginId && loginAliases.has(itemLoginId))
+          || (normalizedName && itemName === normalizedName);
+      }) || null;
+    }
+
     function getDemoLocalSharedSummary() {
       if (!isDemoAccount()) return null;
 
+      const currentLoginId = sessionStorage.getItem("loginId") || "";
       const data = loadDemoAfterReadingData();
+      /* 거절된 공용 seed를 편집 폼에 불러온 임시 값은 별도의 학생 작성
+         카드로 병합하지 않는다. 실제 seed 카드는 revision override가
+         최신 질문/답/간추리기를 보존해 같은 summaryId로 렌더링한다. */
+      if (data.source === "demo-seed-edit" || data.editingReviewSeedId) return null;
+
+      /* mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한
+         칸뿐이라, 같은 브라우저에서 다른 심사 학생이 이어서 글을 쓰면
+         그 학생의 내용으로 덮어써진다. 지금 로그인한 학생 것이 아니면 이
+         내용을 "내 글"로 보여주지 않고, 대신 이 학생이 예전에 이미
+         제출해 둔 누적 기록(practiceWrittenSummaries)에서 찾는다. */
+      if (data.writerLoginId && String(data.writerLoginId) !== currentLoginId) {
+        const archived = findDemoPracticeSummaryByIdentity(
+          currentLoginId,
+          sessionStorage.getItem("name") || ""
+        );
+        if (!archived) return null;
+        return {
+          id: archived.localId,
+          localId: archived.localId,
+          demoBrowserId: archived.demoBrowserId,
+          demoLocal: true,
+          writerLoginId: archived.writerLoginId,
+          studentId: archived.studentId,
+          studentName: archived.studentName,
+          classReadingBookId: archived.classReadingBookId,
+          bookTitle: archived.bookTitle,
+          bookType: archived.bookType,
+          summary: archived.summary,
+          summaryText: archived.summaryText,
+          sharedAt: archived.sharedAt,
+          createdAt: archived.sharedAt,
+          updatedAt: archived.sharedAt,
+          likeCount: 0,
+          likedByMe: false,
+          status: archived.status,
+          rejectionReason: archived.rejectionReason || ""
+        };
+      }
+
       const summaryText = String(data.summary || "").trim();
       if (!isRealAfterReadingSummary(summaryText)) return null;
 
@@ -6103,14 +6329,18 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
       if (data.demoBrowserId && data.demoBrowserId !== demoBrowserId) return null;
 
       const now = new Date().toISOString();
-      const localId = data.localId || [
-        "practice-summary",
-        demoBrowserId,
-        currentClassReadingBookId || "book"
-      ].join("-");
+      const localId = (data.localId && String(data.writerLoginId || "") === currentLoginId)
+        ? data.localId
+        : [
+          "practice-summary",
+          demoBrowserId,
+          currentLoginId || "unknown",
+          currentClassReadingBookId || "book"
+        ].join("-");
       const normalized = Object.assign({}, data, {
         localId: localId,
         demoBrowserId: demoBrowserId,
+        writerLoginId: currentLoginId || data.writerLoginId || "",
         studentId: data.studentId || context.id || "",
         studentName: data.studentName || sessionStorage.getItem("name") || "김초롱",
         classReadingBookId: data.classReadingBookId || currentClassReadingBookId,
@@ -6140,6 +6370,7 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         localId: localId,
         demoBrowserId: demoBrowserId,
         demoLocal: true,
+        writerLoginId: normalized.writerLoginId,
         studentId: normalized.studentId,
         studentName: normalized.studentName,
         classReadingBookId: normalized.classReadingBookId,
@@ -6166,13 +6397,31 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
       if (isTeacherAfterReadingMode() && localSummary.status !== "approved") return serverItems;
       return [localSummary].concat(serverItems.filter(function(item) {
-        return String(item.id) !== String(localSummary.id);
+        const sameSummary = String(item.id) === String(localSummary.id);
+        const sameStudentId = localSummary.studentId != null && item.studentId != null
+          && String(item.studentId) === String(localSummary.studentId);
+        const sameLoginId = localSummary.writerLoginId && item.writerLoginId
+          && String(item.writerLoginId) === String(localSummary.writerLoginId);
+        const sameStudentName = localSummary.studentName && item.studentName
+          && String(item.studentName) === String(localSummary.studentName);
+
+        /* demo DB에 미리 심은 같은 학생의 예시는 별도 summaryId를 쓰므로
+           ID 비교만으로는 실제 작성본과 함께 '나의 간추리기'로 남는다.
+           실제 작성본이 source of truth일 때는 서버가 mine으로 표시한 예시와
+           동일 학생 식별값의 예시를 제거한다. */
+        const sameDemoOwner = isDemoAccount() && (
+          item.mine === true || sameStudentId || sameLoginId || sameStudentName
+        );
+        return !(sameSummary || sameDemoOwner);
       }));
     }
 
     function mergeDemoVisibleReviewSeedSummaries(items) {
       if (!isDemoAccount() || !Array.isArray(items)) return items;
       const currentLoginId = String(sessionStorage.getItem("loginId") || "");
+      const hasStudentWrittenSummary = items.some(function(item) {
+        return item && item.demoLocal === true && isRealAfterReadingSummary(item.summary || item.summaryText || "");
+      });
       const existingIds = new Set(items.map(function(item) { return String(item.id); }));
       const visibleSeeds = getDemoFinalSummaryReviewSeeds("practice")
         .map(function(seed) {
@@ -6181,6 +6430,9 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
           });
         })
         .filter(function(seed) {
+          /* 같은 학생이 직접 저장한 글이 있으면 공용 예시는 더 이상
+             fallback이 아니다. 학생 작성본을 최우선 source of truth로 둔다. */
+          if (seed.mine && hasStudentWrittenSummary) return false;
           return seed.status === "approved" || (seed.mine && (seed.status === "pending" || seed.status === "rejected"));
         })
         .filter(function(seed) { return !existingIds.has(String(seed.id)); })
@@ -6207,7 +6459,50 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
     async function loadMyAfterReadingData() {
       if (isDemoAccount()) {
-        const data = loadDemoAfterReadingData();
+        const currentLoginId = sessionStorage.getItem("loginId") || "";
+        let data = loadDemoAfterReadingData();
+
+        /* mq_demo_afterReading은 "현재 로그인한 학생의 진행 중 작성 폼" 한
+           칸뿐이라, 같은 브라우저에서 다른 심사 학생이 이어서 로그인하면
+           그 학생이 쓴 질문/답/간추리기가 남아 있다. 지금 로그인한 학생
+           것이 아니면 그 내용을 이어받지 않는다 - 내가 예전에 이미 제출해
+           둔 기록(practiceWrittenSummaries)이 있으면 그걸로 이어서
+           편집하고, 없으면 빈 폼에서 새로 시작한다. */
+        if (data.writerLoginId && String(data.writerLoginId) !== currentLoginId) {
+          const archived = findDemoPracticeSummaryByIdentity(
+            currentLoginId,
+            sessionStorage.getItem("name") || ""
+          );
+          data = archived ? {
+            localId: archived.localId,
+            demoBrowserId: archived.demoBrowserId,
+            writerLoginId: currentLoginId,
+            studentId: archived.studentId,
+            studentName: archived.studentName,
+            classReadingBookId: archived.classReadingBookId,
+            bookTitle: archived.bookTitle,
+            bookType: archived.bookType,
+            questions: archived.questions || [],
+            questionsByBookType: archived.questionsByBookType || {},
+            summary: archived.summary,
+            summaryText: archived.summaryText,
+            sharedAt: archived.sharedAt,
+            status: archived.status,
+            rejectionReason: archived.rejectionReason || "",
+            afterDone: true,
+            source: "student",
+            typeProgress: { story: false, info: false, opinion: false },
+            typePracticeAnswers: {}
+          } : {
+            bookType: null,
+            questions: [],
+            questionsByBookType: {},
+            summary: "",
+            typeProgress: { story: false, info: false, opinion: false }
+          };
+          saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
+        }
+
         restoreAfterReadingData(data);
         return data;
       }
@@ -6269,8 +6564,28 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         if (answer) answer.value = item ? item.answer || "" : "";
       });
       restoreQuestionCardProgress(questions);
-      currentBookQuestionIndex = 0;
-      showBookQuestionCard(0);
+      const firstIncompleteIndex = [1, 2, 3].findIndex(function(number) {
+        const saved = questions.find(function(item) {
+          return Number(item.index) === number;
+        });
+        return !isRestoredBookQuestionPassed(saved);
+      });
+      currentBookQuestionIndex = firstIncompleteIndex === -1 ? 2 : firstIncompleteIndex;
+      showBookQuestionCard(currentBookQuestionIndex);
+    }
+
+    /*
+     * 일반계정은 서버가 돌려준 aiPassed를 통과 상태의 기준으로 삼는다.
+     * 심사계정의 예전 브라우저 저장본에는 passed 필드가 없을 수 있는데,
+     * 그 저장본은 기존에도 AI good 콜백에서만 만들어졌으므로 질문·답이
+     * 모두 있으면 한 번만 이전 형식으로 호환한다.
+     */
+    function isRestoredBookQuestionPassed(saved) {
+      if (!saved || !saved.question || !saved.answer) return false;
+      if (saved.aiPassed === true || saved.passed === true) return true;
+      return isDemoAccount()
+        && saved.aiPassed == null
+        && saved.passed == null;
     }
 
     /*
@@ -6316,7 +6631,7 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
           return Number(item.index) === number;
         });
 
-        const passed = !!(saved && saved.question && saved.answer);
+        const passed = isRestoredBookQuestionPassed(saved);
         card.dataset.feedbackPassed = passed ? "true" : "false";
         card.classList.toggle("passed", passed);
       });
@@ -6361,6 +6676,30 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
             encodeURIComponent(currentClassReadingBookId),
           { headers: headers }
         );
+      }
+
+      /* 교사 심사 화면에서 변경한 demo 판정은 서버 예시 자체를 수정하지
+         않고 브라우저 override로 보존한다. 서버 응답 카드에도 같은 id의
+         override를 적용해야 승인 취소/거절 결과가 학생 화면에 즉시 같다. */
+      if (isDemoAccount() && Array.isArray(sharedSummaries)) {
+        sharedSummaries = sharedSummaries.map(function(item) {
+          const summaryId = String(item && (item.id != null ? item.id : item.summaryId));
+          const override = getDemoSummaryReviewOverride("practice", summaryId);
+          if (!override) return item;
+          return Object.assign({}, item, {
+            status: String(override.status || item.status || "approved").toLowerCase(),
+            summary: typeof override.summary === "string" ? override.summary : item.summary,
+            bookType: override.bookType || item.bookType,
+            rejectionReason: String(override.status).toLowerCase() === "rejected"
+              ? String(override.reason || "")
+              : "",
+            updatedAt: override.updatedAt || item.updatedAt
+          });
+        }).filter(function(item) {
+          const summaryId = String(item && (item.id != null ? item.id : item.summaryId));
+          const override = getDemoSummaryReviewOverride("practice", summaryId);
+          return !(override && override.deleted === true);
+        });
       }
 
       return sharedSummaries;
@@ -6611,7 +6950,9 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
      * openAfterReadTargetFromUrl()의 교사 진입 로직과 같은 화면 전환을 쓴다.
      */
     function goToMySummaryShareDirect() {
-      if (!hasOwnSummaryPost()) return;
+      /* 심사계정은 연습/작성 상태와 무관하게 공유 화면 전체를 바로 체험할
+         수 있게 한다. 일반계정은 기존처럼 본인 간추리기가 있을 때만 이동한다. */
+      if (!isDemoAccount() && !hasOwnSummaryPost()) return;
 
       document.getElementById("menuScreen").classList.remove("is-active");
       document.getElementById("studyScreen").classList.add("is-active");
@@ -6655,7 +6996,8 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
 
       const shortcutButton = document.getElementById("myBookShareShortcutButton");
       if (shortcutButton) {
-        shortcutButton.hidden = inMyBookMode || !hasOwnSummaryPost();
+        const canOpenShareDirectly = isDemoAccount() || hasOwnSummaryPost();
+        shortcutButton.hidden = inMyBookMode || !canOpenShareDirectly;
       }
 
       AFTER_READING_TYPE_ORDER.forEach(function (type) {
@@ -6804,49 +7146,60 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
         const filtered = questions.filter(function(item) {
           return Number(item.index) !== Number(index);
         });
-        filtered.push({ index: index, question: question, answer: answer });
+        filtered.push({
+          index: index,
+          question: question,
+          answer: answer,
+          passed: true,
+          aiPassed: true
+        });
         grouped[bookType] = filtered;
         data.questionsByBookType = grouped;
         data.questions = filtered;
         data.bookType = bookType;
+        if (data.source !== "demo-seed-edit") {
+          data.source = "student";
+          delete data.editingReviewSeedId;
+          delete data.seedEditBackup;
+        }
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
-        return;
+        return data;
       }
 
       const context = getCurrentUserContext();
 
       if (!context.id || context.role !== "student" || !context.token || !currentClassReadingBookId) {
-        return;
+        throw new Error("자동저장에 필요한 로그인 또는 온책읽기 정보가 없습니다.");
       }
 
-      try {
-        const saved = await fetchJson(
-          AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/question",
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + context.token
-            },
-            body: JSON.stringify({
-              classReadingBookId: currentClassReadingBookId,
-              bookType: bookType,
-              index: index,
-              question: question,
-              answer: answer
-            })
-          }
-        );
-        restoredAfterReadingData = saved;
-      } catch (error) {
-        console.error("내 책 질문 자동저장에 실패했습니다.", error);
-      }
+      const saved = await fetchJson(
+        AFTER_READING_API_BASE_URL + "/api/students/" + context.id + "/after-reading/question",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + context.token
+          },
+          body: JSON.stringify({
+            classReadingBookId: currentClassReadingBookId,
+            bookType: bookType,
+            index: index,
+            question: question,
+            answer: answer
+          })
+        }
+      );
+      restoredAfterReadingData = saved;
+      return saved;
     }
 
     async function saveAfterReadingSummaryDraft(summaryText) {
       if (isDemoAccount()) {
         const data = loadDemoAfterReadingData();
         data.summary = summaryText;
+        data.summaryText = summaryText;
+        /* 학생이 직접 입력한 순간부터 seed는 fallback으로만 취급한다. */
+        if (data.source !== "demo-seed-edit") data.source = "student";
         saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, data);
         return;
       }
@@ -7579,7 +7932,8 @@ if (selectedBookType === "opinion") {
     function requestExtraPracticeAiFeedback(question1, answer1, question2, answer2) {
       const requestId = ++extraPracticeAiRequestId;
       const checkButton = document.getElementById("extraPracticeCheckButton");
-      const timeoutMs = 15000;
+      /* 백엔드의 OpenAI 응답 제한(20초)보다 먼저 요청을 끊지 않는다. */
+      const timeoutMs = 30000;
       const failMessage = "지금은 루미 피드백을 확인하기 어려워요. 잠시 후 다시 검사해 보세요.";
 
       isExtraPracticeAiRequestInFlight = true;
@@ -8141,14 +8495,16 @@ if (selectedBookType === "opinion") {
         /* 교사용 공용 seed를 김초롱(ss01)이 거절 뒤 고치는 경우에는 새
            local 카드로 복제하지 않고 같은 summaryId의 revision override를
            PENDING으로 갱신한다. */
-        if (editingDemoPracticeReviewSeedId) {
-          const resubmittedSeedId = editingDemoPracticeReviewSeedId;
+        const editingReviewSeedId = editingDemoPracticeReviewSeedId || previousData.editingReviewSeedId;
+        if (editingReviewSeedId) {
+          const resubmittedSeedId = editingReviewSeedId;
+          const revisedQuestions = getAfterReadingQuestionPayload();
           saveDemoSummaryRevisionOverride(
             "practice",
             resubmittedSeedId,
             summaryText,
             selectedBookType,
-            getAfterReadingQuestionPayload()
+            revisedQuestions
           );
           const seedAfterResubmit = getDemoFinalSummaryReviewSeeds("practice").find(function(seed) {
             return String(seed.id) === String(resubmittedSeedId);
@@ -8159,6 +8515,21 @@ if (selectedBookType === "opinion") {
           const seedLikes = loadDemoState(DEMO_SHARE_LIKES_KEY, {});
           delete seedLikes[String(resubmittedSeedId)];
           saveDemoState(DEMO_SHARE_LIKES_KEY, seedLikes);
+          /* seed 편집을 위해 afterReading에 임시로 넣었던 값은 다시 direct
+             글로 남기지 않는다. 편집 전에 있던 학생별 작성 상태를 그대로
+             복원하고, 수정 결과는 위 revision override 한 곳에만 보존한다. */
+          const editBackup = previousData.seedEditBackup;
+          saveDemoState(DEMO_AFTER_READING_STORAGE_KEY,
+            editBackup && typeof editBackup === "object" ? editBackup : {
+              bookType: selectedBookType,
+              questions: [],
+              questionsByBookType: {},
+              summary: "",
+              summaryText: "",
+              typeProgress: previousData.typeProgress || { story: false, info: false, opinion: false },
+              typePracticeAnswers: previousData.typePracticeAnswers || {}
+            }
+          );
           editingDemoPracticeReviewSeedId = null;
           await renderShareList();
           showStudyPanel("share");
@@ -8175,11 +8546,18 @@ if (selectedBookType === "opinion") {
           ? summaryText
           : (previousData.summary || "");
 
-        const resolvedLocalId = previousData.localId || [
-          "practice-summary",
-          getDemoBrowserId(),
-          currentClassReadingBookId || "book"
-        ].join("-");
+        /* localId는 같은 브라우저에서 다른 심사 학생이 이어서 쓴 값이면
+           재사용하지 않는다 - 재사용하면 이전 학생의 summaryReviewOverrides
+           (승인/거절 상태)가 새 학생 글에 그대로 씌워진다. */
+        const currentWriterLoginId = sessionStorage.getItem("loginId") || "";
+        const resolvedLocalId = (previousData.localId && String(previousData.writerLoginId || "") === currentWriterLoginId)
+          ? previousData.localId
+          : [
+            "practice-summary",
+            getDemoBrowserId(),
+            currentWriterLoginId || "unknown",
+            currentClassReadingBookId || "book"
+          ].join("-");
 
         /*
          * getDemoLocalSharedSummary()가 화면에 보여주는 "실제 표시
@@ -8195,10 +8573,11 @@ if (selectedBookType === "opinion") {
         const previousDisplayedStatus = previousOverride
           ? previousOverride.status
           : (previousData.status || "pending");
-        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, {
+        const savedAfterReadingData = {
           localId: resolvedLocalId,
           demoBrowserId: getDemoBrowserId(),
           studentId: context.id,
+          writerLoginId: currentWriterLoginId,
           studentName: sessionStorage.getItem("name") || "김초롱",
           classReadingBookId: currentClassReadingBookId,
           bookTitle: currentClassReadingBookTitle || "우리 반 온책읽기 책",
@@ -8211,6 +8590,7 @@ if (selectedBookType === "opinion") {
           summaryText: summaryToStore,
           sharedAt: previousData.sharedAt || now,
           status: "pending",
+          source: "student",
           rejectionReason: "",
           afterDone: true,
           /*
@@ -8228,7 +8608,17 @@ if (selectedBookType === "opinion") {
            * 버그의 또 다른 원인).
            */
           typePracticeAnswers: previousData.typePracticeAnswers || {}
-        });
+        };
+        saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, savedAfterReadingData);
+        /*
+         * 같은 브라우저에서 다른 심사 학생이 이어서 글을 쓰면 위
+         * mq_demo_afterReading 한 칸은 새 학생 값으로 덮어써진다. 교사
+         * 간추리기 관리가 이 학생의 제출을 계속 볼 수 있도록 누적 기록에도
+         * 같은 localId로 남겨 둔다.
+         */
+        if (typeof saveDemoPracticeWrittenSummary === "function") {
+          saveDemoPracticeWrittenSummary(savedAfterReadingData);
+        }
 
         /*
          * 거절된 글을 학생이 재제출했다면 본문 비교 결과와 관계없이 같은
@@ -8472,10 +8862,10 @@ if (selectedBookType === "opinion") {
             '<article class="ar-share-item">' +
               '<div class="ar-share-head">' +
                 '<strong>' + escapeHtml(summaryTitle) + '</strong>' +
+                '<span class="ar-share-tag">' + icon + ' ' + escapeHtml(typeLabel) + '</span>' +
                 '<span class="ar-share-date">' + escapeHtml(dateText) + '</span>' +
               '</div>' +
               statusBadgeHtml +
-              '<span class="ar-share-tag">' + icon + ' ' + escapeHtml(typeLabel) + '</span>' +
               '<p>' + escapeHtml(item.summary || "") + '</p>' +
               (item.rejectionReason ? '<div class="ar-share-rejection"><strong>선생님이 남긴 이유</strong><p>' + escapeHtml(item.rejectionReason) + '</p></div>' : '') +
               '<div class="ar-share-footer">' + footerContent + '</div>' +
@@ -8958,6 +9348,7 @@ let bookQuestionAiRequestId = 0;
 
 function requestBookQuestionAiFeedback(card, item, number) {
   const requestId = ++bookQuestionAiRequestId;
+  let isSavingPassedQuestion = false;
   const checkButton = document.querySelector(
     "#writePanel .ar-after-feedback-button"
   );
@@ -9007,14 +9398,33 @@ function requestBookQuestionAiFeedback(card, item, number) {
       );
 
   bookQuestionAiPromise
-    .then(function(result) {
+    .then(async function(result) {
       if (requestId !== bookQuestionAiRequestId) {
         return;
       }
 
       const isGood = result.status === "good";
 
-      /* AI가 good을 준 경우에만 현재 질문을 통과 처리한다. */
+      /*
+       * 일반계정은 서버 자동저장까지 성공해야 통과 UI와 다음 질문 버튼을
+       * 연다. 이렇게 해야 저장 요청이 끝나기 전에 화면을 떠나 재진입 시
+       * 내용이 사라지는 경쟁 상태와, 저장 실패를 성공처럼 숨기는 문제를
+       * 함께 막을 수 있다. demo도 같은 순서로 browser-local 저장한다.
+       */
+      if (isGood) {
+        isSavingPassedQuestion = true;
+        setAfterAiFeedback(
+          "bookQuestionAiFeedback",
+          "",
+          "좋아요! 질문과 답을 저장하고 있어요..."
+        );
+        await saveAfterReadingQuestionDraft(number, item.question, item.answer);
+      }
+
+      if (requestId !== bookQuestionAiRequestId) {
+        return;
+      }
+
       card.dataset.feedbackPassed = isGood ? "true" : "false";
       card.classList.toggle("passed", isGood);
 
@@ -9035,12 +9445,8 @@ function requestBookQuestionAiFeedback(card, item, number) {
         result.message
       );
 
-      /* 루미 피드백 통과 = 자동저장. 실패한 시도는 절대 저장하지 않는다. */
-      if (isGood) {
-        saveAfterReadingQuestionDraft(number, item.question, item.answer);
-      }
     })
-    .catch(function() {
+    .catch(function(error) {
       if (requestId !== bookQuestionAiRequestId) {
         return;
       }
@@ -9053,10 +9459,14 @@ function requestBookQuestionAiFeedback(card, item, number) {
 
       updateAddQuestionButton();
 
+      console.error("내 책 질문 검사 또는 자동저장에 실패했습니다.", error);
+
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "need",
-        "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해줘."
+        isSavingPassedQuestion
+          ? "질문과 답을 저장하지 못했어요. 내용은 그대로 두었으니 잠시 후 다시 검사해줘."
+          : "지금은 피드백을 확인하기 어려워요. 잠시 후 다시 시도해줘."
       );
     })
     .finally(function() {
@@ -9222,7 +9632,13 @@ function requestBookQuestionAiFeedback(card, item, number) {
                 };
               })
             : [];
+          const seedEditBackup = previousData.source === "demo-seed-edit"
+            ? (previousData.seedEditBackup || {})
+            : Object.assign({}, previousData);
           saveDemoState(DEMO_AFTER_READING_STORAGE_KEY, Object.assign({}, previousData, {
+            source: "demo-seed-edit",
+            editingReviewSeedId: rejectedSeed.id,
+            seedEditBackup: seedEditBackup,
             bookType: selectedBookType,
             questions: restoredQuestions,
             questionsByBookType: Object.assign({}, previousData.questionsByBookType || {}, {

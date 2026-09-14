@@ -9,61 +9,62 @@
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
     @import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap");
 
-   * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
 
-body {
-  position: relative;
-  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
-  color: #3f2615;
-  background: #fff8e9 !important;
-}
+    body {
+      position: relative;
+      font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      color: #3f2615;
+      background: #fff8e9 !important;
+    }
 
-button,
-textarea {
-  font-family: inherit;
-}
+    button,
+    textarea {
+      font-family: inherit;
+    }
 
-button {
-  cursor: pointer;
-}
+    button {
+      cursor: pointer;
+    }
 
-.page {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+    .page {
+      position: absolute;
+      top: 50%;
+      left: 50%;
 
-  width: 1920px;
-  height: 1080px;
-  padding: 8px 20px 10px;
-  overflow: hidden;
+      width: 1920px;
+      height: 1080px;
+      padding: 8px 20px 10px;
+      overflow: hidden;
 
-  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
-  transform-origin: center center;
+      transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+      transform-origin: center center;
 
-  background-image:
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 247, 224, 0.08)
-    ),
-    url("../assets/images/practice/during-reading-magic-space-bg.png") !important;
+      background-image:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 247, 224, 0.08)
+        ),
+        url("../assets/images/practice/during-reading-magic-space-bg.png") !important;
 
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  background-color: #fff8e9 !important;
-}
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      background-color: #fff8e9 !important;
+    }
+
     .shell {
       width: 1580px;
       height: 1062px;
@@ -129,11 +130,6 @@ button {
       display: none;
     }
 
-    /*
-      title-area는 원래 비어 있는 제목(main-title/main-desc)을 담던 자리라
-      화면에서 완전히 숨겨져 있었다. 그 빈 자리(.top 헤더의 가운데 칸)를
-      심사 체험 배지 전용 자리로 재사용한다.
-    */
     .title-area {
       display: flex;
       align-items: center;
@@ -141,8 +137,6 @@ button {
       min-width: 0;
     }
 
-    /* 심사 체험 계정에서만 보이는 짧은 안내 배지. 연습읽기 질문 작성
-       화면들이 공통으로 사용하는 디자인(베이지/브라운/골드)이다. */
     .mq-demo-banner {
       display: inline-flex;
       align-items: center;
@@ -152,8 +146,15 @@ button {
       padding: 6px 18px;
       border-radius: 20px;
       border: 1px solid rgba(180, 130, 60, 0.42);
-      background: linear-gradient(180deg, rgba(255, 247, 225, 0.96), rgba(238, 216, 176, 0.92));
-      box-shadow: 0 6px 14px rgba(90, 55, 15, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 247, 225, 0.96),
+          rgba(238, 216, 176, 0.92)
+        );
+      box-shadow:
+        0 6px 14px rgba(90, 55, 15, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
       color: #6b4b26;
       font-size: 15px;
       line-height: 1.45;
@@ -169,7 +170,9 @@ button {
       font-weight: 900;
     }
 
-    .mq-demo-banner[hidden] { display: none !important; }
+    .mq-demo-banner[hidden] {
+      display: none !important;
+    }
 
     .top-actions {
       justify-self: end;
@@ -186,6 +189,7 @@ button {
 
     .mq-book-home-button,
     .class-reading-button,
+    .focus-time-button,
     .date-pill {
       height: 46px;
 
@@ -222,6 +226,24 @@ button {
       box-shadow:
         0 8px 16px rgba(105, 57, 5, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+    /* 독서 집중타임 상단 버튼 */
+    .focus-time-button {
+      padding: 0 20px;
+
+      border: 1px solid rgba(124, 86, 38, 0.5);
+      background:
+        linear-gradient(
+          180deg,
+          #725032,
+          #3b2717
+        );
+      color: #fff4db;
+
+      box-shadow:
+        0 8px 16px rgba(52, 30, 11, 0.25),
+        inset 0 1px 0 rgba(255, 239, 210, 0.18);
     }
 
     .date-pill {
@@ -288,45 +310,46 @@ button {
       overflow: hidden;
     }
 
-   .section-title-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-}
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
 
-.section-title-row .section-title {
-  flex-shrink: 0;
-  margin: 0;
-}
+    .section-title-row .section-title {
+      flex-shrink: 0;
+      margin: 0;
+    }
 
-.section-title-row .mq-demo-banner {
-  flex: 1;
-  min-width: 0;
-  max-width: 900px;
-  min-height: 38px;
-  height: auto;
-  padding: 6px 16px;
-  font-size: 16px;
-  line-height: 1.4;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  word-break: keep-all;
-}
+    .section-title-row .mq-demo-banner {
+      flex: 1;
+      min-width: 0;
+      max-width: 900px;
+      min-height: 38px;
+      height: auto;
+      padding: 6px 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      word-break: keep-all;
+    }
 
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
 
-  color: #4b2a13;
-  font-family: "Noto Serif KR", serif;
-  font-size: 34px;
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -0.7px;
-}
+      color: #4b2a13;
+      font-family: "Noto Serif KR", serif;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.7px;
+    }
+
     .title-line {
       height: 1px;
       margin: 9px 0 10px;
@@ -390,9 +413,6 @@ button {
       margin-top: 5px;
     }
 
-    /*
-      답 영역이 남는 공간을 모두 차지하도록 설정
-    */
     .answer-block {
       flex: 1 1 auto;
       min-height: 0;
@@ -458,18 +478,11 @@ button {
         inset 0 1px 0 rgba(255, 255, 255, 0.72);
     }
 
-    /*
-      질문 입력칸도 기존보다 확대
-    */
     #questionInput {
       height: 130px;
       min-height: 130px;
     }
 
-    /*
-      답 입력칸은 고정 높이가 아니라
-      카드에서 남는 높이를 자동으로 채움
-    */
     #answerInput {
       flex: 1 1 auto;
       height: auto;
@@ -521,7 +534,8 @@ button {
     .main-button:hover,
     .type-button:hover,
     .mq-book-home-button:hover,
-    .class-reading-button:hover {
+    .class-reading-button:hover,
+    .focus-time-button:hover {
       transform: translateY(-1px);
     }
 
@@ -529,7 +543,8 @@ button {
     .main-button:active,
     .type-button:active,
     .mq-book-home-button:active,
-    .class-reading-button:active {
+    .class-reading-button:active,
+    .focus-time-button:active {
       transform: translateY(1px);
     }
 
@@ -728,13 +743,131 @@ button {
       font-weight: 800;
       text-align: center;
     }
+/* 읽기 중 활동 - 본문, 유형, 버튼 가독성 확대 */
+.section-title { font-size: 40px; }
+.small-label { font-size: 30px; }
+.type-button { font-size: 30px; }
+.count { font-size: 24px; }
+textarea,
+textarea::placeholder { font-size: 30px; line-height: 1.45; }
+.sub-button,
+.main-button { font-size: 28px; }
+.pass-count { font-size: 28px; min-height: 48px; }
+.next-button { font-size: 30px; min-height: 62px; flex-shrink: 0; }
+.share-note { font-size: 19px; line-height: 1.35; word-break: keep-all; }
+.feedback-message {
+  display: block;
+  align-content: center;
+  font-size: 28px;
+  line-height: 1.45;
+}
+.date-pill { font-size: 20px; }
+.mq-book-home-button,
+.class-reading-button,
+.focus-time-button { font-size: 22px; }
+.write-card { padding-top: 16px; padding-bottom: 14px; }
+.write-actions { margin-top: 10px; }
 
-    /*
-      1920×1080 고정 스테이지를 사용하므로
-      화면 크기에 따라 글씨·버튼·카드 크기를 바꾸는 반응형 규칙은 사용하지 않습니다.
-      아래 스크립트가 전체 화면만 같은 비율로 축소·확대합니다.
-    */
-
+/* 다음 단계 전에 질문 활용 방법을 안내하는 보조창 */
+.question-route-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(48, 30, 17, 0.54);
+  backdrop-filter: blur(3px);
+}
+.question-route-overlay.is-open { display: flex; }
+.question-route-dialog {
+  position: relative;
+  width: min(920px, calc(100vw - 64px));
+  padding: 38px 40px 34px;
+  border: 1px solid rgba(181, 117, 37, 0.42);
+  border-radius: 26px;
+  background: linear-gradient(180deg, #fffdf7 0%, #fff5df 100%);
+  box-shadow: 0 24px 60px rgba(58, 34, 16, 0.3);
+  color: #513018;
+  text-align: center;
+}
+.question-route-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(181, 117, 37, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  color: #74471f;
+  font-size: 26px;
+  line-height: 1;
+}
+.question-route-dialog h2 {
+  margin: 0 48px 10px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 32px;
+  font-weight: 900;
+}
+.question-route-intro {
+  margin: 0 0 24px;
+  color: #765132;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.question-route-cards {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
+  gap: 16px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.question-route-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(181, 117, 37, 0.3);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+}
+.question-route-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #684019;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.question-route-card p {
+  margin: 0;
+  color: #6e4a2c;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.question-route-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.question-route-actions button {
+  min-height: 54px;
+  border: 1px solid rgba(181, 117, 37, 0.34);
+  border-radius: 15px;
+  background: #fffdf7;
+  color: #71451f;
+  font-size: 18px;
+  font-weight: 900;
+}
+.question-route-actions .question-route-primary {
+  background: linear-gradient(180deg, #e5b75f, #b7751b);
+  color: #fffaf0;
+  box-shadow: 0 5px 0 rgba(101, 57, 5, 0.54);
+}
   </style>
 </head>
 
@@ -754,14 +887,16 @@ button {
           <span>우리반 책읽기</span>
         </div>
 
-       <div class="title-area">
-  <h1 class="main-title"></h1>
-  <p class="main-desc">
-    질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
-  </p>
-</div>
+        <div class="title-area">
+          <h1 class="main-title"></h1>
+
+          <p class="main-desc">
+            질문과 내 생각을 쓰고 루미에게 확인 받아 봐.
+          </p>
+        </div>
 
         <div class="top-actions">
+
           <button
             class="mq-book-home-button"
             type="button"
@@ -792,8 +927,15 @@ button {
               ✎ 책 속 생각 쓰기
             </h2>
 
-            <div class="mq-demo-banner" id="demoExperienceBanner" hidden>
-              🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.
+            <div
+              class="mq-demo-banner"
+              id="demoExperienceBanner"
+              hidden
+            >
+              🔍
+              <strong>심사 체험 안내</strong>
+              — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만,
+              심사계정은 바로 이동할 수 있습니다.
             </div>
           </div>
 
@@ -960,16 +1102,39 @@ button {
     </div>
   </main>
 
+  <div class="question-route-overlay" id="questionRouteOverlay" aria-hidden="true" onclick="handleQuestionRouteOverlayClick(event)">
+    <section class="question-route-dialog" role="dialog" aria-modal="true" aria-labelledby="questionRouteTitle" onclick="event.stopPropagation()">
+      <button class="question-route-close" type="button" aria-label="안내창 닫기" onclick="closeQuestionRouteModal()">×</button>
+      <h2 id="questionRouteTitle">내 질문은 어디로 갈까요?</h2>
+      <p class="question-route-intro">책 속에서 만든 질문은 친구들과 함께 활용해요.</p>
+      <div class="question-route-cards">
+        <article class="question-route-card">
+          <strong>🔎 바로 찾기</strong>
+          <p>책수다방의 ‘책 퀴즈’에 활용돼요.</p>
+        </article>
+        <article class="question-route-card">
+          <strong>💬 짐작하기 · 생각/느낌 · 삶과 연결</strong>
+          <p>‘생각 나누기’에서 친구들과 이야기를 나눌 수 있어요.</p>
+        </article>
+      </div>
+      <div class="question-route-actions">
+        <button type="button" onclick="hideQuestionRouteAndGoNext()">다시 보지 않기</button>
+        <button class="question-route-primary" type="button" onclick="finishQuestionRouteAndGoNext()">책수다방 이동하기</button>
+      </div>
+    </section>
+  </div>
+
+
   <script src="../js/auth.js"></script>
   <script src="../js/demo-storage.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
-<script src="../js/ai-feedback.js"></script>
+  <script src="../js/ai-feedback.js"></script>
+
   <script>
     /* =========================================================
        1920×1080 고정 화면 비율 유지
-       - 내부 글씨, 버튼, 카드 크기는 원본 그대로 유지
-       - 브라우저 창 크기에 맞춰 화면 전체만 동일 비율로 축소/확대
     ========================================================= */
+
     function fitFixedStage() {
       const designWidth = 1920;
       const designHeight = 1080;
@@ -986,10 +1151,10 @@ button {
 
     window.addEventListener("resize", fitFixedStage);
     window.addEventListener("DOMContentLoaded", fitFixedStage);
+
     fitFixedStage();
   </script>
-
-  <script>
+<script>
     /*
       =========================================================
       1. 기본 데이터
@@ -998,7 +1163,9 @@ button {
 
     const studentId =
       sessionStorage.getItem("studentId") || "student-demo";
-      let classReadingBookId = null;
+
+    let classReadingBookId = null;
+
     const typeInfo = {
       direct: {
         label: "바로 찾기",
@@ -1111,70 +1278,97 @@ button {
 
     const todayText =
       document.getElementById("todayText");
-async function loadClassReadingBookId() {
-  const token = sessionStorage.getItem("token");
-  const role = sessionStorage.getItem("role");
 
-  if (!token || !studentId || role !== "student") {
-    alert("학생 로그인이 필요합니다.");
-    location.href = "../../index.html";
-    return false;
-  }
 
-  try {
-    const classResponse = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/class`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+    async function loadClassReadingBookId() {
+      const token =
+        sessionStorage.getItem("token");
+
+      const role =
+        sessionStorage.getItem("role");
+
+      if (
+        !token ||
+        !studentId ||
+        role !== "student"
+      ) {
+        alert("학생 로그인이 필요합니다.");
+        location.href = "../../index.html";
+        return false;
       }
-    );
 
-    if (!classResponse.ok) {
-      throw new Error(
-        `학생 학급 조회 실패: ${classResponse.status}`
-      );
-    }
+      try {
+        const classResponse =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/class`,
+            {
+              method: "GET",
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
 
-    const classData = await classResponse.json();
-
-    const bookResponse = await fetch(
-      `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
+        if (!classResponse.ok) {
+          throw new Error(
+            `학생 학급 조회 실패: ${classResponse.status}`
+          );
         }
+
+        const classData =
+          await classResponse.json();
+
+        const bookResponse =
+          await fetch(
+            `${API_BASE_URL}/api/classes/${classData.classId}/reading-range`,
+            {
+              method: "GET",
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        if (bookResponse.status === 404) {
+          alert(
+            "아직 우리 반의 온책읽기 책이 등록되지 않았습니다."
+          );
+          return false;
+        }
+
+        if (!bookResponse.ok) {
+          throw new Error(
+            `온책읽기 책 조회 실패: ${bookResponse.status}`
+          );
+        }
+
+        const bookData =
+          await bookResponse.json();
+
+        classReadingBookId =
+          bookData.id;
+
+        return true;
+
+      } catch (error) {
+        console.error(
+          "학급 책 정보를 불러오지 못했습니다.",
+          error
+        );
+
+        alert(
+          "책 정보를 불러오지 못했습니다."
+        );
+
+        return false;
       }
-    );
-
-    if (bookResponse.status === 404) {
-      alert("아직 우리 반의 온책읽기 책이 등록되지 않았습니다.");
-      return false;
     }
 
-    if (!bookResponse.ok) {
-      throw new Error(
-        `온책읽기 책 조회 실패: ${bookResponse.status}`
-      );
-    }
 
-    const bookData = await bookResponse.json();
-
-    classReadingBookId = bookData.id;
-    return true;
-  } catch (error) {
-    console.error(
-      "학급 책 정보를 불러오지 못했습니다.",
-      error
-    );
-    alert("책 정보를 불러오지 못했습니다.");
-    return false;
-  }
-}
     initPage();
+
 
     /*
       =========================================================
@@ -1183,18 +1377,23 @@ async function loadClassReadingBookId() {
     */
 
     async function initPage() {
-  showDemoBannerIfDemoAccount("demoExperienceBanner");
+      showDemoBannerIfDemoAccount(
+        "demoExperienceBanner"
+      );
 
-  const bookLoaded = await loadClassReadingBookId();
+      const bookLoaded =
+        await loadClassReadingBookId();
 
-  if (!bookLoaded) {
-    return;
-  }
+      if (!bookLoaded) {
+        return;
+      }
 
-  todayText.textContent =
-    "오늘 날짜 " + todayInfo.display;
+      todayText.textContent =
+        "오늘 날짜 " +
+        todayInfo.display;
 
       await loadTodayBookThoughtResponses();
+
       updateCounts();
       renderTodayQuestions();
 
@@ -1203,30 +1402,44 @@ async function loadClassReadingBookId() {
         setCompletionFeedback();
       }
 
-      typeButtons.forEach(function(button) {
-        button.addEventListener("click", function() {
-          if (todayQuestions.length >= 3) {
-            setCompletionFeedback();
-            return;
-          }
+      typeButtons.forEach(
+        function(button) {
+          button.addEventListener(
+            "click",
+            function() {
 
-          typeButtons.forEach(function(btn) {
-            btn.classList.remove("active");
-          });
+              if (todayQuestions.length >= 3) {
+                setCompletionFeedback();
+                return;
+              }
 
-          button.classList.add("active");
-          selectedType = button.dataset.type;
+              typeButtons.forEach(
+                function(btn) {
+                  btn.classList.remove(
+                    "active"
+                  );
+                }
+              );
 
-          setFeedback(
-            "need",
-            "'" +
-              typeInfo[selectedType].label +
-              "' 유형을 골랐어. " +
-              typeInfo[selectedType].guide +
-              " 질문과 내 생각을 써 보고 루미에게 확인 받아 봐."
+              button.classList.add(
+                "active"
+              );
+
+              selectedType =
+                button.dataset.type;
+
+              setFeedback(
+                "need",
+                "'" +
+                typeInfo[selectedType].label +
+                "' 유형을 골랐어. " +
+                typeInfo[selectedType].guide +
+                " 질문과 내 생각을 써 보고 루미에게 확인 받아 봐."
+              );
+            }
           );
-        });
-      });
+        }
+      );
 
       questionInput.addEventListener(
         "input",
@@ -1249,17 +1462,17 @@ async function loadClassReadingBookId() {
       );
     }
 
-    /*
-      직전 검사 결과(good/need)가 남아 있는 채로 질문이나 답을 수정하면,
-      아직 검사하지 않은 새 내용이 이미 통과한 것처럼 보일 수 있다.
-      검사 중(로딩)이거나 이미 잠긴 상태(3개 완료)라면 건드리지 않는다.
-    */
+
     function resetDuringReadingFeedbackOnEdit() {
-      if (isDuringReadingAiRequestInFlight) {
+      if (
+        isDuringReadingAiRequestInFlight
+      ) {
         return;
       }
 
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         return;
       }
 
@@ -1276,18 +1489,23 @@ async function loadClassReadingBookId() {
       );
     }
 
+
     function getTodayInfo() {
-      const today = new Date();
+      const today =
+        new Date();
 
-      const year = today.getFullYear();
+      const year =
+        today.getFullYear();
 
-      const month = String(
-        today.getMonth() + 1
-      ).padStart(2, "0");
+      const month =
+        String(
+          today.getMonth() + 1
+        ).padStart(2, "0");
 
-      const date = String(
-        today.getDate()
-      ).padStart(2, "0");
+      const date =
+        String(
+          today.getDate()
+        ).padStart(2, "0");
 
       const dayNames = [
         "일",
@@ -1299,7 +1517,8 @@ async function loadClassReadingBookId() {
         "토"
       ];
 
-      const day = dayNames[today.getDay()];
+      const day =
+        dayNames[today.getDay()];
 
       return {
         key:
@@ -1326,6 +1545,7 @@ async function loadClassReadingBookId() {
       };
     }
 
+
     function updateCounts() {
       questionCount.textContent =
         questionInput.value.length +
@@ -1336,6 +1556,7 @@ async function loadClassReadingBookId() {
         " / 400자";
     }
 
+
     /*
       =========================================================
       3. 루미 피드백 검사
@@ -1343,17 +1564,23 @@ async function loadClassReadingBookId() {
     */
 
     let duringReadingAiRequestId = 0;
-    let isDuringReadingAiRequestInFlight = false;
+
+    let isDuringReadingAiRequestInFlight =
+      false;
+
 
     function checkQuestion() {
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         lockQuestionForm();
         setCompletionFeedback();
         return;
       }
 
-      /* 요청이 진행 중이면 버튼이 비활성화되어 있지만, 혹시 모를 중복 클릭을 한 번 더 막는다. */
-      if (isDuringReadingAiRequestInFlight) {
+      if (
+        isDuringReadingAiRequestInFlight
+      ) {
         return;
       }
 
@@ -1378,17 +1605,17 @@ async function loadClassReadingBookId() {
         return;
       }
 
-      requestDuringReadingAiFeedback(question, answer);
+      requestDuringReadingAiFeedback(
+        question,
+        answer
+      );
     }
 
-    /*
-      로컬 형식 필터. 의미 판정(선택한 질문 유형에 맞는지, 질문과 답이
-      자연스럽게 이어지는지)은 하지 않고, 읽기 전 검증(js/pre-reading-
-      validation.js)과 같은 기준으로 빈 입력·초성/기호만 입력·반복 글자·
-      너무 짧은 입력·질문 형태가 아닌 입력만 걸러낸다. 의미 판정은
-      requestDuringReadingAiFeedback()에서 AI에게 맡긴다.
-    */
-    function validateDuringReadingFormat(question, answer) {
+
+    function validateDuringReadingFormat(
+      question,
+      answer
+    ) {
       if (!question) {
         return {
           ok: false,
@@ -1397,21 +1624,35 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (preReadingIsJamoOrSymbolOnly(question)) {
+      if (
+        preReadingIsJamoOrSymbolOnly(
+          question
+        )
+      ) {
         return {
           ok: false,
-          message: "질문의 뜻이 잘 보이지 않아. 궁금한 점을 문장으로 다시 적어 보자."
+          message:
+            "질문의 뜻이 잘 보이지 않아. 궁금한 점을 문장으로 다시 적어 보자."
         };
       }
 
-      if (preReadingHasExcessiveRepetition(question)) {
+      if (
+        preReadingHasExcessiveRepetition(
+          question
+        )
+      ) {
         return {
           ok: false,
-          message: "같은 글자가 너무 많이 반복됐어. 궁금한 내용을 문장으로 적어 보자."
+          message:
+            "같은 글자가 너무 많이 반복됐어. 궁금한 내용을 문장으로 적어 보자."
         };
       }
 
-      if (preReadingCountWithoutSpaces(question) < 5) {
+      if (
+        preReadingCountWithoutSpaces(
+          question
+        ) < 5
+      ) {
         return {
           ok: false,
           message:
@@ -1419,7 +1660,11 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (!preReadingLooksLikeQuestion(question)) {
+      if (
+        !preReadingLooksLikeQuestion(
+          question
+        )
+      ) {
         return {
           ok: false,
           message:
@@ -1435,21 +1680,35 @@ async function loadClassReadingBookId() {
         };
       }
 
-      if (preReadingIsJamoOrSymbolOnly(answer)) {
+      if (
+        preReadingIsJamoOrSymbolOnly(
+          answer
+        )
+      ) {
         return {
           ok: false,
-          message: "답의 뜻이 잘 보이지 않아. 내 생각을 문장으로 다시 적어 보자."
+          message:
+            "답의 뜻이 잘 보이지 않아. 내 생각을 문장으로 다시 적어 보자."
         };
       }
 
-      if (preReadingHasExcessiveRepetition(answer)) {
+      if (
+        preReadingHasExcessiveRepetition(
+          answer
+        )
+      ) {
         return {
           ok: false,
-          message: "같은 글자가 너무 많이 반복됐어. 내 생각을 문장으로 적어 보자."
+          message:
+            "같은 글자가 너무 많이 반복됐어. 내 생각을 문장으로 적어 보자."
         };
       }
 
-      if (preReadingCountWithoutSpaces(answer) < 3) {
+      if (
+        preReadingCountWithoutSpaces(
+          answer
+        ) < 3
+      ) {
         return {
           ok: false,
           message:
@@ -1457,399 +1716,718 @@ async function loadClassReadingBookId() {
         };
       }
 
-      return { ok: true };
+      return {
+        ok: true
+      };
     }
 
-    /*
-      심사 체험 계정은 공용 DB 대신 "현재 브라우저" localStorage에만
-      질문·답을 저장한다. 같은 ss01 로그인을 쓰는 다른 심사위원 브라우저와
-      서로 섞이지 않게 하기 위함이다(일반 학생 계정은 이 분기를 타지 않음).
-    */
-    const DEMO_DURING_READ_STORAGE_KEY = "duringRead";
 
-    /*
-      =========================================================
-      읽기 중 AI 피드백 요청
-      =========================================================
-      AI가 good을 줘야만 저장·통과 카운트·다음 단계 조건에 반영된다.
-      AbortController + 타임아웃으로 "루미가 답변을 읽고 있어요..."에서
-      무한정 멈추는 문제를 막고, 요청 중에는 checkButton을 잠가 중복
-      요청을 막는다.
-    */
+    const DEMO_DURING_READ_STORAGE_KEY =
+      "duringRead";
+
+
     async function saveBookThoughtResponse(
-  questionType,
-  question,
-  answer,
-  demoOptions
-) {
-  if (isDemoAccount()) {
-    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    const options = demoOptions || {};
-    const demoId = options.id ||
-      "demo-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
-    const existingIndex = items.findIndex(function(item) {
-      return String(item.id) === String(demoId);
-    });
-    const existingItem = existingIndex >= 0 ? items[existingIndex] : null;
+      questionType,
+      question,
+      answer,
+      demoOptions
+    ) {
 
-    const newItem = {
-      id: demoId,
-      questionType: questionType,
-      question: question,
-      answer: answer,
-      createdAt: existingItem?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      aiPassed: options.aiPassed === true
-    };
+      if (isDemoAccount()) {
+        const items =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
 
-    if (existingIndex >= 0) {
-      items[existingIndex] = newItem;
-    } else {
-      items.push(newItem);
-    }
+        const options =
+          demoOptions || {};
 
-    saveDemoState(DEMO_DURING_READ_STORAGE_KEY, items);
+        const demoId =
+          options.id ||
+          "demo-" +
+          Date.now() +
+          "-" +
+          Math.floor(
+            Math.random() * 1000
+          );
 
-    /* saveDemoState는 저장 예외를 내부에서 처리하므로 실제 재조회로 성공을 확인한다. */
-    const persistedItems = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    return persistedItems.find(function(item) {
-      return String(item.id) === String(demoId) &&
-        item.question === question &&
-        item.answer === answer;
-    }) || null;
-  }
+        const existingIndex =
+          items.findIndex(
+            function(item) {
+              return (
+                String(item.id) ===
+                String(demoId)
+              );
+            }
+          );
 
-  const token = sessionStorage.getItem("token");
+        const existingItem =
+          existingIndex >= 0
+            ? items[existingIndex]
+            : null;
 
-  if (!token || !studentId || !classReadingBookId) {
-    console.error(
-      "책 속 생각 저장에 필요한 정보가 없습니다."
-    );
-    return null;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
+        const newItem = {
+          id: demoId,
           questionType: questionType,
           question: question,
           answer: answer,
-          classReadingBookId: classReadingBookId
-        })
-      }
-    );
 
-    if (!response.ok) {
-      const errorText = await response.text();
+          createdAt:
+            existingItem?.createdAt ||
+            new Date().toISOString(),
 
-      console.error(
-        "책 속 생각 저장 실패:",
-        response.status,
-        errorText
-      );
+          updatedAt:
+            new Date().toISOString(),
 
-      return null;
-    }
+          aiPassed:
+            options.aiPassed === true
+        };
 
-    return await response.json();
-  } catch (error) {
-    console.error(
-      "책 속 생각 저장 중 오류가 발생했습니다.",
-      error
-    );
-
-    return null;
-  }
-}
-function applyTodayBookThoughtItems(items) {
-  todayQuestions = items
-    .filter(function(item) {
-      /* AI 확인 전 저장한 심사 체험 초안은 완료 질문 수에 포함하지 않는다. */
-      if (isDemoAccount() && item.aiPassed === false) {
-        return false;
-      }
-
-      if (!item.createdAt) {
-        return false;
-      }
-
-      const createdDate =
-        String(item.createdAt).slice(0, 10);
-
-      return createdDate === todayInfo.key;
-    })
-    .map(function(item) {
-      return {
-        id: item.id,
-        dateKey: todayInfo.key,
-        dateText: todayInfo.display,
-        shortDateText: todayInfo.shortDisplay,
-        type: item.questionType,
-        typeLabel:
-          typeInfo[item.questionType]?.label ||
-          item.questionType,
-        text: item.question,
-        answer: item.answer,
-        createdAt:
-          String(item.createdAt).slice(11, 16)
-      };
-    });
-}
-
-async function loadTodayBookThoughtResponses() {
-  if (isDemoAccount()) {
-    const items = loadDemoState(DEMO_DURING_READ_STORAGE_KEY, []);
-    applyTodayBookThoughtItems(items);
-    return true;
-  }
-
-  const token = sessionStorage.getItem("token");
-
-  if (!token || !studentId || !classReadingBookId) {
-    return false;
-  }
-
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/students/${studentId}/responses/book-thought?classReadingBookId=${classReadingBookId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
+        if (existingIndex >= 0) {
+          items[existingIndex] =
+            newItem;
+        } else {
+          items.push(newItem);
         }
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error(
-        `책 속 생각 조회 실패: ${response.status}`
-      );
+        saveDemoState(
+          DEMO_DURING_READ_STORAGE_KEY,
+          items
+        );
+
+        const persistedItems =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
+
+        return (
+          persistedItems.find(
+            function(item) {
+              return (
+                String(item.id) ===
+                  String(demoId) &&
+                item.question ===
+                  question &&
+                item.answer ===
+                  answer
+              );
+            }
+          ) || null
+        );
+      }
+
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
+
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        console.error(
+          "책 속 생각 저장에 필요한 정보가 없습니다."
+        );
+
+        return null;
+      }
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/responses/book-thought`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${token}`
+              },
+
+              body:
+                JSON.stringify({
+                  questionType:
+                    questionType,
+
+                  question:
+                    question,
+
+                  answer:
+                    answer,
+
+                  classReadingBookId:
+                    classReadingBookId
+                })
+            }
+          );
+
+        if (!response.ok) {
+          const errorText =
+            await response.text();
+
+          console.error(
+            "책 속 생각 저장 실패:",
+            response.status,
+            errorText
+          );
+
+          return null;
+        }
+
+        const saved = await response.json();
+        return saved;
+
+      } catch (error) {
+        console.error(
+          "책 속 생각 저장 중 오류가 발생했습니다.",
+          error
+        );
+
+        return null;
+      }
     }
 
-    const items = await response.json();
 
-    applyTodayBookThoughtItems(items);
+    function applyTodayBookThoughtItems(
+      items
+    ) {
+      todayQuestions =
+        items
 
-    return true;
-  } catch (error) {
-    console.error(
-      "오늘의 책 속 생각 기록을 불러오지 못했습니다.",
-      error
-    );
+          .filter(
+            function(item) {
 
-    todayQuestions = [];
-    return false;
-  }
-}
-    async function requestDuringReadingAiFeedback(question, answer) {
-      const requestId = ++duringReadingAiRequestId;
-      const timeoutMs = 15000;
+              if (
+                isDemoAccount() &&
+                item.aiPassed === false
+              ) {
+                return false;
+              }
+
+              if (!item.createdAt) {
+                return false;
+              }
+
+              const createdDate =
+                String(
+                  item.createdAt
+                ).slice(0, 10);
+
+              return (
+                createdDate ===
+                todayInfo.key
+              );
+            }
+          )
+
+          .map(
+            function(item) {
+              return {
+                id:
+                  item.id,
+
+                dateKey:
+                  todayInfo.key,
+
+                dateText:
+                  todayInfo.display,
+
+                shortDateText:
+                  todayInfo.shortDisplay,
+
+                type:
+                  item.questionType,
+
+                typeLabel:
+                  typeInfo[
+                    item.questionType
+                  ]?.label ||
+                  item.questionType,
+
+                text:
+                  item.question,
+
+                answer:
+                  item.answer,
+
+                createdAt:
+                  String(
+                    item.createdAt
+                  ).slice(11, 16)
+              };
+            }
+          );
+    }
+
+
+    async function loadTodayBookThoughtResponses() {
+      if (isDemoAccount()) {
+        const items =
+          loadDemoState(
+            DEMO_DURING_READ_STORAGE_KEY,
+            []
+          );
+
+        applyTodayBookThoughtItems(
+          items
+        );
+
+        return true;
+      }
+
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
+
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        return false;
+      }
+
+      try {
+        const response =
+          await fetch(
+            `${API_BASE_URL}/api/students/${studentId}/responses/book-thought?classReadingBookId=${classReadingBookId}`,
+            {
+              method: "GET",
+
+              headers: {
+                Authorization:
+                  `Bearer ${token}`
+              }
+            }
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            `책 속 생각 조회 실패: ${response.status}`
+          );
+        }
+
+        const items =
+          await response.json();
+
+        applyTodayBookThoughtItems(
+          items
+        );
+
+        return true;
+
+      } catch (error) {
+        console.error(
+          "오늘의 책 속 생각 기록을 불러오지 못했습니다.",
+          error
+        );
+
+        todayQuestions = [];
+
+        return false;
+      }
+    }
+
+
+    async function requestDuringReadingAiFeedback(
+      question,
+      answer
+    ) {
+      const requestId =
+        ++duringReadingAiRequestId;
+
+      const timeoutMs =
+        30000;
+
       const aiFailMessage =
         "루미 피드백을 불러오지 못했어요. 잠시 후 다시 시도해봐.";
 
-      isDuringReadingAiRequestInFlight = true;
+      isDuringReadingAiRequestInFlight =
+        true;
 
       if (checkButton) {
-        checkButton.disabled = true;
+        checkButton.disabled =
+          true;
       }
 
-      setFeedback("", "루미가 답변을 읽고 있어요...");
+      setFeedback(
+        "",
+        "루미가 답변을 읽고 있어요..."
+      );
 
-      const abortController = new AbortController();
+      const abortController =
+        new AbortController();
 
-      const timeoutId = setTimeout(function() {
-        abortController.abort();
-      }, timeoutMs);
+      const timeoutId =
+        setTimeout(
+          function() {
+            abortController.abort();
+          },
+          timeoutMs
+        );
 
-      const token = sessionStorage.getItem("token");
+      const token =
+        sessionStorage.getItem(
+          "token"
+        );
 
-if (!token || !studentId || !classReadingBookId) {
-  clearTimeout(timeoutId);
-  isDuringReadingAiRequestInFlight = false;
+      if (
+        !token ||
+        !studentId ||
+        !classReadingBookId
+      ) {
+        clearTimeout(
+          timeoutId
+        );
 
-  if (checkButton) {
-    checkButton.disabled = false;
-  }
+        isDuringReadingAiRequestInFlight =
+          false;
 
-  setFeedback(
-    "need",
-    "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
-  );
+        if (checkButton) {
+          checkButton.disabled =
+            false;
+        }
 
-  return;
-}
+        setFeedback(
+          "need",
+          "로그인 또는 책 정보가 없어요. 다시 로그인한 뒤 시도해 주세요."
+        );
 
-/*
-  아직 저장되지 않은 현재 질문의 순번을 사용한다.
-  같은 질문을 수정해서 재검사할 때는 todayQuestions.length가 바뀌지 않으므로
-  동일한 evaluationKey가 유지된다.
-*/
-const questionNumber = todayQuestions.length + 1;
+        return;
+      }
 
-const evaluationKey =
-  "practice-during-" +
-  classReadingBookId +
-  "-" +
-  studentId +
-  "-book-thought-" +
-  todayInfo.key +
-  "-" +
-  questionNumber;
 
-      const isDemo = isDemoAccount();
-      const demoResponseId = "demo-" + evaluationKey;
+      const questionNumber =
+        todayQuestions.length + 1;
+
+      const evaluationKey =
+        "practice-during-" +
+        classReadingBookId +
+        "-" +
+        studentId +
+        "-book-thought-" +
+        todayInfo.key +
+        "-" +
+        questionNumber;
+
+
+      const isDemo =
+        isDemoAccount();
+
+      const demoResponseId =
+        "demo-" +
+        evaluationKey;
+
 
       try {
-        /* 심사 체험은 공용 DB가 아니라 현재 브라우저에 먼저 초안으로 저장한다. */
+
         if (isDemo) {
-          const localDraft = await saveBookThoughtResponse(
-            selectedType,
-            question,
-            answer,
-            { id: demoResponseId, aiPassed: false }
-          );
+          const localDraft =
+            await saveBookThoughtResponse(
+              selectedType,
+              question,
+              answer,
+              {
+                id:
+                  demoResponseId,
+
+                aiPassed:
+                  false
+              }
+            );
 
           if (!localDraft) {
-            setFeedback("need", "질문을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+            setFeedback(
+              "need",
+              "질문을 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+            );
+
             return;
           }
         }
 
-        const apiPath = isDemo
-          ? "/api/feedback/ai-review"
-          : "/api/students/me/feedback/ai-review";
-        const headers = { "Content-Type": "application/json" };
+
+        const apiPath =
+          isDemo
+            ? "/api/feedback/ai-review"
+            : "/api/students/me/feedback/ai-review";
+
+
+        const headers = {
+          "Content-Type":
+            "application/json"
+        };
+
 
         if (!isDemo) {
-          headers.Authorization = "Bearer " + token;
+          headers.Authorization =
+            "Bearer " +
+            token;
         }
 
-        const requestBody = isDemo
-          ? {
-              type: "during_reading_question",
-              stepType: selectedType,
-              qaList: [{ question: question, answer: answer }]
+
+        const requestBody =
+          isDemo
+            ? {
+                type:
+                  "during_reading_question",
+
+                stepType:
+                  selectedType,
+
+                qaList: [
+                  {
+                    question:
+                      question,
+
+                    answer:
+                      answer
+                  }
+                ]
+              }
+
+            : {
+                question:
+                  question,
+
+                answer:
+                  answer,
+
+                activityType:
+                  "during_reading_question",
+
+                questionType:
+                  selectedType,
+
+                evaluationKey:
+                  evaluationKey,
+
+                classReadingBookId:
+                  classReadingBookId
+              };
+
+
+        const response =
+          await fetch(
+            API_BASE_URL +
+              apiPath,
+            {
+              method:
+                "POST",
+
+              headers:
+                headers,
+
+              signal:
+                abortController.signal,
+
+              body:
+                JSON.stringify(
+                  requestBody
+                )
             }
-          : {
-              question: question,
-              answer: answer,
-              activityType: "during_reading_question",
-              questionType: selectedType,
-              evaluationKey: evaluationKey,
-              classReadingBookId: classReadingBookId
-            };
+          );
 
-        const response = await fetch(API_BASE_URL + apiPath, {
-          method: "POST",
-          headers: headers,
-          signal: abortController.signal,
-          body: JSON.stringify(requestBody)
-        });
 
-        if (requestId !== duringReadingAiRequestId) {
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
           return;
         }
 
+
         if (!response.ok) {
-          const bodyText = await response.text().catch(function() {
-            return "(읽지 못함)";
-          });
+
+          const bodyText =
+            await response
+              .text()
+              .catch(
+                function() {
+                  return "(읽지 못함)";
+                }
+              );
+
           console.error(
             "읽기 중 AI 피드백 요청 실패 - status:",
             response.status,
             "body:",
             bodyText
           );
-          setFeedback("need", aiFailMessage);
-          return;
-        }
 
-        const result = await response.json();
-
-        if (requestId !== duringReadingAiRequestId) {
-          return;
-        }
-
-        const isGood = result.status === "good";
-        setFeedback(isGood ? "good" : "need", result.message);
-
-        if (isGood) {
-          const savedResponse = await saveBookThoughtResponse(
-            selectedType,
-            question,
-            answer,
-            isDemo ? { id: demoResponseId, aiPassed: true } : undefined
+          setFeedback(
+            "need",
+            aiFailMessage
           );
 
-          if (requestId !== duringReadingAiRequestId) {
+          return;
+        }
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
+          return;
+        }
+
+
+        const isGood =
+          result.status === "good";
+
+
+        setFeedback(
+          isGood
+            ? "good"
+            : "need",
+
+          result.message
+        );
+
+
+        if (isGood) {
+
+          const savedResponse =
+            await saveBookThoughtResponse(
+              selectedType,
+              question,
+              answer,
+
+              isDemo
+                ? {
+                    id:
+                      demoResponseId,
+
+                    aiPassed:
+                      true
+                  }
+                : undefined
+            );
+
+
+          if (
+            requestId !==
+            duringReadingAiRequestId
+          ) {
             return;
           }
 
+
           if (!savedResponse) {
+
             setFeedback(
               "need",
               "질문은 잘 만들었지만 저장하지 못했어요. 잠시 후 다시 확인 받아 주세요."
             );
+
             return;
           }
 
-          saveQuestion(question, answer, savedResponse);
-          questionInput.value = "";
-          answerInput.value = "";
+
+          saveQuestion(
+            question,
+            answer,
+            savedResponse
+          );
+
+
+          questionInput.value =
+            "";
+
+          answerInput.value =
+            "";
+
           updateCounts();
 
-          if (todayQuestions.length >= 3) {
+
+          if (
+            todayQuestions.length >= 3
+          ) {
             syncDemoPracticeApprovalRequests();
+
             lockQuestionForm();
+
             setCompletionFeedback();
           }
         }
+
       } catch (error) {
-          if (requestId !== duringReadingAiRequestId) {
-            return;
-          }
 
-          if (error.name === "AbortError") {
-            console.error(
-              "읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
-              error
-            );
-          } else {
-            console.error(
-              "읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
-              error
-            );
-          }
+        if (
+          requestId !==
+          duringReadingAiRequestId
+        ) {
+          return;
+        }
 
-          setFeedback("need", aiFailMessage);
+
+        if (
+          error.name ===
+          "AbortError"
+        ) {
+          console.error(
+            "읽기 중 AI 피드백 요청이 시간 초과(타임아웃)되었습니다.",
+            error
+          );
+
+        } else {
+
+          console.error(
+            "읽기 중 AI 피드백 요청 중 네트워크 오류가 발생했습니다.",
+            error
+          );
+        }
+
+
+        setFeedback(
+          "need",
+          aiFailMessage
+        );
+
       } finally {
-          clearTimeout(timeoutId);
-          isDuringReadingAiRequestInFlight = false;
 
-          /* 질문 3개를 이미 다 통과했으면 lockQuestionForm()이 잠근 상태를 유지해야 한다. */
-          if (checkButton && todayQuestions.length < 3) {
-            checkButton.disabled = false;
-          }
+        clearTimeout(
+          timeoutId
+        );
+
+        isDuringReadingAiRequestInFlight =
+          false;
+
+
+        if (
+          checkButton &&
+          todayQuestions.length < 3
+        ) {
+          checkButton.disabled =
+            false;
+        }
       }
     }
+
 
     function setFeedback(
       state,
       message
     ) {
       feedbackBox.className =
-        "feedback-message " + state;
+        "feedback-message " +
+        state;
 
       feedbackBox.innerHTML =
         message;
     }
+
 
     /*
       =========================================================
@@ -1858,58 +2436,97 @@ const evaluationKey =
     */
 
     function saveQuestion(
-  question,
-  answer,
-  savedResponse
-) {
-  const alreadyExists = todayQuestions.some(
-    function(item) {
-      return item.id === savedResponse.id;
+      question,
+      answer,
+      savedResponse
+    ) {
+      const alreadyExists =
+        todayQuestions.some(
+          function(item) {
+            return (
+              item.id ===
+              savedResponse.id
+            );
+          }
+        );
+
+      if (alreadyExists) {
+        setFeedback(
+          "need",
+          "이미 통과한 질문과 같은 내용이에요. 다른 질문을 만들어 보세요."
+        );
+
+        return;
+      }
+
+
+      const newQuestion = {
+        id:
+          savedResponse.id,
+
+        dateKey:
+          todayInfo.key,
+
+        dateText:
+          todayInfo.display,
+
+        shortDateText:
+          todayInfo.shortDisplay,
+
+        type:
+          savedResponse.questionType,
+
+        typeLabel:
+          typeInfo[
+            savedResponse.questionType
+          ]?.label ||
+          savedResponse.questionType,
+
+        text:
+          savedResponse.question,
+
+        answer:
+          savedResponse.answer,
+
+        createdAt:
+          String(
+            savedResponse.createdAt ||
+            ""
+          ).slice(11, 16)
+      };
+
+
+      todayQuestions.push(
+        newQuestion
+      );
+
+      saveTodayQuestions();
+
+      renderTodayQuestions();
     }
-  );
 
-  if (alreadyExists) {
-    setFeedback(
-      "need",
-      "이미 통과한 질문과 같은 내용이에요. 다른 질문을 만들어 보세요."
-    );
-    return;
-  }
-
-  const newQuestion = {
-    id: savedResponse.id,
-    dateKey: todayInfo.key,
-    dateText: todayInfo.display,
-    shortDateText: todayInfo.shortDisplay,
-    type: savedResponse.questionType,
-    typeLabel:
-      typeInfo[savedResponse.questionType]?.label ||
-      savedResponse.questionType,
-    text: savedResponse.question,
-    answer: savedResponse.answer,
-    createdAt:
-      String(savedResponse.createdAt || "").slice(11, 16)
-  };
-
-  todayQuestions.push(newQuestion);
-
-  saveTodayQuestions();
-  renderTodayQuestions();
-}
 
     function getCurrentTimeText() {
-      const now = new Date();
+      const now =
+        new Date();
 
-      const hour = String(
-        now.getHours()
-      ).padStart(2, "0");
+      const hour =
+        String(
+          now.getHours()
+        ).padStart(2, "0");
 
-      const minute = String(
-        now.getMinutes()
-      ).padStart(2, "0");
+      const minute =
+        String(
+          now.getMinutes()
+        ).padStart(2, "0");
 
-      return hour + ":" + minute;
+      return (
+        hour +
+        ":" +
+        minute
+      );
     }
+
 
     function loadTodayQuestions() {
       const savedData =
@@ -1924,11 +2541,15 @@ const evaluationKey =
 
       try {
         todayQuestions =
-          JSON.parse(savedData);
+          JSON.parse(
+            savedData
+          );
+
       } catch (error) {
         todayQuestions = [];
       }
     }
+
 
     function saveTodayQuestions() {
       localStorage.setItem(
@@ -1938,41 +2559,58 @@ const evaluationKey =
         )
       );
 
+
       const archiveKey =
         "classReadingQuestionArchive_" +
         studentId;
+
 
       let archive =
         JSON.parse(
           localStorage.getItem(
             archiveKey
-          ) || "{}"
+          ) ||
+          "{}"
         );
 
-      archive[todayInfo.key] =
+
+      archive[
+        todayInfo.key
+      ] =
         todayQuestions;
+
 
       localStorage.setItem(
         archiveKey,
-        JSON.stringify(archive)
+        JSON.stringify(
+          archive
+        )
       );
     }
+
 
     function renderTodayQuestions() {
       const passed =
         todayQuestions.length;
 
+
       if (passCount) {
         passCount.textContent =
           "통과 " +
-          Math.min(passed, 3) +
+          Math.min(
+            passed,
+            3
+          ) +
           " / 3개";
       }
 
+
       if (nextButton) {
         nextButton.disabled =
-          !isDemoAccount() && passed < 3;
+          !isDemoAccount() &&
+          passed < 3;
       }
+
 
       if (passed >= 3) {
         lockQuestionForm();
@@ -1980,9 +2618,11 @@ const evaluationKey =
         unlockQuestionForm();
       }
 
+
       if (!questionList) {
         return;
       }
+
 
       if (selectCount) {
         selectCount.textContent =
@@ -1990,15 +2630,18 @@ const evaluationKey =
           " / 3개 선택됨";
       }
 
+
       if (shareButton) {
         shareButton.disabled =
           selectedQuestionIds.length === 0;
       }
 
+
       if (topShareButton) {
         topShareButton.disabled =
           selectedQuestionIds.length === 0;
       }
+
 
       if (
         todayQuestions.length === 0
@@ -2012,65 +2655,93 @@ const evaluationKey =
         return;
       }
 
+
       questionList.innerHTML =
         todayQuestions
-          .map(function(question) {
-            const selected =
-              selectedQuestionIds.includes(
-                question.id
+
+          .map(
+            function(question) {
+
+              const selected =
+                selectedQuestionIds.includes(
+                  question.id
+                );
+
+
+              const selectedClass =
+                selected
+                  ? " selected"
+                  : "";
+
+
+              return (
+                '<article class="question-card' +
+                selectedClass +
+                '" onclick="toggleQuestionSelect(' +
+                question.id +
+                ')">' +
+
+                '<div class="check"></div>' +
+
+                '<div class="q-meta">' +
+                question.shortDateText +
+
+                '<span class="type-badge">' +
+                escapeHtml(
+                  question.typeLabel
+                ) +
+                "</span>" +
+
+                "</div>" +
+
+                '<div class="q-text">' +
+                escapeHtml(
+                  question.text
+                ) +
+                "</div>" +
+
+                '<div class="q-answer">내 답: ' +
+                escapeHtml(
+                  question.answer ||
+                  ""
+                ) +
+                "</div>" +
+
+                '<button class="edit-button" type="button" onclick="editQuestion(event, ' +
+                question.id +
+                ')">✎</button>' +
+
+                "</article>"
               );
+            }
+          )
 
-            const selectedClass =
-              selected
-                ? " selected"
-                : "";
-
-            return (
-              '<article class="question-card' +
-              selectedClass +
-              '" onclick="toggleQuestionSelect(' +
-              question.id +
-              ')">' +
-              '<div class="check"></div>' +
-              '<div class="q-meta">' +
-              question.shortDateText +
-              '<span class="type-badge">' +
-              escapeHtml(
-                question.typeLabel
-              ) +
-              "</span>" +
-              "</div>" +
-              '<div class="q-text">' +
-              escapeHtml(
-                question.text
-              ) +
-              "</div>" +
-              '<div class="q-answer">내 답: ' +
-              escapeHtml(
-                question.answer || ""
-              ) +
-              "</div>" +
-              '<button class="edit-button" type="button" onclick="editQuestion(event, ' +
-              question.id +
-              ')">✎</button>' +
-              "</article>"
-            );
-          })
           .join("");
     }
 
-    function toggleQuestionSelect(id) {
+
+    function toggleQuestionSelect(
+      id
+    ) {
       const alreadySelected =
-        selectedQuestionIds.includes(id);
+        selectedQuestionIds.includes(
+          id
+        );
+
 
       if (alreadySelected) {
+
         selectedQuestionIds =
           selectedQuestionIds.filter(
             function(itemId) {
-              return itemId !== id;
+              return (
+                itemId !== id
+              );
             }
           );
+
       } else {
+
         if (
           selectedQuestionIds.length >= 3
         ) {
@@ -2082,11 +2753,16 @@ const evaluationKey =
           return;
         }
 
-        selectedQuestionIds.push(id);
+
+        selectedQuestionIds.push(
+          id
+        );
       }
+
 
       renderTodayQuestions();
     }
+
 
     function editQuestion(
       event,
@@ -2094,53 +2770,72 @@ const evaluationKey =
     ) {
       event.stopPropagation();
 
+
       const target =
         todayQuestions.find(
           function(question) {
-            return question.id === id;
+            return (
+              question.id === id
+            );
           }
         );
+
 
       if (!target) {
         return;
       }
 
+
       selectedType =
         target.type;
+
 
       questionInput.value =
         target.text;
 
+
       answerInput.value =
         target.answer;
+
 
       typeButtons.forEach(
         function(button) {
           button.classList.toggle(
             "active",
+
             button.dataset.type ===
               selectedType
           );
         }
       );
 
+
       todayQuestions =
         todayQuestions.filter(
           function(question) {
-            return question.id !== id;
+            return (
+              question.id !== id
+            );
           }
         );
+
 
       selectedQuestionIds =
         selectedQuestionIds.filter(
           function(questionId) {
-            return questionId !== id;
+            return (
+              questionId !== id
+            );
           }
         );
 
+
       saveTodayQuestions();
+
       renderTodayQuestions();
+
       updateCounts();
+
 
       setFeedback(
         "need",
@@ -2148,41 +2843,70 @@ const evaluationKey =
       );
     }
 
-    function lockQuestionForm() {
-      questionInput.disabled = true;
-      answerInput.disabled = true;
 
-      typeButtons.forEach(function(button) {
-        button.disabled = true;
-      });
+    function lockQuestionForm() {
+      questionInput.disabled =
+        true;
+
+      answerInput.disabled =
+        true;
+
+
+      typeButtons.forEach(
+        function(button) {
+          button.disabled =
+            true;
+        }
+      );
+
 
       if (resetButton) {
-        resetButton.disabled = true;
+        resetButton.disabled =
+          true;
       }
 
+
       if (checkButton) {
-        checkButton.disabled = true;
-        checkButton.textContent = "✓ 질문 3개 통과 완료";
+        checkButton.disabled =
+          true;
+
+        checkButton.textContent =
+          "✓ 질문 3개 통과 완료";
       }
     }
+
 
     function unlockQuestionForm() {
-      questionInput.disabled = false;
-      answerInput.disabled = false;
+      questionInput.disabled =
+        false;
 
-      typeButtons.forEach(function(button) {
-        button.disabled = false;
-      });
+      answerInput.disabled =
+        false;
+
+
+      typeButtons.forEach(
+        function(button) {
+          button.disabled =
+            false;
+        }
+      );
+
 
       if (resetButton) {
-        resetButton.disabled = false;
+        resetButton.disabled =
+          false;
       }
 
+
       if (checkButton) {
-        checkButton.disabled = false;
-        checkButton.textContent = "✨ 루미에게 확인 받기";
+        checkButton.disabled =
+          false;
+
+        checkButton.textContent =
+          "✨ 루미에게 확인 받기";
       }
     }
+
 
     function setCompletionFeedback() {
       setFeedback(
@@ -2193,14 +2917,20 @@ const evaluationKey =
       );
     }
 
+
     function resetForm() {
-      if (todayQuestions.length >= 3) {
+      if (
+        todayQuestions.length >= 3
+      ) {
         setCompletionFeedback();
         return;
       }
 
-      questionInput.value = "";
-      answerInput.value = "";
+      questionInput.value =
+        "";
+
+      answerInput.value =
+        "";
 
       updateCounts();
 
@@ -2210,126 +2940,350 @@ const evaluationKey =
       );
     }
 
+
     /*
-  =========================================================
-  5. 다음 단계 이동
-  =========================================================
-*/
+      =========================================================
+      5. 다음 단계 이동
+      =========================================================
+    */
 
-function syncDemoPracticeApprovalRequests() {
-  if (!isDemoAccount() || todayQuestions.length < 3) return [];
+    function syncDemoPracticeApprovalRequests() {
+      if (
+        !isDemoAccount() ||
+        todayQuestions.length < 3
+      ) {
+        return [];
+      }
 
-  const existingRequests = loadDemoApprovalRequests("practice");
-  return todayQuestions.slice(0, 3).map(function(question, index) {
-    const requestId = "practice-book-thought-" + String(question.id || index);
-    const existing = existingRequests.find(function(item) {
-      return String(item.requestId) === requestId;
-    });
-    const unchanged = existing
-      && existing.question === question.text
-      && existing.answer === question.answer
-      && existing.questionType === question.type;
 
-    return saveDemoApprovalRequest("practice", {
-      requestId: requestId,
-      activityScope: "practiceBookChat",
-      studentId: studentId,
-      studentName: sessionStorage.getItem("name") || "김초롱",
-      classReadingBookId: classReadingBookId,
-      questionId: String(question.id || index),
-      submittedAt: existing && unchanged ? existing.submittedAt : new Date().toISOString(),
-      status: existing && unchanged ? existing.status : "pending",
-      rejectedReason: existing && unchanged ? existing.rejectedReason : "",
-      questionType: question.type,
-      question: question.text,
-      answer: question.answer,
-      questions: [{
-        questionId: String(question.id || index),
-        questionType: question.type,
-        question: question.text,
-        answer: question.answer
-      }]
-    });
-  });
-}
+      const existingRequests =
+        loadDemoApprovalRequests(
+          "practice"
+        );
 
-function goNextStep() {
-  if (!isDemoAccount() && todayQuestions.length < 3) {
-    setFeedback(
-      "need",
-      "아직 " +
-        (3 - todayQuestions.length) +
-        "개가 더 필요해. 질문과 내 생각을 쓰고 루미에게 확인 받아 봐."
-    );
 
-    return;
-  }
+      return todayQuestions
+        .slice(0, 3)
+        .map(
+          function(
+            question,
+            index
+          ) {
 
-  /*
-    책수다방에서 불러올 질문 저장
-  */
-  const studentQuestionData = {
-    name: sessionStorage.getItem("name") || "나",
-    isMine: true,
-    dateKey: todayInfo.key,
-    dateText: todayInfo.display,
+            const requestId =
+              "practice-book-thought-" +
+              String(
+                question.id ||
+                index
+              );
 
-    questions: todayQuestions.slice(0, 3).map(function(question) {
-      return {
-        text: question.text,
-        answer: question.answer,
-        type: question.type,
-        typeLabel: question.typeLabel,
-        createdAt:
-          question.dateText +
-          " " +
-          question.createdAt
+
+            const existing =
+              existingRequests.find(
+                function(item) {
+                  return (
+                    String(
+                      item.requestId
+                    ) ===
+                    requestId
+                  );
+                }
+              );
+
+
+            const unchanged =
+              existing &&
+              existing.question ===
+                question.text &&
+              existing.answer ===
+                question.answer &&
+              existing.questionType ===
+                question.type;
+
+
+            return saveDemoApprovalRequest(
+              "practice",
+              {
+                requestId:
+                  requestId,
+
+                activityScope:
+                  "practiceBookChat",
+
+                studentId:
+                  studentId,
+
+                studentName:
+                  sessionStorage.getItem(
+                    "name"
+                  ) ||
+                  "김초롱",
+
+                classReadingBookId:
+                  classReadingBookId,
+
+                questionId:
+                  String(
+                    question.id ||
+                    index
+                  ),
+
+                submittedAt:
+                  existing &&
+                  unchanged
+                    ? existing.submittedAt
+                    : new Date().toISOString(),
+
+                status:
+                  existing &&
+                  unchanged
+                    ? existing.status
+                    : "pending",
+
+                rejectedReason:
+                  existing &&
+                  unchanged
+                    ? existing.rejectedReason
+                    : "",
+
+                questionType:
+                  question.type,
+
+                question:
+                  question.text,
+
+                answer:
+                  question.answer,
+
+                questions: [
+                  {
+                    questionId:
+                      String(
+                        question.id ||
+                        index
+                      ),
+
+                    questionType:
+                      question.type,
+
+                    question:
+                      question.text,
+
+                    answer:
+                      question.answer
+                  }
+                ]
+              }
+            );
+          }
+        );
+    }
+
+
+    function goNextStep() {
+      if (
+        !isDemoAccount() &&
+        todayQuestions.length < 3
+      ) {
+        setFeedback(
+          "need",
+          "아직 " +
+          (
+            3 -
+            todayQuestions.length
+          ) +
+          "개가 더 필요해. 질문과 내 생각을 쓰고 루미에게 확인 받아 봐."
+        );
+
+        return;
+      }
+
+      if (shouldSkipQuestionRouteModal()) {
+        completeQuestionSharingAndNavigate();
+        return;
+      }
+
+      openQuestionRouteModal();
+    }
+
+
+    function getQuestionRouteGuideKey() {
+      return "individualDuringQuestionGuideHidden_" + studentId;
+    }
+
+
+    function shouldSkipQuestionRouteModal() {
+      return localStorage.getItem(getQuestionRouteGuideKey()) === "true";
+    }
+
+
+    function openQuestionRouteModal() {
+      const overlay = document.getElementById("questionRouteOverlay");
+      if (!overlay) return;
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+    }
+
+
+    function closeQuestionRouteModal() {
+      const overlay = document.getElementById("questionRouteOverlay");
+      if (!overlay) return;
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+    }
+
+
+    function handleQuestionRouteOverlayClick(event) {
+      if (event.target === event.currentTarget) {
+        closeQuestionRouteModal();
+      }
+    }
+
+
+    function finishQuestionRouteAndGoNext() {
+      closeQuestionRouteModal();
+      completeQuestionSharingAndNavigate();
+    }
+
+
+    function hideQuestionRouteAndGoNext() {
+      localStorage.setItem(getQuestionRouteGuideKey(), "true");
+      finishQuestionRouteAndGoNext();
+    }
+
+
+    function completeQuestionSharingAndNavigate() {
+
+
+      const studentQuestionData = {
+        name:
+          sessionStorage.getItem(
+            "name"
+          ) ||
+          "나",
+
+        isMine:
+          true,
+
+        dateKey:
+          todayInfo.key,
+
+        dateText:
+          todayInfo.display,
+
+        questions:
+          todayQuestions
+            .slice(0, 3)
+            .map(
+              function(question) {
+                return {
+                  text:
+                    question.text,
+
+                  answer:
+                    question.answer,
+
+                  type:
+                    question.type,
+
+                  typeLabel:
+                    question.typeLabel,
+
+                  createdAt:
+                    question.dateText +
+                    " " +
+                    question.createdAt
+                };
+              }
+            )
       };
-    })
-  };
 
-  syncDemoPracticeApprovalRequests();
 
-  if (isDemoAccount()) {
-    const demoProgress = loadDemoState("practiceProgress", {});
-    demoProgress.classReadDone = true;
-    saveDemoState("practiceProgress", demoProgress);
-  }
+      syncDemoPracticeApprovalRequests();
 
-  localStorage.setItem(
-    "classReadingPassedQuestions",
-    JSON.stringify(todayQuestions.slice(0, 3))
-  );
 
-  localStorage.setItem(
-    "mySharedQuestions",
-    JSON.stringify(studentQuestionData)
-  );
+      if (isDemoAccount()) {
 
-  location.href = "./book-chat.html";
-}
+        const demoProgress =
+          loadDemoState(
+            "practiceProgress",
+            {}
+          );
+
+        demoProgress.classReadDone =
+          true;
+
+        saveDemoState(
+          "practiceProgress",
+          demoProgress
+        );
+      }
+
+
+      localStorage.setItem(
+        "classReadingPassedQuestions",
+        JSON.stringify(
+          todayQuestions.slice(
+            0,
+            3
+          )
+        )
+      );
+
+
+      localStorage.setItem(
+        "mySharedQuestions",
+        JSON.stringify(
+          studentQuestionData
+        )
+      );
+
+
+      location.href =
+        "./book-chat.html";
+    }
+
 
     function goReadingMain() {
       location.href =
         "./class-reading.html";
     }
 
+
     function goHome() {
       location.href =
         "./individual-reading.html";
     }
+
 
     function goClassReading() {
       location.href =
         "./class-reading.html";
     }
 
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
+
+    function escapeHtml(
+      text
+    ) {
+      return String(
+        text || ""
+      )
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
         .replaceAll(
           "'",
           "&#039;"

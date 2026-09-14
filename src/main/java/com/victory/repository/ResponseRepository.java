@@ -1,6 +1,7 @@
 package com.victory.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,4 +86,9 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
      */
     List<Response> findByReadingRecord_IdAndModeAndDeletedAtIsNullOrderByIdAsc(
             Long readingRecordId, String mode);
+
+    List<Response> findByStudent_IdAndModeAndDeletedAtIsNullAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(
+            Long studentId, String mode, LocalDateTime startAt, LocalDateTime endAt);
+
+    List<Response> findByStudent_IdAndModeAndDeletedAtIsNullOrderByIdAsc(Long studentId, String mode);
 }
