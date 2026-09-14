@@ -468,7 +468,7 @@ const DungeonUI = (() => {
 
     if ($('battle-bg')) $('battle-bg').style.backgroundImage = "url('" + s.dungeon.bg + "')";
 
-    const titleMap = ['초급 던전','중급 던전','고급 던전'];
+    const titleMap = ['초급 대결','중급 대결','고급 대결'];
     if ($('enemy-lbl'))    $('enemy-lbl').textContent    = titleMap[dungeonIdx] || s.dungeon.name;
     if ($('enemy-lbl2'))   $('enemy-lbl2').textContent   = s.dungeon.name;
 

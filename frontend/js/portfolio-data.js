@@ -557,8 +557,19 @@ async function regeneratePortfolioAnalysis(kind, auth, classId, studentId, from,
    draft(임시 저장) - localStorage, 학생/유형별로 분리
    ========================================================= */
 
+/*
+ * 심사/demo 교사계정(tt11)은 mq_demo_ 접두어를 붙여 localStorage에 저장한다.
+ * demo-storage.js의 clearAllDemoState("심사 체험 기록 초기화")가 이 접두어로
+ * 시작하는 key만 지우므로, 접두어를 붙여야 그 초기화 버튼으로도 포트폴리오
+ * 직접 수정값이 함께 지워진다. 일반계정은 기존 key를 그대로 써서 동작이
+ * 전혀 바뀌지 않는다 - 두 계정 모두 이미 localStorage뿐이라 브라우저 간
+ * 독립은 원래부터 보장되고, 여기서는 demo 전용 접두어만 더한다.
+ */
 function portfolioDraftKey(kind, studentId) {
-  return "portfolioDraft_" + kind + "_" + studentId;
+  const demoPrefix = (typeof isDemoAccount === "function" && isDemoAccount())
+    ? MQ_DEMO_STORAGE_PREFIX
+    : "";
+  return demoPrefix + "portfolioDraft_" + kind + "_" + studentId;
 }
 
 function savePortfolioDraft(kind, studentId, draft) {

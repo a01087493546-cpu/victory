@@ -5503,7 +5503,8 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
       throw new Error("최종 간추리기 저장 실패: " + response.status);
     }
 
-    return await response.json();
+    const saved = await response.json();
+    return saved;
   } catch (error) {
     console.error("개별읽기 최종 간추리기를 저장하지 못했습니다.", error);
     return null;
@@ -5606,6 +5607,7 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
     alert("아직 완료 조건을 채우지 못했어요. 질문 3개와 간추리기를 다시 확인한 뒤 눌러줘.");
     return;
   }
+
 
   sessionStorage.setItem(AFTER_KEYS.afterDone, "true");
   sessionStorage.setItem(AFTER_KEYS.stage, "after");

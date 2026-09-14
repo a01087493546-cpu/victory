@@ -728,7 +728,7 @@
             </p>
           </div>
 
-          <button class="step-button" id="duringButton" type="button" disabled onclick="goClassReadingPage()">
+          <button class="step-button" id="duringButton" type="button" disabled onclick="goDuringReadingIntroPage()">
             잠김
           </button>
         </article>
@@ -847,9 +847,9 @@ loadPracticeProgress();
   location.href = "individual-reading.html";
 }
 
-// 우리반 책읽기 화면으로 이동합니다.
-function goClassReadingPage() {
-  window.location.href = "./class-reading.html";
+// 읽기 중 활동은 기존 인트로를 먼저 본 뒤 질문 연습으로 이동합니다.
+function goDuringReadingIntroPage() {
+  window.location.href = "./during-reading-intro.html";
 }
 // 읽기 전 인트로 화면으로 이동합니다.
 function goBeforeIntroPage() {

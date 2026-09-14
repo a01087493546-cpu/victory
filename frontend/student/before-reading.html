@@ -3351,7 +3351,8 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
     throw new Error("읽기 전 질문·답 저장 실패: " + response.status);
   }
 
-  return response.json();
+  const saved = await response.json();
+  return saved;
 }
 
     async function loadSelectedBook() {

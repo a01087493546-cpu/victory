@@ -3150,7 +3150,8 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
           throw new Error("읽기 전 질문·답 저장 실패: " + response.status);
         }
 
-        return await response.json();
+        const saved = await response.json();
+        return saved;
       } catch (error) {
         console.error("개별읽기 읽기 전 질문·답을 저장하지 못했습니다.", error);
         return null;

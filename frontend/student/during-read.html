@@ -1880,9 +1880,8 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
           return null;
         }
 
-        return (
-          await response.json()
-        );
+        const saved = await response.json();
+        return saved;
 
       } catch (error) {
         console.error(
