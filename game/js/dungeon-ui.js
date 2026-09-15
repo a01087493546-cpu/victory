@@ -81,8 +81,10 @@ const DungeonUI = (() => {
       console.warn('효과음을 찾을 수 없음:', skillKey);
       return;
     }
-    audio.currentTime = 0;
-    audio.play().catch(err => console.warn('효과음 재생 실패:', err));
+    setTimeout(() => {
+      audio.currentTime = 0;
+      audio.play().catch(err => console.warn('효과음 재생 실패:', err));
+    }, 200);
   }
 
   function showScreen(id) {
