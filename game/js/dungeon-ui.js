@@ -67,8 +67,21 @@ const DungeonUI = (() => {
     cheolbyeok: 'sfx_cheolbyeok.mp3',
   };
 
-  function playSfx(fileName) {
-    const audio = new Audio(`audio/${fileName}`);
+  // 효과음 파일을 미리 로드해두고 재사용하는 풀 (매번 new Audio() 생성 방지)
+  const SFX_POOL = {};
+  Object.entries(SKILL_SFX).forEach(([key, file]) => {
+    const audio = new Audio(`audio/${file}`);
+    audio.preload = 'auto';
+    SFX_POOL[key] = audio;
+  });
+
+  function playSfx(skillKey) {
+    const audio = SFX_POOL[skillKey];
+    if (!audio) {
+      console.warn('효과음을 찾을 수 없음:', skillKey);
+      return;
+    }
+    audio.currentTime = 0;
     audio.play().catch(err => console.warn('효과음 재생 실패:', err));
   }
 
@@ -651,14 +664,14 @@ const DungeonUI = (() => {
       showImpact('hero','shield');
       showTextPopup('hero','완전 방어','block');
       playFighterMotion('hero', 'ironwall-burst', 900);
-      playSfx(SKILL_SFX.cheolbyeok);
+      playSfx('cheolbyeok');
       addLog('완전 방어! 용기 ' + defendCost + '를 사용해 피해를 크게 줄였습니다.', 'defend');
     } else {
       // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
       showTextPopup('hero','GUARD','block');
       playFighterMotion('hero', 'guard-burst', 650);
-      playSfx(SKILL_SFX.bangeo);
+      playSfx('bangeo');
       addLog('기본 막기! 용기 ' + defendCost + '를 사용해 피해를 줄였습니다.', 'defend');
     }
 
@@ -685,9 +698,9 @@ const DungeonUI = (() => {
     if (skillName === 'ilgyeok') {
       setAnim('hero-spr','attack');
       playFighterMotion('hero','hero-lunge',470);
-      playSfx(SKILL_SFX.ilgyeok);
+      playSfx('ilgyeok');
     } else if (skillName === 'yeonsoek') {
-      playSfx(SKILL_SFX.yeonsoek);
+      playSfx('yeonsoek');
     }
 
     const atkCost = getSkillCost(skillName, s);
@@ -798,7 +811,7 @@ const DungeonUI = (() => {
 
       setAnim('hero-spr', 'attack');
       playFighterMotion('hero', 'hero-lunge', 520);
-      playSfx(SKILL_SFX.bulkkot);
+      playSfx('bulkkot');
 
       setTimeout(() => {
         if (!s.isRunning) return;
@@ -859,7 +872,7 @@ const DungeonUI = (() => {
 
       setAnim('hero-spr', 'attack');
       playFighterMotion('hero', 'hero-lunge', 620);
-      playSfx(SKILL_SFX.hwayeom);
+      playSfx('hwayeom');
       showWhiteFlash();
 
       setTimeout(() => {
