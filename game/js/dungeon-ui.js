@@ -63,6 +63,8 @@ const DungeonUI = (() => {
     yeonsoek: 'sfx_yeonsoek.mp3',
     bulkkot:  'sfx_bulkkot.mp3',
     hwayeom:  'sfx_hwayeom.mp3',
+    bangeo:     'sfx_bangeo.mp3',
+    cheolbyeok: 'sfx_cheolbyeok.mp3',
   };
 
   function playSfx(fileName) {
@@ -649,12 +651,14 @@ const DungeonUI = (() => {
       showImpact('hero','shield');
       showTextPopup('hero','완전 방어','block');
       playFighterMotion('hero', 'ironwall-burst', 900);
+      playSfx(SKILL_SFX.cheolbyeok);
       addLog('완전 방어! 용기 ' + defendCost + '를 사용해 피해를 크게 줄였습니다.', 'defend');
     } else {
       // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
       showTextPopup('hero','GUARD','block');
       playFighterMotion('hero', 'guard-burst', 650);
+      playSfx(SKILL_SFX.bangeo);
       addLog('기본 막기! 용기 ' + defendCost + '를 사용해 피해를 줄였습니다.', 'defend');
     }
 
