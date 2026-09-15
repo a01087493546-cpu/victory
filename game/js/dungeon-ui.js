@@ -57,6 +57,19 @@ const DungeonUI = (() => {
 
   function $(id) { return document.getElementById(id); }
 
+  // 스킬별 효과음 파일명
+  const SKILL_SFX = {
+    ilgyeok:  'sfx_ilgyeok.mp3',
+    yeonsoek: 'sfx_yeonsoek.mp3',
+    bulkkot:  'sfx_bulkkot.mp3',
+    hwayeom:  'sfx_hwayeom.mp3',
+  };
+
+  function playSfx(fileName) {
+    const audio = new Audio(`audio/${fileName}`);
+    audio.play().catch(err => console.warn('효과음 재생 실패:', err));
+  }
+
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = $(id);
@@ -668,6 +681,9 @@ const DungeonUI = (() => {
     if (skillName === 'ilgyeok') {
       setAnim('hero-spr','attack');
       playFighterMotion('hero','hero-lunge',470);
+      playSfx(SKILL_SFX.ilgyeok);
+    } else if (skillName === 'yeonsoek') {
+      playSfx(SKILL_SFX.yeonsoek);
     }
 
     const atkCost = getSkillCost(skillName, s);
@@ -778,6 +794,7 @@ const DungeonUI = (() => {
 
       setAnim('hero-spr', 'attack');
       playFighterMotion('hero', 'hero-lunge', 520);
+      playSfx(SKILL_SFX.bulkkot);
 
       setTimeout(() => {
         if (!s.isRunning) return;
@@ -838,6 +855,7 @@ const DungeonUI = (() => {
 
       setAnim('hero-spr', 'attack');
       playFighterMotion('hero', 'hero-lunge', 620);
+      playSfx(SKILL_SFX.hwayeom);
       showWhiteFlash();
 
       setTimeout(() => {
