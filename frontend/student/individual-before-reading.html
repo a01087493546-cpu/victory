@@ -1758,6 +1758,15 @@
   gap: 6px !important;
 }
 
+    /* 개별 읽기: 확인 전 안내 */
+    .ibr-lumi-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
+    .ibr-lumi-badge { padding: 5px 15px; border-radius: 14px; background: #f7dfb3; color: #7b4b18; font-size: 20px; font-weight: 800; }
+    .ibr-lumi-copy strong { font-size: 30px; line-height: 1.25; }
+    .ibr-lumi-copy small { color: #8d8174; font-size: 24px; font-weight: 500; line-height: 1.35; }
+    #feedbackText:empty { display: none; }
+    #feedbackText:not(:empty) { margin-top: 5px; font-size: 14px; }
+    .ibr-feedback-row { background: #fff9f0; border-color: #f0dfc8; }
+    .ibr-check-button { background: #fffaf1 !important; color: #784915 !important; border: 1px solid #eacfa7 !important; border-radius: 22px; }
   </style>
 </head>
 
@@ -1895,11 +1904,11 @@
                   <div class="ibr-feedback-row" id="feedbackRow">
                     <div class="ibr-feedback" id="feedbackBox">
                       <img src="../assets/images/individual-reading/today-reading-lumi-guide.png" alt="루미">
-                      <span id="feedbackText">책을 정하고 질문을 저장하면 루미가 확인해줄게!</span>
+                      <div class="ibr-lumi-copy"><span class="ibr-lumi-badge">선택</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong><small>내가 쓴 질문과 답에 대한 조언이나 새로운 생각을 들을 수 있어요.</small><span id="feedbackText"></span></div>
                     </div>
 
                     <button type="button" class="ibr-button primary ibr-check-button" id="checkAnswerButton" onclick="handleMainAction()">
-                      검사하기
+                      확인받기
                     </button>
                   </div>
                 </div>
@@ -2489,7 +2498,7 @@ updateDemoBanner(isBookStep);
         ? "책 제목을 적고 저장하면 4개의 읽기 전 질문 만들기가 시작돼!"
         : (isContentsSkipped
           ? "이 책에는 차례가 없어 질문 만들기를 건너뛰었어요."
-          : "질문과 답을 적고 저장하면 루미가 확인해줄게!");
+          : "");
 
       const mainActionButton = document.getElementById("mainActionButton");
       const checkAnswerButton = document.getElementById("checkAnswerButton");
@@ -3973,9 +3982,23 @@ function goTodayAdventure() {
   object-fit: contain !important;
 }
 
+/* 초등학생이 읽는 활동 문구와 조작 글자 크기 */
+.ibr-page:not(.book-step) .ibr-field label { font-size: 24px !important; }
+.ibr-page:not(.book-step) .ibr-work-desc,
+.ibr-page:not(.book-step) .ibr-guide-card p,
+.ibr-page:not(.book-step) .ibr-guide-card li { font-size: 22px !important; line-height: 1.4 !important; }
+.ibr-page:not(.book-step) .ibr-count { font-size: 19px !important; }
+.ibr-page:not(.book-step) .ibr-input,
+.ibr-page:not(.book-step) .ibr-textarea { font-size: 23px !important; }
+.ibr-page:not(.book-step) .ibr-check-button,
+.ibr-page:not(.book-step) .ibr-actions .ibr-button { font-size: 24px !important; min-height: 62px !important; }
+.ibr-page:not(.book-step) .ibr-check-button { height: 72px !important; min-width: 180px; padding: 0 34px; font-size: 28px !important; }
+.ibr-page:not(.book-step) .ibr-form-card { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 230px !important; }
+.ibr-page:not(.book-step) #feedbackText:not(:empty) { font-size: 21px !important; }
+
 @media (max-height: 760px) {
   .ibr-page:not(.book-step) .ibr-form-card {
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 172px !important;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 230px !important;
   }
 
   .ibr-page:not(.book-step) .ibr-feedback {

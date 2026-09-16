@@ -8241,6 +8241,19 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   opacity: 0.48;
   transform: none !important;
 }
+.idr-inline-feedback .idr-lumi-intro { grid-column: 2; grid-row: 1; align-self: center; }
+.idr-inline-feedback .idr-lumi-badge { display: inline-block; padding: 5px 15px; border-radius: 14px; background: #f7dfb3; color: #7b4b18; font-size: 20px; font-weight: 800; }
+.idr-inline-feedback .idr-inline-feedback-title { display: block !important; margin: 5px 0 2px; font-size: 30px !important; color: #54361d; }
+.idr-inline-feedback .idr-lumi-intro p { margin: 0; font-size: 24px; line-height: 1.35; color: #8d8174; }
+#questionScreen .idr-inline-feedback .idr-feedback-box { grid-row: 2 !important; min-height: 0 !important; height: auto !important; padding: 0 !important; font-size: 22px !important; }
+#questionScreen .idr-inline-feedback .idr-feedback-box:has(#questionFeedbackText:empty) { display: none !important; }
+#questionScreen .idr-inline-feedback-lumi { grid-row: 1 / 3 !important; }
+#questionScreen .idr-inline-feedback:not(:has(.good)):not(:has(.need)) { background: #fff9f0 !important; border-color: #f0dfc8 !important; }
+#questionScreen #checkQuestionButton { background: #fffaf1 !important; color: #784915 !important; border: 1px solid #eacfa7 !important; }
+#questionScreen .idr-inline-feedback { min-height: 230px !important; }
+#questionScreen .idr-question-actions .idr-main-button { font-size: 24px !important; min-height: 62px !important; }
+#questionScreen .idr-question-actions { grid-template-columns: 190px minmax(0, 1fr) !important; }
+#questionScreen #checkQuestionButton { height: 72px !important; padding: 0 28px !important; font-size: 28px !important; }
 </style>
 <style>
   .idr-teacher-book-chat-return {
@@ -8477,16 +8490,14 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
                 alt="용사 루미"
                 class="idr-inline-feedback-lumi"
               >
-              <h3 class="idr-inline-feedback-title">✦ 루미의 피드백</h3>
+              <div class="idr-lumi-intro"><span class="idr-lumi-badge">선택</span><h3 class="idr-inline-feedback-title">도움이 필요하면 루미에게 확인받아 보세요.</h3><p>내가 쓴 질문과 답에 대한 조언이나 새로운 생각을 들을 수 있어요.</p></div>
               <div class="idr-feedback-box" id="questionFeedbackBox">
-                <span id="questionFeedbackText">
-                  질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.
-                </span>
+                <span id="questionFeedbackText"></span>
               </div>
             </div>
 
             <div class="idr-question-actions">
-              <button type="button" class="idr-main-button primary" id="checkQuestionButton" onclick="checkAndSaveQuestion()">✨ 루미에게 확인 받기</button>
+              <button type="button" class="idr-main-button primary" id="checkQuestionButton" onclick="checkAndSaveQuestion()">확인받기</button>
               <button type="button" class="idr-main-button" id="questionNextStageButton" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
             </div>
           </article>
@@ -9195,7 +9206,7 @@ function getNextEmptyQuestionSlot() {
         const draft = drafts[selectedType] || {};
         document.getElementById("questionInput").value = draft.question || "";
         document.getElementById("answerInput").value = draft.answer || "";
-        feedbackText.textContent = "질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.";
+        feedbackText.textContent = "";
       } else {
         document.getElementById("questionInput").value = "";
         document.getElementById("answerInput").value = "";
@@ -11406,7 +11417,7 @@ function confirmDuringRewardModal() {
       }
 
       feedbackBox.classList.remove("good", "need");
-      feedbackText.textContent = "질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.";
+      feedbackText.textContent = "";
     }
 
     /*
@@ -11780,7 +11791,7 @@ function getBookTypeCounts() {
       if (clearFeedback) {
         const feedbackBox = document.getElementById("questionFeedbackBox");
         feedbackBox.classList.remove("good", "need");
-        document.getElementById("questionFeedbackText").textContent = "질문을 쓰고 루미에게 확인 받기 버튼을 눌러 봐.";
+        document.getElementById("questionFeedbackText").textContent = "";
       }
     }
 
