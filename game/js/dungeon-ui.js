@@ -65,6 +65,7 @@ const DungeonUI = (() => {
     hwayeom:  'sfx_hwayeom.mp3',
     bangeo:     'sfx_bangeo.mp3',
     cheolbyeok: 'sfx_cheolbyeok.mp3',
+    dragonAttack: 'sfx_dragon_attack.mp3',
   };
 
   // 효과음 파일을 미리 로드해두고 재사용하는 풀 (매번 new Audio() 생성 방지)
@@ -542,6 +543,7 @@ const DungeonUI = (() => {
       if (!s.isRunning) return;
       setAnim('enemy-spr', 'attack');
       playFighterMotion('enemy', 'enemy-lunge', 480);
+      playSfx('dragonAttack');
       setTimeout(() => {
         if (!s.isRunning) return;
         const result = BattleEngine.enemyNormalAttack(
@@ -573,6 +575,7 @@ const DungeonUI = (() => {
         if (!s.isRunning) return;
         setAnim('enemy-spr','attack');
         playFighterMotion('enemy','enemy-lunge',520);
+        playSfx('dragonAttack');
         setTimeout(() => {
           if (!s.isRunning) return;
           const result = BattleEngine.enemyHeavyAttack(
