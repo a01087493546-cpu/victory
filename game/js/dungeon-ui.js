@@ -75,16 +75,21 @@ const DungeonUI = (() => {
     SFX_POOL[key] = audio;
   });
 
-  function playSfx(skillKey) {
+  function playSfx(skillKey, delay = 0) {
     const audio = SFX_POOL[skillKey];
     if (!audio) {
       console.warn('효과음을 찾을 수 없음:', skillKey);
       return;
     }
-    setTimeout(() => {
+    if (delay > 0) {
+      setTimeout(() => {
+        audio.currentTime = 0;
+        audio.play().catch(err => console.warn('효과음 재생 실패:', err));
+      }, delay);
+    } else {
       audio.currentTime = 0;
       audio.play().catch(err => console.warn('효과음 재생 실패:', err));
-    }, 200);
+    }
   }
 
   function showScreen(id) {
@@ -666,14 +671,14 @@ const DungeonUI = (() => {
       showImpact('hero','shield');
       showTextPopup('hero','완전 방어','block');
       playFighterMotion('hero', 'ironwall-burst', 900);
-      playSfx('cheolbyeok');
+      playSfx('cheolbyeok', 200);
       addLog('완전 방어! 용기 ' + defendCost + '를 사용해 피해를 크게 줄였습니다.', 'defend');
     } else {
       // 일반 방어는 짧고 선명한 방어 효과
       showImpact('hero','shield');
       showTextPopup('hero','GUARD','block');
       playFighterMotion('hero', 'guard-burst', 650);
-      playSfx('bangeo');
+      playSfx('bangeo', 200);
       addLog('기본 막기! 용기 ' + defendCost + '를 사용해 피해를 줄였습니다.', 'defend');
     }
 
