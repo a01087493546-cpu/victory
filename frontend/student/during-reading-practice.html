@@ -5615,13 +5615,13 @@ async function saveDuringPracticeQuestion(question) {
                       '</div>'
                     : '<div class="lumi-feedback">' +
                         '<img src="../assets/images/during-reading/intro/during-reading-lumi-03-practice.png" alt="루미">' +
-                        '<p>질문을 쓴 뒤 검사하기를 눌러 봐. 물음표가 있는 질문인지 확인해 줄게!</p>' +
+                        '<p>질문을 쓴 뒤 확인받기를 눌러 봐. 물음표가 있는 질문인지 확인해 줄게!</p>' +
                       '</div>'
               ) +
 
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goBasicPracticeScreen()">← 기본 연습</button>' +
-                '<button class="main-button" type="button" onclick="checkDeepAnswer()">검사하기</button>' +
+                '<button class="main-button" type="button" onclick="checkDeepAnswer()">확인받기</button>' +
                 '<button class="main-button" type="button" ' + (isDemoAccount() || deepChecked && deepResult && deepResult.ok ? "" : "disabled") + ' onclick="nextDeepQuestion()">' +
                   (currentDeepIndex < questions.length - 1 ? "다음 문제 →" : "연습 완료 →") +
                 '</button>' +
@@ -6022,7 +6022,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
 
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-                '<button class="main-button" type="button" onclick="checkReviewQuestion()">검사하기</button>' +
+                '<button class="main-button" type="button" onclick="checkReviewQuestion()">확인받기</button>' +
                 '<button class="main-button" type="button" ' + (allReviewDone || isDemoAccount() ? "" : "disabled") + ' onclick="finishReview()">총복습 완료 →</button>' +
               '</div>' +
             '</article>' +

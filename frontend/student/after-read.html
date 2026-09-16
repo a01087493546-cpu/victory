@@ -5678,7 +5678,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
                 id="extraPracticeCheckButton"
                 onclick="checkExtraPracticeDone()"
               >
-                검사하기
+                확인받기
               </button>
             </article>
 
@@ -5793,7 +5793,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
               >
               <div class="ar-after-feedback-content">
                 <div class="ar-after-feedback-message" id="bookQuestionAiFeedback">
-                  질문 1과 답을 쓴 뒤 검사하기를 눌러 봐.
+                  질문 1과 답을 쓴 뒤 확인받기를 눌러 봐.
                 </div>
               </div>
               <button
@@ -5801,7 +5801,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
                 type="button"
                 onclick="checkBookQuestionFeedback()"
               >
-                검사하기
+                확인받기
               </button>
             </article>
 
@@ -5840,7 +5840,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
               >
               <div class="ar-after-feedback-content">
                 <div class="ar-after-feedback-message" id="summaryAiFeedback">
-                  간추리기를 쓴 뒤 검사하기를 눌러 봐.
+                  간추리기를 쓴 뒤 확인받기를 눌러 봐.
                 </div>
               </div>
               <button
@@ -5848,7 +5848,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
                 type="button"
                 onclick="checkSummaryFeedback()"
               >
-                검사하기
+                확인받기
               </button>
             </article>
 
@@ -8187,7 +8187,7 @@ if (selectedBookType === "opinion") {
       setAfterAiFeedback(
         "summaryAiFeedback",
         "",
-        "간추리기를 쓴 뒤 검사하기를 눌러 봐."
+        "간추리기를 쓴 뒤 확인받기를 눌러 봐."
       );
 
       syncSummaryNextButton();
@@ -8205,7 +8205,7 @@ if (selectedBookType === "opinion") {
         setAfterAiFeedback(
           "summaryAiFeedback",
           "need",
-          "간추리기를 먼저 쓴 뒤 검사하기를 눌러 줘."
+          "간추리기를 먼저 쓴 뒤 확인받기를 눌러 줘."
         );
         return;
       }
@@ -8370,7 +8370,7 @@ if (selectedBookType === "opinion") {
       }
 
       if (!isDemoAccount() && !summaryCheckPassed) {
-        alert("루미의 피드백을 통과하면 다음으로 갈 수 있어. 검사하기를 먼저 눌러 줘.");
+        alert("루미의 피드백을 통과하면 다음으로 갈 수 있어. 확인받기를 먼저 눌러 줘.");
         return;
       }
 
@@ -9131,7 +9131,7 @@ applyTeacherMode();
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "",
-        "질문 1과 답을 쓴 뒤 검사하기를 눌러 봐."
+        "질문 1과 답을 쓴 뒤 확인받기를 눌러 봐."
       );
 
       updateBookQuestionPlaceholders();
@@ -9240,7 +9240,7 @@ applyTeacherMode();
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "",
-        "질문 " + number + "과 답을 쓴 뒤 검사하기를 눌러 봐."
+        "질문 " + number + "과 답을 쓴 뒤 확인받기를 눌러 봐."
       );
 
       setBookSummaryButtonEnabled(false);
@@ -9508,7 +9508,7 @@ function requestBookQuestionAiFeedback(card, item, number) {
       setAfterAiFeedback(
         "bookQuestionAiFeedback",
         "",
-        "질문 " + nextNumber + "과 답을 쓴 뒤 검사하기를 눌러 봐."
+        "질문 " + nextNumber + "과 답을 쓴 뒤 확인받기를 눌러 봐."
       );
     }
 

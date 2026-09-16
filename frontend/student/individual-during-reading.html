@@ -8253,7 +8253,11 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 #questionScreen .idr-inline-feedback { min-height: 230px !important; }
 #questionScreen .idr-question-actions .idr-main-button { font-size: 24px !important; min-height: 62px !important; }
 #questionScreen .idr-question-actions { grid-template-columns: 190px minmax(0, 1fr) !important; }
-#questionScreen #checkQuestionButton { height: 72px !important; padding: 0 28px !important; font-size: 28px !important; }
+#questionScreen #questionNextStageButton { grid-column: 2; }
+#questionScreen .idr-inline-feedback { grid-template-columns: 140px minmax(0, 1fr) 160px !important; }
+#questionScreen .idr-inline-feedback-lumi { width: 136px !important; height: 160px !important; }
+#questionScreen .idr-inline-feedback #checkQuestionButton { grid-column: 3; grid-row: 1 / 3; align-self: center; justify-self: end; min-width: 160px; }
+#questionScreen #checkQuestionButton { height: 80px !important; padding: 0 28px !important; font-size: 28px !important; }
 </style>
 <style>
   .idr-teacher-book-chat-return {
@@ -8494,10 +8498,10 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
               <div class="idr-feedback-box" id="questionFeedbackBox">
                 <span id="questionFeedbackText"></span>
               </div>
+              <button type="button" class="idr-main-button primary" id="checkQuestionButton" onclick="checkAndSaveQuestion()">확인받기</button>
             </div>
 
             <div class="idr-question-actions">
-              <button type="button" class="idr-main-button primary" id="checkQuestionButton" onclick="checkAndSaveQuestion()">확인받기</button>
               <button type="button" class="idr-main-button" id="questionNextStageButton" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
             </div>
           </article>

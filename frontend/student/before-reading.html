@@ -3737,7 +3737,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
               '</div>' +
               (isContentsSkipped
                 ? ""
-                : '<button class="main-button feedback-check-button" type="button" id="checkAnswerButton" onclick="checkAndGoNext()">검사하기</button>') +
+                : '<button class="main-button feedback-check-button" type="button" id="checkAnswerButton" onclick="checkAndGoNext()">확인받기</button>') +
             '</div>' +
           '</section>'
          ) +
@@ -3922,7 +3922,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
 
         const message = feedbackBox.querySelector(".feedback-message");
         if (message) {
-          message.textContent = "질문이나 답을 바꿨으니 검사하기를 다시 눌러 줘!";
+          message.textContent = "질문이나 답을 바꿨으니 확인받기를 다시 눌러 줘!";
         }
       }
     }
