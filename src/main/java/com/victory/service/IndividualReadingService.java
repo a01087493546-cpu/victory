@@ -839,11 +839,14 @@ public class IndividualReadingService {
 
     /*
      * 읽기 후 간추리기 질문·답 한 세트(질문 번호 1/2/3)를 저장한다. 읽기 전과
-     * 같은 find-or-create-by-extraData-key 관례를 쓰되, aiPassed는 프론트가
-     * "루미 피드백을 이미 통과했다"고 보내는 값을 그대로 믿지 않고, 완료
-     * API(completeAfterReading)에서 다시 한 번 서버가 재검증한다 - 여기서는
-     * 명시적으로 false가 온 경우만 저장을 막는다(아직 통과하지 못한 답이
-     * "통과"로 남는 것을 방지).
+     * 같은 find-or-create-by-extraData-key 관례를 쓴다.
+     *
+     * 개별읽기 AI 피드백("확인받기")은 학생이 선택적으로 쓰는 도움 기능으로
+     * 분리되었으므로, aiPassed가 false(AI가 "수정 필요"로 판단)로 와도 저장
+     * 자체를 막지 않는다 - 질문·답 실제 내용(공백 아님)만 있으면 저장하고,
+     * 수정 여부는 학생이 직접 판단한다. aiPassed 값 자체는 참고용으로 그대로
+     * 저장한다(response.passed - 다른 화면/분석에서 원본 AI 판정을 보존하되,
+     * 이 서비스의 완료 조건에는 더 이상 쓰지 않는다).
      */
     @Transactional
     public IndividualAfterResponseItem saveAfterResponse(
@@ -873,13 +876,6 @@ public class IndividualReadingService {
 
         if (question.isEmpty() || answer.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "질문과 답을 모두 입력해야 합니다.");
-        }
-
-        if (Boolean.FALSE.equals(request.getAiPassed())) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "루미 피드백을 통과한 질문과 답만 저장할 수 있어요."
-            );
         }
 
         List<Response> existing = findAfterResponses(studentId, readingRecordId);
@@ -986,13 +982,11 @@ public class IndividualReadingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "최종 간추린 내용을 입력해야 합니다.");
         }
 
-        if (Boolean.FALSE.equals(request.getAiPassed())) {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "루미 피드백을 통과한 간추리기만 저장할 수 있어요."
-            );
-        }
-
+        /*
+         * AI 피드백은 선택 도움 기능이므로 aiPassed=false(수정 권장)여도 저장을
+         * 막지 않는다 - 실제 간추린 내용(공백 아님)만 있으면 저장하고, 학생이
+         * 그대로 진행할지 고칠지는 스스로 판단한다.
+         */
         Summary summary = summaryRepository
             .findByStudent_IdAndReadingRecord_Id(studentId, readingRecordId)
             .orElseGet(Summary::new);
@@ -1088,13 +1082,16 @@ public class IndividualReadingService {
             }
         }
 
+        /*
+         * AI 피드백은 선택 도움 기능이므로 완료 조건에서 제외한다 - 실제
+         * 답 내용(공백 아님)이 있는지만 확인한다. response.getPassed()(AI
+         * 판정 결과)는 더 이상 여기서 검사하지 않는다.
+         */
         for (Integer index : AFTER_QUESTION_INDEXES) {
             Response response = byIndex.get(index);
 
             if (response == null || response.getContent() == null || response.getContent().isBlank()) {
                 problems.add("질문 " + index + "의 답이 아직 없어요.");
-            } else if (!Boolean.TRUE.equals(response.getPassed())) {
-                problems.add("질문 " + index + "이 아직 루미 피드백을 통과하지 못했어요.");
             }
         }
 
@@ -1104,8 +1101,6 @@ public class IndividualReadingService {
 
         if (summary == null || summary.getSummaryText() == null || summary.getSummaryText().isBlank()) {
             problems.add("최종 간추린 내용이 아직 없어요.");
-        } else if (!Boolean.TRUE.equals(summary.getAiPassed())) {
-            problems.add("최종 간추리기가 아직 루미 피드백을 통과하지 못했어요.");
         }
 
         if (!problems.isEmpty()) {

@@ -1,13 +1,9 @@
 package com.victory.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,13 +14,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.victory.dto.IndividualAchievementLevel;
 import com.victory.dto.IndividualAchievementResult;
-import com.victory.entity.AiEvaluationAttempt;
 import com.victory.entity.BookRecommendation;
 import com.victory.entity.ReadingProgressLog;
 import com.victory.entity.ReadingRecord;
 import com.victory.entity.Response;
 import com.victory.entity.Summary;
-import com.victory.repository.AiEvaluationAttemptRepository;
 import com.victory.repository.BookRecommendationRepository;
 import com.victory.repository.ReadingProgressLogRepository;
 import com.victory.repository.ReadingRecordRepository;
@@ -56,30 +50,11 @@ public class IndividualAchievementService {
     private static final String STAGE_DURING = "during";
     private static final String STAGE_AFTER = "after";
 
-    /*
-     * FeedbackAiService(개별읽기 AI 호출 흐름 - 보호 범위)가 실제로 쓰는
-     * activityType 문자열을 그대로 옮겨 적은 값이다. 그 파일은 이번
-     * 작업에서 수정하지 않으므로 상수를 공유하지 않고 문자열을 그대로
-     * 복사했다 - 값이 바뀌면 이 목록도 함께 갱신해야 한다.
-     *
-     * 다만 readingRecordId 자체가 개별읽기 요청에서만 채워지고
-     * classReadingBookId 기반 온책읽기 요청은 이 컬럼이 항상 NULL이라
-     * (AiEvaluationAttempt 주석 참고), readingRecordId로 거르는 조회만으로도
-     * 온책읽기 기록과 섞이지 않는다 - 이 목록은 이중 안전장치다.
-     */
-    private static final List<String> INDIVIDUAL_AI_ACTIVITY_TYPES = List.of(
-        "pre_reading_question",
-        "during_reading_question",
-        "individual_question",
-        "individual_summary"
-    );
-
     private final ReadingRecordRepository readingRecordRepository;
     private final ResponseRepository responseRepository;
     private final SummaryRepository summaryRepository;
     private final ReadingProgressLogRepository readingProgressLogRepository;
     private final BookRecommendationRepository bookRecommendationRepository;
-    private final AiEvaluationAttemptRepository aiEvaluationAttemptRepository;
     private final IndividualAchievementCalculator calculator;
 
     @Transactional(readOnly = true)
@@ -113,39 +88,24 @@ public class IndividualAchievementService {
             + (Boolean.TRUE.equals(record.getAfterDone()) ? 1 : 0);
         double stageCompletionRate = calculator.round2(calculator.stageCompletionRate(completedStageCount));
 
-        List<AiEvaluationAttempt> attempts = aiEvaluationAttemptRepository
-            .findByReadingRecordIdAndActivityTypeIn(readingRecordId, INDIVIDUAL_AI_ACTIVITY_TYPES);
+        /*
+         * 기록충실도 - AI 확인 여부/통과 여부는 절대 쓰지 않는다. 핵심 기록
+         * 5개 중 앞의 3개(읽기 전/중/후 질문·답 또는 간추리기 작성 여부)는
+         * computeLiveReadingPractice()가 이미 계산한 boolean을 그대로
+         * 재사용하고, 나머지 2개(책수다방 참여, 필수 기록 전체 완료)는 여기서
+         * 판단한다.
+         */
+        boolean noMissingRequiredRecord = Boolean.TRUE.equals(record.getBeforeDone())
+            && Boolean.TRUE.equals(record.getDuringDone())
+            && Boolean.TRUE.equals(record.getAfterDone());
 
-        Map<String, List<AiEvaluationAttempt>> attemptsByEvaluationKey = new HashMap<>();
-
-        for (AiEvaluationAttempt attempt : attempts) {
-            String key = attempt.getEvaluationKey();
-
-            if (key == null || key.isBlank()) {
-                continue;
-            }
-
-            attemptsByEvaluationKey.computeIfAbsent(key, k -> new ArrayList<>()).add(attempt);
-        }
-
-        int inspectedItemCount = attemptsByEvaluationKey.size();
-        int passedWithinThreeCount = 0;
-
-        for (List<AiEvaluationAttempt> group : attemptsByEvaluationKey.values()) {
-            List<String> orderedStatuses = group.stream()
-                .sorted(Comparator.comparing(
-                    AiEvaluationAttempt::getAttemptNumber,
-                    Comparator.nullsLast(Comparator.naturalOrder())))
-                .map(AiEvaluationAttempt::getStatus)
-                .toList();
-
-            if (calculator.passedWithinAttemptLimit(orderedStatuses)) {
-                passedWithinThreeCount++;
-            }
-        }
-
-        double contentSuitabilityScore = calculator.round2(
-            calculator.contentSuitabilityScore(passedWithinThreeCount, inspectedItemCount));
+        double recordFaithfulnessScore = calculator.round2(
+            calculator.recordFaithfulnessScore(
+                live.wrotePreQuestion(),
+                live.wroteDuringQuestion(),
+                live.wroteAfterSummary(),
+                live.bookChatPostCount() > 0,
+                noMissingRequiredRecord));
 
         /*
          * 완독 기록은 final_record_completion_score가 이미 저장되어 있으면
@@ -156,7 +116,7 @@ public class IndividualAchievementService {
                 && record.getFinalRecordCompletionScore() != null)
             ? calculator.round2(record.getFinalRecordCompletionScore())
             : calculator.round2(
-                calculator.recordCompletionScore(stageCompletionRate, contentSuitabilityScore));
+                calculator.recordCompletionScore(stageCompletionRate, recordFaithfulnessScore));
 
         double overallAchievementScore = calculator.round2(
             calculator.overallAchievementScore(readingPracticeScore, recordCompletionScore));
@@ -177,9 +137,7 @@ public class IndividualAchievementService {
             readingPracticeScore,
             completedStageCount,
             stageCompletionRate,
-            inspectedItemCount,
-            passedWithinThreeCount,
-            contentSuitabilityScore,
+            recordFaithfulnessScore,
             recordCompletionScore,
             overallAchievementScore,
             roundedOverallAchievementScore,
@@ -292,11 +250,19 @@ public class IndividualAchievementService {
             activityTypeScore,
             liveReadingPracticeScore,
             wroteQuestionActivity,
+            wrotePreQuestion,
+            wroteDuringQuestion,
+            wroteAfterQuestionOrSummary,
             bookChatPostCount,
             latestActivityDate
         );
     }
 
+    /*
+     * wroteAfterSummary는 wroteAfterQuestionOrSummary와 같은 값이다(읽기 후
+     * summary 저장 또는 after 단계 답변 존재) - 기록충실도 5개 항목의
+     * "읽기 후 간추리기 완료"에 이 값을 그대로 재사용한다.
+     */
     private record LiveReadingPracticeComputation(
         int readingDays,
         double readingDaysScore,
@@ -304,6 +270,9 @@ public class IndividualAchievementService {
         double activityTypeScore,
         double liveReadingPracticeScore,
         boolean wroteQuestionActivity,
+        boolean wrotePreQuestion,
+        boolean wroteDuringQuestion,
+        boolean wroteAfterSummary,
         int bookChatPostCount,
         LocalDate latestActivityDate
     ) {

@@ -2,7 +2,6 @@ package com.victory.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -18,14 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.victory.dto.IndividualAchievementLevel;
 import com.victory.dto.IndividualAchievementResult;
-import com.victory.entity.AiEvaluationAttempt;
 import com.victory.entity.BookRecommendation;
 import com.victory.entity.ReadingProgressLog;
 import com.victory.entity.ReadingRecord;
 import com.victory.entity.Response;
 import com.victory.entity.Summary;
 import com.victory.entity.User;
-import com.victory.repository.AiEvaluationAttemptRepository;
 import com.victory.repository.BookRecommendationRepository;
 import com.victory.repository.ReadingProgressLogRepository;
 import com.victory.repository.ReadingRecordRepository;
@@ -36,8 +33,6 @@ class IndividualAchievementServiceTest {
 
     private static final Long STUDENT_ID = 1L;
     private static final Long READING_RECORD_ID = 10L;
-    private static final List<String> AI_TYPE_WHITELIST = List.of(
-        "pre_reading_question", "during_reading_question", "individual_question", "individual_summary");
 
     private final ReadingRecordRepository readingRecordRepository = mock(ReadingRecordRepository.class);
     private final ResponseRepository responseRepository = mock(ResponseRepository.class);
@@ -46,13 +41,11 @@ class IndividualAchievementServiceTest {
         mock(ReadingProgressLogRepository.class);
     private final BookRecommendationRepository bookRecommendationRepository =
         mock(BookRecommendationRepository.class);
-    private final AiEvaluationAttemptRepository aiEvaluationAttemptRepository =
-        mock(AiEvaluationAttemptRepository.class);
     private final IndividualAchievementCalculator calculator = new IndividualAchievementCalculator();
 
     private final IndividualAchievementService service = new IndividualAchievementService(
         readingRecordRepository, responseRepository, summaryRepository, readingProgressLogRepository,
-        bookRecommendationRepository, aiEvaluationAttemptRepository, calculator);
+        bookRecommendationRepository, calculator);
 
     private ReadingRecord buildRecord(boolean beforeDone, boolean duringDone, boolean afterDone) {
         ReadingRecord record = new ReadingRecord();
@@ -76,8 +69,6 @@ class IndividualAchievementServiceTest {
         when(summaryRepository.findByStudent_IdAndReadingRecord_Id(STUDENT_ID, READING_RECORD_ID))
             .thenReturn(Optional.empty());
         when(bookRecommendationRepository.findByReadingRecord_Id(READING_RECORD_ID)).thenReturn(List.of());
-        when(aiEvaluationAttemptRepository.findByReadingRecordIdAndActivityTypeIn(
-            eq(READING_RECORD_ID), any())).thenReturn(List.of());
         when(readingRecordRepository.countByStudent_IdAndFinishedAtIsNotNull(STUDENT_ID)).thenReturn(0L);
     }
 
@@ -116,17 +107,6 @@ class IndividualAchievementServiceTest {
         Summary summary = new Summary();
         summary.setCreatedAt(createdAt);
         return summary;
-    }
-
-    private AiEvaluationAttempt attempt(String evaluationKey, int attemptNumber, String status) {
-        AiEvaluationAttempt attempt = new AiEvaluationAttempt();
-        attempt.setStudentId(STUDENT_ID);
-        attempt.setReadingRecordId(READING_RECORD_ID);
-        attempt.setActivityType("individual_question");
-        attempt.setEvaluationKey(evaluationKey);
-        attempt.setAttemptNumber(attemptNumber);
-        attempt.setStatus(status);
-        return attempt;
     }
 
     /* 검증 1: 같은 날 페이지·질문·책수다방을 모두 수행 → 독서일수 1일 */
@@ -238,33 +218,6 @@ class IndividualAchievementServiceTest {
         assertThat(result.getStageCompletionRate()).isCloseTo(66.67, org.assertj.core.data.Offset.offset(0.01));
     }
 
-    /* 검증 11~14: evaluationKey A/B/C 조합 → 분모 3, 성공 2, 적합성 약 66.67 */
-    @Test
-    void calculate_aiEvaluation_groupsByEvaluationKeyAcrossThreeQuestions() {
-        ReadingRecord record = buildRecord(false, false, false);
-        stubEmptyDataExcept(record);
-        when(aiEvaluationAttemptRepository.findByReadingRecordIdAndActivityTypeIn(
-            eq(READING_RECORD_ID), any()))
-            .thenReturn(List.of(
-                // A: 1회 need, 2회 good → 성공
-                attempt("A", 2, "good"),
-                attempt("A", 1, "need"),
-                // B: 1~3회 need, 4회 good → 실패
-                attempt("B", 1, "need"),
-                attempt("B", 4, "good"),
-                attempt("B", 3, "need"),
-                attempt("B", 2, "need"),
-                // C: 1회 good → 성공
-                attempt("C", 1, "good")));
-
-        IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
-
-        assertThat(result.getInspectedItemCount()).isEqualTo(3);
-        assertThat(result.getPassedWithinThreeCount()).isEqualTo(2);
-        assertThat(result.getContentSuitabilityScore())
-            .isCloseTo(66.67, org.assertj.core.data.Offset.offset(0.01));
-    }
-
     /*
      * "읽기 후 질문 또는 간추리기"는 하나로 묶인 활동 종류다 - 간추리기만
      * 있어도(읽기 후 answer 응답이 없어도) 그 종류가 채워진 것으로 본다.
@@ -283,54 +236,19 @@ class IndividualAchievementServiceTest {
         assertThat(result.getReadingDays()).isEqualTo(1);
     }
 
-    /* 검증 15: 검사 대상 0개 → 0점 */
-    @Test
-    void calculate_zeroAiAttempts_contentSuitabilityScoreIsZero() {
-        ReadingRecord record = buildRecord(false, false, false);
-        stubEmptyDataExcept(record);
-
-        IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
-
-        assertThat(result.getInspectedItemCount()).isEqualTo(0);
-        assertThat(result.getContentSuitabilityScore()).isEqualTo(0.0);
-    }
-
-    /* 검증 16: 같은 evaluationKey의 여러 시도 → 분모 1개 */
-    @Test
-    void calculate_sameEvaluationKeyMultipleAttempts_countedOnceInDenominator() {
-        ReadingRecord record = buildRecord(false, false, false);
-        stubEmptyDataExcept(record);
-        when(aiEvaluationAttemptRepository.findByReadingRecordIdAndActivityTypeIn(
-            eq(READING_RECORD_ID), any()))
-            .thenReturn(List.of(
-                attempt("X", 1, "need"),
-                attempt("X", 2, "need"),
-                attempt("X", 3, "good")));
-
-        IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
-
-        assertThat(result.getInspectedItemCount()).isEqualTo(1);
-        assertThat(result.getPassedWithinThreeCount()).isEqualTo(1);
-    }
-
     /*
-     * 검증 17/18: 다른 readingRecord의 시도·온책읽기(classReadingBookId) 평가는
-     * 계산에서 제외되어야 한다. 이 서비스는 정확히 이 readingRecordId +
-     * 개별읽기 activityType 화이트리스트로만 조회하므로, 다른 책의 시도나
-     * readingRecordId가 채워지지 않는 온책읽기 시도는 애초에 이 조회
-     * 결과에 나타날 수 없다(JPA가 reading_record_id = :id로 변환하므로
-     * NULL이거나 다른 값인 행은 SQL 3치 논리상 절대 일치하지 않는다).
-     * 여기서는 서비스가 실제로 그 정확한 조건으로 조회를 호출하는지 검증한다.
+     * 기록충실도: 핵심 기록 5개 중 아무 것도 채우지 않은 새 기록은 0점이다.
+     * AI 확인 여부는 조회조차 하지 않는다(더 이상 aiEvaluationAttemptRepository를
+     * 쓰지 않음).
      */
     @Test
-    void calculate_aiEvaluationQuery_scopedToExactReadingRecordIdAndWhitelist() {
+    void calculate_noRecords_recordFaithfulnessScoreIsZero() {
         ReadingRecord record = buildRecord(false, false, false);
         stubEmptyDataExcept(record);
 
-        service.calculate(READING_RECORD_ID);
+        IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
 
-        verify(aiEvaluationAttemptRepository)
-            .findByReadingRecordIdAndActivityTypeIn(eq(READING_RECORD_ID), eq(AI_TYPE_WHITELIST));
+        assertThat(result.getRecordFaithfulnessScore()).isEqualTo(0.0);
     }
 
     /*
@@ -375,8 +293,7 @@ class IndividualAchievementServiceTest {
         assertThat(result.getReadingPracticeScore()).isEqualTo(0.0);
         assertThat(result.getCompletedStageCount()).isEqualTo(0);
         assertThat(result.getStageCompletionRate()).isEqualTo(0.0);
-        assertThat(result.getInspectedItemCount()).isEqualTo(0);
-        assertThat(result.getContentSuitabilityScore()).isEqualTo(0.0);
+        assertThat(result.getRecordFaithfulnessScore()).isEqualTo(0.0);
         assertThat(result.getRecordCompletionScore()).isEqualTo(0.0);
         assertThat(result.getOverallAchievementScore()).isEqualTo(0.0);
         assertThat(result.getAchievementLevel()).isEqualTo(IndividualAchievementLevel.NEED_SUPPORT);
@@ -442,7 +359,8 @@ class IndividualAchievementServiceTest {
 
         IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
 
-        // 실시간 계산이었다면 stageCompletionRate(100) * 0.5 + contentSuitability(0) * 0.5 = 50이 되었을 것이다.
+        // 실시간 계산이었다면 stageCompletionRate(100) * 0.5 + recordFaithfulness(20, "필수 기록
+        // 완료" 1개만 충족) * 0.5 = 60이 되었을 것이다.
         assertThat(result.getRecordCompletionScore()).isEqualTo(77.0);
     }
 
@@ -468,7 +386,9 @@ class IndividualAchievementServiceTest {
         IndividualAchievementResult result = service.calculate(READING_RECORD_ID);
 
         assertThat(result.getReadingPracticeScore()).isEqualTo(0.0);
-        assertThat(result.getRecordCompletionScore()).isEqualTo(50.0);
+        // stageCompletionRate(100) * 0.5 + recordFaithfulness(핵심 기록 5개 중 "필수 기록
+        // 전체 완료" 1개만 충족 = 20) * 0.5 = 60.
+        assertThat(result.getRecordCompletionScore()).isEqualTo(60.0);
     }
 
     /*

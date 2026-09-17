@@ -233,9 +233,9 @@ public class IndividualReadingController {
     }
 
     /*
-     * 읽기 후 간추리기 질문·답 한 세트(질문 번호 1/2/3)를 저장한다. AI가
-     * good으로 판정한 직후에만 프론트에서 호출되는 것을 전제로 하되, 서버는
-     * aiPassed가 명시적으로 false로 온 경우 저장 자체를 거부해 한 번 더 검증한다.
+     * 읽기 후 간추리기 질문·답 한 세트(질문 번호 1/2/3)를 저장한다. AI
+     * 확인받기는 선택 도움 기능이라 aiPassed=false(수정 권장)로 와도 저장을
+     * 거부하지 않는다 - 질문과 답이 실제로 채워져 있으면 저장한다.
      */
     @PutMapping("/{readingRecordId}/after-responses/{questionIndex}")
     public ResponseEntity<IndividualAfterResponseItem> saveAfterResponse(

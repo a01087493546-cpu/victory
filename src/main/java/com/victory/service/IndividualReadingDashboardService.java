@@ -43,7 +43,7 @@ public class IndividualReadingDashboardService {
     private static final ZoneId ZONE_SEOUL = ZoneId.of("Asia/Seoul");
     private static final int READING_PRACTICE_LOW_THRESHOLD = 30;
     private static final int MIN_READING_DAYS_FOR_PRACTICE_JUDGEMENT = 3;
-    private static final int CONTENT_SUITABILITY_LOW_THRESHOLD = 50;
+    private static final int RECORD_FAITHFULNESS_LOW_THRESHOLD = 50;
 
     /*
      * "미참여"는 종합달성도 등급이 아니라, 대표 ReadingRecord가 아예 없는
@@ -152,7 +152,9 @@ public class IndividualReadingDashboardService {
          * 학생별 종합달성도가 70% 근처에 몰리지 않도록 서로 다른 값으로
          * 고정한다(순서: 김초롱/송민정/박하민/이진우/김민지/서희원/김수진/이혜원).
          * value = {totalCompletedBookCount, readingDays, readingPracticeScore,
-         * recordCompletionScore, contentSuitabilityScore, overallAchievementScore}.
+         * recordCompletionScore, recordFaithfulnessScore, overallAchievementScore}.
+         * 심사/demo는 예시 데이터이므로 이번 공식 변경으로 재계산하지 않고
+         * 기존 시드 값을 그대로 유지한다(정책 2번: demo 점수 재계산 금지).
          */
         int[][] scores = {
             {5, 9, 93, 96, 94, 94}, {6, 10, 90, 93, 91, 91},
@@ -178,7 +180,7 @@ public class IndividualReadingDashboardService {
              */
             List<String> reasons = i == 4 ? List.of("질문 만들기 참여가 필요해요")
                 : i == 5 ? List.of("생각 나누기 참여가 필요해요")
-                : i == 6 ? List.of("독서실천도가 낮아요", "기록 내용을 조금 더 다듬어야 해요")
+                : i == 6 ? List.of("독서실천도가 낮아요", "기록을 빠짐없이 남기는 연습이 필요해요")
                 : i == 7 ? List.of("읽기 중 활동을 완료해야 해요")
                 : List.of();
             if (active) activeToday++;
@@ -187,7 +189,7 @@ public class IndividualReadingDashboardService {
             students.add(new TeacherIndividualReadingStudentResponse(
                 member.getStudent().getId(), member.getStudent().getName(), member.getStudentNumber(),
                 null, books[Math.min(i, books.length - 1)], 0, value[0], value[1], value[2], 3,
-                value[3], 6, value[4], overall, overall,
+                value[3], value[4], overall, overall,
                 overall >= 90 ? "매우 우수" : overall >= 75 ? "우수" : overall >= 50 ? "보통" : "집중 지원",
                 today.minusDays(active ? 0 : i == 6 ? 3 : 6), active, reasons));
         }
@@ -219,7 +221,6 @@ public class IndividualReadingDashboardService {
                 0.0,
                 0,
                 0.0,
-                0,
                 0.0,
                 0.0,
                 0,
@@ -251,8 +252,7 @@ public class IndividualReadingDashboardService {
             result.getReadingPracticeScore(),
             result.getCompletedStageCount(),
             result.getRecordCompletionScore(),
-            result.getInspectedItemCount(),
-            result.getContentSuitabilityScore(),
+            result.getRecordFaithfulnessScore(),
             result.getOverallAchievementScore(),
             result.getRoundedOverallAchievementScore(),
             result.getAchievementLevel().getLabel(),
@@ -339,11 +339,16 @@ public class IndividualReadingDashboardService {
         }
 
         /*
-         * 5. 기록내용 적합성 부족 - 기존 조건 그대로 유지.
+         * 5. 기록충실도 부족 - AI 피드백 통과 여부는 절대 근거로 쓰지 않는다
+         * (개별읽기 AI 피드백은 선택 도움 기능으로 분리됨). 읽기 전/중/후
+         * 질문·답·간추리기 작성, 책수다방 참여, 필수 기록 누락 여부처럼
+         * 실제 독서 기록/행동 데이터만으로 계산된 recordFaithfulnessScore를
+         * 기준으로 삼는다. 최소 한 단계라도 진행되어야 판단 가능하다(등록만
+         * 하고 아무것도 안 한 학생에게는 붙이지 않음).
          */
-        if (result.getInspectedItemCount() >= 1
-                && result.getContentSuitabilityScore() < CONTENT_SUITABILITY_LOW_THRESHOLD) {
-            reasons.add("기록 내용을 조금 더 다듬어야 해요");
+        if (result.getCompletedStageCount() >= 1
+                && result.getRecordFaithfulnessScore() < RECORD_FAITHFULNESS_LOW_THRESHOLD) {
+            reasons.add("기록을 빠짐없이 남기는 연습이 필요해요");
         }
 
         return reasons;

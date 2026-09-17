@@ -131,7 +131,14 @@ public class FeedbackAiService {
                 improvementText 다섯 영역이 서로 다른 내용을 다루게 한다.
             15. portfolioType이 "individual"이면 stageAnalysis는 절대 채우지 않고
                 반드시 null로 둔다(온책읽기 전용 필드를 개별읽기 분석에 섞지 않는다).
-            16. 다른 설명이나 마크다운 없이 아래 JSON 객체만 반환한다.
+            16. portfolioType이 "individual"이면, 개별읽기 AI 피드백("확인받기")은
+                학생이 선택적으로 쓰는 도움 기능이다. AI 피드백 통과 여부, 첫 시도
+                통과율, 재시도 횟수, 승인 여부 같은 정보는 입력에 포함되어 있지
+                않으며, 어떤 경우에도 이를 추측하거나 언급하지 않는다. strengthText/
+                improvementText는 읽기 전·중·후 활동 기록, 간추리기, 책수다방 참여,
+                독서 지속성, 완독 권수처럼 입력에 실제로 주어진 독서 행동 데이터만
+                근거로 쓴다.
+            17. 다른 설명이나 마크다운 없이 아래 JSON 객체만 반환한다.
             {"strengthText":"...", "improvementText":"...", "stageAnalysis": null 또는
             {"before":{"title":"읽기 전","completed":true,"strengthText":"근거를 담은 최대 2문장","growthText":""},
              "during":{"title":"읽기 중","completed":true,"strengthText":"근거를 담은 최대 2문장","growthText":""},

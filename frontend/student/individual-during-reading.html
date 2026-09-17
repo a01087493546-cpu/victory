@@ -8241,18 +8241,58 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   opacity: 0.48;
   transform: none !important;
 }
-.idr-inline-feedback .idr-lumi-intro { grid-column: 2; grid-row: 1; align-self: center; }
+.idr-inline-feedback .idr-lumi-intro {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
+}
 .idr-inline-feedback .idr-lumi-badge { display: inline-block; padding: 5px 15px; border-radius: 14px; background: #f7dfb3; color: #7b4b18; font-size: 20px; font-weight: 800; }
-.idr-inline-feedback .idr-inline-feedback-title { display: block !important; margin: 5px 0 2px; font-size: 30px !important; color: #54361d; }
+.idr-inline-feedback .idr-inline-feedback-title { display: block !important; margin: 5px 0 2px; font-size: 30px !important; font-weight: 800 !important; color: #54361d; }
 .idr-inline-feedback .idr-lumi-intro p { margin: 0; font-size: 24px; line-height: 1.35; color: #8d8174; }
-#questionScreen .idr-inline-feedback .idr-feedback-box { grid-row: 2 !important; min-height: 0 !important; height: auto !important; padding: 0 !important; font-size: 22px !important; }
+#questionScreen .idr-inline-feedback .idr-feedback-box {
+  grid-column: 2 !important;
+  grid-row: 1 / 3 !important;
+  align-self: center;
+  justify-content: center;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  font-size: 30px !important;
+  line-height: 1.5 !important;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
 #questionScreen .idr-inline-feedback .idr-feedback-box:has(#questionFeedbackText:empty) { display: none !important; }
+#questionScreen .idr-inline-feedback:has(#questionFeedbackText:not(:empty)) .idr-lumi-intro { display: none !important; }
 #questionScreen .idr-inline-feedback-lumi { grid-row: 1 / 3 !important; }
-#questionScreen .idr-inline-feedback:not(:has(.good)):not(:has(.need)) { background: #fff9f0 !important; border-color: #f0dfc8 !important; }
+#questionScreen .idr-inline-feedback:not(:has(.good)):not(:has(.need)) {
+  background: #fff9f0 !important;
+  border-color: #cdaa7f !important;
+  box-shadow: 0 6px 16px rgba(112, 75, 38, 0.08) !important;
+}
 #questionScreen #checkQuestionButton { background: #fffaf1 !important; color: #784915 !important; border: 1px solid #eacfa7 !important; }
-#questionScreen .idr-inline-feedback { min-height: 230px !important; }
+#questionScreen .idr-inline-feedback {
+  min-height: 214px !important;
+  padding: 10px 20px !important;
+}
 #questionScreen .idr-question-actions .idr-main-button { font-size: 24px !important; min-height: 62px !important; }
-#questionScreen .idr-question-actions { grid-template-columns: 190px minmax(0, 1fr) !important; }
+#questionScreen .idr-question-actions {
+  grid-template-columns: repeat(2, 180px) !important;
+  justify-content: end !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+#questionScreen .idr-question-actions .idr-main-button {
+  width: 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
+}
+#questionScreen #questionPreviousButton { grid-column: 1; }
 #questionScreen #questionNextStageButton { grid-column: 2; }
 #questionScreen .idr-inline-feedback { grid-template-columns: 140px minmax(0, 1fr) 160px !important; }
 #questionScreen .idr-inline-feedback-lumi { width: 136px !important; height: 160px !important; }
@@ -8494,7 +8534,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
                 alt="용사 루미"
                 class="idr-inline-feedback-lumi"
               >
-              <div class="idr-lumi-intro"><span class="idr-lumi-badge">선택</span><h3 class="idr-inline-feedback-title">도움이 필요하면 루미에게 확인받아 보세요.</h3><p>내가 쓴 질문과 답에 대한 조언이나 새로운 생각을 들을 수 있어요.</p></div>
+              <div class="idr-lumi-intro"><span class="idr-lumi-badge">선택 활동</span><h3 class="idr-inline-feedback-title">도움이 필요하면 루미에게 확인받아 보세요.</h3></div>
               <div class="idr-feedback-box" id="questionFeedbackBox">
                 <span id="questionFeedbackText"></span>
               </div>
@@ -8502,7 +8542,8 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
             </div>
 
             <div class="idr-question-actions">
-              <button type="button" class="idr-main-button" id="questionNextStageButton" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
+              <button type="button" class="idr-main-button" id="questionPreviousButton" onclick="showScreen('home')">이전</button>
+              <button type="button" class="idr-main-button primary" id="questionNextStageButton" onclick="completeDuringQuestionsAndShare()">다음 단계</button>
             </div>
           </article>
 
@@ -8723,6 +8764,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   <script src="../js/demo-storage.js"></script>
   <script src="../js/ai-feedback.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
+  <script src="../js/individual-min-input.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -8757,15 +8799,40 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   서버에 처음 저장하는 시점(saveTodayQuestion 성공 시)에 지급되므로,
   여기서 별도로 지급하지 않는다(중복 지급 방지).
 */
-function completeDuringQuestionsAndShare() {
+async function completeDuringQuestionsAndShare() {
   const completedCount = getTodayCompletedQuestionCount();
 
   if (completedCount < 3 && !isDemoAccount()) {
-    alert(
-      "책수다방으로 이동하려면 오늘 질문을 3개 완성해야 해!\n" +
-      "현재 " + completedCount + "/3개를 완성했어."
-    );
-    return;
+    const questionInput = document.getElementById("questionInput");
+    const answerInput = document.getElementById("answerInput");
+    const validation = validateIndividualMinimumInput(questionInput.value, answerInput.value);
+
+    if (!validation.valid) {
+      showIndividualMinInputModal(
+        validation.message,
+        validation.field === "answer" ? answerInput : questionInput,
+        validation.title
+      );
+      return;
+    }
+
+    const saved = await saveTodayQuestion();
+    if (!saved) {
+      showIndividualMinInputModal("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+
+    resetQuestionForm();
+    renderTodayQuestionList();
+    renderCollection();
+    renderShareQuestionList();
+    updateShareButtons();
+    updateMadeQuestionCountBadge();
+
+    if (getTodayCompletedQuestionCount() < 3) {
+      showIndividualMinInputModal("질문과 답을 3개 적으면 다음으로 넘어갈 수 있어요.", questionInput);
+      return;
+    }
   }
 
   showScreen("bookChat");
@@ -11304,17 +11371,79 @@ function confirmDuringRewardModal() {
       const question = document.getElementById("questionInput").value.trim();
       const answer = document.getElementById("answerInput").value.trim();
 
+      /*
+       * 개별읽기 AI 피드백은 선택 도움 기능이므로, 최소 작성 기준(질문·답이
+       * 실제로 있는지)은 AI 호출과 별개로 여기서 먼저 확인한다. 심사/demo
+       * 계정은 이 검사를 건너뛴다(기존 심사 편의 유지).
+       */
+      if (!isDemoAccount()) {
+        const validation = validateIndividualMinimumInput(question, answer);
+
+        if (!validation.valid) {
+          const focusTarget = validation.field === "answer"
+            ? document.getElementById("answerInput")
+            : document.getElementById("questionInput");
+          showIndividualMinInputModal(validation.message, focusTarget, validation.title);
+          return;
+        }
+      }
+
       const localResult = validateIndividualDuringReadingFormat(question, answer);
 
       feedbackBox.classList.remove("good", "need");
 
       if (!localResult.ok) {
+        /*
+         * "확인받기"의 AI 호출 전용 사전 검증(질문 형태인지 등)에는
+         * 걸리지만 최소 작성 기준은 이미 충족했으므로, AI를 부르지 않고
+         * 그대로 저장해 진행할 수 있게 한다.
+         */
         feedbackBox.classList.add("need");
         feedbackText.textContent = localResult.message;
+        saveTodayQuestionAndRefresh(feedbackBox, feedbackText);
         return;
       }
 
       requestIndividualDuringQuestionAiFeedback(question, answer);
+    }
+
+    /*
+     * AI 확인 여부와 무관하게 오늘 슬롯을 저장하고 화면을 갱신하는 공통
+     * 경로. requestIndividualDuringQuestionAiFeedback()의 good/need 결과와
+     * checkAndSaveQuestion()의 형식 사전 검증 실패 경로가 모두 이 함수
+     * 하나만 쓴다 - 저장 성공 후 처리를 두 곳에서 따로 구현하지 않는다.
+     */
+    function saveTodayQuestionAndRefresh(feedbackBox, feedbackText) {
+      return saveTodayQuestion().then(function (saved) {
+        if (!saved) {
+          feedbackBox.classList.remove("good", "need");
+          feedbackBox.classList.add("need");
+          feedbackText.textContent = "질문이 저장되지 않았어요. 잠시 후 다시 시도해봐.";
+          return false;
+        }
+
+        resetQuestionForm(false);
+
+        renderTodayQuestionList();
+        renderCollection();
+        renderShareQuestionList();
+        updateShareButtons();
+        updateMadeQuestionCountBadge();
+
+        if (saved.rewardGranted && typeof openMiniRewardModal === "function") {
+          openMiniRewardModal({
+            badge: "✨ 나의 힘 성장!",
+            title: "책 속 생각쓰기를 완성했어요!",
+            message: "루미: 오늘도 좋은 질문을 만들었네! 내일 또 새로운 질문을 만들어보자.",
+            rewards: [
+              { type: "magic", name: "마법력", point: "+1" },
+              { type: "wisdom", name: "지혜", point: "+1" }
+            ]
+          });
+        }
+
+        return true;
+      });
     }
 
     /*
@@ -11499,46 +11628,21 @@ function confirmDuringRewardModal() {
           feedbackBox.classList.add(isGood ? "good" : "need");
           feedbackText.textContent = result.message;
 
-          if (!isGood) {
-            return;
-          }
-
           /*
-            AI 검사와 DB 저장을 분리한다: AI가 good을 줘도 서버 저장이
-            실패하면 오늘의 책속 생각쓰기로 완료 처리하지 않는다(읽기
-            전과 같은 원칙). 저장에 성공했을 때만(rewardGranted=true)
-            보상 모달을 띄우고, 이미 오늘 지급받았으면 다시 띄우지 않는다.
+            개별읽기 AI 피드백은 선택 도움 기능이다 - "수정 필요(need)"
+            판정이 나와도 최소 작성 기준은 이미 통과했으므로 그대로
+            저장한다(saveTodayQuestionAndRefresh가 good/need 공통으로
+            저장 후 화면 갱신을 처리한다).
           */
-          return saveTodayQuestion().then(function (saved) {
+          return saveTodayQuestionAndRefresh(feedbackBox, feedbackText).then(function (saveSucceeded) {
             if (requestId !== individualDuringQuestionAiRequestId) {
               return;
             }
 
-            if (!saved) {
+            if (saveSucceeded && !isGood) {
               feedbackBox.classList.remove("good", "need");
               feedbackBox.classList.add("need");
-              feedbackText.textContent = "질문이 저장되지 않았어요. 잠시 후 다시 시도해봐.";
-              return;
-            }
-
-            resetQuestionForm(false);
-
-            renderTodayQuestionList();
-            renderCollection();
-            renderShareQuestionList();
-            updateShareButtons();
-            updateMadeQuestionCountBadge();
-
-            if (saved.rewardGranted && typeof openMiniRewardModal === "function") {
-              openMiniRewardModal({
-                badge: "✨ 나의 힘 성장!",
-                title: "책 속 생각쓰기를 완성했어요!",
-                message: "루미: 오늘도 좋은 질문을 만들었네! 내일 또 새로운 질문을 만들어보자.",
-                rewards: [
-                  { type: "magic", name: "마법력", point: "+1" },
-                  { type: "wisdom", name: "지혜", point: "+1" }
-                ]
-              });
+              feedbackText.textContent = result.message;
             }
           });
         })
@@ -11833,8 +11937,6 @@ function getBookTypeCounts() {
     */
 function updateMadeQuestionCountBadge() {
   const count = getTodayCompletedQuestionCount();
-  const canMoveNext = count >= 3 || isDemoAccount();
-
   const countText =
     count >= 3
       ? "만든 질문 " + count + "/3개 · 다음 단계 가능"
@@ -11852,8 +11954,8 @@ function updateMadeQuestionCountBadge() {
 
   const nextButton = document.getElementById("questionNextStageButton");
   const bottomButton = document.getElementById("bottomShareButton");
-  if (nextButton) nextButton.disabled = !canMoveNext;
-  if (bottomButton) bottomButton.disabled = !canMoveNext;
+  if (nextButton) nextButton.disabled = false;
+  if (bottomButton) bottomButton.disabled = false;
 }
 
     function renderQuestionCard(item) {

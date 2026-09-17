@@ -58,8 +58,10 @@ public class ReadingCompetencyCalculator {
 
     /*
      * 생각 다듬기 역량 = 평가기간 내 완독한 책들의 평균 기록완성도를
-     * 그대로 재사용한다(활동완료율 + AI 첫 통과율이 이미 반영된 값 -
-     * 새 계산식을 복제하지 않는다). 완독한 책이 없으면 0으로 처리한다.
+     * 그대로 재사용한다(단계완료율 + 기록충실도가 이미 반영된 값 - 새
+     * 계산식을 복제하지 않는다). AI 피드백 통과 여부는 전혀 관여하지
+     * 않는다(개별읽기 AI 피드백은 선택 도움 기능으로 분리됨). 완독한
+     * 책이 없으면 0으로 처리한다.
      */
     public double thoughtRefinementScore(Double averageRecordCompletionScore) {
         return clamp(averageRecordCompletionScore == null ? 0.0 : averageRecordCompletionScore);

@@ -24,12 +24,11 @@ public class IndividualAchievementResult {
     private double activityTypeScore;
     private double readingPracticeScore;
 
-    // 기록완성도 근거
+    // 기록완성도 근거 - recordFaithfulnessScore(기록충실도)는 AI 통과 여부를
+    // 전혀 쓰지 않고 실제 독서 기록 작성/참여 여부만으로 계산한다.
     private int completedStageCount;
     private double stageCompletionRate;
-    private int inspectedItemCount;
-    private int passedWithinThreeCount;
-    private double contentSuitabilityScore;
+    private double recordFaithfulnessScore;
     private double recordCompletionScore;
 
     // 종합

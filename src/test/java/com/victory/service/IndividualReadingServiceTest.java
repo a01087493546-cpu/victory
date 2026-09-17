@@ -142,8 +142,6 @@ class IndividualReadingServiceTest {
             readingPracticeScore,
             3,
             100.0,
-            5,
-            4,
             80.0,
             recordCompletionScore,
             overall,
@@ -2200,19 +2198,27 @@ class IndividualReadingServiceTest {
         verify(responseRepository, never()).save(any(Response.class));
     }
 
-    /* 검증: AI가 need로 판정한(aiPassed=false) 답은 저장 자체를 거부한다 */
+    /*
+     * 검증: AI가 need로 판정해도(aiPassed=false) 저장을 거부하지 않는다 - 개별읽기
+     * AI 확인받기는 선택 도움 기능으로 분리되어, 실제 질문·답 내용만 있으면
+     * 학생이 수정하지 않고 그대로 진행할 수 있다.
+     */
     @Test
-    void saveAfterResponse_rejectsWhenAiPassedIsExplicitlyFalse() {
+    void saveAfterResponse_savesEvenWhenAiPassedIsExplicitlyFalse() {
         ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
+        mockAfterResponses(10L, List.of());
+        when(responseRepository.save(any(Response.class))).thenAnswer(invocation -> {
+            Response toSave = invocation.getArgument(0);
+            toSave.setId(2001L);
+            return toSave;
+        });
 
-        assertThatThrownBy(() ->
-            service.saveAfterResponse(STUDENT_ID, 10L, 1, buildAfterSaveRequest("질문?", "답", false))
-        )
-            .isInstanceOf(ResponseStatusException.class)
-            .hasMessageContaining("400");
+        IndividualAfterResponseItem result = service.saveAfterResponse(
+            STUDENT_ID, 10L, 1, buildAfterSaveRequest("질문?", "답", false));
 
-        verify(responseRepository, never()).save(any(Response.class));
+        assertThat(result.getAiPassed()).isFalse();
+        verify(responseRepository).save(any(Response.class));
     }
 
     /* 검증: 완독한 기록의 읽기 후 질문·답은 수정할 수 없다(409) */
@@ -2322,10 +2328,16 @@ class IndividualReadingServiceTest {
             .grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
     }
 
-    /* 검증: 질문 3세트 중 하나라도 AI 통과 상태가 아니면 완료가 실패한다 */
+    /*
+     * 검증: 질문 3세트 중 하나가 AI 통과 상태가 아니어도(passed=false) 실제
+     * 답 내용이 있으면 완료할 수 있다 - AI 확인받기는 선택 도움 기능으로
+     * 분리되어 완료 조건에서 제외됐다.
+     */
     @Test
-    void completeAfterReading_failsWhenOneQuestionNotPassed() {
+    void completeAfterReading_succeedsEvenWhenOneQuestionNotAiPassed() {
         ReadingRecord record = buildRecord(10L, student, buildBook(1L, "책", "작가"));
+        record.setBeforeDone(true);
+        record.setDuringDone(true);
         Response r1 = buildAfterResponseEntity(1L, student, record, 1, "q1?", "a1", true);
         Response r2 = buildAfterResponseEntity(2L, student, record, 2, "q2?", "a2", true);
         Response r3 = buildAfterResponseEntity(3L, student, record, 3, "q3?", "a3", false);
@@ -2333,14 +2345,18 @@ class IndividualReadingServiceTest {
         when(readingRecordRepository.findByIdAndStudent_Id(10L, STUDENT_ID)).thenReturn(Optional.of(record));
         mockAfterResponses(10L, List.of(r1, r2, r3));
         when(summaryRepository.findByStudent_IdAndReadingRecord_Id(STUDENT_ID, 10L))
-            .thenReturn(Optional.of(buildSummary(500L, student, record, "story", "간추린 내용", true)));
+            .thenReturn(Optional.of(buildSummary(500L, student, record, "story", "간추린 내용", false)));
+        when(readingRecordRepository.save(any(ReadingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertThatThrownBy(() -> service.completeAfterReading(STUDENT_ID, 10L))
-            .isInstanceOf(ResponseStatusException.class)
-            .hasMessageContaining("400");
+        StudentStats stats = new StudentStats();
+        stats.setStudent(student);
+        when(afterReadingRewardService.grantAfterCompleteRewardOnce(student, 10L))
+            .thenReturn(new IndividualAfterReadingRewardService.RewardResult(true, false, stats));
 
-        verify(afterReadingRewardService, never())
-            .grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
+        IndividualAfterCompleteResponse response = service.completeAfterReading(STUDENT_ID, 10L);
+
+        assertThat(response.getAfterDone()).isTrue();
+        verify(afterReadingRewardService).grantAfterCompleteRewardOnce(any(User.class), any(Long.class));
     }
 
     /* 검증: 최종 간추리기가 비어 있으면(저장 자체가 없으면) 완료가 실패한다 */

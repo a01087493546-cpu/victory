@@ -36,8 +36,7 @@ public class TeacherIndividualReadingStudentResponse {
     private double readingPracticeScore;
     private int completedStageCount;
     private double recordCompletionScore;
-    private int inspectedItemCount;
-    private double contentSuitabilityScore;
+    private double recordFaithfulnessScore;
     private double overallAchievementScore;
     private int roundedOverallAchievementScore;
     private String achievementLevel;

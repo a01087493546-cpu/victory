@@ -3452,17 +3452,17 @@ body {
 .iar-feedback-text.need {
   width: 100% !important;
   min-height: 86px !important;
-  max-height: 108px !important;
+  max-height: none !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
   gap: 5px !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   white-space: normal !important;
   word-break: keep-all !important;
   overflow-wrap: anywhere !important;
-  font-size: 22px !important;
-  line-height: 1.32 !important;
+  font-size: 30px !important;
+  line-height: 1.5 !important;
   font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
   font-weight: 900 !important;
 }
@@ -3770,24 +3770,47 @@ body {
 
 /* 개별 읽기: 확인 전 안내 */
 #questionScreen .iar-lumi-feedback, #summaryScreen .iar-lumi-feedback { grid-template-rows: auto auto !important; row-gap: 3px !important; }
-#questionScreen .iar-lumi-feedback:not(:has(.good)):not(:has(.need)), #summaryScreen .iar-lumi-feedback:not(:has(.good)):not(:has(.need)) { background: #fff9f0 !important; border-color: #f0dfc8 !important; }
+#questionScreen .iar-lumi-feedback:not(:has(.good)):not(:has(.need)),
+#summaryScreen .iar-lumi-feedback:not(:has(.good)):not(:has(.need)) {
+  background: #fff9f0 !important;
+  border-color: #cdaa7f !important;
+  box-shadow: 0 6px 16px rgba(112, 75, 38, 0.08) !important;
+}
 #questionScreen .iar-lumi-feedback img, #summaryScreen .iar-lumi-feedback img { grid-column: 1; grid-row: 1 / 3; }
-.iar-lumi-intro { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.iar-lumi-intro {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
 .iar-lumi-badge { padding: 5px 15px; border-radius: 14px; background: #f7dfb3; color: #7b4b18; font-size: 20px; font-weight: 800; }
-.iar-lumi-intro strong { color: #54361d; font-size: 30px; line-height: 1.25; }
+.iar-lumi-intro strong { color: #54361d; font-size: 30px; font-weight: 800; line-height: 1.25; }
 .iar-lumi-intro small { color: #8d8174; font-size: 24px; line-height: 1.35; }
-#questionScreen #questionFeedback, #summaryScreen #summaryFeedback { grid-column: 2; grid-row: 2; min-height: 0 !important; padding: 0 !important; }
-#questionScreen #questionFeedback, #summaryScreen #summaryFeedback, #questionScreen #questionFeedback *, #summaryScreen #summaryFeedback * { font-size: 22px !important; line-height: 1.35 !important; }
+#questionScreen #questionFeedback, #summaryScreen #summaryFeedback {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+#questionScreen #questionFeedback, #summaryScreen #summaryFeedback, #questionScreen #questionFeedback *, #summaryScreen #summaryFeedback * { font-size: 30px !important; line-height: 1.5 !important; }
 #questionScreen #questionFeedback:empty, #summaryScreen #summaryFeedback:empty { display: none !important; }
+#questionScreen .iar-lumi-feedback:has(#questionFeedback:not(:empty)) .iar-lumi-intro,
+#summaryScreen .iar-lumi-feedback:has(#summaryFeedback:not(:empty)) .iar-lumi-intro { display: none !important; }
 #questionScreen .iar-lumi-feedback-actions, #summaryScreen .iar-lumi-feedback-actions { grid-column: 3; grid-row: 1 / 3; }
 #questionScreen .iar-lumi-feedback-action, #summaryScreen .iar-lumi-feedback-action { background: #fffaf1 !important; color: #784915 !important; border: 1px solid #eacfa7 !important; }
 #questionScreen .iar-lumi-feedback-action, #summaryScreen .iar-lumi-feedback-action { min-width: 160px !important; height: 60px !important; min-height: 60px !important; padding: 0 22px !important; font-size: 24px !important; }
-#summaryScreen .iar-panel { grid-template-rows: auto minmax(0, 1fr) 170px auto !important; }
-#summaryScreen .iar-lumi-feedback { height: 170px !important; min-height: 170px !important; padding: 14px 20px !important; }
+#summaryScreen .iar-panel { grid-template-rows: auto minmax(0, 1fr) minmax(158px, auto) auto !important; }
+#summaryScreen .iar-lumi-feedback { height: auto !important; min-height: 158px !important; padding: 10px 20px !important; }
 #questionScreen .iar-lumi-intro strong, #summaryScreen .iar-lumi-intro strong { font-size: 26px !important; }
 #questionScreen .iar-lumi-intro small, #summaryScreen .iar-lumi-intro small { font-size: 20px !important; }
 #questionScreen .iar-lumi-badge, #summaryScreen .iar-lumi-badge { font-size: 17px !important; padding: 3px 12px !important; }
-#questionScreen #questionFeedback, #summaryScreen #summaryFeedback { max-height: 54px; overflow-y: auto; }
+#questionScreen #questionFeedback, #summaryScreen #summaryFeedback { max-height: none; overflow: visible; }
 #summaryScreen .iar-summary-right label { font-size: 24px !important; }
 #summaryScreen .iar-bottom-actions .iar-main-button { font-size: 23px !important; }
 .iar-step-title { font-size: 28px !important; }
@@ -3801,7 +3824,7 @@ body {
   display: grid !important;
   height: 100% !important;
   min-height: 0 !important;
-  grid-template-rows: auto minmax(0, 1fr) 166px auto !important;
+  grid-template-rows: auto minmax(0, 1fr) minmax(154px, auto) auto !important;
   align-content: stretch !important;
   gap: 14px !important;
   padding: 26px 36px 24px !important;
@@ -3854,10 +3877,10 @@ body {
 #questionScreen .iar-qa-card .iar-textarea::placeholder { color: #8d7860 !important; opacity: 1; }
 #questionScreen .iar-lumi-feedback {
   width: 100% !important;
-  height: 166px !important;
-  min-height: 166px !important;
+  height: auto !important;
+  min-height: 154px !important;
   grid-template-columns: 112px minmax(0, 1fr) auto !important;
-  padding: 16px 24px !important;
+  padding: 12px 24px !important;
   gap: 20px !important;
 }
 #questionScreen .iar-lumi-feedback img { width: 106px !important; height: 120px !important; object-fit: contain !important; }
@@ -3868,13 +3891,13 @@ body {
 #questionScreen .iar-bottom-actions .iar-main-button { height: 54px !important; min-width: 150px !important; font-size: 21px !important; }
 
 @media (max-height: 960px) {
-  #questionScreen .iar-panel { grid-template-rows: auto minmax(0, 1fr) 150px auto !important; gap: 12px !important; padding: 22px 32px !important; }
+  #questionScreen .iar-panel { grid-template-rows: auto minmax(0, 1fr) minmax(142px, auto) auto !important; gap: 12px !important; padding: 22px 32px !important; }
   #questionScreen .iar-qa-card { padding: 14px 24px !important; gap: 8px !important; }
   #questionScreen .iar-qa-card h3 { font-size: 25px !important; }
   #questionScreen .iar-qa-card label { gap: 6px !important; font-size: 20px !important; }
   #questionScreen .iar-qa-card .iar-input { height: 48px !important; }
   #questionScreen .iar-qa-card .iar-textarea { height: 110px !important; min-height: 110px !important; padding: 10px 16px !important; }
-  #questionScreen .iar-lumi-feedback { height: 150px !important; min-height: 150px !important; padding: 12px 20px !important; }
+  #questionScreen .iar-lumi-feedback { height: auto !important; min-height: 142px !important; padding: 10px 20px !important; }
   #questionScreen .iar-lumi-intro strong { font-size: 26px !important; }
   #questionScreen .iar-lumi-intro small { font-size: 20px !important; }
   #questionScreen .iar-bottom-actions { margin-top: 10px !important; }
@@ -3995,7 +4018,7 @@ body {
 
           <div class="iar-lumi-feedback">
             <img src="../assets/images/after-read/after-read-lumi-guide.png" alt="피드백을 주는 루미">
-            <div class="iar-lumi-intro"><span class="iar-lumi-badge">선택</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong><small>내가 쓴 질문과 답에 대한 조언이나 새로운 생각을 들을 수 있어요.</small></div>
+            <div class="iar-lumi-intro"><span class="iar-lumi-badge">선택 활동</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong></div>
             <div class="iar-feedback-text" id="questionFeedback"></div>
             <div class="iar-lumi-feedback-actions">
   <button
@@ -4024,7 +4047,6 @@ body {
     class="iar-main-button primary"
     id="goSummaryButton"
     onclick="goToNextQuestionCard()"
-    disabled
   >
     다음으로
   </button>
@@ -4060,14 +4082,14 @@ body {
 
           <div class="iar-lumi-feedback">
             <img src="../assets/images/after-read/after-read-lumi-guide.png" alt="피드백을 주는 루미">
-            <div class="iar-lumi-intro"><span class="iar-lumi-badge">선택</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong><small>내가 쓴 글에 대한 조언이나 새로운 생각을 들을 수 있어요.</small></div>
+            <div class="iar-lumi-intro"><span class="iar-lumi-badge">선택 활동</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong></div>
             <div class="iar-feedback-text" id="summaryFeedback"></div>
             <div class="iar-lumi-feedback-actions"><button type="button" class="iar-lumi-feedback-action" id="checkSummaryButton" onclick="checkSummaryFeedback()">확인받기</button></div>
           </div>
 
           <div class="iar-bottom-actions">
             <button type="button" class="iar-main-button" onclick="showQuestionScreen()">이전으로</button>
-            <button type="button" class="iar-main-button primary" id="finishAfterButton" onclick="finishAfterReading()" disabled>저장하고 완료하기</button>
+            <button type="button" class="iar-main-button primary" id="finishAfterButton" onclick="finishAfterReading()">저장하고 완료하기</button>
           </div>
         </article>
       </section>
@@ -4194,6 +4216,7 @@ body {
 
   <script src="../js/auth.js"></script>
   <script src="../js/demo-storage.js"></script>
+  <script src="../js/individual-min-input.js"></script>
   <script>
     const studentId = sessionStorage.getItem("studentId") || sessionStorage.getItem("id") || "student-demo";
     document.getElementById("demoSummaryExampleBanner").hidden = true;
@@ -4448,7 +4471,7 @@ async function moveSummaryDate(dayOffset) {
         summaryFeedbackPassed = summary.aiPassed === true;
 
         const finishAfterButton = document.getElementById("finishAfterButton");
-        if (finishAfterButton) finishAfterButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
+        if (finishAfterButton) finishAfterButton.disabled = false;
 
         if (summaryFeedbackPassed) {
           setFeedback("summaryFeedback", "good", "이전에 저장한 간추리기예요. 그대로 완료할 수 있어요.");
@@ -4594,7 +4617,7 @@ async function moveSummaryDate(dayOffset) {
      * 버튼을 켠다 - 저장돼 있다고 해서(summaryPassed가 false인 채로도
      * 자동저장/이전 값 복원이 될 수 있다) 무조건 통과로 간주하면 안 된다.
      */
-    if (finishButton) finishButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
+    if (finishButton) finishButton.disabled = false;
   }
 
   /*
@@ -4677,7 +4700,7 @@ async function moveSummaryDate(dayOffset) {
           summaryFeedbackPassed = false;
           summaryAiRequestId++;
           const finishAfterButton = document.getElementById("finishAfterButton");
-          if (finishAfterButton) finishAfterButton.disabled = !isDemoAccount();
+          if (finishAfterButton) finishAfterButton.disabled = false;
           setFeedback("summaryFeedback", "need", "간추린 내용이 바뀌었어. 다시 루미 피드백을 받아줘.");
           persistDemoAfterReadingState();
         }
@@ -4764,7 +4787,7 @@ async function moveSummaryDate(dayOffset) {
        * 그대로 반영만 한다.
        */
       const finishButton = document.getElementById("finishAfterButton");
-      if (finishButton) finishButton.disabled = !isDemoAccount() && !summaryFeedbackPassed;
+      if (finishButton) finishButton.disabled = false;
 
       persistDemoAfterReadingState();
     }
@@ -4974,23 +4997,43 @@ async function moveSummaryDate(dayOffset) {
       const number = cards.indexOf(card) + 1;
       const item = getQuestionAnswerFromCard(card);
       const usedQuestionTexts = getPassedQuestionTexts(card);
-      const problems = validateQuestionAnswer(item, number, usedQuestionTexts);
 
       // 다시 확인받기를 누르면 이전 판정에 딸려 있던 "다음 질문으로"는
       // 더 이상 유효하지 않으므로 항상 숨긴다.
       cardPendingAdvance = null;
       setNextQuestionButtonVisible(false);
 
+      /*
+       * 개별읽기 AI 피드백은 선택 도움 기능이므로, 최소 작성 기준(질문·답이
+       * 실제로 있는지)은 AI 호출과 별개로 여기서 먼저 확인한다. 심사/demo
+       * 계정은 이 검사를 건너뛴다.
+       */
+      if (!isDemoAccount()) {
+        const validation = validateIndividualMinimumInput(item.question, item.answer);
+
+        if (!validation.valid) {
+          const focusTarget = validation.field === "answer"
+            ? card.querySelector(".qa-answer")
+            : card.querySelector(".qa-question");
+          showIndividualMinInputModal(validation.message, focusTarget, validation.title);
+          return;
+        }
+      }
+
+      const problems = validateQuestionAnswer(item, number, usedQuestionTexts);
+
       if (problems.length > 0) {
-        card.dataset.feedbackPassed = "false";
-        card.classList.remove("passed");
-        setFeedback("questionFeedback", "need", `<b>고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
-        updateSequentialQuestionLock();
+        /*
+         * 확인받기 전용 형식 검증(물음표로 끝나는지, 길이, 중복 등)에는
+         * 걸리지만 최소 작성 기준은 이미 충족했으므로, AI를 부르지 않고
+         * 그대로 저장해 진행할 수 있게 한다(applyIndividualQuestionAiResult가
+         * good/need 공통 저장·진행 경로를 담당한다).
+         */
+        const message = `<b>고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`;
+        applyIndividualQuestionAiResult(card, item, number, "need", message);
         return;
       }
 
-      // 형식 체크만 통과한 상태. AI 판정이 오기 전까지는 카드를
-      // 통과 처리하지도, 다음 카드로 넘기지도 않는다.
       requestIndividualQuestionAiFeedback(card, item, number);
     }
 
@@ -5062,24 +5105,40 @@ async function moveSummaryDate(dayOffset) {
     let cardPendingAdvance = null;
 
     /*
-      AI가 good으로 판정한 직후에만 서버에 저장한다(읽기 전/읽기 중과 같은
-      관례). 저장이 실패하면 통과 처리를 하지 않고 다시 시도하도록 안내해서
-      "화면은 통과했는데 DB에는 없는" 상태가 생기지 않게 한다.
+      확인받기를 아예 누르지 않고 "다음"을 바로 눌렀을 때(goToNextQuestionCard
+      전용) 쓰는 단순 저장 경로 - AI 판정 자체가 없으므로 aiPassed는
+      undefined로 보낸다(서버는 null이면 true로 취급). cardPendingAdvance/
+      다음 질문 버튼 노출 같은 "확인받기 이후" UI는 건드리지 않는다 -
+      호출부가 이미 다음으로 넘어가는 중이기 때문이다.
+    */
+    async function saveQuestionCardResponse(card, item, number, aiPassed, aiFeedback) {
+      const saved = await saveAfterResponseToServer(number, item.question, item.answer, aiPassed, aiFeedback);
+
+      if (!saved) {
+        card.dataset.feedbackPassed = "false";
+        card.classList.remove("passed");
+        return false;
+      }
+
+      card.dataset.feedbackPassed = "true";
+      card.classList.add("passed");
+
+      if (isDemoAccount()) persistDemoAfterReadingState();
+
+      return true;
+    }
+
+    /*
+      개별읽기 AI 피드백은 학생이 선택적으로 쓰는 도움 기능이다 - "수정
+      필요(need)" 판정이 나와도 최소 작성 기준(공백 아님)은 이미 통과했으므로
+      그대로 저장하고 다음 카드/질문으로 진행할 수 있게 한다. AI 판정
+      결과(status)는 aiPassed로 참고용 저장만 되고, 진행 가능 여부에는
+      더 이상 영향을 주지 않는다.
     */
     async function applyIndividualQuestionAiResult(card, item, number, status, message) {
       setFeedback("questionFeedback", status, message);
 
-      if (status !== "good") {
-        // AI가 need로 판정하면 통과 처리하지 않고 이 카드에 그대로 머무른다.
-        card.dataset.feedbackPassed = "false";
-        card.classList.remove("passed");
-        cardPendingAdvance = null;
-        setNextQuestionButtonVisible(false);
-        updateSequentialQuestionLock();
-        return;
-      }
-
-      const saved = await saveAfterResponseToServer(number, item.question, item.answer, true, message);
+      const saved = await saveAfterResponseToServer(number, item.question, item.answer, status === "good", message);
 
       if (!saved) {
         setFeedback("questionFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
@@ -5091,10 +5150,11 @@ async function moveSummaryDate(dayOffset) {
         return;
       }
 
-      // 서버 저장이 끝난 뒤에만 카드를 통과 처리해 두고, 다음 카드로
-      // 넘어가는 것은 학생이 "다음 질문으로"를 눌러야 실행된다.
+      // 서버 저장이 끝난 뒤에만 카드를 통과(=저장 완료) 처리해 두고, 다음
+      // 카드로 넘어가는 것은 학생이 "다음 질문으로"를 눌러야 실행된다.
       card.dataset.feedbackPassed = "true";
       card.classList.add("passed");
+      updateSequentialQuestionLock();
 
       /* passed=true가 DOM에 반영된 뒤 저장해야 최신 통과본으로 남는다. */
       if (isDemoAccount()) persistDemoAfterReadingState();
@@ -5168,11 +5228,11 @@ async function moveSummaryDate(dayOffset) {
   const button = document.getElementById("goSummaryButton");
 
   if (button) {
-    button.disabled = isDemoAccount() ? false : !visible;
+    button.disabled = false;
   }
 }
 
-    function goToNextQuestionCard() {
+    async function goToNextQuestionCard() {
   const cards = Array.from(
     document.querySelectorAll("#qaList .iar-qa-card")
   );
@@ -5183,12 +5243,36 @@ async function moveSummaryDate(dayOffset) {
     return;
   }
 
-  const currentPassed =
-    currentCard.dataset.feedbackPassed === "true";
+  let currentPassed = currentCard.dataset.feedbackPassed === "true";
 
+  if (!isDemoAccount()) {
+    const currentItem = getQuestionAnswerFromCard(currentCard);
+    const validation = validateIndividualMinimumInput(currentItem.question, currentItem.answer);
+    if (!validation.valid) {
+      const focusTarget = validation.field === "answer"
+        ? currentCard.querySelector(".qa-answer")
+        : currentCard.querySelector(".qa-question");
+      showIndividualMinInputModal(validation.message, focusTarget, validation.title);
+      return;
+    }
+  }
+
+  /*
+   * 확인받기를 한 번도 누르지 않고 바로 "다음"을 눌러도 진행할 수 있어야
+   * 한다(AI 확인은 선택 도움 기능) - 최소 작성 기준만 만족하면 여기서
+   * 바로 저장한 뒤 진행한다. 심사/demo 계정은 이 검사·저장을 건너뛴다.
+   */
   if (!currentPassed && !isDemoAccount()) {
-    alert("현재 질문과 답을 먼저 루미에게 확인받아 주세요.");
-    return;
+    const number = activeQuestionCardIndex + 1;
+    const item = getQuestionAnswerFromCard(currentCard);
+    currentPassed = await saveQuestionCardResponse(currentCard, item, number, undefined, "");
+
+    if (!currentPassed) {
+      showIndividualMinInputModal("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
+
+    updateSequentialQuestionLock();
   }
 
   cardPendingAdvance = null;
@@ -5212,7 +5296,7 @@ async function moveSummaryDate(dayOffset) {
   updateQuestionProgress();
 
   if (!questionFeedbackPassed && !isDemoAccount()) {
-    alert("질문 1, 2, 3을 모두 확인해 주세요.");
+    showIndividualMinInputModal("질문과 답을 적은 뒤 다음으로 넘어갈 수 있어요.");
     return;
   }
 
@@ -5299,8 +5383,7 @@ function goToPreviousQuestionCard() {
   if (goSummaryButton) {
   const currentCard = cards[activeQuestionCardIndex];
 
-  goSummaryButton.disabled = !isDemoAccount() && (
-    !currentCard || currentCard.dataset.feedbackPassed !== "true");
+  goSummaryButton.disabled = false;
 }
 
   updateSequentialQuestionLock();
@@ -5400,9 +5483,50 @@ function goToPreviousQuestionCard() {
 
     let summaryAiRequestId = 0;
 
+    /*
+      확인받기의 good/need 판정, 그리고 형식 사전 검증(20자 미만) 실패
+      경로가 모두 이 함수 하나로 저장을 처리한다 - AI 피드백은 선택 도움
+      기능이므로 need여도 최소 작성 기준(공백 아님)만 충족했으면 저장하고
+      "완료하기" 버튼을 활성화한다.
+    */
+    async function applySummarySaveResult(summaryText, aiPassed) {
+      const saved = editingRejectedSummary
+        ? { rejectedSummaryChecked: true }
+        : await saveAfterSummaryToServer(selectedBookType, summaryText, aiPassed);
+
+      if (!saved) {
+        summaryFeedbackPassed = false;
+        document.getElementById("finishAfterButton").disabled = false;
+        setFeedback("summaryFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        return false;
+      }
+
+      summaryFeedbackPassed = true;
+      document.getElementById("finishAfterButton").disabled = false;
+      return true;
+    }
+
     async function checkSummaryFeedback() {
   const questionAnswers = getQuestionAnswers();
   const summaryText = document.getElementById("summaryInput").value.trim();
+
+  /*
+   * 개별읽기 AI 피드백은 선택 도움 기능이므로, 최소 작성 기준(간추리기가
+   * 실제로 있는지)은 AI 호출과 별개로 여기서 먼저 확인한다. 심사/demo
+   * 계정은 이 검사를 건너뛴다.
+   */
+  if (!isDemoAccount()) {
+    const validation = validateIndividualSummaryMinimumInput(summaryText);
+    if (!validation.valid) {
+      showIndividualMinInputModal(
+        validation.message,
+        document.getElementById("summaryInput"),
+        validation.title
+      );
+      return;
+    }
+  }
+
   const problems = [];
 
   if (summaryText.length < 20) {
@@ -5410,9 +5534,13 @@ function goToPreviousQuestionCard() {
   }
 
   if (problems.length > 0) {
-    summaryFeedbackPassed = false;
-    document.getElementById("finishAfterButton").disabled = !isDemoAccount();
+    /*
+     * 확인받기 전용 형식 검증(최소 글자 수)에는 걸리지만 최소 작성 기준은
+     * 이미 충족했으므로, AI를 부르지 않고 그대로 저장해 진행할 수 있게
+     * 한다.
+     */
     setFeedback("summaryFeedback", "need", `<b>아직 고칠 부분이 있어.</b><ul class="iar-feedback-list"><li>${problems.join("</li><li>")}</li></ul>`);
+    await applySummarySaveResult(summaryText, undefined);
     return;
   }
 
@@ -5420,7 +5548,7 @@ function goToPreviousQuestionCard() {
   const checkButton = document.getElementById("checkSummaryButton");
 
   summaryFeedbackPassed = false;
-  document.getElementById("finishAfterButton").disabled = !isDemoAccount();
+  document.getElementById("finishAfterButton").disabled = false;
   if (checkButton) checkButton.disabled = true;
 
   setFeedback("summaryFeedback", "", "루미가 답변을 읽고 있어요...");
@@ -5457,27 +5585,18 @@ function goToPreviousQuestionCard() {
 
     setFeedback("summaryFeedback", result.status, result.message);
 
-    if (result.status === "good") {
-      /* 거절글 수정 모드는 검사 단계에서 DB 상태를 바꾸지 않는다. */
-      const saved = editingRejectedSummary
-        ? { rejectedSummaryChecked: true }
-        : await saveAfterSummaryToServer(selectedBookType, summaryText, true);
+    /*
+     * AI가 need로 판정해도 최소 작성 기준은 이미 통과했으므로 그대로
+     * 저장한다 - 개별읽기 AI 피드백은 선택 도움 기능이다.
+     */
+    await applySummarySaveResult(summaryText, result.status === "good");
 
-      if (requestId !== summaryAiRequestId) return;
-
-      if (!saved) {
-        summaryFeedbackPassed = false;
-        document.getElementById("finishAfterButton").disabled = !isDemoAccount();
-        setFeedback("summaryFeedback", "need", "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
-        return;
-      }
-
-      summaryFeedbackPassed = true;
-      document.getElementById("finishAfterButton").disabled = false;
-    }
-  }).catch(function() {
+    if (requestId !== summaryAiRequestId) return;
+  }).catch(async function() {
     if (requestId !== summaryAiRequestId) return;
     setFeedback("summaryFeedback", "need", "루미가 지금 간추린 내용을 읽지 못했어. 다시 한 번 눌러줘.");
+    /* AI 호출 자체가 실패해도 최소 작성 기준은 충족했으므로 저장은 시도한다. */
+    await applySummarySaveResult(summaryText, undefined);
   }).finally(function() {
     if (requestId !== summaryAiRequestId) return;
     if (checkButton) checkButton.disabled = false;
@@ -5543,15 +5662,31 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
       직접 계산하지 않는다).
     */
     async function finishAfterReading() {
-  /* 일반계정은 기존 AI GOOD gate를 유지하고 심사계정만 검사 없이
-     완료·공유할 수 있다. */
-  if (!isDemoAccount() && !summaryFeedbackPassed) {
-    alert("먼저 루미 피드백을 통과해야 해!");
-    return;
-  }
-
   const summaryText = document.getElementById("summaryInput").value.trim();
   const questionAnswers = getQuestionAnswers();
+
+  /*
+   * 개별읽기 AI 피드백은 선택 도움 기능이므로, "완료하기"는 AI 통과
+   * 여부(summaryFeedbackPassed)가 아니라 최소 작성 기준으로 진행 가능
+   * 여부를 판단한다. 확인받기를 한 번도 누르지 않았어도 여기서 바로
+   * 저장하고 진행할 수 있다. 심사/demo 계정은 이 검사를 건너뛴다.
+   */
+  if (!isDemoAccount() && !summaryFeedbackPassed) {
+    const validation = validateIndividualSummaryMinimumInput(summaryText);
+    if (!validation.valid) {
+      showIndividualMinInputModal(
+        validation.message,
+        document.getElementById("summaryInput"),
+        validation.title
+      );
+      return;
+    }
+
+    const saved = await applySummarySaveResult(summaryText, undefined);
+    if (!saved) {
+      return;
+    }
+  }
 
   if (editingRejectedSummary) {
     const resubmitted = await resubmitRejectedIndividualSummary(summaryText);
@@ -6992,7 +7127,7 @@ async function saveBookFinishRecord() {
       summaryFeedbackPassed = false;
       summaryAiRequestId++;
       const finishButton = document.getElementById("finishAfterButton");
-      if (finishButton) finishButton.disabled = !isDemoAccount();
+      if (finishButton) finishButton.disabled = false;
       setFeedback(
         "summaryFeedback",
         "need",
@@ -7254,7 +7389,7 @@ function getTodayText() {
     }
 
     function shrinkAiFeedbackFontToFit(box) {
-      const minFontSize = 20;
+      const minFontSize = 30;
       let fontSize = parseFloat(window.getComputedStyle(box).fontSize);
 
       while (box.scrollHeight > box.clientHeight && fontSize > minFontSize) {

@@ -912,6 +912,41 @@ body {
   filter: brightness(1.15);
 }
 
+.sound-toggle-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid rgba(214, 168, 74, 0.68);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 216, 117, 0.16), transparent 48%),
+    linear-gradient(180deg, rgba(32, 21, 7, 0.94), rgba(8, 5, 2, 0.96));
+  color: #f1d27a;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow:
+    0 0 18px rgba(255, 216, 117, 0.12),
+    inset 0 0 18px rgba(255, 216, 117, 0.04);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sound-toggle-btn:hover {
+  transform: scale(1.06);
+  filter: brightness(1.15);
+}
+
+.sound-toggle-btn.muted {
+  color: #8a7a52;
+  border-color: rgba(214, 168, 74, 0.35);
+}
+
 .battle-title-block {
   display: flex;
   flex-direction: column;

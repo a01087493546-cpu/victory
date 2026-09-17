@@ -2,8 +2,6 @@ package com.victory.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import com.victory.dto.IndividualAchievementLevel;
@@ -80,17 +78,22 @@ class IndividualAchievementCalculatorTest {
         assertThat(calculator.stageCompletionRate(0)).isEqualTo(0.0);
     }
 
-    /* 검증 15: 검사 대상 0개 → 0점 */
+    /* 기록충실도: 핵심 기록 5개 모두 충족 → 100점. AI 통과 여부는 전혀 입력받지 않는다. */
     @Test
-    void contentSuitabilityScore_zeroInspected_ReturnsZero() {
-        assertThat(calculator.contentSuitabilityScore(0, 0)).isEqualTo(0.0);
+    void recordFaithfulnessScore_allFiveFulfilled_Returns100() {
+        assertThat(calculator.recordFaithfulnessScore(true, true, true, true, true)).isEqualTo(100.0);
     }
 
-    /* 검증 14: 분모 3, 성공 2 → 약 66.67 */
+    /* 기록충실도: 핵심 기록 5개 중 4개 충족 → 80점 */
     @Test
-    void contentSuitabilityScore_twoOfThree_ReturnsExpected() {
-        assertThat(calculator.contentSuitabilityScore(2, 3))
-            .isCloseTo(66.67, org.assertj.core.data.Offset.offset(0.01));
+    void recordFaithfulnessScore_fourOfFive_Returns80() {
+        assertThat(calculator.recordFaithfulnessScore(true, true, true, true, false)).isEqualTo(80.0);
+    }
+
+    /* 기록충실도: 아무 기록도 없음 → 0점 */
+    @Test
+    void recordFaithfulnessScore_none_ReturnsZero() {
+        assertThat(calculator.recordFaithfulnessScore(false, false, false, false, false)).isEqualTo(0.0);
     }
 
     @Test
@@ -144,42 +147,13 @@ class IndividualAchievementCalculatorTest {
         assertThat(calculator.achievementLevel(0)).isEqualTo(IndividualAchievementLevel.NEED_SUPPORT);
     }
 
-    /* 검증 11: evaluationKey A - 1회 need, 2회 good → 성공 */
-    @Test
-    void passedWithinAttemptLimit_needThenGood_ReturnsTrue() {
-        assertThat(calculator.passedWithinAttemptLimit(List.of("need", "good"))).isTrue();
-    }
-
-    /* 검증 12: evaluationKey B - 1~3회 need, 4회 good → 실패 */
-    @Test
-    void passedWithinAttemptLimit_goodOnlyAfterFourthAttempt_ReturnsFalse() {
-        assertThat(calculator.passedWithinAttemptLimit(List.of("need", "need", "need", "good"))).isFalse();
-    }
-
-    /* 검증 13: evaluationKey C - 1회 good → 성공 */
-    @Test
-    void passedWithinAttemptLimit_firstAttemptGood_ReturnsTrue() {
-        assertThat(calculator.passedWithinAttemptLimit(List.of("good"))).isTrue();
-    }
-
-    @Test
-    void passedWithinAttemptLimit_neverGood_ReturnsFalse() {
-        assertThat(calculator.passedWithinAttemptLimit(List.of("need", "need", "need"))).isFalse();
-    }
-
-    @Test
-    void passedWithinAttemptLimit_emptyOrNull_ReturnsFalse() {
-        assertThat(calculator.passedWithinAttemptLimit(List.of())).isFalse();
-        assertThat(calculator.passedWithinAttemptLimit(null)).isFalse();
-    }
-
     /* 검증 26: 점수는 0~100 범위를 벗어나지 않는다 */
     @Test
     void scores_neverExceedUpperOrLowerBound() {
         assertThat(calculator.readingDaysScore(1000)).isEqualTo(50.0);
         assertThat(calculator.activityTypeScore(1000)).isEqualTo(50.0);
         assertThat(calculator.readingPracticeScore(50.0, 50.0)).isEqualTo(100.0);
-        assertThat(calculator.contentSuitabilityScore(999, 3)).isEqualTo(100.0);
+        assertThat(calculator.recordFaithfulnessScore(true, true, true, true, true)).isEqualTo(100.0);
         assertThat(calculator.recordCompletionScore(100.0, 100.0)).isEqualTo(100.0);
         assertThat(calculator.overallAchievementScore(100.0, 100.0)).isEqualTo(100.0);
         assertThat(calculator.roundedOverallAchievementScore(150.0)).isEqualTo(100);

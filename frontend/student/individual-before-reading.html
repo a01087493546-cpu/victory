@@ -1761,7 +1761,7 @@
     /* 개별 읽기: 확인 전 안내 */
     .ibr-lumi-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-width: 0; }
     .ibr-lumi-badge { padding: 5px 15px; border-radius: 14px; background: #f7dfb3; color: #7b4b18; font-size: 20px; font-weight: 800; }
-    .ibr-lumi-copy strong { font-size: 30px; line-height: 1.25; }
+    .ibr-lumi-copy strong { font-size: 30px; font-weight: 800; line-height: 1.25; }
     .ibr-lumi-copy small { color: #8d8174; font-size: 24px; font-weight: 500; line-height: 1.35; }
     #feedbackText:empty { display: none; }
     #feedbackText:not(:empty) { margin-top: 5px; font-size: 14px; }
@@ -1904,12 +1904,11 @@
                   <div class="ibr-feedback-row" id="feedbackRow">
                     <div class="ibr-feedback" id="feedbackBox">
                       <img src="../assets/images/individual-reading/today-reading-lumi-guide.png" alt="루미">
-                      <div class="ibr-lumi-copy"><span class="ibr-lumi-badge">선택</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong><small>내가 쓴 질문과 답에 대한 조언이나 새로운 생각을 들을 수 있어요.</small><span id="feedbackText"></span></div>
+                      <div class="ibr-lumi-copy"><span class="ibr-lumi-badge">선택 활동</span><strong>도움이 필요하면 루미에게 확인받아 보세요.</strong><span id="feedbackText"></span></div>
+                      <button type="button" class="ibr-button primary ibr-check-button" id="checkAnswerButton" onclick="handleMainAction()">
+                        확인받기
+                      </button>
                     </div>
-
-                    <button type="button" class="ibr-button primary ibr-check-button" id="checkAnswerButton" onclick="handleMainAction()">
-                      확인받기
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1925,7 +1924,7 @@
             <button type="button" class="ibr-button" id="tocSkipButton" onclick="handleTocSkipButtonClick()" style="display: none;">
               차례 없음
             </button>
-            <button type="button" class="ibr-button primary" id="nextStepButton" onclick="goNextQuestionStep()" style="display: none;" disabled>
+            <button type="button" class="ibr-button primary" id="nextStepButton" onclick="goNextQuestionStep()" style="display: none;">
               다음 →
             </button>
           </div>
@@ -1962,6 +1961,7 @@
   <script src="../js/demo-storage.js"></script>
   <script src="../js/ai-feedback.js"></script>
   <script src="../js/pre-reading-validation.js"></script>
+  <script src="../js/individual-min-input.js"></script>
 
   <script>
     // 개발 중 화면 확인을 위해 로그인 체크를 잠시 꺼둡니다.
@@ -2264,7 +2264,7 @@ function selectBookType(type) {
     function setNextStepButtonEnabled(enabled) {
       const nextStepButton = document.getElementById("nextStepButton");
       if (!nextStepButton) return;
-      nextStepButton.disabled = isDemoAccount() ? false : !enabled;
+      nextStepButton.disabled = false;
     }
 
     function resetIndividualPreReadingFeedbackOnEdit() {
@@ -2310,19 +2310,24 @@ function selectBookType(type) {
         return;
       }
 
-      if (!answer.passed) {
-        return;
+      if (answer.passed) {
+        answer.passed = false;
+        individualPreReadingAiRequestId++;
+
+        if (feedbackBox && feedbackText) {
+          feedbackBox.classList.remove("good", "need");
+          feedbackText.textContent = "질문이나 답을 바꿨으니 검사하기를 다시 눌러 줘!";
+        }
       }
 
-      answer.passed = false;
-      individualPreReadingAiRequestId++;
-
-      setNextStepButtonEnabled(false);
-
-      if (feedbackBox && feedbackText) {
-        feedbackBox.classList.remove("good", "need");
-        feedbackText.textContent = "질문이나 답을 바꿨으니 검사하기를 다시 눌러 줘!";
-      }
+      /*
+       * AI 확인 여부와 무관하게, 실제로 적은 질문·답이 있으면 다음으로
+       * 넘어갈 수 있어야 한다(선택 도움 기능 정책) - 매 입력마다 최소
+       * 작성 기준으로 다시 판단한다.
+       */
+      setNextStepButtonEnabled(
+        individualHasMeaningfulRecord(currentQuestion) && individualHasMeaningfulRecord(currentAnswerText)
+      );
     }
 
     function renderAll() {
@@ -2540,7 +2545,17 @@ updateDemoBanner(isBookStep);
         nextStepButton.textContent = currentStepIndex === steps.length - 1
           ? "읽기 전 활동 완료하기"
           : "다음 →";
-        setNextStepButtonEnabled(!!(answer && answer.passed));
+        /*
+         * 개별읽기 AI 피드백은 선택 도움 기능이므로, "다음" 버튼은 AI 통과
+         * 여부(answer.passed)가 아니라 최소 작성 기준(질문·답이 실제로
+         * 있는지)만으로 활성화한다. 심사/demo 계정은 setNextStepButtonEnabled
+         * 내부에서 항상 켜진다.
+         */
+        setNextStepButtonEnabled(
+          isContentsSkipped ||
+          !!(answer && individualHasMeaningfulRecord(answer.question)
+            && individualHasMeaningfulRecord(answer.expectedAnswer))
+        );
       }
 
       /*
@@ -2849,7 +2864,15 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
 
         answers[answerIndex].passed = false;
 
-        setNextStepButtonEnabled(false);
+        /*
+         * 확인받기 전용 사전 검증(validatePreReadingQuestionAndAnswer)은
+         * AI 호출을 낭비하지 않기 위한 것일 뿐, "다음" 진행 가능 여부는
+         * 이것과 별개로 최소 작성 기준만 따른다 - 여기서 실패해도 실제
+         * 작성된 내용이 있으면 다음 버튼을 막지 않는다.
+         */
+        setNextStepButtonEnabled(
+          individualHasMeaningfulRecord(question) && individualHasMeaningfulRecord(expectedAnswer)
+        );
 
         return;
       }
@@ -2860,7 +2883,49 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
       requestIndividualPreReadingAiFeedback(feedbackBox, feedbackText, question, expectedAnswer);
     }
 
-    function goNextQuestionStep() {
+    /*
+     * "다음" 버튼의 진짜 진행 가능 여부 판정. AI 확인받기를 눌렀는지와
+     * 무관하게, 실제 질문·답 기록이 있으면(최소 작성 기준) 진행할 수
+     * 있다. 심사/demo 계정은 이 최소 기준 검사를 완전히 건너뛴다(기존
+     * 심사 편의 유지) - AI fail 여부도 마찬가지로 막지 않는다.
+     */
+    async function goNextQuestionStep() {
+      const answer = answers[currentStepIndex - 1];
+
+      if (!isDemoAccount() && !(answer && answer.skipped)) {
+        const question = document.getElementById("questionInput").value.trim();
+        const expectedAnswer = document.getElementById("answerInput").value.trim();
+        const validation = validateIndividualMinimumInput(question, expectedAnswer);
+
+        if (!validation.valid) {
+          const focusTarget = validation.field === "answer"
+            ? document.getElementById("answerInput")
+            : document.getElementById("questionInput");
+          showIndividualMinInputModal(validation.message, focusTarget, validation.title);
+          return;
+        }
+
+        const alreadySaved = answer
+          && answer.savedQuestion === question
+          && answer.savedAnswer === expectedAnswer;
+
+        if (!alreadySaved) {
+          const stepType = steps[currentStepIndex].key;
+          const saved = await saveIndividualBeforeResponseToServer(stepType, question, expectedAnswer);
+
+          if (!saved) {
+            showIndividualMinInputModal("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
+            return;
+          }
+
+          lastBeforeStepSaveResult = saved;
+          answer.question = question;
+          answer.expectedAnswer = expectedAnswer;
+          answer.savedQuestion = question;
+          answer.savedAnswer = expectedAnswer;
+        }
+      }
+
       if (currentStepIndex < steps.length - 1) {
         currentStepIndex++;
         renderAll();
@@ -3048,18 +3113,11 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
 
           feedbackBox.classList.remove("good", "need");
 
-          if (!result.isGood) {
-            feedbackBox.classList.add("need");
-            feedbackText.textContent = result.message;
-            answers[answerIndex].passed = false;
-
-            setNextStepButtonEnabled(false);
-            return;
-          }
-
           /*
-            AI 검사와 DB 저장을 분리한다: AI가 good을 줘도 저장이 실패하면
-            그 단계를 완료 처리하지 않는다(입력한 내용은 화면에 그대로 남김).
+            개별읽기 AI 피드백은 선택 도움 기능이다 - "수정 필요(need)"
+            판정이 나와도 최소 작성 기준(공백 아님)은 이미 충족한 상태이므로
+            그대로 저장하고 다음으로 진행할 수 있게 한다. 학생이 조언을 보고
+            고칠지 그대로 둘지는 스스로 판단한다.
           */
           const stepType = steps[currentStepIndex].key;
           const saved = await saveIndividualBeforeResponseToServer(stepType, question, answer);
@@ -3070,20 +3128,26 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
 
           if (!saved) {
             feedbackBox.classList.add("need");
-            feedbackText.textContent = "질문과 답을 저장하지 못했어요. 잠시 후 검사하기를 다시 눌러 줘.";
+            feedbackText.textContent = "질문과 답을 저장하지 못했어요. 잠시 후 다시 시도해 줘.";
             answers[answerIndex].passed = false;
 
-            setNextStepButtonEnabled(false);
+            setNextStepButtonEnabled(true);
             return;
           }
 
           lastBeforeStepSaveResult = saved;
-
-          feedbackBox.classList.add("good");
-          feedbackText.textContent = result.message;
-          answers[answerIndex].passed = true;
           answers[answerIndex].savedQuestion = question;
           answers[answerIndex].savedAnswer = answer;
+
+          if (!result.isGood) {
+            feedbackBox.classList.add("need");
+            feedbackText.textContent = result.message;
+            answers[answerIndex].passed = false;
+          } else {
+            feedbackBox.classList.add("good");
+            feedbackText.textContent = result.message;
+            answers[answerIndex].passed = true;
+          }
 
           setNextStepButtonEnabled(true);
         }
@@ -3993,12 +4057,27 @@ function goTodayAdventure() {
 .ibr-page:not(.book-step) .ibr-check-button,
 .ibr-page:not(.book-step) .ibr-actions .ibr-button { font-size: 24px !important; min-height: 62px !important; }
 .ibr-page:not(.book-step) .ibr-check-button { height: 72px !important; min-width: 180px; padding: 0 34px; font-size: 28px !important; }
-.ibr-page:not(.book-step) .ibr-form-card { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 230px !important; }
-.ibr-page:not(.book-step) #feedbackText:not(:empty) { font-size: 21px !important; }
+.ibr-page:not(.book-step) .ibr-form-card { grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 216px !important; }
+.ibr-page:not(.book-step) #feedbackText {
+  display: none;
+}
+.ibr-page:not(.book-step) .ibr-feedback.good #feedbackText,
+.ibr-page:not(.book-step) .ibr-feedback.need #feedbackText {
+  display: inline;
+  font-size: 30px !important;
+  line-height: 1.5 !important;
+  overflow-wrap: break-word;
+}
+.ibr-page:not(.book-step) .ibr-feedback.good .ibr-lumi-badge,
+.ibr-page:not(.book-step) .ibr-feedback.good .ibr-lumi-copy > strong,
+.ibr-page:not(.book-step) .ibr-feedback.need .ibr-lumi-badge,
+.ibr-page:not(.book-step) .ibr-feedback.need .ibr-lumi-copy > strong {
+  display: none !important;
+}
 
 @media (max-height: 760px) {
   .ibr-page:not(.book-step) .ibr-form-card {
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 230px !important;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) 216px !important;
   }
 
   .ibr-page:not(.book-step) .ibr-feedback {
@@ -4010,6 +4089,43 @@ function goTodayAdventure() {
   .ibr-page:not(.book-step) .ibr-feedback img {
     width: 114px !important;
     height: 138px !important;
+  }
+}
+
+/* 루미·안내/피드백·확인받기를 하나의 가로 카드 안에 배치합니다. */
+.ibr-page:not(.book-step) .ibr-feedback-row {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.ibr-page:not(.book-step) .ibr-feedback-row .ibr-feedback {
+  width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: 142px minmax(0, 1fr) 180px !important;
+  gap: 20px !important;
+}
+
+.ibr-page:not(.book-step) .ibr-feedback-row .ibr-feedback:not(.good):not(.need) {
+  background: #fff9f0 !important;
+  border: 1px solid #cdaa7f !important;
+  box-shadow: 0 6px 16px rgba(112, 75, 38, 0.08) !important;
+}
+
+.ibr-page:not(.book-step) .ibr-feedback-row .ibr-check-button {
+  grid-column: 3;
+  align-self: center;
+  justify-self: end;
+  flex-shrink: 0;
+  margin-right: 0;
+}
+
+@media (max-height: 760px) {
+  .ibr-page:not(.book-step) .ibr-feedback-row .ibr-feedback {
+    grid-template-columns: 120px minmax(0, 1fr) 180px !important;
+    gap: 16px !important;
   }
 }
   </style>

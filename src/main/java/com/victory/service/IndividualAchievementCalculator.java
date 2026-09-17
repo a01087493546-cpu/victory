@@ -2,7 +2,6 @@ package com.victory.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -13,14 +12,20 @@ import com.victory.dto.IndividualAchievementLevel;
  * 의존하지 않아 단위 테스트로 공식만 독립적으로 검증할 수 있다
  * (PracticeAchievementCalculator와 같은 패턴). 계산 과정은 모두 double로
  * 하고, 화면에 보여줄 자릿수 반올림은 이 클래스의 round2()에서만 한다.
+ *
+ * 개별읽기 AI 피드백("확인받기")은 학생이 선택적으로 쓰는 도움 기능으로
+ * 분리되었으므로, 이 계산기는 AI 통과 여부/시도 횟수를 절대 입력으로 받지
+ * 않는다(과거에는 contentSuitabilityScore가 "3회 이내 AI 통과 비율"이었다 -
+ * 연습읽기 전용 PracticeAchievementCalculator는 그 방식을 그대로 유지하며,
+ * 이 클래스와는 별개다).
  */
 @Component
 public class IndividualAchievementCalculator {
 
-    private static final int ATTEMPT_SUCCESS_LIMIT = 3;
     private static final int ACTIVITY_TYPE_TOTAL = 5;
     private static final int READING_DAYS_TARGET = 15;
     private static final int STAGE_TOTAL = 3;
+    private static final int CORE_RECORD_TOTAL = 5;
 
     /*
      * 독서일수점수 = MIN(50, 독서일수 / 15 × 50)
@@ -59,24 +64,33 @@ public class IndividualAchievementCalculator {
     }
 
     /*
-     * 기록내용적합성 = 3회 이내 good 수 / AI 검사를 1회 이상 받은 전체
-     * 평가 대상 수 × 100. 검사 대상이 0개면 0점으로 계산한다(나눗셈 0 방지).
+     * 기록충실도 = 충족한 핵심 기록 수 / 5 × 100. AI 판단은 전혀 쓰지 않고
+     * 실제 독서 기록의 작성/참여 여부(boolean)만으로 계산한다. 핵심 기록
+     * 5개(각 20점): 읽기 전 질문·답 작성, 읽기 중 질문·답 작성, 읽기 후
+     * 간추리기 작성, 책수다방 참여 1회 이상, 해당 책의 필수 기록(읽기
+     * 전/중/후) 전체에 미작성 항목 없음.
      */
-    public double contentSuitabilityScore(int passedWithinThreeCount, int inspectedItemCount) {
-        if (inspectedItemCount <= 0) {
-            return 0.0;
-        }
+    public double recordFaithfulnessScore(
+            boolean wrotePreQuestion,
+            boolean wroteDuringQuestion,
+            boolean wroteAfterSummary,
+            boolean joinedBookChat,
+            boolean noMissingRequiredRecord) {
 
-        double raw = (Math.max(0, passedWithinThreeCount) / (double) inspectedItemCount) * 100.0;
+        int fulfilledCount = (wrotePreQuestion ? 1 : 0)
+            + (wroteDuringQuestion ? 1 : 0)
+            + (wroteAfterSummary ? 1 : 0)
+            + (joinedBookChat ? 1 : 0)
+            + (noMissingRequiredRecord ? 1 : 0);
 
-        return clamp(raw);
+        return clamp((fulfilledCount / (double) CORE_RECORD_TOTAL) * 100.0);
     }
 
     /*
-     * 기록완성도 = 활동완료율 × 0.5 + 기록내용적합성 × 0.5
+     * 기록완성도 = 단계완료율 × 0.5 + 기록충실도 × 0.5
      */
-    public double recordCompletionScore(double stageCompletionRate, double contentSuitabilityScore) {
-        return clamp(stageCompletionRate * 0.5 + contentSuitabilityScore * 0.5);
+    public double recordCompletionScore(double stageCompletionRate, double recordFaithfulnessScore) {
+        return clamp(stageCompletionRate * 0.5 + recordFaithfulnessScore * 0.5);
     }
 
     /*
@@ -101,27 +115,6 @@ public class IndividualAchievementCalculator {
      */
     public IndividualAchievementLevel achievementLevel(int roundedOverallAchievementScore) {
         return IndividualAchievementLevel.fromRoundedScore(roundedOverallAchievementScore);
-    }
-
-    /*
-     * 한 평가 대상(evaluationKey)의 AI 검사 시도 상태를 attempt_number
-     * 오름차순으로 받아, "3회 이내에 good을 받았는지"를 판정한다.
-     * 4회차 이후에만 good이 있으면 실패로 본다.
-     */
-    public boolean passedWithinAttemptLimit(List<String> orderedStatuses) {
-        if (orderedStatuses == null || orderedStatuses.isEmpty()) {
-            return false;
-        }
-
-        int limit = Math.min(orderedStatuses.size(), ATTEMPT_SUCCESS_LIMIT);
-
-        for (int i = 0; i < limit; i++) {
-            if ("good".equals(orderedStatuses.get(i))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /*

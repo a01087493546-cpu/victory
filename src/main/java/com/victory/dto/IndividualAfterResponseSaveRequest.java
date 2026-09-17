@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 
 /*
  * 개별읽기 읽기 후 간추리기 질문·답 한 세트(1/2/3) 저장 요청.
- * IndividualBeforeResponseSaveRequest와 달리 aiPassed/aiFeedback을 함께 받는다 -
- * 읽기 후 완료 조건이 "3세트 모두 AI 통과"라서 서버가 재검증할 근거가 필요하기 때문이다.
+ * aiPassed/aiFeedback은 AI 확인받기(선택 도움 기능) 결과를 참고용으로만
+ * 함께 저장하기 위한 값이고, 저장 자체를 막는 조건으로는 쓰이지 않는다.
  */
 @Getter
 @NoArgsConstructor

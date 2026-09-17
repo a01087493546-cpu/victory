@@ -76,12 +76,48 @@ const DungeonUI = (() => {
     SFX_POOL[key] = audio;
   });
 
+  // 소리끄기: 심사계정/일반계정 모두 이 브라우저에 저장된 값을 그대로
+  // 따른다 - 계정 종류와 무관하게 기기별 환경설정이므로 demo-storage와
+  // 별개로 일반 localStorage 키를 사용한다.
+  const MUTE_STORAGE_KEY = 'mq_game_muted';
+
+  function isMuted() {
+    try {
+      return localStorage.getItem(MUTE_STORAGE_KEY) === '1';
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function applyMuteState(muted) {
+    Object.values(SFX_POOL).forEach(audio => { audio.muted = muted; });
+    const btn = $('sound-toggle-btn');
+    if (btn) {
+      btn.textContent = muted ? '🔇 소리켜기' : '🔊 소리끄기';
+      btn.setAttribute('aria-label', muted ? '소리 켜기' : '소리 끄기');
+      btn.classList.toggle('muted', muted);
+    }
+  }
+
+  function toggleMute() {
+    const muted = !isMuted();
+    try {
+      localStorage.setItem(MUTE_STORAGE_KEY, muted ? '1' : '0');
+    } catch (error) {
+      console.warn('소리 설정을 저장하지 못했습니다.', error);
+    }
+    applyMuteState(muted);
+  }
+
+  applyMuteState(isMuted());
+
   function playSfx(skillKey, delay = 0) {
     const audio = SFX_POOL[skillKey];
     if (!audio) {
       console.warn('효과음을 찾을 수 없음:', skillKey);
       return;
     }
+    audio.muted = isMuted();
     if (delay > 0) {
       setTimeout(() => {
         audio.currentTime = 0;
@@ -1095,6 +1131,7 @@ const DungeonUI = (() => {
     playerAttack:      () => useSkill('ilgyeok'),
     playerHeavyAttack: () => useSkill('bulkkot'),
     startDefend:       () => useSkill('bangeo'),
+    toggleMute,
   };
 
 })();
@@ -1103,6 +1140,7 @@ function goToMap()           { DungeonUI.goToMap(); }
 function goToBattle(idx)     { DungeonUI.startBattle(idx); }
 function playerAttack()      { DungeonUI.playerAttack(); }
 function playerHeavyAttack() { DungeonUI.playerHeavyAttack(); }
+function toggleSound()       { DungeonUI.toggleMute(); }
 function startDefend()       { DungeonUI.startDefend(); }
 function stopDefend()        { DungeonUI.stopDefend(); }
 function useSkill(name)      { DungeonUI.useSkill(name); }

@@ -108,8 +108,8 @@ class IndividualReadingDashboardServiceTest {
 
     private IndividualAchievementResult result(
             Long studentId, Long readingRecordId, int readingDays, double readingPracticeScore,
-            int completedStageCount, double recordCompletionScore, int inspectedItemCount,
-            double contentSuitabilityScore, long totalCompletedBookCount,
+            int completedStageCount, double recordCompletionScore, double recordFaithfulnessScore,
+            long totalCompletedBookCount,
             boolean wroteQuestionActivity, int bookChatPostCount, LocalDate latestActivityDate) {
 
         double overall = (readingPracticeScore + recordCompletionScore) / 2.0;
@@ -120,8 +120,7 @@ class IndividualReadingDashboardServiceTest {
             readingDays, 0.0, 0, 0.0,
             readingPracticeScore,
             completedStageCount, 0.0,
-            inspectedItemCount, 0,
-            contentSuitabilityScore, recordCompletionScore,
+            recordFaithfulnessScore, recordCompletionScore,
             overall, rounded,
             IndividualAchievementLevel.fromRoundedScore(rounded),
             totalCompletedBookCount,
@@ -144,14 +143,14 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(S01_ID))
             .thenReturn(Optional.of(s01Record));
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 10, 43.0, 3, 100.0, 5, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
+            result(S01_ID, 12L, 10, 43.0, 3, 100.0, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
 
         // s02: 진행 중 기록 id 13 대표
         ReadingRecord s02Record = buildRecord(13L, s02, null, "진행중책");
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID))
             .thenReturn(Optional.of(s02Record));
         when(individualAchievementService.calculate(13L)).thenReturn(
-            result(S02_ID, 13L, 5, 50.0, 1, 40.0, 2, 50.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
+            result(S02_ID, 13L, 5, 50.0, 1, 40.0, 50.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
 
         // s03: 기록 전혀 없음
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S03_ID)).thenReturn(Optional.empty());
@@ -176,7 +175,7 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(S01_ID))
             .thenReturn(Optional.of(record12));
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 10, 43.0, 3, 100.0, 5, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
+            result(S01_ID, 12L, 10, 43.0, 3, 100.0, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
 
         TeacherIndividualReadingStudentResponse student = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -203,7 +202,7 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID))
             .thenReturn(Optional.of(record13));
         when(individualAchievementService.calculate(13L)).thenReturn(
-            result(S02_ID, 13L, 5, 50.0, 1, 40.0, 2, 50.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
+            result(S02_ID, 13L, 5, 50.0, 1, 40.0, 50.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
 
         TeacherIndividualReadingStudentResponse student = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -229,7 +228,7 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID))
             .thenReturn(Optional.of(record13));
         when(individualAchievementService.calculate(13L)).thenReturn(
-            result(S02_ID, 13L, 1, 23.33, 1, 66.66, 4, 100.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
+            result(S02_ID, 13L, 1, 23.33, 1, 66.66, 100.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
 
         TeacherIndividualReadingStudentResponse student = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -258,8 +257,7 @@ class IndividualReadingDashboardServiceTest {
         assertThat(student.getReadingPracticeScore()).isEqualTo(0.0);
         assertThat(student.getCompletedStageCount()).isEqualTo(0);
         assertThat(student.getRecordCompletionScore()).isEqualTo(0.0);
-        assertThat(student.getInspectedItemCount()).isEqualTo(0);
-        assertThat(student.getContentSuitabilityScore()).isEqualTo(0.0);
+        assertThat(student.getRecordFaithfulnessScore()).isEqualTo(0.0);
         assertThat(student.getOverallAchievementScore()).isEqualTo(0.0);
         assertThat(student.getRoundedOverallAchievementScore()).isEqualTo(0);
         assertThat(student.getAchievementLevel()).isEqualTo("미참여");
@@ -290,14 +288,14 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(S01_ID))
             .thenReturn(Optional.of(finishedRecord));
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 20, 80.0, 3, 100.0, 3, 100.0, 1, true, 1, today));
+            result(S01_ID, 12L, 20, 80.0, 3, 100.0, 100.0, 1, true, 1, today));
 
         // 김만수: 진행 중 기록, 오늘 활동함
         ReadingRecord inProgressRecord = buildRecord(13L, inProgressStudent, null, "읽는 중");
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID))
             .thenReturn(Optional.of(inProgressRecord));
         when(individualAchievementService.calculate(13L)).thenReturn(
-            result(S02_ID, 13L, 5, 50.0, 1, 50.0, 1, 100.0, 0, true, 1, today));
+            result(S02_ID, 13L, 5, 50.0, 1, 50.0, 100.0, 0, true, 1, today));
 
         TeacherIndividualReadingDashboardResponse response = service.getDashboard(TEACHER_ID, CLASS_ID);
 
@@ -323,7 +321,7 @@ class IndividualReadingDashboardServiceTest {
             .thenReturn(Optional.of(finishedRecord));
         // 최근 활동일이 오늘이 아님(예: 예전에 완독한 뒤 오늘은 아무 활동도 안 함)
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 1, 43.0, 3, 100.0, 9, 100.0, 2, true, 2, LocalDate.of(2026, 6, 1)));
+            result(S01_ID, 12L, 1, 43.0, 3, 100.0, 100.0, 2, true, 2, LocalDate.of(2026, 6, 1)));
 
         TeacherIndividualReadingDashboardResponse response = service.getDashboard(TEACHER_ID, CLASS_ID);
 
@@ -352,8 +350,11 @@ class IndividualReadingDashboardServiceTest {
     /*
      * 검증 16/17: 여러 사유 동시 반환(순서 포함) + 판단 불가 사유는 제외.
      * 진행 중, 읽기 전·중은 끝냈지만 읽기 후는 아직인 학생 - 질문 활동은
-     * 이미 썼으므로(duringDone=true) 질문 참여 부족은 제외되어야 하고,
-     * inspectedItemCount=0이라 기록내용 적합성도 제외되어야 한다.
+     * 이미 썼으므로(duringDone=true) 질문 참여 부족은 제외되어야 한다.
+     * recordFaithfulnessScore=0.0(<50)이고 completedStageCount=2(>=1)이므로
+     * 기록충실도 부족 사유는 이제 함께 나타나야 한다(AI 확인 여부와 무관하게
+     * 항상 계산 가능한 값이라, 과거처럼 "아직 AI 검사를 안 받아서 판단 불가"로
+     * 제외되는 경우가 없다).
      */
     @Test
     void getDashboard_supportReasons_multipleAtOnceAndSkipsUnjudgeable() {
@@ -364,16 +365,16 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.of(record));
 
         when(individualAchievementService.calculate(1L)).thenReturn(
-            result(S01_ID, 1L, 5, 10.0, 2, 20.0, 0, 0.0, 0, true, 0, LocalDate.of(2026, 6, 1)));
+            result(S01_ID, 1L, 5, 10.0, 2, 20.0, 0.0, 0, true, 0, LocalDate.of(2026, 6, 1)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
 
-        // 우선순위대로: 1)단계 미완료 2)독서실천도 부족 3)질문(제외) 4)생각 나누기 부족 5)적합성(제외)
+        // 우선순위대로: 1)단계 미완료 2)독서실천도 부족 3)질문(제외) 4)생각 나누기 부족 5)기록충실도 부족
         assertThat(res.getSupportReasons()).containsExactly(
-            "읽기 후 활동을 완료해야 해요", "독서실천도가 낮아요", "생각 나누기 참여가 필요해요");
-        assertThat(res.getSupportReasons()).doesNotContain(
-            "질문 만들기 참여가 필요해요", "기록 내용을 조금 더 다듬어야 해요");
+            "읽기 후 활동을 완료해야 해요", "독서실천도가 낮아요", "생각 나누기 참여가 필요해요",
+            "기록을 빠짐없이 남기는 연습이 필요해요");
+        assertThat(res.getSupportReasons()).doesNotContain("질문 만들기 참여가 필요해요");
     }
 
     /* 실제 김만수 시나리오: 읽기 전 완료·읽기 중 미완료, 진행 중, readingPracticeScore=23.33 */
@@ -386,7 +387,7 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID))
             .thenReturn(Optional.of(record13));
         when(individualAchievementService.calculate(13L)).thenReturn(
-            result(S02_ID, 13L, 1, 23.33, 1, 66.66, 4, 100.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
+            result(S02_ID, 13L, 1, 23.33, 1, 66.66, 100.0, 1, true, 0, LocalDate.of(2026, 8, 2)));
 
         TeacherIndividualReadingDashboardResponse response = service.getDashboard(TEACHER_ID, CLASS_ID);
         TeacherIndividualReadingStudentResponse s02Response = response.getStudents().get(0);
@@ -408,7 +409,7 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(S01_ID))
             .thenReturn(Optional.of(finished));
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 1, 43.0, 3, 100.0, 9, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
+            result(S01_ID, 12L, 1, 43.0, 3, 100.0, 100.0, 2, true, 2, LocalDate.of(2026, 7, 20)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -426,7 +427,7 @@ class IndividualReadingDashboardServiceTest {
         ReadingRecord record = buildRecord(1L, student, null, "새 책", false, false, false);
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.of(record));
         when(individualAchievementService.calculate(1L)).thenReturn(
-            result(S01_ID, 1L, 0, 0.0, 0, 0.0, 0, 0.0, 0, false, 0, null));
+            result(S01_ID, 1L, 0, 0.0, 0, 0.0, 0.0, 0, false, 0, null));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -440,11 +441,12 @@ class IndividualReadingDashboardServiceTest {
         User student = buildStudent(S01_ID, "이재환");
         when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(buildMembership(student, 1)));
 
-        // completedStageCount>=1인데 wroteQuestionActivity=false인 경우를 그대로 재현(실제로는 드물지만 방어 로직 검증용)
+        // completedStageCount>=1인데 wroteQuestionActivity=false인 경우를 그대로 재현(실제로는 드물지만 방어 로직 검증용).
+        // recordFaithfulnessScore는 100.0으로 두어 기록충실도 부족 사유가 함께 섞이지 않게 격리한다.
         ReadingRecord record = buildRecord(1L, student, null, "책", true, true, true);
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.of(record));
         when(individualAchievementService.calculate(1L)).thenReturn(
-            result(S01_ID, 1L, 5, 90.0, 3, 90.0, 0, 0.0, 0, false, 1, LocalDate.of(2026, 6, 1)));
+            result(S01_ID, 1L, 5, 90.0, 3, 90.0, 100.0, 0, false, 1, LocalDate.of(2026, 6, 1)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -459,11 +461,12 @@ class IndividualReadingDashboardServiceTest {
         when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(buildMembership(student, 1)));
 
         // afterDone까지 true라 단계 미완료 사유는 뜨지 않고, finishedAt은 아직 null(완독 처리 전)이라
-        // currentlyReading은 그대로 true다.
+        // currentlyReading은 그대로 true다. recordFaithfulnessScore는 100.0으로 두어 기록충실도
+        // 부족 사유가 함께 섞이지 않게 격리한다.
         ReadingRecord record = buildRecord(1L, student, null, "책", true, true, true);
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.of(record));
         when(individualAchievementService.calculate(1L)).thenReturn(
-            result(S01_ID, 1L, 10, 90.0, 3, 90.0, 0, 0.0, 0, true, 0, LocalDate.of(2026, 6, 1)));
+            result(S01_ID, 1L, 10, 90.0, 3, 90.0, 100.0, 0, true, 0, LocalDate.of(2026, 6, 1)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -471,9 +474,9 @@ class IndividualReadingDashboardServiceTest {
         assertThat(res.getSupportReasons()).containsExactly("생각 나누기 참여가 필요해요");
     }
 
-    /* inspectedItemCount>=1, contentSuitabilityScore=49 -> 기록내용 적합성 부족만 발생 */
+    /* completedStageCount>=1, recordFaithfulnessScore=49(<50) -> 기록충실도 부족만 발생 */
     @Test
-    void getDashboard_lowContentSuitability_returnsContentSuitabilityReasonOnly() {
+    void getDashboard_lowRecordFaithfulness_returnsRecordFaithfulnessReasonOnly() {
         User student = buildStudent(S01_ID, "이재환");
         when(classStudentRepository.findBySchoolClassId(CLASS_ID)).thenReturn(List.of(buildMembership(student, 1)));
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.empty());
@@ -483,12 +486,12 @@ class IndividualReadingDashboardServiceTest {
         when(readingRecordRepository.findFirstByStudent_IdAndFinishedAtIsNotNullOrderByFinishedAtDesc(S01_ID))
             .thenReturn(Optional.of(finished));
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 10, 90.0, 3, 90.0, 3, 49.0, 1, true, 2, LocalDate.of(2026, 8, 2)));
+            result(S01_ID, 12L, 10, 90.0, 3, 90.0, 49.0, 1, true, 2, LocalDate.of(2026, 8, 2)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
 
-        assertThat(res.getSupportReasons()).containsExactly("기록 내용을 조금 더 다듬어야 해요");
+        assertThat(res.getSupportReasons()).containsExactly("기록을 빠짐없이 남기는 연습이 필요해요");
     }
 
     /* 완독 기록의 낮은 독서실천도는 readingDays>=3일 때만 판정(과거 기록을 과도하게 경고하지 않음) */
@@ -504,7 +507,7 @@ class IndividualReadingDashboardServiceTest {
             .thenReturn(Optional.of(finished));
         // readingDays=1(<3)이므로 완독 기록에는 독서실천도 부족을 판정하지 않는다.
         when(individualAchievementService.calculate(12L)).thenReturn(
-            result(S01_ID, 12L, 1, 10.0, 3, 90.0, 3, 90.0, 1, true, 2, LocalDate.of(2026, 7, 1)));
+            result(S01_ID, 12L, 1, 10.0, 3, 90.0, 90.0, 1, true, 2, LocalDate.of(2026, 7, 1)));
 
         TeacherIndividualReadingStudentResponse res = service.getDashboard(TEACHER_ID, CLASS_ID)
             .getStudents().get(0);
@@ -523,12 +526,12 @@ class IndividualReadingDashboardServiceTest {
         ReadingRecord recordA = buildRecord(1L, needsHelp, null, "책A");
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S01_ID)).thenReturn(Optional.of(recordA));
         when(individualAchievementService.calculate(1L)).thenReturn(
-            result(S01_ID, 1L, 5, 10.0, 0, 0.0, 0, 0.0, 0, false, 0, LocalDate.of(2026, 6, 1)));
+            result(S01_ID, 1L, 5, 10.0, 0, 0.0, 0.0, 0, false, 0, LocalDate.of(2026, 6, 1)));
 
         ReadingRecord recordB = buildRecord(2L, doingFine, null, "책B");
         when(readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(S02_ID)).thenReturn(Optional.of(recordB));
         when(individualAchievementService.calculate(2L)).thenReturn(
-            result(S02_ID, 2L, 20, 90.0, 3, 90.0, 5, 90.0, 1, true, 3, LocalDate.of(2026, 8, 2)));
+            result(S02_ID, 2L, 20, 90.0, 3, 90.0, 90.0, 1, true, 3, LocalDate.of(2026, 8, 2)));
 
         TeacherIndividualReadingDashboardResponse response = service.getDashboard(TEACHER_ID, CLASS_ID);
 
