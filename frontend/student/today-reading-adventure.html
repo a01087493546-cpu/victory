@@ -111,7 +111,7 @@
 
     .tra-logo span {
       font-family: "Noto Serif KR", "Noto Sans KR", serif;
-      font-size: 29px;
+      font-size: 30px;
       font-weight: 900;
       letter-spacing: -0.045em;
       color: #5a3415;
@@ -404,25 +404,6 @@
       background: rgba(255, 251, 242, 0.72);
     }
 
-    .tra-lumi-bubble {
-      position: relative;
-      z-index: 3;
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-      padding: 20px 18px;
-      border: 1px solid rgba(179, 117, 36, 0.24);
-      border-radius: 26px;
-      background: rgba(255, 252, 242, 0.96);
-      color: #5b3515;
-      font-size: 17px;
-      font-weight: 900;
-      line-height: 1.5;
-      text-align: center;
-      word-break: keep-all;
-      box-shadow: 0 12px 22px rgba(98, 59, 15, 0.1);
-    }
-
     .tra-lumi-wrap {
       position: relative;
       min-height: 0;
@@ -470,7 +451,6 @@
       .tra-stage-button p { font-size: 14px; }
       .tra-stage-state { height: 48px; font-size: 16px; margin-top: 14px; }
       .tra-lumi-card { padding: 20px 18px; gap: 14px; }
-      .tra-lumi-bubble { padding: 16px 15px; font-size: 15px; }
       .tra-lumi { width: 260px; max-height: 390px; }
       .tra-lumi-glow { bottom: 48px; width: 220px; height: 220px; }
     }
@@ -803,15 +783,6 @@
       align-items: stretch !important;
     }
 
-    .tra-lumi-bubble {
-      width: 100% !important;
-      max-width: 300px !important;
-      margin: 0 auto !important;
-      min-height: 104px !important;
-      padding: 22px 18px !important;
-      font-size: 19px !important;
-    }
-
     .tra-lumi-wrap {
       width: 100% !important;
       justify-content: center !important;
@@ -856,72 +827,91 @@
       font-size: 18px !important;
     }
 
-    .tra-community-shortcut-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 28px;
-      align-items: center;
-      justify-items: center;
-      margin-top: -10px;
+    /* 오른쪽 사이드: 친구 생각 나누기 안내 + 바로가기 버튼 2개 + 루미 */
+    .tra-friend-panel {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 22px 20px 20px;
+      border: 1px solid rgba(179, 117, 36, 0.3);
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 232, 165, 0.36), transparent 62%),
+        rgba(255, 252, 242, 0.96);
+      box-shadow:
+        0 12px 22px rgba(98, 59, 15, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+      text-align: center;
     }
 
-    .tra-community-guide {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  color: #6b4019;
-  line-height: 1.3;
-  text-align: center;
-}
+    .tra-friend-title {
+      display: block;
+      color: #5b3515;
+      font-size: 29px;
+      font-weight: 800;
+      line-height: 1.3;
+      letter-spacing: -0.04em;
+      word-break: keep-all;
+    }
 
-.tra-community-guide strong {
-  display: block;
-  font-size: 24px;
-  font-weight: 900;
-  white-space: nowrap;
-}
+    .tra-friend-desc {
+      margin: 0 0 6px;
+      color: #8a5a27;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.4;
+      word-break: keep-all;
+    }
 
-.tra-community-guide span {
-  display: block;
-  font-size: 20px;
-  font-weight: 850;
-  color: #8a5a27;
-  white-space: nowrap;
-}
+    .tra-friend-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
     .tra-community-shortcut {
-      width: 82%;
-      min-height: 58px;
-      height: 58px;
+      width: 100%;
+      height: 60px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 9px;
-      padding: 0 24px;
-      border: 1.5px solid rgba(175, 112, 32, 0.58);
+      gap: 10px;
+      padding: 0 18px;
+      border: 1.5px solid rgba(175, 112, 32, 0.6);
       border-radius: 18px;
-      background: rgba(255, 247, 226, 0.96);
-      color: #633915;
-      font-size: 20px;
+      background: linear-gradient(180deg, #fffaf0 0%, #f8e7bd 100%);
+      color: #5b3515;
+      font-size: 21px;
       font-weight: 900;
       line-height: 1;
+      letter-spacing: -0.03em;
       white-space: nowrap;
       cursor: pointer;
-      box-shadow: 0 5px 10px rgba(98, 59, 15, 0.08);
-      transition: transform 0.18s ease, background 0.18s ease;
+      box-shadow:
+        0 6px 12px rgba(98, 59, 15, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
 
     .tra-community-shortcut:hover {
       transform: translateY(-2px);
-      background: #fffaf0;
+      border-color: rgba(191, 133, 35, 0.95);
+      background: linear-gradient(180deg, #fff3cf 0%, #f2cf7c 100%);
+      box-shadow:
+        0 10px 18px rgba(98, 59, 15, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
     .tra-community-shortcut:focus-visible {
       outline: 3px solid rgba(190, 123, 35, 0.35);
       outline-offset: 2px;
     }
+
+    .tra-lumi-card { gap: 12px !important; }
+    .tra-lumi { max-height: 100% !important; height: auto !important; min-height: 0; }
+    .tra-lumi-wrap { overflow: visible; }
 
     @media (max-height: 760px) {
       .tra-content-card {
@@ -942,9 +932,10 @@
       .tra-stage-icon img { width: 88px !important; height: 88px !important; }
       .tra-stage-button h2 { font-size: 29px !important; }
       .tra-stage-state { height: 48px !important; font-size: 16px !important; }
-      .tra-community-shortcut-grid { gap: 16px; margin-top: -2px; }
-      .tra-community-guide { font-size: 20px; }
-      .tra-community-shortcut { min-height: 58px; height: 58px; font-size: 20px; }
+      .tra-friend-panel { padding: 16px 16px 16px; gap: 8px; }
+      .tra-friend-title { font-size: 28px; }
+      .tra-friend-desc { font-size: 24px; }
+      .tra-community-shortcut { height: 50px; font-size: 19px; }
     }
   </style>
 </head>
@@ -959,8 +950,6 @@
         </div>
 
         <div class="tra-top-actions">
-          <!-- 개별읽기 활동 중에도 현재 능력치를 확인하는 버튼입니다. -->
-<button type="button" class="tra-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
          
         </div>
@@ -972,24 +961,20 @@
 
           <div class="tra-stage-grid" id="stageGrid"></div>
 
-          <div class="tra-community-shortcut-grid" aria-label="친구 활동 바로가기">
-         <div class="tra-community-guide">
-  <strong>✨ 친구들의 생각이 궁금하다면?</strong>
-  <span>바로가기 버튼을 눌러보세요!</span>
-</div>
-            <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('during')"><span aria-hidden="true">💬</span><span>책수다방</span></button>
-            <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('after')"><span aria-hidden="true">📖</span><span>간추리기 공유</span></button>
-          </div>
-
           <!-- 아래 안내 문구 바는 화면을 깔끔하게 보이도록 제거했습니다. -->
 <div class="tra-bottom-note" id="bottomNote" style="display: none;"></div>
         </article>
 
         <aside class="tra-lumi-card">
-          <div class="tra-lumi-bubble" id="lumiBubble">
-            이번 모험은 읽기 전부터 시작이야.<br>
-            어떤 책을 읽을지 먼저 알려줘!
-          </div>
+          <section class="tra-friend-panel" aria-label="친구 활동 바로가기">
+            <strong class="tra-friend-title">✨ 친구들의 생각이 궁금하다면?</strong>
+            <p class="tra-friend-desc">아래 바로가기 버튼을 눌러 보세요.</p>
+
+            <div class="tra-friend-actions">
+              <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('during')"><span aria-hidden="true">💬</span><span>책수다방</span></button>
+              <button type="button" class="tra-community-shortcut" onclick="openCommunityShortcut('after')"><span aria-hidden="true">📖</span><span>간추리기 공유</span></button>
+            </div>
+          </section>
 
           <div class="tra-lumi-wrap">
             <div class="tra-lumi-glow"></div>
@@ -1292,27 +1277,23 @@ if (
     function renderLumiGuide() {
       const currentStage = getCurrentStage();
       const bookTitle = getCurrentBookTitle();
-      const lumiBubble = document.getElementById("lumiBubble");
       const lumiImage = document.getElementById("lumiImage");
       const bottomNote = document.getElementById("bottomNote");
 
       if (currentStage === "before") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-point.png";
-        lumiBubble.innerHTML = "이번 모험은 읽기 전부터 시작이야.<br>어떤 책을 읽을지 먼저 알려줘!";
         
         return;
       }
 
       if (currentStage === "during") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-reading.png";
-        lumiBubble.innerHTML = `${bookTitle ? "「" + bookTitle + "」" : "책"}을 읽으며<br>떠오르는 질문을 붙잡아 보자!`;
         
         return;
       }
 
       if (currentStage === "after") {
         lumiImage.src = "../assets/images/individual-reading/today-reading-lumi-guide.png";
-        lumiBubble.innerHTML = "완독까지 거의 다 왔어!<br>읽은 내용을 정리하면 모험이 마무리돼.";
         
       }
     }

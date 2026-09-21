@@ -830,8 +830,7 @@
 
         <div class="top-actions">
           <button class="memory-button top-memory-button" type="button" onclick="goQuestionCollection()">✨ 생각 모음 보기</button>
-          <button class="top-pill" type="button" onclick="goStepSelect()">단계 선택</button>
-          <button class="top-pill" type="button" onclick="goHome()">📚 책읽기 홈</button>
+          <button class="top-pill" type="button" onclick="goStepSelect()">읽기 단계 선택</button>
         </div>
       </header>
 
@@ -1253,9 +1252,9 @@
       location.href = "./my-questions.html";
     }
 
-    // 읽기 중 연습 화면으로 이동합니다.
+    // 읽기 중 연습 화면으로 바로 이동합니다(튜토리얼 인트로는 거치지 않습니다).
     function goDuringPractice() {
-      location.href = "./during-reading-intro.html";
+      location.href = "./during-reading-practice.html";
     }
 
     // 우리반 책읽기를 완료 처리하고, 읽기 후 단계를 열어 줍니다.
@@ -1332,10 +1331,6 @@
 function goStepSelect() {
   location.href = "./practice.html";
 }
-    // 개별읽기 메인 화면(나만의 독서 모험)으로 이동합니다.
-    function goHome() {
-      location.href = "./individual-reading.html";
-    }
   </script>
   <script src="../js/fixed-stage.js"></script>
 </body>

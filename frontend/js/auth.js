@@ -193,7 +193,7 @@ async function guardStudentIntroDirectAccess() {
   if (pageName !== "story-intro.html" && pageName !== "ability-intro.html") return;
 
   /*
-    "나의 힘 쌓는 법" 버튼처럼, 이미 완료한 인트로를 학생이 스스로 다시
+    "힘 키우는 방법" 버튼처럼, 이미 완료한 인트로를 학생이 스스로 다시
     보고 싶어서 들어온 경우(?revisit=1)에는 이 가드가 곧바로
     individual-reading.html로 되돌려 보내면 안 된다. 원래 이 가드는
     "완료한 인트로 URL을 직접 쳐서 들어온 경우"만 막으려던 것이라,
@@ -321,41 +321,6 @@ document.addEventListener("DOMContentLoaded", function () {
       loginPasswordInput.value = role === "teacher" ? "tt11" : "ss01";
       (role === "teacher" ? teacherRoleButton : studentRoleButton).click();
       loginIdInput.focus();
-    });
-  });
-
-  document.querySelectorAll("[data-copy]").forEach(function (button) {
-    button.addEventListener("click", async function () {
-      const value = button.dataset.copy;
-      const message = document.getElementById("demoCopyMessage");
-      try {
-        let copied = false;
-        if (navigator.clipboard && window.isSecureContext) {
-          try {
-            await navigator.clipboard.writeText(value);
-            copied = true;
-          } catch (clipboardError) {
-            copied = false;
-          }
-        }
-        if (!copied) {
-          const temporary = document.createElement("textarea");
-          temporary.value = value;
-          temporary.style.position = "fixed";
-          temporary.style.opacity = "0";
-          document.body.appendChild(temporary);
-          temporary.focus();
-          temporary.select();
-          temporary.setSelectionRange(0, temporary.value.length);
-          copied = document.execCommand("copy");
-          temporary.remove();
-        }
-        if (!copied) throw new Error("copy unavailable");
-        message.textContent = button.dataset.label + "가 복사되었습니다.";
-      } catch (error) {
-        message.textContent = "복사하지 못했습니다. 표시된 값을 직접 입력해 주세요.";
-      }
-      window.setTimeout(function () { message.textContent = ""; }, 1800);
     });
   });
 

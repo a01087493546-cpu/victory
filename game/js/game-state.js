@@ -38,9 +38,6 @@ const GameState = (() => {
         maxHp:  dungeon.enemy.maxHp,
       },
 
-      // 타이머
-      timeLeft: dungeon.timeLimit,
-
       // 쿨타임 (ms)
       cooldowns: {
         normal:     0,
@@ -88,12 +85,6 @@ const GameState = (() => {
     _state.player.defenseMode = value ? (mode || 'guard') : null;
   }
 
-  // 타이머 감소
-  function tickTimer() {
-    if (!_state) return;
-    _state.timeLeft = Math.max(0, _state.timeLeft - 1);
-  }
-
   // 쿨타임 설정
   function setCooldown(type, ms) {
     if (!_state) return;
@@ -133,7 +124,6 @@ const GameState = (() => {
     damagePlayer,
     damageEnemy,
     setDefending,
-    tickTimer,
     setCooldown,
     tickCooldown,
     setRunning,

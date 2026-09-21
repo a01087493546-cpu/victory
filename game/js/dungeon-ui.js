@@ -3,7 +3,6 @@
 
 const DungeonUI = (() => {
 
-  let _timerInterval    = null;
   let _enemyNormalTimer = null;
   let _enemyHeavyTimer  = null;
   let _cooldownInterval = null;
@@ -14,9 +13,9 @@ const DungeonUI = (() => {
    * 던전 전투 능력치 연계 시스템 도입 후 재조정한 쿨타임이다(기존 대비
    * 약 3배). 능력치를 매 공격마다 소모하는 자원형으로 바꾸면서 쿨타임이
    * 너무 짧으면 몇 초 만에 자원을 전부 써버려 전투가 자원 총량만으로
-   * 즉시 결정돼 버린다 - 쿨타임을 늘려 전투 시간을 실제 제한시간에 더
-   * 가깝게 늘림으로써 적의 공격도 여러 번 맞으며 진짜 자원 관리/방어
-   * 타이밍 싸움이 되도록 자동 전투 시뮬레이션으로 다시 산출했다.
+   * 즉시 결정돼 버린다 - 쿨타임을 늘려 전투 시간을 늘림으로써 적의 공격도
+   * 여러 번 맞으며 진짜 자원 관리/방어 타이밍 싸움이 되도록 자동 전투
+   * 시뮬레이션으로 다시 산출했다.
    */
   const SKILL_COOLDOWNS = {
     ilgyeok:    2400,
@@ -180,17 +179,6 @@ const DungeonUI = (() => {
     if ($('battleStaminaValue')) $('battleStaminaValue').textContent = Math.max(0, s.player.battleStamina);
     if ($('battleWisdomValue'))  $('battleWisdomValue').textContent  = Math.max(0, s.player.wisdom);
     if ($('battleCourageValue')) $('battleCourageValue').textContent = Math.max(0, s.player.courage);
-  }
-
-  function updateTimer() {
-    const s = GameState.get();
-    if (!s) return;
-    const min = Math.floor(s.timeLeft / 60);
-    const sec = s.timeLeft % 60;
-    const timer = $('timer');
-    if (!timer) return;
-    timer.textContent = min + ':' + (sec < 10 ? '0' + sec : sec);
-    timer.classList.toggle('danger', s.timeLeft <= 30);
   }
 
   function updateButtons() {
@@ -546,7 +534,7 @@ const DungeonUI = (() => {
 
     setAnim('hero-spr', 'idle');
     setAnim('enemy-spr', 'idle');
-    updateBars(); updateTimer(); updateButtons();
+    updateBars(); updateButtons();
     switchSkillTabInternal('atk');
 
     if ($('battle-log')) $('battle-log').innerHTML = '';
@@ -561,13 +549,6 @@ const DungeonUI = (() => {
     const s = GameState.get();
     if (!s) return;
     const dungeon = s.dungeon;
-
-    _timerInterval = setInterval(() => {
-      if (!s.isRunning) return;
-      GameState.tickTimer(); updateTimer();
-      const r = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
-      if (r) endBattle(r);
-    }, 1000);
 
     _cooldownInterval = setInterval(() => {
       if (!s.isRunning) return;
@@ -599,7 +580,7 @@ const DungeonUI = (() => {
         }
         updateBars();
         setTimeout(() => setAnim('enemy-spr','idle'), 260);
-        const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
         if (r2) endBattle(r2);
       }, 260);
     }, dungeon.enemy.normalAtkInterval);
@@ -632,7 +613,7 @@ const DungeonUI = (() => {
           }
           updateBars();
           setTimeout(() => setAnim('enemy-spr','idle'), 260);
-          const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+          const r2 = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
           if (r2) endBattle(r2);
         }, 300);
       }, 2000);
@@ -640,13 +621,12 @@ const DungeonUI = (() => {
   }
 
   function clearTimers() {
-    clearInterval(_timerInterval); 
     clearInterval(_enemyNormalTimer);
     clearInterval(_enemyHeavyTimer); 
     clearInterval(_cooldownInterval);
     clearTimeout(_defenseTimer);
 
-    _timerInterval = _enemyNormalTimer = _enemyHeavyTimer = _cooldownInterval = null;
+    _enemyNormalTimer = _enemyHeavyTimer = _cooldownInterval = null;
     _defenseTimer = null;
   }
 
@@ -794,7 +774,7 @@ const DungeonUI = (() => {
 
             updateBars();
 
-            const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+            const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
             if (be) endBattle(be);
           }, index * 360);
         });
@@ -818,7 +798,7 @@ const DungeonUI = (() => {
 
         updateBars();
 
-        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
         if (be) endBattle(be);
       }
     }, 230);
@@ -880,7 +860,7 @@ const DungeonUI = (() => {
 
         updateBars();
 
-        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
         if (be) endBattle(be);
       }, 260);
 
@@ -942,7 +922,7 @@ const DungeonUI = (() => {
 
         updateBars();
 
-        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp, s.timeLeft);
+        const be = BattleEngine.checkBattleEnd(s.player.hp, s.enemy.hp);
         if (be) endBattle(be);
       }, 320);
 
@@ -977,8 +957,6 @@ const DungeonUI = (() => {
     } else if (result === 'defeat') {
       setAnim('hero-spr','dead');
       addLog('전투 실패: 용사가 쓰러졌습니다.', 'system');
-    } else if (result === 'timeout') {
-      addLog('시간 초과: 전투에 실패했습니다.', 'system');
     }
 
     const battleResponse = await GameAPI.submitBattleResult(s.dungeon.apiId, result);
@@ -1002,7 +980,7 @@ const DungeonUI = (() => {
       }
     }
 
-    showResult(result === 'victory', result === 'timeout', battleResponse);
+    showResult(result === 'victory', battleResponse);
   }
 
   /*
@@ -1033,7 +1011,7 @@ const DungeonUI = (() => {
     battleResponse.updatedStats = resetStats;
   }
 
-  function showResult(isWin, isTimeout, battleResponse) {
+  function showResult(isWin, battleResponse) {
   setTimeout(() => {
     const s = GameState.get();
     if (!s) return;
@@ -1041,8 +1019,8 @@ const DungeonUI = (() => {
     const resultWrap = document.getElementById('result-wrap');
 
     if (resultWrap) {
-      resultWrap.classList.remove('victory-result', 'defeat-result', 'timeout-result');
-      resultWrap.classList.add(isWin ? 'victory-result' : (isTimeout ? 'timeout-result' : 'defeat-result'));
+      resultWrap.classList.remove('victory-result', 'defeat-result');
+      resultWrap.classList.add(isWin ? 'victory-result' : 'defeat-result');
     }
 
     if (isWin) {
@@ -1070,13 +1048,11 @@ const DungeonUI = (() => {
         $('r-sub').textContent = '능력치 반영에 실패했어요, 다시 시도해주세요.';
       }
     } else {
-      // 패배 / 시간 초과 결과 화면
-      $('r-emoji').textContent = isTimeout ? '⌛' : '☠';
-      $('r-title').textContent = isTimeout ? '시간이 모두 지났습니다' : '전투에 실패했습니다';
+      // 패배 결과 화면
+      $('r-emoji').textContent = '☠';
+      $('r-title').textContent = '전투에 실패했습니다';
 
-      $('r-sub').textContent = isTimeout
-        ? ''
-        : "책을 읽고 '나의 힘'을 더 모아서 도전해보세요!";
+      $('r-sub').textContent = "책을 읽고 '나의 힘'을 더 모아서 도전해보세요!";
       $('r-rewards').innerHTML = '';
     }
 

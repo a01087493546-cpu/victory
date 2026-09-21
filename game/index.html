@@ -103,16 +103,6 @@
 
               <div class="info-card">
                 <div class="info-card-icon">
-                  <span class="detail-symbol detail-time-symbol">◷</span>
-                </div>
-                <div class="info-card-content">
-                  <div class="info-card-label">제한 시간</div>
-                  <div class="info-card-val" id="detail-time">3분</div>
-                </div>
-              </div>
-
-              <div class="info-card">
-                <div class="info-card-icon">
                   <span class="detail-symbol detail-difficulty-symbol">◇</span>
                 </div>
                 <div class="info-card-content">
@@ -172,16 +162,6 @@
           <small>던전 전투</small>
         </div>
         <button class="sound-toggle-btn" id="sound-toggle-btn" type="button" onclick="toggleSound()" aria-label="소리 끄기">🔊 소리끄기</button>
-      </div>
-
-      <div class="topbar-center">
-        <div class="timer-wrap">
-          <span class="timer-icon"></span>
-          <div class="timer-text">
-            <small>남은 시간</small>
-            <span class="timer" id="timer">3:00</span>
-          </div>
-        </div>
       </div>
 
       <div class="battle-top-right">
@@ -410,11 +390,6 @@
       if (banner) banner.hidden = !isDemoAccount();
     }
 
-    function formatTimeLimit(seconds) {
-      if (!seconds) return '';
-      return Math.round(seconds / 60) + '분';
-    }
-
     function selectDungeon(idx) {
       const dungeon = dungeonList[idx];
       if (!dungeon) return;
@@ -439,7 +414,6 @@
       document.getElementById('detail-req').innerHTML =
         '책 ' + dungeon.requiredBooks + '권 이상<br><span class="req-sub">나의 힘 평균 ' + dungeon.requiredStatAvg + ' 이상</span>';
 
-      document.getElementById('detail-time').textContent = formatTimeLimit(dungeon.timeLimit);
       document.getElementById('detail-diff-val').textContent = DIFF_LEVEL_MAP[dungeon.difficulty] || '';
 
       /*

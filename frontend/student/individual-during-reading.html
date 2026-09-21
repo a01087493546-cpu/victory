@@ -4679,8 +4679,7 @@
 .idr-question-top,
 .idr-today-panel,
 .idr-question-bottom,
-#topShareButton,
-.idr-top-actions .idr-top-button[onclick="goTodayAdventure()"] {
+#topShareButton {
   display: none !important;
 }
 
@@ -8343,10 +8342,8 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 
        <div class="idr-top-actions">
   <button type="button" class="idr-top-button" id="homeNavButton" style="display:none" onclick="showScreen('home')">읽기 중 홈</button>
-  <span class="idr-top-button idr-top-date" id="todayDateTop">오늘 날짜</span>
+  <button type="button" class="idr-top-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
 
-  <!-- 개별읽기 활동 중에도 현재 능력치를 확인할 수 있는 버튼입니다. -->
-  <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
 <button
   class="idr-teacher-book-chat-return"
   id="individualBookChatTeacherReturn"
@@ -8478,7 +8475,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 
           <div class="idr-question-top-actions">
             <button type="button" class="idr-pill-button" onclick="showScreen('home')">읽기 중 홈</button>
-            <span class="idr-date-pill" id="todayDatePill">오늘 날짜</span>
+            <button type="button" class="idr-pill-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
           </div>
         </article>
 
@@ -9037,16 +9034,6 @@ const INDIVIDUAL_READING_API_BASE_URL = getApiBaseUrl();
       }
 
       document.getElementById("readDateInput").value = today;
-
-      const todayDateTop = document.getElementById("todayDateTop");
-      if (todayDateTop) {
-        todayDateTop.textContent = "오늘 날짜 " + formatFullKoreanDate(today);
-      }
-
-      const todayDatePill = document.getElementById("todayDatePill");
-      if (todayDatePill) {
-        todayDatePill.textContent = "오늘 날짜 " + formatFullKoreanDate(today);
-      }
 
       restoreTodayInputsForSelectedType();
     }
@@ -10022,8 +10009,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
         </div>
         <div class="idr-top-actions">
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
-          <span class="idr-top-button idr-top-date">오늘 날짜 2026.07.05 (일)</span>
-          <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="idr-top-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
         </div>
       </header>
@@ -10347,8 +10333,7 @@ ${
         </div>
         <div class="idr-top-actions">
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
-          <span class="idr-top-button idr-top-date">오늘 날짜 2026.07.05 (일)</span>
-          <button type="button" class="idr-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
+          <button type="button" class="idr-top-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
         </div>
       </header>

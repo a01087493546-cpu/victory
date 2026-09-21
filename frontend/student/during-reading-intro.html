@@ -353,7 +353,7 @@
       const nextButton = document.getElementById("nextButton");
 
       if (currentSceneIndex === scenes.length - 1) {
-        nextButton.textContent = "질문 연습하러 가기";
+        nextButton.textContent = "연습하기";
       } else {
         nextButton.textContent = "다음";
       }
@@ -392,10 +392,10 @@
       document.getElementById("nextButton").disabled = true;
       playPageTurnSound();
 
-      /* 실제 읽기 중 질문 연습 화면으로 이동한다. 짧은 지연은 Safari가
-         클릭 효과음을 시작할 시간을 주며 진행 상태는 변경하지 않는다. */
+      /* 읽기 중 메인 홈으로 이동해 연습하기, 책 속 생각쓰기, 책수다방 중
+         다음 활동을 직접 선택하게 한다. 진행 상태는 변경하지 않는다. */
       window.setTimeout(function() {
-        location.href = "./during-reading-practice.html";
+        location.href = "./class-reading.html";
       }, 120);
     }
 

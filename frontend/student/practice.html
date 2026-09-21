@@ -847,21 +847,17 @@ loadPracticeProgress();
   location.href = "individual-reading.html";
 }
 
-// 읽기 중 활동은 기존 인트로를 먼저 본 뒤 질문 연습으로 이동합니다.
+// 읽기 중 활동만 튜토리얼 인트로를 먼저 본 뒤 읽기 중 화면으로 이동합니다.
 function goDuringReadingIntroPage() {
   window.location.href = "./during-reading-intro.html";
 }
-// 읽기 전 인트로 화면으로 이동합니다.
+// 읽기 전 활동은 스토리 튜토리얼 없이 바로 책 소개 화면으로 이동합니다.
 function goBeforeIntroPage() {
-  window.location.href = "./read-before-intro.html";
+  window.location.href = "./read-before-book-intro.html";
 }
-// 읽기 후 활동 화면으로 이동합니다.
+// 읽기 후 활동은 스토리 튜토리얼 없이 바로 읽기 후 화면으로 이동합니다.
 function goAfterReadingPage() {
-  /* 단계 선택 화면에서 읽기 후를 시작할 때는 기존 3장면 스토리 인트로를
-     먼저 보여준다. 인트로 마지막 버튼이 after-read.html의 책 종류 선택
-     허브로 이어지므로, 읽기 후 내부 이동·수정하기 흐름에는 인트로가
-     다시 끼어들지 않는다. */
-  window.location.href = "./after-read-intro.html";
+  window.location.href = "./after-read.html";
 }
 
 

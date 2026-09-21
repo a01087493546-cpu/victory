@@ -89,7 +89,7 @@
     /* 상단 메뉴 */
    .top-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 10px;
 }
@@ -99,6 +99,10 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .nav-left {
+      margin-left: auto;
     }
 
     .nav-button {
@@ -2990,7 +2994,7 @@ body {
       <header class="top-nav">
         <div class="nav-left">
           <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">📚 책읽기 홈</button>
-          <button class="nav-button" type="button" onclick="goPractice()">▣ 연습하기로</button>
+          <button class="nav-button" type="button" onclick="goPractice()">읽기 단계 선택</button>
         </div>
 
         <div class="nav-right">

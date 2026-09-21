@@ -56,7 +56,6 @@ const GameAPI = (() => {
         normalAtkInterval: 2000,
         heavyAtkInterval: 15000,
       },
-      timeLimit: 180,
     },
     {
       difficulty: '중급',
@@ -69,7 +68,6 @@ const GameAPI = (() => {
         normalAtkInterval: 2000,
         heavyAtkInterval: 12000,
       },
-      timeLimit: 300,
     },
     {
       difficulty: '고급',
@@ -82,7 +80,6 @@ const GameAPI = (() => {
         normalAtkInterval: 2000,
         heavyAtkInterval: 10000,
       },
-      timeLimit: 420,
     }
   ];
 
@@ -136,7 +133,6 @@ const GameAPI = (() => {
       enemyKey: config ? config.enemyKey : null,
       bg: config ? config.bg : null,
       enemy: config ? config.enemy : null,
-      timeLimit: config ? config.timeLimit : null,
     };
   }
 

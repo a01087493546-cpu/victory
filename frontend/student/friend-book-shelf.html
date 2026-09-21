@@ -615,14 +615,6 @@
 
         <div class="fs-top-actions">
           <button
-            id="friendShelfPowerButton"
-            type="button"
-            class="fs-top-button"
-            onclick="openIndividualPowerModal()"
-          >
-            ✨ 나의 힘
-          </button>
-          <button
             id="friendShelfRecommendButton"
             type="button"
             class="fs-top-button"
@@ -773,9 +765,6 @@ const API_BASE_URL = getApiBaseUrl();
 
       const mineTabButton = document.querySelector('.fs-tab-button[data-tab="mine"]');
       if (mineTabButton) mineTabButton.style.display = "none";
-
-      const powerButton = document.getElementById("friendShelfPowerButton");
-      if (powerButton) powerButton.hidden = true;
 
       const recommendButton = document.getElementById("friendShelfRecommendButton");
       if (recommendButton) recommendButton.hidden = true;

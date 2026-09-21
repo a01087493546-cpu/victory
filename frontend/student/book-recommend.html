@@ -414,9 +414,16 @@
   place-items: center;
   height: 84px;
   margin-bottom: 16px;
-  font-size: 60px;
   filter: drop-shadow(0 8px 10px rgba(99, 61, 17, 0.14));
 }
+
+    .br-option-icon img {
+      width: 78px;
+      max-width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
 
     .br-option strong {
   display: block;
@@ -613,7 +620,7 @@
     .br-book-card {
       min-height: 0;
       display: grid;
-      grid-template-columns: 58px minmax(0, 1fr) 52px;
+      grid-template-columns: 58px minmax(0, 1fr);
       gap: 16px;
       align-items: center;
       padding: 14px 18px;
@@ -665,17 +672,6 @@
       color: #8a581d;
       font-size: 12px;
       font-weight: 900;
-    }
-
-    .br-book-pick {
-      width: 46px;
-      height: 46px;
-      border: 1px solid rgba(174, 109, 27, 0.24);
-      border-radius: 16px;
-      background: #fff7e3;
-      color: #9b650f;
-      font-size: 22px;
-      cursor: pointer;
     }
 
     .br-empty-result {
@@ -821,7 +817,7 @@
       }
 
       .br-book-card {
-        grid-template-columns: 52px minmax(0, 1fr) 44px;
+        grid-template-columns: 52px minmax(0, 1fr);
         padding: 10px 14px;
       }
 
@@ -881,19 +877,19 @@
 }
 
 .br-options.six-options .br-option {
-  min-height: 185px !important;
-  padding: 26px 16px 24px !important;
+  min-height: 205px !important;
+  padding: 30px 18px 27px !important;
   border-radius: 28px !important;
 }
 
 .br-options.six-options .br-option-icon {
-  height: 62px !important;
-  margin-bottom: 14px !important;
-  font-size: 48px !important;
+  height: 70px !important;
+  margin-bottom: 16px !important;
+  font-size: 54px !important;
 }
 
 .br-options.six-options .br-option strong {
-  font-size: 25px !important;
+  font-size: 27px !important;
   line-height: 1.25 !important;
 }
 
@@ -922,28 +918,34 @@
   line-height: 1.22 !important;
 }
 
-/* 5개 선택지: 가로 폭 넓게 */
+/* 5개 선택지: 위 3개 + 아래 2개를 같은 폭으로 중앙 정렬 */
 .br-options.many-options {
   width: 100% !important;
   max-width: none !important;
-  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-  gap: 16px !important;
+  margin: 0 auto !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 20px !important;
 }
 
 .br-options.many-options .br-option {
-  min-height: 190px !important;
-  padding: 28px 12px 24px !important;
-  border-radius: 26px !important;
+  grid-column: span 2;
+  min-height: 205px !important;
+  padding: 30px 18px 27px !important;
+  border-radius: 28px !important;
+}
+
+.br-options.many-options .br-option:nth-child(4) {
+  grid-column: 2 / span 2;
 }
 
 .br-options.many-options .br-option-icon {
-  height: 64px !important;
-  margin-bottom: 14px !important;
-  font-size: 48px !important;
+  height: 70px !important;
+  margin-bottom: 16px !important;
+  font-size: 54px !important;
 }
 
 .br-options.many-options .br-option strong {
-  font-size: 24px !important;
+  font-size: 27px !important;
   line-height: 1.25 !important;
 }
 
@@ -1071,7 +1073,7 @@
 }
 
 .br-book-card {
-  grid-template-columns: 62px minmax(0, 1fr) 54px !important;
+  grid-template-columns: 62px minmax(0, 1fr) !important;
   padding: 20px 22px !important;
 }
 
@@ -1163,7 +1165,7 @@
 
 /* 카드도 글자 커진 만큼 여유 있게 */
 .br-book-card {
-  grid-template-columns: 68px minmax(0, 1fr) 58px !important;
+  grid-template-columns: 68px minmax(0, 1fr) !important;
   padding: 24px 26px !important;
   gap: 20px !important;
 }
@@ -1206,7 +1208,6 @@
         </div>
 
         <div class="br-top-actions">
-          <button type="button" class="br-top-button" onclick="openIndividualPowerModal()">✨ 나의 힘</button>
           <button type="button" class="mq-book-home-button" onclick="goIndividualReading()">📚 책읽기 홈</button>
         </div>
       </header>
@@ -1296,65 +1297,62 @@
         key: "thickness",
         title: "읽을 책의 두께는 어느 정도가 좋아?",
         options: [
-          { label: "가볍게 읽는\n얇은 책", icon: "🪶", value: "thin" },
-          { label: "적당히 읽는\n보통 책", icon: "📖", value: "medium" },
-          { label: "오래 읽는\n두꺼운 책", icon: "📚", value: "thick" }
+          { label: "가볍게 읽는\n얇은 책", image: "../assets/images/book-recommendation/book-thin.png", value: "thin" },
+          { label: "적당히 읽는\n보통 책", image: "../assets/images/book-recommendation/book-normal.png", value: "medium" },
+          { label: "오래 읽는\n두꺼운 책", image: "../assets/images/book-recommendation/book-thick.png", value: "thick" }
         ]
       },
       {
         key: "mood",
         title: "어떤 분위기의 책이 끌려?",
         options: [
-          { label: "재미있고\n웃긴 이야기", icon: "😄", value: "funny" },
-          { label: "따뜻하고\n감동적인 이야기", icon: "🌷", value: "touching" },
-          { label: "신나고\n흥미진진한 이야기", icon: "🧭", value: "exciting" },
-          { label: "차분하고\n잔잔한 이야기", icon: "🌿", value: "calm" },
-          { label: "상상력이\n커지는 이야기", icon: "💭", value: "imaginative" },
-          { label: "무섭거나\n신비로운 이야기", icon: "🌙", value: "mysterious" }
+          { label: "재미있고\n웃긴 이야기", image: "../assets/images/book-recommendation/mood-funny.png", value: "funny" },
+          { label: "따뜻하고\n감동적인 이야기", image: "../assets/images/book-recommendation/mood-warm.png", value: "touching" },
+          { label: "신나고\n흥미진진한 이야기", image: "../assets/images/book-recommendation/mood-exciting.png", value: "exciting" },
+          { label: "차분하고\n잔잔한 이야기", image: "../assets/images/book-recommendation/mood-calm.png", value: "calm" },
+          { label: "상상력이\n커지는 이야기", image: "../assets/images/book-recommendation/mood-imaginative.png", value: "imaginative" },
+          { label: "무섭거나\n신비로운 이야기", image: "../assets/images/book-recommendation/mood-scary.png", value: "mysterious" }
         ]
       },
       {
         key: "genre",
         title: "어떤 종류의 책을 읽고 싶어?",
         options: [
-          { label: "친구와\n우정 이야기", icon: "🏫", value: "friendship" },
-          { label: "판타지\n이야기", icon: "✨", value: "fantasy" },
-          { label: "신나는\n모험 이야기", icon: "🧭", value: "adventure" },
-          { label: "일상과\n학교 이야기", icon: "☀️", value: "daily_life" },
-          { label: "동물·자연\n이야기", icon: "🦁", value: "nature" },
-          { label: "역사·위인\n이야기", icon: "🏛️", value: "history" },
-          { label: "과학·정보\n책", icon: "🔎", value: "science" },
-          { label: "추리·미스터리\n이야기", icon: "🕵️", value: "mystery" },
-          { label: "마음이 자라는\n성장 이야기", icon: "🌱", value: "growth" }
+          { label: "친구와\n우정 이야기", image: "../assets/images/book-recommendation/genre-friendship.png", value: "friendship" },
+          { label: "판타지\n이야기", image: "../assets/images/book-recommendation/genre-fantasy.png", value: "fantasy" },
+          { label: "동물·자연\n이야기", image: "../assets/images/book-recommendation/genre-animal.png", value: "nature" },
+          { label: "역사·위인\n이야기", image: "../assets/images/book-recommendation/genre-history.png", value: "history" },
+          { label: "과학·정보\n책", image: "../assets/images/book-recommendation/genre-science.png", value: "science" },
+          { label: "추리·미스터리\n이야기", image: "../assets/images/book-recommendation/genre-mystery.png", value: "mystery" }
         ]
       },
       {
         key: "illustrationLevel",
         title: "책에 그림이 어느 정도 있으면 좋아?",
         options: [
-          { label: "그림이\n많은 책", icon: "🖼️", value: "many" },
-          { label: "글과 그림이\n반반 있는 책", icon: "📘", value: "medium" },
-          { label: "그림이 조금만\n있어도 좋아", icon: "📚", value: "few" }
+          { label: "그림이\n많은 책", image: "../assets/images/book-recommendation/picture-many.png", value: "many" },
+          { label: "글과 그림이\n반반 있는 책", image: "../assets/images/book-recommendation/picture-balanced.png", value: "medium" },
+          { label: "그림이 조금만\n있어도 좋아", image: "../assets/images/book-recommendation/picture-few.png", value: "few" }
         ]
       },
       {
         key: "difficulty",
         title: "읽기 어려운 정도는 어느 정도가 좋아?",
         options: [
-          { label: "쉽고 술술\n읽히는 책", icon: "🍃", value: "easy" },
-          { label: "생각하면서\n읽는 책", icon: "💭", value: "medium" },
-          { label: "어려워도\n도전할 책", icon: "🏔️", value: "hard" }
+          { label: "쉽고 술술\n읽히는 책", image: "../assets/images/book-recommendation/difficulty-easy.png", value: "easy" },
+          { label: "생각하면서\n읽는 책", image: "../assets/images/book-recommendation/difficulty-thoughtful.png", value: "medium" },
+          { label: "어려워도\n도전할 책", image: "../assets/images/book-recommendation/difficulty-challenge.png", value: "hard" }
         ]
       },
       {
         key: "purpose",
         title: "이번 책을 읽고 어떤 느낌을 얻고 싶어?",
         options: [
-          { label: "재미있게\n웃고 싶어", icon: "🌟", value: "fun" },
-          { label: "마음이\n따뜻해지고 싶어", icon: "🌷", value: "comfort" },
-          { label: "새로운 지식을\n알고 싶어", icon: "🧠", value: "knowledge" },
-          { label: "상상력을\n키우고 싶어", icon: "✨", value: "imagination" },
-          { label: "어려운 책에\n도전하고 싶어", icon: "🛡️", value: "challenge" }
+          { label: "재미있게\n웃고 싶어", image: "../assets/images/book-recommendation/feeling-fun.png", value: "fun" },
+          { label: "마음이\n따뜻해지고 싶어", image: "../assets/images/book-recommendation/feeling-warm.png", value: "comfort" },
+          { label: "새로운 지식을\n알고 싶어", image: "../assets/images/book-recommendation/feeling-knowledge.png", value: "knowledge" },
+          { label: "상상력을\n키우고 싶어", image: "../assets/images/book-recommendation/feeling-imagination.png", value: "imagination" },
+          { label: "어려운 책에\n도전하고 싶어", image: "../assets/images/book-recommendation/feeling-challenge.png", value: "challenge" }
         ]
       }
     ];
@@ -1385,7 +1383,11 @@
 
     function renderQuestion() {
       const question = questions[currentQuestionIndex];
-      selectedValue = answers[question.key] || null;
+      const savedValue = answers[question.key];
+      selectedValue = question.options.some((option) => option.value === savedValue)
+        ? savedValue
+        : null;
+      answers[question.key] = selectedValue;
 
       document.getElementById("progressCount").textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
       document.getElementById("questionKicker").textContent = `Q${currentQuestionIndex + 1}`;
@@ -1431,7 +1433,11 @@
 
         const icon = document.createElement("div");
         icon.className = "br-option-icon";
-        icon.textContent = option.icon;
+
+        const image = document.createElement("img");
+        image.src = option.image;
+        image.alt = option.label.replaceAll("\n", " ");
+        icon.appendChild(image);
 
         const label = document.createElement("strong");
         option.label.split("\n").forEach((line, index) => {
@@ -1568,8 +1574,12 @@
 
       if (savedPreferences && typeof savedPreferences === "object") {
         questions.forEach((question) => {
-          if (typeof savedPreferences[question.key] === "string") {
-            answers[question.key] = savedPreferences[question.key];
+          const savedValue = savedPreferences[question.key];
+          if (
+            typeof savedValue === "string" &&
+            question.options.some((option) => option.value === savedValue)
+          ) {
+            answers[question.key] = savedValue;
           }
         });
       }
@@ -1756,16 +1766,8 @@
         info.appendChild(author);
         info.appendChild(summary);
 
-        const pickButton = document.createElement("button");
-        pickButton.type = "button";
-        pickButton.className = "br-book-pick";
-        pickButton.title = "이 책으로 읽기 시작하기";
-        pickButton.textContent = "🔖";
-        pickButton.dataset.bookId = book.bookId || "";
-
         card.appendChild(cover);
         card.appendChild(info);
-        card.appendChild(pickButton);
 
         bookList.appendChild(card);
       });

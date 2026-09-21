@@ -103,10 +103,9 @@ const BattleEngine = (() => {
   return { damage: dungeonHeavyAtk, blocked: false, defenseMode: null };
 }
 
-  function checkBattleEnd(playerHp, enemyHp, timeLeft) {
+  function checkBattleEnd(playerHp, enemyHp) {
     if (enemyHp <= 0)  return 'victory';
     if (playerHp <= 0) return 'defeat';
-    if (timeLeft <= 0) return 'timeout';
     return null;
   }
 

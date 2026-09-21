@@ -913,9 +913,13 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
             📚 우리반 책읽기
           </button>
 
-          <div class="date-pill" id="todayText">
-            오늘 날짜
-          </div>
+          <button
+            class="date-pill"
+            type="button"
+            onclick="goReadingStageSelect()"
+          >
+            읽기 단계 선택
+          </button>
         </div>
       </header>
 
@@ -1276,9 +1280,6 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
     const checkButton =
       document.getElementById("checkButton");
 
-    const todayText =
-      document.getElementById("todayText");
-
 
     async function loadClassReadingBookId() {
       const token =
@@ -1387,10 +1388,6 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
       if (!bookLoaded) {
         return;
       }
-
-      todayText.textContent =
-        "오늘 날짜 " +
-        todayInfo.display;
 
       await loadTodayBookThoughtResponses();
 
@@ -3259,6 +3256,11 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
     function goClassReading() {
       location.href =
         "./class-reading.html";
+    }
+
+    function goReadingStageSelect() {
+      location.href =
+        "./practice.html";
     }
 
 

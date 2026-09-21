@@ -5461,6 +5461,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
         <div class="ar-top-actions">
           <button class="mq-book-home-button" type="button" onclick="goIndividualReading()">📚 책읽기 홈</button>
+          <button class="mq-book-home-button" type="button" onclick="goReadingStageSelect()">읽기 단계 선택</button>
           <button
   class="mq-book-home-button teacher-top-button"
   id="teacherHomeButton"
@@ -9064,6 +9065,10 @@ if (selectedBookType === "opinion") {
 
     function goIndividualReading() {
       location.href = "./individual-reading.html";
+    }
+
+    function goReadingStageSelect() {
+      location.href = "./practice.html";
     }
 
     function openAfterReadTargetFromUrl() {
