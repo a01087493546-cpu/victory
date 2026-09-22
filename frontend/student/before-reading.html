@@ -3461,11 +3461,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
   renderTopProgress();
   renderSideSteps();
 
-  if (currentMode === "summary") {
-    renderSummary();
-  } else {
-    renderActivity();
-  }
+  renderActivity();
 
   updateQuestionCount();
 }
@@ -3514,7 +3510,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
         const button = document.createElement("button");
         button.className = "side-step";
 
-        if (index === currentStepIndex && currentMode !== "summary") {
+        if (index === currentStepIndex) {
           button.classList.add("active");
         }
 
@@ -3553,11 +3549,6 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
     function updateLumiText() {
   const lumiTextEl = document.getElementById("lumiText");
   if (!lumiTextEl) return;
-
-  if (currentMode === "summary") {
-    lumiTextEl.textContent = "잘했어! 네 질문들이 책을 읽을 때 생각의 길잡이가 되어 줄 거야.";
-    return;
-  }
 
   const step = steps[currentStepIndex];
 
@@ -3777,7 +3768,7 @@ answerPlaceholder: "예) 글을 훑어보고 내가 예상한 답을 적어 보�
                   ? '<button class="plain-button" type="button" onclick="cancelContentsSkip()">차례 질문 작성하기</button>'
                   : '<button class="plain-button" type="button" onclick="skipContentsStep()">차례 없음</button>')
               : "") +
-            '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + ((answer.passed || isDemoAccount()) ? "" : "disabled") + '>다음 →</button>' +
+            '<button class="main-button" type="button" id="nextStepButton" onclick="goNextAfterFeedback()" ' + ((answer.passed || isDemoAccount()) ? "" : "disabled") + '>' + (currentStepIndex === steps.length - 1 ? '완료하고 읽기 단계 선택 →' : '다음 →') + '</button>' +
           '</div>'
       ) +
     '</div>';
@@ -4175,8 +4166,7 @@ function goNextAfterFeedback() {
     currentMode = "write";
     renderAll();
   } else {
-    currentMode = "summary";
-    renderAll();
+    return completeAndGoPractice();
   }
 }
 
@@ -4448,61 +4438,7 @@ function cancelContentsSkip() {
       };
     }
 
-    /*
-      =========================================================
-      7. 요약 화면
-      =========================================================
-    */
-
-    function showSummary() {
-      currentMode = "summary";
-      renderAll();
-    }
-
-    function renderSummary() {
-      const activityCard = document.getElementById("activityCard");
-
-      activityCard.innerHTML =
-        '<div class="activity-head">' +
-          '<div>' +
-            '<h2 class="activity-title">내가 만든 읽기 전 질문 확인하기</h2>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="summary-list">' +
-          steps.map(function(step, index) {
-            const item = answers[index];
-
-            return '<article class="summary-item">' +
-              '<h3 class="summary-title">' + step.number + '. ' + step.title + '</h3>' +
-              '<p class="summary-text"><strong>질문</strong> · ' + (item.skipped ? "차례가 없어 건너뛰었어요." : (item.question || "아직 작성하지 않았어요.")) + '</p>' +
-              '<p class="summary-text"><strong>답</strong> · ' + (item.skipped ? "차례가 없어 건너뛰었어요." : (item.expectedAnswer || "아직 작성하지 않았어요.")) + '</p>' +
-            '</article>';
-          }).join("") +
-        '</div>' +
-
-        '<div class="bottom-row">' +
-          '<div></div>' +
-
-          '<div class="action-area">' +
-            '<button class="plain-button" type="button" onclick="editIncompleteOrFirst()">수정하기</button>' +
-            '<button class="main-button" type="button" onclick="completeAndGoPractice()">읽기 단계 선택으로 이동 →</button>' +
-          '</div>' +
-        '</div>';
-    }
-
-    function editIncompleteOrFirst() {
-      const incompleteIndex = answers.findIndex(function(item) {
-        return !item.passed;
-      });
-
-      currentStepIndex = incompleteIndex === -1 ? 0 : incompleteIndex;
-      currentMode = "write";
-      renderAll();
-    }
-
-    // 질문 4개를 모두 완성하면 읽기 전 질문 공유하기 화면은 건너뛰고,
-    // 바로 읽기 전/중/후 3단계 선택 화면(practice.html)으로 이동합니다.
+    // 마지막 질문을 마치면 완료 상태를 저장하고 읽기 단계 선택으로 이동합니다.
 async function completeAndGoPractice() {
   const incompleteIndex = answers.findIndex(function(item) {
     return !item.passed;
