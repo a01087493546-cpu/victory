@@ -868,6 +868,17 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
   color: #fffaf0;
   box-shadow: 0 5px 0 rgba(101, 57, 5, 0.54);
 }
+
+.feedback-check-button {
+  background: #24573e !important;
+  color: #fff9e9 !important;
+  box-shadow: 0 7px 14px rgba(27, 74, 50, 0.2) !important;
+}
+
+.feedback-check-button:hover,
+.feedback-check-button:focus-visible {
+  background: #194a34 !important;
+}
   </style>
 </head>
 
@@ -1044,7 +1055,7 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
             </button>
 
             <button
-              class="main-button"
+              class="main-button feedback-check-button"
               id="checkButton"
               type="button"
               onclick="checkQuestion()"

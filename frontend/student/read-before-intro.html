@@ -72,19 +72,15 @@
     right: 10%;
     bottom: 0;
     z-index: 2;
-    width: min(32vw, 460px);
-    max-height: 88vh;
+    width: auto;
+    height: 950px;
+    max-width: 720px;
     object-fit: contain;
     object-position: bottom center;
     filter:
       drop-shadow(0 18px 28px rgba(0, 0, 0, 0.34))
       drop-shadow(0 0 12px rgba(231, 178, 82, 0.16));
   }
-/* 두 번째 장면 루미는 새 이미지 기준으로 살짝 크게 보정합니다. */
-.intro-lumi.scene-thinking {
-  transform: scale(1.08);
-  transform-origin: bottom center;
-}
   .story-box {
     position: absolute;
     left: 6%;
@@ -215,7 +211,7 @@
 
   @media (max-width: 1100px) {
     .intro-lumi {
-      width: min(42vw, 440px);
+      max-width: 48vw;
       right: 3%;
     }
 
@@ -428,14 +424,6 @@ if (currentSceneIndex > 0) {
     const lumiImage = document.getElementById("lumiImage");
 
     lumiImage.src = scene.image;
-
-    // 장면별 루미 크기를 조절하기 위해 기본 클래스를 다시 설정합니다.
-    lumiImage.className = "intro-lumi";
-
-    // 두 번째 장면만 크기를 따로 보정합니다.
-    if (currentSceneIndex === 1) {
-      lumiImage.classList.add("scene-thinking");
-    }
 
     renderDots();
   }

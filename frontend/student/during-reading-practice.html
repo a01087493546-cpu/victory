@@ -4400,6 +4400,17 @@ body {
   min-height: 104px !important;
   padding: 14px 16px !important;
 }
+
+#app .feedback-check-button {
+  background: #24573e !important;
+  color: #fff9e9 !important;
+  box-shadow: 0 7px 14px rgba(27, 74, 50, 0.2) !important;
+}
+
+#app .feedback-check-button:hover,
+#app .feedback-check-button:focus-visible {
+  background: #194a34 !important;
+}
 </style>
 </head>
 
@@ -5017,8 +5028,6 @@ async function loadProgress() {
     (progress.opinion ? 1 : 0) +
     (progress.connect ? 1 : 0);
 
-  const ready = canStartReview();
-
   app.innerHTML =
     '<section class="screen select-screen">' +
       '<div class="screen-title-row select-title-row">' +
@@ -5032,7 +5041,9 @@ async function loadProgress() {
             '<span class="select-progress-label">진행률</span>' +
             '<strong>' + doneCount + ' / 4</strong>' +
           '</div>' +
-          '<button class="main-button select-review-button" type="button" ' + (ready ? '' : 'disabled') + ' onclick="goReviewScreen()">총복습 시작 →</button>' +
+          (doneCount === questionTypes.length
+            ? '<button class="main-button select-review-button" type="button" onclick="window.location.href=\'class-reading.html\'">우리반 책읽기로 →</button>'
+            : '') +
         '</div>' +
       '</div>' +
 
@@ -5146,7 +5157,7 @@ async function loadProgress() {
 
         '<div class="method-actions">' +
           '<button class="plain-button method-big-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-          '<button class="main-button method-big-button" type="button" onclick="goBasicPracticeScreen()">기본 연습으로 →</button>' +
+          '<button class="main-button method-big-button" type="button" onclick="goDeepPracticeScreen()">심화 연습으로 →</button>' +
         '</div>' +
       '</article>' +
 
@@ -5549,13 +5560,27 @@ async function saveDuringPracticeQuestion(question) {
   }
 
   const previousValue = progress[selectedQuestionType];
+  const previousReview = progress.review;
   progress[selectedQuestionType] = true;
+  const allTypesDone = questionTypes.every(function(item) { return progress[item.id]; });
+  if (allTypesDone) progress.review = true;
 
   const saved = isDemoAccount() ? true : await saveProgress();
 
   if (!saved) {
     /* 저장에 실패했으면 DB에 반영되지 않은 완료 상태를 화면에 남기지 않는다. */
     progress[selectedQuestionType] = previousValue;
+    progress.review = previousReview;
+    return;
+  }
+
+  if (allTypesDone) {
+    if (isDemoAccount()) {
+      const demoProgress = loadDemoState("practiceProgress", {});
+      demoProgress.classReadDone = true;
+      saveDemoState("practiceProgress", demoProgress);
+    }
+    window.location.href = "class-reading.html";
     return;
   }
 
@@ -5620,8 +5645,8 @@ async function saveDuringPracticeQuestion(question) {
               ) +
 
               '<div class="method-actions">' +
-                '<button class="plain-button" type="button" onclick="goBasicPracticeScreen()">← 기본 연습</button>' +
-                '<button class="main-button" type="button" onclick="checkDeepAnswer()">확인받기</button>' +
+                '<button class="plain-button" type="button" onclick="goMethodScreen()">← 방법 알기</button>' +
+                '<button class="main-button feedback-check-button" type="button" onclick="checkDeepAnswer()">확인받기</button>' +
                 '<button class="main-button" type="button" ' + (isDemoAccount() || deepChecked && deepResult && deepResult.ok ? "" : "disabled") + ' onclick="nextDeepQuestion()">' +
                   (currentDeepIndex < questions.length - 1 ? "다음 문제 →" : "연습 완료 →") +
                 '</button>' +
@@ -6022,7 +6047,7 @@ fetch(API_BASE_URL + "/api/students/me/feedback/ai-review", {
 
               '<div class="method-actions">' +
                 '<button class="plain-button" type="button" onclick="goSelectScreen()">← 질문 종류로</button>' +
-                '<button class="main-button" type="button" onclick="checkReviewQuestion()">확인받기</button>' +
+                '<button class="main-button feedback-check-button" type="button" onclick="checkReviewQuestion()">확인받기</button>' +
                 '<button class="main-button" type="button" ' + (allReviewDone || isDemoAccount() ? "" : "disabled") + ' onclick="finishReview()">총복습 완료 →</button>' +
               '</div>' +
             '</article>' +

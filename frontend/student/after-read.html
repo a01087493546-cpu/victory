@@ -503,7 +503,7 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
 
     .ar-study-stepbar {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
 
@@ -1300,7 +1300,7 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
       }
 
       .ar-study-stepbar {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
     /* =========================================================
@@ -1338,7 +1338,7 @@ body.teacher-mode .ar-top-actions > button:not(.teacher-top-button) { display:no
   }
 
   .ar-study-stepbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
   }
 
@@ -5443,6 +5443,24 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
     transform: translateY(-10px);
   }
 }
+
+/* 읽기 후의 모든 확인받기 버튼을 읽기 전·중과 같은 색으로 통일합니다. */
+.ar-after-feedback-button,
+#writePanel .ar-after-feedback-button,
+#summaryPanel .ar-after-feedback-button,
+#practiceWritePanel .ar-after-feedback-button,
+#writePanel .ar-after-feedback-card.is-question-feedback .ar-after-feedback-button {
+  background: #24573e !important;
+  border-color: #477a60 !important;
+  color: #fff9e9 !important;
+  box-shadow: 0 7px 14px rgba(27, 74, 50, 0.2) !important;
+}
+
+.ar-after-feedback-button:hover,
+.ar-after-feedback-button:focus-visible {
+  background: #194a34 !important;
+  filter: none !important;
+}
 </style>
 </head>
 
@@ -5552,10 +5570,9 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
           </div>
 
           <div class="ar-study-stepbar">
-            <div class="ar-study-step" id="stepBar1"><span>1</span> 질문 연습</div>
-            <div class="ar-study-step" id="stepBar2"><span>2</span> 내 책 질문 만들기</div>
-            <div class="ar-study-step" id="stepBar3"><span>3</span> 간추리기</div>
-            <div class="ar-study-step" id="stepBar4"><span>4</span> 간추리기 공유</div>
+            <div class="ar-study-step" id="stepBar1"><span>1</span> 질문 만들기</div>
+            <div class="ar-study-step" id="stepBar2"><span>2</span> 간추리기</div>
+            <div class="ar-study-step" id="stepBar3"><span>3</span> 간추리기 공유</div>
           </div>
         </section>
 
@@ -5570,11 +5587,11 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
             <div class="ar-panel-actions">
               <button class="ar-action-button is-brown" type="button" onclick="goTypeMenu()">이전으로</button>
-              <button class="ar-action-button" type="button" onclick="showStudyPanel('builder')">다음으로</button>
+              <button class="ar-action-button" type="button" onclick="showStudyPanel('practiceWrite')">다음으로</button>
             </div>
           </section>
 
-          <section class="ar-study-panel ar-builder-panel" id="builderPanel">
+          <section class="ar-study-panel ar-builder-panel" id="builderPanel" hidden>
             <div class="ar-builder-layout">
               <article class="ar-study-card ar-practice-reading-card">
                 <h3>짧은 글 읽기</h3>
@@ -5684,7 +5701,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
             </article>
 
             <div class="ar-panel-actions">
-              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('builder')">이전으로</button>
+              <button class="ar-action-button is-brown" type="button" onclick="showStudyPanel('method')">이전으로</button>
               <button class="ar-action-button" type="button" id="extraPracticeNextButton" onclick="goWritePanelAfterPractice()" disabled>다음으로</button>
             </div>
           </section>
@@ -7448,14 +7465,14 @@ if (demoBanner) {
         method: 1,
         builder: 1,
         practiceWrite: 1,
-        write: 2,
-        summary: 3,
-        share: 4
+        write: 1,
+        summary: 2,
+        share: 3
       };
 
       const activeStep = stepMap[panelName] || 1;
 
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 3; i++) {
         const step = document.getElementById("stepBar" + i);
 
         if (step) {

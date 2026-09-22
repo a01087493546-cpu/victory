@@ -1195,6 +1195,19 @@
     padding: 18px 20px !important;
   }
 }
+
+/* 원래 그라데이션은 유지하고 그림자 효과만 제거합니다. */
+.br-page *,
+.br-page *::before,
+.br-page *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.br-lumi,
+.br-option-icon {
+  filter: none !important;
+}
   </style>
 </head>
 

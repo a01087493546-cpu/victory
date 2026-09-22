@@ -197,8 +197,10 @@
       .mq-fixed-stage-page.mq-page-read-before-intro .intro-lumi {
         right: 140px !important;
         bottom: 0 !important;
-        width: 520px !important;
-        max-height: 910px !important;
+        width: auto !important;
+        height: 950px !important;
+        max-width: 720px !important;
+        max-height: none !important;
       }
 
       .mq-fixed-stage-page.mq-page-read-before-intro .next-button,

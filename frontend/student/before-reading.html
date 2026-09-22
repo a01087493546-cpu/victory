@@ -2984,6 +2984,23 @@ body {
 #helpModal .help-context-title .help-context-kicker::after {
   content: " :";
 }
+
+/* 확인받기는 도움 받기·다음과 구분되는 진초록색으로 표시합니다. */
+#activityCard .feedback-check-button {
+  background: #24573e !important;
+  color: #fff9e9 !important;
+  box-shadow: 0 7px 14px rgba(27, 74, 50, 0.2) !important;
+}
+
+#activityCard .feedback-check-button:hover,
+#activityCard .feedback-check-button:focus-visible {
+  background: #194a34 !important;
+}
+
+#activityCard .feedback-check-button:focus-visible {
+  outline: 3px solid #a5c49f;
+  outline-offset: 3px;
+}
   </style>
 </head>
 
