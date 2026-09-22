@@ -7080,7 +7080,40 @@ async function saveBookFinishRecord() {
      * 쪽에 같은 조건으로 좋아요 삭제를 넣어 두었으니 여기서는 심사계정
      * 로컬 저장소만 처리한다.
      */
-    function editRejectedIndividualSummary(summaryId) {
+    /*
+      일반계정의 간추리기(Summary)에는 애초에 질문·답이 저장되지 않는다
+      (IndividualSummarySaveRequest/IndividualSummaryShareItem 모두 question/
+      answer 필드가 없다 - summaryText만 저장·조회한다). 그래서
+      item.questionAnswers/item.questions는 일반계정 응답에는 항상
+      존재하지 않아, 예전 코드는 이 값에 의존해 3단계 왼쪽 카드를 항상
+      빈칸으로 지워 버렸다. 실제 원본 질문·답은 이 책의 "질문과 답을
+      써요" 단계가 이미 저장해 둔 곳(after-responses, Response 엔티티)에
+      있으므로, item.readingRecordId로 그 저장분을 다시 불러와 복원한다
+      - 페이지 최초 진입 시 restoreIndividualAfterReadingFromServer()가
+      쓰는 것과 같은 API/렌더 함수(restoreAfterQuestionCards)를 그대로
+      재사용한다. 심사(demo) 계정은 원래도 로컬에 questionAnswers를
+      함께 저장해 두므로 기존 방식을 그대로 유지한다.
+    */
+    async function restoreQaCardsForRejectedIndividualSummary(readingRecordId) {
+      if (!readingRecordId) return;
+      const token = sessionStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch(
+          INDIVIDUAL_READING_API_BASE_URL +
+            "/api/students/me/individual-reading/" + readingRecordId + "/after-responses",
+          { headers: { Authorization: "Bearer " + token } }
+        );
+        if (!response.ok) return;
+        const afterResponses = await response.json();
+        restoreAfterQuestionCards(afterResponses);
+      } catch (error) {
+        console.error("거절된 간추리기의 원래 질문·답을 불러오지 못했습니다.", error);
+      }
+    }
+
+    async function editRejectedIndividualSummary(summaryId) {
       const item = currentShareSummaries.find(function (summary) {
         return String(summary.summaryId) === String(summaryId);
       });
@@ -7095,29 +7128,33 @@ async function saveBookFinishRecord() {
       const summaryInput = document.getElementById("summaryInput");
       if (summaryInput) summaryInput.value = editingSummaryOriginalText;
 
-      /* 수정 모드에서만 공유 카드에 저장된 질문·답 스냅샷을 2단계 입력
-         DOM에 다시 넣는다. 3단계 왼쪽 목록과 '이전으로'로 돌아간 입력
-         화면이 모두 이 DOM을 공용으로 사용하므로 두 화면이 같은 값을
-         보여준다. */
-      const restoredQuestions = Array.isArray(item.questionAnswers)
-        ? item.questionAnswers
-        : (Array.isArray(item.questions) ? item.questions : []);
-      let editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
-      if (editingDemoSeedSummary && editCards.length > 3) {
-        editCards.slice(3).forEach(function(card) { card.remove(); });
-        editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+      if (isDemoAccount()) {
+        /* 수정 모드에서만 공유 카드에 저장된 질문·답 스냅샷을 2단계 입력
+           DOM에 다시 넣는다. 3단계 왼쪽 목록과 '이전으로'로 돌아간 입력
+           화면이 모두 이 DOM을 공용으로 사용하므로 두 화면이 같은 값을
+           보여준다. */
+        const restoredQuestions = Array.isArray(item.questionAnswers)
+          ? item.questionAnswers
+          : (Array.isArray(item.questions) ? item.questions : []);
+        let editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+        if (editingDemoSeedSummary && editCards.length > 3) {
+          editCards.slice(3).forEach(function(card) { card.remove(); });
+          editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
+        }
+        editCards.forEach(function(card, index) {
+          const saved = restoredQuestions.find(function(entry) {
+            return Number(entry.index) === index + 1;
+          }) || restoredQuestions[index] || {};
+          const questionInput = card.querySelector(".qa-question");
+          const answerInput = card.querySelector(".qa-answer");
+          if (questionInput) questionInput.value = saved.question || "";
+          if (answerInput) answerInput.value = saved.answer || "";
+          card.dataset.feedbackPassed = "true";
+          card.classList.add("passed");
+        });
+      } else {
+        await restoreQaCardsForRejectedIndividualSummary(item.readingRecordId);
       }
-      editCards.forEach(function(card, index) {
-        const saved = restoredQuestions.find(function(entry) {
-          return Number(entry.index) === index + 1;
-        }) || restoredQuestions[index] || {};
-        const questionInput = card.querySelector(".qa-question");
-        const answerInput = card.querySelector(".qa-answer");
-        if (questionInput) questionInput.value = saved.question || "";
-        if (answerInput) answerInput.value = saved.answer || "";
-        card.dataset.feedbackPassed = "true";
-        card.classList.add("passed");
-      });
       activeQuestionCardIndex = 0;
       updateQuestionProgress();
       updateSequentialQuestionLock();

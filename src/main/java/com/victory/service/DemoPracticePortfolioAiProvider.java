@@ -128,6 +128,45 @@ public class DemoPracticePortfolioAiProvider {
         return BY_LOGIN_ID.getOrDefault(loginId, DEFAULT);
     }
 
+    public PortfolioAiAnalysisResponse forLoginId(String loginId, Long regenerationVersion) {
+        PortfolioAiAnalysisResponse base = forLoginId(loginId);
+        if (regenerationVersion == null || regenerationVersion % 2 == 0) {
+            return base;
+        }
+        StageAnalysis stages = base.stageAnalysis();
+        return new PortfolioAiAnalysisResponse(
+            reorderSentences(base.strengthText()),
+            rephraseImprovement(base.improvementText()),
+            stages == null ? null : new StageAnalysis(
+                rephraseStage(stages.before()),
+                rephraseStage(stages.during()),
+                rephraseStage(stages.after())));
+    }
+
+    private StageAnalysisItem rephraseStage(StageAnalysisItem item) {
+        if (item == null) return null;
+        return new StageAnalysisItem(item.title(), item.completed(),
+            reorderSentences(item.strengthText()), item.growthText());
+    }
+
+    private String reorderSentences(String text) {
+        String[] sentences = text.split("(?<=\\.)\\s+");
+        if (sentences.length < 2) return text;
+        StringBuilder reordered = new StringBuilder();
+        for (int i = sentences.length - 1; i >= 0; i--) {
+            if (reordered.length() > 0) reordered.append(' ');
+            reordered.append(sentences[i]);
+        }
+        return reordered.toString();
+    }
+
+    private String rephraseImprovement(String text) {
+        if (text.startsWith("앞으로는 ")) {
+            return "다음 독서에서는 " + text.substring("앞으로는 ".length());
+        }
+        return "다음 독서 활동에서는 " + text;
+    }
+
     private static PortfolioAiAnalysisResponse response(
             String strengthText, String improvementText,
             StageAnalysisItem before, StageAnalysisItem during, StageAnalysisItem after) {

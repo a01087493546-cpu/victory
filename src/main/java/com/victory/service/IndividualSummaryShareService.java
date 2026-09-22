@@ -59,9 +59,16 @@ public class IndividualSummaryShareService {
     private final SchoolClassRepository schoolClassRepository;
     private final UserRepository userRepository;
 
+    /*
+     * 예전에는 "내 간추리기(읽기 후 질문 3개 + 최종 요약)를 먼저 완성해야만
+     * 친구들의 간추리기를 볼 수 있다"는 선행 조건이 있었다(요구사항 변경으로
+     * 제거함) - 자기 읽기 후 활동을 아직 시작도 안 한 학생이 친구의 승인된
+     * 글조차 전혀 못 보고 "내 간추리기를 먼저 완성해 주세요" 안내만 보는
+     * 문제가 있었다. 이제는 같은 학급이면 진행 상태와 무관하게 승인된
+     * 간추리기를 바로 볼 수 있다.
+     */
     public List<IndividualSummaryShareItem> getClassSummariesForStudent(Long studentId, LocalDate date) {
         ClassStudent viewerClassStudent = findClassStudent(studentId);
-        requireStudentReadyToViewSharedSummaries(studentId);
 
         List<Long> classmateIds = studentIdsInClass(viewerClassStudent.getSchoolClass().getId());
 
@@ -91,6 +98,18 @@ public class IndividualSummaryShareService {
         Summary summary = requireTeacherOwnedSummary(teacherId, summaryId);
         summary.setStatus(STATUS_APPROVED);
         summary.setRejectionReason(null);
+        /*
+         * 공유 조건(공유 목록 조회 - findSharedIndividualSummariesByStudentIds...,
+         * 좋아요 대상 판정 - requireSharedSummaryInClass)은 모두 "AI 통과 +
+         * 승인"을 함께 요구한다. AI 피드백은 학생에게 선택 도움 기능이라
+         * "수정 필요(need)" 판정을 받고도 그대로 제출할 수 있는데, 그 경우
+         * summary.aiPassed는 계속 false로 남는다. 교사가 사람으로서 직접
+         * 확인하고 승인하는 행위는 AI의 "수정 필요" 의견보다 우선해야 하므로,
+         * 승인 시점에 aiPassed도 함께 true로 승격한다 - 그러지 않으면 교사가
+         * 승인한 글이 우리 반 간추리기 모음/좋아요 어디에도 절대 나타나지
+         * 않는 채로 영구히 남는다(실제로 보고된 문제).
+         */
+        summary.setAiPassed(true);
         return toItem(summaryRepository.save(summary), teacherId, null);
     }
 
@@ -346,73 +365,6 @@ public class IndividualSummaryShareService {
 
     private LocalDate resolveDate(LocalDate date) {
         return date == null ? LocalDate.now(ZONE_SEOUL) : date;
-    }
-
-    /*
-     * 학생은 자신의 읽기 후 질문 3개와 최종 간추리기를 모두 루미 통과 상태로
-     * 저장한 뒤에만 친구들의 간추리기를 볼 수 있다. afterDone/완독 여부는
-     * 잠금 기준이 아니다.
-     */
-    private void requireStudentReadyToViewSharedSummaries(Long studentId) {
-        List<Summary> mySummaries = summaryRepository
-            .findByStudent_IdAndReadingRecordIsNotNullAndAiPassedTrueAndStatusOrderByCreatedAtDesc(
-                studentId, STATUS_APPROVED);
-        if (mySummaries.isEmpty()) {
-            mySummaries = summaryRepository.findAllReviewableIndividualSummariesByStudentIds(List.of(studentId));
-        }
-
-        boolean ready = mySummaries.stream()
-            .anyMatch(this::hasThreePassedAfterResponses);
-
-        if (!ready) {
-            throw new ResponseStatusException(
-                HttpStatus.CONFLICT,
-                "내 간추리기를 먼저 완성해 주세요."
-            );
-        }
-    }
-
-    private boolean hasThreePassedAfterResponses(Summary summary) {
-        if (summary.getReadingRecord() == null
-                || summary.getSummaryText() == null
-                || summary.getSummaryText().isBlank()) {
-            return false;
-        }
-
-        List<Response> responses = responseRepository
-            .findByStudent_IdAndReadingRecord_IdAndModeAndContentTypeAndStageAndDeletedAtIsNullOrderByIdAsc(
-                summary.getStudent().getId(),
-                summary.getReadingRecord().getId(),
-                MODE_INDIVIDUAL,
-                CONTENT_TYPE_ANSWER,
-                STAGE_AFTER);
-
-        return AFTER_QUESTION_INDEXES.stream()
-            .allMatch(index -> responses.stream()
-                .anyMatch(response -> index.equals(extractQuestionIndex(response))
-                    && response.getContent() != null
-                    && !response.getContent().isBlank()
-                    && Boolean.TRUE.equals(response.getPassed())));
-    }
-
-    private Integer extractQuestionIndex(Response response) {
-        Object value = response.getExtraData() == null
-            ? null
-            : response.getExtraData().get("questionIndex");
-
-        if (value instanceof Number number) {
-            return number.intValue();
-        }
-
-        if (value == null) {
-            return null;
-        }
-
-        try {
-            return Integer.valueOf(value.toString());
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 
     private List<Long> studentIdsInClass(Long classId) {

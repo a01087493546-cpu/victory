@@ -390,6 +390,14 @@
     margin-bottom: 10px;
   }
 
+  .gp-helper-description {
+    margin: 0 0 10px;
+    color: var(--brown-soft);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.55;
+  }
+
   .gp-ai-regenerate button {
     border: 1px solid var(--gold-dark);
     background: linear-gradient(180deg, var(--gold-light), var(--gold));
@@ -399,6 +407,14 @@
     font-size: 12.5px;
     font-weight: 800;
     box-shadow: 0 4px 10px rgba(169, 99, 11, 0.16);
+    line-height: 1.3;
+  }
+
+  .gp-ai-regenerate button .gp-ai-button-line {
+    display: block;
+    color: inherit;
+    font: inherit;
+    white-space: nowrap;
   }
 
   .gp-ai-regenerate button:hover:not(:disabled) {
@@ -434,6 +450,15 @@
     color: #9b352c;
     font-weight: 700;
   }
+
+  .gp-reflect-actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+  .gp-reflect-button {
+    min-width: 150px; padding: 12px 22px; border: 1px solid #a96f24; border-radius: 12px;
+    background: linear-gradient(180deg, #e5b64d, #c98420); color: #fff; font: inherit;
+    font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(116, 73, 24, 0.18);
+  }
+  .gp-reflect-button:hover { filter: brightness(1.04); transform: translateY(-1px); }
+  .gp-reflect-note { color: var(--brown-soft); font-size: 13px; line-height: 1.45; }
 
   /* ---------- 오른쪽: A4 미리보기 ---------- */
   .gp-preview-wrap {
@@ -831,6 +856,24 @@
           </div>
 
           <div class="gp-fieldset">
+            <div class="gp-fieldset-title">독서 기록</div>
+            <div class="gp-field">
+              <label for="fieldBookTitle">함께 읽은 책</label>
+              <input type="text" id="fieldBookTitle" />
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
+            <div class="gp-fieldset-title">성장 기록 도우미</div>
+            <p class="gp-helper-description">학생의 독서 활동을 바탕으로 아래 전체 성장 기록의 초안을 제안합니다.<br>내용을 확인하고 수정해 주세요.</p>
+            <div class="gp-ai-regenerate">
+              <button type="button" id="regenerateAiButton" onclick="handleRegenerateAi()"><span class="gp-ai-button-line">✨ 성장 기록 초안</span><span class="gp-ai-button-line">만들기</span></button>
+              <span class="gp-ai-spinner" id="aiSpinner" hidden></span>
+              <span id="aiRegenerateNote"></span>
+            </div>
+          </div>
+
+          <div class="gp-fieldset">
             <div class="gp-fieldset-title">읽기 단계별 성장</div>
             <div class="gp-field">
               <label for="fieldBeforeGrowthText">읽기 전 성장과정</label>
@@ -847,27 +890,14 @@
           </div>
 
           <div class="gp-fieldset">
-            <div class="gp-fieldset-title">독서 기록</div>
-            <div class="gp-field">
-              <label for="fieldBookTitle">함께 읽은 책</label>
-              <input type="text" id="fieldBookTitle" />
-            </div>
-          </div>
-
-          <div class="gp-fieldset">
-            <div class="gp-fieldset-title">AI 분석</div>
-            <div class="gp-ai-regenerate">
-              <button type="button" id="regenerateAiButton" onclick="handleRegenerateAi()">✨ AI 분석 생성</button>
-              <span class="gp-ai-spinner" id="aiSpinner" hidden></span>
-              <span id="aiRegenerateNote"></span>
-            </div>
+            <div class="gp-fieldset-title">독서 성장 기록</div>
             <div class="gp-field">
               <label for="fieldAiStrengths">잘하는 점</label>
-              <textarea id="fieldAiStrengths" placeholder="AI 분석 결과가 없으면 직접 입력해 주세요."></textarea>
+              <textarea id="fieldAiStrengths" placeholder="기록 초안이 없으면 직접 입력해 주세요."></textarea>
             </div>
             <div class="gp-field">
               <label for="fieldAiImprovements">노력할 점</label>
-              <textarea id="fieldAiImprovements" placeholder="AI 분석 결과가 없으면 직접 입력해 주세요."></textarea>
+              <textarea id="fieldAiImprovements" placeholder="기록 초안이 없으면 직접 입력해 주세요."></textarea>
             </div>
           </div>
 
@@ -877,6 +907,11 @@
               <label for="fieldTeacherComment">교사 의견</label>
               <textarea id="fieldTeacherComment" maxlength="500"></textarea>
             </div>
+          </div>
+
+          <div class="gp-reflect-actions">
+            <button class="gp-reflect-button" type="button" onclick="handleReflectPortfolio()">반영하기</button>
+            <span class="gp-reflect-note" id="reflectNote">입력 중인 내용은 임시 저장되며, 반영하기를 눌러야 결과지와 인쇄본이 바뀝니다.</span>
           </div>
 
         </div>
@@ -935,7 +970,7 @@
                 </div>
 
                 <div class="gp-a4-section">
-                  <div class="gp-a4-section-label">AI 분석</div>
+                  <div class="gp-a4-section-label">독서 성장 기록</div>
                   <div class="gp-ai-grid">
                     <div class="gp-ai-card"><div class="gp-a4-item-label">✨ 잘하는 점</div><div class="gp-a4-text-block" id="previewAiStrengths">-</div></div>
                     <div class="gp-ai-card"><div class="gp-a4-item-label">🌱 노력할 점</div><div class="gp-a4-text-block" id="previewAiImprovements">-</div></div>
@@ -962,6 +997,7 @@
   <script src="../js/portfolio-data.js"></script>
   <script>
     const PORTFOLIO_KIND = "practice";
+    let aiRegenerationVersion = 0;
     const A4_BG_PATH = "../assets/images/portfolio/whole-reading-portfolio-bg.png";
     const DEMO_SEED_LOGIN_IDS = new Set([
       "ss01", "demo_student_02", "demo_student_03", "demo_student_04",
@@ -976,6 +1012,7 @@
     let currentStageAnalysis = { before: "", during: "", after: "" };
     let stageAnalysisSource = "aggregate";
     let saveTimer = null;
+    let reflectedDraft = null;
     /*
      * 집계 API가 실제로 돌려준 activityCount(0 포함)만 신뢰해 "활동 전"을
      * 판정한다. legacy-fallback 등으로 값을 확인할 수 없으면 null로 두고
@@ -1137,6 +1174,9 @@
     function selectStudent(studentId, studentNumber) {
       currentStudentId = studentId;
       currentStudentNumber = studentNumber;
+      // 학생이 바뀌면 재생성 문구 다양화 카운터도 새로 시작한다(이전 학생의
+      // 재생성 횟수가 다음 학생의 첫 생성 결과에 영향을 주지 않도록).
+      aiRegenerationVersion = 0;
       document.getElementById("pickerScreen").hidden = true;
       document.getElementById("editorScreen").hidden = false;
       updateA4Scale();
@@ -1228,7 +1268,7 @@
       document.getElementById("fieldAiImprovements").value = draft.aiImprovements || "";
       document.getElementById("fieldTeacherComment").value = draft.teacherComment || "";
 
-      updatePreview();
+      refreshAiButtonLabel();
     }
 
     function setUnavailableHints(unavailableFields) {
@@ -1262,7 +1302,7 @@
       showSourceNote(result);
       setUnavailableHints(result.unavailableFields);
 
-      return Object.assign({
+      const draft = Object.assign({
         periodFrom: periodFrom,
         periodTo: periodTo,
         teacherComment: "",
@@ -1271,16 +1311,37 @@
         stageAnalysisSource: "aggregate",
         sourceLoadedAt: new Date().toISOString()
       }, result.data);
+      /*
+       * 집계 응답에 포함된 분석 문장은 근거 데이터일 뿐 교사의 확정 기록이
+       * 아니다. 최초 진입에서는 서술형 편집칸을 비워 두고, 교사가 기록
+       * 초안 만들기를 눌렀을 때만 AI 결과를 draft에 채운다.
+       */
+      draft.beforeGrowthText = "";
+      draft.duringGrowthText = "";
+      draft.afterGrowthText = "";
+      draft.stageAnalysis = { before: "", during: "", after: "" };
+      draft.stageAnalysisSource = "teacher";
+      draft.aiStrengths = "";
+      draft.aiImprovements = "";
+      draft.teacherComment = "";
+      return draft;
     }
 
     async function openEditorForCurrentStudent() {
       const savedDraft = loadPortfolioDraft(PORTFOLIO_KIND, currentStudentId);
+      const savedReflected = loadPortfolioReflected(PORTFOLIO_KIND, currentStudentId);
+      reflectedDraft = savedReflected && savedReflected.draft ? savedReflected.draft : null;
 
       if (savedDraft && savedDraft.draft && savedDraft.draft.teacherEdited === true) {
         teacherEdited = true;
         teacherEditedAt = savedDraft.draft.teacherEditedAt || savedDraft.savedAt || null;
         sourceLoadedAt = savedDraft.draft.sourceLoadedAt || null;
         fillFormFromDraft(savedDraft.draft);
+        if (!reflectedDraft) {
+          reflectedDraft = JSON.parse(JSON.stringify(savedDraft.draft));
+          savePortfolioReflected(PORTFOLIO_KIND, currentStudentId, reflectedDraft);
+        }
+        updatePreview(reflectedDraft);
         updateA4Scale();
         return;
       }
@@ -1299,13 +1360,18 @@
         sourceLoadedAt = draft.sourceLoadedAt;
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
+        if (!reflectedDraft) {
+          reflectedDraft = JSON.parse(JSON.stringify(draft));
+          savePortfolioReflected(PORTFOLIO_KIND, currentStudentId, reflectedDraft);
+        }
+        updatePreview(reflectedDraft);
         updateSaveIndicator();
         loadedFreshData = true;
       } finally {
         editor.style.opacity = "1";
         updateA4Scale();
       }
-      if (loadedFreshData) await generateInitialAiAnalysisIfNeeded();
+      if (loadedFreshData) refreshAiButtonLabel();
     }
 
     /*
@@ -1339,7 +1405,7 @@
         fillFormFromDraft(draft);
         savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
         updateSaveIndicator();
-        await generateInitialAiAnalysisIfNeeded();
+        refreshAiButtonLabel();
       } catch (error) {
         console.error("원본 데이터를 다시 불러오지 못했습니다.", error);
         alert("원본 데이터를 다시 불러오지 못했어요. 잠시 후 다시 시도해 주세요.");
@@ -1373,21 +1439,11 @@
       if (!button || button.disabled) return;
       const hasAnalysis =
         document.getElementById("fieldAiStrengths").value.trim() !== "" ||
-        document.getElementById("fieldAiImprovements").value.trim() !== "";
-      button.textContent = hasAnalysis ? "✨ AI 분석 다시 생성" : "✨ AI 분석 생성";
-    }
-
-    async function generateInitialAiAnalysisIfNeeded() {
-      const strengths = document.getElementById("fieldAiStrengths").value.trim();
-      const improvements = document.getElementById("fieldAiImprovements").value.trim();
-      const hasStageAnalysis = Object.values(readStageEditorValues()).every(function (value) {
-        return value.trim() !== "";
-      });
-      if ((strengths || improvements) && hasStageAnalysis && stageAnalysisSource !== "aggregate") {
-        refreshAiButtonLabel();
-        return;
-      }
-      await handleRegenerateAi({ initialLoad: true });
+        document.getElementById("fieldAiImprovements").value.trim() !== "" ||
+        Object.values(readStageEditorValues()).some(function (value) { return value.trim() !== ""; });
+      button.innerHTML = hasAnalysis
+        ? '<span class="gp-ai-button-line">✨ 성장 기록 초안</span><span class="gp-ai-button-line">다시 만들기</span>'
+        : '<span class="gp-ai-button-line">✨ 성장 기록 초안</span><span class="gp-ai-button-line">만들기</span>';
     }
 
     async function handleRegenerateAi(options) {
@@ -1421,35 +1477,36 @@
 
       try {
         const result = await regeneratePortfolioAnalysis(
-          PORTFOLIO_KIND, auth, currentClassId, currentStudentId, periodFrom, periodTo
+          PORTFOLIO_KIND, auth, currentClassId, currentStudentId, periodFrom, periodTo,
+          ++aiRegenerationVersion
         );
 
         if (!result.ok) {
           note.classList.add("gp-ai-error");
-          note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+          note.textContent = initialLoad ? "초안은 생성 버튼으로 다시 시도할 수 있어요." : "초안을 불러오지 못했습니다. 다시 시도해 주세요.";
           return;
         }
 
         document.getElementById("fieldAiStrengths").value = result.strength;
         document.getElementById("fieldAiImprovements").value = result.improvement;
-        if (result.stageAnalysis) {
-          currentStageAnalysis = {
-            before: stageAnalysisToEditorText(result.stageAnalysis.before),
-            during: stageAnalysisToEditorText(result.stageAnalysis.during),
-            after: stageAnalysisToEditorText(result.stageAnalysis.after)
-          };
-          document.getElementById("fieldBeforeGrowthText").value = currentStageAnalysis.before;
-          document.getElementById("fieldDuringGrowthText").value = currentStageAnalysis.during;
-          document.getElementById("fieldAfterGrowthText").value = currentStageAnalysis.after;
-          stageAnalysisSource = "ai";
-        }
-        note.textContent = "AI 분석을 반영했어요.";
-        updatePreview();
+        const generatedStages = result.stageAnalysis || {};
+        currentStageAnalysis = {
+          before: stageAnalysisToEditorText(generatedStages.before),
+          during: stageAnalysisToEditorText(generatedStages.during),
+          after: stageAnalysisToEditorText(generatedStages.after)
+        };
+        document.getElementById("fieldBeforeGrowthText").value = currentStageAnalysis.before;
+        document.getElementById("fieldDuringGrowthText").value = currentStageAnalysis.during;
+        document.getElementById("fieldAfterGrowthText").value = currentStageAnalysis.after;
+        stageAnalysisSource = "ai";
+        teacherEdited = true;
+        teacherEditedAt = new Date().toISOString();
+        note.textContent = "학생의 독서 활동을 바탕으로 기록 초안을 제안합니다. 내용을 확인하고 수정해 주세요.";
         scheduleAutoSave();
       } catch (error) {
         console.error("AI 분석 생성 중 오류가 발생했습니다.", error);
         note.classList.add("gp-ai-error");
-        note.textContent = initialLoad ? "AI 분석은 생성 버튼으로 다시 시도할 수 있어요." : "AI 분석을 불러오지 못했습니다. 다시 시도해 주세요.";
+        note.textContent = initialLoad ? "초안은 생성 버튼으로 다시 시도할 수 있어요." : "초안을 불러오지 못했습니다. 다시 시도해 주세요.";
       } finally {
         button.disabled = false;
         spinner.hidden = true;
@@ -1501,16 +1558,9 @@
     }
 
     /*
-     * analysis는 항상 문자열이다(collectDraftFromForm이 stageAnalysis를
-     * 편집 textarea 값으로 평탄화한다). 완료 단계는 backend가 항상 실제
-     * 성장 문장(AI 또는 결정적 growthNote 안전망)을 채워 주므로, 문자열이
-     * 비어 있는 경우는 진짜로 미완료뿐이라 "활동 기록이 없습니다." 하나만
-     * fallback으로 쓴다. strengthText/growthText를 점선·별색 등으로
-     * 나눠 보여주던 별도 영역은 없앴다 - 여러 줄이 섞여 들어와도
-     * 공백으로 이어붙여 하나의 자연스러운 문단으로만 표시한다
-     * (.gp-stage-text가 white-space:normal이라 줄바꿈은 어차피 시각적
-     * 공백으로 접히지만, "\n"으로 저장된 옛 draft도 명시적으로
-     * 공백 결합해 일관되게 한 문단으로 보이게 한다).
+     * 오른쪽 카드는 AI/집계 원본이 아니라 마지막 reflected draft만 받는다.
+     * 여러 줄로 저장된 교사 기록은 한 문단으로 정리하고, 확정 기록이
+     * 비어 있을 때만 단계별 입력 안내를 표시한다.
      */
     function renderStage(stage, status, analysis) {
       const badge = document.getElementById("preview" + stage);
@@ -1522,11 +1572,17 @@
         .map(function (line) { return line.trim(); })
         .filter(Boolean)
         .join(" ");
-      target.innerHTML = formatPlainText(text, "활동 기록이 없습니다.");
+      const emptyMessages = {
+        Before: "읽기 전 단계별 성장 과정을 입력해주세요.",
+        During: "읽기 중 단계별 성장 과정을 입력해주세요.",
+        After: "읽기 후 단계별 성장 과정을 입력해주세요."
+      };
+      target.innerHTML = formatPlainText(text, emptyMessages[stage] || "단계별 성장 과정을 입력해주세요.");
     }
 
-    function updatePreview() {
-      const draft = collectDraftFromForm();
+    function updatePreview(draft) {
+      draft = draft || reflectedDraft;
+      if (!draft) return;
 
       document.getElementById("previewStudentName").textContent = draft.studentName || "-";
       document.getElementById("previewGradeClass").textContent =
@@ -1542,15 +1598,28 @@
       renderStage("After", draft.afterStatus, draft.stageAnalysis && draft.stageAnalysis.after);
 
       document.getElementById("previewBookTitle").innerHTML = formatPlainText(draft.bookTitle);
-      const aiEmptyFallback = practiceHasConfirmedNoActivity()
-        ? "독서 활동이 시작되면 AI 분석이 표시됩니다."
-        : "AI 분석 결과가 아직 없어요.";
+      // 성장 기록 초안 생성 여부와 관계없이, 최종 반영된 기록이 없을 때는 항상 이 문구 하나로 통일한다.
+      const aiEmptyFallback = "성장 기록을 입력해주세요.";
       document.getElementById("previewAiStrengths").innerHTML = formatPlainText(draft.aiStrengths, aiEmptyFallback);
       document.getElementById("previewAiImprovements").innerHTML = formatPlainText(draft.aiImprovements, aiEmptyFallback);
       document.getElementById("previewTeacherComment").innerHTML = formatPlainText(draft.teacherComment, "교사 의견을 입력해 주세요.");
 
       refreshAiButtonLabel();
       requestAnimationFrame(paginateA4);
+    }
+
+    function handleReflectPortfolio() {
+      teacherEdited = true;
+      teacherEditedAt = new Date().toISOString();
+      const draft = collectDraftFromForm();
+      reflectedDraft = JSON.parse(JSON.stringify(draft));
+      const draftSaved = savePortfolioDraft(PORTFOLIO_KIND, currentStudentId, draft);
+      const finalSaved = savePortfolioReflected(PORTFOLIO_KIND, currentStudentId, reflectedDraft);
+      updatePreview(reflectedDraft);
+      updateSaveIndicator();
+      document.getElementById("reflectNote").textContent = finalSaved && draftSaved
+        ? "마지막 반영 내용이 결과지와 인쇄본에 저장되었습니다."
+        : "반영 내용을 저장하지 못했습니다. 다시 시도해 주세요.";
     }
 
     document.addEventListener("input", function (event) {
@@ -1560,7 +1629,6 @@
       if (event.target.classList.contains("gp-stage-editor-textarea")) {
         stageAnalysisSource = "teacher";
       }
-      updatePreview();
       scheduleAutoSave();
     });
 

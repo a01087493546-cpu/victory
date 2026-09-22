@@ -49,8 +49,12 @@ public class TeacherStudentPortfolioController {
             @PathVariable Long teacherId, @PathVariable Long classId, @PathVariable Long studentId,
             @RequestBody PortfolioAiAnalysisRequest request, Authentication authentication) {
         requireSelf(teacherId, authentication);
-        return ResponseEntity.ok(portfolioAiAnalysisService.analyzePractice(
-            teacherId, classId, studentId, request.from(), request.to()));
+        Long version = request.regenerationVersion();
+        return ResponseEntity.ok(version == null || version <= 0
+            ? portfolioAiAnalysisService.analyzePractice(
+                teacherId, classId, studentId, request.from(), request.to())
+            : portfolioAiAnalysisService.analyzePractice(
+                teacherId, classId, studentId, request.from(), request.to(), version));
     }
 
     @PostMapping("/api/teachers/{teacherId}/classes/{classId}/students/{studentId}/individual-portfolio/ai-analysis")
@@ -58,8 +62,12 @@ public class TeacherStudentPortfolioController {
             @PathVariable Long teacherId, @PathVariable Long classId, @PathVariable Long studentId,
             @RequestBody PortfolioAiAnalysisRequest request, Authentication authentication) {
         requireSelf(teacherId, authentication);
-        return ResponseEntity.ok(portfolioAiAnalysisService.analyzeIndividual(
-            teacherId, classId, studentId, request.from(), request.to()));
+        Long version = request.regenerationVersion();
+        return ResponseEntity.ok(version == null || version <= 0
+            ? portfolioAiAnalysisService.analyzeIndividual(
+                teacherId, classId, studentId, request.from(), request.to())
+            : portfolioAiAnalysisService.analyzeIndividual(
+                teacherId, classId, studentId, request.from(), request.to(), version));
     }
 
     private void requireSelf(Long teacherId, Authentication authentication) {

@@ -138,7 +138,13 @@ public class FeedbackAiService {
                 improvementText는 읽기 전·중·후 활동 기록, 간추리기, 책수다방 참여,
                 독서 지속성, 완독 권수처럼 입력에 실제로 주어진 독서 행동 데이터만
                 근거로 쓴다.
-            17. 다른 설명이나 마크다운 없이 아래 JSON 객체만 반환한다.
+            17. 입력의 aggregate.rewriteRequest 필드를 확인한다. 이 필드가 "재작성 N회차"를
+                말하고 있으면, 교사가 이미 이전 초안을 보고 "초안 다시 만들기"를 다시 누른
+                것이다 - 같은 근거 데이터를 유지하되 문장 구성·어순·예시로 든 근거의 배치를
+                이전 초안과 눈에 띄게 다르게 새로 쓴다(단어 몇 개만 바꾸거나 어순만 살짝
+                바꾸는 정도로는 부족하다). rewriteRequest가 최초 생성 안내 문구이거나 없으면
+                이 규칙은 적용하지 않는다.
+            18. 다른 설명이나 마크다운 없이 아래 JSON 객체만 반환한다.
             {"strengthText":"...", "improvementText":"...", "stageAnalysis": null 또는
             {"before":{"title":"읽기 전","completed":true,"strengthText":"근거를 담은 최대 2문장","growthText":""},
              "during":{"title":"읽기 중","completed":true,"strengthText":"근거를 담은 최대 2문장","growthText":""},
@@ -2667,8 +2673,23 @@ public class FeedbackAiService {
     /** 기존 OpenAI 클라이언트와 JSON 추출 경로를 재사용하는 포트폴리오 전용 호출. */
     public PortfolioAiAnalysisResponse generatePortfolioAnalysis(
             String portfolioType, Map<String, Object> aggregateInput) {
+        return generatePortfolioAnalysis(portfolioType, aggregateInput, 0L);
+    }
+
+    /*
+     * "초안 다시 만들기"(재생성) 전용 진입점. aggregateInput에는 이미
+     * PortfolioAiAnalysisService가 만든 "rewriteRequest" 안내 문구가
+     * 들어 있어 시스템 프롬프트 규칙(재작성 지시 처리)이 이를 읽고 다른
+     * 문장을 쓰게 하지만, temperature=0 고정 seed만으로는 프롬프트가
+     * 거의 같을 때 모델이 이전과 동일한 문장으로 수렴하는 경우가 있다.
+     * regenerationVersion으로 seed도 함께 바꿔 재생성마다 실제로 다른
+     * 응답이 나오도록 두 방법을 같이 쓴다.
+     */
+    public PortfolioAiAnalysisResponse generatePortfolioAnalysis(
+            String portfolioType, Map<String, Object> aggregateInput, Long regenerationVersion) {
         try {
-            Map<String, Object> requestBody = buildPortfolioAnalysisRequestBody(portfolioType, aggregateInput);
+            Map<String, Object> requestBody =
+                buildPortfolioAnalysisRequestBody(portfolioType, aggregateInput, regenerationVersion);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(openaiApiKey);
@@ -2700,12 +2721,26 @@ public class FeedbackAiService {
 
     Map<String, Object> buildPortfolioAnalysisRequestBody(
             String portfolioType, Map<String, Object> aggregateInput) throws JsonProcessingException {
+        return buildPortfolioAnalysisRequestBody(portfolioType, aggregateInput, 0L);
+    }
+
+    /*
+     * seed를 regenerationVersion만큼 옮겨서 "초안 다시 만들기"를 여러 번
+     * 눌러도 매번 같은 seed로 수렴하지 않게 한다. regenerationVersion이
+     * 없거나 0 이하이면(최초 생성) 기존과 동일하게 seed=42를 그대로 쓴다 -
+     * 기존 테스트가 기대하는 첫 생성 동작은 바뀌지 않는다.
+     */
+    Map<String, Object> buildPortfolioAnalysisRequestBody(
+            String portfolioType, Map<String, Object> aggregateInput, Long regenerationVersion)
+            throws JsonProcessingException {
         if (!"practice".equals(portfolioType) && !"individual".equals(portfolioType)) {
             throw new IllegalArgumentException("지원하지 않는 포트폴리오 유형입니다.");
         }
         Map<String, Object> userPayload = new LinkedHashMap<>();
         userPayload.put("portfolioType", portfolioType);
         userPayload.put("aggregate", aggregateInput == null ? Map.of() : aggregateInput);
+
+        long version = regenerationVersion == null ? 0L : regenerationVersion;
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("model", MODEL);
@@ -2714,7 +2749,7 @@ public class FeedbackAiService {
             Map.of("role", "user", "content", objectMapper.writeValueAsString(userPayload))));
         body.put("response_format", Map.of("type", "json_object"));
         body.put("temperature", 0);
-        body.put("seed", 42);
+        body.put("seed", version > 0 ? 42 + version : 42);
         return body;
     }
 

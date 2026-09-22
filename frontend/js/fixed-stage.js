@@ -518,6 +518,16 @@
   function updateExistingStageScale(viewport, frame, page) {
     const scale = Math.min(window.innerWidth / STAGE_WIDTH, window.innerHeight / STAGE_HEIGHT, 1);
 
+    /*
+     * 일부 화면(개별읽기 책수다방 상세 모달 등)은 z-index/overflow 문제
+     * 때문에 스케일이 적용된 stage 밖(document.body 바로 아래)으로
+     * 옮겨져 렌더링된다. 그런 요소는 --stage-scale을 상속받지 못해
+     * 창을 줄여도 원래 픽셀 크기 그대로 남아 나머지 화면과 비례가
+     * 깨져 보인다. :root에도 같은 값을 올려 두면 stage 밖 요소도
+     * transform: scale(var(--stage-scale))로 같은 배율을 따라갈 수 있다.
+     */
+    document.documentElement.style.setProperty("--stage-scale", scale);
+
     viewport.style.width = "100vw";
     viewport.style.height = "100vh";
     viewport.style.overflowX = "hidden";
@@ -573,6 +583,9 @@
     const scale = Math.min(window.innerWidth / STAGE_WIDTH, window.innerHeight / STAGE_HEIGHT, 1);
     frame.style.setProperty("--stage-scale", scale);
     page.style.setProperty("--stage-scale", scale);
+    // stage 밖(document.body 직속)으로 옮겨지는 모달용 - 위 updateExistingStageScale 주석 참고.
+    document.documentElement.style.setProperty("--stage-scale", scale);
+    window.__scaleDebugMarker = scale;
     frame.style.width = `${STAGE_WIDTH * scale}px`;
     frame.style.height = `${STAGE_HEIGHT * scale}px`;
   }

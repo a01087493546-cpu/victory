@@ -531,14 +531,18 @@ function normalizePortfolioAnalysisResponse(body) {
  * 삼아야, 교사가 출력용으로 고친 숫자가 AI 분석 근거를 오염시키지
  * 않는다. kind는 "practice" 또는 "individual".
  */
-async function regeneratePortfolioAnalysis(kind, auth, classId, studentId, from, to) {
+async function regeneratePortfolioAnalysis(kind, auth, classId, studentId, from, to, regenerationVersion) {
   const pathBuilder = PORTFOLIO_AI_ANALYSIS_PATHS[kind];
   if (!pathBuilder || !auth) {
     return { ok: false, reason: "invalid-arguments" };
   }
 
   const path = pathBuilder(auth.teacherId, classId, studentId);
-  const result = await portfolioPostJson(path, auth.token, { from: from, to: to });
+  const result = await portfolioPostJson(path, auth.token, {
+    from: from,
+    to: to,
+    regenerationVersion: Number(regenerationVersion) || 0
+  });
 
   if (!result.ok) {
     return { ok: false, status: result.status, reason: result.networkError ? "network" : "http" };
@@ -601,5 +605,41 @@ function clearPortfolioDraft(kind, studentId) {
     localStorage.removeItem(portfolioDraftKey(kind, studentId));
   } catch (error) {
     console.error("포트폴리오 임시 저장 데이터를 지우지 못했습니다.", error);
+  }
+}
+
+/*
+ * 교사가 "반영하기"로 확정한 결과지 전용 저장소다. 편집 중인 draft와
+ * 키를 분리해 AI 초안이나 입력 중인 문장이 미리보기/인쇄에 섞이지 않게
+ * 한다. demo 계정도 기존 초기화 정책에 포함되도록 같은 접두어를 쓴다.
+ */
+function portfolioReflectedKey(kind, studentId) {
+  const demoPrefix = (typeof isDemoAccount === "function" && isDemoAccount())
+    ? MQ_DEMO_STORAGE_PREFIX
+    : "";
+  return demoPrefix + "portfolioReflected_" + kind + "_" + studentId;
+}
+
+function savePortfolioReflected(kind, studentId, draft) {
+  try {
+    localStorage.setItem(
+      portfolioReflectedKey(kind, studentId),
+      JSON.stringify({ draft: draft, savedAt: new Date().toISOString() })
+    );
+    return true;
+  } catch (error) {
+    console.error("포트폴리오 확정본 저장에 실패했습니다.", error);
+    return false;
+  }
+}
+
+function loadPortfolioReflected(kind, studentId) {
+  try {
+    const raw = localStorage.getItem(portfolioReflectedKey(kind, studentId));
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("포트폴리오 확정본을 불러오지 못했습니다.", error);
+    return null;
   }
 }

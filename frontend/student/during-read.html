@@ -909,27 +909,11 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
         <div class="top-actions">
 
           <button
-            class="mq-book-home-button"
-            type="button"
-            onclick="goHome()"
-          >
-            🏠 홈으로
-          </button>
-
-          <button
             class="class-reading-button"
             type="button"
             onclick="goClassReading()"
           >
             📚 우리반 책읽기
-          </button>
-
-          <button
-            class="date-pill"
-            type="button"
-            onclick="goReadingStageSelect()"
-          >
-            읽기 단계 선택
           </button>
         </div>
       </header>
@@ -3088,7 +3072,61 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
     }
 
 
-    function goNextStep() {
+    /*
+      심사/demo 계정 전용: "다음 단계"를 누른 시점에 입력칸에 남아 있는
+      질문/답이 있으면(확인받기를 안 눌렀거나, AI가 "고쳐보세요"라고
+      했어도) 이동하기 전에 먼저 저장한다. AI 확인 여부/통과 여부는
+      저장 조건과 전혀 무관하다 - 로컬 형식 검사(질문·답이 실제로
+      있는지)만 통과하면 저장한다. 이미 오늘 3개를 다 채웠거나 입력이
+      비어 있으면 아무것도 하지 않는다(요구사항 5번).
+    */
+    async function saveDemoDuringReadQuestionIfValid() {
+      if (
+        !isDemoAccount() ||
+        todayQuestions.length >= 3
+      ) {
+        return;
+      }
+
+      const question = questionInput.value.trim();
+      const answer = answerInput.value.trim();
+
+      if (!question && !answer) {
+        return;
+      }
+
+      const localResult = validateDuringReadingFormat(question, answer);
+
+      if (!localResult.ok) {
+        return;
+      }
+
+      const savedResponse = await saveBookThoughtResponse(
+        selectedType,
+        question,
+        answer,
+        { aiPassed: true }
+      );
+
+      if (!savedResponse) {
+        return;
+      }
+
+      saveQuestion(question, answer, savedResponse);
+
+      questionInput.value = "";
+      answerInput.value = "";
+      updateCounts();
+
+      if (todayQuestions.length >= 3) {
+        syncDemoPracticeApprovalRequests();
+        lockQuestionForm();
+        setCompletionFeedback();
+      }
+    }
+
+
+    async function goNextStep() {
       if (
         !isDemoAccount() &&
         todayQuestions.length < 3
@@ -3106,6 +3144,10 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
         return;
       }
 
+      if (isDemoAccount()) {
+        await saveDemoDuringReadQuestionIfValid();
+      }
+
       if (shouldSkipQuestionRouteModal()) {
         completeQuestionSharingAndNavigate();
         return;
@@ -3120,7 +3162,16 @@ textarea::placeholder { font-size: 30px; line-height: 1.45; }
     }
 
 
+    /*
+      심사/demo 계정은 studentId가 모든 심사 세션에서 동일해서, 한 번이라도
+      "다시 보지 않기"를 누르면 이후 모든 심사 세션에서 영구히 이 안내
+      팝업이 뜨지 않게 되어 버린다(요구사항 3번 원인). 심사/demo 계정은
+      이 설정을 절대 존중하지 않고 매번 다시 보여준다 - "다시 보지 않기"
+      버튼 자체는 기존 UI를 그대로 재사용하므로 계속 보이지만, 심사
+      계정에서는 그 선택이 다음 팝업 노출에 영향을 주지 않는다.
+    */
     function shouldSkipQuestionRouteModal() {
+      if (isDemoAccount()) return false;
       return localStorage.getItem(getQuestionRouteGuideKey()) === "true";
     }
 

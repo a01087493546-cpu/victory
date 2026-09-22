@@ -48,29 +48,52 @@ public class PortfolioAiAnalysisService {
 
     public PortfolioAiAnalysisResponse analyzePractice(
             Long teacherId, Long classId, Long studentId, LocalDate from, LocalDate to) {
+        return analyzePractice(teacherId, classId, studentId, from, to, 0L);
+    }
+
+    public PortfolioAiAnalysisResponse analyzePractice(
+            Long teacherId, Long classId, Long studentId, LocalDate from, LocalDate to, Long regenerationVersion) {
         PracticePortfolioResponse data = portfolioService
             .getPracticePortfolio(teacherId, classId, studentId, from, to);
         Optional<User> demoStudent = findDemoStudent(studentId);
         PortfolioAiAnalysisResponse analysis = demoStudent.isPresent()
-            ? demoPracticePortfolioAiProvider.forLoginId(demoStudent.get().getLoginId())
+            ? demoPracticePortfolioAiProvider.forLoginId(demoStudent.get().getLoginId(), regenerationVersion)
             : hasPracticeActivity(data)
-                ? feedbackAiService.generatePortfolioAnalysis(TYPE_PRACTICE, practiceInput(data))
+                ? callPortfolioAi(TYPE_PRACTICE, practiceInput(data, regenerationVersion), regenerationVersion)
                 : NO_ACTIVITY_ANALYSIS;
         return withAuthoritativeCompletion(analysis, data);
     }
 
     public PortfolioAiAnalysisResponse analyzeIndividual(
             Long teacherId, Long classId, Long studentId, LocalDate from, LocalDate to) {
+        return analyzeIndividual(teacherId, classId, studentId, from, to, 0L);
+    }
+
+    public PortfolioAiAnalysisResponse analyzeIndividual(
+            Long teacherId, Long classId, Long studentId, LocalDate from, LocalDate to, Long regenerationVersion) {
         IndividualPortfolioResponse data = portfolioService
             .getIndividualPortfolio(teacherId, classId, studentId, from, to);
         Optional<User> demoStudent = findDemoStudent(studentId);
         if (demoStudent.isPresent()) {
-            return demoIndividualPortfolioAiProvider.forLoginId(demoStudent.get().getLoginId());
+            return demoIndividualPortfolioAiProvider.forLoginId(demoStudent.get().getLoginId(), regenerationVersion);
         }
         if (!hasIndividualActivity(data)) {
             return NO_ACTIVITY_ANALYSIS;
         }
-        return feedbackAiService.generatePortfolioAnalysis(TYPE_INDIVIDUAL, individualInput(data));
+        return callPortfolioAi(TYPE_INDIVIDUAL, individualInput(data, regenerationVersion), regenerationVersion);
+    }
+
+    /*
+     * 최초 생성(regenerationVersion<=0)은 기존 2-인자 오버로드를 그대로
+     * 호출한다 - seed=42 고정이던 기존 동작/테스트와 100% 동일하게
+     * 유지하기 위함이다. "초안 다시 만들기"(version>0)일 때만 3-인자
+     * 오버로드로 넘어가 seed를 회차마다 바꾼다.
+     */
+    private PortfolioAiAnalysisResponse callPortfolioAi(
+            String portfolioType, Map<String, Object> input, Long regenerationVersion) {
+        return (regenerationVersion == null || regenerationVersion <= 0)
+            ? feedbackAiService.generatePortfolioAnalysis(portfolioType, input)
+            : feedbackAiService.generatePortfolioAnalysis(portfolioType, input, regenerationVersion);
     }
 
     /*
@@ -109,6 +132,10 @@ public class PortfolioAiAnalysisService {
     }
 
     Map<String, Object> practiceInput(PracticePortfolioResponse data) {
+        return practiceInput(data, 0L);
+    }
+
+    Map<String, Object> practiceInput(PracticePortfolioResponse data, Long regenerationVersion) {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("studentName", data.studentName());
         input.put("periodStart", data.periodStart());
@@ -128,10 +155,15 @@ public class PortfolioAiAnalysisService {
         input.put("beforeStage", data.beforeStage());
         input.put("duringStage", data.duringStage());
         input.put("afterStage", data.afterStage());
+        input.put("rewriteRequest", rewriteRequest(regenerationVersion));
         return input;
     }
 
     Map<String, Object> individualInput(IndividualPortfolioResponse data) {
+        return individualInput(data, 0L);
+    }
+
+    Map<String, Object> individualInput(IndividualPortfolioResponse data, Long regenerationVersion) {
         Map<String, Object> input = new LinkedHashMap<>();
         input.put("studentName", data.studentName());
         input.put("periodStart", data.periodStart());
@@ -147,7 +179,15 @@ public class PortfolioAiAnalysisService {
          * 계산된 0~100 독서 역량 4종(readingCompetencies)을 넘긴다.
          */
         input.put("readingCompetencies", data.readingCompetencies());
+        input.put("rewriteRequest", rewriteRequest(regenerationVersion));
         return input;
+    }
+
+    private String rewriteRequest(Long regenerationVersion) {
+        long version = regenerationVersion == null ? 0L : regenerationVersion;
+        return version <= 0
+            ? "학생 활동 근거에 충실한 초안을 작성합니다."
+            : "재작성 " + version + "회차입니다. 같은 근거를 유지하되 이전 초안과 다른 문장 구성과 표현으로 새로 작성합니다.";
     }
 
     /* AI가 완료 여부를 추측하거나 누락하지 않도록 DB 집계값으로 최종 보정한다. */
