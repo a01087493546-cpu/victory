@@ -83,6 +83,13 @@ const GameAPI = (() => {
     }
   ];
 
+  // 입장 기준(20/55/85)과 분리된 심사 체험용 실제 전투 능력치입니다.
+  const DEMO_BATTLE_STAT_BY_DIFFICULTY = {
+    '초급': 25,
+    '중급': 60,
+    '고급': 90,
+  };
+
   // 서버에서 받아온 던전 목록 캐시. fetchDungeonsFromServer()가 채운다.
   let _cachedDungeons = [];
 
@@ -194,14 +201,15 @@ const GameAPI = (() => {
    *   전혀 건드리지 않는다 - 여기서 반환하는 객체는 매 전투 시작마다
    *   새로 만들어지는 사본이다.
    * - 심사계정: 모든 던전을 바로 체험해야 하므로 mq_demo_studentStats를
-   *   쓰지 않고, 선택한 던전의 입장 기준 능력치(requiredStatAvg = T)를
-   *   그대로 전투 시작값으로 임시 제공한다. 이 값은 mq_demo_studentStats에
+   *   쓰지 않고, 선택한 난이도의 체험용 전투 능력치(25/60/90)를
+   *   전투 시작값으로 임시 제공한다. 이 값은 mq_demo_studentStats에
    *   저장하지 않으며, 클리어 보상(10/15/0 SET)은 기존 로직 그대로
    *   mq_demo_studentStats에만 반영된다.
    */
   async function getInitialPlayerState(studentId, dungeon) {
     if (typeof isDemoAccount === 'function' && isDemoAccount()) {
-      const T = Math.round((dungeon && dungeon.requiredStatAvg) || 20);
+      const difficulty = dungeon && dungeon.difficulty;
+      const T = DEMO_BATTLE_STAT_BY_DIFFICULTY[difficulty] || 25;
       return { studentId, magic: T, stamina: T, wisdom: T, courage: T };
     }
 

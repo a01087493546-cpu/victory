@@ -95,19 +95,46 @@ function validateIndividualSummaryMinimumInput(summary) {
   var summaryText = summary == null ? "" : String(summary).trim();
 
   if (!summaryText) {
-    return { valid: false, message: "간추리기를 작성한 뒤 다음으로 넘어갈 수 있어요." };
+    return {
+      valid: false,
+      title: "간추리기를 조금 더 적어 주세요!",
+      message: "책의 중요한 내용을 떠올려 간추리기를 작성한 뒤 다음으로 넘어갈 수 있어요."
+    };
   }
   if (!individualHasMeaningfulRecord(summaryText)) {
-    return { valid: false, message: "조금 더 알아볼 수 있게 적어 주세요." };
+    return {
+      valid: false,
+      title: "간추리기를 조금 더 적어 주세요!",
+      message: "책의 중요한 내용을 조금 더 자세히 간추려 보세요."
+    };
   }
 
   var compactSummary = summaryText.replace(/\s+/g, "");
-  var summaryWords = summaryText.split(/\s+/).filter(Boolean).length;
-  if (compactSummary.length < 20 && summaryWords < 5) {
+  var repeatedShortPattern = /^(.{1,5})\1{2,}$/.test(compactSummary);
+  var normalizedWords = summaryText
+    .replace(/[^가-힣a-zA-Z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  var repeatedSingleWord = normalizedWords.length >= 3
+    && normalizedWords.every(function (word) { return word === normalizedWords[0]; });
+  var meaningfulSentences = summaryText
+    .split(/[.!?。！？]+|\n+/)
+    .map(function (sentence) { return sentence.trim(); })
+    .filter(function (sentence) {
+      return individualHasMeaningfulRecord(sentence)
+        && sentence.replace(/\s+/g, "").length >= 5;
+    });
+  var hasMeaningfulSentenceShape = normalizedWords.length >= 3
+    || meaningfulSentences.length >= 2
+    || /(?:다|요|까|죠|네|함|됨)[.!?。！？]?$/.test(summaryText);
+  var hasEnoughContent = compactSummary.length >= 25
+    || meaningfulSentences.length >= 2;
+
+  if (!hasEnoughContent || !hasMeaningfulSentenceShape || repeatedShortPattern || repeatedSingleWord) {
     return {
       valid: false,
-      title: "조금 더 적어 주세요!",
-      message: "간추리기를 조금 더 자세히 적어 주세요."
+      title: "간추리기를 조금 더 적어 주세요!",
+      message: "책의 중요한 내용을 조금 더 자세히 간추려 보세요."
     };
   }
 

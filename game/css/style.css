@@ -1211,12 +1211,12 @@ body {
 
 .fighter.left {
   left: 16%;
-  bottom: 12%;
+  bottom: 8%;
 }
 
 .fighter.right {
   right: 16%;
-  bottom: 11%;
+  bottom: 7%;
 }
 
 .fighter.right .sprite {
@@ -1263,8 +1263,25 @@ body {
 }
 
 .fighter.left .sprite {
-  width: clamp(200px, 15vw, 275px);
-  height: clamp(200px, 15vw, 275px);
+  width: clamp(270px, 20vw, 370px);
+  height: clamp(270px, 20vw, 370px);
+}
+
+/* transform 기반 공격/피격 모션과 충돌하지 않도록 이미지 박스 자체를 확대합니다. */
+.battle-bg[data-enemy-key="hatchling"] .fighter.right .sprite {
+  width: clamp(300px, 22vw, 430px);
+  height: clamp(300px, 22vw, 430px);
+}
+
+.battle-bg[data-enemy-key="dragon"] .fighter.right .sprite {
+  width: clamp(315px, 23vw, 440px);
+  height: clamp(315px, 23vw, 440px);
+}
+
+/* 고급 용 원본은 가로형(3:2)이므로 세로 여백을 키우지 않고 폭을 더 확보합니다. */
+.battle-bg[data-enemy-key="elder"] .fighter.right .sprite {
+  width: clamp(390px, 27vw, 495px);
+  height: clamp(280px, 20vw, 380px);
 }
 
 .sprite.idle {

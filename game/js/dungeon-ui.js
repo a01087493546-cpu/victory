@@ -526,7 +526,11 @@ const DungeonUI = (() => {
     if (!s) return;
     GameState.setRunning(true);
 
-    if ($('battle-bg')) $('battle-bg').style.backgroundImage = "url('" + s.dungeon.bg + "')";
+    if ($('battle-bg')) {
+      $('battle-bg').style.backgroundImage = "url('" + s.dungeon.bg + "')";
+      // 이미지 원본 비율이 서로 달라 CSS에서 보스별 시각 크기를 맞춥니다.
+      $('battle-bg').dataset.enemyKey = s.dungeon.enemyKey || 'hatchling';
+    }
 
     const titleMap = ['초급 대결','중급 대결','고급 대결'];
     if ($('enemy-lbl'))    $('enemy-lbl').textContent    = titleMap[dungeonIdx] || s.dungeon.name;

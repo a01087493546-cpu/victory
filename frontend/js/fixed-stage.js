@@ -585,7 +585,6 @@
     page.style.setProperty("--stage-scale", scale);
     // stage 밖(document.body 직속)으로 옮겨지는 모달용 - 위 updateExistingStageScale 주석 참고.
     document.documentElement.style.setProperty("--stage-scale", scale);
-    window.__scaleDebugMarker = scale;
     frame.style.width = `${STAGE_WIDTH * scale}px`;
     frame.style.height = `${STAGE_HEIGHT * scale}px`;
   }

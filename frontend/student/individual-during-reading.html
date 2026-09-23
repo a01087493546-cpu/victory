@@ -8367,16 +8367,118 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   body.individual-book-chat-teacher-mode .idr-top-actions > * {
     display:none !important;
   }
-  body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-date-actions {
+  /*
+   * 예전에는 교사 모드에서 날짜 이동 UI(이전날/오늘/다음날) 자체를
+   * 통째로 숨겼다. 교사도 "책수다방 보러가기"에서 날짜별로 학생 글을
+   * 볼 수 있어야 하므로 더 이상 숨기지 않는다 - moveBookChatDate() 등
+   * 날짜 이동 로직과 심사/일반 필터링은 이미 학생 화면과 동일하게
+   * 동작하므로 그대로 재사용한다.
+   */
+  body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-write-button {
     display:none !important;
   }
-  body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-write-button {
+  /*
+   * 날짜 이동 UI(이전날/오늘/다음날)는 이제 교사 모드에서도 보이지만,
+   * 그 안에 같이 있던 "읽기중 홈"(학생 읽기 중 홈으로 이동)은 교사
+   * 미리보기에는 맞지 않으므로 이 버튼만 계속 숨긴다.
+   */
+  body.individual-book-chat-teacher-mode .idr-book-chat-date-actions button[onclick="showScreen('home')"] {
     display:none !important;
   }
   body.individual-book-chat-teacher-mode #individualBookChatTeacherReturn {
     display:inline-flex !important;
     align-items:center;
     justify-content:center;
+  }
+
+  /* =========================================================
+     책수다방 상세 팝업(생각쓰기 / 친구들의 선택과 이유 보기 / 내가 쓴
+     생각 보기) 정리 - 일반계정·심사(demo)계정 공용. 셋 다 같은
+     #bookChatDetailModal 하나를 상태(showing-replies)만 바꿔 쓰므로
+     여기 스타일 하나로 세 화면 모두에 동일하게 적용된다.
+     ========================================================= */
+
+  /* 1) 팝업 자체 높이를 조금 키워 웬만하면 스크롤 없이 한 화면에
+     들어오게 하되, 내용이 그래도 넘치는 경우(긴 상황 설명 등)에는
+     팝업 전체(#idr-book-chat-modal-body) 기준으로 세로 스크롤이
+     생기도록 한다 - 일반·심사 계정 공용. 친구 생각 보기 상태는
+     목록(#bookChatThoughtList)이 내부에서 한 번 더 스크롤된다. */
+  #bookChatDetailModal .idr-book-chat-modal-panel {
+    height: min(900px, calc(100vh - 32px)) !important;
+    max-height: calc(100vh - 32px) !important;
+  }
+  #bookChatDetailModal .idr-book-chat-modal-body {
+    overflow-y: auto !important;
+    padding-right: 6px !important;
+  }
+  #bookChatDetailModal .idr-reply-box {
+    gap: 10px !important;
+  }
+  /* "나는 어떤 선택을 할까?" / "선택한 이유" 라벨을 23px로 키운다(일반·심사 공통).
+     팝업 높이를 위에서 900px까지 늘려 둬서 커진 만큼도 스크롤 없이 들어간다. */
+  #bookChatDetailModal .idr-label,
+  #bookChatDetailModal .idr-field label {
+    font-size: 23px !important;
+    font-weight: 900 !important;
+  }
+  #bookChatDetailModal #bookChatReasonInput {
+    height: 84px !important;
+  }
+  #bookChatDetailModal .idr-reply-actions .idr-main-button {
+    min-height: 50px !important;
+  }
+  #bookChatDetailModal .idr-reply-box > .idr-main-button.primary {
+    height: 50px !important;
+    margin-top: 8px !important;
+  }
+  #bookChatDetailModal .idr-book-chat-modal-panel.showing-replies #bookChatThoughtList {
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    padding-right: 6px !important;
+  }
+
+  /* 2) 상황 설명 / 선택 메타 / 본문 / 빈 상태 글자를 24px 기준으로 확대.
+     친구 생각 보기와 내가 쓴 생각 보기가 같은 마크업(#bookChatThoughtList
+     .idr-reply-item)을 공유하므로 여기서 한 번만 고치면 둘 다 적용된다. */
+  #bookChatDetailModal .idr-selected-question p strong {
+    display: block !important;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    margin-bottom: 6px !important;
+  }
+  #bookChatDetailModal .idr-selected-question p {
+    font-size: 24px !important;
+    line-height: 1.5 !important;
+  }
+  #bookChatDetailModal #bookChatThoughtList {
+    gap: 16px !important;
+  }
+  #bookChatDetailModal #bookChatThoughtList .idr-reply-item {
+    padding: 18px 96px 18px 20px !important;
+    font-size: 24px !important;
+    line-height: 1.5 !important;
+  }
+  #bookChatDetailModal #bookChatThoughtList .idr-reply-item strong {
+    font-size: 24px !important;
+    font-weight: 900 !important;
+    margin-bottom: 8px !important;
+  }
+  #bookChatDetailModal #bookChatThoughtList .content-manage-button {
+    font-size: 20px !important;
+    padding: 8px 16px !important;
+    min-width: 60px !important;
+  }
+  #bookChatDetailModal .idr-empty-box {
+    font-size: 24px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* 3) 상단 토글 버튼(친구들의 선택과 이유 보기 / 내 생각 쓰기로
+     돌아가기)을 24px 본문과 균형 맞게 살짝 키운다. 위치는 그대로
+     absolute 유지 - 크기만 커진다. */
+  #bookChatDetailModal .idr-book-chat-replies-toggle {
+    font-size: 19px !important;
+    height: 50px !important;
   }
 </style>
 </head>
@@ -10253,7 +10355,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
             type="button"
             onclick="window.moveBookChatDate(1)"
             style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-            ${!isIndividualBookChatDemoView() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+            ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
           >
             다음날
           </button>
@@ -10505,7 +10607,7 @@ ${
               <textarea class="idr-textarea" id="bookChatReasonInput" placeholder="왜 그렇게 생각했는지 이유를 적어 보세요." style="height: 110px;"></textarea>
             </div>
 
-            <button class="idr-main-button primary" type="button" onclick="window.saveBookChatThought()">
+            <button class="idr-main-button primary" id="bookChatThoughtSaveButton" type="button" onclick="window.saveBookChatThought()">
               내 생각 남기기
             </button>
           </div>
@@ -10577,7 +10679,7 @@ ${
   type="button"
   onclick="window.moveBookChatDate(1)"
   style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-  ${!isIndividualBookChatDemoView() && selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
+  ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
 >
   다음날
 </button>
@@ -10689,9 +10791,23 @@ ${
       </div>
     </div>
   `;
-// 이전에 body로 옮겨둔 오래된 보조창이 남아있으면 지우고, 방금 새로 만든 보조창만 남깁니다.
-  document.querySelectorAll("body > .idr-book-chat-modal").forEach(function (oldModal) {
-    oldModal.remove();
+  /*
+   * 이전에 body로 옮겨둔 오래된 보조창이 남아있으면 지우고, 방금 새로 만든
+   * 보조창만 남긴다. "body > .idr-book-chat-modal"(직속 자식만)로는 부족하다 -
+   * 페이지 최초 로드 때(?view=bookChat) renderBookChatRoom()이 fixed-stage.js의
+   * wrapPage()보다 먼저 실행되면, 그때 body로 옮겨둔 예전 모달이 wrapPage()에
+   * 의해 다시 .mq-fixed-stage-page 안으로 통째로 딸려 들어가 버린다. 그러면
+   * 이 선택자가 더 이상 그 예전 모달을 못 찾아 지우지 못하고, 같은 id를 가진
+   * 요소가 두 개 남는다 - document.getElementById()는 그중 하나만(항상 최신
+   * 것이라는 보장 없이) 돌려주므로, 친구 생각 보기를 열 때마다 화면에 보이는
+   * 모달이 방금 만든 최신 내용이 아니라 예전 위치/크기 그대로인 죽은 모달일
+   * 수 있었다(실제로 보고된 증상). 깊이에 상관없이 문서 전체에서 같은 id를
+   * 찾아 지우되, 방금 shareScreen.innerHTML로 새로 만든 것만 남긴다.
+   */
+  document.querySelectorAll("#bookChatDetailModal, #individualRejectReasonModal").forEach(function (oldModal) {
+    if (!shareScreen.contains(oldModal)) {
+      oldModal.remove();
+    }
   });
 
   const bookChatModalEl = document.getElementById("bookChatDetailModal");
@@ -10747,6 +10863,7 @@ window.closeBookChatDetail = function () {
   const modal = document.getElementById("bookChatDetailModal");
   if (!modal) return;
 
+  window.editingIndividualBookChatCommentId = "";
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
 };
@@ -11159,8 +11276,12 @@ function moveBookChatDate(direction) {
   const nextDateKey = currentDate.toISOString().slice(0, 10);
   const todayKey = getTodayDateKey();
 
-  // 미래 날짜는 볼 수 없게 막습니다.
-  if (!isIndividualBookChatDemoView() && nextDateKey > todayKey) {
+  /*
+   * 미래 날짜는 볼 수 없게 막습니다. 심사(demo) 계정도 예외 없이 막습니다 -
+   * 예시 데이터 내용은 날짜와 무관하게 항상 그대로 보이지만("오늘 이후로
+   * 못 넘어간다"는 이동 자체는 일반계정과 동일하게 지켜야 하기 때문입니다.
+   */
+  if (nextDateKey > todayKey) {
     alert("아직 오지 않은 날짜예요.");
     return;
   }
@@ -11185,6 +11306,7 @@ function goTodayBookChatDate() {
 window.selectedBookChatChoice = "";
 window.selectedBookChatPostId = "";
 window.selectedBookChatIndex = 0;
+window.editingIndividualBookChatCommentId = "";
 // HTML onclick에서 저장 함수를 찾을 수 있게 연결합니다.
 window.saveBookChatPost = saveBookChatPost;
 // HTML onclick에서 글쓰기 화면 함수를 찾을 수 있게 연결합니다.
@@ -12608,6 +12730,57 @@ function setBookChatChoiceValue(choice) {
 }
 
 /*
+  내가 남긴 생각을 기존 생각쓰기 UI에서 수정한다.
+  댓글 고유 ID를 별도로 보관해 저장 시 POST가 아니라 같은 ID의 PUT을
+  사용하며, A/B 선택과 이유를 현재 값으로 미리 채운다.
+*/
+window.editIndividualBookChatComment = async function (commentId) {
+  const normalizedCommentId = String(commentId == null ? "" : commentId).trim();
+  const postId = getCurrentBookChatPostId();
+
+  if (!normalizedCommentId || !postId) {
+    alert("수정할 생각을 찾지 못했어요.");
+    return;
+  }
+
+  const comments = await fetchBookChatComments(postId);
+  const comment = comments.find(function (item) {
+    return String(item.id) === normalizedCommentId && item.mine === true;
+  });
+
+  if (!comment) {
+    alert("내가 작성한 생각만 수정할 수 있어요.");
+    return;
+  }
+
+  const modal = document.getElementById("bookChatDetailModal");
+  const panel = modal && modal.querySelector(".idr-book-chat-modal-panel");
+  const thoughtList = document.getElementById("bookChatThoughtList");
+  const toggleButton = modal && modal.querySelector(".idr-book-chat-replies-toggle");
+  const reasonInput = document.getElementById("bookChatReasonInput");
+  const saveButton = document.getElementById("bookChatThoughtSaveButton");
+
+  if (!modal || !reasonInput || !saveButton) {
+    alert("수정 입력 화면을 열지 못했어요. 다시 시도해 주세요.");
+    return;
+  }
+
+  window.editingIndividualBookChatCommentId = normalizedCommentId;
+  setBookChatChoiceValue(comment.choice);
+  reasonInput.value = comment.content || "";
+  saveButton.textContent = "수정 완료";
+
+  if (panel) panel.classList.remove("showing-replies");
+  if (thoughtList) thoughtList.classList.add("hidden");
+  if (toggleButton) toggleButton.textContent = "친구 생각 보기";
+
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+  reasonInput.focus();
+  reasonInput.setSelectionRange(reasonInput.value.length, reasonInput.value.length);
+};
+
+/*
   혹시 inline onclick이 브라우저에서 꼬여도 클릭 자체를 잡아서 A/B 선택을 저장합니다.
 */
 document.addEventListener("click", function (event) {
@@ -12749,6 +12922,7 @@ function syncIndividualPowerStats(stats) {
 window.saveBookChatThought = async function () {
   const reasonInput = document.getElementById("bookChatReasonInput");
   const thoughtList = document.getElementById("bookChatThoughtList");
+  const editingCommentId = String(window.editingIndividualBookChatCommentId || "").trim();
 
   if (!reasonInput) {
     alert("선택한 이유 입력칸을 찾지 못했어요.");
@@ -12784,25 +12958,46 @@ window.saveBookChatThought = async function () {
   if (isDemoAccount()) {
     const temporary = loadDemoState("individualBookChatComments", {});
     const key = String(postId);
-    temporary[key] = (temporary[key] || []).concat({
-      id: "demo-individual-comment-" + Date.now(),
-      writer: sessionStorage.getItem("name") || "김초롱",
-      authorId: studentId,
-      authorRole: individualBookChatTeacherMode ? "teacher" : "student",
-      mine: true,
-      choice: choice,
-      content: reason
-    });
+    const storedComments = temporary[key] || [];
+
+    if (editingCommentId) {
+      const editIndex = storedComments.findIndex(function (comment) {
+        return String(comment.id) === editingCommentId &&
+          (comment.mine === true || String(comment.authorId) === String(studentId));
+      });
+
+      if (editIndex < 0) {
+        alert("수정할 생각을 찾지 못했어요. 목록을 다시 열어 주세요.");
+        return;
+      }
+
+      temporary[key] = storedComments.map(function (comment, index) {
+        return index === editIndex
+          ? { ...comment, choice: choice, content: reason }
+          : comment;
+      });
+    } else {
+      temporary[key] = storedComments.concat({
+        id: "demo-individual-comment-" + Date.now(),
+        writer: sessionStorage.getItem("name") || "김초롱",
+        authorId: studentId,
+        authorRole: individualBookChatTeacherMode ? "teacher" : "student",
+        mine: true,
+        choice: choice,
+        content: reason
+      });
+    }
     saveDemoState("individualBookChatComments", temporary);
     reasonInput.value = "";
     window.selectedBookChatChoice = "";
+    window.editingIndividualBookChatCommentId = "";
     await window.openBookChatDetail(window.selectedBookChatIndex || 0, true);
 
     /* grantCommentDailyRewardOnce와 같은 "학생당 하루 1회"를 그대로 옮긴 것이다. */
     let demoResult = null;
-    if (typeof grantDemoStatRewardOnce === "function") {
+    if (!editingCommentId && typeof grantDemoStatRewardOnce === "function") {
       demoResult = grantDemoStatRewardOnce("individual-book-chat-comment", new Date().toISOString().slice(0, 10), { courage: 1 });
-    } else {
+    } else if (!editingCommentId) {
       console.error("grantDemoStatRewardOnce를 찾을 수 없어 책수다방 댓글 보상을 지급하지 못했습니다.");
     }
 
@@ -12827,16 +13022,21 @@ window.saveBookChatThought = async function () {
     return;
   }
 
-  const saveButton = document.querySelector("#shareScreen .idr-reply-box .idr-main-button.primary");
+  const saveButton = document.getElementById("bookChatThoughtSaveButton");
   if (saveButton) { saveButton.disabled = true; }
 
   try {
+    const endpoint = editingCommentId
+      ? (individualBookChatTeacherMode
+          ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + teacherId + "/individual-reading/book-chat/comments/" + encodeURIComponent(editingCommentId)
+          : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments/" + encodeURIComponent(editingCommentId))
+      : (individualBookChatTeacherMode
+          ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/book-chat/posts/" + postId + "/comments"
+          : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments");
     const response = await fetch(
-      individualBookChatTeacherMode
-        ? INDIVIDUAL_READING_API_BASE_URL + "/api/teachers/" + studentId + "/individual-reading/book-chat/posts/" + postId + "/comments"
-        : INDIVIDUAL_READING_API_BASE_URL + "/api/students/me/individual-reading/book-chat/comments",
+      endpoint,
       {
-        method: "POST",
+        method: editingCommentId ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token
@@ -12867,6 +13067,7 @@ window.saveBookChatThought = async function () {
     } catch (error) {}
 
     window.selectedBookChatChoice = "";
+    window.editingIndividualBookChatCommentId = "";
 
     /*
       저장 성공 후에는 항상 서버에서 다시 불러와 화면을 그린다 - 그래야
@@ -12879,13 +13080,16 @@ window.saveBookChatThought = async function () {
     const detailPanel = document.querySelector("#bookChatDetailModal .idr-book-chat-modal-panel");
     const wasShowingRepliesOnly = !!(detailPanel && detailPanel.classList.contains("showing-replies"));
 
-    await window.openBookChatDetail(window.selectedBookChatIndex || 0, wasShowingRepliesOnly);
+    await window.openBookChatDetail(
+      window.selectedBookChatIndex || 0,
+      editingCommentId ? true : wasShowingRepliesOnly
+    );
 
     if (saved.stats) {
       syncIndividualPowerStats(saved.stats);
     }
 
-    if (saved.rewardGranted && typeof openMiniRewardModal === "function") {
+    if (!editingCommentId && saved.rewardGranted && typeof openMiniRewardModal === "function") {
       openMiniRewardModal({
         badge: "✨ 용기 성장!",
         title: "친구 글에 내 생각을 남겼어요!",
