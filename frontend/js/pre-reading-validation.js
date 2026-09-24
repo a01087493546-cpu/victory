@@ -365,7 +365,7 @@ function requestPreReadingAiFeedback(options) {
           message:
             result.message ||
             (isGood
-              ? "잘했어요! 질문과 예상한 답이 자연스럽게 이어져요."
+              ? "책에서 찾은 단서로 궁금한 점과 예상한 답을 잘 연결했어요."
               : "질문과 답이 서로 잘 이어지지 않아요. 질문에서 물어본 내용에 맞게 다시 예상해 보세요.")
         });
       }

@@ -667,14 +667,13 @@
     }
 
     .lumi-feedback.need {
-      border-color: rgba(255, 190, 93, 0.58);
+      border-color: #cf857b;
       background:
-        radial-gradient(circle at 8% 50%, rgba(255, 171, 72, 0.22), transparent 40%),
-        radial-gradient(circle at 90% 12%, rgba(255, 224, 130, 0.12), transparent 34%),
-        linear-gradient(135deg, rgba(70, 45, 22, 0.66), rgba(13, 10, 7, 0.94));
+        radial-gradient(circle at 8% 50%, rgba(207, 133, 123, 0.20), transparent 40%),
+        linear-gradient(135deg, rgba(88, 42, 36, 0.78), rgba(24, 13, 11, 0.96));
       box-shadow:
-        0 0 22px rgba(255, 171, 72, 0.10),
-        inset 0 0 0 1px rgba(255, 231, 180, 0.06),
+        0 0 22px rgba(160, 70, 59, 0.13),
+        inset 0 0 0 1px rgba(255, 232, 228, 0.08),
         0 16px 34px rgba(0, 0, 0, 0.26);
     }
 
@@ -2888,9 +2887,14 @@ height: calc(100% + 110px);
 }
 
 .lumi-feedback.need {
-  border-color: rgba(224, 158, 74, 0.6) !important;
-  background: rgba(253, 240, 219, 0.92) !important;
-  box-shadow: none !important;
+  border-color: #cf857b !important;
+  background: rgba(251, 233, 231, 0.96) !important;
+  color: #783b34 !important;
+  box-shadow: 0 8px 18px rgba(126, 59, 50, 0.12) !important;
+}
+
+.lumi-feedback.need p {
+  color: #783b34 !important;
 }
 
 /* 버튼 */

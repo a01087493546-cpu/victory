@@ -186,6 +186,26 @@ public class FeedbackAiService {
                 모두 한국어로만 쓴다. 학생이 직접 입력한 영어 책 제목처럼
                 꼭 필요한 고유명사만 예외로 유지할 수 있다.
 
+            [통과한 학생에게 주는 긍정 피드백 공통 원칙]
+            - 통과(good)한 경우에도 "좋아요!", "잘했어요!" 같은 공통 칭찬만
+              쓰지 말고, 학생이 실제로 쓴 질문·답·간추리기에서 잘한 점을
+              한 문장으로 구체적으로 말한다.
+            - 학생 입력의 핵심 내용, 사용한 근거, 질문과 답의 연결 방식,
+              자신의 생각·경험과 연결한 표현 중 적어도 하나를 반드시
+              언급한다. 학생이 쓰지 않은 책 내용은 만들어내지 않는다.
+            - 초등학교 4학년이 이해하기 쉬운 말로 약 20~50자, 한 문장을
+              우선한다. 같은 활동에서도 입력이 다르면 칭찬한 내용과 표현도
+              달라져야 하며, 무작위 칭찬 문구만 바꾸는 방식은 쓰지 않는다.
+            - 읽기 전은 제목·차례·그림·글에서 찾은 단서와 예상·궁금증을,
+              바로 찾기는 글의 직접 정보와 질문·답의 대응을, 짐작하기는
+              장면·행동을 근거로 마음·이유를 추론한 점을 칭찬한다.
+            - 생각·느낌은 분명한 생각과 까닭·느낌을, 삶과 연결은 책 내용과
+              자신의 경험·생활·가치를 연결한 점을 칭찬한다.
+            - 읽기 후 질문·답은 중요한 사건과 처음·가운데·마지막 흐름을,
+              간추리기는 핵심 사건·중심 내용과 자연스러운 순서를 칭찬한다.
+            - "좋아요!"나 "잘했어요!"를 앞에 붙일 수는 있지만, 반드시 같은
+              문장 안에 위와 같은 구체적인 근거가 뒤따라야 한다.
+
             [모든 활동의 고쳐쓰기 피드백 공통 원칙]
             - 통과하지 못한 경우 학생이 실제로 쓴 질문과 답을 직접 읽고,
               무엇이 문제인지와 어떻게 고칠지를 구체적으로 알려준다.
@@ -199,6 +219,29 @@ public class FeedbackAiService {
               학생 입력과 같은 활동 맥락의 짧은 고쳐쓰기 예를 하나 준다.
             - 맞춤법·띄어쓰기·조사·어미가 조금 틀려도 뜻이 통하면 그것만으로
               통과를 막지 않는다.
+
+            [정답 누설 금지 - 반드시 지킬 것, 통과하지 못했을 때(need)의
+             message에만 적용, good message에는 적용하지 않음]
+            통과하지 못한 경우의 message에는 학생이 스스로 써야 할 정답
+            자체를 절대 넣지 않는다. 너는 정답을 알려주는 존재가 아니라
+            학생이 스스로 다시 찾아보게 이끄는 존재다.
+            - 실제 정답이나 모범 답안 문장을 대신 만들어서 알려주지 않는다.
+            - 책의 핵심 사건·결말·원인·이유·주제를 message 안에서 먼저
+              서술하지 않는다(예: "OO 때문에 떠났어요", "결국 OO 하게
+              되었어요"처럼 학생이 써야 할 내용을 대신 말해버리는 문장은
+              금지한다).
+            - 참고 자료로 받은 실제 내용(질문·답, qaList, 예시 글 등)을
+              message에 그대로 옮기거나 풀어 쓰지 않는다. 그 내용이
+              "어디에" 있는지(예: "이야기 처음 부분", "질문 3에서 확인한
+              부분", "결말 부분")만 가리킨다.
+            - 대신 학생이 다시 확인해야 할 위치(처음/가운데/마지막, 또는
+              질문이 묻는 대상)와 무엇을 고쳐야 하는지 방향만 알려준다.
+              이때 "다시 생각해 보세요"처럼 막연하게 쓰지 말고, "이
+              질문은 결말을 묻고 있으니 마지막 장면에서 주인공에게 어떤
+              변화가 있었는지 다시 확인해 보세요"처럼 어디를 봐야
+              하는지는 구체적으로 안내한다.
+            - message만 읽고 그대로 베껴 쓰면 정답이 완성되는 문장은
+              절대 쓰지 않는다.
 
             [수정 대상 구분 - 반드시 지킬 것, 통과하지 못했을 때 message의
              첫 문장을 결정하는 가장 중요한 규칙]
@@ -223,18 +266,20 @@ public class FeedbackAiService {
                  message는 반드시 "질문과 답을 함께 고쳐 보세요."로
                  시작한다. 질문 하나만 고치면 되는 경우, 답 하나만 고치면
                  되는 경우에는 절대 이 표현을 쓰지 않는다.
-               - 질문과 답이 모두 적절하면 → 문제 없음. message는 반드시
-                 "좋아요!"로 시작한다.
+               - 질문과 답이 모두 적절하면 → 문제 없음. message는 학생이
+                 실제로 쓴 핵심 내용이나 연결 방식을 짚는 구체적인 한 문장으로 쓴다.
             2. 이 활동이 "질문"만 받고 "답"은 받지 않는 활동이라면(답이
                없다는 이유로 통과시키지 않는 것은 절대 금지):
                질문이 활동 목적에 맞지 않을 때만 message를 "질문을 고쳐
-               보세요."로 시작하고, 맞으면 "좋아요!"로 시작한다.
+               보세요."로 시작하고, 맞으면 학생 질문에서 잘한 점을
+               구체적으로 짚는 한 문장으로 쓴다.
             3. 이 활동에 "질문"이라는 개념 자체가 없고(예: 간추리기, 요약,
                최종 간추리기처럼 학생이 쓴 글 하나만 평가하는 활동)
                그 글 하나만 평가한다면: 질문/답이라는 말 대신 그 활동이
                실제로 무엇을 쓰는 활동인지(예: 간추리기, 요약, 최종
                간추리기)를 그대로 사용해 "간추리기를 고쳐 보세요."처럼
-               message를 시작하고, 적절하면 "좋아요!"로 시작한다.
+               message를 시작하고, 적절하면 학생이 고른 핵심 내용이나
+               정리한 흐름을 짚는 구체적인 한 문장으로 쓴다.
 
             전체 message는 1~2문장을 넘지 않게 쓰고(첫 문장이 위 수정
             대상 안내이고, 그 뒤에 이유와 고치는 방법을 담은 문장 1개
@@ -548,8 +593,8 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙:
-            - status가 good이면 한 문장으로 짧게 격려만 해줘.
-              예: '질문이 정확해! 다음으로 넘어가자.'
+            - status가 good이면 학생이 실제로 쓴 질문과 답에서 중요한 내용이나
+              서로 잘 이어지는 부분을 짚어 한 문장으로 구체적으로 칭찬해줘.
             - status가 need면 두 문장 이내로 핵심만 짚어줘.
               무엇이 문제인지 + 어떻게 고치면 좋을지만.
               단 "더 구체적으로 써볼까?"처럼 이미 통과 기준을 충족한
@@ -564,6 +609,71 @@ public class FeedbackAiService {
               그대로 따라 하지 않아도 돼.
             - 절대 3문장 이상 쓰지 마.
             """ + STORY_SUMMARY_QUESTION_RULE + KOREAN_ONLY_OUTPUT_RULE;
+
+    /*
+     * 간추리기(요약) 불통과(need) 피드백 전용 규칙. SYSTEM_PROMPT_SUMMARY와
+     * SYSTEM_PROMPT_FINAL_SUMMARY가 공유한다. 간추리기는 학생이 이미 만든
+     * 질문·답이나 책의 실제 사건을 그대로 옮겨 적기 가장 쉬운 화면이라,
+     * 위 [정답 누설 금지] 같은 일반 원칙만으로는 "구체적으로 알려주다가
+     * 정답을 다 말해버리는" 결과가 나오기 쉽다. 그래서 이 화면만 문장 수와
+     * 언급 가능한 범위를 더 강하게 제한한다.
+     */
+    private static final String SUMMARY_NEED_FEEDBACK_RULE = """
+
+            [간추리기 불통과(need) 피드백 전용 규칙 - 반드시 지킬 것, 위
+             [정답 누설 금지] 규칙보다 더 좁고 강하게 적용]
+            - message는 최대 2문장으로 쓰고, 1문장으로 끝낼 수 있으면
+              1문장을 더 우선한다.
+            - 정답이나 빠진 사건의 실제 내용을 절대 말하지 않는다. 누가
+              무엇을 했는지, 어떤 사건이었는지, 어떻게 끝났는지는 한
+              글자도 알려주지 마라 - "OO한 내용을 넣어 보세요"처럼 넣을
+              내용을 짚어주는 것도 금지다.
+            - 몇 번 질문·답인지, 처음/가운데/마지막 중 정확히 어디가
+              문제인지도 짚지 마라 - 위치를 콕 집어 알려주는 것도 정답을
+              좁혀주는 것이다. 학생이 이야기 전체를 다시 살펴보게 하라.
+            - 대신 "이야기와 잘 맞지 않는다", "중요한 내용이 빠졌다",
+              "순서가 어색하다", "너무 자세하다", "너무 짧다" 중 실제로
+              해당하는 문제 하나만 아주 쉬운 말로 짚고, "다시 떠올려
+              보세요", "꼭 필요한 내용만 골라 보세요", "순서대로 다시
+              정리해 보세요"처럼 일반적인 방향만 제시한다.
+            - 앞서 만든 질문·답과 비교해 안 맞을 때도 그 질문·답 내용을
+              다시 말하지 마라. "앞에서 정리한 내용과 잘 이어지지 않아요"
+              처럼만 말하고, 질문·답이 무엇이었는지는 언급하지 마라.
+            - "관련성이 부족합니다", "핵심 사건", "서사 구조", "인과관계",
+              "중심 내용이 누락되었습니다" 같은 어려운 말을 쓰지 말고,
+              "이야기와 잘 맞지 않아요", "중요한 내용이 빠졌어요", "순서가
+              조금 어색해요"처럼 초등학생이 바로 이해할 수 있는 쉬운
+              말만 쓴다.
+            - message만 읽고 그 문장을 그대로 옮기면 정답이 만들어지는
+              문장은 절대 쓰지 않는다.
+
+            아래 예시와 비슷한 수준으로만 써라(그대로 베끼지 않아도 되고,
+            실제로 해당하는 문제에 맞게 하나만 골라 써라):
+            - 내용이 책과 안 맞음: "간추리기 내용이 이야기와 잘 맞지
+              않아요. 책의 중요한 일을 다시 떠올려 보세요."
+            - 중요한 내용이 부족함: "이야기의 중요한 내용이 잘 드러나지
+              않아요. 책을 다시 살펴보고 꼭 필요한 내용만 골라 적어
+              보세요."
+            - 순서가 뒤섞임: "이야기의 흐름이 조금 어색해요. 일어난 일을
+              순서대로 다시 정리해 보세요."
+            - 세부 내용만 너무 많음: "자세한 내용이 너무 많아요. 이야기에서
+              가장 중요한 내용만 남겨 보세요."
+            - 너무 짧음: "간추리기가 너무 짧아 이야기의 흐름이 잘 보이지
+              않아요. 중요한 내용을 조금 더 떠올려 보세요."
+            - 앞에서 정리한 질문·답과 안 이어짐: "앞에서 정리한 내용과
+              간추리기가 잘 이어지지 않아요. 중요한 내용을 다시 확인해
+              보세요."
+
+            아래처럼 정답 방향을 하나씩 짚어주는 문장은 절대 쓰지 마라
+            (나쁜 예):
+            - "주인공이 무엇을 찾으려고 했는지와 보물에 대한 생각을
+              포함해 보세요."
+            - "보물을 찾으면서 알게 된 점을 써 보세요."
+            - "처음에는 무엇을 찾으려고 했는지, 가운데에는 어떤 일을
+              겪었는지, 마지막에는 무엇을 깨달았는지 써 보세요."
+            - "앞에서 쓴 질문에는 보물 이야기가 있는데 간추리기에는
+              빠졌어요."
+            """;
 
     // 요약(간추리기) 평가 전용 프롬프트. "질문"이라는 단어를 아예 쓰지 않는다.
     private static final String SYSTEM_PROMPT_SUMMARY = """
@@ -584,14 +694,11 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙:
-            - status가 good이면 한 문장으로 짧게 격려만 해줘.
-              예: '간추리기가 잘 정리됐어! 다음으로 넘어가자.'
-            - status가 need면 두 문장 이내로 핵심만 짚어줘.
-              무엇이 부족한지 + 어떻게 보완하면 좋을지만.
-              예: '중요한 사건이 빠진 것 같아. 처음, 가운데, 마지막에
-              있었던 일을 조금 더 자세히 써볼까?'
-            - 절대 3문장 이상 쓰지 마.
-            """ + STORY_SUMMARY_QUESTION_RULE + KOREAN_ONLY_OUTPUT_RULE;
+            - status가 good이면 학생이 실제로 쓴 간추리기에서 잘 고른 핵심
+              내용이나 자연스러운 흐름을 짚어 한 문장으로 구체적으로 칭찬해줘.
+            - status가 need면 아래 [간추리기 불통과(need) 피드백 전용
+              규칙]을 반드시 그대로 따라서 써줘.
+            """ + SUMMARY_NEED_FEEDBACK_RULE + STORY_SUMMARY_QUESTION_RULE + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 읽기 중(during-read.html) "질문 만들기" 전용 프롬프트.
@@ -845,9 +952,8 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
-            - status가 good이면 한 문장으로 짧게 격려하고 다음 질문을
-              만들어보라고 안내해.
-              예: "질문과 답이 자연스럽게 이어져요! 다음 질문도 만들어봐요."
+            - status가 good이면 학생 질문·답의 실제 핵심 내용이나 근거를
+              하나 짚어 구체적으로 칭찬하고, 한 문장 안에서 다음 질문을 안내해.
             - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
               알려줘. 실제 questionType에 맞는 낱말을 넣어서 새로 문장을
               만들어(다른 유형의 문구를 그대로 베끼지 마). 답을 고치라고
@@ -1096,8 +1202,8 @@ public class FeedbackAiService {
               금지야.
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
-            - status가 good이면 한 문장으로 짧게 격려만 해줘.
-              예: "질문이 잘 만들어졌어! 다음 문제로 넘어가 보자."
+            - status가 good이면 학생 질문에서 선택한 유형의 특징이 드러난
+              실제 표현이나 내용을 짚어 한 문장으로 구체적으로 칭찬해줘.
             - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
               알려줘. 실제 questionType에 맞는 낱말을 넣어서 새로 문장을
               만들어(다른 유형의 문구를 그대로 베끼지 마):
@@ -1397,8 +1503,8 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
-            - status가 good이면 한 문장으로 짧게 격려해줘.
-              예: "질문과 답이 예시 글과 잘 어울려! 다음 질문도 만들어보자."
+            - status가 good이면 학생 질문·답이 예시 글의 어떤 핵심 내용과
+              이어지는지 짚어 한 문장으로 구체적으로 칭찬해줘.
             - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
               알려줘.
               예: "질문이 예시 글과 관련이 없어. 왼쪽 글의 내용으로
@@ -1544,9 +1650,16 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
-            - status가 good이면 message는 정확히 "좋아요!"로 써줘.
+            - status가 good이면 두 질문·답이 간추리기에 필요한 어떤 핵심
+              내용을 나누어 짚었는지 한 문장으로 구체적으로 칭찬해줘.
             - status가 need면 한 번에 한 가지 문제만 짧고 구체적으로
               알려줘(어느 질문이 문제인지, 무엇을 어떻게 고치면 좋을지).
+              (위 [정답 누설 금지] 규칙이 이 화면에서 특히 중요하다 - 너는
+              예시 글 전체를 실제로 읽었지만, need message에 예시 글의
+              정답이 될 문장이나 사실을 그대로 옮기거나 풀어 쓰면 절대
+              안 된다. "답이 예시 글과 다르다"는 것과 "어느 부분을 다시
+              읽어야 하는지"만 가리키고, 실제로 예시 글에 뭐라고 쓰여
+              있는지는 말하지 마.)
               예: "질문 2는 색깔처럼 사소한 내용을 묻고 있어. 글의 중요한
               사건을 묻는 질문으로 바꿔볼까?"
               예: "답이 예시 글의 내용과 달라. 글을 다시 읽고 답을
@@ -1708,25 +1821,21 @@ public class FeedbackAiService {
             {"status": "good" 또는 "need", "message": "피드백"}
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장):
-            - status가 good이면 한 문장으로 짧게 격려해줘.
-              예: "질문과 답의 핵심 내용을 잘 이어서 간추렸어."
-              예: "중요한 내용을 빠뜨리지 않고 자연스럽게 정리했어."
-            - status가 need면 뭉뚱그리지 말고 (1) 무엇이 부족한지 (2) 왜
-              그런지 (3) 어떻게 고치면 되는지가 드러나게, 한 번에 한
-              가지 문제만 구체적으로 알려줘. "내용이 맞지 않아요",
-              "질문의 뜻이 잘 보이지 않아요" 같은 뭉뚱그린 문구는 쓰지 마:
-              핵심 누락 예: "질문 1과 2의 내용은 잘 들어갔는데, 질문
-              3에서 확인한 마지막 내용이 빠져 있어. 마지막에 어떤 일이
-              있었는지 한 문장 더 넣어 보자."
-              관련 없음 예: "간추리기 내용이 왼쪽 질문·답과 다른
-              이야기를 하고 있어. 질문 1~3의 답을 중심으로 다시
-              간추려 봐."
+            - status가 good이면 학생의 최종 간추리기에서 질문·답의 어떤
+              핵심 내용을 골라 자연스럽게 이었는지 한 문장으로 칭찬해줘.
+            - status가 need이고 그 원인이 아래 "문장 미완성"이나 "단어
+              나열"처럼 순수한 형식 문제일 때만, 그 형식 문제를 한
+              문장으로 짧게 알려줘:
               문장 미완성 예: "마지막 문장이 끝나지 않았어. 문장을
               끝까지 완성해 봐."
               단어 나열 예: "단어만 나열하지 말고, 완성된 문장으로 이어서
               써 봐."
-            - 절대 3문장 이상 쓰지 마.
-            """ + KOREAN_ONLY_OUTPUT_RULE;
+            - 그 외의 모든 need(핵심 내용 누락, 질문·답과 관련 없음, 흐름이
+              어색함, 너무 짧음 등 내용에 관한 문제)는 형식 문제가 아니므로
+              아래 [간추리기 불통과(need) 피드백 전용 규칙]을 반드시 그대로
+              따라서 써줘 - 질문 번호나 빠진 사건의 실제 내용을 절대 짚지
+              마라.
+            """ + SUMMARY_NEED_FEEDBACK_RULE + KOREAN_ONLY_OUTPUT_RULE;
 
     /*
      * 개별읽기 읽기 후(individual-after-reading.html) "질문과 답 쓰기"
@@ -1814,9 +1923,8 @@ public class FeedbackAiService {
 
             message 작성 규칙 (초등학교 4학년이 이해할 수 있는 쉬운 문장,
             한 번에 가장 중요한 한 가지만 짧고 구체적으로):
-            - status가 good이면 한 문장으로 짧게 격려해줘.
-              예: "책의 중요한 내용을 찾을 수 있는 질문이야."
-              예: "질문과 답이 잘 이어져 있어."
+            - status가 good이면 학생 질문·답의 실제 내용에서 질문 유형의
+              특징이나 연결이 잘 드러난 부분을 한 문장으로 구체적으로 칭찬해줘.
               예: "간추리기에 활용하기 좋은 질문과 답이야."
             - status가 need면 예시처럼 구체적으로 알려줘:
               답 불일치 예: "질문은 좋지만 답이 질문과 잘 맞지 않아. 다시
@@ -2554,12 +2662,12 @@ public class FeedbackAiService {
             시작한다. ANSWER_NOT_RELATED, KEYWORD_ONLY_ANSWER는 모두 "답"만
             문제인 경우이므로 message를 반드시 "답을 고쳐 보세요."로
             시작한다(질문을 다시 쓰라는 말은 절대 넣지 않는다 - 질문은 이미
-            통과했다). result가 good이면 "좋아요!"로 시작한다.
+            통과했다). result가 good이면 학생이 실제로 활용한 제목·차례·
+            그림·글 단서와 예상 내용을 짚어 한 문장으로 칭찬한다.
 
-            - result가 good이면 짧게 격려만 해줘. 단순하거나 뻔한 답이어도
-              good이면 격려하는 말투로 써(부족하다는 뉘앙스 금지).
-              예: "좋아요! 질문과 예상한 답이 자연스럽게 이어져요."
-              예: "좋아요! 책 제목을 보고 궁금한 점과 예상한 답을 잘 적었어요."
+            - result가 good이면 단순하거나 뻔한 답이어도 부족하다는 뉘앙스
+              없이, 학생이 쓴 핵심 질문·예상이나 활용한 단서를 직접 짚어
+              20~50자 정도의 한 문장으로 구체적으로 칭찬해줘.
             - failedRule이 NOT_A_QUESTION이면:
               "질문을 고쳐 보세요."로 시작한 뒤, 무엇이 빠져 질문으로
               보이지 않는지 학생 입력을 기준으로 짚고 고쳐쓰기 예를 줘.
@@ -2894,7 +3002,8 @@ public class FeedbackAiService {
         AiFeedbackResponse answerRechecked = reconsiderAnswerOnlyFailure(request, reconsidered);
         AiFeedbackResponse directRechecked = reconsiderDirectQuestionTypeFailure(request, answerRechecked);
         AiFeedbackResponse withFixedTitleFeedback = applyFixedTitleMismatchFeedback(request, directRechecked);
-        return sanitizeEnglishLeakage(withFixedTitleFeedback);
+        AiFeedbackResponse sanitized = sanitizeEnglishLeakage(withFixedTitleFeedback);
+        return ensureSpecificPositiveFeedback(request, sanitized);
     }
 
     /*
@@ -3053,7 +3162,7 @@ public class FeedbackAiService {
             if (check.answerConnected()) {
                 response.setResult("good");
                 response.setFailedRule(null);
-                response.setMessage("좋아요! 책 제목을 보고 궁금한 점과 예상한 답을 잘 적었어요.");
+                response.setMessage(buildContextualPositiveFeedback(request));
             } else {
                 response.setResult("retry");
                 response.setFailedRule(ANSWER_NOT_RELATED_RULE);
@@ -3197,7 +3306,7 @@ public class FeedbackAiService {
                 } else {
                     response.setStatus("good");
                 }
-                response.setMessage("좋아요! 질문과 답이 자연스럽게 이어져요.");
+                response.setMessage(buildContextualPositiveFeedback(request));
             }
         } catch (Exception e) {
             log.warn("답 연결성 재확인 호출 실패 - 원래 판정을 유지합니다.", e);
@@ -3336,9 +3445,7 @@ public class FeedbackAiService {
             if (check.answerMatches()) {
                 response.setStatus("good");
                 boolean hasAnswer = item.getAnswer() != null && !item.getAnswer().isBlank();
-                response.setMessage(hasAnswer
-                        ? "좋아요! 질문과 답이 자연스럽게 이어져요."
-                        : "좋아요! 바로 찾기 질문을 잘 만들었어요.");
+                response.setMessage(buildContextualPositiveFeedback(request));
             } else {
                 response.setStatus("need");
                 response.setMessage("답을 고쳐 보세요. 질문에서 묻는 내용에 맞게 답해 보세요.");
@@ -3923,6 +4030,81 @@ public class FeedbackAiService {
     private static final String ENGLISH_FALLBACK_GOOD_MESSAGE = "정말 잘했어요! 다음으로 넘어가 볼까요?";
     private static final String ENGLISH_FALLBACK_NEED_MESSAGE =
             "질문을 잘 살펴보았어요. 책과 관련된 궁금한 점이 드러나도록 조금 더 구체적으로 적어 보세요.";
+
+    /*
+     * 프롬프트를 강화해도 모델/파싱 fallback이 드물게 "좋아요!" 한마디만
+     * 돌려줄 수 있다. 통과 판정 자체는 건드리지 않고, 그런 짧은 공통 칭찬만
+     * 활동 유형별 최소한의 구체적인 칭찬으로 바꾼다. 정상적으로 학생 입력을
+     * 짚은 AI 문장은 그대로 보존한다.
+     */
+    private AiFeedbackResponse ensureSpecificPositiveFeedback(
+            AiFeedbackRequest request, AiFeedbackResponse response) {
+        if (response == null || !isGoodFeedback(response)) {
+            return response;
+        }
+
+        String message = response.getMessage();
+        if (message == null || message.isBlank() || isGenericPositiveMessage(message)) {
+            response.setMessage(buildContextualPositiveFeedback(request));
+        }
+        return response;
+    }
+
+    private boolean isGoodFeedback(AiFeedbackResponse response) {
+        return "good".equals(response.getStatus()) || "good".equals(response.getResult());
+    }
+
+    private boolean isGenericPositiveMessage(String message) {
+        String normalized = message.replaceAll("[\\s!！.?？~～]", "");
+        return normalized.equals("좋아요")
+                || normalized.equals("잘했어요")
+                || normalized.equals("아주잘했어요")
+                || normalized.equals("정말잘했어요")
+                || normalized.equals("질문이좋아요")
+                || normalized.equals("답을잘썼어요")
+                || normalized.equals("질문과답이잘연결되었어요")
+                || normalized.equals("정말잘했어요다음으로넘어가볼까요");
+    }
+
+    private String buildContextualPositiveFeedback(AiFeedbackRequest request) {
+        if (request == null) {
+            return "쓴 내용에서 중요한 생각을 골라 분명하게 표현했어요.";
+        }
+
+        if (isPreReadingQuestionType(request)) {
+            return switch (String.valueOf(request.getStepType())) {
+                case "title" -> "책 제목에서 궁금한 점을 떠올리고 예상한 답으로 잘 이어갔어요.";
+                case "toc" -> "차례에서 찾은 단서로 책의 내용을 자연스럽게 예상했어요.";
+                case "picture" -> "그림 속 단서를 살펴보고 궁금한 점과 예상을 잘 연결했어요.";
+                case "text" -> "글에서 찾은 단서로 이어질 내용을 자연스럽게 예상했어요.";
+                default -> "책에서 찾은 단서로 궁금한 점과 예상한 답을 잘 연결했어요.";
+            };
+        }
+
+        if (isSummaryType(request) || isFinalSummaryType(request)
+                || INDIVIDUAL_SUMMARY_TYPE.equals(request.getType())) {
+            return "이야기의 중요한 내용을 중심으로 흐름이 잘 드러나게 정리했어요.";
+        }
+
+        if (isExtraPracticeType(request)) {
+            return "질문과 답으로 이야기의 중요한 흐름을 나누어 잘 짚었어요.";
+        }
+
+        return switch (String.valueOf(request.getStepType())) {
+            case "direct" -> hasWrittenAnswer(request)
+                    ? "글에서 중요한 내용을 찾아 질문과 답으로 정확하게 연결했어요."
+                    : "글에서 직접 찾을 수 있는 중요한 내용을 질문으로 잘 만들었어요.";
+            case "infer" -> "장면과 행동을 바탕으로 인물의 마음이나 이유를 자연스럽게 짐작했어요.";
+            case "opinion" -> "책 속 장면에 대한 자신의 생각과 느낌을 분명하게 표현했어요.";
+            case "connect" -> "책의 내용을 자신의 경험이나 생활과 자연스럽게 연결했어요.";
+            default -> "책의 중요한 내용을 질문과 답으로 자연스럽게 연결했어요.";
+        };
+    }
+
+    private boolean hasWrittenAnswer(AiFeedbackRequest request) {
+        AiFeedbackRequest.QAItem item = firstQaItem(request);
+        return item != null && item.getAnswer() != null && !item.getAnswer().isBlank();
+    }
 
     private AiFeedbackResponse sanitizeEnglishLeakage(AiFeedbackResponse response) {
         if (response == null || response.getMessage() == null) {

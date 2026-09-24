@@ -401,7 +401,7 @@ class FeedbackAiServiceTest {
                 .contains("\"답을 고쳐 보세요.\"로 시작")
                 .contains("\"질문을 고쳐 보세요.\"로 시작")
                 .contains("\"질문과 답을 함께 고쳐 보세요.\"로")
-                .contains("반드시 \"좋아요!\"로 시작");
+                .contains("실제로 쓴 핵심 내용이나 연결 방식을 짚는 구체적인 한 문장");
         }
     }
 
@@ -422,7 +422,7 @@ class FeedbackAiServiceTest {
             .contains("이 책 표지는 어떤 색인가요?")
             .contains("오늘 저녁은 무엇을")
             .contains("피자입니다.")
-            .contains("status가 good이면 message는 정확히 \"좋아요!\"");
+            .contains("두 질문·답이 간추리기에 필요한 어떤 핵심 내용을 나누어 짚었는지");
     }
 
     /*
@@ -867,7 +867,8 @@ class FeedbackAiServiceTest {
 
         AiFeedbackResponse result = service.getFeedback(buildRequest("during_reading_question", "direct"));
 
-        assertThat(result.getMessage()).isEqualTo("정말 잘했어요! 다음으로 넘어가 볼까요?");
+        assertThat(result.getMessage())
+            .isEqualTo("글에서 중요한 내용을 찾아 질문과 답으로 정확하게 연결했어요.");
     }
 
     /* 짧은 영어 고유명사(영어 책 제목 등)가 섞인 정상 한국어 문장은 통째로 대체되지 않음 */
@@ -1330,7 +1331,7 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getResult()).isEqualTo("good");
         assertThat(result.getFailedRule()).isNull();
-        assertThat(result.getMessage()).startsWith("좋아요!");
+        assertThat(result.getMessage()).contains("책 제목", "궁금한 점", "예상한 답");
     }
 
     /* 관련 개념 확장(핵심 단어가 제목에 그대로 없는 경우)도 같은 경로로 통과되어야 한다. */
@@ -1931,7 +1932,7 @@ class FeedbackAiServiceTest {
 
         assertThat(result.getResult()).isEqualTo("good");
         assertThat(result.getFailedRule()).isNull();
-        assertThat(result.getMessage()).startsWith("좋아요!");
+        assertThat(result.getMessage()).contains("그림 속 단서", "궁금한 점", "예상");
     }
 
     /* failedRule이 답 문제를 명확히 나타내면 AI message 표현이 달라도 재검토한다. */
@@ -1990,7 +1991,7 @@ class FeedbackAiServiceTest {
         AiFeedbackResponse result = service.getFeedback(request);
 
         assertThat(result.getStatus()).isEqualTo("good");
-        assertThat(result.getMessage()).startsWith("좋아요!");
+        assertThat(result.getMessage()).contains("장면과 행동", "마음이나 이유", "짐작");
     }
 
     /* during_reading_practice_review(총복습, passage 포함)에도 동일하게 적용됨 */
@@ -2118,7 +2119,7 @@ class FeedbackAiServiceTest {
         AiFeedbackResponse result = service.getFeedback(request);
 
         assertThat(result.getStatus()).isEqualTo("good");
-        assertThat(result.getMessage()).startsWith("좋아요!");
+        assertThat(result.getMessage()).contains("중요한 내용", "질문과 답", "연결");
     }
 
     /* 심화 연습(질문만 받는 화면)에서도 같은 재확인이 적용되고, 답이 없을 때는 "답"을 언급하지 않는 메시지를 써야 한다. */
