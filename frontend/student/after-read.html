@@ -5206,16 +5206,33 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 }
 
 .ar-my-book-start-hint {
-  font-size: 17px !important;
-  font-weight: 700 !important;
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  line-height: 1.5;
+  color: #75491f;
 }
 
 .ar-my-book-start-button {
-  min-width: 370px;
-  min-height: 58px;
-  padding: 0 44px !important;
-  font-size: 20px !important;
+  min-width: 400px;
+  min-height: 66px;
+  padding: 12px 40px !important;
+  font-size: 23px !important;
   font-weight: 900;
+  line-height: 1.35;
+  border: 2px solid #a96925;
+  box-shadow: 0 8px 18px rgba(140, 84, 22, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.ar-my-book-start-button:disabled {
+  background: #dfc8a7;
+  border-color: #c5a77e;
+  color: #765d3e;
+  box-shadow: none;
+}
+
+.ar-my-book-start-button:focus-visible {
+  outline: 3px solid #75491f;
+  outline-offset: 4px;
 }
 
 .ar-my-book-start-buttons {
@@ -5274,7 +5291,7 @@ body.teacher-mode .ar-top-actions > .mq-book-home-button:first-child {
 
 @media (max-width: 900px) {
   .ar-my-book-start-button {
-    width: min(100%, 370px);
+    width: min(100%, 400px);
     min-width: 0;
   }
 

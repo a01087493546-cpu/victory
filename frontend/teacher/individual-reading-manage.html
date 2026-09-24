@@ -1837,18 +1837,52 @@
     .ir-pill,
     .ir-home-button { font-size: 17px !important; }
 
-    .ir-preview-card .ir-card-title,
+    /* 학생별 달성도 미리보기의 크기와 간격을 온책읽기에 맞춘다. */
+    .ir-preview-card .ir-card-inner {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) 58px;
+      gap: 12px;
+      padding: 20px 22px 18px;
+    }
+    .ir-preview-card .ir-card-title-row { margin-bottom: 0; }
+    .ir-preview-card .ir-card-sub { margin-top: 6px; }
+    .ir-preview-card .ir-small-tag,
+    .ir-preview-card .ir-criteria-button {
+      min-width: 92px;
+      height: 43px;
+      padding: 0 16px;
+    }
+    .ir-preview-card .ir-title-actions { gap: 9px; }
+    .ir-preview-scroll { border-radius: 21px; }
+    .ir-list-header {
+      grid-template-columns: 145px minmax(180px, 1fr) 115px;
+      min-height: 47px;
+      padding: 9px 17px;
+    }
+    .ir-student-row {
+      grid-template-columns: 145px minmax(180px, 1fr) 115px;
+      min-height: 73px;
+      padding: 10px 17px;
+    }
+    .ir-student-state { margin-top: 4px; }
+    .ir-more-button {
+      height: 58px;
+      flex-basis: 58px;
+      border-radius: 17px;
+    }
+    .ir-preview-card .ir-card-title { font-size: 33px !important; }
     .ir-status-card .ir-card-title { font-size: 31px !important; }
     .ir-card-sub { font-size: 17px !important; line-height: 1.4 !important; }
+    .ir-preview-card .ir-card-sub { font-size: 18px !important; }
     .ir-small-tag,
     .ir-criteria-button { font-size: 16px !important; }
 
     .ir-list-header { font-size: 16px !important; }
-    .ir-student-name { font-size: 20px !important; }
-    .ir-student-percent { font-size: 23px !important; }
-    .ir-student-state { font-size: 13px !important; }
+    .ir-student-name { font-size: 21px !important; }
+    .ir-student-percent { font-size: 24px !important; }
+    .ir-student-state { font-size: 14px !important; }
     .ir-achieve-bar { height: 19px !important; }
-    .ir-more-button { font-size: 19px !important; }
+    .ir-more-button { font-size: 20px !important; }
 
     .ir-today-value { font-size: 39px !important; }
     .ir-today-label { font-size: 17px !important; }
