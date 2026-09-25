@@ -8370,21 +8370,13 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
     display:none !important;
   }
   /*
-   * 예전에는 교사 모드에서 날짜 이동 UI(이전날/오늘/다음날) 자체를
+   * 예전에는 교사 모드에서 날짜 이동 UI(이전날/다음날) 자체를
    * 통째로 숨겼다. 교사도 "책수다방 보러가기"에서 날짜별로 학생 글을
    * 볼 수 있어야 하므로 더 이상 숨기지 않는다 - moveBookChatDate() 등
    * 날짜 이동 로직과 심사/일반 필터링은 이미 학생 화면과 동일하게
    * 동작하므로 그대로 재사용한다.
    */
   body.individual-book-chat-teacher-mode #shareScreen .idr-book-chat-write-button {
-    display:none !important;
-  }
-  /*
-   * 날짜 이동 UI(이전날/오늘/다음날)는 이제 교사 모드에서도 보이지만,
-   * 그 안에 같이 있던 "읽기중 홈"(학생 읽기 중 홈으로 이동)은 교사
-   * 미리보기에는 맞지 않으므로 이 버튼만 계속 숨긴다.
-   */
-  body.individual-book-chat-teacher-mode .idr-book-chat-date-actions button[onclick="showScreen('home')"] {
     display:none !important;
   }
   body.individual-book-chat-teacher-mode #individualBookChatTeacherReturn {
@@ -8495,8 +8487,8 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
         </div>
 
        <div class="idr-top-actions">
-  <button type="button" class="idr-top-button" id="homeNavButton" style="display:none" onclick="showScreen('home')">읽기 중 홈</button>
   <button type="button" class="idr-top-button" id="stageSelectNavButton" onclick="goTodayAdventure()">읽기 단계 선택</button>
+  <button type="button" class="idr-top-button" id="homeNavButton" style="display:none" onclick="showScreen('home')">읽기 중 홈</button>
 
   <button type="button" class="mq-book-home-button" id="bookHomeNavButton" onclick="goIndividualReading()">📚 책읽기 홈</button>
 </div>
@@ -10311,6 +10303,7 @@ async function renderBookChatRoom(selectedIndex = 0) {
         </div>
         <div class="idr-top-actions">
           ${renderIndividualBookChatTeacherReturnButton()}
+          <button type="button" class="idr-top-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
         </div>
       </header>
@@ -10346,22 +10339,12 @@ async function renderBookChatRoom(selectedIndex = 0) {
           <button
             class="idr-top-button"
             type="button"
-            onclick="window.goTodayBookChatDate()"
-            style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
-          >
-            오늘
-          </button>
-
-          <button
-            class="idr-top-button"
-            type="button"
             onclick="window.moveBookChatDate(1)"
             style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
             ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
           >
             다음날
           </button>
-          <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
         </div>
       </div>
 
@@ -10634,6 +10617,7 @@ ${
         </div>
         <div class="idr-top-actions">
           ${renderIndividualBookChatTeacherReturnButton()}
+          <button type="button" class="idr-top-button" onclick="goTodayAdventure()">읽기 단계 선택</button>
           <button type="button" class="idr-top-button" onclick="showScreen('home')">읽기 중 홈</button>
         </div>
       </header>
@@ -10670,22 +10654,12 @@ ${
    <button
   class="idr-top-button"
   type="button"
-  onclick="window.goTodayBookChatDate()"
-  style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
->
-  오늘
-</button>
-
-   <button
-  class="idr-top-button"
-  type="button"
   onclick="window.moveBookChatDate(1)"
   style="height: 38px; padding: 0 14px; background: linear-gradient(180deg, #8b5421, #5b3215); color: #fff8e8; border: none;"
   ${selectedBookChatDate >= getTodayDateKey() ? "disabled" : ""}
 >
   다음날
 </button>
-        <button class="idr-top-button" type="button" onclick="showScreen('home')">읽기중 홈</button>
   </div>
 </div>
 
@@ -11293,13 +11267,6 @@ function moveBookChatDate(direction) {
 }
 
 /*
-  책수다방 날짜를 오늘로 되돌립니다.
-*/
-function goTodayBookChatDate() {
-  selectedBookChatDate = getTodayDateKey();
-  renderBookChatRoom(0);
-}
-/*
   책수다방 현재 선택 상태입니다.
   - showScreen 함수 안에 let으로 두면
     맨 아래 window.saveBookChatThought 함수에서 값을 읽지 못합니다.
@@ -11317,7 +11284,6 @@ window.renderBookChatWriteScreen = renderBookChatWriteScreen;
 window.renderBookChatRoom = renderBookChatRoom;
 // HTML onclick에서 책수다방 날짜 이동 함수를 찾을 수 있게 연결합니다.
 window.moveBookChatDate = moveBookChatDate;
-window.goTodayBookChatDate = goTodayBookChatDate;
 
     function getBookTitle() {
       return sessionStorage.getItem(STORAGE_KEYS.bookTitle) || sessionStorage.getItem("individualCurrentBookTitle_" + studentId) || "아직 읽을 책을 정하지 않았어요";

@@ -996,7 +996,6 @@ body.teacher-mode .teacher-return-button {
         <div class="date-nav-actions">
           <button class="nav-button" type="button" onclick="moveBookChatDate(-1)">이전날</button>
           <span class="date-nav-label" id="bookChatDateLabel"></span>
-          <button class="nav-button" type="button" onclick="goTodayBookChatDate()">오늘</button>
           <button class="nav-button" type="button" id="bookChatNextDayButton" onclick="moveBookChatDate(1)">다음날</button>
         </div>
       </div>
@@ -1413,12 +1412,6 @@ function moveBookChatDate(direction) {
   }
 
   selectedBookChatDate = nextDateKey;
-  updateBookChatDateLabel();
-  renderAll();
-}
-
-function goTodayBookChatDate() {
-  selectedBookChatDate = getTodayDateKey();
   updateBookChatDateLabel();
   renderAll();
 }

@@ -22,4 +22,10 @@ public class IndividualAfterResponseSaveRequest {
     private Boolean aiPassed;
 
     private String aiFeedback;
+
+    /*
+     * 이 질문·답이 속한 책 유형(story/info/opinion). 이 책의 읽기 후 유형을
+     * 확정하는 기준이 되며, 비어 있으면(예전 클라이언트) 저장하지 않는다.
+     */
+    private String bookType;
 }

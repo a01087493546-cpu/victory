@@ -425,6 +425,69 @@ class FeedbackAiServiceTest {
             .contains("두 질문·답이 간추리기에 필요한 어떤 핵심 내용을 나누어 짚었는지");
     }
 
+    @Test
+    void afterReadingPrompts_prioritizeSummaryUsefulnessOverExactAnswerOrBookTypeForm() throws Exception {
+        List<String> afterReadingPromptFields = List.of(
+            "SYSTEM_PROMPT_QUESTION",
+            "SYSTEM_PROMPT_SUMMARY",
+            "SYSTEM_PROMPT_EXTRA_PRACTICE",
+            "SYSTEM_PROMPT_FINAL_SUMMARY",
+            "SYSTEM_PROMPT_INDIVIDUAL_QUESTION"
+        );
+
+        for (String fieldName : afterReadingPromptFields) {
+            String prompt = privatePrompt(fieldName).replaceAll("\\s+", " ");
+            assertThat(prompt)
+                .as("읽기 후 프롬프트 %s의 유연한 공통 판정 기준", fieldName)
+                .contains("정답 맞히기 시험이 아니다")
+                .contains("책의 중요한 내용을 다시 떠올리거나 간추리는 데 도움이 되는가")
+                .contains("책 유형은 보조 기준일 뿐 탈락 조건이 아니다")
+                .contains("짧은 사실 확인 질문")
+                .contains("핵심 뜻이 같고 질문에 대응하면")
+                .contains("애매하면 good")
+                .contains("피드백은 최대 2문장")
+                .contains("정답·모범답안·완성 문장을 직접 알려주지 않는다");
+        }
+    }
+
+    @Test
+    void afterReadingPrompts_acceptUmbrellaFactQuestionAndParaphrasedEndingAnswer() throws Exception {
+        List<String> questionPromptFields = List.of(
+            "SYSTEM_PROMPT_QUESTION",
+            "SYSTEM_PROMPT_EXTRA_PRACTICE",
+            "SYSTEM_PROMPT_INDIVIDUAL_QUESTION"
+        );
+
+        for (String fieldName : questionPromptFields) {
+            String prompt = privatePrompt(fieldName).replaceAll("\\s+", " ");
+            assertThat(prompt)
+                .as("읽기 후 질문 프롬프트 %s의 우산 회귀 예시", fieldName)
+                .contains("수지가 잃어버린 것은 무엇인가요?")
+                .contains("우산입니다.")
+                .contains("주요 사건을 떠올리게 하므로 반드시 good")
+                .contains("같이 우산 쓰고 집에 갔다.")
+                .contains("핵심 뜻이 같으므로 good")
+                .contains("친구를 만났습니다.")
+                .contains("질문과 답이 서로 다르므로 need")
+                .contains("정답인 물건 이름을 알려주지 말고");
+        }
+    }
+
+    @Test
+    void summaryPrompts_allowShortSummariesWhenCoreMeaningIsVisible() throws Exception {
+        String summary = privatePrompt("SYSTEM_PROMPT_SUMMARY").replaceAll("\\s+", " ");
+        String finalSummary = privatePrompt("SYSTEM_PROMPT_FINAL_SUMMARY").replaceAll("\\s+", " ");
+
+        assertThat(summary)
+            .contains("모범답안과 똑같거나 모든 요소를 빠짐없이 담도록 요구하지 마")
+            .contains("조금 짧거나 일부 내용이 빠졌어도 핵심을 파악할 수 있으면 good")
+            .contains("정보책에는 사건 흐름을 요구하지 말며")
+            .contains("근거를 전부 쓰지 않아도 중심 주장이 드러나면 통과");
+        assertThat(finalSummary)
+            .contains("질문 수에 맞춘 포함 개수나 비율을 통과 조건으로 요구하지 않음")
+            .contains("책의 중심 내용이 전혀 드러나지 않음");
+    }
+
     /*
      * 이번 작업의 핵심 검증: "질문↔답 관련성" 판정을 넓히는 [질문-답 관련성
      * 판정] 규칙도 KOREAN_ONLY_OUTPUT_RULE에 있어 9개 프롬프트 전부가

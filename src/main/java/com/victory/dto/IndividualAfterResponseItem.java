@@ -28,6 +28,7 @@ public class IndividualAfterResponseItem {
     private String answer;
     private Boolean aiPassed;
     private String aiFeedback;
+    private String bookType;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean rewardGranted;
@@ -42,6 +43,7 @@ public class IndividualAfterResponseItem {
             response.getContent(),
             response.getPassed(),
             extractFromExtraData(response, "aiFeedback"),
+            extractFromExtraData(response, "bookType"),
             response.getCreatedAt(),
             response.getUpdatedAt(),
             false,

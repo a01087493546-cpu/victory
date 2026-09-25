@@ -905,6 +905,12 @@ public class IndividualReadingService {
             extraData.put("aiFeedback", aiFeedback);
         }
 
+        /* 이 책의 읽기 후 유형 확정 기준 - 질문·답이 저장되는 순간 함께 기록한다. */
+        String bookType = request.getBookType() == null ? "" : request.getBookType().trim();
+        if (!bookType.isEmpty()) {
+            extraData.put("bookType", bookType);
+        }
+
         response.setExtraData(extraData);
 
         Response saved = responseRepository.save(response);
