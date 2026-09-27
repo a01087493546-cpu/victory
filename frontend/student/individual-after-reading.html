@@ -3926,6 +3926,9 @@ body {
   transform: none !important;
   box-shadow: none !important;
 }
+
+/* 피드백이 표시될 때는 안내 문구를 확실히 숨긴다(Safari :has 재계산 문제 대비) */
+.iar-lumi-feedback.has-feedback .iar-lumi-intro { display: none !important; }
 </style>
 </head>
 
@@ -3942,7 +3945,7 @@ body {
     id="demoSummaryExampleBanner"
     hidden
   >
-    🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 최소 작성 조건 없이 다음 단계로 이동할 수 있습니다.
+    🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 내용을 작성하지 않아도 화면 이동이 가능합니다.
   </div>
         <div class="iar-top-actions">
           <button type="button" class="iar-top-button" onclick="goAdventure()">읽기 단계 선택</button>
@@ -4416,6 +4419,15 @@ async function moveSummaryDate(dayOffset) {
 
     if (isDemoAccount()) {
       restoreDemoAfterReadingState();
+      /*
+       * 예전 버전에서는 확인받기까지만 하고 완료하기를 누르지 않으면 심사계정 학생의
+       * 간추리기가 교사 승인 목록에 등록되지 않았다. 이 브라우저에 저장돼 있는
+       * 간추리기가 있으면 화면을 열 때 한 번 등록해 교사 화면에서도 보이게 한다.
+       */
+      const savedDemoAfter = loadDemoState(DEMO_AFTER_READING_KEY, {});
+      if (savedDemoAfter.summarySaved === true || savedDemoAfter.afterDone === true) {
+        registerDemoWrittenSummaryIfChanged(savedDemoAfter.summary);
+      }
     } else {
       await restoreIndividualAfterReadingFromServer();
     }
@@ -4642,6 +4654,22 @@ async function moveSummaryDate(dayOffset) {
       if (answerInput) answerInput.value = item.answer || "";
       card.dataset.feedbackPassed = "true";
       card.classList.add("passed");
+    });
+    /* 저장 후 확인받기를 거치지 않아 통과 표시는 없지만 실제로 적어 둔 질문·답도 복원한다. */
+    (Array.isArray(saved.questions) ? saved.questions : []).forEach(function (item, index) {
+      const card = cards[index];
+      if (!card || !item) return;
+      const questionInput = card.querySelector(".qa-question");
+      const answerInput = card.querySelector(".qa-answer");
+      if (!questionInput || !answerInput) return;
+      if (questionInput.value || answerInput.value) return;
+      if (!String(item.question || "").trim() && !String(item.answer || "").trim()) return;
+      questionInput.value = item.question || "";
+      answerInput.value = item.answer || "";
+      if (item.passed) {
+        card.dataset.feedbackPassed = "true";
+        card.classList.add("passed");
+      }
     });
     const summaryInput = document.getElementById("summaryInput");
     if (summaryInput) summaryInput.value = saved.summary || "";
@@ -4901,7 +4929,7 @@ async function moveSummaryDate(dayOffset) {
         return;
       }
       if (activeId === "questionScreen") {
-        banner.innerHTML = "🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 최소 작성 조건 없이 다음 단계로 이동할 수 있습니다.";
+        banner.innerHTML = "🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 내용을 작성하지 않아도 화면 이동이 가능합니다.";
         banner.hidden = false;
       } else if (activeId === "shareScreen") {
         banner.innerHTML = "🔍 <strong>심사 체험 안내</strong> — 학생 활동 모습을 확인할 수 있도록 가상 학생들의 예시 데이터를 미리 구성해 두었습니다.";
@@ -5038,6 +5066,33 @@ async function moveSummaryDate(dayOffset) {
           index: index + 1,
           question: questionInputs[index] ? questionInputs[index].value.trim() : "",
           answer: answerInputs[index] ? answerInputs[index].value.trim() : ""
+        };
+      });
+    }
+
+    function hasAnyQuestionAnswer(slots) {
+      return Array.isArray(slots) && slots.some(function (entry) {
+        return entry && (String(entry.question || "").trim() || String(entry.answer || "").trim());
+      });
+    }
+
+    /*
+     * 심사계정이 간추리기와 함께 남기는 질문·답 스냅샷. 화면 입력칸(DOM)이 아직
+     * 복원 전이거나 비어 있으면(공유 화면에서 등록되는 경우 등) 이 브라우저에
+     * 자동 저장돼 있는 읽기 후 작성 상태(mq_demo_individualAfterReading.questions)에서
+     * 가져온다. 그래야 "수정하기"로 들어갔을 때 왼쪽에 원래 질문·답이 보인다.
+     */
+    function getDemoQuestionAnswerSnapshot() {
+      const fromDom = getQuestionAnswerSlots();
+      if (hasAnyQuestionAnswer(fromDom)) return fromDom;
+      const saved = loadDemoState(DEMO_AFTER_READING_KEY, {});
+      const questions = Array.isArray(saved.questions) ? saved.questions : [];
+      return Array.from({ length: 3 }, function (_, index) {
+        const entry = questions[index] || {};
+        return {
+          index: index + 1,
+          question: String(entry.question || "").trim(),
+          answer: String(entry.answer || "").trim()
         };
       });
     }
@@ -5372,6 +5427,19 @@ async function moveSummaryDate(dayOffset) {
     updateSequentialQuestionLock();
   }
 
+  /*
+   * 심사/demo계정: 확인받기 없이 "다음"을 눌러도, 질문·답을 실제로 적었다면 저장
+   * 처리한다(입력이 비어 있으면 기존처럼 그냥 넘어간다). 예전에는 이 저장을
+   * 건너뛰어서 질문 1만 확인받고 넘어가면 질문 2·3은 새로고침/재진입 때 사라졌다.
+   */
+  if (!currentPassed && isDemoAccount()) {
+    const demoItem = getQuestionAnswerFromCard(currentCard);
+    if (demoItem.question && demoItem.answer) {
+      await saveQuestionCardResponse(currentCard, demoItem, activeQuestionCardIndex + 1, undefined, "");
+      updateSequentialQuestionLock();
+    }
+  }
+
   cardPendingAdvance = null;
 
   // 질문 1 또는 질문 2에서는 다음 질문으로 이동합니다.
@@ -5687,6 +5755,7 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
       const demoAfter = loadDemoState(DEMO_AFTER_READING_KEY, {});
       demoAfter.summarySaved = true;
       saveDemoState(DEMO_AFTER_READING_KEY, demoAfter);
+      registerDemoWrittenSummaryIfChanged(summaryText);
     }
     renderBookTypeCards();
     return { demoSaved: true };
@@ -5951,6 +6020,8 @@ async function saveAfterSummaryToServer(bookType, summaryText, aiPassed) {
     }
 
     async function showShareScreen() {
+      /* 심사계정: 간추리기를 쓰고 완료 버튼 없이 공유 화면으로 와도 내 글이 목록/교사 화면에 등록되게 한다. */
+      registerDemoWrittenSummaryIfChanged((document.getElementById("summaryInput") || {}).value);
       switchScreen("shareScreen");
       setActiveStep("stepShare");
       await refreshShareSummaries();
@@ -6775,7 +6846,28 @@ async function saveBookFinishRecord() {
         return;
       }
 
+      /*
+       * 본문이 그대로인 재저장(완료하기를 다시 누르거나 단계를 다시 넘기는 경우)은
+       * 승인/거절 상태와 저장 시각을 건드리지 않는다. 예전에는 무조건 승인대기로 되돌려서
+       * 교사가 거절/승인한 글이 학생이 화면을 다시 넘길 때마다 "확인 중"으로 새로 떴다.
+       * 본문을 실제로 고쳤을 때만 아래에서 승인대기로 되돌린다.
+       */
+      if (existingIndex >= 0
+          && String(list[existingIndex].summaryText || "").trim() === trimmedSummaryText) {
+        const snapshot = getDemoQuestionAnswerSnapshot();
+        if (!hasAnyQuestionAnswer(list[existingIndex].questionAnswers) && hasAnyQuestionAnswer(snapshot)) {
+          list[existingIndex] = Object.assign({}, list[existingIndex], { questionAnswers: snapshot });
+        }
+        saveDemoState(DEMO_WRITTEN_SUMMARIES_KEY, list);
+        return;
+      }
+
       if (existingIndex >= 0) {
+        const previousSummaryId = list[existingIndex].summaryId;
+        if (previousSummaryId != null) {
+          /* 본문을 고쳤으니 이전 교사 승인/거절 기록은 더 이상 유효하지 않다. */
+          clearDemoSummaryReviewOverride("individual", String(previousSummaryId));
+        }
         list[existingIndex] = Object.assign({}, list[existingIndex], {
           stableKey: stableKey,
           readingRecordId: readingRecordId,
@@ -6783,7 +6875,7 @@ async function saveBookFinishRecord() {
           bookTitle: bookTitle,
           bookType: selectedBookType || "other",
           summaryText: summaryText,
-          questionAnswers: getQuestionAnswerSlots(),
+          questionAnswers: getDemoQuestionAnswerSnapshot(),
           status: "pending",
           rejectionReason: "",
           updatedAt: now
@@ -6798,7 +6890,7 @@ async function saveBookFinishRecord() {
           bookTitle: bookTitle,
           bookType: selectedBookType || "other",
           summaryText: summaryText,
-          questionAnswers: getQuestionAnswerSlots(),
+          questionAnswers: getDemoQuestionAnswerSnapshot(),
           status: "pending",
           rejectionReason: "",
           createdAt: now,
@@ -6810,6 +6902,47 @@ async function saveBookFinishRecord() {
       }
 
       saveDemoState(DEMO_WRITTEN_SUMMARIES_KEY, list);
+    }
+
+    /*
+     * 심사계정에서 학생이 쓴 간추리기를 "직접 쓴 글" 저장소(교사 승인대기 목록의
+     * 원본)에 등록한다. 예전에는 "저장하고 완료하기"를 눌러야만 등록돼서, 확인받기
+     * 까지만 하고 공유 화면으로 넘어가면 교사 화면에는 실제 글이 없고 예시(seed)
+     * 김초롱 글만 보였다 - 교사가 그 예시를 승인해도 학생의 실제 글은 계속 대기
+     * 상태였다. 그래서 간추리기가 저장되는 시점(확인받기)과 공유 화면 진입 시점에도
+     * 같은 저장소에 등록한다. 내용이 바뀌지 않았으면 다시 저장하지 않아(승인 상태를
+     * 되돌리지 않음), 내용을 고쳤을 때만 이전 승인/거절 기록을 지우고 승인대기로
+     * 돌린다.
+     */
+    function registerDemoWrittenSummaryIfChanged(summaryText) {
+      if (!isDemoAccount() || isTeacherShareMode() || editingRejectedSummary) return;
+      const text = typeof summaryText === "string" ? summaryText.trim() : "";
+      if (!text) return;
+
+      const readingRecordId = sessionStorage.getItem("individualReadingRecordId_" + studentId) || "";
+      const stableKey = buildDemoSummaryStableKey(readingRecordId, getCurrentBookTitle());
+      const before = normalizeDemoWrittenSummaries(loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []))
+        .find(function (item) { return item.stableKey === stableKey; });
+      if (before && String(before.summaryText || "").trim() === text) {
+        /* 본문은 그대로여도 질문·답 스냅샷이 비어 있으면 채워 둔다(상태는 건드리지 않음). */
+        const snapshot = getDemoQuestionAnswerSnapshot();
+        if (!hasAnyQuestionAnswer(before.questionAnswers) && hasAnyQuestionAnswer(snapshot)) {
+          const all = loadDemoState(DEMO_WRITTEN_SUMMARIES_KEY, []);
+          if (Array.isArray(all)) {
+            saveDemoState(DEMO_WRITTEN_SUMMARIES_KEY, all.map(function (item) {
+              return item && item.summaryId === before.summaryId
+                ? Object.assign({}, item, { questionAnswers: snapshot })
+                : item;
+            }));
+          }
+        }
+        return;
+      }
+
+      saveDemoWrittenSummary(summaryText);
+      if (before && before.summaryId != null) {
+        clearDemoSummaryReviewOverride("individual", String(before.summaryId));
+      }
     }
 
     /*
@@ -6842,17 +6975,17 @@ async function saveBookFinishRecord() {
       const sorted = written.slice().sort(function (a, b) {
         return String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || ""));
       }).map(function (item) {
-        const overrides = loadDemoState("summaryReviewOverrides", {});
-        const override = overrides["individual:" + item.summaryId];
-        return Object.assign({}, item, {
+        /* 교사 승인관리 화면과 같은 계산(applyDemoIndividualSummaryOverride)으로
+           본문/책 종류/상태를 정해 두 화면이 같은 글을 같은 내용으로 보게 한다. */
+        const effective = applyDemoIndividualSummaryOverride(item);
+        if (!effective) return null;
+        return Object.assign({}, effective, {
           /* 새 데이터는 writerLoginId로 본인을 판정한다. writerLoginId가
              없던 이전 브라우저-local 데이터만 동일 브라우저 학생에게
              귀속시키는 호환 처리를 유지한다. */
-          isMine: viewingAsStudent && (!item.writerLoginId || String(item.writerLoginId) === currentLoginId),
-          status: override ? override.status : (item.status || "pending"),
-          rejectionReason: override ? (override.reason || "") : (item.rejectionReason || "")
+          isMine: viewingAsStudent && (!item.writerLoginId || String(item.writerLoginId) === currentLoginId)
         });
-      });
+      }).filter(Boolean);
       return sorted.filter(function(item) { return !isTeacherShareMode() || item.status === "approved"; }).concat(items);
     }
 
@@ -7221,9 +7354,13 @@ async function saveBookFinishRecord() {
            DOM에 다시 넣는다. 3단계 왼쪽 목록과 '이전으로'로 돌아간 입력
            화면이 모두 이 DOM을 공용으로 사용하므로 두 화면이 같은 값을
            보여준다. */
-        const restoredQuestions = Array.isArray(item.questionAnswers)
+        let restoredQuestions = Array.isArray(item.questionAnswers)
           ? item.questionAnswers
           : (Array.isArray(item.questions) ? item.questions : []);
+        /* 저장된 스냅샷이 비어 있는 내 글(예전에 등록된 글)은 이 브라우저의 읽기 후 작성 상태에서 대신 가져온다. */
+        if (!editingDemoSeedSummary && !hasAnyQuestionAnswer(restoredQuestions)) {
+          restoredQuestions = getDemoQuestionAnswerSnapshot();
+        }
         let editCards = Array.from(document.querySelectorAll("#qaList .iar-qa-card"));
         if (editingDemoSeedSummary && editCards.length > 3) {
           editCards.slice(3).forEach(function(card) { card.remove(); });
@@ -7500,6 +7637,14 @@ function getTodayText() {
       feedback.classList.remove("good", "need");
       if (state) feedback.classList.add(state);
       feedback.innerHTML = message;
+      /*
+        피드백이 있으면 "선택 활동 / 도움이 필요하면…" 안내(.iar-lumi-intro)를
+        숨긴다. 예전에는 CSS :has(:not(:empty))만 썼는데, Safari가 innerHTML
+        로 내용이 바뀔 때 이 선택자를 다시 계산하지 않아 안내와 피드백이
+        겹쳐 보였다. 그래서 JS가 부모 카드에 has-feedback 클래스를 직접 단다.
+      */
+      const card = feedback.closest(".iar-lumi-feedback");
+      if (card) card.classList.toggle("has-feedback", String(message || "").trim() !== "");
       applyAiFeedbackFontScale(feedback);
     }
 

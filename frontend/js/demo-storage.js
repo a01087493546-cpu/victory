@@ -366,35 +366,63 @@ function saveDemoPracticeWrittenSummary(entry) {
   saveDemoState("practiceWrittenSummaries", directList);
 }
 
+/*
+  개별읽기 direct 간추리기 한 건의 "실제 반영 값"(본문/책 종류/질문·답/상태/거절 사유)을
+  계산하는 단일 함수. 학생 공유 화면과 교사 승인관리 화면이 서로 다른 계산을 하면
+  같은 글이 화면마다 다르게 보이므로(학생: 원본 글, 교사: 재제출 override 본문) 두 화면
+  모두 이 함수를 쓴다. override가 원본 글보다 오래됐으면(학생이 그 뒤에 다시 저장함)
+  옛 override는 무시한다.
+*/
+function applyDemoIndividualSummaryOverride(item) {
+  if (!item) return null;
+  const summaryId = item.summaryId != null ? item.summaryId : item.id;
+  const summaryText = String(item.summaryText || item.summary || "").trim();
+  if (summaryId == null || !summaryText) return null;
+
+  let override = getDemoSummaryReviewOverride("individual", String(summaryId));
+  if (override && item.updatedAt && String(override.updatedAt || "") < String(item.updatedAt)) {
+    override = null;
+  }
+  if (override && override.deleted === true) return null;
+  const status = String(override ? override.status : (item.status || "pending")).toLowerCase();
+
+  return Object.assign({}, item, {
+    summaryId: String(summaryId),
+    summaryText: override && typeof override.summary === "string"
+      ? override.summary
+      : summaryText,
+    bookType: override && override.bookType ? override.bookType : (item.bookType || "other"),
+    questionAnswers: override && Array.isArray(override.questions)
+      ? override.questions
+      : (item.questionAnswers || item.questions || []),
+    status: status,
+    rejectionReason: status === "rejected"
+      ? String(override ? override.reason || "" : item.rejectionReason || "")
+      : ""
+  });
+}
+
 function getDemoIndividualDirectSummaries() {
   const list = loadDemoState("individualWrittenSummaries", []);
   if (!Array.isArray(list)) return [];
 
-  return list.map(function(item) {
-    if (!item) return null;
-    const summaryId = item.summaryId != null ? item.summaryId : item.id;
-    const summaryText = String(item.summaryText || item.summary || "").trim();
-    if (summaryId == null || !summaryText) return null;
+  /* 같은 책(stableKey)의 옛 저장본이 남아 있으면 가장 최근 것만 보여 준다(학생 화면과 동일). */
+  const latestByKey = {};
+  const noKey = [];
+  list.forEach(function(item) {
+    if (!item) return;
+    if (!item.stableKey) { noKey.push(item); return; }
+    const time = String(item.updatedAt || item.createdAt || "");
+    const existing = latestByKey[item.stableKey];
+    if (!existing || time >= String(existing.updatedAt || existing.createdAt || "")) {
+      latestByKey[item.stableKey] = item;
+    }
+  });
 
-    const override = getDemoSummaryReviewOverride("individual", String(summaryId));
-    if (override && override.deleted === true) return null;
-    const status = String(override ? override.status : (item.status || "pending")).toLowerCase();
-
-    return Object.assign({}, item, {
-      summaryId: String(summaryId),
-      summaryText: override && typeof override.summary === "string"
-        ? override.summary
-        : summaryText,
-      bookType: override && override.bookType ? override.bookType : (item.bookType || "other"),
-      questionAnswers: override && Array.isArray(override.questions)
-        ? override.questions
-        : (item.questionAnswers || item.questions || []),
-      status: status,
-      rejectionReason: status === "rejected"
-        ? String(override ? override.reason || "" : item.rejectionReason || "")
-        : ""
-    });
-  }).filter(Boolean);
+  return Object.keys(latestByKey).map(function(key) { return latestByKey[key]; })
+    .concat(noKey)
+    .map(applyDemoIndividualSummaryOverride)
+    .filter(Boolean);
 }
 
 /*

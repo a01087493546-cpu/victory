@@ -49,6 +49,7 @@ class StudentPortfolioServiceTest {
     private final StudentStatRewardLogRepository logs = mock(StudentStatRewardLogRepository.class);
     private final PracticeAchievementService practice = mock(PracticeAchievementService.class);
     private final IndividualReadingService individual = mock(IndividualReadingService.class);
+    private final IndividualAchievementService achievement = mock(IndividualAchievementService.class);
     private final BookRecommendationRepository bookRecommendations = mock(BookRecommendationRepository.class);
     private final ReadingCompetencyCalculator readingCompetencyCalculator = new ReadingCompetencyCalculator();
     private final DemoReadingCompetencyProvider demoReadingCompetencyProvider = new DemoReadingCompetencyProvider();
@@ -56,7 +57,7 @@ class StudentPortfolioServiceTest {
     private final DemoPracticeStageProvider demoPracticeStageProvider =
         new DemoPracticeStageProvider(new DemoPracticePortfolioAiProvider());
     private final StudentPortfolioService service = new StudentPortfolioService(users, classes, memberships,
-        classBooks, records, responses, summaries, logs, practice, individual, bookRecommendations,
+        classBooks, records, responses, summaries, logs, practice, individual, achievement, bookRecommendations,
         readingCompetencyCalculator, demoReadingCompetencyProvider, practiceStageNarrativeBuilder,
         demoPracticeStageProvider);
 
@@ -321,6 +322,9 @@ class StudentPortfolioServiceTest {
         when(bookRecommendations.findByReadingRecord_Id(100L)).thenReturn(List.of());
         when(bookRecommendations.findByReadingRecord_Id(101L)).thenReturn(List.of());
         when(bookRecommendations.findByReadingRecord_Id(102L)).thenReturn(List.of(new com.victory.entity.BookRecommendation()));
+        // 진행 중인 책은 실시간 점수(실천도 80 / 완성도 100)로 평균에 포함된다.
+        com.victory.dto.IndividualAchievementResult live102 = achievementResult(80.0, 100.0);
+        when(achievement.calculate(102L)).thenReturn(live102);
 
         IndividualPortfolioResponse result = service.getIndividualPortfolio(1L, 10L, 2L, from, to);
         var competencies = result.readingCompetencies();
@@ -328,11 +332,11 @@ class StudentPortfolioServiceTest {
         // 질문 생성 역량: (100 + 33.33 + 66.67) / 3 = 66.67 -> 67
         assertThat(competencies.questionGeneration().score()).isEqualTo(67);
         assertThat(competencies.questionGeneration().level()).isEqualTo("우수");
-        // 독서 지속/생각 다듬기 역량: 완독 2권 평균을 그대로 재사용.
+        // 독서 지속/생각 다듬기 역량: 완독 2권 + 진행 중 1권 평균을 그대로 재사용.
         assertThat(result.averageReadingPracticeScore()).isEqualByComparingTo("80.00");
         assertThat(competencies.readingPersistence().score()).isEqualTo(80);
-        assertThat(result.averageRecordCompletionScore()).isEqualByComparingTo("90.00");
-        assertThat(competencies.thoughtRefinement().score()).isEqualTo(90);
+        assertThat(result.averageRecordCompletionScore()).isEqualByComparingTo("93.33");
+        assertThat(competencies.thoughtRefinement().score()).isEqualTo(93);
         // 생각 나눔 역량: 책 3권 중 2권(bookA, inProgress) 나눔 참여 -> 66.67 -> 67
         assertThat(competencies.thoughtSharing().score()).isEqualTo(67);
         assertThat(competencies.thoughtSharing().level()).isEqualTo("우수");
@@ -374,6 +378,64 @@ class StudentPortfolioServiceTest {
     private User user(long id, String role, boolean demo, String login, String name) {
         User user = new User(); user.setId(id); user.setRole(role); user.setDemoAccount(demo); user.setLoginId(login); user.setName(name); return user;
     }
+    @Test
+    void individualPortfolio_inProgressStudentWithNoCompletedBooksShowsLiveScores() {
+        ReadingRecord inProgress = new ReadingRecord();
+        inProgress.setId(200L); inProgress.setBeforeDone(true); inProgress.setDuringDone(true); inProgress.setAfterDone(false);
+        when(records.findByStudent_IdAndFinishedAtIsNotNull(2L)).thenReturn(List.of());
+        when(records.findByStudent_IdAndFinishedAtIsNull(2L)).thenReturn(Optional.of(inProgress));
+        when(responses.findByStudent_IdAndModeAndDeletedAtIsNullAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(
+            eq(2L), eq("individual"), any(), any())).thenReturn(List.of());
+        when(summaries.findByStudent_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(eq(2L), any(), any()))
+            .thenReturn(List.of());
+        when(logs.findByStudent_IdAndGrantedAtGreaterThanEqualAndGrantedAtLessThan(eq(2L), any(), any())).thenReturn(List.of());
+        com.victory.dto.IndividualAchievementResult live200 = achievementResult(46.67, 53.33);
+        when(achievement.calculate(200L)).thenReturn(live200);
+
+        IndividualPortfolioResponse result = service.getIndividualPortfolio(1L, 10L, 2L, from, to);
+
+        assertThat(result.completedBookCount()).isZero();
+        assertThat(result.averageReadingPracticeScore()).isEqualByComparingTo("46.67");
+        assertThat(result.averageRecordCompletionScore()).isEqualByComparingTo("53.33");
+        assertThat(result.readingCompetencies().readingPersistence().score()).isEqualTo(47);
+        assertThat(result.readingCompetencies().thoughtRefinement().score()).isEqualTo(53);
+        // 완독이 없으므로 월별 완독 기록은 전부 0.
+        assertThat(result.monthlyCompletionStats().getMonthlyCounts()).containsOnly(0);
+    }
+
+    @Test
+    void individualPortfolio_completedBookWithoutFrozenScoresFallsBackToLiveAndMonthlyFollowsPeriod() {
+        ReadingRecord legacy = new ReadingRecord();
+        legacy.setId(300L); legacy.setFinishedAt(LocalDateTime.of(2026, 5, 10, 10, 0));
+        ReadingRecord frozen = completed(60, 80, LocalDateTime.of(2026, 5, 20, 10, 0));
+        ReadingRecord outside = completed(10, 10, LocalDateTime.of(2025, 5, 1, 10, 0));
+        when(records.findByStudent_IdAndFinishedAtIsNotNull(2L)).thenReturn(List.of(legacy, frozen, outside));
+        when(records.findByStudent_IdAndFinishedAtIsNull(2L)).thenReturn(Optional.empty());
+        when(responses.findByStudent_IdAndModeAndDeletedAtIsNullAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(
+            eq(2L), eq("individual"), any(), any())).thenReturn(List.of());
+        when(summaries.findByStudent_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByIdAsc(eq(2L), any(), any()))
+            .thenReturn(List.of());
+        when(logs.findByStudent_IdAndGrantedAtGreaterThanEqualAndGrantedAtLessThan(eq(2L), any(), any())).thenReturn(List.of());
+        com.victory.dto.IndividualAchievementResult live300 = achievementResult(40.0, 60.0);
+        when(achievement.calculate(300L)).thenReturn(live300);
+
+        IndividualPortfolioResponse result = service.getIndividualPortfolio(1L, 10L, 2L, from, to);
+
+        assertThat(result.completedBookCount()).isEqualTo(2);
+        assertThat(result.averageReadingPracticeScore()).isEqualByComparingTo("50.00");
+        assertThat(result.averageRecordCompletionScore()).isEqualByComparingTo("70.00");
+        // 5월에 2권 완독, 평가기간 밖(2025년) 기록은 제외.
+        assertThat(result.monthlyCompletionStats().getMonthlyCounts().get(4)).isEqualTo(2);
+        assertThat(result.monthlyCompletionStats().getMonthlyCounts().stream().mapToInt(Integer::intValue).sum()).isEqualTo(2);
+    }
+
+    private com.victory.dto.IndividualAchievementResult achievementResult(double practice, double completion) {
+        com.victory.dto.IndividualAchievementResult r = mock(com.victory.dto.IndividualAchievementResult.class);
+        when(r.getReadingPracticeScore()).thenReturn(practice);
+        when(r.getRecordCompletionScore()).thenReturn(completion);
+        return r;
+    }
+
     private Response response(String stage) { Response r = new Response(); r.setStage(stage); r.setContentType("answer"); return r; }
     private Response chat() { Response r = new Response(); r.setContentType("chat_post"); return r; }
     private ReadingRecord completed(int practice, int completion, LocalDateTime at) {

@@ -2422,9 +2422,7 @@ function selectBookType(type) {
         return;
       }
 
-      banner.innerHTML = isBookStep
-        ? "🔍 <strong>심사 체험 안내</strong> — 심사계정은 내용을 입력하지 않아도 다음 단계로 이동할 수 있습니다."
-        : "🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.";
+      banner.innerHTML = "🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 내용을 작성하지 않아도 화면 이동이 가능합니다.";
       banner.hidden = false;
     }
 

@@ -6424,8 +6424,57 @@ const AFTER_READING_API_BASE_URL = getApiBaseUrl();
       };
     }
 
+    /*
+     * 교사(tt11) 화면: getDemoLocalSharedSummary()는 "지금 로그인한 사람"의 글만
+     * 찾기 때문에, 교사로 열면 학생(ss01)이 쓴 승인된 실제 간추리기를 못 찾아
+     * 예시(seed)만 보였다. 교사 모드에서는 이 브라우저에 저장된 모든 심사 학생의
+     * 직접 작성 간추리기 중 승인된 것을 예시보다 앞에 붙인다(교사 승인관리
+     * 화면과 같은 저장소/override를 쓴다).
+     */
+    function mergeDemoApprovedDirectSummariesForTeacher(serverItems) {
+      const approved = getDemoPracticeDirectSummaries().filter(function(item) {
+        return item && String(item.status || "").toLowerCase() === "approved"
+          && isRealAfterReadingSummary(item.summary || item.summaryText || "");
+      }).map(function(item) {
+        const sharedAt = item.sharedAt || item.createdAt || item.updatedAt || "";
+        return {
+          id: item.localId || item.id,
+          localId: item.localId || item.id,
+          demoBrowserId: item.demoBrowserId,
+          demoLocal: true,
+          writerLoginId: item.writerLoginId,
+          studentId: item.studentId,
+          studentName: item.studentName,
+          classReadingBookId: item.classReadingBookId,
+          bookTitle: item.bookTitle,
+          bookType: item.bookType,
+          summary: item.summary,
+          summaryText: item.summaryText || item.summary,
+          sharedAt: sharedAt,
+          createdAt: sharedAt,
+          updatedAt: item.updatedAt || sharedAt,
+          likeCount: 0,
+          likedByMe: false,
+          status: "approved",
+          rejectionReason: ""
+        };
+      });
+      if (approved.length === 0) return serverItems;
+
+      return approved.concat(serverItems.filter(function(item) {
+        return !approved.some(function(local) {
+          return String(item.id) === String(local.id)
+            || (local.writerLoginId && item.writerLoginId && String(item.writerLoginId) === String(local.writerLoginId))
+            || (local.studentName && item.studentName && String(item.studentName) === String(local.studentName));
+        });
+      }));
+    }
+
     function mergeDemoLocalSharedSummary(items) {
       const serverItems = Array.isArray(items) ? items : [];
+      if (isDemoAccount() && isTeacherAfterReadingMode()) {
+        return mergeDemoApprovedDirectSummariesForTeacher(serverItems);
+      }
       const localSummary = getDemoLocalSharedSummary();
       /* getDemoLocalSharedSummary()가 이미 blank/템플릿을 걸러내지만,
          병합 단계에서도 한 번 더 확인해 빈 direct 카드가 새어나가지 않게 한다. */

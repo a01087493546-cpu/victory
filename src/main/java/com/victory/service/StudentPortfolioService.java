@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.victory.dto.IndividualAchievementResult;
 import com.victory.dto.IndividualPortfolioResponse;
 import com.victory.dto.IndividualPortfolioResponse.ActivitySummary;
 import com.victory.dto.IndividualPortfolioResponse.Competencies;
 import com.victory.dto.IndividualPortfolioResponse.ReadingCompetencies;
+import com.victory.dto.MonthlyCompletionStatsResponse;
 import com.victory.dto.PortfolioActivityCount;
 import com.victory.dto.PracticeAchievementResponse;
 import com.victory.dto.PracticePortfolioResponse;
@@ -62,6 +64,7 @@ public class StudentPortfolioService {
     private final StudentStatRewardLogRepository rewardLogRepository;
     private final PracticeAchievementService practiceAchievementService;
     private final IndividualReadingService individualReadingService;
+    private final IndividualAchievementService individualAchievementService;
     private final BookRecommendationRepository bookRecommendationRepository;
     private final ReadingCompetencyCalculator readingCompetencyCalculator;
     private final DemoReadingCompetencyProvider demoReadingCompetencyProvider;
@@ -175,22 +178,51 @@ public class StudentPortfolioService {
             ? deriveDemoCompetencies(responses, summaries)
             : sumLoggedCompetencies(logs);
 
-        BigDecimal averageReadingPracticeScore =
-            average(completed.stream().map(ReadingRecord::getFinalReadingPracticeScore).toList());
-        BigDecimal averageRecordCompletionScore =
-            average(completed.stream().map(ReadingRecord::getFinalRecordCompletionScore).toList());
+        /*
+         * 독서 실천도/기록 완성도 평균.
+         * - 심사계정: 기존 seed(완독 기록에 고정 저장된 final 점수)를 그대로 쓴다.
+         * - 일반계정: 평가기간 내 완독한 책 + 현재 진행 중인 책(있으면 1권)의
+         *   점수를 평균한다. 예전에는 완독 책의 final 점수만 평균해서 진행 중인
+         *   학생이나 final 점수가 비어 있는 과거 기록은 활동이 있어도 0점이었다.
+         *   책마다 완독 책은 고정된 final 점수를, 그 외에는 실제 활동 기준
+         *   실시간 점수를 쓴다(학생별 달성도 화면과 같은 계산 경로).
+         */
+        List<ReadingRecord> booksInScope = new ArrayList<>(completed);
+        if (!demo) {
+            readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(studentId).ifPresent(booksInScope::add);
+        }
+        BigDecimal averageReadingPracticeScore;
+        BigDecimal averageRecordCompletionScore;
+        if (demo) {
+            averageReadingPracticeScore =
+                average(completed.stream().map(ReadingRecord::getFinalReadingPracticeScore).toList());
+            averageRecordCompletionScore =
+                average(completed.stream().map(ReadingRecord::getFinalRecordCompletionScore).toList());
+        } else {
+            List<BookScores> bookScores = booksInScope.stream().map(this::scoresFor).toList();
+            averageReadingPracticeScore = averageScores(bookScores.stream().map(BookScores::practice).toList());
+            averageRecordCompletionScore = averageScores(bookScores.stream().map(BookScores::completion).toList());
+        }
         boolean hasUnattributedSharing = responses.stream().anyMatch(r -> "chat_reply".equals(r.getContentType())
             || "reply".equals(r.getContentType()));
         ReadingCompetencies readingCompetencies = demo
             ? demoReadingCompetencyProvider.forLoginId(context.student().getLoginId())
             : calculateReadingCompetencies(
-                studentId, completed, averageReadingPracticeScore, averageRecordCompletionScore, hasUnattributedSharing);
+                booksInScope, averageReadingPracticeScore, averageRecordCompletionScore, hasUnattributedSharing);
+
+        /*
+         * 월별 완독 기록: 심사계정은 seed 그대로. 일반계정은 위 completed(평가기간 내
+         * 완독)를 월별로 세어, 완독 권수(completedBookCount)와 항상 합계가 맞게 한다.
+         */
+        MonthlyCompletionStatsResponse monthlyStats = demo
+            ? individualReadingService.getMonthlyCompletionStats(studentId)
+            : monthlyCompletionOf(completed, to.getYear());
 
         return new IndividualPortfolioResponse(studentId, context.student().getName(), context.schoolClass().getGrade(),
             context.schoolClass().getClassNumber(), from, to, completed.size(),
             averageReadingPracticeScore, averageRecordCompletionScore,
             new ActivitySummary(questions, thoughts, summaries.size(), sharing),
-            individualReadingService.getMonthlyCompletionStats(studentId), competencies, readingCompetencies, demo);
+            monthlyStats, competencies, readingCompetencies, demo);
     }
 
     /*
@@ -207,12 +239,9 @@ public class StudentPortfolioService {
      * 이미 "완독 시점이 기간 내"만으로 기간을 가르는 것과 같은 원칙).
      */
     private ReadingCompetencies calculateReadingCompetencies(
-            Long studentId, List<ReadingRecord> completedInPeriod,
+            List<ReadingRecord> booksInScope,
             BigDecimal averageReadingPracticeScore, BigDecimal averageRecordCompletionScore,
             boolean hasUnattributedSharing) {
-
-        List<ReadingRecord> booksInScope = new ArrayList<>(completedInPeriod);
-        readingRecordRepository.findByStudent_IdAndFinishedAtIsNull(studentId).ifPresent(booksInScope::add);
 
         List<Integer> completedStageCountPerBook = booksInScope.stream()
             .map(this::stageDoneCount)
@@ -234,6 +263,46 @@ public class StudentPortfolioService {
             ReadingCompetencyScore.of(readingPersistenceScore),
             ReadingCompetencyScore.of(thoughtRefinementScore),
             ReadingCompetencyScore.of(thoughtSharingScore));
+    }
+
+    private record BookScores(double practice, double completion) {
+    }
+
+    /*
+     * 책 한 권의 독서 실천도/기록 완성도. 완독하면서 고정 저장된 final 점수가
+     * 둘 다 있으면 그 값을, 진행 중이거나 final 점수가 비어 있는 과거 기록은
+     * IndividualAchievementService(학생별 달성도와 같은 계산)의 값을 쓴다.
+     */
+    private BookScores scoresFor(ReadingRecord record) {
+        boolean frozen = record.getFinishedAt() != null
+            && record.getFinalReadingPracticeScore() != null
+            && record.getFinalRecordCompletionScore() != null;
+        if (frozen) {
+            return new BookScores(record.getFinalReadingPracticeScore(), record.getFinalRecordCompletionScore());
+        }
+        if (record.getId() == null) {
+            return new BookScores(
+                record.getFinalReadingPracticeScore() == null ? 0 : record.getFinalReadingPracticeScore(),
+                record.getFinalRecordCompletionScore() == null ? 0 : record.getFinalRecordCompletionScore());
+        }
+        IndividualAchievementResult live = individualAchievementService.calculate(record.getId());
+        return new BookScores(live.getReadingPracticeScore(), live.getRecordCompletionScore());
+    }
+
+    private BigDecimal averageScores(List<Double> values) {
+        if (values.isEmpty()) return BigDecimal.ZERO.setScale(2);
+        return BigDecimal.valueOf(values.stream().mapToDouble(Double::doubleValue).average().orElse(0))
+            .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private MonthlyCompletionStatsResponse monthlyCompletionOf(List<ReadingRecord> completed, int year) {
+        int[] counts = new int[12];
+        for (ReadingRecord record : completed) {
+            if (record.getFinishedAt() != null) counts[record.getFinishedAt().getMonthValue() - 1]++;
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int count : counts) list.add(count);
+        return new MonthlyCompletionStatsResponse(year, list);
     }
 
     private int stageDoneCount(ReadingRecord record) {

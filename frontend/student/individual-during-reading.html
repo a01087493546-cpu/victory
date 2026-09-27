@@ -4853,6 +4853,27 @@
   gap: 18px !important;
 }
 
+.idr-demo-banner {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  max-width: 900px;
+  padding: 4px 14px;
+  border: 1px solid rgba(180, 130, 60, 0.42);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
+  color: #6b4b26;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 800;
+  white-space: normal;
+  word-break: keep-all;
+  overflow: visible;
+}
+
+.idr-demo-banner strong { font-size: 14px; font-weight: 900; }
+.idr-demo-banner[hidden] { display: none !important; }
+
 .idr-made-count-badge {
   flex: 0 0 auto !important;
   min-width: 132px !important;
@@ -8094,27 +8115,6 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
   line-height: 1.35 !important;
 }
 
-.idr-demo-banner {
-  flex: 1 1 auto;
-  min-width: 0;
-  width: auto;
-  max-width: 720px;
-  padding: 4px 14px;
-  border: 1px solid rgba(180, 130, 60, 0.42);
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(255,247,225,.96), rgba(238,216,176,.92));
-  color: #6b4b26;
-  font-size: 14px;
-  line-height: 1.35;
-  font-weight: 800;
-  white-space: normal;
-  word-break: keep-all;
-  overflow: visible;
-}
-
-.idr-demo-banner strong { font-size: 14px; font-weight: 900; }
-.idr-demo-banner[hidden] { display: none !important; }
-
 /* 책수다방 목록과 상세 화면에서 A/B 선택지를 같은 카드 언어로 보여줍니다. */
 .idr-book-chat-option-list {
   display: grid;
@@ -8313,6 +8313,11 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
 #questionScreen .idr-inline-feedback-lumi { width: 136px !important; height: 160px !important; }
 #questionScreen .idr-inline-feedback #checkQuestionButton { grid-column: 3; grid-row: 1 / 3; align-self: center; justify-self: end; min-width: 160px; }
 #questionScreen #checkQuestionButton { height: 80px !important; padding: 0 28px !important; font-size: 28px !important; }
+
+/* Safari가 :has(:not(:empty))를 textContent 변경 시 다시 계산하지 않아 안내와 피드백이
+   겹치던 문제 - JS가 붙이는 has-feedback 클래스로 같은 동작을 보장한다. */
+#questionScreen .idr-inline-feedback.has-feedback .idr-lumi-intro { display: none !important; }
+#questionScreen .idr-inline-feedback:not(.has-feedback) .idr-feedback-box { display: none !important; }
 </style>
 <style>
   /*
@@ -8620,7 +8625,7 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
           <article class="idr-question-panel">
             <div class="idr-question-title-row">
               <h2 class="idr-panel-title">✎ 책 속 생각쓰기</h2>
-              <div class="idr-demo-banner" id="individualDuringQuestionDemoBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 실제 학생은 루미 피드백을 통과해야 다음 단계로 이동하지만, 심사계정은 바로 이동할 수 있습니다.</div>
+              <div class="idr-demo-banner" id="individualDuringQuestionDemoBanner" hidden>🔍 <strong>심사 체험 안내</strong> — 루미 피드백은 선택 활동이며, 심사계정은 내용을 작성하지 않아도 화면 이동이 가능합니다.</div>
               <span class="idr-made-count-badge" id="madeQuestionCountBadge">만든 질문 0개</span>
             </div>
             <div class="idr-divider"></div>
@@ -8926,6 +8931,18 @@ body.idr-book-chat-open .idr-book-chat-reject-feedback p {
     }
     const individualBookChatActorId = individualBookChatTeacherMode ? teacherId : studentId;
     showDemoBannerIfDemoAccount("individualDuringQuestionDemoBanner");
+
+    /* 책 속 생각쓰기 루미 피드백 카드: 피드백 문구가 있으면 has-feedback 클래스를 붙인다. */
+    (function watchQuestionFeedbackText() {
+      const text = document.getElementById("questionFeedbackText");
+      const card = text && text.closest(".idr-inline-feedback");
+      if (!text || !card) return;
+      const sync = function () {
+        card.classList.toggle("has-feedback", text.textContent.trim() !== "");
+      };
+      new MutationObserver(sync).observe(text, { childList: true, characterData: true, subtree: true });
+      sync();
+    })();
 /*
   "질문 만들기" 화면에서 "책수다방" 화면(탭)으로 넘어가는 버튼이다.
   ReadingRecord.duringDone과는 무관한 화면 내 탭 전환일 뿐이다 - 실제
