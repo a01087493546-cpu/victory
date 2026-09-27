@@ -693,7 +693,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   {
     title: "책 추천받기 버튼 이미지",
     category: "그림",
-    fileName: "고풍스러운_필기_도구와_책.png",
+    fileName: "antique-writing-tools.png",
     description: "개별읽기 메인 화면에서 책 추천받기 버튼에 사용한 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
     location: "학생 개별읽기 메인 화면 책 추천받기 버튼",
@@ -702,7 +702,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   {
     title: "오늘의 독서모험 버튼 이미지",
     category: "그림",
-    fileName: "마법의_나침반_장식.png",
+    fileName: "magic-compass-ornament.png",
     description: "개별읽기 메인 화면에서 오늘의 독서모험 버튼에 사용한 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
     location: "학생 개별읽기 메인 화면 오늘의 독서모험 버튼",
@@ -711,7 +711,7 @@ note: "ChatGPT 생성 이미지 / OpenAI 이용약관 증빙자료 확보"
   {
     title: "던전입장 버튼 이미지",
     category: "그림",
-    fileName: "고대_던전의_석문.png",
+    fileName: "ancient-dungeon-gate.png",
     description: "개별읽기 메인 화면에서 던전입장 버튼에 사용한 이미지",
     source: "OpenAI ChatGPT 이미지 생성",
     location: "학생 개별읽기 메인 화면 던전입장 버튼",
