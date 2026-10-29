@@ -231,6 +231,24 @@
     text-decoration: none;
   }
 
+  /* 사용 자료 출처 / 개인정보처리방침 버튼을 한 줄에 나란히 배치 */
+  .mq-source-row {
+    display: flex !important;
+    gap: 12px;
+    margin-top: 12px !important;
+  }
+
+  .mq-source-row .mq-source-button {
+    margin-top: 0 !important;
+  }
+
+  .mq-source-button--half {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 18px !important;
+    white-space: nowrap;
+  }
+
   /* 처음 이용하는 교사를 위한 계정 등록 안내 */
   .mq-register-guide {
     margin-top: 12px;
@@ -492,16 +510,27 @@
           </button>
         </div>
 
-        <!-- 사용 자료 출처 버튼: 심사위원이 확인하기 쉽게 크게 배치 -->
-        <a
-          class="mq-source-button"
-          href="./material-sources.html"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span>ⓘ</span>
-          사용 자료 출처
-        </a>
+        <!-- 사용 자료 출처 / 개인정보처리방침 버튼: 심사위원이 확인하기 쉽게 나란히 배치 -->
+        <div class="mq-source-row">
+          <a
+            class="mq-source-button mq-source-button--half"
+            href="./material-sources.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>ⓘ</span>
+            사용 자료 출처
+          </a>
+          <a
+            class="mq-source-button mq-source-button--half"
+            href="./privacy-policy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>ⓘ</span>
+            개인정보처리방침
+          </a>
+        </div>
       </div>
         </section>
       </main>
